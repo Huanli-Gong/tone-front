@@ -1,0 +1,84 @@
+.warp{
+    // ------------start 修改ProTable高级表格组件"列设置"框title栏-------------
+    // :global(.ant-popover-title){
+    //   height: unset;
+    //   line-height: unset;
+    //   padding: 5px 20px 4px;
+    // }
+    // -------------end 修改ProTable高级表格组件"列设置"框title栏---------------
+    :global(.ant-pro-table-toolbar){
+        padding: 0;
+    }
+    :global(.ant-tabs-nav::before){
+        border-bottom: none
+    }
+    :global(tr.ant-table-expanded-row > td){
+        background: #fff;
+    }
+    :global(.ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell){
+        padding: 0 0 8px 16px; 
+    }
+    .batch{
+        padding-right : 20px;
+        height:64px;
+        width:100%;
+        background-color: #fff;
+        padding-left:24px;
+        box-shadow:0 -9px 28px 8px rgba(0,0,0,0.05), 0 -6px 16px 0 rgba(0,0,0,0.08), 0 -3px 6px -4px rgba(0,0,0,0.12)
+    }
+    .pagination{
+        display:flex;
+        justify-content:space-between;
+        padding:20px 0;
+    }
+    .hidden{
+        opacity: 0;
+    }
+    
+    .ellipsis{
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+// ------------------------------- jpt--------------------------------------------
+// 设置ProTable高级表格组件thead栏: 小表格栏样式。
+// .warp > div > div > div > div > div > div > div > div > div > table > thead > tr > th {
+//   padding: 0 !important;
+// }
+// ProTable高级表格组件的，"列设置"按钮里的某些选项后面带的"过滤or排序图标"去除掉。
+.table_style > div > div > div > div > div > div > div > div > span > label > span > div > div > div:nth-child(2) {
+  display: none;
+}
+// -------------------------------------------------------------------------------
+
+.des{
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-variant: tabular-nums;
+    font-feature-settings: 'tnum', "tnum";
+    font-size: 14px;
+    color: rgba(0,0,0,.65);
+    font-weight: normal;
+    line-height: 1.5715;
+    white-space:pre-wrap; 
+    white-space:-moz-pre-wrap; 
+    white-space:-pre-wrap; 
+    white-space:-o-pre-wrap;
+    word-wrap:break-word; 
+} 
+
+.table_style {
+    :global(.ant-table-row-expand-icon-cell) {
+        padding : 0 !important;
+        width: 24px;
+    }
+
+    :global(th.no_padding_head) {
+        padding: 0!important;
+    }
+    :global(.ant-card-body) {
+        padding: 0;
+    }
+}

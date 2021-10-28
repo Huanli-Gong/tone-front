@@ -1,0 +1,58 @@
+
+.stepsWrapper_1 > div {
+    :global{
+       .ant-steps-item-icon > .ant-steps-icon > span {
+            display: none; // 让小对勾图标隐藏
+        }
+        .ant-steps-item-icon > .ant-steps-icon {
+            line-height:0; // 让原组件提供的文本隐藏
+            font-size:0;
+            overflow:hidden;
+        }
+        .ant-steps-item-icon > .ant-steps-icon {
+            &::after {
+                content: '1';
+                line-height: unset;
+                font-size: 16px;
+                overflow: visible;
+            }
+        }
+    }
+}
+
+.stepsWrapper_2 > div {
+    :global{
+       .ant-steps-item-icon > .ant-steps-icon > span {
+            display: none;
+        }
+        .ant-steps-item-icon > .ant-steps-icon {
+            line-height:0;
+            font-size:0;
+            overflow:hidden;
+        }
+        .ant-steps-item-icon > .ant-steps-icon {
+            &::after {
+                content: '2';
+                line-height: unset;
+                font-size: 16px;
+                overflow: visible;
+            }
+        }
+    }
+}
+
+.plan_step_btn {
+    color : rgba(0,0,0,.85);
+    font-size: 16px;
+    height: 100%;
+    line-height: 50px;
+    margin-left: 12px;
+    cursor: pointer;
+    &:hover {
+        color : #1890FF;
+    }
+
+    & span:first-child {
+        margin-right: 4px;
+    }
+}

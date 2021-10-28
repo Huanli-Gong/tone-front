@@ -1,0 +1,87 @@
+// 拐角线段：灰色
+.ArrowSolidGrey {
+  width: 28px;
+  height: 12px;
+  border-left: 2px solid #CECECE;
+  border-bottom: 2px solid #CECECE;
+  border-top: transparent;
+  border-right: transparent;
+  border-radius: 0 15px;
+  &::after {
+      content: '';
+      width: 0px;
+      height: 0px;
+      display: inline-block;
+      border-left: 5px solid #CECECE;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 5px solid transparent;
+      margin-top: 0px;
+      margin-left: 26px;
+  }
+}
+
+// 拐角线段：蓝色
+.ArrowSolidBlue {
+  width: 28px;
+  height: 12px;
+  border-left: 2px solid #1890FF;
+  border-bottom: 2px solid #1890FF;
+  border-top: transparent;
+  border-right: transparent;
+  border-radius: 0 15px;
+  &::after {
+      content: '';
+      width: 0px;
+      height: 0px;
+      display: inline-block;
+      border-left: 5px solid #1890FF;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 5px solid transparent;
+      margin-top: 0px;
+      margin-left: 26px;
+  }
+}
+
+// 每列
+.TemplateItemBlue {
+    width : 100%;
+    padding-top: 20px;
+    border-left: 2px solid #1890FF; // #CECECE;
+    // 处理最后一项。
+    &:nth-last-child(1) {
+        padding-top: 0px;
+        border-left: none;
+        padding-left: 2px;
+        &::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 20px;
+            margin-left: -2px;
+            margin-bottom: -2px;
+            border-left: 2px solid #1890FF;
+        }
+    }
+  }
+  .TemplateItemGrey {
+    width : 100%;
+    padding-top: 20px;
+    border-left: 2px solid #CECECE;
+    // 处理最后一项。
+    &:nth-last-child(1) {
+        padding-top: 0px;
+        border-left: none;
+        padding-left: 2px;
+        &::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 20px;
+            margin-left: -2px;
+            margin-bottom: -2px;
+            border-left: 2px solid #cecece;
+        }
+    }
+  }

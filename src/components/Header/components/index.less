@@ -1,0 +1,68 @@
+
+.job_drop_menu {
+    background: #FFFFFF;
+    box-shadow: 0 9px 28px 8px rgba(0,0,0,0.05), 0 6px 16px 0 rgba(0,0,0,0.08), 0 3px 6px -4px rgba(0,0,0,0.12);
+    border-radius: 2px;
+    .create_job_type_text{
+        cursor: pointer;
+        margin-right: 25px;
+    }
+    .create_job_type_text:hover{
+        color: #1890ff;
+    }
+    ul,li{
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .test_type{
+        display: flex;
+        padding-left: 20px;
+        margin-bottom: 16px;
+        li{
+          margin-right: 16px;
+          cursor: pointer;
+        }
+      }
+}
+
+.menu_scroll {
+    :global {
+        /* 设置滚动条的样式 */
+        ::-webkit-scrollbar {
+            width:4px;
+            background-color: #FFFFFF;
+        }
+
+        /* 滚动槽 */
+        ::-webkit-scrollbar-track {
+            border-radius:2px;
+        }
+
+        /* 滚动条滑块 */
+        ::-webkit-scrollbar-thumb {
+            border-radius:2px;
+            background:rgba(0,0,0,.1);
+        }
+    }
+}
+
+.header_dorop_menu {
+    width: 240px;
+    overflow: auto;
+    max-height: 430px;
+    padding: 5px 0;
+}
+
+.active {
+    color: #1890FF;
+    background-color: #f5f5f5;
+}
+
+.active_typography { color : #1890FF;}
+
+.dropdownClass {
+    :global(.ant-dropdown-arrow ){
+        visibility: hidden;
+    }
+}

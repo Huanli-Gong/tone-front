@@ -1,0 +1,80 @@
+.font_default {
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+}
+.read_father {
+    .read_warp {
+        margin:0 20px;
+        padding:15px 0;
+        border-bottom:1px solid rgba( 0 , 0 , 0 , 0.09);
+        .msg_text{
+            opacity: 0.65;
+            color: #000000;
+            .font_default();
+        }
+        .msg_read , .msg_unread{
+            :global(.ant-btn){
+                padding: 0;
+                //color: #1890FF;
+                cursor: pointer;
+                .font_default();
+            }
+        }
+    }
+    .read_content{
+        padding: 0 20px;
+        height: calc(100% - 63px);
+        overflow-x: hidden;
+        overflow-y: scroll;
+        :global(.ant-list-split .ant-list-item:last-child){
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .msg_record{
+            //margin:0 20px;
+            padding:10px 0;
+            border-bottom:1px solid rgba( 0 , 0 , 0 , 0.09);
+            position: relative;
+            .msg_title{
+                color: #000000;
+                opacity: 0.85;
+                .font_default();
+            }
+            .msg_detail {
+                color: #1890FF;
+                margin: 0 6px;
+                cursor: pointer;
+                .font_default();
+            }
+            .msg_default {
+                color: #000000;
+                opacity: 0.65;
+                .font_default();
+            }
+            .msg_time{
+                color: #000000;
+                opacity: 0.45;
+                cursor: pointer;
+                .font_default();
+            }
+            .msg_badge{
+                position: absolute;
+                right: 10px;
+                top: 25px;
+            }
+        }
+        .list_user{
+            .font_default();
+            color:rgba(0,0,0,0.65);
+        }
+        .list_title {
+            margin: 0 6px;
+            color:rgba(0,0,0,0.65);
+            .font_default();
+        }
+        .list_ws_name{
+            .font_default();
+            color: #1890FF;
+        }
+        
+    }
+}

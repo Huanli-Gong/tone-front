@@ -1,0 +1,51 @@
+.suite_nav_bar {
+  height: 50px;
+  padding : 0 20px;
+  background: #fff;
+  :global {
+      .ant-page-header-heading {
+          height: 100%;
+          align-items: center;
+      }
+  }
+}
+
+
+.suite_left_wrapper {
+  width: 36%;
+  margin-right: 20px;
+  background: #fff;
+  position: 'relative';
+  overflow: hidden;
+}
+
+.suite_right_wrapper {
+  width: calc(100% - 36% - 20px);
+  background: #fff;
+  overflow: hidden;
+}
+
+.left_table_style,
+.right_table_style {
+  max-height: calc( 100% - 72px );
+}
+
+.search_input_style {
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid rgba(0,0,0,0.15);
+  border-top: 1px solid rgba(0,0,0,0.15);
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+}
+
+.tooltipCss {
+  :global(.ant-tooltip-inner) {
+      width: 510px;
+      height: 300px;
+      overflow: auto;
+  }
+}

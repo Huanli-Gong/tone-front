@@ -1,0 +1,50 @@
+.timeAnalysisTabs {
+    // :global(.ant-tabs-content-holder) {
+    //     background : rgb(245, 245, 245);
+    // }
+
+    :global(.ant-tabs-nav) {
+        height: 64px;
+        background: #FAFBFC;
+    }
+    
+    :global(.ant-tabs-nav::before) {
+        border-bottom: 1px solid #f0f0f0 !important;
+    }
+
+    :global(.ant-card-bordered) {
+        border: none;
+    }
+}
+
+.timeAnalysisExtraBtnContent {
+    display: flex;
+    width: 176px;
+    height: 32px;
+    margin-right: 20px;
+
+    div {
+        width: 88px;
+        height: 100%;
+        text-align: center;
+        font-size: 14px;
+        border-radius: 2px;
+        line-height: 32px;
+        cursor: pointer;
+        color: rgba(0,0,0,.65);
+        border: 1px solid #D9D9D9;
+        &:first-child {
+            border-right: none;
+        }
+
+        &:hover {
+            border: 1px solid #1890FF;
+            border-radius: 2px 0 0 2px;
+        }
+    }
+
+    .btnActive {
+        border: 1px solid #1890FF;
+        border-radius: 2px 0 0 2px;
+    }
+}

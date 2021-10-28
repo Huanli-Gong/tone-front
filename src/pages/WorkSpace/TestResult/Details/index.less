@@ -1,0 +1,51 @@
+.test_result_name {
+    font-size: 32px;
+    color: rgba(0,0,0,0.85);
+    font-weight: 700;
+}
+
+.test_summary_item {
+    display: inline-block;
+    font-weight: 700;
+    width: 58px;
+    margin-right: 16px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0,0,0,0.85);
+}
+
+.test_summary_item_right {
+    display: inline-block;
+    width: calc( 100% - 58px - 16px );
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.test_summary_item_right_unellipsis {
+    display: inline-block;
+    width: calc( 100% - 58px - 16px );
+    word-break: break-all;
+}
+
+.test_summary_row {
+    margin-bottom: 10px;
+}
+
+.detail_collection {
+    position: absolute;
+    left: 0;
+    top : 18px;
+}
+
+.result_tab_bar {
+    .ant-tabs-bar {
+        border-bottom: 1px solid #f0f0f0 !important;
+    }
+    :global(.ant-tabs-nav::before) {
+        border-bottom: 1px solid #f0f0f0 !important;
+    }
+    :global(.ant-tabs-nav) {
+        margin: 0 !important;
+    }
+}

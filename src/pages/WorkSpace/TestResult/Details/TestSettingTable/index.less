@@ -1,0 +1,101 @@
+.setting_info_table {
+    width: 100%;
+    background : #ffffff;
+
+    tbody {
+        tr {
+            border: 1px solid rgba(0,0,0,0.15);
+            & td:first-child {
+                width: 180px;
+                background: #FAFAFA;
+                font-size: 14px;
+                color: rgba(0,0,0,0.85);
+                padding: 20px;
+                border-right: 1px solid rgba(0,0,0,0.15);
+                text-align: center;
+            }
+            & td:last-child {
+                padding: 20px;
+                width: calc( 100% - 180px );
+                b {
+                    font-size: 14px;
+                    margin-right: 12px;
+                }
+                span {
+                    font-size: 14px;
+                }
+
+                :global(.ant-row) {
+                    margin-bottom: 8px;
+                }
+            }
+        }
+    }
+}
+.label_style_form{
+    :global(.ant-form-item-label) {
+        width: 66px;
+    }
+    
+}
+.job_test_form {
+    :global {
+        .monitor label{
+            opacity: 0;
+        }
+        .ant-form-item {
+            margin-bottom: 8px;
+        }
+        .ant-input[disabled] {
+            color: rgba(0,0,0,.85);
+        }
+
+        .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+            color: rgba(0,0,0,.85);
+        }
+        .ant-form-item-control-input-content{
+            position: relative;
+            .anticon-question-circle{
+                position: absolute;
+                right: -20px;
+                transform: translateY(-50%);
+                top: 50%;
+                color: rgba(0, 0, 0, 0.45);
+            }
+        }
+        label[for="more_report_template_id"] {
+            opacity: 0;
+        }
+    }
+    .pers_select{
+        :global(.ant-select-selection-item){
+            border: none;
+        }
+    }
+}
+.pers_select{
+    :global{
+        div[class="ant-select-selection-overflow-item"]{
+            max-width: 96%;
+        }
+    }
+}
+.join_persbaseline{
+    width: 100%;
+    :global(.ant-checkbox-wrapper) {
+        height: 40px;
+        line-height: 40px;
+        display: block;
+        padding-left: 10px;
+        margin-left: 0px  !important;
+    }
+    :global(.ant-checkbox-wrapper-checked) {
+        height: 40px;
+        line-height: 40px;
+        display: block;
+        background: rgba(0,0,0,0.06);
+    }
+    :global(.ant-checkbox){
+      display: none;  
+    }
+}

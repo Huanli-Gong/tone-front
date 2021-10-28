@@ -1,0 +1,60 @@
+.result_expand_table {
+    :global( .ant-table-expanded-row > td ) {
+        background: #ffffff; 
+        padding: 0 !important;
+    }
+
+    :global(.ant-table-row-expand-icon-cell) {
+        padding: 0 !important;
+    }
+}
+
+.result_info_table_head {
+    :global( .ant-table-thead .ant-table-cell ) {
+        background: #EDEDED;
+    }
+}
+
+.result_info_table_row {
+    background: #fbfbfb;
+
+    :global( .ant-table-cell ) {
+        background: #fbfbfb !important;
+        border-bottom: 1px solid #f0f0f0;
+        padding-left: 8px;
+    }
+}
+
+.column_circle_text {
+    display: inline-block;
+    min-width: 33px;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 18px;
+    border-radius: 9px;
+    text-align: center;
+    color: #ffffff;
+    line-height: 18px;
+    cursor: pointer; 
+}
+
+.edit:hover{
+    color:#1890ff
+}
+
+.file_icon ,
+.dir_icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-top: 5px;
+    background: url('~@/assets/single-only-sprite.png') no-repeat center center;
+}
+
+.file_icon {
+    background-position: 0 -48px;
+}
+
+.dir_icon {
+    background-position: 0 -16px;
+}

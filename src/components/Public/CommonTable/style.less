@@ -1,0 +1,20 @@
+.pagination{
+    display:flex;
+    justify-content:space-between;
+    padding:20px 0;
+}
+.hidden{
+    padding:0;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+.table_empty{
+    :global(.ellipsis:empty:after) {
+        content: '-';
+    }
+    :global(.ant-table.ant-table-small .ant-table-tbody > tr > .row_cursor) {
+        cursor: pointer ; 
+    }
+    
+}

@@ -1,0 +1,36 @@
+
+.filter_wrapper_container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+.filter_icon_wrapper {
+    width: 28px;
+    height: 38px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background: rgba(0,0,0,.08);
+        .filter_icon_contaner {
+            color: rgba(0, 0, 0, 0.45);
+        }
+    }
+}
+
+.filter_icon_contaner ,
+.filter_icon_contaner_active {
+    font-size: 12px;
+}
+
+.filter_icon_contaner {
+    color : #bfbfbf;
+}
+
+.filter_icon_contaner_active {
+    color : #1890ff;
+}

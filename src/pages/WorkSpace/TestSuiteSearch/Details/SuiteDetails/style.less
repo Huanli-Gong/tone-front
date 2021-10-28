@@ -1,0 +1,122 @@
+ 
+.TestSuiteDetails_wrap {
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+
+  // 布局相关设置
+  .content {
+    position: absolute;
+    top: 0;
+    padding-top: 20px;
+    margin-bottom: 40px;
+
+    .content_left {
+      width: 700px;
+    }
+    .content_right {
+      width: 280px;
+    }
+
+    .details-description-tag {
+      margin: 8px 0;
+    }
+    .details-founder-row {
+      margin: 8px 0;
+    }
+    .details-description-label {
+      font-family: PingFangSC-Semibold;
+      font-size: 14px;
+      color: rgba(0,0,0,0.85);
+      margin-right: 8px;
+    }
+    .details-description-click-text {
+      color: #1890ff;
+      cursor: pointer;
+    }
+
+    .enterOutlined {
+      color: rgba(0,0,0, 0.65);
+      font-size: 12px;
+      margin-right: 10px;
+    }
+
+    .click-a-text {
+      color: rgba(0,0,0, 0.65);
+      // 文本超长设置
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      &:hover {
+        cursor: pointer;
+        color: #1890FF;
+      }
+    }
+  }
+
+  .detailInfo_card {
+    border: 1px solid #F5F5F5;
+
+    .card_head {
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 500;
+      text-align: left;
+      background: #fafafa;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.3s ease;
+      padding: 8px 20px;
+    }
+    .card_content {
+      padding: 20px;
+      .card_row {
+        line-height: 22px;
+        margin-bottom: 8px;
+      }
+      .card_row:nth-last-child(1) {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // 详细信息
+  .test-columns-label {
+    padding-right: 10px;
+    font-family: PingFangSC-Semibold;
+    font-size: 14px;
+    color: rgba(0,0,0,0.85);
+  }
+  .test-columns-name {
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: rgba(0,0,0,0.65);
+    line-height: 22px;
+  }
+
+  .no-borderBottom {
+    border-top: 1px solid #F5F5F5;
+    border-left: 1px solid #F5F5F5;
+    border-right: 1px solid #F5F5F5;
+  }
+  .have-borderBottom {
+    margin-bottom: 20px;
+    border: 1px solid #F5F5F5;
+  }
+
+  .test-card-border {
+    margin-right: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #F5F5F5;
+    padding: 20px 20px 0;
+  }
+
+  .footer {
+    height: 72px;
+  }
+
+  :global(.ant-table-cell ){
+    padding: 8px 20px !important;
+  }
+}

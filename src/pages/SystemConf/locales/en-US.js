@@ -1,0 +1,28 @@
+export default {  
+  'menu.systemConf':'System Configuration',
+  'menu.systemConf.joinApprove':'Application Approve',
+  'menu.systemConf.userManagement':'User Management',
+  'menu.systemConf.workspaceManagement':'Workspace Management',
+  'menu.systemConf.suiteManagement':'Test Suite Management',
+  "menu.systemConf.KernelManage"     : 'Kernel Manage',
+  "menu.systemConf.BasicSetting" : 'Basic Setting',
+  "menu.systemConf.TestParmSetting" : 'Testfarm Setting',
+
+  'SystemConf.menuLayout.joinApprove':'Application Approve',
+  'SystemConf.menuLayout.workspaceManagement':'Workspace Management',
+  'SystemConf.menuLayout.userManagement':'User Management',
+  'SystemConf.menuLayout.suiteManagement':'Test Suite Management',
+  "SystemConf.menuLayout.KernelManage"     : 'Kernel Manage',
+  "systemConf.menuLayout.BasicSetting" : 'Basic Setting',
+  "systemConf.menuLayout.TestParmSetting" : 'TestParm Setting',
+
+  'JoinApprove.tab.pending':'Pending',
+  'JoinApprove.tab.record':'Record',
+  'JoinApprove.table.category':'Category',
+  'JoinApprove.table.applicant':'Applicant',
+  'JoinApprove.table.reason':'Reason',
+  'JoinApprove.table.start':'Application time',
+  'JoinApprove.table.operation':'Operation',
+  'JoinApprove.table.end':'Approval time',
+  'JoinApprove.table.result':'Result',
+};

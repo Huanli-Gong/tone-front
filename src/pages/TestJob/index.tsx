@@ -1,0 +1,1121 @@
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
+
+import { history, useRequest, useModel } from 'umi'
+import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
+import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType } from '@/utils/utils'
+import { resizeDocumentHeightHook, writeDocumentTitle, resizeDocumentWidthHooks } from '@/utils/hooks'
+import styles from './index.less'
+import { queryJobTypeItems } from '@/pages/CreateJobType/services'
+import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
+
+import { ArrowLeftOutlined, SearchOutlined, CloseOutlined } from '@ant-design/icons'
+
+import BasciForm from './components/JobForms/BasicForm'
+import EnvForm from './components/JobForms/EnvForm'
+import MoreForm from './components/JobForms/MoreForm'
+import SelectSuite from './components/SelectSuite'
+import SaveTemplate from './components/SaveTemplate'
+import TemplateForm from './components/JobForms/TemplateForm'
+
+import { createWsJobTest, queryTestTemplateData, queryTestExportValues, formatYamlToJson, testYaml } from './services'
+import { saveTestTemplate, queryTestTemplateList, updateTestTemplate } from '@/pages/WorkSpace/TestTemplateManage/service'
+
+import Clipboard from 'clipboard'
+
+import _ from 'lodash'
+import { ReactComponent as YamlFormat } from '@/assets/svg/yaml_format.svg'
+import { ReactComponent as YamlCopy } from '@/assets/svg/yaml_copy.svg'
+import { ReactComponent as YamlDownload } from '@/assets/svg/yaml_download.svg'
+import { ReactComponent as YamlTest } from '@/assets/svg/yaml_test.svg'
+import CodeEditer from '@/components/CodeEditer'
+
+interface PropsTypes {
+    templateEditFormInfo?: Object,
+    basicFormInfo?: Object,
+    envFormInfo?: Object,
+    moreFormInfo?: Object,
+    new_test_config?: Object
+}
+
+const TestJob: React.FC<any> = (props) => {
+    const { name } = props.route
+    const layoutHeight = resizeDocumentHeightHook()
+    const layoutWidth = resizeDocumentWidthHooks()
+    const hasNav = name === 'JobTypePreview' || name === 'TemplatePreview' || name === 'TemplateEdit'
+
+    const { initialState, setInitialState } = useModel('@@initialState')
+    const { ws_id, jt_id } = props.match.params
+    const { query, state } = props.location
+    writeDocumentTitle(`Workspace.${name}`)
+
+    const [test_config, setTest_config] = useState<any>([])
+    const [detail, setDetail] = useState<any>({ name: '', server_type: '', test_type: '' })
+    const [items, setItems] = useState<any>({ basic: {}, env: {}, suite: {}, more: {} })
+    const [loading, setLoading] = useState(true)
+
+    const [isloading, setIsloading] = useState(false)
+    const [disabled, setDisabled] = useState(name === 'TemplatePreview')
+    const [modifyTemplate, setModifyTemplate] = useState(false)
+    const [templateDatas, setTemplateDatas] = useState<any>({})
+    const [templateBtnVisible, setTemplateBtnVisible] = useState(false)
+
+    const moreForm: any = useRef(null)
+    const envForm: any = useRef(null)
+    const basicForm: any = useRef(null)
+    const suiteTable: any = useRef(null)
+    const bodyRef: any = useRef(null)
+    // yaml 回显
+    const projectListData: any = useRef(null)
+    const baselineListData: any = useRef(null)
+    const tagsData: any = useRef(null)
+    const reportTemplateData: any = useRef(null)
+    const caseData: any = useRef(null)
+
+    const saveTemplateDrawer: any = useRef()
+    const templateEditForm: any = useRef()
+
+    const [templateEnabel, setTemplateEnable] = useState(false)
+    const [fetching, setFetching] = useState(false)
+    const [isReset, setIsReset] = useState(false)
+
+    const [jobInfo, setJobInfo] = useState('')
+    const [isYamlFormat, setIsYamlFormat] = useState(false)
+
+    const { data: templateList, run: requestTemplateRun, refresh: templatePopoverRefresh } = useRequest(
+        (params: any) => queryTestTemplateList(params),
+        {
+            initialData: [],
+            throttleInterval: 300,
+            manual: true,
+        }
+    )
+
+    const handleModifySetting = () => {
+        setDisabled(false)
+        setModifyTemplate(true)
+    }
+
+    const getPageData = async () => {
+        setLoading(true)
+        let job_type_id = jt_id
+
+        if (name === 'TestExport') {
+            const { data } = await queryTestExportValues({ job_id: jt_id, ...query })
+            setTemplateDatas(data)
+            setTest_config(data.test_config)
+            job_type_id = data.job_type_id
+        }
+
+        if (name === 'TestTemplate' || name === 'TemplatePreview' || name === 'TemplateEdit' || name === 'TestJob') {
+            let template_id: any = null
+            if (name === 'TestJob' && query.template_id)
+                template_id = query.template_id
+            if (name === 'TestTemplate' || name === 'TemplatePreview' || name === 'TemplateEdit')
+                template_id = jt_id
+
+            if (template_id) {
+                const { data: [datas] } = await queryTestTemplateData({ template_id })
+                job_type_id = datas.job_type_id
+                setTemplateDatas(datas)
+                setTest_config(datas.test_config)
+                setTemplateEnable(datas.enable)
+            }
+            else {
+                setTemplateDatas({})
+            }
+        }
+
+        const { data: [jobTypedetail] } = await queryJobTypeList({ jt_id: job_type_id })
+        setDetail(jobTypedetail)
+        const { data: items } = await queryJobTypeItems({ jt_id: job_type_id })
+        filterItems(items)
+        setLoading(false)
+        if (name === 'TestJob') requestTemplateRun({ ws_id, job_type_id, enable: 'True' })
+    }
+
+    const filterItems = (t: any) => {
+        const basic = {}, env = {}, suite = {}, more = {}
+        t.forEach((i: any) => {
+            if (i.config_index === 1) basic[i.name] = i
+            if (i.config_index === 2) env[i.name] = i
+            if (i.config_index === 3) suite[i.name] = i
+            if (i.config_index === 4) more[i.name] = i
+        })
+
+        setItems({ basic, env, suite, more })
+    }
+
+    useEffect(() => {
+        const clipboard = new Clipboard('.copy_link', {
+            text: function () {
+                return window.location.href;
+            },
+        })
+        clipboard.on('success', function (e) {
+            message.success('复制成功')
+            e.clearSelection();
+        })
+        return () => {
+            clipboard.destroy()
+        }
+    }, [])
+
+    //数据初始化 init hooks //新建job 1 jobType预览 2 模板预览 3 模板测试 4
+    useEffect(() => {
+        handleReset()
+        getPageData()
+    }, [location.pathname, query])
+
+    const compact = (obj: any) => {
+        let result = {}
+        Object.keys(obj).forEach(
+            key => {
+                const z = obj[key]
+                if (z === null || z === undefined || z === '')
+                    return
+                const t = Object.prototype.toString.call(z)
+                if (t === '[object Array]') {
+                    const arrayItem = z.filter(
+                        (item: any) => {
+                            let noData = false
+                            Object.keys(item).forEach(
+                                ctx => {
+                                    const t = item[ctx]
+                                    if (t === null || t === undefined || t === '')
+                                        noData = true
+                                }
+                            )
+                            if (!noData)
+                                return item
+                        }
+                    )
+                    if (arrayItem.length !== 0)
+                        result[key] = arrayItem
+                }
+                else if (t === '[object Object]') {
+                    if (JSON.stringify(z) !== '{}')
+                        result[key] = compact(z)
+                }
+                else
+                    result[key] = z
+            }
+        )
+        return Object.assign({}, result)
+    }
+
+    const goValidate = (form: any) => {
+        return new Promise(
+            (resolve, reject) => (
+                form
+                    .validateFields()
+                    .then(resolve)
+                    .catch(() => {
+                        reject()
+                        setFetching(false)
+                    })
+            )
+        )
+    }
+
+    const transformDate = async (result: PropsTypes | null = null) => {
+        let data: any = {}
+        let installKernel = ''
+        if (name === 'TestTemplate' || name === 'TemplatePreview' || name === 'TemplateEdit') {
+            const templateFormVal = result ? result.templateEditFormInfo : await goValidate(templateEditForm.current.form)
+            data = Object.assign(data, compact(templateFormVal))
+        }
+
+        if (JSON.stringify(items.basic) !== '{}') {
+            const basicVal = result ? result.basicFormInfo : await goValidate(basicForm.current.form)
+            data = Object.assign(data, compact(basicVal))
+        }
+
+        if (JSON.stringify(items.env) !== '{}') {
+            const envVal = result ? result.envFormInfo : await goValidate(envForm.current.form)
+            const {
+                env_info, rpm_info, script_info, moniter_contrl,
+                monitor_info, reclone_contrl, app_name, os,
+                vm, need_reboot, kernel_version, kernel_install,
+                code_repo, code_branch, compile_branch, cpu_arch, commit_id,
+                build_config, build_machine, scripts, kernel, devel, headers, hotfix_install
+            }: any = envVal
+
+            installKernel = kernel_install
+            const envStr = env_info && env_info.replace(/,|，|\n/g, ',')
+
+            const build_pkg_info = {
+                code_repo, code_branch, compile_branch, cpu_arch, commit_id,
+                build_config, build_machine, scripts,
+            }
+
+            const kernel_info = { kernel, devel, headers, hotfix_install, scripts }
+
+            let scriptInfo = script_info
+            let rpmInfo = rpm_info
+
+            if (!need_reboot) {
+                rpmInfo = rpmInfo ? rpmInfo.map((i: any) => ({ ...i, pos: 'before' })) : undefined
+                scriptInfo = scriptInfo ? scriptInfo.map((i: any) => ({ ...i, pos: 'before' })) : undefined
+            }
+
+            let envProps: any = {
+                env_info: envStr ? envStr : '',
+                rpm_info: rpmInfo,
+                script_info: scriptInfo,
+                moniter_contrl,
+                // monitor_info,
+                reclone_contrl,
+                iclone_info: (os || app_name || vm) ? { os, app_name, vm } : undefined,
+                need_reboot,
+                kernel_version
+            }
+
+            if (code_repo) envProps.build_pkg_info = build_pkg_info
+            else envProps.kernel_info = kernel_info
+
+            data = Object.assign(data, compact(envProps), { monitor_info })
+
+        }
+
+        if (JSON.stringify(items.more) !== '{}') {
+            const moreVal: any = result ? result.moreFormInfo : await goValidate(moreForm.current.form)
+            const email = moreVal.email ? moreVal.email.replace(/\s/g, ',') : null
+            data = Object.assign(data, compact({ ...moreVal, email }))
+        }
+        const testConfigData = result ? result.new_test_config : test_config
+        if (testConfigData.length > 0) {
+            const test_conf = testConfigData.map((item: any) => {
+                const {
+                    id: test_suite,
+                    setup_info,
+                    console: Console,
+                    need_reboot,
+                    priority,
+                    cleanup_info,
+                    run_mode,
+                    test_case_list: cases
+                }: any = item
+                return {
+                    ...compact({
+                        test_suite,
+                        setup_info,
+                        cleanup_info,
+                        console: Console,
+                        need_reboot,
+                        priority,
+                        run_mode,
+                    }),
+                    cases: cases.map((ctx: any) => {
+                        const {
+                            id: test_case,
+                            setup_info,
+                            cleanup_info,
+                            repeat,
+                            server_object_id,
+                            server_tag_id,
+                            need_reboot,
+                            console: Console,
+                            monitor_info,
+                            priority,
+                            env_info,
+                            // server:{
+                            //     ip,
+                            //     tag
+                            // },
+                            is_instance,
+                            custom_ip,
+                            custom_channel
+                        } = ctx
+
+                        const envs: any = env_info.filter((i: any) => {
+                            if (i.name && i.val) return i
+                        })
+                        const evnInfoStr = envs.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? ',' : ''}${p.name}=${p.val}`), '')
+
+                        let customer_server = undefined
+                        if (custom_channel && custom_ip) {
+                            customer_server = {
+                                custom_channel,
+                                custom_ip
+                            }
+                        }
+
+                        return compact({
+                            test_case,
+                            setup_info: setup_info === '[]' ? '' : setup_info,
+                            cleanup_info,
+                            repeat,
+                            server_object_id,
+                            server_tag_id,
+                            need_reboot,
+                            console: Console,
+                            monitor_info,
+                            priority,
+                            is_instance,
+                            env_info: evnInfoStr,
+                            // server:{
+                            //     ip,
+                            //     tag: tag && _.isArray(tag) ? tag.toString() : '',
+                            // },
+                            customer_server
+                        })
+                    })
+                }
+            })
+            data.test_config = test_conf
+        }
+
+        if (installKernel !== 'install_push')
+            data.kernel_version = null
+        const report_template = data.report_template
+        delete data.report_template
+        if ('report_name' in data && _.get(data, 'report_name')) data.report_template = report_template
+        return data
+    }
+
+    const handleSubmit = async () => {
+        if (fetching) return false
+        setFetching(true)
+        let resultData = {}
+        if (isYamlFormat) {
+            const { code, result } = await handleFormatChange('submit')
+            resultData = result
+            if (code !== 200) return
+        }
+        let data = isYamlFormat ? await transformDate(resultData) : await transformDate()
+        data = {
+            ...data,
+            workspace: ws_id,
+            job_type: detail.id,
+        }
+
+        if (name === 'TestTemplate') {
+            data = {
+                ...data,
+                data_from: 'template',
+                template_id: templateDatas.id,
+                job_type: detail.id,
+            }
+        }
+
+        if (name === 'TestExport') {
+            data = {
+                ...data,
+                data_from: 'rerun',
+                job_id: jt_id
+            }
+        }
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning('监控机器不能为空')
+        }
+
+        if (!data.test_config) {
+            setFetching(false)
+            return message.warning('用例不能为空')
+        }
+        const test_config = handleServerChannel(data.test_config)
+        let { code, msg } = await createWsJobTest({ ...data, test_config })
+        if (code === 200) {
+            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
+            history.push(`/ws/${ws_id}/test_result`)
+        }
+        else
+            requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+    const handleServerChannel = (testConfig: any[]) => {
+        return testConfig.map((item: any) => {
+            const cases = _.get(item, 'cases') || []
+            item.cases = cases.map((ctx: any) => {
+                const { customer_server } = ctx || {}
+                const channel_type = _.get(customer_server, 'custom_channel')
+                const ip = _.get(customer_server, 'custom_ip')
+                if (channel_type && ip) {
+                    ctx.server = {
+                        ip,
+                        channel_type
+                    }
+                    delete ctx.customer_server
+                }
+                return ctx
+            })
+
+            return item
+        })
+    }
+    const isMonitorEmpty = (data: any) => {
+        let flag = false
+        if (data && data.moniter_contrl) {
+            const arrData = Array.isArray(data.monitor_info) ? data.monitor_info : []
+            flag = arrData.some((item: any) => item && item.monitor_type === 'custom_machine' && !item.server)
+        }
+        return flag
+    }
+    const handleOpenTemplate = async () => {
+        let resultData = {}
+        if (isYamlFormat) {
+            const { code, result } = await handleFormatChange('template')
+            resultData = result
+            if (code !== 200) return
+        }
+        const data = isYamlFormat ? await transformDate(resultData) : await transformDate()
+        if (isMonitorEmpty(data)) return message.warning('监控机器不能为空')
+        if (!data.test_config) return message.warning('用例不能为空')
+        name === 'TestJob' || name === 'TestExport' ?
+            saveTemplateDrawer.current.show() :
+            handleSaveTemplateOk({})
+    }
+
+    const handleSaveTemplateOk = async (vals: any) => {
+        if (fetching) return false
+        setFetching(true)
+        let data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning('监控机器不能为空')
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            return message.warning('用例不能为空')
+        }
+        data = {
+            workspace: ws_id,
+            ...data,
+            job_type: detail.id
+        }
+        console.log(data.test_conf)
+        const test_config = handleServerChannel(data.test_config)
+        const { code, msg } = await saveTestTemplate({ ...data, test_config, ...vals })
+
+        if (code === 200) {
+            message.success('操作成功！')
+            saveTemplateDrawer.current.hide()
+            templatePopoverRefresh()
+            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
+        }
+        else
+            requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+
+    const handleReset = (flag = false) => {
+        setIsReset(flag)
+        setJobInfo('')
+        templateEditForm.current?.reset()
+        basicForm.current?.reset()
+        moreForm.current?.reset()
+        envForm.current?.reset()
+        suiteTable.current?.reset()
+    }
+
+    const handleChangeTemplateName = ({ target }: any) => {
+        requestTemplateRun({ job_type_id: detail.id, name: target.value })
+    }
+
+    const handleSaveTemplateModify = async () => {
+        if (fetching) return
+        setFetching(true)
+        let data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning('监控机器不能为空')
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            message.warning('用例不能为空')
+            return
+        }
+
+        const test_config = handleServerChannel(data.test_config)
+        const { code, msg } = await updateTestTemplate({
+            template_id: templateDatas.id,
+            workspace: ws_id,
+            job_type: detail.id,
+            ...data,
+            test_config
+        })
+
+        if (code === 200) {
+            const { data: [datas] } = await queryTestTemplateData({ template_id: templateDatas.id })
+            setTemplateDatas(datas)
+            setModifyTemplate(false)
+            setDisabled(true)
+            setTemplateEnable(data.enable)
+            message.success('操作成功！')
+            if (name !== 'TemplatePreview')
+                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+        }
+        else
+            requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+
+
+    const handleSaveCreateSubmit = async () => {
+        if (fetching) return
+        setFetching(true)
+
+        let data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning('监控机器不能为空')
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            return message.warning('用例不能为空')
+        }
+        const test_config = handleServerChannel(data.test_config)
+        const { code, msg } = await updateTestTemplate({
+            template_id: templateDatas.id,
+            workspace: ws_id,
+            job_type: detail.id,
+            ...data,
+            test_config
+        })
+
+        if (code === 200) {
+            message.success('保存成功')
+            history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
+        }
+        else requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+
+    const handleTemplatePopoverChange = (v: any) => {
+        setTemplateBtnVisible(v)
+    }
+
+    const modalProps = {
+        disabled, ws_id,
+        template: templateDatas,
+        test_type: detail?.test_type,
+        business_type: detail?.business_type || '',
+        server_provider: detail?.server_type,
+        server_type: detail?.server_type,
+    }
+    const bodyPaddding = useMemo(() => {
+        if (layoutWidth >= 1240) return (1240 - 1000) / 2
+        return 20
+    }, [layoutWidth])
+
+    const [headerWidth, setHeaderWidth] = useState(0)
+    const setChildTableWidth = () => setHeaderWidth(bodyRef.current.clientWidth + bodyPaddding * 2)
+
+    useEffect(
+        () => {
+            setChildTableWidth()
+            addEventListener('resize', setChildTableWidth)
+            return () => {
+                removeEventListener('resize', setChildTableWidth)
+            }
+        }, []
+    )
+
+    const layoutCss = useMemo(() => {
+        const defaultCss = { height: layoutHeight, overflow: 'auto' }
+        return hasNav ? { ...defaultCss, paddingTop: 50 } : defaultCss
+    }, [layoutHeight, hasNav])
+
+    const handleFormatChange = async (operateType: any = '') => {
+        let parmas = {}
+        const envVal = envForm && envForm.current ? await goValidate(envForm.current.form) : {}
+        let server_provider = detail?.server_type
+        // operateType !== 'template' && setIsloading(true)
+        setIsloading(true)
+        if (!isYamlFormat) {
+            let formData = await transformDate()
+            const dataCopy = _.cloneDeep(formData)
+            const test_config = _.get(dataCopy, 'test_config')
+            if (_.isArray(test_config)) {
+                test_config.forEach((item: any) => {
+                    let cases = _.get(item, 'cases')
+                    const runMode = _.get(item, 'run_mode')
+                    if (_.isArray(cases)) {
+                        cases = cases.map((obj: any) => {
+                            let server: Object | null = {}
+                            const objCopy = _.cloneDeep(obj)
+                            if (_.has(objCopy, 'server_object_id') && objCopy.server_object_id !== undefined) {
+                                // server = {}
+                                const is_instance = _.get(objCopy, 'is_instance')
+                                let key = 'id'
+                                if (is_instance === 0 && server_provider === 'aliyun') key = 'config'
+                                if (is_instance === 1 && server_provider === 'aliyun') key = 'instance'
+                                if (runMode === 'cluster') key = 'cluster'
+                                server[key] = _.get(objCopy, 'server_object_id')
+                            }
+                            if (_.has(objCopy, 'server_tag_id') && objCopy.server_tag_id.length) server = { tag: _.get(objCopy, 'server_tag_id') }
+                            if (_.get(objCopy, 'customer_server')) {
+                                const customServer = _.get(objCopy, 'customer_server')
+                                server = { channel_type: customServer.custom_channel, ip: customServer.custom_ip }
+                            }
+                            if (server) obj.server = server
+                            delete obj.server_object_id
+                            delete obj.server_tag_id
+                            delete item.run_mode
+                            delete obj.is_instance
+                            delete obj.customer_server
+                            return obj
+                        })
+                        item.cases = cases
+                    }
+                })
+            }
+
+            dataCopy.test_config = test_config
+            delete dataCopy.moniter_contrl
+            delete dataCopy.reclone_contrl
+            if (!dataCopy.kernel_version) delete dataCopy.kernel_version
+            parmas = { type: 'json2yaml', json_data: dataCopy, workspace: ws_id }
+        }
+
+        if (isYamlFormat) parmas = { type: 'yaml2json', yaml_data: jobInfo, workspace: ws_id }
+
+        let { code, msg, data } = await formatYamlToJson(parmas)
+        // operateType !== 'template' && setIsloading(false)
+        setIsloading(false)
+        let result = {}
+        if (code === 200) {
+            if (!isYamlFormat) setJobInfo(data)
+            if (isYamlFormat) {
+                const dataCopy = _.cloneDeep(data)
+                const test_config = _.get(dataCopy, 'test_config')
+                if (_.isArray(test_config)) {
+                    test_config.forEach((item: any) => {
+                        let cases = _.get(item, 'cases')
+                        item.run_mode = 'standalone'
+                        if (_.isArray(cases)) {
+                            cases = cases.map((obj: any) => {
+                                const server = _.get(obj, 'server')
+                                if (_.has(server, 'id')) {
+                                    obj.server_object_id = _.get(server, 'id')
+                                }
+                                if (_.get(server, 'config')) {
+                                    obj.server_object_id = _.get(server, 'config')
+                                    obj.is_instance = 0
+                                }
+                                if (_.get(server, 'instance')) {
+                                    obj.server_object_id = _.get(server, 'instance')
+                                    obj.is_instance = 1
+                                }
+                                if (_.get(server, 'cluster')) {
+                                    obj.server_object_id = _.get(server, 'cluster')
+                                    item.run_mode = 'cluster'
+                                }
+                                if (_.get(server, 'tag') && _.get(server, 'tag').length) obj.server_tag_id = _.get(server, 'tag')
+                                if (_.get(server, 'channel_type') && _.get(server, 'ip')) {
+                                    obj.customer_server = { custom_channel: _.get(server, 'channel_type'), custom_ip: _.get(server, 'ip') }
+                                    obj.ip = _.get(server, 'ip')
+                                }
+                                if (_.get(server, 'name')) {
+                                    let ip = server.name
+                                    if (_.isArray(ip)) ip = ip.join(',')
+                                    obj.ip = ip
+                                }
+                                delete obj.server
+                                return obj
+                            })
+                            item.cases = cases
+                        }
+                    })
+                }
+                dataCopy.test_config = test_config
+                dataCopy.moniter_contrl = false
+                dataCopy.reclone_contrl = _.get(envVal, 'reclone_contrl') || false
+                if (_.get(dataCopy, 'monitor_info')) dataCopy.moniter_contrl = true
+                // 以下是表单值的同步
+                result = getFormData(dataCopy)
+            }
+            operateType !== 'template' && operateType !== 'submit' && setIsYamlFormat(!isYamlFormat)
+        } else {
+            requestCodeMessage(code, msg)
+        }
+        return { code, result }
+
+    }
+    const getFormData = (dataCopy: any) => {
+        const { template_name, description, enable,
+            name, project, baseline,
+            monitor_info,
+            need_reboot,
+            rpm_info,
+            script_info,
+            env_info,
+            kernel_info,
+            kernel_version,
+            iclone_info,
+            build_pkg_info,
+            reclone_contrl,
+            moniter_contrl,
+            test_config,
+            cleanup_info, tags, notice_subject, report_name, callback_api, email, ding_token, report_template
+        } = dataCopy
+        const { os = '', app_name = '' } = iclone_info || {}
+        const { devel, headers, branch, ...kernels } = kernel_info || {}
+        const templateEditFormInfo = { template_name, description, enable }
+        const basicFormInfo = { name, project, baseline }
+        const envFormInfo = {
+            monitor_info,
+            rpm_info,
+            script_info,
+            need_reboot,
+            env_info,
+            reclone_contrl,
+            os,
+            app_name,
+            moniter_contrl,
+            kernel_version,
+            devel, headers,
+            ...kernels,
+            ...build_pkg_info
+        }
+
+        const testConfigInfo = test_config
+        const moreFormInfo = {
+            cleanup_info,
+            tags,
+            notice_subject,
+            email,
+            ding_token,
+            report_template,
+            report_name,
+            callback_api
+        }
+        templateEditForm.current?.setVal(templateEditFormInfo)
+        basicForm.current?.setVal(basicFormInfo)
+        envForm.current?.setVal({ ...envFormInfo, kernel_info, build_pkg_info })
+        moreForm.current?.setVal(moreFormInfo)
+        const new_test_config = suiteTable.current?.setVal(testConfigInfo) || []
+        return { templateEditFormInfo, basicFormInfo, envFormInfo, moreFormInfo, new_test_config }
+    }
+    const handleTestYaml = async () => {
+        const parmas = { yaml_data: jobInfo, workspace: ws_id }
+        let { code, msg } = await testYaml(parmas)
+        requestCodeMessage(code, msg)
+    }
+    const handleClose = () => {
+        setIsYamlFormat(false)
+        setJobInfo('')
+    }
+
+    useEffect(() => {
+        const clipboard = new Clipboard('#copy_dom_id')
+        clipboard.on('success', function (e) {
+            message.success('复制成功')
+            e.clearSelection();
+        })
+        return () => {
+            clipboard.destroy()
+        }
+    }, [])
+    const fakeClick = (obj: any) => {
+        var ev = document.createEvent("MouseEvents");
+        ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        obj.dispatchEvent(ev);
+    }
+
+    const exportRaw = (name: string, data: any) => {
+        var urlObject = window.URL || window.webkitURL || window;
+        var export_blob = new Blob([data]);
+        var save_link: any = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+        save_link.href = urlObject.createObjectURL(export_blob);
+        save_link.download = name;
+        fakeClick(save_link);
+    }
+    const handleDownload = async () => {
+        // const parmas = { type: 'yaml2json', yaml_data: jobInfo }
+        // let { code, data } = await formatYamlToJson(parmas)
+        let fileName = 'job_' + (+new Date())
+        // if (code === 200 && _.get(data, 'name')) fileName = _.get(data, 'name')
+        exportRaw(`${fileName}.yaml`, jobInfo);
+    }
+
+    return (
+        <Layout style={layoutCss} >
+            {
+                hasNav &&
+                <Row align="middle" className={styles.page_preview_nav} justify="space-between">
+                    <Space>
+                        <div
+                            style={{ height: 50, width: 50, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                            onClick={
+                                () => {
+                                    if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
+                                    else history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                                }
+                            }
+                        >
+                            <ArrowLeftOutlined style={{ fontSize: 20 }} />
+                        </div>
+                        {name === 'JobTypePreview' && <Typography.Title level={4} >Job类型预览</Typography.Title>}
+                        {name === 'TemplatePreview' && <Typography.Title level={4} >模板预览</Typography.Title>}
+                        {name === 'TemplateEdit' && <Typography.Title level={4} >模板编辑</Typography.Title>}
+                    </Space>
+                    {
+                        name === 'TemplatePreview' &&
+                        <Space>
+                            {
+                                modifyTemplate &&
+                                <>
+                                    <Button
+                                        onClick={
+                                            () => {
+                                                setDisabled(true)
+                                                setModifyTemplate(false)
+                                                suiteTable.current.setChecked(false)
+                                            }
+                                        }
+                                    >
+                                        取 消
+                                    </Button>
+                                    {
+                                        templateEnabel &&
+                                        <Button onClick={handleSaveCreateSubmit}>保存并新建job</Button>
+                                    }
+                                    <Button type="primary" onClick={handleSaveTemplateModify} >保存修改</Button>
+                                </>
+                            }
+                            {
+                                !modifyTemplate &&
+                                <>
+                                    <Button className="copy_link">复制链接</Button>
+                                    {
+                                        <AuthMember
+                                            isAuth={['sys_test_admin', 'user', 'ws_member']}
+                                            children={<Button >修改配置</Button>}
+                                            onClick={handleModifySetting}
+                                            creator_id={state?.creator}
+                                        />
+                                    }
+                                </>
+                            }
+                        </Space>
+                    }
+                    {
+                        name === 'TemplateEdit' &&
+                        <Space>
+                            {
+                                templateEnabel &&
+                                <Button onClick={handleSaveCreateSubmit}>保存并新建job</Button>
+                            }
+                            <Button type="primary" onClick={handleSaveTemplateModify} >保存修改</Button>
+                        </Space>
+                    }
+                </Row>
+            }
+            <Spin spinning={loading}>
+                <div className={styles.page_header}
+                    style={(name === 'TestJob' || name === 'TestExport') ? { paddingBottom: 80 } : {}}
+                >
+
+                    <div style={{ height: 250, minWidth: 1080, background: '#fff', position: 'absolute', left: 0, top: 0, width: '100%' }} />
+                    <Row className={styles.page_title} justify="center" >
+                        <Row style={{ width: headerWidth }}>
+                            <Col span={24} >
+                                <Row justify="space-between">
+                                    <span>{detail.name}</span>
+                                    {
+                                        (name === 'TestJob' && !loading) &&
+                                        <Popover
+                                            overlayClassName={styles.template_popover}
+                                            placement={"bottomRight"}
+                                            visible={templateBtnVisible}
+                                            onVisibleChange={handleTemplatePopoverChange}
+                                            title={
+                                                <Input
+                                                    autoComplete="off"
+                                                    prefix={<SearchOutlined />}
+                                                    className={styles.job_search_inp}
+                                                    placeholder="搜索模板"
+                                                    onChange={handleChangeTemplateName}
+                                                />
+                                            }
+                                            content={
+                                                <Menu style={{ maxHeight: 480, overflow: 'auto', paddingBottom: 12 }} >
+                                                    {
+                                                        Array.isArray(templateList) && templateList.length > 0 &&
+                                                        <>
+                                                            {
+                                                                templateList.map(
+                                                                    (item: any) => (
+                                                                        <div
+                                                                            className={styles.template_item}
+                                                                            key={item.id}
+                                                                            onClick={(): any => {
+                                                                                if (!item.job_type) return message.error('问题模板，请及时删除')
+                                                                                history.push(`/ws/${ws_id}/test_job/${item.job_type_id}?template_id=${item.id}`)
+                                                                                setTemplateBtnVisible(false)
+                                                                            }}
+                                                                        >
+                                                                            {item.name}
+                                                                        </div>
+                                                                    )
+                                                                )
+                                                            }
+                                                        </>
+                                                    }
+                                                    {
+                                                        Array.isArray(templateList) && templateList.length === 0 &&
+                                                        <div style={{ lineHeight: '80px', textAlign: 'center', color: 'rgba(0,0,0,.35)' }}>
+                                                            暂无模板
+                                                        </div>
+                                                    }
+                                                </Menu>
+                                            }
+                                        >
+                                            <Button type="default" >用模板新建</Button>
+                                        </Popover>
+                                    }
+                                </Row>
+                                <div className={styles.page_tags}>
+                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{switchServerType(detail.server_type)}</Tag>
+                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
+                                        {detail.test_type === 'business' ? switchBusinessType(detail.business_type) : switchTestType(detail.test_type)}
+                                    </Tag>
+                                </div>
+                                <div className={styles.page_dec}>{detail.description}</div>
+                            </Col>
+                        </Row>
+                    </Row>
+                    <div className={styles.page_body_content} style={isYamlFormat ? { paddingTop: 0 } : { paddingLeft: bodyPaddding, paddingRight: bodyPaddding }}>
+                        <Spin spinning={isloading} style={{ width: '100%' }}>
+                            <Row className={styles.page_body} justify="center" >
+
+                                <div ref={bodyRef} style={{ width: '100%' }} />
+                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
+                                <div style={isYamlFormat ? { opacity: 0, width: 0, height: 0 } : { opacity: 1, width: 1000 }}>
+                                    <Col span={24} style={{ width: 1000 }}>
+                                        {name === 'TestJob' && <Row className={styles.page_body_title}>新建Job</Row>}
+                                        {name === 'TestExport' && <Row className={styles.page_body_title}>导入配置</Row>}
+                                        {
+                                            (name === 'TemplatePreview' || name === 'TemplateEdit' || name === 'TestTemplate') &&
+                                            <Row className={styles.page_body_title}>测试模板</Row>
+                                        }
+                                    </Col>
+
+                                    <Col span={24} style={{ width: 1000 }}>
+
+                                        {
+                                            (name === 'TemplatePreview' || name === 'TemplateEdit' || name === 'TestTemplate') &&
+                                            <Row className={styles.form_row}>
+                                                <div className={styles.page_body_nav}>
+                                                    <span>模板信息</span>
+                                                </div>
+                                                <TemplateForm
+                                                    onEnabelChange={setTemplateEnable}
+                                                    ref={templateEditForm}
+
+                                                    {...modalProps}
+                                                />
+                                            </Row>
+                                        }
+                                        {
+                                            JSON.stringify(items.basic) !== '{}' &&
+                                            <Row className={styles.form_row}>
+                                                <div className={styles.page_body_nav}>
+                                                    <span>基础配置</span>
+                                                </div>
+                                                <BasciForm
+                                                    onRef={basicForm}
+                                                    contrl={items.basic}
+                                                    projectListDataRef={projectListData}
+                                                    baselineListDataRef={baselineListData}
+                                                    isYamlFormat={isYamlFormat}
+                                                    {...modalProps}
+                                                />
+                                            </Row>
+                                        }
+                                        {
+                                            JSON.stringify(items.env) !== '{}' &&
+                                            <Row className={styles.form_row}>
+                                                <div className={styles.page_body_nav}>
+                                                    <span>环境准备</span>
+                                                </div>
+                                                <EnvForm
+                                                    onRef={envForm}
+                                                    contrl={items.env}
+                                                    {...modalProps}
+                                                />
+                                            </Row>
+                                        }
+                                        {
+                                            detail.test_type &&
+                                            <Row className={styles.form_row}>
+                                                <div className={styles.page_body_nav}>
+                                                    <span><b style={{ fontWeight: 'normal', color: '#ff4d4f' }}>*&nbsp;</b>用例和机器</span>
+                                                </div>
+                                                <Col offset={3} span={21}>
+                                                    <SelectSuite
+                                                        {...modalProps}
+                                                        key={detail.test_type}
+                                                        handleData={(data: any) => setTest_config(data)}
+                                                        contrl={items.suite}
+                                                        onRef={suiteTable}
+                                                        setPageLoading={setLoading}
+                                                        caseDataRef={caseData}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        }
+                                        {
+                                            JSON.stringify(items.more) !== '{}' &&
+                                            <Row className={styles.form_row}>
+                                                <div className={styles.page_body_nav}>
+                                                    <span>更多配置</span>
+                                                </div>
+                                                <MoreForm
+                                                    {...modalProps}
+                                                    onRef={moreForm}
+                                                    contrl={items.more}
+                                                    isReset={isReset}
+                                                    tagsDataRef={tagsData}
+                                                    reportTemplateDataRef={reportTemplateData}
+                                                />
+                                            </Row>
+                                        }
+                                    </Col>
+
+                                </div>
+                                {isYamlFormat && <div className={styles.yaml_container}><Col span={24} className={styles.yaml_operate}>
+                                    <span className={styles.yaml_copy_link} onClick={handleTestYaml}><YamlTest className={styles.operate_icon} />验证</span>
+                                    <span className={styles.yaml_copy_link} id='copy_dom_id' data-clipboard-text={jobInfo.replace('---', '')} style={{ marginLeft: 10 }}> <YamlCopy className={styles.operate_icon} />复制</span>
+                                    <span className={styles.yaml_copy_link} onClick={handleDownload} style={{ marginLeft: 10 }}><YamlDownload className={styles.operate_icon} />下载</span>
+                                    <CloseOutlined onClick={handleClose} style={{ float: 'right', color: '#fff' }} />
+                                </Col>
+                                    <CodeEditer
+                                        mode='yaml'
+                                        code={jobInfo}
+                                        onChange={(value: any) => setJobInfo(
+                                            value
+                                        )}
+                                    /></div>}
+
+                            </Row>
+                        </Spin>
+                    </div>
+                </div>
+                {
+                    (name === 'TestJob' || name === 'TestTemplate' || name === 'TestExport') &&
+                    <Row justify="end" className={styles.options_bar}>
+                        <Space>
+                            <Popconfirm
+                                title="重置后将清空所有配置，确认重置吗？"
+                                onConfirm={_.partial(handleReset, true)}
+                                okText="确认"
+                                cancelText="取消"
+                            >
+                                <Button >重 置</Button>
+                            </Popconfirm>
+                            <Button onClick={handleOpenTemplate}>存为模板</Button>
+                            <Button type="primary" onClick={handleSubmit} >提交测试</Button>
+                        </Space>
+                    </Row>
+                }
+                <SaveTemplate ref={saveTemplateDrawer} onOk={handleSaveTemplateOk} />
+            </Spin>
+        </Layout>
+    )
+}
+
+export default TestJob

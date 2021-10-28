@@ -1,0 +1,102 @@
+.selectMertricTable {
+    height: 400px;
+    border-right: 1px solid rgba( 0 , 0 , 0 , .1 );
+    border-left: 1px solid rgba( 0 , 0 , 0 , .1 );
+    :global( .ant-col-8 ) {
+        // border
+        height: 100%;
+        overflow: auto;
+        border-right: 1px solid rgba( 0 , 0 , 0 , .1 );
+        &:last-child {
+            border-right: none;
+        }
+    }
+    
+    :global(.ant-checkbox-wrapper) {
+        height: 34px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        margin-left: 0;
+        padding-left: 8px;
+    }
+}
+
+.checkboxAllStyle {
+    height: 34px;
+    width: 100%;
+    background: #F5F5F5;
+}
+
+.selectItem {
+    height: 34px;
+    width: 100%;
+    line-height: 34px;
+    cursor: pointer;
+    padding-left: 12px;
+    padding-right: 12px;
+
+    :global(.right-arrow-icon) {
+        color:rgba(0,0,0,.25)
+    }
+
+    &:hover {
+        background: #E6F7FF;
+    }
+}
+
+.selectItemName {
+    width: calc( 100% - 24px );
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.activeStyle {
+    background: #E6F7FF;
+}
+
+.select_inner_span {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width : 500px;
+    line-height: 32px;
+    height: 100%;
+}
+
+.select_left_title {
+    display: inline-block;
+    height: 100%;
+    line-height: 32px;
+}
+
+.selectTable {
+    :global(.ant-table-tbody > tr.ant-table-row-selected > td) {
+        background-color: #ffffff;
+    }
+}
+
+.formInlineStyles {
+    :global(.ant-form-item) {
+        margin-right: 48px;
+    }
+}
+
+.table_question_tooltip {
+    :global {
+        .ant-tooltip-arrow::before {
+            background: #ffffff;
+        }
+
+        .ant-tooltip-inner {
+            background: #ffffff;
+            color: rgba(0,0,0,0.65);
+        }
+
+        .ant-tooltip-arrow-content {
+            background-color: #ffffff;
+        }
+    }
+}

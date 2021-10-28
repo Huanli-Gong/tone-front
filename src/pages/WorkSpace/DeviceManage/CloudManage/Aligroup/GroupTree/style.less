@@ -1,0 +1,29 @@
+.warp{
+    .tree{
+        position: absolute;
+        left:22px;
+        width: 60px;
+        background-image:url("../../../../../../assets/svg/tree.svg");
+        background-repeat: repeat-y;
+    }
+    td{
+        background: #fff !important;
+    }
+    :global(.ant-pro-table-toolbar){
+        padding: 0;
+    }
+    :global(.ant-table-tbody>tr .ant-table-wrapper:only-child .ant-table td){
+        background: #fff !important;
+    }
+
+    :global {
+        .ant-table .ant-table-container::before, 
+        .ant-table .ant-table-container::after {
+            position: unset!important;
+        }
+
+        .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
+            box-shadow: unset!important;
+        }
+    }
+}

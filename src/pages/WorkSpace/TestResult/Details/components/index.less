@@ -1,0 +1,163 @@
+.table_question_tooltip {
+    max-width: 540px;
+    :global {
+        .ant-tooltip-arrow::before {
+            background: #ffffff;
+        }
+
+        .ant-tooltip-inner {
+            background: #ffffff;
+            color: rgba(0,0,0,0.65);
+            max-width: 540px;
+            overflow-y: scroll;
+        }
+
+        .ant-tooltip-arrow-content {
+            background-color: #ffffff;
+        }
+    }
+}
+
+.test_summary_item {
+    display: inline-block;
+    font-weight: 700;
+    width: 56px;
+    margin-right: 16px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0,0,0,0.85);
+}
+
+.test_summary_row {
+    margin-bottom: 10px;
+    .test_summary_job{
+        flex: none;
+        display: block;
+        cursor: pointer;
+        color: rgba(0,0,0,0.65);
+        padding: 8px;
+    }
+}
+.join_base_line{
+    flex: none;
+    display: block;
+    cursor: pointer;
+    color: rgba(0,0,0,0.65);
+    height : 32px ;
+    line-height : 32px ;
+    // padding: 8px 12px;
+}
+
+.ellips_copy_column,
+.ellips_column_refclass {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ellips_column_refclass {
+    position: absolute;
+    left: 1000px;
+    top: 1000px;
+    z-index: -300;
+    visibility: hidden;
+}
+
+.result_popover_span {
+    &:hover {
+        color : #1890FF;
+    }
+}
+
+.tag_popover_style {
+    :global(.ant-popover-title) {
+        height: 28px;
+        line-height: 28px;
+        border-bottom: none;
+        font-size: 12px;
+        color: rgba(0,0,0,0.65);
+        min-width: 0px;
+        min-height: 0px;
+        padding : 0px 10px
+    }
+    :global(.ant-popover-inner-content) {
+        padding: 0;
+    }
+}
+
+.join_baseline,.join_persbaseline {
+    width: 100%;
+    :global(.ant-checkbox-wrapper) {
+        display: flex;
+        align-items: flex-start;
+        height: auto;
+        padding-left: 10px;
+        margin-left: 0px  !important;
+        &>span:first-of-type{
+            margin-top: 4px;
+        }
+    }
+    :global(.ant-checkbox-wrapper-checked) {
+        background: rgba(0,0,0,0.06);
+    }
+    :global(.ant-checkbox + span) {
+        width: calc(100% - 32px);
+    }
+    label[class="ant-checkbox-wrapper ant-checkbox-group-item"]{
+        &:hover{
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+    }
+}
+
+.select_baseline {
+    :global(.ant-select-selection-search) {
+        min-width: 5px;
+    }   
+}
+
+.join_persbaseline{
+    :global(.ant-checkbox){
+      display: none;  
+    }
+}
+
+.pers_select,.select_baseline{
+    :global{
+        .ant-select-selection-item{
+            max-width: 96%;
+        }
+        .ant-select-item-option-active {
+            color: #1890FF;
+            background-color: #E6F7FF;
+        }
+        .ant-select-item-option-selected {
+            color : #1890FF;
+            font-weight: normal;
+        }
+    }
+}
+
+.tootip_overflow {
+    max-width: 540px;
+    :global(.ant-tooltip-inner) {
+        max-width: 540px;
+        max-height: 240px;
+        overflow-y: scroll;
+    }
+
+    ::-webkit-scrollbar-thumb{
+        background: rgba(255,255,255,0.3);
+    }
+}
+
+.metric_list_copy {
+    :global(.ant-popover-title) {
+        padding:5px 16px!important;
+    }
+}
+.machineTable{
+    :global(.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table) {
+        background-color: transparent;
+    }
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="9px" height="9px" viewBox="0 0 9 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title></title>
+    <desc>Created with Sketch.</desc>
+    <g id="ws-用例管理" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="4-增删界面-常规" transform="translate(-595.000000, -446.000000)" fill="#000000">
+            <g id="编组" transform="translate(550.000000, 85.000000)">
+                <g id="表格" transform="translate(0.000000, 63.000000)">
+                    <g id="内容">
+                        <g transform="translate(15.000000, 0.000000)">
+                            <g id="应用名称备份" transform="translate(13.000000, 2.000000)">
+                                <g id="展开" transform="translate(21.000000, 301.000000) rotate(-270.000000) translate(-21.000000, -301.000000) translate(13.000000, 293.000000)">
+                                    <rect id="矩形" fill-rule="nonzero" opacity="0" x="0" y="0" width="16" height="16"></rect>
+                                    <path d="M12,4.20710678 L12,11.5 C12,11.7761424 11.7761424,12 11.5,12 L4.20710678,12 C3.93096441,12 3.70710678,11.7761424 3.70710678,11.5 C3.70710678,11.3673918 3.7597852,11.2402148 3.85355339,11.1464466 L11.1464466,3.85355339 C11.3417088,3.65829124 11.6582912,3.65829124 11.8535534,3.85355339 C11.9473216,3.94732158 12,4.07449854 12,4.20710678 Z" id="矩形" opacity="0.699999988"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

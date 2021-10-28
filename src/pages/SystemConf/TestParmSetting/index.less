@@ -1,0 +1,185 @@
+
+.test_parm {
+    background-color: #f5f5f5;
+    .config_lable{
+        width: 100%;
+        display: block;
+        margin-bottom: 8px !important;
+        font-size: 16px;
+        line-height: 16px;
+        color: rgba(0,0,0,0.85);
+        font-weight: 600;
+    }
+    .config_lable_push{
+        margin-bottom: 12px !important;
+    }
+    :global{
+        
+        .ant-form-item{
+            width: 100%;
+            margin-bottom: 8px;
+            .ant-input-affix-wrapper{
+                max-width: 480px;
+            }
+        }
+        .ant-form-item-label{
+            width: 110px;
+            padding-right: 10px;
+        }
+        .ant-form-item-label > label{
+            float: right;
+        }
+        .ant-form-item-has-success:first-child{
+            max-width: 590px;
+        }
+        .ant-form-item-control-input-content>.ant-form-item-has-success{
+            transform: translateX(0px);
+        }
+        .ant-select{
+            max-width: 480px;
+        }
+        .ant-alert{
+            padding: 4px 15px!important;
+        }
+        
+        
+    }
+    .del_icon{
+        cursor: pointer;
+        position: absolute;
+        top: 8px;
+        right: -24px;
+        transform: translateX(28px);
+        &:hover{
+            color: red
+        }
+    }
+    .add_space{
+        transform: translateX(110px);
+        cursor: pointer;
+        margin-top: 12px;
+    }
+    .add_pushconfig{
+        color: #1890ff;
+    }
+   
+    .push_config_row{
+        :global{
+            .ant-form-item-control-input-content > .ant-form-item{
+                margin-bottom: 0;
+            }
+        }
+        .push_config_box{
+            max-width: 618px;
+            div[class="ant-row ant-form-item"]{
+                max-width: 590px;
+            }
+        }
+    }
+
+    .push_check_row{
+        :global{
+            .ant-col{
+                padding-left: 0 !important;
+            }
+            .ant-col-24{
+                transform: translateX(0px);
+            }
+        }
+        .button{
+            p{
+                margin-top: 12px;
+                opacity: 0.65;
+                font-size: 14px;
+                color: #000000;
+            }
+        }
+    }
+
+    .sync_info{
+        padding-left: 110px;
+        font-size: 12px;
+        color: #E02020;
+    }
+    
+}
+
+.question_tip_layout {
+    position: relative;
+    margin-left: 8px;
+}
+.question_icon {
+    color: rgba(0,0,0,.45);
+    cursor: pointer;
+}
+.question_tip_wrapper {
+    background: #FFFFFF;
+    box-shadow: 0 3px 6px -4px rgba(0,0,0,0.12), 0 6px 16px 0 rgba(0,0,0,0.08), 0 9px 28px 8px rgba(0,0,0,0.05);
+    border-radius: 4px;
+    padding:9px;
+    position: absolute;
+    left: 0;
+    top: 20px;
+    z-index:100;
+
+    p {
+        font-size: 14px;
+        color: rgba(0,0,0,0.65);
+        margin-bottom: 0;
+    }
+}
+.w_384 {
+    width : 228px;
+    text-align: center;
+}
+.question_tip_container{
+    display: inline-block;
+}
+.push_job_modal{
+    :global{
+        .ant-modal-title{
+            color: #000000
+        }
+        .ant-modal-body{
+            padding-top: 20px;
+        }
+    }
+    .modal_Title{
+        margin-right: 5px;
+    }
+}
+.option_label_item{
+    height: 22px;
+    display: flex;
+    justify-content: space-between;
+    .option_label_item_success{
+        display: inline-block;
+        width: 32px;
+        :global{
+            .ant-result-success{
+                padding: 0;
+            }
+            .ant-result-icon{
+                margin-bottom: 0;
+            }
+            .anticon-check-circle{
+                font-size: 16px;
+            }
+        }
+    }
+
+}
+.success_icon{
+    display: inline-block;
+    padding: 0;
+    :global{
+        .ant-result-icon{
+            margin-bottom: 0;
+        }
+        .anticon-check-circle{
+            font-size: 16px;
+            margin-right: 5px;
+        }
+    }
+    
+}

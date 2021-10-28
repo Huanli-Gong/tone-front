@@ -1,0 +1,103 @@
+// .task_footer {
+//     text-align: center;
+//     cursor: pointer;
+// }
+
+// .font_default {
+//     font-family: PingFangSC-Regular;
+//     font-size: 14px;
+// }
+// .list_warp,.list_warps {
+//     margin: 0 20px;
+//     border-bottom:1px solid rgba(0, 0, 0, 0.09);
+    
+//     .list_desc {
+//         opacity: 0.45;
+//         font-family: PingFangSC-Regular;
+//         font-size: 12px;
+//         color: #000000;
+//     }
+// }
+// .list_warp {
+//     .list_user{
+//         margin: 0 6px;
+//         color: #1890FF;
+//         .font_default();
+//     }
+//     .list_title {
+//         .font_default();
+//         color: rgba(0,0,0,0.65);
+//     }
+// }
+// .list_warps {
+//     .list_user{
+//         color: #1890FF;
+//         .font_default();
+//     }
+//     .list_title {
+//         margin:0 6px;
+//         .font_default();
+//         color: rgba(0,0,0,0.65);
+//     }
+//     .list_titles {
+//         .font_default();
+//         color: rgba(0,0,0,0.65);
+//     }
+// }
+.font_default {
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+}
+.task_warp {
+    border-top: 1px solid rgba(0, 0, 0, 0.09);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+    //height: 247px;
+    height: auto;
+    .list_content {
+        margin: 0px 24px;
+        height: 61px;
+        padding: 8px 0 13px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+        .list_title{
+            .font_default();
+            padding-left:10px;
+            color: rgba(0,0,0,0.65);
+        }
+        // .list_title{
+        //     .font_default();
+        //     color: rgba(0,0,0,0.65);
+        // }
+        .list_user {
+            .font_default();
+            color: rgba(0,0,0,0.65);
+        }
+        .list_ws_name {
+            .font_default();
+            padding-left:10px;
+            color: #1890FF;
+        }
+        .list_main{
+            .font_default();
+            padding-left: 10px;
+            color: #1890FF;
+        }
+        .list_time{
+            color:#000000;
+            opacity: 0.45;
+            font-family: PingFangSC-Regular;
+            font-size: 12px;
+        }
+    }
+    .list_content:last-child{
+        border-bottom:none;
+    }
+}
+.task_footer{
+    height: 40px;
+    line-height: 48px;
+    cursor: pointer;
+    text-align: center;
+    .font_default();
+    color: rgba(0,0,0,0.65);
+    &:hover { color:#1890FF;}
+}

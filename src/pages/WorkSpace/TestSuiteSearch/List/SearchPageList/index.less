@@ -1,0 +1,76 @@
+
+.TestSuiteSearch_wrapper {
+  position: relative;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  // overflow: auto;
+
+  .header {
+    height: 128px;
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: rgba(0,0,0,0.01);
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .content {
+    margin-top: 20px;
+    width: 1000px;
+    background-color: #fff;
+     // 搜索框区域
+    .content_search {
+      margin-bottom: 14px;
+      height: 48px;
+      // 搜索输入框大小设置
+      :global(.ant-input-affix-wrapper) {
+        height: 48px;
+      }
+      // 搜索按钮大小设置
+      :global(.ant-input-search-button) {
+        width: 100px;
+        height: 48px;
+        font-size: 16px;
+      }
+    }
+    // 搜索tab
+    :global(.ant-tabs-nav-wrap) {
+      padding-left: 0;
+    }
+
+    .initialPage {
+      margin-top: 41px;
+
+      .headerInfo {
+        span {
+          font-family: PingFangSC-Medium;
+          font-size: 14px;
+          letter-spacing: 0;
+          text-align: justify;
+          line-height: 22px;
+        }
+      }
+    }
+  }
+}
+
+.define_backTop {
+  height: 44px;
+  width: 44px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  position: fixed;
+  right: 40px;
+  bottom: 40px;
+  text-align: center;
+  .backTop_icon {
+    font-size: 30px;
+    color: rgba(0,0,0,0.5);
+  }
+  &:hover {
+    cursor: pointer;
+  }
+
+}

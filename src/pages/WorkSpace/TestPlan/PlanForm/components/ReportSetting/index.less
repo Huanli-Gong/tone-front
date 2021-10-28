@@ -1,0 +1,23 @@
+
+.job_plan_form {
+  :global {
+      .ant-form-item {
+          margin-bottom: 8px;
+          position: relative;
+      }
+      .ant-input[disabled] {
+          color: rgba(0,0,0,.85);
+      }
+
+      .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+          color: rgba(0,0,0,.85);
+      }
+  }
+
+  // 覆盖Cascader组件样式。
+  .cascaderStyle > span:nth-child(1) {
+    padding: 0 20px 0 8px;
+  }
+}
+
+

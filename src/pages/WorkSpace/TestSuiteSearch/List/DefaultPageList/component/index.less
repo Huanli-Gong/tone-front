@@ -1,0 +1,64 @@
+
+.DefaultPageList_root {
+  padding-top: 11px;
+  padding-bottom: 40px;
+  :global{
+    // 修改嵌套父表格展开区的padding
+   .ant-table-expanded-row > td {
+      padding: 0 !important;
+    }
+  }
+  :global{
+    // 修改嵌套子表格的margin
+    .ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
+      margin: 0px 0px 0px 25px !important;
+    }
+  }
+  // 去除掉table的行的 hover效果
+  :global(.ant-table-tbody > tr.ant-table-row:hover > td) {
+    background: #fff;
+  }
+}
+
+.ChildTable_root {
+  background: #fff;
+  // 去掉各嵌套表格的最底部的线。
+  :global(.ant-table-tbody > tr:nth-last-child(1) > td) {
+    border-bottom: none;
+  }
+}
+
+.click-a-text {
+  color: rgba(0,0,0, 0.65);
+  &:hover {
+    cursor: pointer;
+    color: #1890FF;
+  }
+}
+
+.enterOutlined {
+  color: rgba(0,0,0, 0.65);
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.ellipsis {
+  max-width: 100px;
+  color: rgba(0,0,0, 0.3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+}
+
+.safety {
+  display: flex;
+  align-items: center;
+}
+
+.expand_all_btn {
+  margin-top: 40px;
+  text-align: center;
+  color: #1890ff;
+  cursor: pointer;
+}

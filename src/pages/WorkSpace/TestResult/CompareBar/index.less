@@ -1,0 +1,190 @@
+.popover_group{
+    padding-left: 0;
+    left: 70px !important;
+    :global{
+        .ant-popover-arrow{
+            display: none;
+        }
+        .ant-popover-inner-content{
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 0;
+        }
+        .ant-popover-title{
+            padding-left: 16px !important;
+        }
+    }
+}
+.job_compare{
+    height: 106px;
+    width: 100%;
+    ul,li{
+        list-style: none;
+        margin: 0;
+        padding:0;
+        height: 68px;
+        box-sizing: border-box;
+    }
+    ul{
+        position: relative;
+        li{
+            display: inline-block;
+            min-width: 246px;
+            padding-right: 20px;
+            padding-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            height: 48px;
+        }
+    }
+    .title{
+        border-top: 2px solid #1890FF;
+        padding-left: 20px;
+        font-weight: 700;
+        color: #000000;
+        opacity: 0.85;
+        height: 38px;
+        line-height: 38px;
+        border-bottom: 1px solid rgba(0,0,0, 0.06);
+    }
+    .job_card{
+        display: inline-block;
+        width: 25%;
+        padding-left: 20px;
+        .job_index{
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background-color: #F0F0F0;
+            font-size: 14px;
+            color:#1D1D1D;
+            opacity: 0.65;
+            line-height:20px;
+            text-align: center;
+            transform: translateX(-10px)
+        }
+        .job_detail{
+            // display: inline-block;
+            // width: calc(100% - 74px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .job_id,.job_creator,.remove_active,.remove{
+            display: inline-block;
+            max-width: 33.33%;
+            padding-right: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    // .remove,
+    .remove_active {
+        color:red;
+        cursor: pointer;
+    }
+
+    .remove{
+        visibility: hidden;
+    }
+
+    .remove_active {
+        visibility: visible;
+    }
+        .job_delete{
+            opacity: 0;
+        }
+        :global{
+            .ant-space-align-center{
+                width: 100%;
+            }
+            .ant-space-item:last-child{
+                width: calc(100% - 30px);
+            }
+        }
+    }
+    .job_group{
+        height: 68px;
+        line-height: 22px;
+        position: relative;
+        padding-right: 325px;
+        background: #fff;
+        .job_group_title{
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .job_item{
+            display: flex;
+            height: 22px;
+            margin-bottom: 4px;
+            .job_item_span{
+                position: relative;
+                margin-right: 8px;
+                display:inline-block;
+                min-width: 64px;
+                height: 22px;
+                background: rgba(0,0,0,0.04);
+                border: 1px solid rgba(0,0,0,0.15);
+                border-radius: 2px;
+                padding-left: 8px;
+                padding-right: 24px;
+                box-sizing: border-box;
+                line-height: 19px;
+                .delete{
+                    position: absolute;
+                    right: 8px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    line-height: 20px;
+                    font-size: 9px;
+                    cursor: pointer;
+                }
+            }
+        }
+        .operate{
+            width: 325px;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #fff;
+            line-height: 68px;
+            box-shadow: -3px 0 2px 0 rgba(0,0,0,0.05);
+        }
+    }
+}
+.popover_job{
+    width: 540px;
+    height: 304px;
+    :global{
+        .ant-popover-arrow{
+            display: none;
+        }
+        .ant-popover-inner-content{
+            padding: 12px 15px !important;
+        }
+    } 
+}
+.hrefUrl{
+    &:hover{
+        color: #1890FF;
+    }
+    cursor: pointer;
+    font-weight: normal;
+}
+.row_table{
+    &:hover {
+        :global {
+            .ant-table-cell-ellipsis{
+                cursor: pointer;
+                color : #1890FF;
+            } 
+        }
+    }
+}
+.question_icon{
+    color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+}

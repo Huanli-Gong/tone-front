@@ -1,0 +1,113 @@
+
+.searchList {
+  margin-top: -15px;
+  height: calc(100% - 106px - 186px);
+  margin-bottom: 186px;
+  
+  .searchList_item {
+    padding: 13px 20px;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .title {
+        font-family: PingFangSC-Regular;
+        font-size: 20px;
+        margin-top: -4px;
+        margin-bottom: auto;
+        color: #000000;
+        overflow: hidden; 
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &:hover {
+          color: #1890ff;
+          cursor: pointer;
+          text-decoration: underline;
+        }
+      }
+      
+      .author {
+        width: 100px;
+        text-align: right;
+        opacity: 0.4;
+        font-family: PingFangSC-Regular;
+        font-size: 12px;
+        color: #000;
+      }
+    }
+    
+    .subTitle {
+      height: 22px;
+      font-family: PingFangSC-Regular;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.4);
+      line-height: 22px;
+    }
+    .content_tag {
+      margin-top: 8px;
+      margin-bottom: 8px;
+      font-family: PingFangSC-Regular;
+      font-size: 12px;
+      
+      span {
+        margin-right: 8px;
+        opacity: 0.4;
+        color: #000000;
+      }
+      .type_tag {
+        display: inline-block;
+        height: 22px;
+        line-height: 22px;
+        padding: 0px 10px;
+        background: #F2F4F6;
+        border-radius: 2px;
+        color: #515B6A;
+      }
+    }
+    .content {
+      opacity: 0.7;
+      font-family: PingFangSC-Regular;
+      font-size: 12px;
+      color: #000000;
+    }
+    .content_remarks {
+      margin-bottom: 0px;
+    }
+  }
+
+  .little_data_tips {
+    text-align: center;
+    margin-top: 40px;
+    opacity: 0.4;
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+  }
+  .no_data_tips {
+    min-height: 200px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    p {
+      text-align: center;
+      margin-bottom: 0px;
+    }
+    div {
+      text-align: center;
+      color: #1890FF;
+    }
+  }
+
+  .footer {
+    height: 40px;
+  }
+
+  // 分页组件位置设置
+  :global(.ant-pagination) {
+    text-align: center;
+    margin-top: 40px;
+  }
+}

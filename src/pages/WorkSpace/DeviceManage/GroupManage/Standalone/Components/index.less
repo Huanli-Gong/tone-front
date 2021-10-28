@@ -1,0 +1,18 @@
+
+.DeployModal_root {
+  .Alert {
+    margin-bottom: 12px;
+    // hover
+    :global(.ant-alert .ant-alert-content .ant-alert-message) {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      &:hover {
+        overflow: unset;
+        white-space: unset;
+        text-overflow: unset;
+      }
+    }
+  }
+
+}

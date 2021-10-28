@@ -1,0 +1,61 @@
+.step_table_popover {
+    :global(.ant-popover-title) {
+        padding: 20px;
+    }
+}
+
+.prep_test_conf_row {
+    :global( .ant-table-cell ) {
+        background: #fbfbfb !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+}
+
+.popover_text_span {
+    color : #1890FF;
+    cursor: pointer;
+}
+
+.prepTable {
+    :global(.expanded-row-padding-no>td) {
+        padding : 0 !important;
+    }
+    :global(.ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table) {
+        margin: -8px -8px -8px 35px;
+    }
+}
+.buildTable {
+    :global(.expanded-row-padding-no>td) {
+        padding : 0 !important;
+    }
+    .buildWrap {
+        height: 122px;
+        padding: 20px 70px;
+    }
+    .buildChild {
+        height: 27px;
+        line-height: 27px;
+        .buildName{
+            width: 6%;
+            float: left;
+            font-weight: 600;
+            color:rgba(0,0,0,0.85);
+            text-align: right;
+        }
+        .buildDetail{
+            color: #1890FF;
+            // overflow: hidden;
+            // text-overflow: ellipsis;
+            // white-space: nowrap;
+            // display: block;
+            width: 90%;
+            padding-left: 24px;
+            float: left;
+        }
+        .buildCopy {
+            width: 3%;
+            cursor: pointer;
+            float: left;
+        }
+    }
+}

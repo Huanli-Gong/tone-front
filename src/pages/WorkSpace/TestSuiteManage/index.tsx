@@ -1,0 +1,322 @@
+import React, { useState, useEffect } from 'react';
+import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography , Spin } from 'antd';
+import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
+import { AuthCommon } from '@/components/Permissions/AuthCommon';
+import { querySuiteList, queryDomains } from './service';
+import { history } from 'umi'
+import { suiteChange } from '@/components/Public/TestSuite/index.js';
+import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
+import styles from './style.less';
+import CaseTable from './components/CaseTable';
+import BusinessTest from './BusinessTest';
+import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
+import { runList } from '@/utils/utils';
+import { SearchColumnFilterTitle, CheckboxColumnFilterTitle, UserSearchColumnFilterTitle } from './components'
+import CodeViewer from '@/components/CodeViewer'
+import { TabCard } from '@/components/UpgradeUI';
+
+const SuiteManagement: React.FC<any> = (props) => {
+	const { ws_id } = props.match.params
+
+	const testType = props.location.query.test_type || 'functional'
+
+	const { TabPane } = Tabs;
+	const [data, setData] = useState<any>([]);
+	const [refresh, setRefresh] = useState<boolean>(true)
+	const [fetchParams, setFetchParams] = useState<any>({
+		name: '',
+		domain: '',
+		run_mode: '',
+		owner: '',
+		order: '',
+		page_num: 1,
+		page_size: 10,
+		test_type: testType
+	})
+
+	const [loading, setLoading] = useState<boolean>(true)
+	const [expandKey, setExpandKey] = useState<string[]>([])
+	const [filterRefresh, setFilterRefresh] = useState(false)
+	const [show, setShow] = useState<boolean>(false)
+	const [des, setDes] = useState<string>('')
+
+	const [domainList, setDomainList] = useState<any>([])
+	// const domainList = [{ id: 1, name: "内存" }, { id: 2, name: "调度" }, { id: 3, name: "cpu" }, { id: 4, name: "文件系统" }, { id: 5, name: "IO子系统" }, { id: 6, name: "网络" }, { id: 7, name: "Pounch" }, { id: 8, name: "其他" }]
+
+	const getDomains = async () => {
+		const { data: domains } = await queryDomains()
+		setDomainList(domains)
+	}
+
+	useEffect(() => {
+		getDomains()
+	}, [])
+
+	const getList = async (params: any = {}) => {
+		setLoading(true)
+		setData({ data: [] })
+		const data: any = await querySuiteList({ ...params, ws_id })
+		setData(data)
+		setLoading(false)
+	};
+
+	useEffect(() => {
+		getList(fetchParams)
+		setExpandKey([])
+	}, [fetchParams, refresh])
+
+	const handlePage = (page_num: number, page_size: any) => {
+		setFetchParams({
+			...fetchParams,
+			page_num,
+			page_size
+		})
+	}
+	const view_type_content = (
+		<div>
+			<div>Type1：所有指标拆分展示</div>
+			<div>Type2：多Conf同指标合并</div>
+			<div>Type3：单Conf多指标合并</div>
+		</div>
+	)
+	const handleTab = (test_type: string) => {
+		if (['functional', 'performance'].includes(test_type)) {
+			setExpandKey([])
+			setFilterRefresh(!filterRefresh)
+			setFetchParams({
+				test_type,
+				name: '',
+				domain: '',
+				owner: '',
+				order: '',
+				run_mode: '',
+				page_num: 1,
+				page_size: 10
+			})
+    }
+		history.push(`${location.pathname}?test_type=${test_type}`)
+	}
+
+	const columns: any = [
+		{
+			title: () => (
+				<SearchColumnFilterTitle
+					title="Test Suite"
+					params={fetchParams}
+					setParams={setFetchParams}
+					name={'name'}
+				/>
+			),
+			className: 'no_padding_head',
+			dataIndex: 'name',
+			ellipsis: true,
+		},
+		{
+			title: () => (
+				<CheckboxColumnFilterTitle
+					title="运行模式"
+					params={fetchParams}
+					setParams={setFetchParams}
+					name={'run_mode'}
+					list={runList}
+				/>
+			),
+			width: 120,
+			className: 'no_padding_head',
+			dataIndex: 'run_mode',
+			render: (_: any) => _ === 'standalone' ? "单机" : '集群',
+		},
+		{
+			title: () => (
+				<CheckboxColumnFilterTitle
+					title="领域"
+					params={fetchParams}
+					setParams={setFetchParams}
+					name={'domain'}
+					list={domainList}
+				/>
+			),
+			width: 90,
+			ellipsis: true,
+			render: (_: any) => _ ? <Tooltip placement={'bottomLeft'} title={_}><Typography.Text style={{ width: 85 }} ellipsis>{_ || '-'}</Typography.Text></Tooltip> : '-',
+			className: 'no_padding_head',
+			dataIndex: 'domain_name_list',
+		},
+		{
+			title: testType == 'functional' ? <></> : <>视图类型 <Tooltip title={view_type_content} placement="bottomLeft"><QuestionCircleOutlined /></Tooltip></>,
+			dataIndex: 'view_type',
+			width: testType == 'functional' ? 0 : 120,
+			ellipsis: true,
+			render: (_: any, record: any) => testType == 'functional' ? <></> : suiteChange(_, record),
+		},
+		{
+			title: '说明',
+			dataIndex: 'doc',
+			className: 'no_padding_head',
+			width: 190,
+			render: (_, row) => (
+				<div >
+					<ButtonEllipsis
+						title={row.doc}
+						isCode={true}
+						onClick={() => {
+							setShow(true)
+							setDes(row.doc)
+						}}
+					/>
+				</div>
+			)
+		},
+		{
+			title: '备注',
+			dataIndex: 'description',
+			className: 'no_padding_head',
+			width: 100,
+			ellipsis: true,
+			render: (_, row) => {
+				return (
+					<PopoverEllipsis title={row.description} width={100} />
+				)
+			}
+		},
+		{
+			title: () => (
+				<UserSearchColumnFilterTitle
+					title="Owner"
+					params={fetchParams}
+					setParams={setFetchParams}
+					name={'owner'}
+				/>
+			),
+			width: 120,
+			className: 'no_padding_head',
+			dataIndex: 'owner_name',
+		},
+		{
+			title: '创建时间',
+			dataIndex: 'gmt_created',
+			className: 'no_padding_head',
+			sorter: true,
+			ellipsis: true,
+		},
+	]
+
+	const onExpand = async (record: any) => {
+		setExpandKey([record.id + ''])
+	}
+
+	return (
+		<TabCard
+			title={
+				<Tabs defaultActiveKey={testType} onChange={handleTab}>
+					<TabPane
+						tab="功能测试"
+						key="functional"
+					/>
+					<TabPane
+						tab="性能测试"
+						key="performance"
+					/>
+					<TabPane
+						tab="业务测试"
+						key="business"
+					/>
+				</Tabs>
+			}
+			extra={
+				<AuthCommon
+					key="manage"
+					isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
+					children={<Button type="primary" key="createSuite">Test Suite管理</Button>}
+					onClick={() => {
+						if (['functional', 'performance', 'business'].includes(fetchParams.test_type)) {
+							history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
+						}
+						// else if (fetchParams.test_type === 'business') {
+						//   history.push(`/test_suite/add_business?ws=${ws_id}&test_type=${fetchParams.test_type}`)
+						// }
+					}}
+				/>
+			}
+		>
+
+			{
+				['functional', 'performance'].includes(fetchParams.test_type) &&
+				(
+					<Spin spinning={ loading }>
+						<Table
+							className={styles.table_style}
+							size={'small'}
+							onChange={(pagination: any, filters: any, sorter: any) => {
+								switch (sorter.order) {
+									case undefined:
+										setFetchParams({ ...fetchParams, order: undefined })
+										break;
+									case 'descend':
+										setFetchParams({ ...fetchParams, order: '-gmt_created' })
+										break;
+									case 'ascend':
+										setFetchParams({ ...fetchParams, order: 'gmt_created' })
+										break;
+									default:
+										break;
+								}
+							}}
+							columns={columns}
+							dataSource={data.data}
+							rowKey={record => record.id + ''}
+							expandable={{
+								expandedRowRender: (record) => (
+									<CaseTable
+										domains={domainList}
+										record={record.test_case_list}
+										id={record.id}
+										type={fetchParams.test_type}
+										ws_id={ws_id}
+									/>
+								),
+								onExpand: (_, record) => _ ? onExpand(record) : setExpandKey([]),
+								expandedRowKeys: expandKey,
+								expandIcon: ({ expanded, onExpand, record }) =>
+									expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
+										(<CaretRightFilled onClick={e => onExpand(record, e)} />)
+							}}
+							pagination={false}
+						/>
+						<Row justify="space-between" style={{ padding: '16px 20px 0' }}>
+							<div className={data.total == 0 ? styles.hidden : ''} >共{data.total || 0}条</div>
+							<Pagination
+								className={data.total == 0 ? styles.hidden : ''}
+								showQuickJumper
+								showSizeChanger
+								current={fetchParams.page_num}
+								defaultCurrent={1}
+								//hideOnSinglePage={true}
+								onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
+								onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
+								total={data.total}
+							/>
+						</Row>
+					</Spin>
+				)}
+			{fetchParams.test_type === 'business' && (
+				<BusinessTest ws_id={ws_id} />
+			)}
+
+			<Drawer
+				maskClosable={false}
+				keyboard={false}
+				width={376}
+				title="说明详情"
+				onClose={() => setShow(false)}
+				visible={show}
+			>
+				<CodeViewer code={des} />
+			</Drawer>
+		</TabCard>
+	);
+};
+
+export default SuiteManagement;
+
+

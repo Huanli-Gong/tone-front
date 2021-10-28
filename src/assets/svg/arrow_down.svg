@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8px" height="5px" viewBox="0 0 8 5" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title></title>
+    <desc>Created with Sketch.</desc>
+    <g id="提交反馈" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.25">
+        <g id="1-页面反馈" transform="translate(-209.000000, -39.000000)" fill="#000000" fill-rule="nonzero">
+            <g id="导航备份-2">
+                <g id="workspace" transform="translate(121.000000, 26.000000)">
+                    <g id="ws下-拉" transform="translate(80.000000, 3.500000)">
+                        <rect id="矩形" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                        <path d="M14.9491166,10.9483203 L11.9107885,14.2707969 C11.8200096,14.374094 11.6891499,14.4333047 11.5516323,14.4333047 C11.4141037,14.4333047 11.2832309,14.3741022 11.1924448,14.2707969 L8.15411664,10.9483203 C8.00579632,10.7916641 7.95996039,10.5633281 8.03661664,10.3616563 C8.11327289,10.1599844 8.2982807,10.0191563 8.51328851,10 L14.5874604,10 C14.8032963,10.0183359 14.9891166,10.1583203 15.0657885,10.3608359 C15.1432885,10.5633359 15.0974604,10.7908203 14.9491166,10.9483203 Z" id="路径"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

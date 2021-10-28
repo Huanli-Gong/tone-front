@@ -1,0 +1,168 @@
+.popover_group{
+    padding-left: 0;
+    left: 70px !important;
+    :global{
+        .ant-popover-arrow{
+            display: none;
+        }
+        .ant-popover-inner-content{
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 0;
+        }
+        .ant-popover-title{
+            padding-left: 16px !important;
+        }
+    }
+}
+.job_compare{
+    height: 110px;
+    width: calc(100% + 40px);
+    transform: translate(-20px,20px);
+    ul,li{
+        list-style: none;
+        margin: 0;
+        padding:0;
+        height: 72px;
+        box-sizing: border-box;
+    }
+    ul{
+        position: relative;
+        li{
+            display: inline-block;
+            min-width: 246px;
+            padding-right: 20px;
+            padding-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            line-height: 52px;
+            height: 52px;
+        }
+    }
+    .title{
+        border-top: 2px solid #1890FF;
+        padding-left: 20px;
+        font-weight: 700;
+        color: #000000;
+        opacity: 0.85;
+        height: 38px;
+        line-height: 38px;
+        border-bottom: 1px solid rgba(151, 151, 151, 0.4);
+    }
+    .job_card{
+        display: inline-block;
+        width: 25%;
+        padding-left: 20px;
+        .job_index{
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background-color: #F0F0F0;
+            font-size: 14px;
+            color:#1D1D1D;
+            opacity: 0.65;
+            line-height:20px;
+            text-align: center;
+            transform: translateX(-10px)
+        }
+        .job_detail{
+            // display: inline-block;
+            // width: calc(100% - 74px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .job_id,.job_creator,.remove_active,.remove{
+            display: inline-block;
+            max-width: 33.33%;
+            padding-right: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    // .remove,
+    .remove_active {
+        color:red;
+        cursor: pointer;
+    }
+
+    .remove{
+        visibility: hidden;
+    }
+
+    .remove_active {
+        visibility: visible;
+    }
+        .job_delete{
+            opacity: 0;
+        }
+        :global{
+            .ant-space-align-center{
+                width: 100%;
+            }
+            .ant-space-item:last-child{
+                width: calc(100% - 30px);
+            }
+        }
+    }
+    .job_group{
+        height: 72px;
+        line-height: 22px;
+        position: relative;
+        padding-right: 230px;
+        background: #fff;
+        .job_group_title{
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .job_item{
+            height: 22px;
+            margin-bottom: 4px;
+            .job_item_span{
+                display:inline-block;
+                width: 64px;
+                height: 22px;
+                background: rgba(0,0,0,0.04);
+                border: 1px solid rgba(0,0,0,0.15);
+                border-radius: 2px;
+                padding-left: 8px;
+                padding-right: 8px;
+                box-sizing: border-box;
+                .delete{
+                    float: right;
+                    line-height: 20px;
+                    font-size: 9px;
+                }
+            }
+        }
+        .operate{
+            width: 230px;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #fff;
+            line-height: 72px;
+            box-shadow: -3px 0 2px 0 rgba(0,0,0,0.05);
+        }
+    }
+}
+.list_container{
+    :global{
+        .ant-table-selection{
+            display: inline-block;
+        }
+        .ant-table-tbody > tr.ant-table-row-selected > td{
+            background: #fff;
+        }
+    }
+    
+}
+
+.ViewTableStyle {
+    :global(.ant-table-tbody tr:last-child td) {
+      border-bottom: none;
+    }
+  }

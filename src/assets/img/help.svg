@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="14px" viewBox="0 0 11 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>业务图标/帮助</title>
+    <desc>Created with Sketch.</desc>
+    <g id="首页/加入" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2-首页-申请加入" transform="translate(-635.000000, -178.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="欢迎页头" transform="translate(20.000000, 100.000000)">
+                <g id="banner">
+                    <g id="描述文案" transform="translate(24.000000, 74.000000)">
+                        <g id="业务图标/帮助" transform="translate(591.000000, 4.000000)">
+                            <path d="M8.7375,4.4046875 L8.7375,0.9375 L7.2375,0.9375 L7.2375,4.428125 L8.0109375,3.875 L8.7375,4.4046875 Z M1.6,0 L1.634375,14 L0.5,14 C0.2234375,14 0,13.7765625 0,13.5 L0,0.5 C0,0.2234375 0.2234375,0 0.5,0 L1.6,0 Z M2.8,0 L10.5,0 C10.7765625,0 11,0.2234375 11,0.5 L11,13.5 C11,13.7765625 10.7765625,14 10.5,14 L2.7734375,14 L2.8,0 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

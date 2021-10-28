@@ -1,0 +1,359 @@
+import React, { useState, useCallback, useImperativeHandle, forwardRef } from 'react'
+import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip } from 'antd'
+
+import { queryTestServerAppGroup, queryTestServerNewList, addServerGroup, checkTestServerIps } from '../../services'
+import Owner from '@/components/Owner/index';
+import styles from './index.less'
+import { requestCodeMessage } from '@/utils/utils';
+
+const CreateClusterDrawer = (props: any, ref: any) => {
+    const { onFinish, ws_id } = props
+    const [form] = Form.useForm()
+    const [single, setSingle] = useState('1')
+    const [ips, setIps] = useState({ success: [], errors: [] })
+    const [validateMsg, setValidateMsg] = useState<any>('');
+    // const [vals, setVals] = useState([])
+    const [appGroup, setAppGroup] = useState<any>(undefined)
+    const [groupList, setGroupList] = useState([])
+    const [testServerList, setTestServerList] = useState([])
+    // const [selectIpsValue, setSelectIpsValue] = useState('')
+    const [loading, setLoading] = useState(true)
+
+    const [testServerLoading, setTestServerLoading] = useState(false)
+    const [visible, setVisible] = useState(false)
+
+    const [source, setSource] = useState<any>(null)
+
+    useImperativeHandle(ref, () => ({
+        show(_: any) {
+            setVisible(true)
+            getAppGroupList()
+            if (_) {
+                setSource(_)
+            }
+        }
+    }))
+
+    const getAppGroupList = useCallback(
+        async () => {
+            setLoading(true)
+            const { data } = await queryTestServerAppGroup({ ws_id })
+            setGroupList(data)
+            setLoading(false)
+        }, []
+    )
+
+    const getTestServerList = useCallback(
+        async (app_group) => {
+            form.resetFields(['ip'])
+            setTestServerLoading(true)
+            setAppGroup(app_group)
+            const { data } = await queryTestServerNewList({ ws_id, app_group })
+            setTestServerList(data)
+            setTestServerLoading(false)
+        },
+        [appGroup]
+    )
+
+    const setIpStyle = useCallback(
+        (evt) => {
+            form.resetFields(['ip'])
+            setSingle(evt.target.value)
+        }, []
+    )
+
+    const handleOk = () => {
+        form
+            .validateFields()
+            .then(
+                async (values) => {
+                    const data: any = await addServerGroup({ ...values, ws_id, cluster_id: source.id, cluster_type: 'aligroup' })
+                    if (data.code === 200) {
+                        onFinish(source.id)
+                        message.success('操作成功')
+                        handleCancel()
+                    }
+                    else {
+                        requestCodeMessage(data.code, data.msg)
+                    }
+                }
+            )
+            .catch(
+                (err: any) => {
+                    console.log(err)
+                }
+            )
+    }
+
+    const handleCancel = () => {
+        form.resetFields()
+        setVisible(false)
+        setAppGroup('')
+        setSource(null)
+    }
+
+    const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
+        <Space>
+            <span>{data.msg[0]}</span>
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}>详细信息</span></Tooltip>
+        </Space>
+    )
+
+    // 接口校验是否为有效ip
+    const handleIpsCheck = async () => {
+        if (loading) return
+        setLoading(true)
+        const ip = form.getFieldValue('ip')
+        const channel_type = form.getFieldValue('channel_type')
+        if (channel_type && ip && ip.length > 0) {
+            try {
+                const data = await checkTestServerIps({ ips: [ip], channel_type, ws_id }) || {}
+                if (data.code === 200) {
+                    setIps({ ...data.data })
+                    setValidateMsg(<ValidateDisplayMessage data={data} />)
+                    // setVals(data.data.success)
+                    // setSelectIpsValue('')
+                }
+            } catch (err) {
+                setLoading(false)
+            }
+        }
+        setLoading(false)
+    }
+
+    // -----------------------
+    // 失焦校验
+    const handleBlurIp = (e: any) => {
+        // const ipValue =  e.target.value
+        if (form.getFieldValue('channel_type')) {
+            handleIpsCheck()
+        }
+    }
+
+    return (
+        <Drawer
+            maskClosable={false}
+            keyboard={false}
+            title="添加机器"
+            forceRender={true}
+            visible={visible}
+            width="376"
+            onClose={handleCancel}
+            footer={
+                <div style={{ textAlign: 'right' }} >
+                    <Space>
+                        <Button onClick={handleCancel}>取消</Button>
+                        <Button type="primary" onClick={handleOk}>确定</Button>
+                    </Space>
+                </div>
+            }
+        >
+            <Spin spinning={loading}>
+                <Form
+                    layout="vertical"
+                    /*hideRequiredMark*/
+                    form={form}
+                    className={styles.add_server_form}
+                >
+                    <Form.Item name="is_single" label="是否是单机池" initialValue="1">
+                        <Radio.Group onChange={setIpStyle}>
+                            <Radio value="1">是</Radio>
+                            <Radio value="0">否</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    {
+                        single === '1' ?
+                            <Form.Item label="机器">
+                                <Form.Item noStyle>
+                                    <Row gutter={10}>
+                                        <Col span={12}>
+                                            <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
+                                                <Select
+                                                    placeholder="请选择分组"
+                                                    onChange={getTestServerList}
+                                                    value={appGroup}
+                                                    getPopupContainer={node => node.parentNode}
+                                                >
+                                                    {
+                                                        Array.isArray(groupList) && groupList.map(
+                                                            (item: any) => (
+                                                                <Select.Option key={item} value={item}>{item}</Select.Option>
+                                                            )
+                                                        )
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
+                                                <Select
+                                                    placeholder="请选择机器"
+                                                    loading={testServerLoading}
+                                                    getPopupContainer={node => node.parentNode}
+                                                >
+                                                    {
+                                                        testServerList.map(
+                                                            (item: any) => (
+                                                                <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
+                                                            )
+                                                        )
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form.Item>
+                            </Form.Item> :
+                            <Row>
+                                <Col span={24}>
+                                    <Form.Item name="channel_type" label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]}>
+                                        <Select onChange={handleIpsCheck}>
+                                            <Select.Option value="staragent">StarAgent</Select.Option>
+                                            <Select.Option value="toneagent">ToneAgent</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                                <Col span={24}>
+
+                                    <Form.Item label="机器"
+                                        name="ip"
+                                        validateStatus={ips.errors.length > 0 ? 'error' : ''}
+                                        help={ips.errors.length > 0 && validateMsg}
+                                    >
+                                        <Input allowClear
+                                            onBlur={(e: any) => handleBlurIp(e)}
+                                            autoComplete="off"
+                                            placeholder="请输入输入IP/SN" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={24}>
+                                    <Form.Item label="使用状态"
+                                        name="state"
+                                        hasFeedback
+                                        rules={[{ required: true, message: '请选择机器状态!' }]}
+                                        initialValue={'Available'}
+                                    >
+                                        <Select placeholder="请选择机器状态" >
+                                            <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
+                                            <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                    }
+                    <Form.Item name="private_ip" label="私网IP" >
+                        <Input autoComplete="off" placeholder="请输入私网IP" />
+                    </Form.Item>
+                    <Form.Item name="role" label="角色" rules={[{ required: true }]}>
+                        <Select getPopupContainer={node => node.parentNode} placeholder="请选择角色">
+                            <Select.Option value="local">local</Select.Option>
+                            <Select.Option value="remote">remote</Select.Option>
+                        </Select>
+                    </Form.Item>
+                    <Owner />
+                    <Form.Item name="baseline_server" label="是否基线机器" initialValue={false}>
+                        <Radio.Group>
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    <Form.Item name="kernel_install" label="安装内核" initialValue={false}>
+                        <Radio.Group>
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    <Form.Item
+                        name="var_name"
+                        label="运行变量名"
+                        rules={[{
+                            required: true, 
+                            // pattern: /^[A-Za-z0-9]+$/g,
+                            // message: '仅允许包含字母、数字'
+                        }]}
+                    >
+                        <Input autoComplete="off" placeholder="请输入" />
+                    </Form.Item>
+                </Form>
+            </Spin>
+        </Drawer>
+    )
+}
+
+export default forwardRef(CreateClusterDrawer)
+
+
+    // 搜索
+    // const handleChangeIps = ( value : any ) => {
+    //     setSelectIpsValue( value )
+    // }
+    // 失焦校验
+    // const handleBlurIps = () => {
+    //     const matchResult : any = selectIpsValue.match(/[a-z0-9A-Z.-_]+(\s|,|)/g) || []
+    //     const resultIp : any = Array.from(
+    //         new Set( matchResult.map(( i : any ) => i.replace(/(\s|,|)/g,'')).concat( vals ) )
+    //     )
+    //     setVals( resultIp )
+    //     form.setFieldsValue({ ips : resultIp })
+    //     if (form.getFieldValue('channel_type')) {
+    //         handleIpsCheck()
+    //     }
+    // }
+    // const handleFocusIps = () => {
+    //     setIps({ success : [] , errors : [] })
+    //     setValidateMsg('')
+    // }
+    // const handleMultipIpChange = ( values : any ) => {
+    //     setVals( values )
+    //     setSelectIpsValue( values.toString() )
+    // }
+
+
+                                    // {/* <Form.Item label="机器"
+                                    //     name="ips"
+                                    //     validateStatus={ ips.errors.length > 0 ? 'error' : '' }
+                                    //     help={ ips.errors.length > 0 && validateMsg }
+                                    // >
+                                    //     <Select 
+                                    //     mode="multiple"
+                                    //     placeholder='输入IP/SN,多个以空格或英文逗号分隔'
+                                    //     onBlur={ handleBlurIps }
+                                    //     onFocus = { handleFocusIps }
+                                    //     onSearch={ handleChangeIps }
+                                    //     onChange={ handleMultipIpChange }
+                                    //     notFoundContent={ null }
+                                    //     className={ styles.select_ips }
+                                    //     >
+                                    //     {ips.success.map(( item : any, index:number ) => (
+                                    //         <Select.Option key={ index } value={ item }>
+                                    //             { item }
+                                    //         </Select.Option>
+                                    //         ))
+                                    //     }
+                                    //     </Select>
+                                    // </Form.Item> */}
+
+
+                    // {/* <Form.Item
+                    //     name="owner"
+                    //     label="Owner"
+                    //     rules={[{ required: true, message: '请选择' }]}
+                    // >
+                    //     <Select
+                    //         allowClear
+                    //         notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+                    //         filterOption={false}
+                    //         onSearch={handleSearch}
+                    //         onFocus={() => { handleSearch() }}
+                    //         style={{ width: '100%' }}
+                    //         showArrow={false}
+                    //         showSearch
+                    //         getPopupContainer={ node => node.parentNode }
+                    //     >
+                    //         {
+                    //             user.map((item: any) => {
+                    //                 return <Option value={item.id} key={item.id}>{item.last_name}</Option>
+                    //             })
+                    //         }
+                    //     </Select>
+                    // </Form.Item> */}

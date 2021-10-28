@@ -1,0 +1,75 @@
+
+  @label_width: 130px;
+  .form_row {
+    margin-top: 12px;
+  }
+
+  .page_body_nav {
+    position: relative;
+    height: 1px;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+    margin-bottom: 12px;
+    width: 100%;
+
+    span {
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding-right: 10px;
+        background: #FFFFFF;
+        transform:translate(0, -50%);
+        font-size: 16px;
+        color: rgba(0 , 0 , 0 , .85);
+        float: left;
+        display: table-cell;
+        margin: 0 auto;
+        &::before {
+            float: left;
+            content :'';
+            height: 16px;
+            width: 2px;
+            background: #1890FF;
+            margin-top: 5px;
+            margin-right: 10px;
+        }
+    }
+  }
+
+  .content {
+    width: 100%;
+    padding: 8px 0;
+    .ItemRow {
+       display: flex;
+       margin: 4px 0;
+    
+      .label {
+        width: @label_width;
+        flex-shrink: 0;
+        font-family: PingFangSC-Semibold;
+        font-size: 14px;
+        color: rgba(0,0,0,0.85);
+        text-align: right;
+      }
+      .text {
+        // width: calc(100% - @label_width);
+        flex-grow: 1;
+        margin-left: 8px;
+        opacity: 0.65;
+        font-family: PingFangSC-Regular;
+        font-size: 14px;
+        color: #000;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .end {
+        overflow: unset;
+        text-overflow: unset;
+        white-space: unset;
+      }
+      .edit {
+        margin-left: 8px;
+      }
+    }
+  }
+

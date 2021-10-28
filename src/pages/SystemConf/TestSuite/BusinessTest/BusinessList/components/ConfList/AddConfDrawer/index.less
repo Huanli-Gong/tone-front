@@ -1,0 +1,43 @@
+
+.addConf_drawer {
+  .server_provider{
+    margin-bottom: 5px;
+  }
+
+  .variableLabel {
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    .Bulk_btn {
+      font-family: PingFangSC-Regular;
+      font-size: 14px;
+      cursor: pointer;
+      color: #1890FF;
+    }
+  }
+
+  .flexStart {
+    display: flex;
+    align-items: flex-start;
+  }
+  .CI_Config_Extra {
+    color: #E02020;
+    margin-top: 3px;
+  }
+
+  // 调整同组为20px
+  .ciTypeElement {
+    :global(.ant-form-item) {
+      margin-top: -4px;
+      margin-bottom: 20px;
+    }
+    :global(.ant-form-item-with-help) {
+      margin-bottom: 0px;
+    }
+    :global(.ant-form-item-explain.ant-form-item-explain-error) {
+      min-height: 20px;
+      font-size: 12px;
+    }
+  }
+
+}

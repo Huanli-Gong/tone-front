@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon_add</title>
+    <g id="体验升级-第一阶段" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.5">
+        <g id="1.ws系统级" transform="translate(-172.000000, -300.000000)" fill="#000000" fill-rule="nonzero">
+            <g id="Group-9" transform="translate(24.000000, 248.000000)">
+                <g id="Group-8" transform="translate(124.000000, 52.000000)">
+                    <g id="icon_add" transform="translate(24.000000, 0.000000)">
+                        <rect id="Rectangle" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                        <path d="M3,10.749625 L20.5,10.749625 C21.0522847,10.749625 21.5,11.1973403 21.5,11.749625 C21.5,12.3019097 21.0522847,12.749625 20.5,12.749625 L3,12.749625 C2.44771525,12.749625 2,12.3019097 2,11.749625 C2,11.1973403 2.44771525,10.749625 3,10.749625 Z M10.750375,20.5 L10.750375,3 C10.750375,2.44771525 11.1980903,2 11.750375,2 C12.3026597,2 12.750375,2.44771525 12.750375,3 L12.750375,20.5 C12.750375,21.0522847 12.3026597,21.5 11.750375,21.5 C11.1980903,21.5 10.750375,21.0522847 10.750375,20.5 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

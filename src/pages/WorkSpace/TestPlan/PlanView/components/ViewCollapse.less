@@ -1,0 +1,13 @@
+
+  .CollapseContainer {
+    border: 1px solid rgba(21,0,0,0.10);
+    border-radius: 4px;
+    padding:0;
+    // hover、展开后背景显示出来。
+    &:hover {
+      background : #fafafa !important;
+    }
+    :global(.ant-collapse-content > .ant-collapse-content-box) {
+      padding : 0!important;
+    }
+ }
