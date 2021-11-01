@@ -4,8 +4,6 @@ import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import { ClickParam } from 'antd/es/menu';
 import { history, useModel, useRequest } from 'umi';
 
-import { outLogin, queryOutLogin } from '@/services/login';
-
 import styles from './index.less';
 
 import { person_auth_info } from '@/services/user'
@@ -15,8 +13,7 @@ import request from 'umi-request';
  * 退出登录，并且将当前的 url 保存
  */
 const logout = async () => {
-    const url = origin
-    await request
+    request
         .get('/api/auth/logout/')
         .then(function (response) {
             console.log(response);
@@ -24,7 +21,6 @@ const logout = async () => {
         .catch(function (error) {
             console.log(error);
         });
-    window.location.href = ''
 }
 const PersonCenter = () => {
     const [currentUser, setCurrentUser] = useState<any>(null)

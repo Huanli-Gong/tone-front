@@ -5,10 +5,12 @@
  * For details, please see
  * https://pro.ant.design/docs/deploy
  */
+import { proxyDev } from 'varConfig'
+
 export default {
     dev: {
         '/api/': {
-            target: 'https://tone.aliyun.test/',
+            target: proxyDev,
             changeOrigin: true,
             secure: false,
             // withCredentials: true,

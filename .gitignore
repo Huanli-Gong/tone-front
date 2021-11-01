@@ -40,3 +40,5 @@ screenshot
 .eslintcache
 
 build
+
+.varConfig.ts
