@@ -6,14 +6,23 @@ import settingDrawer from './zh-CN/settingDrawer';
 import settings from './zh-CN/settings';
 
 export default {
-  'navBar.lang': '语言',
-  'layout.user.link.help': '帮助',
-  'layout.user.link.privacy': '隐私',
-  'layout.user.link.terms': '条款',
-  'app.preview.down.block': '下载此页面到本地项目',
-  'app.welcome.link.fetch-blocks': '获取全部区块',
-  'app.welcome.link.block-list': '基于 block 开发，快速构建标准页面',
   'navbar.lang' : 'En',
+  //
+  //
+  'Drawer.btn.close': '取消',
+  'Drawer.btn.ok': '确定',
+  'Drawer.btn.confirm': '确认',
+  'Drawer.btn.update': '更新',
+
+  'Table.columns.result': '结果',
+  'Table.columns.date': '日期',
+  'Table.columns.startTime': '开始时间',
+  'Table.columns.endTime': '结束时间',
+  'Table.columns.operation': '操作',
+  'operation.edit': '编辑',
+  'operation.delete': '删除',
+  'operation.view': '查看',
+
   ...globalHeader,
   ...menu,
   ...settingDrawer,

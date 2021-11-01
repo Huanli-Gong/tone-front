@@ -40,7 +40,7 @@ import {
     RightResult,
     CloseBtn,
 } from '../../ReportUI';
-import produce from 'immer';
+// import produce from 'immer';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 const { Option } = Select;
 
@@ -59,9 +59,8 @@ const Performance = (props: any) => {
         test_env: "",
     })
     const [num, setNum] = useState(0)
-    const [btn, setBtn] = useState<boolean>(true)
+    const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
     let group = allGroupData?.length
-
     const switchMode = () => {
         setBtn(!btn)
         setChartType('1')
@@ -157,7 +156,19 @@ const Performance = (props: any) => {
     //     return btnState && <PrefDataDel />
     // }
     const handleFieldChange = (field: any, name: string, data: any) => {
-        perData.list.map((item: any) => {
+        // const list = perData.list.map((item:any)=>{
+        //     return produce(item,(draf:any)=>{
+        //         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
+        //             draf[name] = field
+        //         }
+        //         // setSuite({
+        //         //     ...draf,
+        //         // })
+        //     })
+        // })
+        // console.log('list',list)
+        
+        perData.list.map((item: any,index:number) => {
             if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
                 const { suite_id } = item
                 source[name] = field
@@ -168,38 +179,7 @@ const Performance = (props: any) => {
             }
             return item
         })
-
     }
-
-    // const handleDescChange = (field: any, name: string, data: any) => {
-    //     perData.list.map((item: any) => {
-    //         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
-    //             const { suite_id  }= item
-    //             setSource({
-    //                 ...source,
-    //                 suite_id,
-    //                 test_description:field,
-    //             })
-    //         }
-    //         return item
-    //     })
-    // }
-    // const handleEnvChange = (field: any, name: string, data: any) => {
-    //     perData.list.map((item: any) => {
-    //         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
-    //             const { suite_id  }= item
-    //             setSource({
-    //                 ...source,
-    //                 suite_id,
-    //                 test_env:field,
-    //             })
-    //         }
-    //         return item
-    //     })
-    // }
-
-
-
     const handleDelete = (name: string, row: any, rowKey: any) => {
         setEditBtn(true)
         if (name == 'suite') {
@@ -234,17 +214,19 @@ const Performance = (props: any) => {
             <TestItemFunc>
                 <Space>
                     <Button onClick={switchMode}>{btnName}</Button>
-                    <Space>
-                        <Typography.Text>筛选: </Typography.Text>
-                        <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="all">全部</Option>
-                            <Option value="invalid">无效</Option>
-                            <Option value="volatility">波动大（包括上升、下降）</Option>
-                            <Option value="increase">上升</Option>
-                            <Option value="decline">下降</Option>
-                            <Option value="normal">正常</Option>
-                        </Select>
-                    </Space>
+                    {
+                        btn && <Space>
+                            <Typography.Text>筛选: </Typography.Text>
+                            <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
+                                <Option value="all">全部</Option>
+                                <Option value="invalid">无效</Option>
+                                <Option value="volatility">波动大（包括上升、下降）</Option>
+                                <Option value="increase">上升</Option>
+                                <Option value="decline">下降</Option>
+                                <Option value="normal">正常</Option>
+                            </Select>
+                        </Space>
+                    }
                 </Space>
             </TestItemFunc>
         )
@@ -314,6 +296,7 @@ const Performance = (props: any) => {
         setPerData(obj)
     }
 
+
     useEffect(() => {
         if (source.suite_id !== '') {
             setSuite(perData.list?.map((item: any) => {
@@ -324,12 +307,10 @@ const Performance = (props: any) => {
                         test_env,
                         test_description,
                         test_conclusion,
-
                     }
                 }
             }))
         }
-
     }, [source])
 
     // suite遍历
@@ -660,3 +641,31 @@ const Performance = (props: any) => {
     )
 }
 export default memo(Performance);
+
+
+// const handleDescChange = (field: any, name: string, data: any) => {
+//     perData.list.map((item: any) => {
+//         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
+//             const { suite_id  }= item
+//             setSource({
+//                 ...source,
+//                 suite_id,
+//                 test_description:field,
+//             })
+//         }
+//         return item
+//     })
+// }
+// const handleEnvChange = (field: any, name: string, data: any) => {
+//     perData.list.map((item: any) => {
+//         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
+//             const { suite_id  }= item
+//             setSource({
+//                 ...source,
+//                 suite_id,
+//                 test_env:field,
+//             })
+//         }
+//         return item
+//     })
+// }

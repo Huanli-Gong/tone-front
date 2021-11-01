@@ -1,9 +1,9 @@
 import React from 'react';
 import { Space, Tag, Select, message } from 'antd';
 import { updateWorkspaceMember } from '@/services/Workspace'
-import { handleRole } from '@/components/Role/index.js';
 import styles from './index.less';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, switchUserRole } from '@/utils/utils';
+
 export const EditableCell: React.FC<any> = (props) => {
     const { ws_id, user_info, select, is_owner } = props
     const { role_list, id } = user_info
@@ -20,14 +20,14 @@ export const EditableCell: React.FC<any> = (props) => {
             props.handleOk()
             props.onOk()
         } else {
-            requestCodeMessage( data.code , data.msg )
+            requestCodeMessage(data.code, data.msg)
         }
     }
-    
-    if(is_owner){
+
+    if (is_owner) {
         return (
             <div className={styles.roleStyle}>
-                <span style={{ fontSize:12 }}>所有者</span>
+                <span style={{ fontSize: 12 }}>所有者</span>
             </div>
         )
     }
@@ -37,7 +37,7 @@ export const EditableCell: React.FC<any> = (props) => {
             <div className={styles.roleStyle}>
                 <Select
                     size='small'
-                    value={handleRole(defaultName)}
+                    value={switchUserRole(defaultName[0])}
                     showSearch={false}
                     bordered={false}
                     dropdownMatchSelectWidth={false}
@@ -46,7 +46,7 @@ export const EditableCell: React.FC<any> = (props) => {
                 >
                     {
                         select?.map((item: any) => {
-                            return <Select.Option value={item.id} key={item.id}>{handleRole(item.name)}</Select.Option>
+                            return <Select.Option value={item.id} key={item.id}>{switchUserRole(item.name)}</Select.Option>
                         })
                     }
                 </Select>
@@ -81,7 +81,7 @@ export const EditableCell: React.FC<any> = (props) => {
                                 color="rgba(140,140,140,0.1)"
                                 style={{ color: 'rgba(0,0,0,0.65)' }}
                             >
-                                { name}
+                                {name}
                             </Tag>
                         )
                     }

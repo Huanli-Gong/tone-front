@@ -1,13 +1,13 @@
 
 
-import React, { useState, useImperativeHandle, forwardRef, memo, useCallback, useMemo, useEffect } from 'react'
+import React, { useState, useImperativeHandle, forwardRef, memo, useCallback, useMemo } from 'react'
 import { Space, Button, Drawer, Input, Spin, Tree, Empty } from 'antd'
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 
 import { useParams, useRequest } from 'umi'
-import { suiteList } from '@/pages/TestJob/components/SelectSuite/service'
-import { getDomain } from '@/pages/SystemConf/SuiteMangement/service'
-import styles from '@/pages/TestJob/components/SelectSuite/style.less';
+import { suiteList } from '@/pages/WorkSpace/TestJob/components/SelectSuite/service'
+import { getDomain } from '@/pages/SystemConf/TestSuite/service'
+import styles from '@/pages/WorkSpace/TestJob/components/SelectSuite/style.less';
 
 const CustomDrawer = (props: any, ref: any) => {
     const { ws_id } = useParams<any>()

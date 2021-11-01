@@ -544,6 +544,22 @@ export default (props: any) => {
             newProductVersionGroup.current = newGroup
         }
     }
+    const baseAssemble = (baseObj:any,arr:any) => {
+        let brr: any = []
+        let baseMembers = _.get(arr, 'members')
+        baseMembers = _.isArray(baseMembers) ? baseMembers : []
+        baseMembers = baseMembers.filter((val: any) => val)
+        const flag = arr.type === 'baseline'
+        baseMembers.forEach((item: any) => {
+            if (!flag) {
+                brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {}})
+            }
+            if (flag) {
+                brr.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: baseObj[item.id] || {}})
+            }
+        })
+        return brr;
+    }
     const handlEenvironment = (selData:any) => {
         const {obj:baseObj,trr:compareArr} = getJobRefSuit(selData)
         let groupDataCopy = _.cloneDeep(groupData).filter((item:any) => _.get(item,'members') && _.get(item,'members').length)
@@ -554,52 +570,47 @@ export default (props: any) => {
         }
         
         const arr = groupData.filter((item: any, index: any) => index !== baselineGroupIndex).filter((item:any) => _.get(item,'members') && _.get(item,'members').length)
-
-        const compare_groups = _.reduce(arr, (groups: any, obj, num:number) => {
-            const compare_objs: any = []
-            let members = _.get(obj, 'members')
-            members = _.isArray(members) ? members : []
-            members = members.filter((val: any) => val)
-
-            const flag = obj.type === 'baseline'
-            members.forEach((item: any) => {
-                if (!flag) {
-                    compare_objs.push({ is_job: 1, obj_id: item.id, suite_data: (compareArr[num] && compareArr[num][item.id]) || {}})
+        const array = groupData.filter((item: any, index: any) => _.get(item,'members') && _.get(item,'members').length)
+        let base_group = {}
+        let compare_groups = []
+        if(array.length === 1){
+            base_group = {
+                tag: newGroup[0]?.product_version || '',
+                base_objs: baseAssemble(baseObj,arr[0]),
+            }
+        }else{
+            const baseIndex = _.findIndex(newGroup, function(o:any) { return String(o.id) === String(baselineGroup.id) });
+            base_group = {
+                tag: newGroup.length ? newGroup[baseIndex]?.product_version : '',
+                base_objs: baseAssemble(baseObj,baselineGroup),
+            }
+    
+            compare_groups = _.reduce(arr, (groups: any, obj, num:number) => {
+                const compare_objs: any = []
+                let members = _.get(obj, 'members')
+                members = _.isArray(members) ? members : []
+                members = members.filter((val: any) => val)
+    
+                const flag = obj.type === 'baseline'
+                members.forEach((item: any) => {
+                    if (!flag) {
+                        compare_objs.push({ is_job: 1, obj_id: item.id, suite_data: (compareArr[num] && compareArr[num][item.id]) || {}})
+                    }
+                    if (flag) {
+                        compare_objs.push({ is_job: 0, obj_id: item.id,baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: compareArr[num][item.id] })
+                    }
+                })
+                const index = _.findIndex(newGroup, function(o:any) { return String(o.id) === String(obj.id) });
+                const groupItem: any = {
+                    tag: newGroup[index]?.product_version,
+                    // tag: newGroup[index]?.product_version || '-',
+                    base_objs: compare_objs
                 }
-                if (flag) {
-                    compare_objs.push({ is_job: 0, obj_id: item.id,baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: compareArr[num][item.id] })
-                }
-            })
-            const index = _.findIndex(newGroup, function(o:any) { return String(o.id) === String(obj.id) });
-            const groupItem: any = {
-                tag: newGroup[index].product_version,
-                base_objs: compare_objs
-            }
-            groups.push(groupItem)
-            // groups.push(compare_objs)
-            return groups
-        }, []);
-
-        const brr: any = []
-        let baseMembers = _.get(baselineGroup, 'members')
-        baseMembers = _.isArray(baseMembers) ? baseMembers : []
-        baseMembers = baseMembers.filter((val: any) => val)
-
-        const flag = baselineGroup.type === 'baseline'
-        baseMembers.forEach((item: any) => {
-            if (!flag) {
-                brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {}})
-            }
-            if (flag) {
-                brr.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: baseObj[item.id] || {}})
-            }
-        })
-        const baseIndex = _.findIndex(newGroup, function(o:any) { return String(o.id) === String(baselineGroup.id) });
-        const base_group = {
-            tag: newGroup.length ? newGroup[baseIndex].product_version : '',
-            base_objs: brr,
+                groups.push(groupItem)
+                // groups.push(compare_objs)
+                return groups
+            }, []);
         }
-
         const paramData = {
             base_group,
             compare_groups

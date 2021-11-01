@@ -260,9 +260,9 @@ const Index: React.FC<any> = (props: any) => {
             <div className={styles.content_right}>
               {dataSet['recently_job'] ? (
                 <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>
-                   <div className={styles.card_head}>示例Job</div>
+                   <div className={styles.card_head}>最近运行的Job</div>
                    <div className={styles.card_content}>
-                      <span className={styles['columns-Job-name']} onClick={handleClick}>最近运行的Job</span>
+                      <span className={styles['columns-Job-name']} onClick={handleClick}>#{dataSet?.recently_job?.slice( dataSet?.recently_job.lastIndexOf('/') + 1)}</span>
                    </div>
                 </div>
                 ) : null

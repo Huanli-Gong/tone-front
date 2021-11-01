@@ -4,27 +4,16 @@ import { message, Breadcrumb, Row, Input, Space, Button, Spin, Checkbox, Form, S
 import { history, useRequest, request } from 'umi'
 import styles from '../index.less'
 import { queryHelpDocList, createHelpDoc, updateHelpDoc } from '../services'
-import E from 'wangeditor'
+import wangeditor from 'wangeditor'
 import _ from 'lodash'
 import { resizeDocumentHeightHook } from '@/utils/hooks'
-import { Scrollbars } from 'react-custom-scrollbars';
-import { duration } from 'moment'
 import { requestCodeMessage } from '@/utils/utils'
 
 import dropDown from '@/assets/svg/dropDown.svg'
-import expand from '@/assets/svg/expand.svg'
 
 const { TextArea } = Input;
 const { Option } = Select;
-// const AddDoc = require('@/assets/svg/addDoc.svg')
-// const dropDown = require('@/assets/svg/dropDown.svg')
-// const expand = require('@/assets/svg/expand.svg')
-
-
-// const background = `url(${AddDoc}) center center / 38.6px 32px`
 const close = `url("${dropDown}") center center / 16px 16px`
-// const open = `url("${expand}") center center / 16px 16px`
-// import { ReactComponent as ArrowDown } from '@/assets/svg/arrow_down.svg'
 
 let editor: any = null
 let odiv: any = null
@@ -224,7 +213,7 @@ export default (props: any) => {
 
     useEffect(() => {
         // 注：class写法需要在componentDidMount 创建编辑器
-        editor = new E('#toolbar-container', '#text-container-text') // 传入两个元素
+        editor = new wangeditor('#toolbar-container', '#text-container-text') // 传入两个元素
 
         editor.config.pasteFilterStyle = false
         editor.config.minHeight = 500

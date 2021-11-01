@@ -7,6 +7,7 @@ import Clipboard from 'clipboard'
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport'
 import _ from 'lodash'
+import { ServerJumpBlock } from '@/components/Public';
 
 const TestEnvironment = (props: any) => {
     const saveReportDraw: any = useRef(null)
@@ -34,7 +35,7 @@ const TestEnvironment = (props: any) => {
             }
             const data = await compareForm({ form_data })
             // setFormId(data.data)
-    
+
             const clipboard = new Clipboard('.test_result_copy_link', {
                 text: function (trigger) {
                     return `${location.href}/?form_id=${data.data}`;
@@ -44,12 +45,12 @@ const TestEnvironment = (props: any) => {
                 message.success('复制成功')
                 e.clearSelection();
             })
-    
+
             document.querySelector('.test_result_copy_link')?.click()
             clipboard.destroy()
-        } , [ groupData , baseIndex ]
+        }, [groupData, baseIndex]
     )
-    
+
     useEffect(() => {
         const clipboard = new Clipboard('.copy_link', {
             text: () => window.location.href
@@ -123,9 +124,7 @@ const TestEnvironment = (props: any) => {
                                             {
                                                 <div key={idx}>
                                                     <div className={styles.enviroment_ip}>
-                                                        <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${item['ip/sn']}`} target="_blank">
-                                                            <span className={styles.enviroment_child}>{item['ip/sn'] || '-'}</span>
-                                                        </a>
+                                                        <span className={styles.enviroment_child}>{item['ip/sn'] || '-'}</span>
                                                     </div>
                                                     <Tooltip placement="topLeft" title={item.distro}>
                                                         <div className={styles.enviroment_machine}>
@@ -172,9 +171,7 @@ const TestEnvironment = (props: any) => {
                                     {
                                         <>
                                             <div className={styles.enviroment_ip}>
-                                                <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${server['ip/sn']}`} target="_blank">
-                                                    <span className={styles.enviroment_child}>{server['ip/sn']}</span>
-                                                </a>
+                                                <ServerJumpBlock className={styles.enviroment_child}>{server['ip/sn']}</ServerJumpBlock>
                                             </div>
                                             <Tooltip placement="topLeft" title={server.distro}>
                                                 <div className={styles.enviroment_machine}>
@@ -233,15 +230,15 @@ const TestEnvironment = (props: any) => {
                 <div className={styles.environment_title} >测试环境</div>
                 <div>
                     {
-                        form_search == '' ? 
-                        <>
-                            <span className="test_result_copy_link"></span>
-                            <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
-                        </>
-                        :
-                        <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
+                        form_search == '' ?
+                            <>
+                                <span className="test_result_copy_link"></span>
+                                <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
+                            </>
+                            :
+                            <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
                     }
-                    
+
                     <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>
                 </div>
             </Row>

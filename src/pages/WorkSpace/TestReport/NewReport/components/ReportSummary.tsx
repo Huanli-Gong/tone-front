@@ -32,7 +32,7 @@ const ReportSummary = () => {
     }
     // const statisticalWidth = `${String(base_group.all).length * 20}px`  动态计算测试数据的宽度
     return (
-        <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1180 }} id="need_test_summary">
+        <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1200 }} id="need_test_summary">
             <SubTitle><span className="line"></span>Summary</SubTitle>
             <Summary>
                 <Group>

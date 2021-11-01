@@ -13,12 +13,10 @@ import TestEnv from './components/TestEnv'
 import FunctionalTest from './components/FunctionalTest'
 import PerformanceTest from './components/Performance'
 import { queryReportTemplateDetails } from '../services'
-import { history } from 'umi'
+import { history , useParams } from 'umi'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
 
 import styled from 'styled-components'
-import { useParams } from 'dva'
-
 interface PreviewContainerProps {
     height: number;
 }

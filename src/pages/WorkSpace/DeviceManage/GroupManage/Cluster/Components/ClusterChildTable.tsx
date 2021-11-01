@@ -14,6 +14,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage } from '@/utils/utils';
 import treeSvg from '@/assets/svg/tree.svg'
+import { ServerJumpBlock } from '@/components/Public';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default (props: any) => {
@@ -99,7 +100,7 @@ export default (props: any) => {
             width: 170,
             fixed: 'left',//TreeIcon
             render: (record: any) => (
-                <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${record.test_server.ip}`} target="_blank">{record.test_server.ip || '-'}</a>
+                <ServerJumpBlock>{record.test_server.ip || '-'}</ServerJumpBlock>
             )
         },
         {

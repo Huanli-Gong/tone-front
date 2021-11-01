@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Typography, message, Spin, Radio, InputNumber, Button, Row, Col } from 'antd'
 import { FormattedMessage } from 'umi'
-import { QusetionIconTootip } from '@/pages/TestJob/components/untils'
+import { QusetionIconTootip } from '@/pages/WorkSpace/TestJob/components/untils'
 
 import { queryDevOpsConfig, updateDevOpsConfig } from './service'
 import { OperationTabCard } from '@/components/UpgradeUI'

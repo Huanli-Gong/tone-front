@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Radio, Button, Divider } from 'antd';
 import styles from './style.less';
-import { handleRole } from '@/components/Role/index.js';
+import { switchUserRole } from '@/utils/utils';
+
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 	// console.log(list,confirm, onConfirm, roleType)
 	const [val, setVal] = useState<number>()
@@ -9,19 +10,20 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 		setVal(e.target.value)
 	}
 
-	
 	return (
 		<div className={styles.filter}>
 			<div>
 				<Radio.Group onChange={handleDomainRadio} value={val} >
 					{
-						roleType === 'role' ?
-							list.map((item: any) => {
-								return <Radio className={styles.domain} value={item.id} key={item.id}>{handleRole(item.name)}</Radio>
-							}) :
-							list.map((item: any) => {
-								return <Radio className={styles.domain} value={item.id} key={item.id}>{item.name}</Radio>
-							})
+						list.map((item: any) => (
+							<Radio
+								className={styles.domain}
+								value={item.id}
+								key={item.id}
+							>
+								{roleType === 'role' ? switchUserRole(item.name) : item.name}
+							</Radio>
+						))
 					}
 				</Radio.Group>
 			</div>
@@ -34,8 +36,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 					onClick={() => {
 						confirm()
 						onConfirm(val)
-					}
-					}
+					}}
 				>
 					确定
 				</Button>
@@ -46,8 +47,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 						confirm()
 						setVal(undefined)
 						onConfirm(undefined)
-					}
-					}
+					}}
 				>
 					重置
 				</Button>

@@ -7,6 +7,7 @@ import { evnPrepareState , tooltipTd , copyTooltipColumn } from '../components'
 import { updateSuiteCaseOption , queryProcessCaseList } from '../service'
 import { useRequest } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
+import { ServerJumpBlock } from '@/components/Public'
 
 export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) => {
     const { data , loading , refresh } = useRequest(
@@ -26,12 +27,10 @@ export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) 
             render: (_: any, row: any) => (
                 _ ?
                     <Tooltip placement="topLeft" title={_}>
-                        <a
-                            href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${_}`}
-                            target="_blank"
+                        <ServerJumpBlock
                         >
                             {_}
-                        </a>
+                        </ServerJumpBlock>
                     </Tooltip> :
                     '-'
             )

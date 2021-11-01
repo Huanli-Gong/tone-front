@@ -548,11 +548,25 @@ export default (props: any) => {
             dataIndex: 'name',
             width: 200,
             ellipsis: true,
-            render: (_: any, row: any) => (
-                <Tooltip title={_}>
-                    <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>{_}</span>
-                </Tooltip>
-            )
+            render: (_: any, row: any) =>
+                <>
+                    {row.created_from === 'offline' ?
+                        <>
+                            <span className={styles.offline_flag}>离</span>
+                            <Tooltip placement="topLeft" title={_}>
+                                <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                                    {_}
+                                </span>
+                            </Tooltip>
+                        </>
+                        :
+                        <Tooltip title={_}>
+                            <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                                {_}
+                            </span>
+                        </Tooltip>
+                    }
+                </>
         }, {
             title: '状态',
             width: 120,
@@ -617,17 +631,21 @@ export default (props: any) => {
             title: '操作',
             width: 160,
             fixed: 'right',
-            render: (_: any) => {
+            render: (_: any, row: any) => {
                 return (
                     <Space>
                         <Access accessible={access.wsTouristFilter()}>
                             <Space>
-                                <AuthMember
-                                    isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                    children={<Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>}
-                                    onClick={() => handleTestReRun(_)}
-                                    creator_id={_.creator}
-                                />
+                                {row.created_from === 'offline' ?
+                                    <span style={{opacity: 0.25}}>重跑</span>
+                                    :
+                                    <AuthMember
+                                        isAuth={['sys_test_admin', 'user', 'ws_member']}
+                                        children={<Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>重跑</Typography.Text>}
+                                        onClick={() => handleTestReRun(_)}
+                                        creator_id={_.creator}
+                                    />
+                                }
                                 <AuthMemberForm
                                     isAuth={['sys_test_admin', 'user', 'ws_member']}
                                     children={<Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>删除</Typography.Text>}
@@ -837,17 +855,19 @@ export default (props: any) => {
             time.forEach((i: any) => { if (i.name) obj[i.name] = lodash.isArray(i.date) ? i.date.map((x: any) => x ? moment(x).format('YYYY-MM-DD HH:mm:ss') : '') : [] })
             delete obj.creation_time
             delete obj.completion_time
-            let newObj = {}   
-            if(obj.start_time[0] === ''){
-                // const { page_num, page_size, search, state,tab,ws_id } = obj
-                // newObj = { page_num, page_size, search, state, tab, ws_id }
-                newObj = {
-                    ...obj,
-                    start_time:null
-                }
-            }else{
-                newObj = {
-                    ...obj,
+            let newObj = {}  
+            if('start_time' in obj){
+                if(obj.start_time[0] === ''){
+                    // const { page_num, page_size, search, state,tab,ws_id } = obj
+                    // newObj = { page_num, page_size, search, state, tab, ws_id }
+                    newObj = {
+                        ...obj,
+                        start_time:null
+                    }
+                }else{
+                    newObj = {
+                        ...obj,
+                    }
                 }
             }
             stringify(newObj)

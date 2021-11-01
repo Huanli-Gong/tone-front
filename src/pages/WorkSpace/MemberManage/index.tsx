@@ -5,9 +5,8 @@ import { AuthCommon } from '@/components/Permissions/AuthCommon';
 import styles from './index.less'
 import TableComponent from './Components/Table'
 import { roleList } from '@/pages/SystemConf/UserManagement/service'
-import { handleRole } from '@/components/Role/index.js';
 import { SingleTabCard } from '@/components/UpgradeUI';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, switchUserRole } from '@/utils/utils';
 let timeout: any
 
 let timer: any
@@ -295,7 +294,7 @@ export default (props: any) => {
                                 showArrow
                             >
                                 {select.map((item: any) => {
-                                    return <Select.Option key={item.id} value={item.id}>{handleRole(item.name)}</Select.Option>
+                                    return <Select.Option key={item.id} value={item.id}>{switchUserRole(item.name)}</Select.Option>
                                 })}
                             </Select>
                         </Form.Item>

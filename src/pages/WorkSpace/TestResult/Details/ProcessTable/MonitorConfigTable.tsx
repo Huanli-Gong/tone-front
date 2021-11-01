@@ -5,24 +5,25 @@ import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
 import { useRequest } from 'umi';
+import { ServerJumpBlock } from '@/components/Public'
 
-export default ({ job_id , refresh = false } : any ) => {
-    const { data , loading , run } = useRequest(
+export default ({ job_id, refresh = false }: any) => {
+    const { data, loading, run } = useRequest(
         () => queryMonitorList({ job_id }),
         {
-            manual : true
+            manual: true
         }
     )
     useEffect(() => {
         run()
-    },[ refresh ])
+    }, [refresh])
 
     const columns = [
         {
-            dataIndex : 'index',
-            title : ' ',
+            dataIndex: 'index',
+            title: ' ',
             width: 48,
-            render : ( _ : undefined) => _
+            render: (_: undefined) => _
         },
 
         {
@@ -31,19 +32,17 @@ export default ({ job_id , refresh = false } : any ) => {
             render: (_: number | string | undefined) => (
                 _ ?
                     <PopoverEllipsis title={_}>
-                        <a
-                            href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${_}`}
-                            target="_blank"
+                        <ServerJumpBlock
                         >
                             {_}
-                        </a>
+                        </ServerJumpBlock>
                     </PopoverEllipsis>
                     : '-'
             )
         },
         {
-            dataIndex : 'state',
-            title : '状态',
+            dataIndex: 'state',
+            title: '状态',
             render: evnPrepareState
         },
         {
@@ -51,18 +50,18 @@ export default ({ job_id , refresh = false } : any ) => {
             title: '链接',
             ellipsis: true,
             render: (_: any) => _ ?
-                 <PopoverEllipsis title={_}>
+                <PopoverEllipsis title={_}>
 
                     {<a
                         href={_}
                         target="_blank"
                     >
 
-                    {_}
-                </a>}
+                        {_}
+                    </a>}
                 </PopoverEllipsis>
 
-            : '-'
+                : '-'
         },
         {
             dataIndex: 'remark',
@@ -71,12 +70,12 @@ export default ({ job_id , refresh = false } : any ) => {
         },
         {
             dataIndex: 'gmt_created',
-            title : '开始时间',
-            render : ( _ : any ) => <PopoverEllipsis title={_ || '-'} />
+            title: '开始时间',
+            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         },
     ]
 
-    if(data && !data.monitor_control) return <></>
+    if (data && !data.monitor_control) return <></>
     /* 
         *** 后端字段调整
     */
@@ -89,17 +88,17 @@ export default ({ job_id , refresh = false } : any ) => {
     return (
         <Card
             title="监控"
-            bodyStyle={{ paddingTop : 0 }}
-            headStyle={{ borderBottom : 'none' }}
-            style={{ marginBottom : 10 , borderTop : 'none' }}
+            bodyStyle={{ paddingTop: 0 }}
+            headStyle={{ borderBottom: 'none' }}
+            style={{ marginBottom: 10, borderTop: 'none' }}
         >
             <Table
-                dataSource={ dataCopy }
-                columns={ columns }
+                dataSource={dataCopy}
+                columns={columns}
                 rowKey="id"
-                loading={ loading }
+                loading={loading}
                 size="small"
-                pagination={ false }
+                pagination={false}
             />
         </Card>
     )

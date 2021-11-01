@@ -49,6 +49,12 @@ export default defineConfig({
     manifest: {
         basePath: '/',
     },
+    externals: {
+        'wangEditor': 'wangEditor'
+    },
+    scripts: [
+        'https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js'
+    ],
     // vendor: ["styled-components"],
     extraBabelPlugins: [
         ["@babel/plugin-proposal-throw-expressions"]

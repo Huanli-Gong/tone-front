@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography , Spin } from 'antd';
+import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography, Spin } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { AuthCommon } from '@/components/Permissions/AuthCommon';
 import { querySuiteList, queryDomains } from './service';
@@ -93,7 +93,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 				page_num: 1,
 				page_size: 10
 			})
-    }
+		}
 		history.push(`${location.pathname}?test_type=${test_type}`)
 	}
 
@@ -230,7 +230,8 @@ const SuiteManagement: React.FC<any> = (props) => {
 					children={<Button type="primary" key="createSuite">Test Suite管理</Button>}
 					onClick={() => {
 						if (['functional', 'performance', 'business'].includes(fetchParams.test_type)) {
-							history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
+							// history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
+							history.push(`/ws/${ws_id}/new_suite/${fetchParams.test_type}`)
 						}
 						// else if (fetchParams.test_type === 'business') {
 						//   history.push(`/test_suite/add_business?ws=${ws_id}&test_type=${fetchParams.test_type}`)
@@ -243,7 +244,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			{
 				['functional', 'performance'].includes(fetchParams.test_type) &&
 				(
-					<Spin spinning={ loading }>
+					<Spin spinning={loading}>
 						<Table
 							className={styles.table_style}
 							size={'small'}

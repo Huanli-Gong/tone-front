@@ -1,15 +1,15 @@
-import React, { forwardRef, useImperativeHandle, useState, useEffect, RefObject } from 'react'
-import { Form, Input, Select, Radio, Switch, Button } from 'antd'
+import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
+import { Form, Input, Select, Radio } from 'antd'
 import { useRequest } from 'umi'
 
-import { queryProjectList, queryBaselineList } from '@/pages/TestJob/services'
+import { queryProjectList, queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
 
 import styles from './index.less'
 
-import IsPushForm from '@/pages/TestJob/components/KernalForms/IsPushForm'
-import UnPushForm from '@/pages/TestJob/components/KernalForms/UnPushForm'
-import BuildKernalForm from '@/pages/TestJob/components/KernalForms/BuildKernalForm'
+import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushForm'
+import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushForm'
+import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 
 /* import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
 import QuestionCircleComponent from '@/components/Public/QuestionCircle'

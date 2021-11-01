@@ -170,7 +170,10 @@ export default (props: any) => {
                             <div style={{ paddingLeft: 20, position: 'relative' }}>
                                 {!collection && <StarOutlined style={{ color: '#4F4F4F' }} className={styles.detail_collection} onClick={handleCollection} />}
                                 {collection && <StarFilled style={{ color: '#F7B500' }} className={styles.detail_collection} onClick={handleCollection} />}
-                                <Row className={styles.test_result_name}>{`#${data.id} ${data.name}`}</Row>
+                                <Row className={styles.test_result_name} align="middle">
+                                    {`#${data.id} ${data.name}`}
+                                    {data.created_from === 'offline' && <span className={styles.offline_flag}>离</span>}
+                                </Row>
                                 <Row >
                                     <Col span={17}>
                                         <Row style={{ marginBottom: 26 }}>
@@ -261,7 +264,7 @@ export default (props: any) => {
                                 </Row>
                             </div>
                         </div>
-                        {/* <RenderMachineItem/> */}
+                        {/* <RenderMachineItem  job_id={job_id}/> */}
                         <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
@@ -273,8 +276,10 @@ export default (props: any) => {
                                         <Access accessible={access.wsTouristFilter()}>
                                             <div style={{ display: 'flex', marginRight: 12 }}>
                                                 <ViewReport viewAllReport={allReport} dreType="bottomRight" ws_id={ws_id} jobInfo={data} origin={'jobDetail'} stylesButton={veiwReportHeight.current} />
-                                                <Button type={data && Array.isArray(data.report_li) && data.report_li.length ? "default" : "primary"} onClick={handleReplay} style={{marginRight: 8}}>重跑</Button>
-                                                {tab === 'testProgress' && isShowStopButton && <Button onClick={handleStopJob} style={{marginRight: 8}}>停止Job</Button>}
+                                                {data.created_from === 'offline' ? null
+                                                 : <Button type={data && Array.isArray(data.report_li) && data.report_li.length ? "default" : "primary"} onClick={handleReplay} style={{marginRight: 8}}>重跑</Button>
+                                                }
+                                                {tab === 'testProgress' && isShowStopButton  && <Button onClick={handleStopJob} style={{marginRight: 8}}>停止Job</Button>}
                                             </div>
                                         </Access>
                                     )
@@ -291,7 +296,7 @@ export default (props: any) => {
                                         ws_id={ws_id}
                                     />
                                 </Tabs.TabPane>
-                                <Tabs.TabPane tab="执行过程" key="testProgress">
+                                <Tabs.TabPane tab="执行过程" key="testProgress" disabled={data.created_from === 'offline'}>
                                     <ProcessTable job_id={job_id} onRef={processTableRef} test_type={data.test_type} />
                                 </Tabs.TabPane>
                                 <Tabs.TabPane tab="测试配置" key="testConfig">

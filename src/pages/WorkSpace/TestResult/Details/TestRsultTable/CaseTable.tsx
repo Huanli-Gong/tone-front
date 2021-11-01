@@ -17,6 +17,7 @@ import { ReactComponent as MinusSvg } from '@/assets/svg/TestResult/conf/skip.sv
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline'
 import treeSvg from '@/assets/svg/tree.svg'
+import { ServerJumpBlock } from '@/components/Public';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default ({ 
@@ -60,11 +61,10 @@ export default ({
         width : 130,
         render : ( _ : string , row : any ) => (
             _ ?
-            <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${ _ }`} 
-              target="_blank"
+            <ServerJumpBlock 
             >
               { _ }
-            </a>
+            </ServerJumpBlock>
               : '-'
         )
     }];

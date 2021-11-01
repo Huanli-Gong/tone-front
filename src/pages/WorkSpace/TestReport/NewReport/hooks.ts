@@ -580,9 +580,9 @@ export const EditPageData = (props:any) => {
     }, [])
 
     let test_conclusion: any, test_env: any;
-    if (JSON.stringify(dataSource) !== '{}') {
-        test_conclusion = JSON.parse(dataSource?.test_conclusion)
-        test_env = JSON.parse(dataSource?.test_env)
+    if (dataSource && JSON.stringify(dataSource) !== '{}') {
+        test_conclusion = JSON.parse(dataSource.test_conclusion)
+        test_env = JSON.parse(dataSource.test_env)
     }
     
     const changeChild = (data: any, index:number) => {

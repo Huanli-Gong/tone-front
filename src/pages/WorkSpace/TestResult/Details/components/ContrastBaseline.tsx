@@ -1,6 +1,6 @@
-import { queryBaselineList } from '@/pages/TestJob/services'
+import { queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { requestCodeMessage } from '@/utils/utils'
-import { Drawer , Form, Select , Space , Button , message , Row } from 'antd'
+import { Drawer , Form, Select , Space , Button , Row } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { useRequest } from 'umi'
 import { contrastBaseline } from '../service'

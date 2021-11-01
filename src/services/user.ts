@@ -19,12 +19,3 @@ export async function queryCurrent() {
 export async function queryNotices(): Promise<any> {
     return request<{ data: API.NoticeIconData[] }>('/api/notices');
 }
-
-export async function goldmineAnalysis(params: any) {
-    if (window.location.hostname === 'tone.aliyun-inc.com') {
-        const strifyParam = stringify(params)
-        let goldmine_api_hostname = 'https://goldmine.aliyun-inc.com'
-        // goldmine_api_hostname = 'https://goldmine.aliyun.test'
-        fetch(`${goldmine_api_hostname}/sys/goldmine_access_info/?${strifyParam}`)
-    }
-}

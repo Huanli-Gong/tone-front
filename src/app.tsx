@@ -4,7 +4,7 @@ import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layou
 import { notification } from 'antd';
 import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
-import { person_auth , goldmineAnalysis } from './services/user';
+import { person_auth } from './services/user';
 import { workspaceHistroy } from './services/Workspace'
 import defaultSettings from '../config/defaultSettings';
 
@@ -56,8 +56,6 @@ export const layout = ({
 }: {
     initialState: { settings?: ProSettings };
 }): BasicLayoutProps => {
-    const origin = window.location.origin
-    const { authList } : any = initialState
     return {
         disableContentMargin: false,
         footerRender: false,
@@ -65,12 +63,6 @@ export const layout = ({
         menuRender: false,
         headerRender: props => <Headers {...props} />,
         onMenuHeaderClick: () => false ,
-        onPageChange : ( location ) => {
-            goldmineAnalysis({
-                request_url : origin + location?.pathname,
-                emp_id : authList?.emp_id
-            })
-        },
         ...initialState?.settings,
     };
 };
@@ -124,75 +116,3 @@ const errorHandler = (error: { response: Response }): Response => {
 export const request: RequestConfig = {
     errorHandler,
 }
-
-
-
-    // responseInterceptors: [
-    //     (async response => {
-    //         const data = await response.clone().json();
-    //         const urlParams = new URL(window.location.href) || {};
-    //         // 用于: Test suite页面数据已不存在的情况下跳404页面。
-    //         if ((data && data.code === 404 ) && urlParams.pathname !== '/404') {
-    //             window.location.href = '/404';
-    //         }
-    //         return response;
-    //     }),
-    // ],
-    // 默认错误处理
-    // credentials: 'include', // 默认请求是否带上cookie
-    // requestInterceptors: [
-    //     ( url, options ) => {
-    //         if ( process.env.NODE_ENV === 'development' ) {
-    //             const headers = {
-    //                 'Cookie': 'csrftoken=M9TLciNFFl9DQGQDJgd4tWNn1OtgG24aY72uSfC0ZU4NAoGWVxRGnypvxS0IdMU3;sessionid=mfv3l0t2nqdy5881wi6ss15tsoa00jiq;'
-    //             }
-    //             return {
-    //                 url , 
-    //                 options : {
-    //                     ...options ,
-    //                     headers
-    //                 }
-    //             }
-    //         }
-    //         return { url ,options }
-    //     }
-    // ]
-
-// export function onRouteChange({ matchedRoutes } : any ) {
-//     if (matchedRoutes.length) {
-//         const matchRoute = matchedRoutes[matchedRoutes.length - 1].route
-//         console.log( matchRoute )
-//         console.log( <FormattedMessage id={`menu.${ matchRoute.name }`} />)
-//         const metaTitle = ''
-//         document.title = metaTitle || '';
-//     }
-// }
-    // 如果是登录页面，不执行
-    // if ( history.location.pathname !== '/user/login' ) {
-    //     try {
-    //         const currentUser = await queryCurrent()
-    //         return {
-    //             currentUser,
-    //             settings: defaultSettings,
-    //         }
-    //     } 
-    //     catch (error) {
-    //         history.push('/user/login');
-    //     }
-    // }
-    //如果是登录页面，不执行
-
-
-// import { queryCurrent } from './services/user';
-// import 'default-passive-events'
-
-// {
-//     //currentUser?: API.CurrentUser;
-//     settings?: ProSettings;
-//     refreshMenu?: boolean,
-//     refreshWorkspaceList?: boolean,
-//     jobTypeList: any,
-// }
-// window.localStorage.setItem('role_title', data.data.role_title)
-                    // window.localStorage.setItem('role_title', data.data.sys_role_title)
-                    // window.localStorage.setItem('role_ws_title', data.data.role_title)

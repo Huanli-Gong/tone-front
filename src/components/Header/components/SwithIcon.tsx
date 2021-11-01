@@ -1,4 +1,5 @@
 import React from 'react'
+import { CloudUploadOutlined } from '@ant-design/icons';
 
 import { ReactComponent as Home } from '@/assets/svg/Nav/icon_home.svg'
 import { ReactComponent as TestJob } from '@/assets/svg/Nav/icon_new.svg'
@@ -25,6 +26,7 @@ export default ( local : any ) => {
         case 'menu.Workspace.TestReport' : return <TestReport />;
         case 'menu.Workspace.TestSuiteSearch' : return <TestSuiteSearch />;
         case 'menu.Workspace.TestResult' : return <TestResult />;
+        case 'menu.Workspace.Upload' : return <div style={{paddingTop: 1}}><CloudUploadOutlined /></div>;
         case 'menu.Workspace.Dashboard' : return <WorkspaceDashboard />
         default : return <></>
     }

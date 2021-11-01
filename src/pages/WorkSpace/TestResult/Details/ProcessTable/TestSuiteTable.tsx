@@ -71,18 +71,28 @@ export default ({ job_id, refresh = false, testType }: any) => {
                     color: state !== 'running' ? 'rgba(0,0,0,.25)' : '#1890FF',
                     cursor: state !== 'running' ? 'not-allowed' : 'pointer',
                 }
+                const pointerStyle = {color:'#1890FF',cursor:'pointer',marginLeft: 12};
 
                 if (state === 'running')
                     return (
-                        <AuthMember
-                            isAuth={['sys_test_admin', 'user', 'ws_member']}
-                            children={<span style={style} >停止Suite</span>}
-                            onClick={() => handleStopSuite(_)}
-                            creator_id={_.creator}
-                        />
+                        <>
+                            <AuthMember
+                                isAuth={['sys_test_admin', 'user', 'ws_member']}
+                                children={<span style={style} >停止Suite</span>}
+                                onClick={() => handleStopSuite(_)}
+                                creator_id={_.creator}
+                            />
+                            
+                            <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
+                        </>
                     )
-                // else if (state === 'pending')
-                //     return <span style={{ color:'#1890FF',cursor:'pointer'}} onClick={ () => handleStopSuite( _ ) }>停止Suite</span>
+                else if (state === 'pending')
+                    return (
+                        <div>
+                            <span style={style}>停止Suite</span>
+                            <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
+                        </div>
+                    )
                 else
                     return <span style={style}>停止Suite</span>
             }
@@ -109,7 +119,20 @@ export default ({ job_id, refresh = false, testType }: any) => {
         setExpandedKeys(data.map((item: any) => item.id))
     }, [data]) */
 
-    console.log(expandedKeys)
+    // pending/running状态的suite加个“跳过suite”按钮
+    const handleSkipSuite  = async (_: any)=> {
+        const { code, msg } = await updateSuiteCaseOption({
+            editor_obj: 'test_job_suite',
+            state: 'skip',
+            test_job_suite_id: _.id,
+        })
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+            return
+        }
+        message.success('操作成功')
+        run()
+    }
 
     return (
         <Card

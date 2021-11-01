@@ -24,7 +24,7 @@ const logout = async () => {
         .catch(function (error) {
             console.log(error);
         });
-    window.location.href = `https://login-test.alibaba-inc.com/ssoLogout.htm?APP_NAME=tone&BACK_URL=${url}`
+    window.location.href = ''
 }
 const PersonCenter = () => {
     const [currentUser, setCurrentUser] = useState<any>(null)

@@ -106,3 +106,7 @@ export const contrastBaseline = async ( data : any ) => {
 export const queryMonitorList = async ( params : any ) => {
     return request(`/api/job/test/process/monitor/job/` , { params })
 }
+// 机器故障详情
+export const queryMachineData = async( params:any ) => {
+    return request(`/api/job/test_server/machine_fault/`,{ params })
+}

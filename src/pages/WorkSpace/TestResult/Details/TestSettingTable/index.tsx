@@ -8,7 +8,7 @@ import TestSuiteServerTable from './TestSuiteServerTable'
 
 import EnvForm from './FormEnv'
 import MoreForm from './FormMore'
-import { queryJobTypeItems }    from '@/pages/CreateJobType/services'
+import { queryJobTypeItems }  from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
 
 //测试配置 index
 export default ({ job_id , jt_id, ws_id, test_type } : any ) => {

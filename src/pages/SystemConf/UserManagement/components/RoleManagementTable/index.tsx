@@ -1,7 +1,8 @@
-import React,{ useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import CommonTable from '@/components/Public/CommonTable';
 import { roleList } from '../../service';
-import { handleRole } from '@/components/Role/index.js';
+import { switchUserRole } from '@/utils/utils';
+
 const RoleManagementTable: React.FC<any> = () => {
     const [data, setData] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(false)
@@ -9,23 +10,24 @@ const RoleManagementTable: React.FC<any> = () => {
         setLoading(true)
         const { data } = await roleList({ role_type: '' })
         setLoading(false)
-		data && setData(data)
+        data && setData(data)
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         getRoleList();
-    },[])
-  
-    const columns:any[] = [
-        { title:'角色名称',dataIndex:'title',
-        render:(_:any) => handleRole(_)
+    }, [])
+
+    const columns: any[] = [
+        {
+            title: '角色名称', dataIndex: 'title',
+            render: (_: any) => switchUserRole(_)
         },
-        { title:'角色描述',dataIndex:'description' }
+        { title: '角色描述', dataIndex: 'description' }
     ]
     //const list:any[] = data
-    return(
+    return (
         <div>
-            <CommonTable 
+            <CommonTable
                 size="small"
                 columns={columns}
                 list={data.list}
@@ -34,7 +36,6 @@ const RoleManagementTable: React.FC<any> = () => {
                 pageSize={data.page_size}
                 totalPage={data.total_page}
                 total={data.total}
-                //handlePage={onChange}
             />
         </div>
     )

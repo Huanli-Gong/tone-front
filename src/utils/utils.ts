@@ -26,8 +26,6 @@ export const isAntDesignProOrDev = (): boolean => {
 
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
 
-export const imgHost = process.env.NODE_ENV === 'development' ? `http://10.97.196.142:8000` : window.location.origin
-
 export const switchRole = (role: number) => {
     switch (role) {
         case 1: return '所有者'
@@ -35,6 +33,21 @@ export const switchRole = (role: number) => {
         case 3: return '成员'
         default: return ''
     }
+}
+
+export const switchUserRole = (name: string) => {
+    return new Map([
+        ['user', '普通用户'],
+        ['sys_test_admin', '测试管理员'],
+        ['sys_admin', '系统管理员'],
+        ['super_admin', '超级管理员'],
+        ['ws_tourist', '游客'],
+        ['ws_member', 'workspace成员'],
+        ['ws_test_admin', '测试管理员'],
+        ['ws_admin', '管理员'],
+        ['all', '全部'],
+        ['ws_owner', '所有者'],
+    ]).get(name)
 }
 
 export const switchBusinessType = (business_type: string) => {
@@ -143,7 +156,7 @@ export function isUrl2(str: any) {
 }
 
 // 重组数据结构
-export function resetImage(list: any, onceName:string, typeName: string) {
+export function resetImage(list: any, onceName: string, typeName: string) {
     if (Array.isArray(list)) {
         // 收集第一层数据
         let keyList: any = []
@@ -152,16 +165,16 @@ export function resetImage(list: any, onceName:string, typeName: string) {
                 !_.isUndefined(item[onceName]) && keyList.push(item[onceName])
             }
         })
-        const secondary = keyList.map((key:any) => {
-            const group = list.filter((item:any) => item[onceName] === key)
+        const secondary = keyList.map((key: any) => {
+            const group = list.filter((item: any) => item[onceName] === key)
             let arr: any = []
             group.forEach((item) => {
                 if (arr.indexOf(item[typeName]) < 0) {
                     arr.push(item[typeName])
                 }
             })
-            const result = arr.map((item:any) => {
-                const children = list.filter((l:any)=> l[onceName] === key && l[typeName] === item).map((k)=>({
+            const result = arr.map((item: any) => {
+                const children = list.filter((l: any) => l[onceName] === key && l[typeName] === item).map((k) => ({
                     value: k.id,
                     label: listRender(k)
                 }))
@@ -174,7 +187,7 @@ export function resetImage(list: any, onceName:string, typeName: string) {
             }
             return row
         })
-       
+
         return secondary
     }
     return []

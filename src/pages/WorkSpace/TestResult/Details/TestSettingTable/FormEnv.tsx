@@ -1,12 +1,12 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react'
-import { Form, Radio, Row, Col, Select, Input, Card, Empty } from 'antd'
+import { Form, Radio, Row, Col, Select, Input, Card } from 'antd'
 import styles from './index.less'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
-import IsPushForm from '@/pages/TestJob/components/KernalForms/IsPushForm'
-import UnPushForm from '@/pages/TestJob/components/KernalForms/UnPushForm'
-import BuildKernalForm from '@/pages/TestJob/components/KernalForms/BuildKernalForm'
-import FormList from '@/pages/TestJob/components/FormList'
-import MonitorList from '@/pages/TestJob/components/JobForms/MonitorList'
+import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushForm'
+import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushForm'
+import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
+import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
+import MonitorList from '@/pages/WorkSpace/TestJob/components/JobForms/MonitorList'
 
 import { useRequest } from 'umi'
 

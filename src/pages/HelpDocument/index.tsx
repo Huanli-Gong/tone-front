@@ -6,7 +6,7 @@ import styles from './index.less'
 import { EditOutlined } from '@ant-design/icons'
 import { queryHelpDocList } from './services'
 import { AuthCommon } from '@/components/Permissions/AuthCommon'
-import E from 'wangeditor'
+import wangeditor from 'wangeditor'
 import _ from 'lodash'
 import Editor from './Editor'
 import dropDown from '@/assets/svg/dropDown.svg'
@@ -291,7 +291,7 @@ export default (props: any) => {
     }, [helpId])
     
     useEffect(() => {
-        editor2 = new E('#showContentBox') // 传入两个元素
+        editor2 = new wangeditor('#showContentBox') // 传入两个元素
         editor2.config.minHeight = 500
         editor2.config.placeholder = ''
         editor2.config.onCatalogChange = function (arr) {

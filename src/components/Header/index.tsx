@@ -91,8 +91,8 @@ export default (props: any) => {
     const layoutWidth = resizeDocumentWidthHooks()
 
     return (
-        <HeaderContainer align="middle">
-            <Col span={20}>
+        <HeaderContainer align="middle" justify="space-between">
+            <Col style={{ flex: 1 }}>
                 <Row align="middle" wrap={false}>
                     {
                         !isWs &&
@@ -268,7 +268,7 @@ export default (props: any) => {
                     </Menu>
                 </Row>
             </Col>
-            <Col span={4}>
+            <Col>
                 <RightContent wsId={wsId} isWs={isWs} />
             </Col>
         </HeaderContainer>

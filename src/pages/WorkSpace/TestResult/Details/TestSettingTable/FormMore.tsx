@@ -1,10 +1,10 @@
 import React, { useImperativeHandle, useEffect, useState } from 'react'
-import { Form, Input, Card, Empty, Row, Col, Popover, Select } from 'antd'
+import { Form, Input, Card, Row, Col, Popover, Select } from 'antd'
 import styles from './index.less'
 import { tagList } from '@/pages/WorkSpace/TagManage/service'
 import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import { queryReportTemplateList } from '@/pages/TestJob/services'
+import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import _ from 'lodash'
 
 const { Option } = Select;

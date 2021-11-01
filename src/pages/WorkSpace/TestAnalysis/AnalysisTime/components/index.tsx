@@ -8,7 +8,7 @@ export function commitLinkTip ( title : string , { commit , job_id , ws_id } : a
 
 export function serverLinkTip ( ip : any ) {
     return ip ?
-    `测试机器: <a target="_blank" href="https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${ip}">${ip}</a><br />` :
+    `测试机器: ${ip}<br />` :
     ''
 }
 

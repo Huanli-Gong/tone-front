@@ -5,7 +5,7 @@ import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, 
 import { ReactComponent as UnFullExpand } from '@/assets/svg/un_full.svg'
 import { unionBy, cloneDeep } from 'lodash'
 import CodeViewer from '@/components/CodeViewer'
-import { saveSuiteCaseList, queryWsCaseConfirm } from '@/pages/TestSuiteCreate/service'
+import { saveSuiteCaseList, queryWsCaseConfirm } from '@/pages/WorkSpace/TestSuiteManage/TestSuiteCreate/service'
 import { queryDomains, queryBusinessSuite, queryWorkspaceBusinessSuite } from '../../../service'
 import styles from './index.less'
 

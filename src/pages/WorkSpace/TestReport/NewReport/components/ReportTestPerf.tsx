@@ -209,7 +209,7 @@ const ReportTestPref = () => {
             suite_list.push({
                 suite_id: suite.suite_id,
                 suite_name: suite.suite_name,
-                //show_type: !switchReport ? 0 : describe?.show_type == 'list' ? 0 : 1,
+                // show_type: !switchReport ? 0 : describe?.show_type == 'list' ? 0 : 1,
                 test_suite_description: suite.test_suite_description || '-',
                 test_env: '',
                 test_description: '',
@@ -227,14 +227,14 @@ const ReportTestPref = () => {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list?.map((child: any, listId: number) => {
-                        let suite_list = suite.length > 0 ? suite : simplify(child, idx, listId, 'group')
+                        let suite_list = suite.length === 1 ? suite : simplify(child, idx, listId, 'group')
                         new_pref_data.push({
                             name: `${item.name}:${child.name}`,
                             suite_list,
                         })
                     })
                 } else {
-                    let suite_list = suite.length > 0 ? suite : simplify(item, idx, 0, 'item')
+                    let suite_list = suite.length === 1 ? suite : simplify(item, idx, 0, 'item')
                     new_pref_data.push({
                         name: item.name,
                         suite_list,
@@ -303,7 +303,7 @@ const ReportTestPref = () => {
     // }, [groupRowRef.current, collapsed])
 
     return (
-        <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1180, position: 'relative' }} id="test_data" ref={testDataRef}>
+        <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1200, position: 'relative' }} id="test_data" ref={testDataRef}>
             <SubTitle><span className="line"></span>测试数据</SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>

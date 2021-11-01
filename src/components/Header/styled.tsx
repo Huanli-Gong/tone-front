@@ -7,6 +7,7 @@ export const HeaderContainer = styled( Row )`
     height:50px;
     line-height:50px;
     padding:0 18px;
+    flex-flow: row nowrap;
 `
 export const LogoWrapper = styled(Row)`
     cursor:pointer;

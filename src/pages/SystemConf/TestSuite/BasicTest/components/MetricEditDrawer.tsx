@@ -116,7 +116,7 @@ export default forwardRef(
                                 {
                                     metricNameList.map( 
                                         ( item : any ) => (
-                                            <Select.Option value={ item } key={ item } >{ item }</Select.Option>
+                                            <Select.Option value={ item.name } key={ item.name } >{ item.name }{item.unit ? `（${item.unit}）` : null }</Select.Option>
                                         )
                                     )
                                 }

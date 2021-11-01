@@ -21,6 +21,7 @@ import ResizeTable from '@/components/ResizeTable';
 import { requestCodeMessage } from '@/utils/utils';
 
 import SelectVmServer from './Components/SelectVmServer';
+import { ServerJumpBlock } from '@/components/Public';
 
 /**
  * 内网单机
@@ -204,13 +205,13 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
-                        <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${_}`} target="_blank">{_ || '-'}</a>
+                        <ServerJumpBlock>{_ || '-'}</ServerJumpBlock>
                     )
                 else
                     return (
                         <Row justify="start" align="middle">
                             <TreeSvg style={{ marginRight : 8 , height : 40 }}/>
-                            <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${_}`} target="_blank">{_ || '-'}</a>
+                            <ServerJumpBlock>{_ || '-'}</ServerJumpBlock>
                         </Row>
                     )
             },
