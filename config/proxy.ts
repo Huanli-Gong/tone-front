@@ -5,12 +5,12 @@
  * For details, please see
  * https://pro.ant.design/docs/deploy
  */
-import { proxyDev } from 'varConfig'
+import { opoenSourceProxyTarget } from '../../wsConfig'
 
 export default {
     dev: {
         '/api/': {
-            target: proxyDev,
+            target: opoenSourceProxyTarget,
             changeOrigin: true,
             secure: false,
             // withCredentials: true,

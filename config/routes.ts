@@ -15,13 +15,6 @@ export default [
 		component: './PersonCenter',
 	},
 	{
-		path: '/test_suite/new',
-		name: 'TestSuiteCreate',
-		layout: false,
-		hideInMenu: true,
-		component: './TestSuiteCreate',
-	},
-	{
 		name: 'Dashboard',
 		path: '/dashboard',
 		component: './DashBoard/index',
@@ -37,49 +30,49 @@ export default [
 		path: '/system',
 		component: './SystemConf/MenuLayout',
 		//showInWs: false,
-		access: 'sysRouteFilter',
+		access: 'canSysTestAdmin',
 		routes: [
 			{
 				path: '/system/approve',
 				name: 'joinApprove',
 				component: './SystemConf/JoinApprove',
-				access: 'sysRouteFilter',
+				access: 'canSuperAdmin',
 			},
 			{
 				path: '/system/workspace',
 				name: 'workspaceManagement',
 				component: './SystemConf/WorkspaceManagement',
-				access: 'sysRouteFilter',
+				access: 'canSuperAdmin',
 			},
 			{
 				path: '/system/user',
 				name: 'userManagement',
 				component: './SystemConf/UserManagement',
-				access: 'sysRouteFilter',
+				access: 'canSuperAdmin',
 			},
 			{
 				path: '/system/suite',
 				name: 'suiteManagement',
 				component: './SystemConf/TestSuite',
-				access: 'sysRouteFilter',
+				access: 'canSysTestAdmin',
 			},
 			{
 				path: '/system/kernel',
 				name: 'KernelManage',
 				component: '@/pages/SystemConf/KernelManage',
-				access: 'sysRouteFilter',
+				access: 'canSysTestAdmin',
 			},
 			{
 				path: '/system/basic',
 				name: 'BasicSetting',
 				component: '@/pages/SystemConf/BasicSetting',
-				access: 'sysRouteFilter',
+				access: 'canSysTestAdmin',
 			},
 			{
 				path: '/system/testfarm',
 				name: 'TestParmSetting',
 				component: '@/pages/SystemConf/TestParmSetting',
-				access: 'sysRouteFilter',
+				access: 'canSysTestAdmin',
 			},
 			{
 				path: '*',
@@ -103,6 +96,7 @@ export default [
 					},
 					{
 						path: '/help_doc/new',
+						access:'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -111,6 +105,7 @@ export default [
 					},
 					{
 						path: '/help_doc/:help_id/edit',
+						access:'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -135,6 +130,7 @@ export default [
 					},
 					{
 						path: '/notice/new',
+						access:'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -143,6 +139,7 @@ export default [
 					},
 					{
 						path: '/notice/:help_id/edit',
+						access:'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -154,37 +151,18 @@ export default [
 		]
 	},
 	{
-		path: '/404',
-		layout: false,
-		hideInMenu: true,
-		name: 'nofoundpage.404',
-		component: './404.tsx',
-	},
-	{
 		path: '/message',
 		//layout: false,
 		showInWs: true,
 		hideInMenu: true,
-		component: './TaskMessage/msg.tsx',
+		component: './TaskMessage',
 	},
-	{
-		path: '/401',
-		layout: false,
-		hideInMenu: true,
-		component: './401.tsx',
-	},
-	{
-		path: '/500',
-		layout: false,
-		hideInMenu: true,
-		name: 'server.500',
-		component: './500.tsx',
-	},
+
 	{
 		path: '/ws/:ws_id/message',
 		//layout: false,
 		hideInMenu: true,
-		component: './TaskMessage/msg.tsx',
+		component: './TaskMessage',
 	},
 	{
 		path: '/ws/:ws_id/refenerce/:type',
@@ -226,7 +204,7 @@ export default [
 				name: 'TestJob',
 				routes: [{
 					path: '/ws/:ws_id/test_job/:jt_id',
-					component: './TestJob',
+					component: './WorkSpace/TestJob',
 					hideInMenu: true,
 					name: 'TestJob',
 				},
@@ -234,11 +212,11 @@ export default [
 					path: '/ws/:ws_id/test_job/:jt_id/template',
 					name: 'TestTemplate',
 					hideInMenu: true,
-					component: './TestJob',
+					component: './WorkSpace/TestJob',
 				},
 				{
 					path: '/ws/:ws_id/test_job/:jt_id/import',
-					component: './TestJob',
+					component: './WorkSpace/TestJob',
 					hideInMenu: true,
 					name: 'TestExport',
 				},
@@ -247,7 +225,7 @@ export default [
 					name: 'JobTypePreview',
 					hideInMenu: true,
 					layout: false,
-					component: './TestJob',
+					component: './WorkSpace/TestJob',
 				},]
 			},
 			{
@@ -359,23 +337,22 @@ export default [
 				path: '/ws/:ws_id/test_create_report',
 				name: 'CreateReport',
 				hideInMenu: true,
-				inNav : true,
+				inNav: true,
 				component: '@/pages/WorkSpace/TestReport/NewReport'
 			},
-			
+
 			{
 				path: '/ws/:ws_id/test_report',
 				inNav: true,
 				name: 'TestReport',
 				hideChildrenInMenu: true,
-
 				routes: [
 					{
 						path: '/ws/:ws_id/test_report',
 						component: '@/pages/WorkSpace/TestReport',
 						name: 'Report',
 					},
-					
+
 					{
 						path: '/ws/:ws_id/test_report/compare',
 						hideInMenu: true,
@@ -452,6 +429,13 @@ export default [
 					}
 				]
 			},
+			// 离线测试
+			{
+				path: '/ws/:ws_id/offline_test',
+				name: 'Upload',
+				inNav: true,
+				component: './WorkSpace/TestUpload',
+			},
 			{
 				path: '/ws/:ws_id/config',
 				name: 'WorkspaceConfig',
@@ -470,7 +454,7 @@ export default [
 						path: '/ws/:ws_id/config/join',
 						name: 'JoinDetail',
 						component: './WorkSpace/JoinDetail',
-						access: 'wsRouteFilter',
+						access: 'canWsAdmin',
 					}
 				]
 			},
@@ -501,7 +485,7 @@ export default [
 						hideInMenu: true,
 						name: 'CreateJobType',
 						hasLeftNav: false,
-						component: './CreateJobType',
+						component: './WorkSpace/JobTypeManage/CreateJobType',
 					},
 					{
 						path: '/ws/:ws_id/job/update/:jt_id',
@@ -509,7 +493,7 @@ export default [
 						hasLeftNav: false,
 						exact: true,
 						name: 'JobTypeUpdate',
-						component: './CreateJobType',
+						component: './WorkSpace/JobTypeManage/CreateJobType',
 					},
 				]
 			},
@@ -566,6 +550,14 @@ export default [
 				name: 'TestSuiteManage',
 				component: './WorkSpace/TestSuiteManage',
 			},
+			{
+				path: '/ws/:ws_id/new_suite/:test_type',
+				name: 'TestSuiteCreate',
+				layout: false,
+				hideInMenu: true,
+				inNav: true,
+				component: './WorkSpace/TestSuiteManage/TestSuiteCreate',
+			},
 			{ //产品管理
 				path: '/ws/:ws_id/product',
 				name: 'Product',
@@ -582,14 +574,14 @@ export default [
 						name: 'TemplateEdit',
 						hideInMenu: true,
 						layout: false,
-						component: '@/pages/TestJob'
+						component: '@/pages/WorkSpace/TestJob'
 					},
 					{
 						path: '/ws/:ws_id/test_template/:jt_id/preview',
 						name: 'TemplatePreview',
 						hideInMenu: true,
 						layout: false,
-						component: '@/pages/TestJob'
+						component: '@/pages/WorkSpace/TestJob'
 					},
 					{
 						path: '*',
@@ -622,17 +614,31 @@ export default [
 	// 	component: './ListTableList'
 	// },
 	{
-		component: './404',
-		wrappers: [
-			'@/pages/auth/NoPage',
-		],
+		path: '/401',
+		layout: false,
+		hideInMenu: true,
+		component: './401',
 	},
 	{
+		path: '/500',
+		layout: false,
+		hideInMenu: true,
+		name: 'server.500',
 		component: './500',
-		wrappers: [
-			'@/pages/auth/ErrorPage',
-		],
 	},
+	{
+		path: '/404',
+		layout: false,
+		hideInMenu: true,
+		name: 'nofoundpage.404',
+		component: './404',
+	},
+	// {
+	// 	component: './500',
+	// 	wrappers: [
+	// 		'@/pages/auth/ErrorPage',
+	// 	],
+	// },
 	{
 		path: '*',
 		redirect: '/'
