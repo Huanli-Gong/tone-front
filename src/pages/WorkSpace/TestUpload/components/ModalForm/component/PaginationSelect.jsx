@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useEffect } from 'react'
 import { message, Select, Pagination, Divider } from 'antd'
 import { FormattedMessage } from 'umi';
-import debounce from 'lodash.debounce';
+import {debounce} from 'lodash';
 
 /**
  * @description 分页Select组件
