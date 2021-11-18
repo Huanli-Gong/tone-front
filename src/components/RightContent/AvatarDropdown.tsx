@@ -37,7 +37,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     const onMenuClick = useCallback((event: ClickParam) => {
         const { key } = event;
         if (key === 'logout') {
-            setInitialState({ ...initialState, currentUser: undefined });
+            setInitialState({ ...initialState, authList: undefined });
             loginOut();
             return;
         }
@@ -60,9 +60,9 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         return loading;
     }
 
-    const { currentUser } = initialState;
+    const { authList } = initialState;
 
-    if (!currentUser || !currentUser.name) {
+    if (!authList || !authList.name) {
         return loading;
     }
 
@@ -91,8 +91,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     return (
         <HeaderDropdown overlay={menuHeaderDropdown}>
             <span className={`${styles.action} ${styles.account}`}>
-                <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-                {/* <span className={`${styles.name} anticon`}>{currentUser.name}</span> */}
+                <Avatar size="small" className={styles.avatar} src={authList.avatar} alt="avatar" />
+                {/* <span className={`${styles.name} anticon`}>{authList.name}</span> */}
             </span>
         </HeaderDropdown>
     );

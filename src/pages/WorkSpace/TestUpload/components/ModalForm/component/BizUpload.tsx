@@ -5,7 +5,7 @@ import { CloseCircleOutlined, UploadOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
 
 // 文件上传组件
-const BizUpload = forwardRef((props, ref) => {
+const BizUpload = forwardRef((props:any, ref:any) => {
   const { formatMessage } = useIntl();
   // 状态
   const [fileList, setFileList] = useState([]);
@@ -16,7 +16,7 @@ const BizUpload = forwardRef((props, ref) => {
   // })));
 
   // 文件上传限制
-  const beforeUpload =(file: any) => {
+  const beforeUpload =(file) => {
     const { type, size } = file
     // 限制文件类型
     const validType = ['application/x-tar'];
@@ -46,7 +46,7 @@ const BizUpload = forwardRef((props, ref) => {
 
   // 删除
   const handleRemove =(file: any) => {
-    const list = fileList.filter(item => item.url !== file.url)
+    const list = fileList.filter((item:any) => item.url !== file.url)
     setFileList(list);
     if (list.length) {
       props.onChange(list[0]);
@@ -56,7 +56,6 @@ const BizUpload = forwardRef((props, ref) => {
       props.callback(undefined);
     }
   }
-  
   return (
     <div ref={ref}>
       <Upload

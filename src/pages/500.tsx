@@ -5,9 +5,9 @@ const ErrorPage: React.FC<{}> = () => (
     <Result
         status="500"
         title="500"
-        subTitle="Sorry, something went wrong."
+        subTitle="系统异常，请联系系统管理员."
         extra={
-            <Button type="primary" onClick={() => location.href = '/'}>Back Home</Button>
+            <Button type="primary" onClick={() => location.href = '/'}>返回首页</Button>
         }
     />
 );

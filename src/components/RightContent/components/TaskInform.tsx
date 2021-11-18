@@ -13,8 +13,11 @@ const TaskInform = (props: any) => {
     // 查看全部
     const lookAll = () => {
         const is_ws = pathname.indexOf('/ws/') > -1
-        if (is_ws) window.open(`/ws/${ws_id}/message?task`)
-        window.open('/message?task')
+        if (is_ws){
+            return window.open(`/ws/${ws_id}/message?task`)
+        } else {
+            return window.open('/message?task')
+        }
     }
     // 全局数据流
     const { increment } = useModel('msg', (ret) => ({

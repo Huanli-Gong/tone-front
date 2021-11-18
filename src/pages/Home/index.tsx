@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useLayoutEffect, useRef } from 'react'
 import styles from './index.less'
-import { history, useModel } from 'umi'
+import { history, useModel, Access, useAccess } from 'umi'
 import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Carousel, Tabs, Input, Tooltip } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
-import JoinPopover from './Component/JoinPopover'
-import { enterWorkspaceHistroy, queryHomeWorkspace } from '@/services/Workspace'
+// import JoinPopover from './Component/JoinPopover'
+import { enterWorkspaceHistroy, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
 import LogoEllipsis from '@/components/LogoEllipsis/index'
 import _ from 'lodash'
 import { queryHelpDocList } from '../HelpDocument/services'
+// import { ReactComponent as WsPrivate } from '@/assets/svg/ws_private.svg'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
@@ -29,6 +30,7 @@ const EllipsisRect = (props: any): JSX.Element => {
     const { text, wsPublic } = props
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState(false)
+
     useEffect(() => {
         let isShow = false
         if (ellipsis && ellipsis.current) {
@@ -38,7 +40,6 @@ const EllipsisRect = (props: any): JSX.Element => {
             setShow(isShow)
         }
     }, [wsPublic])
-
 
     return (
         <span className={styles.ws_description} id='wsdescription' ref={ellipsis}>
@@ -55,14 +56,21 @@ const EllipsisRect = (props: any): JSX.Element => {
 export default (): React.ReactNode => {
     const [wsData, setWsData]: Array<any> = useState([])
     const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
-    const [wsParmas, setWsPasmas] = useState<wsParmas>({ page_size: 50, page_num: 1, scope: 'history' })
     const [currentNum, setCurrentNum] = useState<number>(0)
     const [loading, setLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
-    const sysAuth = initialState?.authList
-    const { user_id } = sysAuth
+    const { user_id, ws_role_title } = initialState?.authList || {}
+    const [wsParmas, setWsPasmas] = useState<wsParmas>({ 
+        page_size: 50, 
+        page_num: 1, 
+        scope: ws_role_title == 'ws_tourist' ? 'all' : 'history' 
+    })
+    const access = useAccess();
     document.title = 'T-One'
     const [helps, setHelps] = useState<Array<any>>([])
+    /**
+     * @author wb-cy860729
+     */
     const wsTableData = async (parmas: wsParmas) => {
         setLoading(true)
         const data = await queryHomeWorkspace(parmas)
@@ -78,12 +86,24 @@ export default (): React.ReactNode => {
             msg && message.error(msg)
         setLoading(false)
     }
+
+    const [topWs, setTopWs] = useState([])
+    
+    const queryWsTopList = async () => {
+        const { data, code } = await queryWorkspaceTopList()
+        if (code === 200) setTopWs(data)
+    }
     const handleTabChange = (key: string) => {
         const { keyword } = wsParmas
         setWsPasmas({ page_size: 50, page_num: 1, scope: key, keyword })
     }
+    /**
+     * @author wb-cy860729
+     */
     const wsDom = () => {
-        const arrKey = [{ tab: '全部Workspace', key: 'all' }, { tab: '最近访问', key: 'history' }, { tab: '我加入的', key: 'joined' }, { tab: '我创建的', key: 'created' }]
+        const allKey = [{ tab: '全部Workspace', key: 'all' }, { tab: '最近访问', key: 'history' }, { tab: '我加入的', key: 'joined' }, { tab: '我创建的', key: 'created' }]
+        const tourKey = [{ tab: '全部Workspace', key: 'all' }, { tab: '我加入的', key: 'joined' }, { tab: '我创建的', key: 'created' }]
+        const arrKey = ws_role_title === 'ws_tourist' ? tourKey : allKey
         return <>
             <Tabs defaultActiveKey="history" onChange={handleTabChange}>
                 {
@@ -94,9 +114,13 @@ export default (): React.ReactNode => {
             </Tabs>
         </>
     }
-    const onSearch = (value: string) => {
-        setWsPasmas({ ...wsParmas, keyword: value, page_num: 1 })
+    /**
+     * @author wb-cy860729
+     */
+    const onSearch = (value:string) => {
+        setWsPasmas({ ...wsParmas,keyword: value,page_num: 1})
     }
+
     const wsHelpDoc = async () => {
         const { data } = await queryHelpDocList({ page_size: 1000 })
         if (Array.isArray(data)) {
@@ -106,9 +130,13 @@ export default (): React.ReactNode => {
 
     useEffect(() => {
         notification.config({ top: 88 })
+        queryWsTopList()
         wsTableData({ scope: 'public', page_size: 999, page_num: 1 })
         wsHelpDoc()
     }, [])
+    /**
+     * @author wb-cy860729
+     */
     useEffect(() => {
         wsTableData(wsParmas)
     }, [wsParmas])
@@ -120,7 +148,7 @@ export default (): React.ReactNode => {
             width: 210,
             render: (_: any, record: any) => {
                 const id = record && record.id
-                if (record.is_member || record.is_public || initialState?.authList.sys_role_title == 'super_admin' || initialState?.authList.sys_role_title == 'sys_admin')
+                if (record.is_member || record.is_public )
                     return (
                         <div
                             onClick={
@@ -141,7 +169,15 @@ export default (): React.ReactNode => {
                             <LogoEllipsis props={record} size={'small'} />
                         </div>
                     )
-                else return <JoinPopover {...record} type={'show_name'} />
+                // else return <JoinPopover {...record} type={'show_name'} />
+                else {
+                    return(
+                        <div onClick={() => _.is_member ? history.push(`/ws/${_.id}/dashboard`) : message.warning('无权限进入')} className={styles.showName}>
+                             <LogoEllipsis props={record} size={'small'} />
+                        </div>
+                    )
+                   
+                }
             }
         },
         {
@@ -176,7 +212,7 @@ export default (): React.ReactNode => {
             align: 'center',
             width: 120,
             render: (_: any) => {
-                if (_.is_member || _.is_public || initialState?.authList.sys_role_title == 'super_admin' || initialState?.authList.sys_role_title == 'sys_admin')
+                if (_.is_member || _.is_public )
                     return (
                         <Button
                             onClick={
@@ -196,7 +232,15 @@ export default (): React.ReactNode => {
                             进入
                         </Button>
                     )
-                else return <JoinPopover {..._} type={'operate'} />
+                // else return <JoinPopover {..._} type={'operate'} />
+                else {
+                    return(
+                        <Button onClick={() => _.is_member ? history.push(`/ws/${_.id}/dashboard`) : message.warning('无权限进入')}>
+                            进入
+                        </Button>
+                    )
+                   
+                }
             }
         }
     ]
@@ -250,13 +294,18 @@ export default (): React.ReactNode => {
         setCurrentNum(currentNum + num)
     }
 
-    const myWsGroup: any[] = []
-    wsPublic.forEach((obj, index) => {
-        const num = Math.floor(index / 6)
-        const remain = index % 6
-        if (index % 6 === 0) myWsGroup[num] = []
-        myWsGroup[num][remain] = obj
-    })
+    const myWsGroup = useMemo(() => {
+        let list: any = []
+
+        topWs.forEach((obj, index) => {
+            const num = Math.floor(index / 6)
+            const remain = index % 6
+            if (index % 6 === 0) list[num] = []
+            list[num][remain] = obj
+        })
+
+        return list
+    }, [topWs])
 
     return (
         <Layout className={styles.content} style={{ minHeight: layoutHeight - 50, height: layoutHeight - 50, overflowY: 'scroll' }}>
@@ -278,14 +327,14 @@ export default (): React.ReactNode => {
 
                     <Layout.Content className={styles.banner}>
                         <Row className={styles.title} style={{ padding: '0 20px' }} align="middle" justify="space-between">
-                            <Typography.Text>公开Workspace</Typography.Text>
+                            <Typography.Text>推荐Workspace</Typography.Text>
 
                         </Row>
                         {/* <Row style={{ padding: '5px 4px 5px 20px',position: 'relative' }}> */}
                         <Row className={styles.ws_row} style={{ paddingBottom: myWsGroup.length > 1 ? 10 : 5 }}>
                             <Carousel>
                                 {
-                                    myWsGroup.map((arr, number) => {
+                                    myWsGroup.map((arr: any, number: any) => {
                                         return (
                                             // <div className={styles.ws_group} style={{ left: leftVal, opacity: number === currentNum ? 1 : 0 }} key={number}>
                                             <div className={styles.ws_group} key={number}>
@@ -293,7 +342,7 @@ export default (): React.ReactNode => {
                                                     (item: any, index: number) => (
                                                         <div
                                                             className={styles.workspace}
-                                                            key={_.get(index, 'id')}
+                                                            key={index}
                                                             style={{
                                                                 marginRight: (index + 1) % 3 ? 16 : 0,
                                                                 // width: wsWidth > 0 ? wsWidth : `calc(100% / 3 - 17px) `
@@ -314,12 +363,10 @@ export default (): React.ReactNode => {
                                                             <Row style={{ width: '100%', height: '100%' }}>
                                                                 <Col span={24} style={{ alignItems: 'flex-start', display: 'flex', height: 48, marginBottom: 8 }}>
                                                                     <AvatarCover size={'middle'} style={avatarStyle} {...item} />
-
                                                                     <div className={styles.right_part}>
                                                                         <b className={styles.ws_name}>{item.show_name}</b>
                                                                         <Space>
-                                                                            <UserOutlined />
-                                                                            <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
+                                                                            <Typography.Text type="secondary"  ellipsis={true}>{item.owner_name} </Typography.Text>
                                                                         </Space>
                                                                         <EllipsisRect text={item.description} wsPublic={wsPublic} />
                                                                     </div>
@@ -343,7 +390,9 @@ export default (): React.ReactNode => {
                             <div>
                                 <Space align='end'>
                                     <Input.Search placeholder="请输入搜索关键字" onSearch={onSearch} style={{ width: 200 }} allowClear={true} />
-                                    <Button onClick={() => history.push('/workspace/create')}>新建Workspace</Button>
+                                    <Access accessible={access.canSuperAdmin()}>
+                                        <Button onClick={() => history.push('/workspace/create')}>新建Workspace</Button>
+                                    </Access>
                                 </Space>
                             </div>
                         </Row>
@@ -358,7 +407,7 @@ export default (): React.ReactNode => {
                                 showHeader={false}
                                 pagination={false}
                             />
-                            <Col span={24} style={{ paddingLeft: 20, paddingRight: 20 }}>
+                            <Col span={24} style={{ paddingLeft: 20 , paddingRight: 20 }}>
                                 <CommonPagination
                                     pageSize={wsData.page_size}
                                     total={wsData.total}

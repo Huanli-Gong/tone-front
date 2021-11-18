@@ -1,6 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect, useMemo } from 'react';
-import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Divider } from 'antd';
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
+import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Form, Divider  } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './index.less'
 import CommentModal from './CommentModal'
@@ -171,40 +170,26 @@ export default forwardRef(
             {
                 title: '操作',
                 key: 'sub_case_name',
-                render: (text: any, record: any) => {
+                render: (text:any,record:any) => {
                     return (
                         <Space size='small'>
-                            {
-                                <AuthCommon
-                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                    children={<span className={styles.fail_detail_operation} >编辑</span>}
-                                    onClick={() => handleOpenComment(record)}
-                                />
-                            }
+                            <span className={styles.fail_detail_operation} onClick={()=>handleOpenComment(record)}>编辑</span>
                             {/* 删除的弹框 */}
-                            {
-                                <AuthForm
-                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                    children={<span className={styles.fail_detail_operation}>删除</span>}
-                                    onFirm={
-                                        <Popconfirm
-                                            title="你确定要删除吗？"
-                                            onConfirm={() => {
-                                                const generObj = handleDelete();
-                                                const excuteResult: any = generObj.next();
-                                                excuteResult.value.then((result: any) => {
-                                                    const { code, msg } = result;
-                                                    defaultOption(code, msg);
-                                                })
-                                            }}
-                                            okText="确认"
-                                            cancelText="取消"
-                                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-                                            <span className={styles.fail_detail_operation}>删除</span>
-                                        </Popconfirm>
-                                    }
-                                />
-                            }
+                            <Popconfirm
+                                title="你确定要删除吗？"
+                                onConfirm={() => {
+                                    const generObj = handleDelete();
+                                    const excuteResult: any = generObj.next();
+                                    excuteResult.value.then((result: any) => {
+                                        const { code, msg } = result;
+                                        defaultOption(code, msg);
+                                    })
+                                }}
+                                okText="确认"
+                                cancelText="取消"
+                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+                                <span className={styles.fail_detail_operation}>删除</span>
+                            </Popconfirm>
                         </Space>
                     )
                 }

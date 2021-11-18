@@ -7,7 +7,6 @@ import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
-import { AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import { history, useModel, Access, useAccess } from 'umi'
 import _ from 'lodash'
 const styleObj = {
@@ -19,7 +18,7 @@ export default (props: any) => {
     const { dreType, ws_id, jobInfo, origin, buttonStyle = {}, title } = props
     const viewAllReport = jobInfo && jobInfo.report_li
     const page_default_params: any = { name: '', creator_name: '' }
-    const access = useAccess()
+
     const [autoFocus, setFocus] = useState(true)
     const [params, setParams] = useState(page_default_params)
     const [jobRefReport, setJobRefAllReport] = useState([])

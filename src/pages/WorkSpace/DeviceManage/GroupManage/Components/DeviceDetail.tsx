@@ -24,17 +24,15 @@ const ViewDetailDrawer = forwardRef(
             }
         }))
 
-        const initDetails = async (id: any) => {
+        const initDetails = async (id: number) => {
             setLoading(true)
-            const { data } = await queryTestServerDetail(id)
+            const { data = {} } = await queryTestServerDetail(id)
             setDetails(data)
             const { code, data: detailData } = await queryChannelState({ ip: data.ip, channel_type: data.channel_type })
-            if (data) {
-                if (code === 200) {
-                    setChannelState(detailData)
-                } else {
-                    setChannelState(data.channel_state)
-                }
+            if (code === 200) {
+                setChannelState(detailData)
+            } else {
+                setChannelState(data.channel_state)
             }
 
             setLoading(false)
@@ -52,14 +50,14 @@ const ViewDetailDrawer = forwardRef(
         // 部署回调
         const deployCallback = (info: any) => {
             // case1. 部署结果信息
-            // const { success_servers = [], fail_servers = [] } = info;
+            const { success_servers= [], fail_servers= []} = info;
             // case2. 刷新数据
         }
 
         return (
-            <Drawer
-                maskClosable={false}
-                keyboard={false}
+            <Drawer 
+                maskClosable={ false }
+                keyboard={ false }
                 forceRender={true}
                 title="详情"
                 width="510"
@@ -160,7 +158,7 @@ const ViewDetailDrawer = forwardRef(
                         <Typography.Text strong>使用状态</Typography.Text>
                         <Row gutter={20} className={styles.row}>
                             <Col span={6}>机器状态:</Col>
-                            <Col span={18}>{StateBadge(details?.state, details)}</Col>
+                            <Col span={18}>{StateBadge(details?.state , details )}</Col>
                         </Row>
                     </Layout.Content>
                     <Layout.Content style={{ marginBottom: 30 }}>
@@ -169,7 +167,7 @@ const ViewDetailDrawer = forwardRef(
                             <Col span={6}>Channel:</Col>
                             <Col span={18}>
                                 <span>{details?.channel_type}</span>
-                                {details?.channel_type === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick([details?.ip])}>重新部署</span>}
+                                {details?.channel_type === 'toneagent' && <span className={styles.btn_style} onClick={()=> deployClick([details?.ip])}>重新部署</span> }
                             </Col>
                         </Row>
                         <Row gutter={20} className={styles.row}>

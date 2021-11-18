@@ -25,14 +25,6 @@ import {
     CloseBtn,
 } from '../ReportUI';
 
-type FloatRowState = {
-    left: number;
-    width: number;
-    show: boolean;
-    scrollTop: number;
-    testDataOffsetTop: number;
-    groupOffsetTop: number
-}
 const GroupBar = styled.div<{ width: number, y: number }>`
     background: #fff;
     position: absolute;
@@ -47,10 +39,7 @@ const GroupBar = styled.div<{ width: number, y: number }>`
 
 const GroupBarWrapper: React.FC<any> = (props) => {
     const { groupRowRef, parentDom, groupLen, envData } = props
-
     const { top } = useScroll(document.querySelector('#report-body-container') as any)
-    
-
     const floatRow = groupRowRef.current
     const testDataEle = parentDom.current
 
@@ -95,21 +84,9 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
-    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm, setEditBtn, bodyRef } = useContext(ReportContext)
+    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm, setEditBtn } = useContext(ReportContext)
     let group = allGroupData?.length
-    // const [bodyWidth, setBodyWidth] = useState(1200)
-    const [suite, setSuite] = useState([])
     const testDataRef = useRef(null)
-    // const [fixedRow, setFixedRow] = useState<FloatRowState>({
-    //     left: 0,
-    //     width: 0,
-    //     show: false,
-    //     scrollTop: 0,
-    //     testDataOffsetTop: 0,
-    //     groupOffsetTop: 0
-    // })
-
-    //let dataSource =  _.cloneDeep(domainResult?.perf_item) 
     const data = useMemo(() => {
         if (Array.isArray(domainResult.perf_item)) {
             return domainResult.perf_item
@@ -193,6 +170,14 @@ const ReportTestPref = () => {
     const simplify = (child: any, idx: number, listId: number, name: string) => {
         let suite_list: any = []
         child.list?.map((suite: any, suiteId: number) => {
+            const { 
+                suite_id, 
+                suite_name,
+                test_suite_description = '-',
+                test_env,
+                test_description,
+                test_conclusion,
+            } = suite
             let conf_list: any = []
             suite.conf_list.map((conf: any, index: number) => {
                 conf_list.push({
@@ -207,34 +192,33 @@ const ReportTestPref = () => {
                 })
             })
             suite_list.push({
-                suite_id: suite.suite_id,
-                suite_name: suite.suite_name,
+                suite_id,
+                suite_name,
                 // show_type: !switchReport ? 0 : describe?.show_type == 'list' ? 0 : 1,
-                test_suite_description: suite.test_suite_description || '-',
-                test_env: '',
-                test_description: '',
-                test_conclusion: '',
-                conf_list: conf_list,
+                test_suite_description,
+                test_env,
+                test_description,
+                test_conclusion,
+                conf_list,
                 rowKey: name == 'group' ? `${idx}-${listId}-${suiteId}` : `${idx}-${suiteId}`
             })
         })
         return suite_list;
     }
-
     useEffect(() => {
         let new_pref_data: any = []
         if (dataSource !== undefined && dataSource.length > 0) {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list?.map((child: any, listId: number) => {
-                        let suite_list = suite.length === 1 ? suite : simplify(child, idx, listId, 'group')
+                        let suite_list =  simplify(child, idx, listId, 'group')
                         new_pref_data.push({
                             name: `${item.name}:${child.name}`,
                             suite_list,
                         })
                     })
                 } else {
-                    let suite_list = suite.length === 1 ? suite : simplify(item, idx, 0, 'item')
+                    let suite_list = simplify(item, idx, 0, 'item')
                     new_pref_data.push({
                         name: item.name,
                         suite_list,
@@ -246,61 +230,9 @@ const ReportTestPref = () => {
         setObj({
             ...obj,
         })
-    }, [dataSource, suite])
-
-    // const hanldePageResize = () => setBodyWidth(bodyRef.current.offsetWidth)
-
-    // useEffect(() => {
-    //     // Select the node that will be observed for mutations
-    //     const targetNode: any = document.getElementById('report-body-container');
-    //     // Options for the observer (which mutations to observe)
-    //     const config = { attributes: true, childList: true, subtree: true };
-    //     // Callback function to execute when mutations are observed
-    //     // Create an observer instance linked to the callback function
-    //     const observer = new MutationObserver(hanldePageResize);
-    //     // Start observing the target node for configured mutations
-    //     observer.observe(targetNode, config);
-    //     // Later, you can stop observing
-    //     return () => {
-    //         observer.disconnect();
-    //     }
-    // }, [])
+    }, [dataSource])
 
     const groupRowRef = useRef<any>(null)
-
-    // const hanldeScrollChange = ({ target }: any) => {
-    //     const floatRow = groupRowRef.current
-
-    //     const testDataEle = document.querySelector('#test_data')
-    //     const testOffset = (testDataEle as any).offsetTop || 0
-
-    //     setFixedRow({
-    //         left: floatRow?.offsetLeft ,
-    //         width: floatRow?.offsetWidth,
-    //         show: target.scrollTop > (testOffset + floatRow.offsetTop),
-    //         scrollTop: target.scrollTop,
-    //         groupOffsetTop: floatRow.offsetTop,
-    //         testDataOffsetTop: testOffset,
-    //     })
-    // }
-
-    // useEffect(() => {
-    //     setFixedRow({
-    //         ...fixedRow,
-    //         left: groupRowRef.current?.offsetLeft,
-    //         width: groupRowRef.current?.offsetWidth
-    //     })
-    // }, [groupRowRef.current, collapsed])
-
-    // useEffect(() => {
-    //     const queryObj: any = document.querySelector('#report-body-container')
-    //     const debounced = _.debounce(hanldeScrollChange, 10 );
-    //     queryObj.addEventListener('scroll', debounced)
-    //     return () => {
-    //         queryObj.removeEventListener('scroll', debounced)
-    //         // debounced.cancel
-    //     }
-    // }, [groupRowRef.current, collapsed])
 
     return (
         <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1200, position: 'relative' }} id="test_data" ref={testDataRef}>
@@ -328,41 +260,6 @@ const ReportTestPref = () => {
                 envData={envData}
                 groupLen={group}
             />
-            {/* {
-                <div
-                    style={{
-                        width: fixedRow.width,
-                        background: '#fff',
-                        position: 'absolute',
-                        top: 57,
-                        height: 50,
-                        border: '1px solid rgba(0,0,0,0.10)',
-                        zIndex: 5,
-                        transform: `translateY(${fixedRow.show ? fixedRow.scrollTop - fixedRow.testDataOffsetTop - fixedRow.groupOffsetTop : 0}px)`
-                    }}
-                >
-                    <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
-                        <Group>
-                            <PerfGroupTitle gLen={group}>对比组名称</PerfGroupTitle>
-                            {
-                                Array.isArray(envData) && envData.length > 0 && envData.map((item: any, idx: number) => {
-                                    return (
-                                        <PerfGroupData gLen={group} key={idx}>
-                                            <Space>
-                                                {
-                                                    item.is_base &&
-                                                    <BaseIcon style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }} title="基准组" />
-                                                }
-                                            </Space>
-                                            <EllipsisPulic title={item.tag} />
-                                        </PerfGroupData>
-                                    )
-                                })
-                            }
-                        </Group>
-                    </Summary>
-                </div>
-            } */}
             {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
@@ -411,7 +308,6 @@ const ReportTestPref = () => {
                                                                         id={child.rowKey}
                                                                         dataSource={dataSource}
                                                                         setDataSource={setDataSource}
-                                                                        setSuite={setSuite}
                                                                         onDelete={handleDelete}
                                                                         onChange={handleFieldChange}
                                                                     />
@@ -423,7 +319,6 @@ const ReportTestPref = () => {
                                                         name="item"
                                                         id={item.rowKey}
                                                         dataSource={dataSource}
-                                                        setSuite={setSuite}
                                                         setDataSource={setDataSource}
                                                         onDelete={handleDelete}
                                                         onChange={handleFieldChange}

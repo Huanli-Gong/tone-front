@@ -15,22 +15,27 @@ const UserManagement: React.FC<{}> = () => {
 	const [select, setSelect] = useState<any[]>([]);
 	const [rolelist, setRolelist] = useState<any[]>([]);
 	const [num, setNum] = useState<number>(0);
+	const [roleTotal,setRoleTotal] = useState<number>(0);
 	const [role, setRole] = useState<number>()
 	const [keyword, setKeyword] = useState<string>()
 
 	const getRoleSysList = async () => {
-
 		const { data } = await roleList({ role_type: 'system', is_filter: '1' }) // is_filter: '1':根据用户角色过滤
 		data && setSelect(data.list)
 		data && setNum(data.num)
 		// all.current && all.current.search()
 	};
+	const getRoleList = async () => {
+        const { total } = await roleList({ role_type: '' })
+		total && setRoleTotal(total)
+    };
 	const getRoleFilterSysList = async () => {
 		const { data } = await roleList({ role_type: 'system', is_filter: '0' }) // is_filter: '1':不过滤，获取全量
 		let all = [{ id: '', name: "all", title: "all" }]
 		data && setRolelist(all.concat(data.list))
 	};
 	useEffect(() => {
+		getRoleList()
 		getRoleSysList()
 		getRoleFilterSysList()
 	}, []);
@@ -50,7 +55,7 @@ const UserManagement: React.FC<{}> = () => {
 				break;
 		}
 	}
-
+	
 	const onSearch = (val: string) => {
 		setKeyword(val)
 		switch (index) {
@@ -105,7 +110,7 @@ const UserManagement: React.FC<{}> = () => {
 					className={styles.tab_style}
 				>
 					<TabPane tab={"用户 " + num} key="1" />
-					<TabPane tab={"角色 8"} key="2" />
+					<TabPane tab={"角色 " + roleTotal} key="2" />
 				</Tabs>
 			}
 		>

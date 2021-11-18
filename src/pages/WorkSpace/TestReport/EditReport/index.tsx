@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Breadcrumb, message, Button, Spin, Space } from 'antd';
 import { editReport, detailTemplate, reportDetail } from '../services'
 import { Wrapper, Header, Line, OverView, TestEnv, TestData } from './styled'
-import { AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import SummaryTable from './components/SummaryTable'
 import TestEnvironment from './components/TestEnvironment';
 import TestDataPage from '../Report/components/TestDataPage';
@@ -55,7 +54,7 @@ const ReportPage = (props: any) => {
     const [btn, setBtn] = useState(true)
     const [show,setShow ] = useState(false)
     const scrollbarsRef = useRef<any>(null)
-    const access = useAccess()
+
     const catalogRef: any = useRef()
     const queryReport = async () => {
         setLoading(true)
@@ -325,16 +324,9 @@ const ReportPage = (props: any) => {
                         <div className="report">
                             报告创建于 {dataSource.gmt_created}
                         </div>
-                        {!btn && access.wsTouristFilter() && 
+                        {!btn && 
                         <div className="action">
-                            <AuthMemberForm 
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={ 
-                                    <span className="edit"><IconEdit style={{ marginRight: 5 }} />编辑报告</span>
-                                }
-                                onFirm={ <span className="edit" onClick={handleEdit}><IconEdit style={{ marginRight: 5 }} />编辑报告</span>}
-                                creator_id={dataSource.creator}
-                            />
+                            <span className="edit" onClick={handleEdit}><IconEdit style={{ marginRight: 5 }} />编辑报告</span>
                             <span className="link test_report_copy_link" ><IconLink style={{ marginRight: 5 }} />分享</span>
                         </div>}
                         {btn && <div className="empty"></div>}

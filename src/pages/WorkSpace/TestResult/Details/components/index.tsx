@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState, useLayoutEffect } from 'react'
 import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
 import Clipboard from 'clipboard'
 import { history, useParams } from 'umi'
 
@@ -117,25 +116,11 @@ export const ellipsisEditColumn = (_: any, row: any, width: any = '100%', onEdit
                         <Tooltip placement="topLeft" title={_}>
                             <span style={{ width: width - 16 - 28 }} className={styles.ellips_copy_column}>{_}</span>
                         </Tooltip>
-                        {
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={<EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} />}
-                                onClick={onEdit}
-                                creator_id={row.creator}
-                            />
-                        }
+                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit}/>
                     </Row> :
                     <Row className={styles.ellips_copy_column} justify="start" align="middle" >
                         {_ || '-'}
-                        {
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={<EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} />}
-                                onClick={onEdit}
-                                creator_id={row.creator}
-                            />
-                        }
+                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit}/>
                     </Row>
             }
             <div
@@ -144,14 +129,7 @@ export const ellipsisEditColumn = (_: any, row: any, width: any = '100%', onEdit
                 style={{ width: width - 16 }}
             >
                 {_ || '-'}
-                {
-                    <AuthMember
-                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                        children={<EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} />}
-                        onClick={onEdit}
-                        creator_id={row.creator}
-                    />
-                }
+                <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit}/>
             </div >
         </>
     )
@@ -292,12 +270,12 @@ interface QuestionTootipProp {
 
 export const QusetionIconTootip: React.FC<QuestionTootipProp> = ({ title, desc, placement = 'bottom' }) => (
     <Space>
-        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>{desc}</span>
+        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>{title}</span>
         <Tooltip
             overlayClassName={styles.table_question_tooltip}
             placement={placement}
             arrowPointAtCenter
-            title={title}
+            title={desc}
         >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)' }} />
         </Tooltip>

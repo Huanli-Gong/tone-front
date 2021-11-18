@@ -6,6 +6,7 @@
     "scripts": {
         "analyze": "cross-env ANALYZE=1 umi build",
         "build": "umi build",
+        "build:opensource": "cross-env BUILD_APP_ENV=\"opensource\" umi build",
         "build:cdn": "cross-env NODE_ENV=cluster-dev umi build",
         "deploy": "npm run site && npm run gh-pages",
         "dev": "npm run start:dev",

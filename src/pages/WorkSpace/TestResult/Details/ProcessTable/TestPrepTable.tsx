@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
+import React , { useEffect } from 'react'
 
-import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
+import { CaretDownFilled , CaretRightFilled } from '@ant-design/icons'
 
-import { Table, Card, message } from 'antd'
-import { evnPrepareState, tooltipTd } from '../components/index'
+import { Table, Card , message } from 'antd'
+import { evnPrepareState , tooltipTd } from '../components/index'
 
 import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
@@ -12,157 +12,153 @@ import { queryProcessPrepareList } from '../service'
 import { useRequest } from 'umi'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
-import { ServerJumpBlock } from '@/components/Public';
 
 //测试准备 ==== Table
-export default ({ job_id, refresh = false, }: any) => {
-    const { data, loading, run } = useRequest(
+export default ({ job_id , refresh = false,  } : any ) => {
+    const { data , loading , run } = useRequest(
         () => queryProcessPrepareList({ job_id }),
         {
-            formatResult: res => {
-                if (res.code !== 200) {
-                    requestCodeMessage(res.code, res.msg)
+            formatResult : res => {
+                if ( res.code !== 200 ){
+                    requestCodeMessage( res.code , res.msg )
                     return []
                 }
 
                 const [{ test_prepare }] = res.data
-                const { cluster, standalone } = test_prepare
+                const { cluster , standalone } = test_prepare
 
-                if (cluster || standalone) {
-                    const tableData = transPrepareData(cluster, '集群').concat(transPrepareData(standalone, '单机'))
+                if ( cluster || standalone ) {
+                    const tableData = transPrepareData( cluster , '集群' ).concat( transPrepareData( standalone , '单机' ) )
                     return tableData
                 }
                 return []
             },
-            manual: true
+            manual : true
         }
     )
 
     useEffect(() => {
         run()
-    }, [refresh])
+    },[ refresh ])
 
-    const transPrepareData = (datas: any, mode: string) => {
-        let source: any = []
-        if (JSON.stringify(datas) !== '{}') {
-            if (mode === '单机') {
-                let list: any = []
-                Object.keys(datas).forEach((key, index) => {
-                    const items = datas[key];
-                    let column: any = {}
-                    for (let i = 0; i < items.length; i++) {
-                        const item = items[i]
-                        if (column[item.server]) {
-                            column[item.server].items.push({ ...item, rowKey: i, })
-                        }
-                        else {
-                            column[item.server] = {
-                                ...item, mode, key, rowKey: i,
-                                items: [{ ...item, rowKey: i, }]
+    const transPrepareData = ( datas : any , mode : string ) => {
+        let source : any = []
+        if ( JSON.stringify( datas ) !== '{}' ) {
+            if ( mode === '单机' ) {
+                let list : any = []
+                Object.keys( datas ).forEach((key , index) => {
+                        const items = datas[key];
+                        let column : any = {}
+                        for ( let i = 0 ; i < items.length ; i ++ ) {
+                            const item = items[ i ]
+                            if ( column[ item.server ] ) {
+                                column[ item.server ].items.push({ ...item, rowKey : i, })
+                            }
+                            else {
+                                column[ item.server ] = {
+                                    ...item, mode, key, rowKey: i,
+                                    items: [{ ...item, rowKey : i, }]
+                                }
                             }
                         }
+                        list.push( column )
                     }
-                    list.push(column)
-                }
                 )
-                list.forEach((i: any, index: any) => {
-                    const keyNameList = Object.keys(i)
-
-                    keyNameList.forEach((key: any) => {
-                        let column = i[key]
-                        const server = i[key]
-                        for (let t = 0, len = server.items.length; t < len; t++) {
-                            let ctx = server.items[t]
-                            column = { ...ctx, mode, items: server.items }
-                            if (ctx.state === 'fail') break;
+                list.forEach(( i : any , index : any ) => {
+                    const keyNameList = Object.keys( i )
+                    
+                    keyNameList.forEach(( key : any ) => {
+                        let column = i[ key ]
+                        const server = i[ key ]
+                        for ( let t = 0 , len = server.items.length ; t < len ; t ++ ) {
+                            let ctx = server.items[ t ]
+                            column = { ...ctx, mode, items : server.items }
+                            if ( ctx.state === 'fail' ) break;
                         }
-                        source.push(column)
+                        source.push( column )
                     })
                 })
             }
             else {
-                let list: any = []
-                Object.keys(datas).forEach((key: any) => {
-                    const item = datas[key]
-                    let items: any = []
+                let list : any = []
+                Object.keys( datas ).forEach(( key : any ) => {
+                    const item = datas[ key ]
+                    let items : any = []
                     let column = {}
-                    Object.keys(item).forEach((server, idx) => {
-                        if (idx === 0) {
-                            for (let x = 0; x < item[server].length; x++) {
+                    Object.keys( item ).forEach(( server , idx ) => {
+                        if  (idx === 0 ) {
+                            for ( let x = 0 ; x < item[ server ].length ; x ++ ) {
                                 const r = item[server][x]
-                                column = { ...r, server }
-                                if (r.state === 'fail') break;
+                                column = { ...r , server }
+                                if ( r.state === 'fail' ) break;
                             }
                         }
-                        return items.push({ server, items: item[server] })
+                        return items.push({ server , items : item[ server ]})
                     })
-                    list.push({ ...column, key, mode, items })
+                    list.push({ ...column, key, mode , items })
                 })
-                source = source.concat(list)
+                source = source.concat( list )
             }
-
+            
             return source
         }
         return source
     }
 
     useEffect(() => {
-        const clipboard = new Clipboard('.test_result_tooptip_btn')
-        clipboard.on('success', function (e) {
+        const clipboard = new Clipboard( '.test_result_tooptip_btn' )
+        clipboard.on('success', function(e) {
             message.success('复制成功')
             e.clearSelection();
         })
         return () => {
             clipboard.destroy()
         }
-    }, [])
+    },[])
 
     const columns = [
         {
-            dataIndex: 'mode',
-            title: '运行模式',
-            render: (_: any) => _ || '-'
+            dataIndex : 'mode',
+            title : '运行模式',
+            render : ( _ : any ) => _ || '-'
         },
         {
-            dataIndex: 'server',
-            title: '测试机器',
-            render: (_: any, row: any) => (
+            dataIndex : 'server',
+            title : '测试机器',
+            render : ( _ : any , row : any ) => (
                 _ ?
-                    <ServerJumpBlock
-                    >
-                        {_}
-                    </ServerJumpBlock>
+                    <span>{ _ }</span> 
                     : '-'
             )
         },
         {
-            dataIndex: 'stage',
-            title: '步骤',
-            render: (_: any) => _ || '-'
+            dataIndex : 'stage',
+            title : '步骤',
+            render : ( _ : any ) => _ || '-'
         },
         {
-            dataIndex: 'state',
-            title: '状态',
-            render: evnPrepareState
+            dataIndex : 'state',
+            title : '状态',
+            render : evnPrepareState
         },
         {
-            dataIndex: 'result',
-            title: '输出结果',
+            dataIndex : 'result',
+            title : '输出结果',
             ...tooltipTd('Nothing to do'),
         },
         {
-            dataIndex: 'tid',
-            title: 'TID',
+            dataIndex : 'tid',
+            title : 'TID',
             ...tooltipTd(),
         },
         {
-            dataIndex: 'gmt_created',
-            title: '开始时间',
+            dataIndex : 'gmt_created',
+            title : '开始时间',
             ...tooltipTd(),
         },
         {
-            dataIndex: 'gmt_modified',
-            title: '完成时间',
+            dataIndex : 'gmt_modified',
+            title : '完成时间',
             ...tooltipTd(),
         },
     ]
@@ -170,74 +166,72 @@ export default ({ job_id, refresh = false, }: any) => {
     const clusterColumns = [
         {},
         {
-            dataIndex: 'server',
-            title: '测试机器',
-            render: (_: any, row: any) => (
+            dataIndex : 'server',
+            title : '测试机器',
+            render : ( _ : any , row : any ) => (
                 _ ?
-                    <ServerJumpBlock
-                    >
-                        {_}
-                    </ServerJumpBlock>
+                    <span>{ _ }</span>
                     : '-'
             )
         },
-        {}, {}, {}, {}, {}
+        {}, {} , {} , {} , {}
     ]
 
     return (
-        <Card
-            title="测试准备"
-            bodyStyle={{ paddingTop: 0 }}
-            headStyle={{ borderBottom: 'none', borderTop: 'none' }}
-            style={{ marginBottom: 10, borderTop: 'none' }}
+        <Card 
+            title="测试准备" 
+            bodyStyle={{ paddingTop : 0 }}
+            headStyle={{ borderBottom : 'none' , borderTop : 'none' }}
+            style={{ marginBottom : 10 , borderTop : 'none' }}
         >
-            <Table
-                dataSource={data}
-                columns={columns}
+            <Table 
+                dataSource={ data }
+                columns={ columns }
                 rowKey="rowKey"
-                loading={loading}
+                loading={ loading }
                 size="small"
-                className={styles.prepTable}
-                pagination={false}
+                className={ styles.prepTable }
+                pagination={ false }
                 expandable={{
                     expandedRowClassName: () => 'expanded-row-padding-no',
-                    expandedRowRender: (record: any) => {
-                        if (record.mode === '集群') {
-                            return record.items.map((item: any) => (
+                    expandedRowRender : ( record : any ) => {
+                        if ( record.mode === '集群' ) 
+                        {
+                            return record.items.map(( item ) => (
                                 <Table
-                                    dataSource={[item]}
-                                    columns={clusterColumns}
-                                    size={'small'}
+                                    dataSource={ [ item ] }
+                                    columns={ clusterColumns }
+                                    size={ 'small'}
                                     rowKey="rowkey"
-                                    showHeader={false}
-                                    pagination={false}
+                                    showHeader={ false }
+                                    pagination={ false }
                                     expandable={{
-                                        expandIcon: () => false,
-                                        defaultExpandAllRows: true,
-                                        expandedRowRender: (record: any) => {
+                                        expandIcon : () => false,
+                                        defaultExpandAllRows : true,
+                                        expandedRowRender : ( record : any ) => {
                                             return (
-                                                <ProcessExpandTable {...record} />
+                                                <ProcessExpandTable { ...record } />
                                             )
                                         }
                                     }}
                                 />
                             ))
                         }
-                        if (record.hasChildren) {
+                        if ( record.hasChildren ) {
                             return (
-                                <Table
-                                    dataSource={record.items}
-                                    columns={columns}
+                                <Table 
+                                    dataSource={ record.items }
+                                    columns={ columns }
                                     rowKey="rowKey"
                                     size="small"
-                                    showHeader={false}
-                                    pagination={false}
+                                    showHeader={ false }
+                                    pagination={ false }
                                     expandable={{
-                                        expandIcon: () => false,
-                                        defaultExpandAllRows: true,
-                                        expandedRowRender: (record: any) => {
+                                        expandIcon : () => false,
+                                        defaultExpandAllRows : true,
+                                        expandedRowRender : ( record : any ) => {
                                             return (
-                                                <ProcessExpandTable {...record} />
+                                                <ProcessExpandTable { ...record } />
                                             )
                                         },
                                     }}
@@ -245,11 +239,11 @@ export default ({ job_id, refresh = false, }: any) => {
                             )
                         }
                         return (
-                            <ProcessExpandTable {...record} />
+                            <ProcessExpandTable { ...record } />
                         )
                     },
-                    expandIcon: ({ expanded, onExpand, record }: any) => (
-                        expanded ?
+                    expandIcon: ({ expanded, onExpand, record }:any) => (
+                        expanded ? 
                             (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
                             (<CaretRightFilled onClick={e => onExpand(record, e)} />)
                     )
@@ -268,7 +262,7 @@ export default ({ job_id, refresh = false, }: any) => {
                     //     Object.keys( i ).forEach(( key ) => {
                     //         if ( !currentKey )
                     //             currentKey = key[i].key
-
+                            
                     //     })
                     // })
                     // list.forEach(( i : any ) => {

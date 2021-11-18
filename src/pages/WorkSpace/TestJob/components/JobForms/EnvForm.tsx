@@ -338,3 +338,26 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: FormP
         </Form>
     )
 }
+
+
+
+// const getVal = ( val : any ) => {
+//     const t = typeof val
+
+//     if ( t === 'string' ) {
+//         const v = JSON.parse( val )
+//         const s = Object.prototype.toString.call( v )
+
+//         if ( s === '[object Array]' )
+//             return v > 0 ? v : false
+
+//         if ( s === '[object Object]' )
+//             return JSON.stringify( v ) !== '{}' ? v : false
+//     }
+// }
+
+// const envs      = getVal( env_info )
+// const kernels   = getVal( kernel_info )
+// const monitors  = getVal( monitor_info )
+// const scr_info  = getVal( script_info )
+// const rpms      = getVal( rpm_info )

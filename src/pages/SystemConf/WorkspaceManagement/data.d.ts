@@ -1,6 +1,8 @@
 export interface WorkspaceList {
 	is_public?:number;
 	onRef:any;
+	tab?:string;
+	top?:boolean
 }
 
 export interface WorkspaceTable {
@@ -35,7 +37,7 @@ export interface TableListParams {
 }
 
 export interface RemovePrams {
-	id:number
+	id:number | null | string
 }
 
 export interface Count {

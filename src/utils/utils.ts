@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import { parse } from 'querystring';
-import { listRender, enumer } from './hooks'
+import { listRender, enumer } from './hooks';
+import { useModel } from 'umi';
 import _ from 'lodash';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
@@ -43,7 +44,8 @@ export const switchUserRole = (name: string) => {
         ['super_admin', '超级管理员'],
         ['ws_tourist', '游客'],
         ['ws_member', 'workspace成员'],
-        ['ws_test_admin', '测试管理员'],
+        ['ws_tester_admin', '测试管理员'],
+        ['ws_tester', '测试人员'],
         ['ws_admin', '管理员'],
         ['all', '全部'],
         ['ws_owner', '所有者'],
@@ -105,7 +107,7 @@ export function getQuery(key: string, url = window.location.href) {
 
 /**
  *  匹配类型
- * @param params 
+ * @param params
  */
 export const matchType = (params: any) => {
     // test suite搜索页面
@@ -224,6 +226,23 @@ export function resetECI(list: any, typeName: string) {
     }
     return []
 }
+export const enumerChinese =  ( name:any ) => {
+    const list = {
+        '公共镜像':'system',
+        '自定义镜像':'self',
+        '共享镜像':'others'
+    }
+    return list[name];
+}
+export const enumerEnglish =  ( name:any ) => {
+    const list = {
+        system:'公共镜像',
+        self:'自定义镜像',
+        others:'共享镜像'
+    }
+    return list[name];
+}
+
 export const gblen = (str: string) => {
     let len = 0;
     for (let i = 0; i < str.length; i++)
@@ -297,3 +316,23 @@ export const requestCodeMessage = (code: number, msg: string) => {
     if (code === 201) return message.warning(msg)
     return message.error(msg)
 }
+
+/**
+ * @description 获取当前用户的角色。
+ * @param type ws级 or 系统级
+ * @returns 用户的角色
+ * */
+//
+export function matchRoleEnum(type = 'ws') {
+    const { initialState } = useModel('@@initialState');
+    const currentRole = initialState?.authList[`${type == 'ws' ? 'ws_role_title' : 'sys_role_title'}`]
+    const currentRoleId = initialState?.authList?.user_id;
+    return { currentRole, currentRoleId };
+};
+
+export const role_type_enum = [
+    { key: 'ws_member', name: 'worksapce成员' },
+    { key: 'ws_tester', name: '测试人员' },
+    { key: 'ws_tester_admin', name: '测试管理员' },
+    { key: 'sys_admin', name: '系统管理员' },
+];

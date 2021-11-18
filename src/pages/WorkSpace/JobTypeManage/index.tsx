@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useEffect,useState } from 'react'
 import { Table, Space, Button, Badge, message, Tooltip, Modal, Input } from 'antd'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import { useRequest, history, useModel } from 'umi'
 import { queryJobTypeList, jobSwitch, deleteJob, queryJobTypeDel } from './services'
 import { requestCodeMessage, switchServerType, switchTestType } from '@/utils/utils'
@@ -104,10 +103,7 @@ export default (props: any) => {
             width: 50,
             // dataIndex : 'is_first',
             render: (_: any) => (
-                <AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                    children={_.is_first ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />}
-                    onClick={() => handleSetDefault(_)} />
+                _.is_first ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined onClick={() => handleSetDefault(_)} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
             )
         },
         {
@@ -115,10 +111,7 @@ export default (props: any) => {
             fixed: 'left',
             width: 75,
             render: (_: any) => (
-                <AuthForm
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                    children={<Input size="small" defaultValue={_.priority} style={{ textAlign: 'center' }} />}
-                    onFirm={<EditTalbeCell size="small" id={_.id} priority={_.priority} onChange={handleChangePriority} />} />
+                <EditTalbeCell size="small" id={_.id} priority={_.priority} onChange={handleChangePriority} />
             )
         },
         {
@@ -170,17 +163,9 @@ export default (props: any) => {
             fixed: 'right',
             render: (_: any) => (
                 <Space>
-                    {  <AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                        children={<Button style={{ padding: 0 }} size="small" type="link" >编辑</Button>}
-                        onClick={() => handleEditJobType(ws_id, _.id)} />
-                    }
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(ws_id, _.id)}>编辑</Button>
                     <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link" >预览</Button>
-                    {  <AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                        children={_.creator_name !== '系统预设' && <Button type='link' size="small" style={{ padding: 0 }}>删除</Button>}
-                        onClick={() => handleDeleteJobType(_)} />
-                    }
+                    {_.creator_name !== '系统预设' && <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>删除</Button>}
                 </Space>
             )
         }
@@ -194,11 +179,7 @@ export default (props: any) => {
         <SingleTabCard
             title={'Job类型管理'}
             extra={
-                <AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                    children={<Button type="primary">新建Job类型</Button>}
-                    onClick={handleCreate}
-                />
+                <Button type="primary" onClick={handleCreate}>新建Job类型</Button>
             }
         >
             <Table

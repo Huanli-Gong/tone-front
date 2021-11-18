@@ -3,7 +3,7 @@ import { Col, Divider, Empty, Layout, Row, Spin, Statistic, Typography , Button 
 import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
-import { useRequest, history } from 'umi'
+import { useRequest, history, Access, useAccess } from 'umi'
 import { queryWorkspaceProductData } from './services'
 
 import { ReactComponent as Icondroduct } from '@/assets/svg/dashboard/icon_droduct.svg'
@@ -191,7 +191,7 @@ const WeatherIcon = styled.div`
 const WorkpsaceDashboard = (props: any) => {
     const { ws_id } = props.match.params
     const layoutHeight = resizeDocumentHeightHook()
-
+    const access = useAccess();
     const { data, loading } = useRequest(() => queryWorkspaceProductData({ ws_id }))
 
     writeDocumentTitle(`menu.Workspace.Dashboard`)
@@ -283,14 +283,23 @@ const WorkpsaceDashboard = (props: any) => {
                                                 image={Empty.PRESENTED_IMAGE_SIMPLE} 
                                                 description={ `产品中还没有项目`}
                                             >
-                                                <Button
+                                                <Access
+                                                    accessible={access.canWsAdmin()}
+                                                    // fallback={ 
+                                                    //     <Button type="primary" disabled={true}>
+                                                    //         立刻创建
+                                                    //     </Button>
+                                                    // }
+                                                >
+                                                    <Button
                                                     onClick={
                                                         () => history.push(`/ws/${ws_id}/product?current=${item.product_id}`)
-                                                    }
-                                                    type="primary"
-                                                >
-                                                    立刻创建
-                                                </Button>
+                                                        }
+                                                        type="primary"
+                                                    >
+                                                        立刻创建
+                                                    </Button>
+                                                </Access>
                                             </Empty>
                                         </Col>
                                 }

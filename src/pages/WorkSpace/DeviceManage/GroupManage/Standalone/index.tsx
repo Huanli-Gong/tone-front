@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperat
 import { Space, Button, Tag, message, Typography, Row, Checkbox, Modal, Spin, Tooltip, Menu, Dropdown } from 'antd'
 
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import DeviceDetail from '../Components/DeviceDetail'
 import AddDevice from './Components/AddDevice'
 import { StateBadge } from '../Components'
@@ -16,12 +15,11 @@ import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTes
 import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
 import { resizeDocumentHeightHook } from '@/utils/hooks'
-
+import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable';
 import { requestCodeMessage } from '@/utils/utils';
 
 import SelectVmServer from './Components/SelectVmServer';
-import { ServerJumpBlock } from '@/components/Public';
 
 /**
  * 内网单机
@@ -205,13 +203,13 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
-                        <ServerJumpBlock>{_ || '-'}</ServerJumpBlock>
+                        <span>{_ || '-'}</span>
                     )
                 else
                     return (
                         <Row justify="start" align="middle">
                             <TreeSvg style={{ marginRight : 8 , height : 40 }}/>
-                            <ServerJumpBlock>{_ || '-'}</ServerJumpBlock>
+                            <span>{_ || '-'}</span>
                         </Row>
                     )
             },
@@ -373,62 +371,33 @@ const Standalone = (props: any, ref: any) => {
             // align: 'center',
             render: (_: any, row: any) => (
                 <Space>
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}>详情</Button>
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)} /*disabled={ _.state === 'Occupied' ? true : false }*/>编辑</Button>
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
+                    <PermissionTootip>
+                        <Button disabled={true} style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
+                    </PermissionTootip>
                     {
-                        <AuthCommon
-                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                            children={<Button style={{ padding: 0 }} type="link" size="small" >详情</Button>}
-                            onClick={() => viewDetailRef.current.show(_.id)}
-                        />
+                         row.sub_server_list && row.device_type === '物理机' ? 
+                         <Dropdown
+                             placement="bottomRight"
+                             overlay={
+                                 <Menu
+                                     onClick={(item) => hanldeClickMenu(item, _)}
+                                 >
+                                     <Menu.Item key={'data'}>同步数据</Menu.Item>
+                                     <Menu.Item key={'vm'}>同步机器</Menu.Item>
+                                 </Menu>
+                             }
+                             trigger={['click', 'hover']}
+                         >
+                             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                 同步 <DownOutlined />
+                             </a>
+                         </Dropdown> :
+                         <Button style={{ padding: 0 }} size="small" type="link" onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id) }>同步</Button>
                     }
-                    {
-                        <AuthCommon
-                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                            children={<Button style={{ padding: 0 }} type="link" size="small"  /*disabled={ _.state === 'Occupied' ? true : false }*/>编辑</Button>}
-                            onClick={() => handleEdit(_)}
-                        />
-                    }
-                    {
-                        <AuthForm
-                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                            children={<Button style={{ padding: 0 }} size="small" type="link" >删除</Button>}
-                            onFirm={
-                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
-                            }
-                        />
-                    }
-                    {
-                        <AuthCommon
-                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                            children={<Button style={{ padding: 0 }} size="small" type="link" >日志</Button>}
-                            onClick={() => handleOpenLogDrawer(_.id)}
-                        />
-                    }
-                    {
-                        <AuthCommon
-                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                            children={
-                                row.sub_server_list && row.device_type === '物理机' ? 
-                                <Dropdown
-                                    placement="bottomRight"
-                                    overlay={
-                                        <Menu
-                                            onClick={(item) => hanldeClickMenu(item, _)}
-                                        >
-                                            <Menu.Item key={'data'}>同步数据</Menu.Item>
-                                            <Menu.Item key={'vm'}>同步机器</Menu.Item>
-                                        </Menu>
-                                    }
-                                    trigger={['click', 'hover']}
-                                >
-                                    <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                        同步 <DownOutlined />
-                                    </a>
-                                </Dropdown> :
-                                <Button style={{ padding: 0 }} size="small" type="link" >同步</Button>
-                            }
-                            onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id) }
-                        />
-                    }
+                    
                 </Space>
             )
         }
@@ -495,16 +464,8 @@ const Standalone = (props: any, ref: any) => {
                                 <Button type="link" onClick={() => setSelectRowKeys([])}>取消</Button>
                             </Space>
                             <Space>
-                                {<AuthCommon
-                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                    children={<Button>批量编辑</Button>}
-                                    onClick={() => handleEdit({selectRowKeys,opreateType:'moreEdit'})} />
-                                }
-                                {<AuthCommon
-                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                    children={<Button>批量同步</Button>}
-                                    onClick={handleBatchOption} />
-                                }
+                                <Button onClick={() => handleEdit({selectRowKeys,opreateType:'moreEdit'})}>批量编辑</Button>
+                                <Button onClick={handleBatchOption}>批量同步</Button>
                             </Space>
                         </Row>
                     ) : null

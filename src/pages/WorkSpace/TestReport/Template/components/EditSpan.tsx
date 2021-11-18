@@ -72,6 +72,7 @@ const EditSpan: React.FC<any> = (props: any) => {
     }
 
     const RowIcon: React.FC<any> = () => icon
+
     if (width <= 0) return <></>
     if (state)
         return (

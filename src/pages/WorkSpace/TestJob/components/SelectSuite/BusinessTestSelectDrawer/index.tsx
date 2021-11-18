@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle } from 'react';
 import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { useRequest } from 'umi'
+import { useRequest,useAccess,Access } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from '../service';
 import styles from './index.less';
@@ -24,6 +24,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     onDomainChange
 }) => {
     const { Search } = Input;
+    const access = useAccess()
     const [ show, setShow ] = useState<boolean>(false)
     // 判断全选框的状态
     const [indeterminate, setIndeterminate] = useState(false); 
@@ -248,14 +249,19 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                 ) : (
                   <div style={{ flex:1, display: 'flex' , justifyContent: 'center' , alignItems: 'center', flexDirection: 'column' }}>
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
-                    <Button type="primary" onClick={() => {
-                        // 跳转至ws级TestSuite管理
-                        const a = document.createElement('a');
-                        a.target = "_blank";
-                        a.rel = "noopener noreferrer"
-                        a.href = testType ? `/ws/${ws_id}/test_suite?test_type=${testType}` : `/ws/${ws_id}/test_suite`;
-                        a.click();
-                    }}>添加用例</Button>
+                    <Access accessible={access.canWsAdmin()}>
+                        <Button type="primary" 
+                            onClick={() => {
+                            // 跳转至ws级TestSuite管理
+                                const a = document.createElement('a');
+                                a.target = "_blank";
+                                a.rel = "noopener noreferrer"
+                                a.href = testType ? `/ws/${ws_id}/test_suite?test_type=${testType}` : `/ws/${ws_id}/test_suite`;
+                                a.click();
+                            }}>
+                            添加用例
+                        </Button>
+                    </Access>
                   </div>
                 )}
             </Spin>

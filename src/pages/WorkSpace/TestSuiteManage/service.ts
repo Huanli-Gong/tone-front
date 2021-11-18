@@ -22,7 +22,7 @@ export async function queryWorkspaceHasRecord ( params : any ) {
 
 //domain list
 export async function queryDomains (params:any={page_size: 100}) {
-    return request(`/api/case/test_domain/`,{params} )
+    return request(`/api/case/test_domain/`, {params} )
 }
 
 

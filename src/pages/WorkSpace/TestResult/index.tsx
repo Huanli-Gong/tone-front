@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Radio, Tag, Tooltip, Layout, Space, Typography, Popconfirm, message, Tabs, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Checkbox, Spin } from 'antd';
 import { useAccess, Access } from 'umi'
-import { AuthMember, AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import { resizeDocumentHeightHook, writeDocumentTitle } from '@/utils/hooks'
 import { DownOutlined, UpOutlined, PlusCircleTwoTone, MinusCircleTwoTone, StarOutlined, StarFilled, SearchOutlined, CloseOutlined } from '@ant-design/icons'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
@@ -102,12 +101,14 @@ const stateColorFn = (state: any) => {
 
 const queryTypeArr = ['creators', 'tags', 'test_suite', 'job_type_id', 'server', 'project_id']
 
-const tabsKey = [
+const tabThree = [
     { tab: '全部Job', key: 'all' },
     { tab: '我创建的Job', key: 'my' },
     { tab: '我的收藏', key: 'collection' }
 ]
-
+const tabSingle = [
+    { tab: '全部Job', key: 'all' },
+]
 const tagRender = ({ label, closable, onClose, value }: any) => {
     return (
         <Tag
@@ -405,18 +406,18 @@ export default (props: any) => {
                 let virtualMachine = {}
                 if (result.code === 200) {
                     let option = result.data && lodash.isArray(result.data) ? result.data : []
-                    let virtualOption:any = []
+                    let virtualOption: any = []
                     if (index === 1) option = option.filter((obj: any) => obj && obj.is_instance)
                     if (option.length) {
                         option = option.map((item: any) => {
-                            if(item.sub_server_list && item.sub_server_list.length > 0){
-                                virtualOption = item.sub_server_list.map((child:any)=>({ id: child.id, name: child.ip, provider: child.device_mode }))
+                            if (item.sub_server_list && item.sub_server_list.length > 0) {
+                                virtualOption = item.sub_server_list.map((child: any) => ({ id: child.id, name: child.ip, provider: child.device_mode }))
                             }
                             // physicalMachine = { id: item.id, name: index === 0 ? item.ip : item.private_ip, provider: index === 0 ? 'aligroup' : 'aliyun' }
                             // virtualMachine = item.sub_server_list.map((child:any)=> ({ id: child.id, name: child.ip, provider: child.device_mode }))
-                            return ({ id: item.id, name: index === 0 ? item.ip : item.pub_ip, provider: index === 0 ? 'aligroup' : 'aliyun' })
+                            return ({ id: item.id, name: index === 0 ? item.ip : item.private_ip, provider: index === 0 ? 'aligroup' : 'aliyun' })
                         })
-                        
+
                         optionArr = [...optionArr, ...option, ...virtualOption]
                     }
                 }
@@ -491,8 +492,8 @@ export default (props: any) => {
             getPageData()
         } else requestCodeMessage(code, msg)
     }
-    
-    const sortStartTime = (sorter:any) => {
+
+    const sortStartTime = (sorter: any) => {
         let newData = lodash.cloneDeep(dataSource)
         switch (sorter.order) {
             case undefined:
@@ -501,7 +502,7 @@ export default (props: any) => {
             case 'descend':
                 setDataSource({
                     ...newData,
-                    data:newData?.data.sort(function(a,b){
+                    data: newData?.data.sort(function (a, b) {
                         return a.start_time < b.start_time ? 1 : -1
                     })
                 })
@@ -509,7 +510,7 @@ export default (props: any) => {
             case 'ascend':
                 setDataSource({
                     ...newData,
-                    data:newData?.data.sort(function(a,b){
+                    data: newData?.data.sort(function (a, b) {
                         return a.start_time > b.start_time ? 1 : -1
                     })
                 })
@@ -517,25 +518,8 @@ export default (props: any) => {
             default:
                 break;
         }
-
     }
-    const columns: any = [
-        {
-            title: ' ',
-            width: 30,
-            align: 'center',
-            fixed: 'left',
-            className: 'collection_star',
-            render: (_: any) => (
-                <div onClick={() => handleClickStar(_, !_.collection)}>
-                    {
-                        _.collection ?
-                            <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
-                            <StarOutlined className="no_collection_star" />
-                    }
-                </div>
-            )
-        },
+    let columns: any = [
         {
             title: 'JobID',
             dataIndex: 'id',
@@ -627,52 +611,64 @@ export default (props: any) => {
             ellipsis: true,
             dataIndex: 'end_time',
             render: (_: any) => (_ || '-')
-        }, {
-            title: '操作',
-            width: 160,
-            fixed: 'right',
-            render: (_: any, row: any) => {
-                return (
-                    <Space>
-                        <Access accessible={access.wsTouristFilter()}>
-                            <Space>
-                                {row.created_from === 'offline' ?
-                                    <span style={{opacity: 0.25}}>重跑</span>
-                                    :
-                                    <AuthMember
-                                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                        children={<Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>重跑</Typography.Text>}
-                                        onClick={() => handleTestReRun(_)}
-                                        creator_id={_.creator}
-                                    />
-                                }
-                                <AuthMemberForm
-                                    isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                    children={<Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>删除</Typography.Text>}
-                                    onFirm={
-                                        <Popconfirm
-                                            title="确定要删除吗？"
-                                            onConfirm={() => handleDelete(_)}
-                                            okText="确认"
-                                            cancelText="取消"
-                                        >
-                                            <Typography.Text
-                                                style={{ color: '#1890FF', cursor: 'pointer' }}
-                                            >
-                                                删除
-                                            </Typography.Text>
-                                        </Popconfirm>
-                                    }
-                                    creator_id={_.creator}
-                                />
-                            </Space>
-                        </Access>
-                        <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
-                    </Space>
-                )
-            }
-        }
+        },
+
     ]
+
+    columns = access.testerAccess() ? [{
+        title: '',
+        width: 30,
+        align: 'center',
+        fixed: 'left',
+        className: 'collection_star',
+        render: (_: any) => (
+            <div onClick={() => handleClickStar(_, !_.collection)}>
+                {
+                    _.collection ?
+                        <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
+                        <StarOutlined className="no_collection_star" />
+                }
+            </div>
+        )
+    }, ...columns] : columns
+
+    columns = access.testerAccess() ? columns.concat({
+        title: '操作',
+        width: 160,
+        fixed: 'right',
+        render: (_: any) => {
+            return (
+                <Space>
+                    <Access accessible={access.testerAccess(_.creator)}
+                        fallback={
+                            <Space>
+                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
+                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>删除</Typography.Text>
+                            </Space>
+                        }
+                    >
+                        <Space>
+                            <span onClick={() => handleTestReRun(_)}><Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>重跑</Typography.Text></span>
+                            <Popconfirm
+                                title="确定要删除吗？"
+                                onConfirm={() => handleDelete(_)}
+                                okText="确认"
+                                cancelText="取消"
+                            >
+                                <Typography.Text
+                                    style={{ color: '#1890FF', cursor: 'pointer' }}
+                                >
+                                    删除
+                                </Typography.Text>
+                            </Popconfirm>
+                        </Space>
+                    </Access>
+                    <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
+                </Space>
+            )
+        }
+    }) : columns
+
 
     const handleTestReRun = (row: any) => {
         setModalData(row)
@@ -714,9 +710,9 @@ export default (props: any) => {
         clipboard.on('success', function (e: any) {
             message.success('复制成功')
             e.clearSelection();
-        })
+        });
 
-        document.querySelector('.test_analysis_copy_link')?.click()
+        (document.querySelector('.test_analysis_copy_link') as any).click()
         clipboard.destroy()
     }
 
@@ -855,16 +851,16 @@ export default (props: any) => {
             time.forEach((i: any) => { if (i.name) obj[i.name] = lodash.isArray(i.date) ? i.date.map((x: any) => x ? moment(x).format('YYYY-MM-DD HH:mm:ss') : '') : [] })
             delete obj.creation_time
             delete obj.completion_time
-            let newObj = {}  
-            if('start_time' in obj){
-                if(obj.start_time[0] === ''){
+            let newObj = {}
+            if ('start_time' in obj) {
+                if (obj.start_time[0] === '') {
                     // const { page_num, page_size, search, state,tab,ws_id } = obj
                     // newObj = { page_num, page_size, search, state, tab, ws_id }
                     newObj = {
                         ...obj,
-                        start_time:null
+                        start_time: null
                     }
-                }else{
+                } else {
                     newObj = {
                         ...obj,
                     }
@@ -961,8 +957,8 @@ export default (props: any) => {
     )
 
     const handleFuncsBaselineSelectSearch = useCallback((val: any) => setServerVal(val), [])
-    const isValidIp = (ip:any) => {
-        return /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/ .test(ip)
+    const isValidIp = (ip: any) => {
+        return /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/.test(ip)
     }
     const handleFuncsBaselineSelectBlur = () => {
         // let index = serverVal?.indexOf('.');
@@ -978,9 +974,9 @@ export default (props: any) => {
         //     testServerSetFormDataFn(serverVal)
         // }
         if(!isValidIp(serverVal)){
-            message.warning('请输入正确的ip')
+            // message.warning('请输入正确的ip')
             testServerSetFormDataFn('')
-        }else{
+        } else {
             testServerSetFormDataFn(serverVal)
         }
     }
@@ -1160,7 +1156,7 @@ export default (props: any) => {
         setSelectRowData(lodash.differenceBy(selectRowData, arr, 'id'))
     }
 
-    const rowSelection = {
+    const rowSelection = access.testerAccess() ? {
         selectedRowKeys,
         onSelect: selectedChange,
         getCheckboxProps: (record: any) => {
@@ -1181,7 +1177,7 @@ export default (props: any) => {
                 cancleAllSelectFn(changeRows)
             }
         },
-    };
+    } : undefined;
 
     let heightVal = radioValue === 2 ? layoutHeight - 50 - 57 : layoutHeight - 50 - 106
     if (radioValue === 1 && !selectedRowKeys.length) heightVal = layoutHeight - 50
@@ -1193,6 +1189,7 @@ export default (props: any) => {
     const handleSearchList = () => {
         queryTestListTableData({ ...pageParams, search: searchInp })
     }
+    const tabsKey = access.testerAccess() ? tabThree : tabSingle
     return (
         <Layout.Content
             style={{
@@ -1213,11 +1210,13 @@ export default (props: any) => {
                         style={{ paddingBottom: tabMarginBottom }}
                     >
                         {
+
                             tabsKey.map(
                                 (item: any) => (
                                     <Tabs.TabPane
                                         key={item.key}
                                         tab={
+
                                             <div
                                                 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                                                 className={styles.result_tab_item}
@@ -1256,13 +1255,16 @@ export default (props: any) => {
                                                     }
                                                 </Space>
                                                 <Space>
-                                                    <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
-                                                        <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
-                                                        <Radio.Group onChange={handleRadioChange} value={radioValue}>
-                                                            <Radio value={1}>报告和分析</Radio>
-                                                            <Radio value={2}>批量删除</Radio>
-                                                        </Radio.Group>
-                                                    </div>
+                                                    {
+                                                        access.testerAccess() &&
+                                                        <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
+                                                            <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
+                                                            <Radio.Group onChange={handleRadioChange} value={radioValue}>
+                                                                <Radio value={1}>报告和分析</Radio>
+                                                                <Radio value={2}>批量删除</Radio>
+                                                            </Radio.Group>
+                                                        </div>
+                                                    }
                                                     <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
                                                         <Input
                                                             style={{ width: 160 }}
@@ -1645,74 +1647,3 @@ export default (props: any) => {
         </Layout.Content>
     )
 }
-
-
-
-        // renderCell: (checked, record) => {
-        //     const flag = record.state !== 'success' && record.state !== 'fail'
-        //     return (
-        //         <PopoverGroup
-        //         selectedChange={selectedChange}
-        //         jobInfo={record}
-        //         disabled={flag}
-        //         content={content}
-        //         title={text}
-        //         isChecked = {checked} />
-        //     )
-        // },
-
-        // let allGroupSelectJob: any = []
-
-        // allGroupSelectJob = lodash.reduce(allGroup, (result, value) => {
-        //     if (value && lodash.isArray(value.members)) return [...result, ...value.members]
-        //     return result
-        // }, []);
-
-        // arrData = lodash.intersectionWith(arrData, allGroupSelectJob, lodash.isEqual);
-        // arrKeys = lodash.reduce(arrData, (result:any, value:any) => {
-        //     return [...result, value.id]
-        // }, []);
-        // 去掉未选组的job 结束
-
-
-
-
-        // if (defaultFilterData) {
-        //     const { valuesCopy: formValues, parmas, filterData, projectDataNew } = defaultFilterData
-        //     if (formValues.time[0]) {
-        //         formValues.time[0].date[0] = moment(formValues.time[0].date[0])
-        //         formValues.time[0].date[1] = moment(formValues.time[0].date[1])
-        //     }
-        //     if (formValues.time[1]) {
-        //         formValues.time[1].date[0] = moment(formValues.time[1].date[0])
-        //         formValues.time[1].date[1] = moment(formValues.time[1].date[1])
-        //     }
-
-        //     page_default_params_copy = { ...page_default_params_copy, ...parmas }
-        //     setFilterData(filterData)
-        //     setFilterparmas(page_default_params_copy)
-        //     setFormFieldsValue(formValues)
-        //     setProjectData({...projectData,...projectDataNew})
-
-        // }
-
-
-
-    // const { data: dataSourceData, loading, run, params, refresh } = useRequest(
-    //     (p) => queryTestResultList(p),
-    //     {
-    //         formatResult: response => response,
-    //         defaultParams: [page_default_params_copy],
-    //         initialData: {
-    //             all_job: 0,
-    //             data: [],
-    //             fail_job: 0,
-    //             my_job: 0,
-    //             pending_job: 0,
-    //             running_job: 0,
-    //             stop_job: 0,
-    //             success_job: 0,
-    //         },
-    //         debounceInterval: 300
-    //     }
-    // )

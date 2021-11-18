@@ -10,7 +10,6 @@ import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import CopyTemplateDrawer from './CopyComplate'
 import CommonPagination from '@/components/CommonPagination'
-import { AuthMember, AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import _ from 'lodash'
 import { requestCodeMessage, targetJump } from '@/utils/utils'
 
@@ -25,6 +24,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         page_size: 10,
         ws_id,
     }
+    // const access = useAccess()
     const [fetchParams, setFetchParams] = useState<any>()
     const fetchParamsData = fetchParams || defaultParmas
     const copyTemplate: any = useRef(null)
@@ -88,8 +88,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         container: 180,
         button_width: 90
     }
-
-    const columns: any = [
+    let columns:any = [
         {
             dataIndex: 'name',
             title: '模版名称',
@@ -180,57 +179,34 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                     <Space>
                         {
                             !isDefault &&
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user', 'ws_member', 'ws_tourist']}
-                                children={
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} >
-                                        编辑
-                                    </span>
-                                }
-                                onClick={
-                                    () => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)
-                                }
-                                creator_id={row.creator_name}
-                            />
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)}>
+                                编辑
+                            </span>
                         }
-
-                        <AuthMember
-                            isAuth={['sys_test_admin', 'user', 'ws_member', 'ws_tourist']}
-                            children={<OptBtn>复制</OptBtn>}
-                            onClick={_.partial(handleAddScript, row)}
-                            creator_id={row.creator_name}
-                        />
-
+                        <OptBtn onClick={_.partial(handleAddScript, row)}>复制</OptBtn>
                         <span
                             style={{ color: '#1890FF', cursor: 'pointer' }}
                             onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}/preview`)}
                         >
                             预览
                         </span>
-
                         {
                             !isDefault &&
-                            <AuthMemberForm
-                                isAuth={['sys_test_admin', 'user', 'ws_member', 'ws_tourist']}
-                                children={<OptBtn >删除</OptBtn>}
-                                onFirm={
-                                    <Popconfirm
-                                        title="确认删除该模板吗？"
-                                        okText="确认"
-                                        cancelText="取消"
-                                        onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
-                                    >
-                                        <OptBtn>删除</OptBtn>
-                                    </Popconfirm>
-                                }
-                                creator_id={row.creator_name}
-                            />
+                            <Popconfirm
+                                title="确认删除该模板吗？"
+                                okText="确认"
+                                cancelText="取消"
+                                onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
+                            >
+                                <OptBtn>删除</OptBtn>
+                            </Popconfirm>
                         }
                     </Space>
-                )
+                    )
+                }
             }
-        }]
-
+    ]
+    
     return (
         <Spin spinning={loading}>
             <ClsResizeTable

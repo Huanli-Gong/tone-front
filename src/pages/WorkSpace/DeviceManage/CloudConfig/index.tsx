@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, Space, Tabs, message, Popconfirm, Pagination, Popover, Table, Row } from 'antd';
 import { FilterFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { deleteCloudImage, queryCloudImage, deleteCloudAk, queryCloudAk } from './service';
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import styles from './style.less';
 import { history } from 'umi'
 
@@ -314,40 +313,29 @@ const CloudConfig: React.FC<any> = (props) => {
 			render: (text, record) => {
 				return (
 					<Space size='small'>
-						{<AuthCommon
-							isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-							children={<span className={styles.fail_detail_operation}>编辑</span>}
-							onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)} />
-						}
-						{
-							<AuthForm
-								isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-								children={<span className={styles.fail_detail_operation}>删除</span>}
-								onFirm={
-									<Form
-										form={form}
-										layout="vertical"
-									/*hideRequiredMark*/
-									>
-										<Popconfirm
-											title="你确定要删除吗？"
-											onConfirm={() => {
-												const generObj = handleDelete(record);
-												const excuteResult: any = generObj.next();
-												excuteResult.value.then((result: any) => {
-													const { code, msg } = result;
-													defaultOption(code, msg);
-												})
-											}}
-											okText="确认"
-											cancelText="取消"
-											// scroll={{ x: 400 }}
-											icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-											<span className={styles.fail_detail_operation}>删除</span>
-										</Popconfirm>
-									</Form>
-								} />
-						}
+						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
+						<Form
+							form={form}
+							layout="vertical"
+						/*hideRequiredMark*/
+						>
+							<Popconfirm
+								title="你确定要删除吗？"
+								onConfirm={() => {
+									const generObj = handleDelete(record);
+									const excuteResult: any = generObj.next();
+									excuteResult.value.then((result: any) => {
+										const { code, msg } = result;
+										defaultOption(code, msg);
+									})
+								}}
+								okText="确认"
+								cancelText="取消"
+								// scroll={{ x: 400 }}
+								icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+								<span className={styles.fail_detail_operation}>删除</span>
+							</Popconfirm>
+						</Form>
 					</Space>
 				)
 			}
@@ -593,40 +581,29 @@ const CloudConfig: React.FC<any> = (props) => {
 			render: (text, record) => {
 				return (
 					<Space size='small'>
-						{<AuthCommon
-							isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-							children={<span className={styles.fail_detail_operation}>编辑</span>}
-							onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)} />
-						}
+						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
 						{/* 删除的弹框 */}
-						{
-							<AuthForm
-								isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-								children={<span className={styles.fail_detail_operation}>删除</span>}
-								onFirm={
-									<Form
-										form={form}
-										layout="vertical"
-									/*hideRequiredMark*/
-									>
-										<Popconfirm
-											title="你确定要删除吗？"
-											onConfirm={() => {
-												const generObj = handleDelete(record);
-												const excuteResult: any = generObj.next();
-												excuteResult.value.then((result: any) => {
-													const { code, msg } = result;
-													defaultOption(code, msg);
-												})
-											}}
-											okText="确认"
-											cancelText="取消"
-											icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-											<span className={styles.fail_detail_operation}>删除</span>
-										</Popconfirm>
-									</Form>
-								} />
-						}
+						<Form
+							form={form}
+							layout="vertical"
+						/*hideRequiredMark*/
+						>
+							<Popconfirm
+								title="你确定要删除吗？"
+								onConfirm={() => {
+									const generObj = handleDelete(record);
+									const excuteResult: any = generObj.next();
+									excuteResult.value.then((result: any) => {
+										const { code, msg } = result;
+										defaultOption(code, msg);
+									})
+								}}
+								okText="确认"
+								cancelText="取消"
+								icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+								<span className={styles.fail_detail_operation}>删除</span>
+							</Popconfirm>
+						</Form>
 					</Space>
 				)
 			}
@@ -676,11 +653,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				</Tabs>
 			}
 			extra={
-				<AuthCommon
-					isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-					children={<Button key="3" type="primary"> {key === 'ak' ? '新建ak' : '新建image'}</Button>}
-					onClick={key === 'ak' ? handleAddAk : handleAddImage}
-				/>
+				<Button key="3" type="primary" onClick={key === 'ak' ? handleAddAk : handleAddImage}> {key === 'ak' ? '新建ak' : '新建image'}</Button>
 			}
 		>
 			<Table

@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState, memo } from 'react';
+import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { SettingTextArea } from '../EditPublic';
+import { PerfTextArea } from '../EditPerfText';
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
@@ -40,24 +41,17 @@ import {
     RightResult,
     CloseBtn,
 } from '../../ReportUI';
-// import produce from 'immer';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 const { Option } = Select;
 
 const Performance = (props: any) => {
-    const { child, name, id, onChange, onDelete, dataSource, setDataSource, setSuite } = props
+    const { child, name, id, onChange, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, setEditBtn, environmentResult } = useContext(ReportContext)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
     const [chartType, setChartType] = useState('1')
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
-    const [source, setSource] = useState<any>({
-        suite_id: '',
-        test_conclusion: "",
-        test_description: "",
-        test_env: "",
-    })
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
     let group = allGroupData?.length
@@ -71,63 +65,63 @@ const Performance = (props: any) => {
         setBtnName(btn ? '图表模式' : '列表模式')
     }, [btn])
 
+    const baseIndex = useMemo(()=>{
+        if(baselineGroupIndex === -1) return 0
+        return baselineGroupIndex
+    },[ baselineGroupIndex ])
+
+    const handleDataArr = (dataArr:any,baseIndex:number) => {
+        if (Array.isArray(dataArr.list) && !!dataArr.list.length) {
+            dataArr.list.forEach((per:any)=>(
+                per.conf_list.forEach((conf:any,i:number)=>(
+                    conf.metric_list.forEach((metric:any,idx:number)=>
+                        (
+                            metric.compare_data.splice(baseIndex,0,{
+                                cv_value: metric.cv_value,
+                                test_value: metric.test_value,
+                            })
+                        )
+                    )
+                ))
+            ))
+        }
+        return dataArr;
+    }
+
     useEffect(() => {
-        setPerData(child)
-    }, [child])
+        let dataArr = _.cloneDeep(child)
+        setPerData(
+            btn ? handleDataArr(dataArr,baseIndex) : child
+        )
+        // setPerData(child)
+    }, [child,btn])
 
     // 筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
-        let dataSource = _.clone(child)
-        let newArr: any = []
-        let newData: any = []
-        dataSource.list.map((item: any) => {
-            item.conf_list.map((conf: any) => {
-                conf.metric_list.map((metric: any) => {
-                    metric.compare_data.map((compare: any) => {
-                        if (compare.compare_result === value)
-                            newData.push(conf.conf_id)
-                    })
-                })
-            })
-        })
+        let dataSource = handleDataArr(_.cloneDeep(child),baseIndex)
+        let num = baseIndex === 0 ? 1 : 0
         if (value === 'all') {
             setPerData(dataSource)
-        } else if (value === 'volatility') {
-            let newData: any = []
-            dataSource.list.map((item: any) => {
-                item.conf_list.map((conf: any) => {
-                    conf.metric_list.map((metric: any) => {
-                        metric.compare_data.map((compare: any) => {
-                            if (compare.compare_result === 'increase' || compare.compare_result === 'decline')
-                                newData.push(conf.conf_id)
-                        })
-                    })
+        }  else {
+            let list = dataSource.list.map((item: any) => {
+                 let conf_list =  item.conf_list.map((conf:any) => {
+                    let metric_list = conf.metric_list.filter((metric:any) => value === 'volatility' 
+                    ? (metric.compare_data[num]?.compare_result === 'increase' || metric.compare_data[num]?.compare_result === 'decline')
+                    : metric.compare_data[num]?.compare_result === value )
+                    return {
+                        ...conf,
+                        metric_list,
+                    }
                 })
-            })
-            dataSource.list.map((item: any) => {
-                let conf_list = item.conf_list.filter((conf: any) => newData.includes(conf.conf_id));
-                newArr.push({
+                return {
                     ...item,
                     conf_list
-                })
+                }
             })
             let obj = {
                 ...dataSource,
-                list: newArr
-            }
-            setPerData(obj)
-        } else {
-            dataSource.list.map((item: any) => {
-                let conf_list = item.conf_list.filter((conf: any) => newData.includes(conf.conf_id));
-                newArr.push({
-                    ...item,
-                    conf_list
-                })
-            })
-            let obj = {
-                ...dataSource,
-                list: newArr
+                list,
             }
             setPerData(obj)
         }
@@ -152,34 +146,6 @@ const Performance = (props: any) => {
         )
     }
 
-    // const DelBtnEmpty: React.FC<any> = (props: any) => {
-    //     return btnState && <PrefDataDel />
-    // }
-    const handleFieldChange = (field: any, name: string, data: any) => {
-        // const list = perData.list.map((item:any)=>{
-        //     return produce(item,(draf:any)=>{
-        //         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
-        //             draf[name] = field
-        //         }
-        //         // setSuite({
-        //         //     ...draf,
-        //         // })
-        //     })
-        // })
-        // console.log('list',list)
-        
-        perData.list.map((item: any,index:number) => {
-            if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
-                const { suite_id } = item
-                source[name] = field
-                setSource({
-                    ...source,
-                    suite_id,
-                })
-            }
-            return item
-        })
-    }
     const handleDelete = (name: string, row: any, rowKey: any) => {
         setEditBtn(true)
         if (name == 'suite') {
@@ -296,27 +262,31 @@ const Performance = (props: any) => {
         setPerData(obj)
     }
 
-
-    useEffect(() => {
-        if (source.suite_id !== '') {
-            setSuite(perData.list?.map((item: any) => {
-                if (item.suite_id == source.suite_id) {
-                    const { test_conclusion, test_description, test_env } = source
-                    return {
-                        ...item,
-                        test_env,
-                        test_description,
-                        test_conclusion,
-                    }
-                }
-            }))
-        }
-    }, [source])
-
+    const renderShare = (conf: any) => {
+        let objList: any = []
+        let obj = conf?.conf_source || conf
+        allGroupData?.map((c: any, i: number) => {
+            objList.push((conf.conf_compare_data || conf.compare_conf_list)[i])
+        })
+        objList.splice(baseIndex, 0, obj)
+        return (
+            objList.map((item: any) => (
+                item !== undefined && <PrefDataText gLen={group} btnState={btnState}>
+                    <a style={{ cursor: 'pointer' }}
+                        href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
+                        target="_blank"
+                    >
+                        {item?.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
+                    </a>
+                </PrefDataText>
+            ))
+        )
+    }
+    
     // suite遍历
     const RenderSuite = () => {
         return (
-            Array.isArray(perData.list) && perData.list.length > 0 ? perData.list.map((suite: any, id: number) => (
+            Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
                 <TestSuite key={id}>
                     <SuiteName>
                         {suite.suite_name}
@@ -353,16 +323,18 @@ const Performance = (props: any) => {
                                     <SigleWrapper>
                                         <TestTitle>测试环境</TestTitle>
                                         <TestContent>
-                                            <SettingTextArea
+                                            <PerfTextArea
                                                 name={suite.test_env}
+                                                field="test_env"
+                                                suite={suite}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
                                                 fontStyle={{
                                                     fontSize: 14,
                                                     fontFamily: 'PingFangSC-Regular',
                                                     color: 'rgba(0,0,0,0.65)'
                                                 }}
                                                 btn={btnState}
-                                                btnConfirm={btnConfirm}
-                                                onOk={(val: any) => handleFieldChange(val, 'test_env', suite)}
                                             />
                                         </TestContent>
                                     </SigleWrapper>
@@ -371,16 +343,18 @@ const Performance = (props: any) => {
                                     <SigleWrapper>
                                         <TestTitle>测试说明</TestTitle>
                                         <TestContent>
-                                            <SettingTextArea
+                                            <PerfTextArea
                                                 name={suite.test_description}
+                                                field="test_description"
+                                                suite={suite}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
                                                 fontStyle={{
                                                     fontSize: 14,
                                                     fontFamily: 'PingFangSC-Regular',
                                                     color: 'rgba(0,0,0,0.65)'
                                                 }}
                                                 btn={btnState}
-                                                btnConfirm={btnConfirm}
-                                                onOk={(val: any) => handleFieldChange(val, 'test_description', suite)}
                                             />
                                         </TestContent>
                                     </SigleWrapper>
@@ -389,16 +363,18 @@ const Performance = (props: any) => {
                                     <SigleWrapper>
                                         <TestTitle>测试结论</TestTitle>
                                         <TestContent>
-                                            <SettingTextArea
+                                            <PerfTextArea
                                                 name={suite.test_conclusion}
+                                                field="test_conclusion"
+                                                suite={suite}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
                                                 fontStyle={{
                                                     fontSize: 14,
                                                     fontFamily: 'PingFangSC-Regular',
                                                     color: 'rgba(0,0,0,0.65)'
                                                 }}
                                                 btn={btnState}
-                                                btnConfirm={btnConfirm}
-                                                onOk={(val: any) => handleFieldChange(val, 'test_conclusion', suite)}
                                             />
                                         </TestContent>
                                     </SigleWrapper>
@@ -407,7 +383,7 @@ const Performance = (props: any) => {
                         }
                         {
                             btn ?
-                                (suite.conf_list && suite.conf_list.length > 0) ? suite.conf_list.map((conf: any, cid: number) => (
+                                (suite.conf_list && !!suite.conf_list.length) ? suite.conf_list.map((conf: any, cid: number) => (
                                     <div key={cid}>
                                         <TestConf>
                                             <ConfTitle gLen={group} style={{ marginLeft: btnState ? 39 : 0 }}>Test Conf / 指标 </ConfTitle>
@@ -441,7 +417,8 @@ const Performance = (props: any) => {
                                             <PrefData>
                                                 <DelBtn conf={conf} cid={cid} />
                                                 <PrefDataTitle gLen={group}>{conf.conf_name} </PrefDataTitle>
-                                                {
+                                                {renderShare(conf)}
+                                                {/* {
                                                     allGroupData?.map((cont: any, i: number) => (
                                                         <PrefDataText gLen={group} btnState={btnState} key={i}>
                                                             {
@@ -458,7 +435,7 @@ const Performance = (props: any) => {
                                                             }
                                                         </PrefDataText>
                                                     ))
-                                                }
+                                                } */}
                                             </PrefData>
                                             {
                                                 conf.metric_list.map((metric: any, idx: number) => (
@@ -471,9 +448,9 @@ const Performance = (props: any) => {
                                                                 <Row justify="start">
                                                                     <EllipsisPulic
                                                                         title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
-                                                                        width={210}
+                                                                        // width={210}
                                                                     >
-                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
+                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
                                                                             {metric.metric}{metric.unit && <span>({metric.unit})</span>}
                                                                         </Typography.Text>
                                                                     </EllipsisPulic>
@@ -487,80 +464,44 @@ const Performance = (props: any) => {
                                                             </Row>
                                                         </MetricTitle>
                                                         {
-                                                            Array.isArray(metric.compare_data) && metric.compare_data.length > 0 ?
-                                                                metric.compare_data.map((item: any, i: number) => (
-                                                                    i !== baselineGroupIndex ?
-                                                                        <MetricText gLen={group} btnState={btnState} key={i}>
-                                                                            <Row justify="space-between">
-                                                                                <Col span={12} >
-                                                                                <Row justify="start">
+                                                            Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
+                                                            metric.compare_data.map((item: any, i: number) => (
+                                                                <MetricText gLen={group} btnState={btnState} key={i}>
+                                                                    <Row justify="space-between">
+                                                                        <Col span={12}>
+                                                                            <Row justify="start">
+                                                                                <EllipsisPulic
+                                                                                    title={`${item.test_value}±${item.cv_value}`}
+                                                                                    width={210}
+                                                                                >
                                                                                     <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
                                                                                         {
-                                                                                            JSON.stringify(item) === '{}' 
-                                                                                            ? '-' 
-                                                                                            : `${item.test_value}±${item.cv_value}`
+                                                                                            JSON.stringify(item) === '{}'
+                                                                                                ? '-'
+                                                                                                : `${item.test_value}±${item.cv_value}`
                                                                                         }
                                                                                     </Typography.Text>
-                                                                                    </Row>
-                                                                                </Col>
-                                                                                <Col span={12}>
+                                                                                </EllipsisPulic>
+                                                                            </Row>
+                                                                        </Col>
+                                                                        {
+                                                                            item.compare_result &&
+                                                                            <Col span={12}>
                                                                                 <Row justify="end">
                                                                                     <RightResult>
                                                                                         <span className={handleColor(item.compare_result)}>
                                                                                             {item.compare_value || '-'}
                                                                                         </span>
-                                                                                        <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 18px 0px 9px ' }}>
+                                                                                        <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 9px ' }}>
                                                                                             {handleIcon(item.compare_result)}
                                                                                         </span>
                                                                                     </RightResult>
-                                                                                    </Row>
-                                                                                </Col>
-                                                                            </Row>
-                                                                        </MetricText> :
-                                                                        <>
-                                                                            <MetricText gLen={group} btnState={btnState} key={i}>
-                                                                                <Row justify="start">
-                                                                                <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
-                                                                                    {
-                                                                                        JSON.stringify(metric) === '{}' ? '-'
-                                                                                        : `${metric.test_value}±${metric.cv_value}`
-                                                                                    }
-                                                                                </Typography.Text>
                                                                                 </Row>
-                                                                            </MetricText>
-                                                                            <MetricText gLen={group} btnState={btnState}>
-                                                                                <Row justify="space-between">
-                                                                                    <Col span={12}>
-                                                                                    <Row justify="start">
-                                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
-                                                                                            { JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}` }
-                                                                                        </Typography.Text>
-                                                                                        </Row>
-                                                                                    </Col>
-                                                                                    <Col span={12}>
-                                                                                        <Row justify="end">
-                                                                                        <RightResult>
-                                                                                            <span className={handleColor(item.compare_result)}>
-                                                                                                {item.compare_value || '-'}
-                                                                                            </span>
-                                                                                            <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 18px 0px 9px ' }}>
-                                                                                                {handleIcon(item.compare_result)}
-                                                                                            </span>
-                                                                                        </RightResult>
-                                                                                        </Row>
-                                                                                    </Col>
-                                                                                </Row>
-                                                                            </MetricText>
-                                                                        </>
-                                                                ))
-                                                                :
-                                                                <MetricText gLen={group} btnState={btnState}>
-                                                                    <Row justify="start">
-                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
-                                                                        { JSON.stringify(metric) === '{}' ? '-' : `${metric.test_value}±${metric.cv_value}` }
-                                                                    </Typography.Text>
+                                                                            </Col>
+                                                                        }
                                                                     </Row>
                                                                 </MetricText>
+                                                            ))
                                                         }
                                                     </PrefMetric>
                                                 ))

@@ -1,3 +1,5 @@
+const { BUILD_APP_ENV } = process.env;
+
 export default [
 	{
 		path: '/',
@@ -14,10 +16,19 @@ export default [
 		hideInMenu: true,
 		component: './PersonCenter',
 	},
+	// {
+	// 	path: '/test_suite/new',
+	// 	name: 'TestSuiteCreate',
+	// 	layout: false,
+	// 	hideInMenu: true,
+	// 	component: './TestSuiteCreate',
+	// 	access: 'canWsAdmin',
+	// },
 	{
 		name: 'Dashboard',
 		path: '/dashboard',
 		component: './DashBoard/index',
+		access: 'canSysTestAdmin',
 	},
 	{
 		path: '/refenerce/:type',
@@ -36,7 +47,7 @@ export default [
 				path: '/system/approve',
 				name: 'joinApprove',
 				component: './SystemConf/JoinApprove',
-				access: 'canSuperAdmin',
+				access: BUILD_APP_ENV ? 'hiddenRoute' : 'canSuperAdmin',
 			},
 			{
 				path: '/system/workspace',
@@ -86,6 +97,7 @@ export default [
 		name: 'helpDoc',
 		hideInMenu: true,
 		path: '/help_doc',
+		
 		routes: [
 			{
 				path: '/help_doc',
@@ -155,6 +167,7 @@ export default [
 		//layout: false,
 		showInWs: true,
 		hideInMenu: true,
+		// access: 'loginAndMsgAccess',
 		component: './TaskMessage',
 	},
 
@@ -162,6 +175,7 @@ export default [
 		path: '/ws/:ws_id/message',
 		//layout: false,
 		hideInMenu: true,
+		access: 'loginAndMsgAccess',
 		component: './TaskMessage',
 	},
 	{
@@ -244,10 +258,6 @@ export default [
 						path: '/ws/:ws_id/test_result/:id',
 						hideInMenu: true,
 						component: '@/pages/WorkSpace/TestResult/Details',
-					},
-					{
-						path: '*',
-						redirect: '/'
 					}
 				]
 			},
@@ -444,23 +454,26 @@ export default [
 						path: '/ws/:ws_id/config',
 						name: 'BasicConfig',
 						component: './WorkSpace/BasicConfig',
+						access:'canWsAdmin',
 					},
 					{
 						path: '/ws/:ws_id/config/member',
 						name: 'MemberManage',
 						component: './WorkSpace/MemberManage',
+						access:'canWsAdmin'
 					},
 					{
 						path: '/ws/:ws_id/config/join',
 						name: 'JoinDetail',
 						component: './WorkSpace/JoinDetail',
-						access: 'canWsAdmin',
+						access: BUILD_APP_ENV ? 'hiddenRoute' : 'canWsAdmin',
 					}
 				]
 			},
 			{
 				path: '/ws/:ws_id/job',
 				name: 'JobConfig',
+				access:'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/job/types',
@@ -502,6 +515,7 @@ export default [
 				name: 'Baseline',
 				// hideInMenu : true ,
 				component: '@/pages/WorkSpace/Baseline',
+				access:'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/baseline/group',
@@ -518,6 +532,7 @@ export default [
 			{
 				path: '/ws/:ws_id/device',
 				name: 'DeviceManage',
+				access:'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/device/group',
@@ -549,6 +564,7 @@ export default [
 				path: '/ws/:ws_id/test_suite',
 				name: 'TestSuiteManage',
 				component: './WorkSpace/TestSuiteManage',
+				access:'canWsAdmin',
 			},
 			{
 				path: '/ws/:ws_id/new_suite/:test_type',
@@ -562,12 +578,14 @@ export default [
 				path: '/ws/:ws_id/product',
 				name: 'Product',
 				component: '@/pages/WorkSpace/Product',
+				access:'canWsAdmin',
 			},
 			{
 				path: '/ws/:ws_id/test_template',
 				hideInMenu: true,
 				inNav: true,
 				layout: false,
+				access:'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/test_template/:jt_id/edit',
@@ -591,8 +609,8 @@ export default [
 			},
 			{
 				path: '/ws/:ws_id/devOps',
+				access:'canWsAdmin',
 				name: 'DevOps',
-				access: 'hasAdminRole',
 				component: '@/pages/WorkSpace/DevOps'
 			},
 			{
@@ -608,6 +626,7 @@ export default [
 		layout: false,
 		hideInMenu: true,
 		component: './WorkSpace/CreateWorkspace',
+		access:'canSuperAdmin'
 	},
 	// {
 	// 	path: '/list/table',

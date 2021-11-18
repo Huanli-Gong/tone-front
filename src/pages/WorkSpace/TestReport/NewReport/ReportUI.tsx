@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import { Row, Breadcrumb, Tooltip } from 'antd';
 import { CaretRightOutlined, CloseOutlined } from '@ant-design/icons';
-
 interface ReportTamplateProps {
     height: number;
 }
@@ -14,9 +13,7 @@ export const ReportTemplate = styled.div<ReportTamplateProps>`
     //padding-bottom: 56px;
 `
 
-export const FLoatSummary = styled.div`
 
-`
 
 interface CatalogProp {
     collapsed: boolean

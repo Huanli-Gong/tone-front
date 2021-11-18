@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useEffect } from 'react'
-import { Modal, Space, Spin, Alert, Form, Button, message, Input, Radio, Select } from 'antd'
-import { connect, FormattedMessage, useIntl  } from 'umi';
-import { debounce, isNaN, stubFalse } from 'lodash'
+import { Modal, Space, Spin, Alert, Form, Button, message, Input, Tooltip, Select, Typography } from 'antd'
+import { FormattedMessage, useIntl, Access, useAccess } from 'umi';
+import { isNaN } from 'lodash'
 import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
 import { queryBaselineList, } from '@/pages/WorkSpace/Baseline/services';
 import { queryJobTypeList, } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -11,8 +11,9 @@ import BizUpload from './component/BizUpload';
 import styles from './style.less';
 const { Option } = Select;
 
-const DrawerForm = forwardRef((props, ref) => {
+const DrawerForm = forwardRef((props:any, ref:any) => {
   const { ws_id, visible } : any = props
+  const access = useAccess();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   // 产品数据源
@@ -246,6 +247,12 @@ const DrawerForm = forwardRef((props, ref) => {
   const { formatMessage } = useIntl();
   const placeholder = formatMessage({ id: "upload.list.Drawer.select.placeholder" });
   const requiredMessage = formatMessage({ id: 'upload.list.Drawer.select.message'});
+  const AuthPop = (
+    <Space>
+        <Typography.Text>无权限，请参考</Typography.Text>
+        <a href="/help_doc/2" target="_blank">帮助文档</a>
+    </Space>
+)
   return (
     <Modal
       title={<FormattedMessage id="upload.list.Drawer.title" />}
@@ -260,9 +267,18 @@ const DrawerForm = forwardRef((props, ref) => {
             <Button onClick={handleClose} disabled={loading}>
               <FormattedMessage id="Drawer.btn.close" />
             </Button>
-            <Button onClick={handleOk} type="primary" disabled={submitDisable || loading}>
-              <FormattedMessage id="Drawer.btn.confirm" />
-            </Button>
+            <Access  
+              accessible={access.testerAccess()} 
+              fallback={
+                <Tooltip placement="topLeft" title={AuthPop} color="#fff">
+                  <Button type="primary"><FormattedMessage id="Drawer.btn.confirm" /></Button>
+                </Tooltip>
+              }
+            >
+              <Button onClick={handleOk} type="primary" disabled={submitDisable || loading}>
+                <FormattedMessage id="Drawer.btn.confirm" />
+              </Button>
+            </Access>
           </Space>
         </div>
       }>
@@ -349,7 +365,7 @@ const DrawerForm = forwardRef((props, ref) => {
                       message: requiredMessage,
                     }]}>
                       <Select
-                        // allowClear
+                        allowClear={true}
                         placeholder={'请选择基线'}
                         onPopupScroll={baselinePopupScroll}
                         getPopupContainer={node => node.parentNode}

@@ -3,8 +3,7 @@ import { Tabs } from 'antd'
 
 import JobModal from './JobModal'
 import JobType from './JobType'
-import { history } from 'umi'
-import { AuthForm } from '@/components/Permissions/AuthCommon';
+import { history,useAccess,Access } from 'umi'
 import { PlusOutlined } from '@ant-design/icons'
 import styles from './index.less'
 
@@ -15,7 +14,7 @@ export default ({ ws_id , types , onOk } : any ) => {
         setTab( tab )
         setTestType('全部')
     }
-
+    const access = useAccess()
     const handleCreateJobType = () => {
         onOk()
         history.push({ pathname:`/ws/${ ws_id }/job/create` })
@@ -27,15 +26,9 @@ export default ({ ws_id , types , onOk } : any ) => {
         </>
     )
     const operations = (
-         <AuthForm 
-            isAuth={['super_admin','sys_admin','ws_owner','ws_admin']} 
-            children={ renderChild } 
-            onFirm={
-                <div onClick={handleCreateJobType}>
-                    {renderChild}
-                </div>
-            } /> 
-        
+        <Access accessible={access.canWsAdmin()}>
+            <div onClick={handleCreateJobType}>{renderChild}</div>
+        </Access>
     );
     const typeName = (type:string) => {
         switch ( type ) {
@@ -54,7 +47,7 @@ export default ({ ws_id , types , onOk } : any ) => {
     }
     
     const testTypeDom = () => {
-        const type = ['全部', '功能测试', '性能测试', '业务测试']
+        const type = ['全部', '功能测试', '性能测试']
         return (
             <ul className={styles.test_type}>
                 {

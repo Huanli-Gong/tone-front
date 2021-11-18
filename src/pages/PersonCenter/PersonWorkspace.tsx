@@ -13,7 +13,7 @@ import { requestCodeMessage } from '@/utils/utils'
 export default (props: any) => {
     const {workspaceList,loading, userId} = props
     const layoutHeight = resizeDocumentHeightHook()
-    const workspaceDataList = _.isArray(workspaceList) ? workspaceList : []
+    const workspaceDataList = _.isArray(workspaceList.workspace_list) ? workspaceList.workspace_list : []
     const wsNameEllipsis = useRef<any>(null)
     const desEllipsis = useRef<any>(null)
     const ellipsisText = (name: string) => {

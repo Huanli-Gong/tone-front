@@ -84,6 +84,7 @@ const DevOps = (props: any) => {
                         </Radio.Group>
                         <TypographyIcon>
                             <QusetionIconTootip
+                                title=""
                                 desc={'最短恢复时间5分钟，最长恢复时间7天'}
                             />
                         </TypographyIcon>

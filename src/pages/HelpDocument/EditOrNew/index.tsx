@@ -4,7 +4,7 @@ import { message, Breadcrumb, Row, Input, Space, Button, Spin, Checkbox, Form, S
 import { history, useRequest, request } from 'umi'
 import styles from '../index.less'
 import { queryHelpDocList, createHelpDoc, updateHelpDoc } from '../services'
-import wangeditor from 'wangeditor'
+import wangEditor from 'wangeditor'
 import _ from 'lodash'
 import { resizeDocumentHeightHook } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils'
@@ -38,13 +38,7 @@ export default (props: any) => {
     const { loading, data } = useRequest(
         (data: any) => queryHelpDocList(data),
         {
-            formatResult: response => {
-                if (_.get(response, 'code') === 200) {
-                    return response.data
-                } else {
-                    return []
-                }
-            },
+            formatResult: response => _.get(response, 'code') === 200 ? response.data : [],
             initialData: [],
             defaultParams: [{ id: Number(help_id) }]
         }
@@ -213,7 +207,7 @@ export default (props: any) => {
 
     useEffect(() => {
         // 注：class写法需要在componentDidMount 创建编辑器
-        editor = new wangeditor('#toolbar-container', '#text-container-text') // 传入两个元素
+        editor = new wangEditor('#toolbar-container', '#text-container-text') // 传入两个元素
 
         editor.config.pasteFilterStyle = false
         editor.config.minHeight = 500

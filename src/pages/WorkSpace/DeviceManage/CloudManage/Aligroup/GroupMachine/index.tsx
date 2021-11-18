@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useImperativeHandle } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Empty, message, Cascader, InputNumber } from 'antd';
-import { requestCodeMessage, resetImage } from '@/utils/utils';
+import { requestCodeMessage, resetImage, resetECI, enumerChinese, enumerEnglish } from '@/utils/utils';
 import { QusetionIconTootip } from '@/components/Product/index'
-import { queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryMember, queryInstance, 
+import {
+    queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryMember, queryInstance,
     querysImage, queryCategories, querysServer, querysAK, querysRegion, queryZone, queryVarName, queryName
- } from '../../service';
+} from '../../service';
 import Owner from '@/components/Owner/index';
 import styles from './style.less';
 import { useParams } from 'umi';
@@ -36,14 +37,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     const [disabled, setDisabled] = useState<boolean>(true)
     const optionLists = [
         {
-          value: 'aliyun_eci',
-          label: 'aliyun_eci',
-          isLeaf: false,
+            value: 'aliyun_eci',
+            label: 'aliyun_eci',
+            isLeaf: false,
         },
         {
-          value: 'aliyun_ecs',
-          label: 'aliyun_ecs',
-          isLeaf: false,
+            value: 'aliyun_ecs',
+            label: 'aliyun_ecs',
+            isLeaf: false,
         },
     ];
     // 编辑的数据
@@ -55,7 +56,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     const [manufacturerType, setChangeManufacturer] = React.useState('aliyun_eci'); // 云厂商 切换 规格
     const [nameStatus, setNameStatus] = React.useState<any>(""); // 校验输入框的状态
     const [firstAddDataFlag, setFirstAddDataFlag] = useState<any>(true) // 是第一次添加数据
-    
+
     // 1.查询云类型
     const getCloudType = async (param: any) => {
         const { data } = await queryCloudType(param);
@@ -82,10 +83,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
         // 查询添加的第一条数据
         if (data) {
-            const { code, data: dataSource=[] } = await queryClusterMachine({ cluster_id: param }) || {};
+            const { code, data: dataSource = [] } = await queryClusterMachine({ cluster_id: param }) || {};
             if (code === 200 && dataSource.length) {
                 // 回填"云厂商/AK" 和 "地域"两个选框都同步第一次选的数据
-                const { test_server = {} } = dataSource[dataSource.length -1]
+                const { test_server = {} } = dataSource[dataSource.length - 1]
                 const { manufacturer, ak_id, region, zone } = test_server
                 if (ak_id && manufacturer && region && zone) {
                     setFirstAddDataFlag(false)
@@ -97,8 +98,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         zone,
                     }
                     if (status) {
-                        Promise.all([getShowRegion(params),getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
-                    }else{
+                        Promise.all([getShowRegion(params), getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+                    } else {
                         Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
                     }
                     form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [region, zone] })
@@ -118,7 +119,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }
     }
     const getCategoriesList = async (param: any) => {
-        const { data=[] } = await queryCategories(param) || {}
+        const { data = [] } = await queryCategories(param) || {}
         setCategories(data)
     }
     const getSeverList = async (param: any) => {
@@ -140,20 +141,20 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         targetOption.loading = true;
         const { code, data, msg } = await queryZone({ ak_id: targetOption.ak_id, region: targetOption.value })
         targetOption.loading = false;
-        if ( code === 200 ) {
+        if (code === 200) {
             targetOption.children = data && data.map((item: any) => { return { label: item.id, value: item.id } });
         }
         setRegion([...region])
         setValidateImage(false)
     };
 
-    const loadAkData = async( selectedOptions:any) => {
+    const loadAkData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         targetOption.loading = true;
         try {
             const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
             targetOption.loading = false;
-            if ( code === 200) {
+            if (code === 200) {
                 targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
                 setOptions([...options])
             } else {
@@ -167,12 +168,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
     // 重置联动控件
     const AkResetStatus = () => {
-       form.setFieldsValue({ 
-           region: undefined,
-           instance_type: undefined, instance_type1: undefined, instance_type2: undefined,
-           image: undefined,
-           storage_type: undefined, storage_size: 40, storage_number: 0,
-           system_disk_category:undefined,system_disk_size:40,
+        form.setFieldsValue({
+            region: undefined,
+            instance_type: undefined, instance_type1: undefined, instance_type2: undefined,
+            image: undefined,
+            storage_type: undefined, storage_size: 40, storage_number: 0,
+            system_disk_category: undefined, system_disk_size: 40,
         })
     }
     // 重置联动控件
@@ -181,24 +182,24 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             instance_type: undefined, instance_type1: undefined, instance_type2: undefined,
             image: undefined,
             storage_type: undefined, storage_size: 40, storage_number: 0,
-            system_disk_category:undefined,system_disk_size:40,
-         })
+            system_disk_category: undefined, system_disk_size: 40,
+        })
     }
     // 重置联动控件
     const imageResetStatus = () => {
         form.setFieldsValue({
             instance_type: undefined, instance_type1: undefined, instance_type2: undefined,
             storage_type: undefined, storage_size: 40, storage_number: 0,
-            system_disk_category:undefined,system_disk_size:40,
-         })
+            system_disk_category: undefined, system_disk_size: 40,
+        })
     }
-    const onAkChange = async(value:any, selectedOptions:any) => {
+    const onAkChange = async (value: any, selectedOptions: any) => {
         // console.log('value', value)
         // 再次添加机器时，"云厂商/AK"和"地域"两个选框没有联动关系
         if (!firstAddDataFlag) {
             setDisabled(true)
             regionResetStatus()
-            if (value && value.length) { 
+            if (value && value.length) {
                 // case1.存储选的"云厂商"类型，决定规格的表现形式。
                 const frisItem = value[0]
                 setChangeManufacturer(frisItem)
@@ -211,8 +212,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     zone: regionZone[1],
                 }
                 if (is_instance) {
-                    Promise.all([ getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
-                }else{
+                    Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                } else {
                     Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
                 }
             } else {
@@ -228,7 +229,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             AkResetStatus()
             if (value && value.length) {
                 // case1.根据 ak_id 查询Region数据
-                const { code, data =[], msg } = await querysRegion({ ak_id: value[1] })
+                const { code, data = [], msg } = await querysRegion({ ak_id: value[1] })
                 let list = []
                 if (code === 200) {
                     list = data?.map((item: any) => {
@@ -246,13 +247,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 setRegion(list)
                 setValidateRegion(!!list.length)
                 setValidateImage(false)
-                
+
                 // case2.存储选的"云厂商"类型，决定规格的表现形式
                 const frisItem = value[0]
                 setChangeManufacturer(frisItem.value)
             } else {
                 // 清除
-                setValidateAK({ validate: true,  meg: '' })
+                setValidateAK({ validate: true, meg: '' })
                 setRegion([])
             }
 
@@ -280,14 +281,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 isLeaf: false,
             }
         })
-        let lists = optionLists.map((item: any)=> {
+        let lists = optionLists.map((item: any) => {
             if (item.value === param.id) {
-               return {
-                value: param.id,
-                label: param.id,
-                isLeaf: false,
-                children: akData.map((item: any) => { return { label: item.name, value: item.id } })
-               }
+                return {
+                    value: param.id,
+                    label: param.id,
+                    isLeaf: false,
+                    children: akData.map((item: any) => { return { label: item.name, value: item.id } })
+                }
             }
             return item
         })
@@ -325,12 +326,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 instance_id: undefined,
                 instance_type: undefined,
                 storage_type: undefined,
-                system_disk_category:undefined,
+                system_disk_category: undefined,
             })
             if (is_instance) {
                 Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
-            }else{
-                Promise.all([getInstancegList(param),getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
+            } else {
+                Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
             }
         } else {
             // case2.清除选项时
@@ -384,8 +385,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             const tempStr = instance_type.substr(0, instance_type.length - 1)
             const tempList = tempStr.split('C');
             if (Array.isArray(tempList) && tempList.length) {
-              param.instance_type1 = Number(tempList[0])
-              param.instance_type2 = tempList[1]
+                param.instance_type1 = Number(tempList[0])
+                param.instance_type2 = tempList[1]
             }
         }
 
@@ -403,14 +404,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             id: param.manufacturer[0]
         }
         if (param.is_instance) {
-            Promise.all([getShowRegion(params),  getSeverList(params),getAK()]).then(() => { setLoading(false), setDisabled(false) })
-        }else{
+            Promise.all([getShowRegion(params), getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+        } else {
             Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params), getAK()]).then(() => { setLoading(false) })
         }
         form.resetFields()
         setTimeout(function () {
             // 数据回填
-            form.setFieldsValue({...param})
+            form.setFieldsValue({ ...param })
         }, 1)
     }
 
@@ -418,21 +419,43 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         newMachine: (id: number) => { newMachine(id) },
         editMachine: (row: any) => { editMachine(row) }
     }));
-
+    const enumer =  ( name:any ) => {
+        const list = {
+            '公共镜像':'system',
+            '自定义镜像':'self',
+            '共享镜像':'others'
+        }
+        return list[name];
+    }
+    const enumers =  ( name:any ) => {
+        const list = {
+            system:'公共镜像',
+            self:'自定义镜像',
+            others:'共享镜像'
+        }
+        return list[name];
+    }
     // 编辑时，镜像字段数据回填
-    useEffect(()=> {
+    useEffect(() => {
         if (Object.keys(editData).length && editData.image && image.length) {
-            const selectItem = image.filter((item : any) => item.id === editData.image)
-            const selectType = selectItem.length ? selectItem[0]['platform'] : ''
-            const imageValue = selectType ? [selectType, editData.image] : undefined
-            form.setFieldsValue({ image: imageValue })
+            const selectItem = image.filter((item: any) => item.id === editData.image)
+            if (manufacturerType === 'aliyun_eci') {
+                const selectType = selectItem.length ? selectItem[0]['platform'] : ''
+                const imageValue = selectType ? [selectType, editData.image] : undefined
+                form.setFieldsValue({ image: imageValue })
+            } else {
+                const selectType = selectItem.length ? selectItem[0]['owner_alias'] : ''
+                const selectSec = selectItem.length ? selectItem[0]['platform'] : ''
+                const imageValue = selectType ? [enumerEnglish(selectType), selectSec, editData.image] : undefined
+                form.setFieldsValue({ image: imageValue })
+            }
         }
     }, [image])
 
     const [form] = Form.useForm();
     const submit = async (params: any) => {
         // setVisible(false)
-        let param = { ...params , ws_id }
+        let param = { ...params, ws_id }
         if (params.hasOwnProperty('manufacturer')) {
             param.manufacturer = params?.manufacturer[0]
             param.ak_id = params.manufacturer[1]
@@ -454,14 +477,34 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }
         // 镜像
         if (params.hasOwnProperty('image') && params.image.length) {
-            param.image = params.image[1]
-            // 获取镜像名
-            const imageSource = resetImage(image,'owner_alias','platform') || []
-            const selectedItem = imageSource.find((item: any)=> item.value == params.image[0]) || {}
-            const itemObj = selectedItem.children?.find((item: any)=> item.value == params.image[1]) || {}
-            param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+            if (manufacturerType === 'aliyun_eci') {
+                param.image = params.image[1]
+                // 获取镜像名
+                const imageSource = resetECI(image, 'platform') || []
+                const selectedItem = imageSource.find((item: any) => item.value == params.image[0]) || {}
+                const itemObj = selectedItem.children?.find((item: any) => item.value == params.image[1])
+                param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+            } else {
+                param.image = params.image[2]
+                // 获取镜像名
+                const imageSource = resetImage(image, 'owner_alias', 'platform') || []
+                const LevelOne = imageSource?.find((item: any) => enumerChinese(item.value) == params.image[0]) || {}
+                const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
+                const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
+                param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+            }
         } else {
-            param.image = undefined
+            if (params.hasOwnProperty('image') && params.image.length) {
+                param.image = params.image[2]
+                // 获取镜像名
+                const imageSource = resetImage(image, 'owner_alias', 'platform') || []
+                const LevelOne = imageSource?.find((item: any) => enumer(item.value) == params.image[0]) || {}
+                const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
+                const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
+                param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+            } else {
+                param.image = undefined
+            }
         }
         param.description = params.description || ''
         param.cluster_id = cluster_id
@@ -474,17 +517,17 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             // case2.回调函数
             onSuccess({ parentId: cluster_id })
         } else {
-            requestCodeMessage( res.code , res.msg )
+            requestCodeMessage(res.code, res.msg)
         }
     }
-    useEffect(()=>{
+    useEffect(() => {
         AkResetStatus()
-    },[ is_instance ])
+    }, [is_instance])
 
     const onSubmit = () => {
         form.validateFields().then(val => submit(val))
     }
-    const onClose = ()=> {
+    const onClose = () => {
         initialState()
     }
 
@@ -510,7 +553,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             // 校验名称是否重复
             const q = { is_instance: 0, name: value, ws_id }
             const query = id ? { ...q, cluster_server_id: id } : { ...q }
-            queryName(query).then(res=>{
+            queryName(query).then(res => {
                 if (res.code === 200) {
                     callback()
                 } else {
@@ -531,18 +574,18 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             setNameStatus('error');
             callback()
         } else if (value && value.length <= maxNumber) {
-                // 校验名称是否重复
-                const q = {cluster_id: cluster_id, var_name: value }
-                const query = id ? { ...q, cluster_server_id: id } : { ...q }
-                queryVarName(query).then(res=>{
-                    if (res.code === 200) {
-                        setNameStatus('success')
-                        callback()
-                    } else {
-                        setNameStatus('error')
-                        callback(res.msg || '校验失败')
-                    }
-                })
+            // 校验名称是否重复
+            const q = { cluster_id: cluster_id, var_name: value }
+            const query = id ? { ...q, cluster_server_id: id } : { ...q }
+            queryVarName(query).then(res => {
+                if (res.code === 200) {
+                    setNameStatus('success')
+                    callback()
+                } else {
+                    setNameStatus('error')
+                    callback(res.msg || '校验失败')
+                }
+            })
         } else {
             setNameStatus('error');
             callback()
@@ -555,9 +598,9 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     }
 
     return (
-        <Drawer 
-            maskClosable={ false }
-            keyboard={ false }
+        <Drawer
+            maskClosable={false}
+            keyboard={false}
             title={id ? "编辑机器" : "添加机器"}
             width={724}
             onClose={onClose}
@@ -572,18 +615,18 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 >
                     <Button onClick={onClose} style={{ marginRight: 8 }}>
                         取消
-                        </Button>
+                    </Button>
                     <Button onClick={() => onSubmit()} type="primary">
                         确定
-                        </Button>
+                    </Button>
                 </div>
             }
         >
             <Spin spinning={loading}>
-                <Form 
-                    layout="vertical" 
-                    form={form} 
-                    /*hideRequiredMark*/ 
+                <Form
+                    layout="vertical"
+                    form={form}
+                /*hideRequiredMark*/
                 >
                     <Row gutter={16}>
                         {/** 新增 */}
@@ -595,7 +638,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     rules={[{ required: true, message: '请选择' }]}
                                     initialValue={0}
                                 >
-                                    <Select placeholder="请选择" disabled={cloudType != 0} onChange={(value: any) => setIs_instance(value)}>
+                                    {/* <Select placeholder="请选择" disabled={cloudType != 0} onChange={(value: any) => setIs_instance(value)}>
+                                        <Option value={0}>立即购买</Option>
+                                        <Option value={1}>选择已有</Option>
+                                    </Select> */}
+                                    <Select placeholder="请选择" disabled={true} onChange={(value: any) => setIs_instance(value)}>
                                         <Option value={0}>立即购买</Option>
                                         <Option value={1}>选择已有</Option>
                                     </Select>
@@ -627,9 +674,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     label="名称"
                                     validateTrigger='onBlur'
                                     rules={[
-                                        { required: true, 
-                                            min:1,
-                                            max:32,
+                                        {
+                                            required: true,
+                                            min: 1,
+                                            max: 32,
                                             pattern: /^[A-Za-z0-9\._-]+$/g,
                                             message: '仅允许包含字母、数字、下划线、中划线、点，最长32个字符'
                                         },
@@ -700,17 +748,17 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     name="instance_id"
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
-                                    <Select 
-                                       showSearch
-                                       optionFilterProp="children"
-                                       placeholder="请选择" labelInValue disabled={sever.length == 0} 
-                                       filterOption={(input, option: any) =>
+                                    <Select
+                                        showSearch
+                                        optionFilterProp="children"
+                                        placeholder="请选择" labelInValue disabled={sever.length == 0}
+                                        filterOption={(input, option: any) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
                                     >
                                         {sever.map((item: any, index: number) => {
-                                                return <Option value={item.id} key={index}>{item.ip ? `${item.ip}/${item.name}` : item.name}</Option>
-                                            })
+                                            return <Option value={item.id} key={index}>{item.ip ? `${item.ip}/${item.name}` : item.name}</Option>
+                                        })
                                         }
                                     </Select>
                                 </Form.Item>
@@ -718,64 +766,64 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             null
                         }
                         {!is_instance ? (
-                            <> 
-                            {manufacturerType === 'aliyun_eci' ?
-                                <Col span={12}>
-                                    {/** case1: aliyun_eci  */}
-                                    <Row>
-                                        <Col span={8} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                                            <Form.Item label="规格"
-                                                name="instance_type1"
-                                                rules={[{ required: true, message: '请输入' }]}
+                            <>
+                                {manufacturerType === 'aliyun_eci' ?
+                                    <Col span={12}>
+                                        {/** case1: aliyun_eci  */}
+                                        <Row>
+                                            <Col span={8} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                                                <Form.Item label="规格"
+                                                    name="instance_type1"
+                                                    rules={[{ required: true, message: '请输入' }]}
+                                                >
+                                                    <InputNumber
+                                                        min={1}
+                                                        //type="text"
+                                                        style={{ width: 70 }}
+                                                        placeholder="大小"
+                                                        disabled={disabled || image.length === 0}
+                                                    />
+                                                </Form.Item>
+                                                <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>C</span>
+                                            </Col>
+                                            <Col span={16} style={{ display: 'flex', alignItems: 'flex-start', paddingLeft: 6 }}>
+                                                <Form.Item label=""
+                                                    name="instance_type2"
+                                                    rules={[{ required: true, message: '请输入' }]}
+                                                >
+                                                    <InputNumber
+                                                        min={1}
+                                                        style={{ width: 70, marginTop: 30 }}
+                                                        //type="text"
+                                                        placeholder="大小"
+                                                        disabled={disabled || image.length === 0}
+                                                    />
+                                                </Form.Item>
+                                                <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>G</span>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                    :
+                                    <Col span={12}>
+                                        {/** case2: aliyun_ecs  */}
+                                        <Form.Item label="规格"
+                                            name="instance_type"
+                                            rules={[{ required: true, message: '请选择' }]}
+                                        >
+                                            <Select placeholder="请选择"
+                                                disabled={disabled || image.length === 0}
+                                                showSearch
+                                                optionFilterProp="children"
+                                                filterOption={(input, option: any) =>
+                                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                }
                                             >
-                                                <InputNumber
-                                                    min={1}
-                                                     //type="text"
-                                                    style={{ width:70 }}
-                                                    placeholder="大小"
-                                                    disabled={disabled || image.length === 0}
-                                                />
-                                            </Form.Item>
-                                            <span style={{ marginTop: '30px',background:'#fafafa',padding:'4px 10px',border:'1px solid #d9d9d9',borderLeft:'none'}}>C</span>
-                                        </Col>
-                                        <Col span={16} style={{ display: 'flex', alignItems: 'flex-start', paddingLeft:6 }}>
-                                            <Form.Item label=""
-                                                name="instance_type2"
-                                                rules={[{ required: true, message: '请输入' }]}
-                                            >
-                                                <InputNumber
-                                                    min={1}
-                                                    style={{ width:70, marginTop: 30 }}
-                                                    //type="text"
-                                                    placeholder="大小"
-                                                    disabled={disabled || image.length === 0}
-                                                />
-                                            </Form.Item>
-                                            <span style={{ marginTop: '30px',background:'#fafafa',padding:'4px 10px',border:'1px solid #d9d9d9',borderLeft:'none'}}>G</span>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                                :
-                                <Col span={12}>
-                                    {/** case2: aliyun_ecs  */}
-                                    <Form.Item label="规格"
-                                        name="instance_type"
-                                        rules={[{ required: true, message: '请选择' }]}
-                                    >
-                                        <Select placeholder="请选择" 
-                                            disabled={disabled || image.length === 0}
-                                            showSearch
-                                            optionFilterProp="children"
-                                            filterOption={(input, option: any) =>
-                                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                              }
-                                            >
-                                            {instance.map((item: any, index: number) => 
-                                               <Option value={item.Value} key={index}>{item.Value}</Option>
-                                            )}
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
+                                                {instance.map((item: any, index: number) =>
+                                                    <Option value={item.Value} key={index}>{item.Value}</Option>
+                                                )}
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
                                 }
                             </>)
                             :
@@ -787,7 +835,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="image"
                                     label="镜像"
-                                    validateStatus={(validateImage && !image.length) ? 'error' : '' }
+                                    validateStatus={(validateImage && !image.length) ? 'error' : ''}
                                     help={(validateImage && !image.length) ? '没有符合的镜像' : ''}
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
@@ -800,7 +848,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         </Select>
                                     } */}
                                     <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
-                                        options={resetImage(image, 'owner_alias','platform')}
+                                        options={resetImage(image, 'owner_alias', 'platform')}
                                         expandTrigger="hover"
                                         displayRender={displayRender}
                                     />
@@ -867,8 +915,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         :
                                         <Select placeholder="请选择" disabled={disabled || image.length === 0}>
                                             {categories.map((item: any, index: number) => {
-                                                    return <Option value={item.value} key={index}>{item.title}</Option>
-                                                })
+                                                return <Option value={item.value} key={index}>{item.title}</Option>
+                                            })
                                             }
                                         </Select>
                                     }
@@ -885,19 +933,19 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 >
                                     <InputNumber
                                         placeholder="大小"
-                                        min={ 20 }
-                                        max={ 500 }
-                                        style={{ width:70 }}
+                                        min={20}
+                                        max={500}
+                                        style={{ width: 70 }}
                                         defaultValue={40}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
-                                <span style={{ marginTop: '30px',background:'#fafafa',padding:'4px 10px',border:'1px solid #d9d9d9',borderLeft:'none'}}>G</span>
+                                <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>G</span>
                             </Col> :
                             null
                         }
                         {!is_instance ?
-                            <Col span={4} style={{ display: 'flex', alignItems:'flex-start' }}>
+                            <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="storage_number"
                                     label=" "
@@ -906,18 +954,18 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     <InputNumber
                                         //type="text"
                                         placeholder="数量"
-                                        style={{ width:70 }}
+                                        style={{ width: 70 }}
                                         defaultValue={0}
-                                        min={ 0 }
-                                        max={ 16 }
+                                        min={0}
+                                        max={16}
                                         disabled={disabled || image.length === 0}
                                     />
                                 </Form.Item>
-                                <span style={{ marginTop: '30px',background:'#fafafa',padding:'4px 10px',border:'1px solid #d9d9d9',borderLeft:'none'}}>个</span>
+                                <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>个</span>
                             </Col> :
                             null
                         }
-                        
+
                         {!is_instance ?
                             <Col span={12} className={styles.warp} >
                                 <Form.Item
@@ -936,7 +984,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             null
                         }
                         <Col span={12}>
-                            <Owner/>
+                            <Owner />
                             {/* <Form.Item
                                 name="owner"
                                 label="Owner"
@@ -1004,7 +1052,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 // validateStatus={nameStatus}
                                 // validateTrigger='onBlur'
                                 rules={[
-                                    { required: true, 
+                                    {
+                                        required: true,
                                         // min: 1,
                                         // max:32,
                                         // pattern: /^[A-Za-z0-9\._-]+$/g,
@@ -1020,7 +1069,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="private_ip"
-                                    label={<QusetionIconTootip desc="私网IP" title="指定主网卡私网IP，则IP必须在虚拟交换机地址段内且可用" />}
+                                    label={<QusetionIconTootip title="私网IP" desc="指定主网卡私网IP，则IP必须在虚拟交换机地址段内且可用" />}
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
                                     <Input autoComplete="off" placeholder="请输入" />
@@ -1029,17 +1078,17 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             null
                         }
                         <Col span={12}>
-                            <Form.Item label="控制通道" 
+                            <Form.Item label="控制通道"
                                 name="channel_type"
                                 initialValue={'toneagent'}
-                                rules={[{ required: true , message : '请选择控制通道' }]}>
+                                rules={[{ required: true, message: '请选择控制通道' }]}>
                                 <Select>
                                     {/* <Select.Option value="staragent">StarAgent</Select.Option> */}
                                     <Select.Option value="toneagent" key="toneagent">ToneAgent</Select.Option>
                                 </Select>
                             </Form.Item>
                         </Col>
-                        
+
                         <Col span={12}>
                             <Form.Item label="备注"
                                 name="description"

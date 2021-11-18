@@ -2,15 +2,15 @@ import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import { useRequest, useParams, useLocation } from 'umi'
 import { deleteBaseline, queryBaselineList } from '../services'
 import AddScripotDrawer from './AddScript'
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
 import BaselineDetail from './BaselineDetail'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import _ from 'lodash'
+import _ from 'lodash';
 import { requestCodeMessage } from '@/utils/utils';
+
 const { Search } = Input;
 
 export default (props: any) => {
@@ -177,7 +177,7 @@ export default (props: any) => {
         <Dropdown
             overlay={
                 <Menu>
-                    <Menu.Item >编辑信息</Menu.Item>
+                    <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
                 </Menu>
             }
         >
@@ -201,13 +201,7 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.script_left}>
                         <div className={styles.create_button_wrapper}>
-                            {
-                                < AuthCommon
-                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                    children={<Button type="primary">新增基线</Button>}
-                                    onClick={handleAddScript}
-                                />
-                            }
+                            <Button type="primary" onClick={handleAddScript}>新增基线</Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text className={styles.all_baseline_title} strong={true}>所有基线 {`(${baelineTotal})`}</Typography.Text>
@@ -254,29 +248,18 @@ export default (props: any) => {
                                             <Tooltip title={item.name} placement="right" overlayStyle={{ wordBreak: 'break-all' }}>
                                                 <Typography.Text className={styles.baseline_name}>{item.name}</Typography.Text>
                                             </Tooltip>
-                                            {
-                                                < AuthForm isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                                    children={
-                                                        <MinusCircleOutlined
-                                                            className={hover === item.id ? styles.remove_active : styles.remove}
-                                                        />
-                                                    }
-                                                    onFirm={
-                                                        <Popconfirm
-                                                            title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
-                                                            onCancel={() => handleDelete(item)}
-                                                            cancelText="确定删除"
-                                                            cancelButtonProps={{ disabled: data.is_first ? true : false }}
-                                                            okText="取消"
-                                                            icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                        >
-                                                            <MinusCircleOutlined
-                                                                className={hover === item.id ? styles.remove_active : styles.remove}
-                                                            />
-                                                        </Popconfirm>
-                                                    }
-                                                />
-                                            }
+                                            <Popconfirm
+                                                title={<div style={{color:'red'}}>删除基线将可能导致Job无法正常运行，<br/>请谨慎删除！！</div>}
+                                                onCancel={()=>handleDelete(item)}
+                                                cancelText="确定删除"
+                                                cancelButtonProps={{ disabled: data.is_first ? true : false }}
+                                                okText="取消"
+                                                icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                            >
+                                                <MinusCircleOutlined
+                                                    className={hover === item.id ? styles.remove_active : styles.remove}
+                                                />  
+                                            </Popconfirm>
                                         </Col>
                                     )
                                 )
@@ -326,13 +309,7 @@ export default (props: any) => {
                                             <EllipsisPulic title={current?.description} style={{ width: 318 }} />
                                         </div>
                                     </Col>
-                                    {
-                                        < AuthCommon
-                                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                                            children={dropdown}
-                                            onClick={hanldeEdit}
-                                        />
-                                    }
+                                    {dropdown}
                                 </Row>
                                 <Row className={styles.right_code_context}>
                                     <BaselineDetail

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Space, Tabs, Drawer, Form, Tag, Input, message, Popconfirm, Pagination, Spin, Popover, Table, Row } from 'antd';
 import { tagList, addTag, editTag, delSuite } from './service';
-import { AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import styles from './style.less';
 import ColorPicker from './components/ColorPicker';
 import Highlighter from 'react-highlight-words';
@@ -220,31 +219,20 @@ const SuiteManagement: React.FC<any> = props => {
             width: 150,
             render: (_: any, row: any) => (
                 row.source_tag !== '系统标签' &&
-                <div>
-                    {
-                        <AuthMemberForm
-                            isAuth={['sys_test_admin', 'user', 'ws_member']}
-                            children={<Space><Button type="link" style={{ padding: 0, height: 'auto' }}>编辑</Button><Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button></Space>}
-                            onFirm={
-                                <Space>
-                                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter({ ...row })}>编辑</Button>
-                                    <Popconfirm
-                                        title={<div style={{ color: 'red' }}>删除标签后，Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
-                                        placement="topRight"
-                                        okText="取消"
-                                        cancelText="确定删除"
-                                        onCancel={() => remOuter(row)}
-                                        overlayStyle={{ width: '300px' }}
-                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                    >
-                                        <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-                                    </Popconfirm>
-                                </Space>
-                            }
-                            creator_id={_}
-                        />
-                    }
-                </div>
+                <Space>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter({ ...row })}>编辑</Button>
+                    <Popconfirm
+                        title={<div style={{ color: 'red' }}>删除标签后，Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
+                        placement="topRight"
+                        okText="取消"
+                        cancelText="确定删除"
+                        onCancel={() => remOuter(row)}
+                        overlayStyle={{ width: '300px' }}
+                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                    >
+                        <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+                    </Popconfirm>
+            </Space>
             ),
         },
     ];

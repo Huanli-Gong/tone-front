@@ -1,30 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { Layout, Tabs, Space, Avatar, Typography, Button, message, Input, Modal, Select, Checkbox, Row, Col, Form, AutoComplete, Popover, Card } from 'antd'
 import { queryMember, addWorkspaceMember, queryWorkspaceMemberCounts, queryWorkspaceMember } from '@/services/Workspace'
-import { AuthCommon } from '@/components/Permissions/AuthCommon';
 import styles from './index.less'
 import TableComponent from './Components/Table'
 import { roleList } from '@/pages/SystemConf/UserManagement/service'
 import { SingleTabCard } from '@/components/UpgradeUI';
+// import { requestCodeMessage, matchRoleEnum } from '@/utils/utils';
 import { requestCodeMessage, switchUserRole } from '@/utils/utils';
 let timeout: any
-
 let timer: any
-
 export default (props: any) => {
     const { ws_id } = props.match.params
-    const [role, setRole] = useState('ws_owner')
+    const [role, setRole] = useState('ws_tester_admin')
     const [keyword, setKeyword] = useState('')
     const [memberCounts, setMemberCounts] = useState<any>({
         all_count: 0,
-        ws_owner: 0,
-        ws_admin: 0,
-        ws_test_admin: 0,
+        //ws_owner: 0,
+        ws_tester_admin: 0,
+        ws_tester: 0,
         ws_member: 0
     })
-
     const [searchKey, setSearchKey] = useState('')
-
     const [memberList, setMemberList] = useState<any[]>([])
     const [options, setOptions] = useState<any>([])
     const [visible, setVisible] = useState(false)
@@ -33,7 +29,10 @@ export default (props: any) => {
     const [select, setSelect] = useState<any[]>([]);
     const [roleData, setRoleData] = useState<any[]>([]);
     const [form] = Form.useForm()
-
+    // 权限
+    // const { currentRole } = matchRoleEnum();
+    // const limitAuthority =['ws_tester_admin'].includes(currentRole);
+        
     const getMemberList = async (name: string = '') => {
         const { data } = await queryMember({ keyword: name, scope: 'aligroup' })
         if (timeout) {
@@ -46,7 +45,7 @@ export default (props: any) => {
         }, 300)
     }
     const getRoleWsList = async () => {
-        const { data } = await roleList({ role_type: 'workspace', ws_id,is_filter: '1' })
+        const { data } = await roleList({ role_type: 'workspace', ws_id, is_filter: '1' })
         data && setRoleData(data.list)
 
     };
@@ -141,9 +140,10 @@ export default (props: any) => {
     }
 
     const childTabs = [
-        { name: `所有者 ${memberCounts.ws_owner}`, role: 'ws_owner' },
-        { name: `管理员 ${memberCounts.ws_admin}`, role: 'ws_admin' },
-        { name: `测试管理员 ${memberCounts.ws_test_admin}`, role: 'ws_test_admin' },
+        // { name: `所有者 ${memberCounts.ws_owner}`, role: 'ws_owner' },
+        // { name: `测试管理员 ${memberCounts.ws_test_admin}`, role: 'ws_test_admin' },
+        { name: `测试管理员 ${memberCounts?.ws_tester_admin}`, role: 'ws_tester_admin' },
+        { name: `测试人员 ${memberCounts.ws_tester || 0}`, role: 'ws_tester' },
         { name: `workspace成员 ${memberCounts.ws_member}`, role: 'ws_member' }
     ]
 
@@ -194,24 +194,19 @@ export default (props: any) => {
                                 onPressEnter={(evt: any) => setKeyword(evt.target.value)}
                             />
                         </AutoComplete>
-                        {<AuthCommon
-                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                            children={<Button type="primary">添加成员</Button>}
-                            onClick={handleOpenAddMemberModal} />
-                        }
+                        <Button type="primary" onClick={handleOpenAddMemberModal}>添加成员</Button>
                     </Space>
                 }
             >
-                <Tabs
-                    className={styles.tab_style}
-                    onChange={handleChangeTab}
-                    type="card"
-                >
-                    {childTabs.map(
-                        (item: any) => (
-                            <Tabs.TabPane tab={item.name} key={item.role} >
-                                {
-                                    role === item.role &&
+                <Tabs className={styles.tab_style} onChange={handleChangeTab} type="card">
+                    {childTabs.map((item: any) => {
+                        // // 测试管理员, 隐藏[所有者]tab
+                        // if (limitAuthority && item.role == 'ws_owner') {
+                        //     return undefined
+                        // }
+                        return (
+                            <Tabs.TabPane tab={item.name} key={item.role}>
+                                {role === item.role &&
                                     <TableComponent
                                         refresh={refresh}
                                         role={role}
@@ -223,7 +218,8 @@ export default (props: any) => {
                                 }
                             </Tabs.TabPane>
                         )
-                    )}
+                        })
+                    }
                 </Tabs>
             </SingleTabCard>
             {
@@ -237,15 +233,11 @@ export default (props: any) => {
                 >
                     <Form 
                         layout="vertical" 
-                        form={form} 
-                        /*hideRequiredMark*/
+                        form={form}
                     >
                         <Form.Item label="用户" name="emp_id_list"
                             rules={[
-                                {
-                                    required: true,
-                                    message: '请选择用户',
-                                }
+                                { required: true, message: '请选择用户' }
                             ]}
                         >
                             <Select
@@ -258,7 +250,7 @@ export default (props: any) => {
                                 onSearch={val => getMemberList(val)}
                             >
                                 {
-                                    memberList.map((item) => (
+                                    memberList?.map((item) => (
                                         <Select.Option key={item.emp_id} value={item.emp_id} label={item.last_name} >
                                             <Row>
                                                 <Col span={2}>

@@ -8,7 +8,7 @@ export function commitLinkTip ( title : string , { commit , job_id , ws_id } : a
 
 export function serverLinkTip ( ip : any ) {
     return ip ?
-    `测试机器: ${ip}<br />` :
+    `测试机器: <span>${ip}</span><br />` :
     ''
 }
 

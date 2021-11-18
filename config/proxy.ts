@@ -5,6 +5,7 @@
  * For details, please see
  * https://pro.ant.design/docs/deploy
  */
+
 import { opoenSourceProxyTarget } from '../../wsConfig'
 
 export default {

@@ -4,8 +4,6 @@ import { ExclamationCircleOutlined, DownOutlined, UpOutlined } from '@ant-design
 import styles from './index.less';
 import { queryMachineData } from '../service';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
-import { ServerJumpBlock } from '@/components/Public';
-
 const RenderMachineItem = (props: any) => {
     const [flag, setFlag] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)
@@ -30,11 +28,14 @@ const RenderMachineItem = (props: any) => {
     const columns = [
         {
             title: 'IP',
-            dataIndex: 'ip',
             render: (_: any, row: any) => {
-                return(
-                    <ServerJumpBlock>{_ || '-'}</ServerJumpBlock>
-                )
+                if(row.device_type){
+                    return(
+                        <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${row.ip}`} target="_blank">{row.ip || '-'}</a>
+                    )
+                }else{
+                    return <span>{row.pub_ip}</span>
+                }
             },
         },
         {
@@ -63,7 +64,7 @@ const RenderMachineItem = (props: any) => {
         }
     ]
     return (
-        !!dataSource.length && <Spin spinning={loading}>
+        !!dataSource.length ? <Spin spinning={loading}>
             <div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>
                 <Row style={{ marginBottom: 16 }}>
                     <Col span={22}>
@@ -72,11 +73,21 @@ const RenderMachineItem = (props: any) => {
                         <Row style={{ padding: '4px 0 0 60px' }}>
                             <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>故障机器</Typography.Text>
                             {
-                                Array.isArray(dataSource) && dataSource.map((item:any)=>(
-                                    <ServerJumpBlock style={{ marginRight: 20 }}>
-                                        {item.ip}/{item.sn}
-                                    </ServerJumpBlock>
-                                ))
+                                Array.isArray(dataSource) && dataSource.map((item:any)=>{
+                                    if(item.device_type){
+                                        return (
+                                            <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${item.ip}`} target="_blank" style={{ marginRight: 20 }}>
+                                                {item.ip}/{item.sn}
+                                            </a>
+                                        )
+                                    }else{
+                                        return(
+                                            <span style={{ marginRight: 20 }}>
+                                                {item.pub_ip}/{item.sn}
+                                            </span>
+                                        )
+                                    }
+                                })
                             }
                         </Row>
                     </Col>
@@ -104,6 +115,7 @@ const RenderMachineItem = (props: any) => {
                 }
             </div>
         </Spin>
+        : <></>
     )
 }
 export default RenderMachineItem;

@@ -3,18 +3,16 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Space, Button, message, Typography, Popconfirm, Tooltip } from 'antd'
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { updateTestServer, deleteClusterServer, queryClusterServer, editGroupMachine } from '../../services'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import DeviceDetail from '../../Components/DeviceDetail'
 import { StateBadge } from '../../Components'
 import ClusterEditServer from './ClusterEditServer'
 import OperationLog from '@/components/Public/Log'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-
+import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage } from '@/utils/utils';
 import treeSvg from '@/assets/svg/tree.svg'
-import { ServerJumpBlock } from '@/components/Public';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default (props: any) => {
@@ -100,7 +98,7 @@ export default (props: any) => {
             width: 170,
             fixed: 'left',//TreeIcon
             render: (record: any) => (
-                <ServerJumpBlock>{record.test_server.ip || '-'}</ServerJumpBlock>
+                <span>{record.test_server.ip || '-'}</span>
             )
         },
         {
@@ -189,40 +187,20 @@ export default (props: any) => {
             align: 'center',
             render: (_: any) => (
                 <Space>
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button style={{ padding: 0 }} type="link" size="small" >详情</Button>}
-                        onClick={() => detailsDrawerRef.current.show(_.test_server.id)} />
-                    }
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button style={{ padding: 0 }} type="link" size="small" >编辑</Button>}
-                        onClick={() => handleOpenEditDrawer(_)} />
-                    }
-                    {<AuthForm
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button style={{ padding: 0 }} size="small" type="link" >删除</Button>}
-                        onFirm={
-                            <Popconfirm
-                                title="确定要删除吗？"
-                                okText="确定"
-                                cancelText="取消"
-                                onConfirm={() => handleDeleteServer(_.id)}
-                            >
-                                <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
-                            </Popconfirm>
-                        } />
-                    }
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button style={{ padding: 0 }} type="link" size="small" >日志</Button>}
-                        onClick={() => handleOpenLogDrawer(_.id)} />
-                    }
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button style={{ padding: 0 }} type="link" size="small" >同步</Button>}
-                        onClick={() => handleUpdateServer(_.id)} />
-                    }
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>详情</Button>
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
+                    <Popconfirm
+                        title="确定要删除吗？"
+                        okText="确定"
+                        cancelText="取消"
+                        onConfirm={() => handleDeleteServer(_.id)}
+                    >
+                        <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
+                    </Popconfirm>
+                    <PermissionTootip>
+                        <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
+                    </PermissionTootip>
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>
                     {/* <Dropdown
                         overlay={
                             <Menu>

@@ -1,4 +1,4 @@
-import React, { useContext, memo, useState, useEffect } from 'react';
+import React, { useContext, memo, useMemo, useState, useEffect } from 'react';
 import { Empty, Row, Col, Tooltip, Typography, Space, Button, Select } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { ReportContext } from '../Provider';
@@ -7,6 +7,7 @@ import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
+import { targetJump } from '@/utils/utils'
 const { Option } = Select
 import {
     TestDataTitle,
@@ -40,6 +41,13 @@ const ReportTestFunc: React.FC<any> = () => {
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [dataSource, setDataSource] = useState<any>([])
     let group = allGroupData?.length
+
+    useEffect(() => {
+        if (Array.isArray(func_data_result) && !!func_data_result.length) {
+            setDataSource(func_data_result)
+        }
+    }, [func_data_result])
+
     // 单个展开
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
@@ -49,7 +57,7 @@ const ReportTestFunc: React.FC<any> = () => {
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                        item.compare_data.splice(baselineGroupIndex, 0, item.result)
+                        item.compare_data.splice(baseIndex, 0, item.result)
                         const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
                         len.forEach((i) => item.compare_data.push('-'))
                         return (
@@ -91,17 +99,18 @@ const ReportTestFunc: React.FC<any> = () => {
     const handleArrow = (conf: any, i: any) => {
         setNum(i)
         setArrowStyle(conf.suite_id)
-        const conf_list = conf.conf_list.forEach((item: any) => {
-            let pre: any = []
-            for (let x = 0; x < 5; x++) pre.push([])
+        let pre: any = []
+        for (let x = 0; x < 5; x++) pre.push([])
+        let num = i > baseIndex ? i - 1 : i
+        const conf_list = conf.conf_list.map((item: any) => {
             item.sub_case_list.forEach((element: any) => {
-                if (element.result === 'Pass' && element.compare_data[i] === 'Fail') {
+                if (element.result === 'Pass' && element.compare_data[num] === 'Fail') {
                     pre[0].push(element)
-                } else if (element.result === 'Fail' && element.compare_data[i] === 'Pass') {
+                } else if (element.result === 'Fail' && element.compare_data[num] === 'Pass') {
                     pre[1].push(element)
-                } else if (element.result === 'Fail' && element.compare_data[i] === 'Fail') {
+                } else if (element.result === 'Fail' && element.compare_data[num] === 'Fail') {
                     pre[2].push(element)
-                } else if (element.result === 'Pass' && element.compare_data[i] === 'Pass') {
+                } else if (element.result === 'Pass' && element.compare_data[num] === 'Pass') {
                     pre[3].push(element)
                 } else {
                     pre[4].push(element)
@@ -112,16 +121,22 @@ const ReportTestFunc: React.FC<any> = () => {
                 sub_case_list: [].concat(...pre)
             }
         })
-        // setFuncData({
-        //     ...child,
-        //     conf_list
-        // })
+        setDataSource(dataSource.map((item:any)=>{
+            if(item.suite_id == conf.suite_id){
+                return {
+                    ...item,
+                    conf_list
+                }
+            }
+            return item
+        }))
     }
-    useEffect(() => {
-        if (Array.isArray(func_data_result) && func_data_result.length > 0) {
-            setDataSource(func_data_result)
-        }
-    }, [func_data_result])
+
+    const baseIndex = useMemo(()=>{
+        if(baselineGroupIndex === -1) return 0
+        return baselineGroupIndex
+    },[ baselineGroupIndex ])
+   
     const OpenSubCase = () => {
         setBtn(!btn)
     }
@@ -194,7 +209,7 @@ const ReportTestFunc: React.FC<any> = () => {
             </Row>
             <TestWrapper>
                 {
-                    dataSource.length > 0 ?
+                    !!dataSource.length ?
                         dataSource.map((item: any, idx: number) => {
                             return (
                                 <div key={idx}>
@@ -210,7 +225,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                 总计/通过/失败
                                                             </Col>
                                                             {
-                                                                i !== baselineGroupIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
+                                                                i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
                                                                     对比结果
                                                                     <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                                         {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow title="差异化排序" />}
@@ -248,14 +263,14 @@ const ReportTestFunc: React.FC<any> = () => {
                                                     let conf_data = conf.conf_compare_data || conf.compare_conf_list
                                                     let metricList: any = []
                                                     for (let i = 0; i < allGroupData.length; i++) {
-                                                        if (i === baselineGroupIndex)
+                                                        if (i === baseIndex)
                                                             metricList.push({
                                                                 all_case,
                                                                 success_case,
                                                                 fail_case,
                                                                 obj_id,
                                                             })
-                                                        conf_data.length > 0 ?
+                                                        !!conf_data.length ?
                                                             conf_data?.forEach((item: any, idx: number) => {
                                                                 if (item !== null) {
                                                                     const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
@@ -302,7 +317,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                                                 </Space>
                                                                                 {item !== null &&
-                                                                                    <span style={{ cursor: 'pointer', paddingLeft: 10 }} onClick={() => window.open(`/ws/${ws_id}/test_result/${item.obj_id}`)}>
+                                                                                    <span style={{ cursor: 'pointer', paddingLeft: 10 }} onClick={() => targetJump(`/ws/${ws_id}/test_result/${item.obj_id}`)}>
                                                                                         {item.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
                                                                                     </span>
                                                                                 }

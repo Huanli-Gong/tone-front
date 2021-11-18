@@ -16,7 +16,7 @@ import { TestContext } from '../../Provider'
 /**
  * 系统级-业务测试
  */
-export default forwardRef(({ callback = () => { } }: any, ref: any) => {
+export default forwardRef(( props : any, ref: any) => {
 	const [loading, setLoading] = useState<any>(true)
 	const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1 })
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -168,20 +168,10 @@ export default forwardRef(({ callback = () => { } }: any, ref: any) => {
 			fixed: 'right',
 			render: (text: any, record: any) => {
 				return (
-					<div>
-						<Space>
-							<a><span onClick={() => callback({ type: 'edit', record })}>编辑</span></a>
-							{/* <Popconfirm title="删除确认"
-								placement="bottomLeft"
-								onConfirm={() => handelDelete(record)}
-								cancelText="取消"
-								okText="删除"
-								icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}>
-								<a><span>删除</span></a>
-							</Popconfirm> */}
-							<a><span onClick={() => onOk(record)}>删除</span></a>
-						</Space>
-					</div>
+					<Space>
+						<a><span onClick={() => AddTestDrawer.current.show(record)}>编辑</span></a>
+						<a><span onClick={() => onOk(record)}>删除</span></a>
+					</Space>
 				)
 			},
 		}

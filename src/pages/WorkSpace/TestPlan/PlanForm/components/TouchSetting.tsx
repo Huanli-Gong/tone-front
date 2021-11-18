@@ -79,9 +79,9 @@ const TouchSetting = ( props : any , ref : any ) => {
                                 </Form.Item>
                                 <div style={{ position : 'absolute' , right : -22 , top : -4 }}>
                                     <QusetionIconTootip 
-                                        desc="" 
+                                        title="" 
                                         placement="rightBottom"
-                                        title={
+                                        desc={
                                             <>
                                                 <Row><Typography.Text strong>CronTab表达式格式：</Typography.Text></Row>
                                                 <br />

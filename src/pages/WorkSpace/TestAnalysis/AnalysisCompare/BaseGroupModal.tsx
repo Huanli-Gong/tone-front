@@ -9,15 +9,16 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { ReactComponent as BaseIcon } from '@/assets/svg/BaseIcon.svg'
 import ExpandTable from './ExpandTable'
 import { requestCodeMessage } from '@/utils/utils';
+import { Access, useAccess } from 'umi';
 const { Panel } = Collapse;
 const { Step } = Steps;
 export default (props: any) => {
     const layoutHeight = resizeDocumentHeightHook()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
-
+    const access = useAccess()
     const { baselineGroup, handleCancle, onOk, baselineGroupIndex, creatReportOk } = props
     const groupAll = _.cloneDeep(props.allGroupData)
-    groupAll.splice(baselineGroupIndex, 1)
+    groupAll.splice(baselineGroupIndex === -1 ? 0 : baselineGroupIndex, 1)
     const allGroupData = groupAll.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length) // 去掉空组但基线组除外
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
     const [copySuitData, setCopySuitData] = useState<any>({}) // 复制得全量数据
@@ -183,7 +184,7 @@ export default (props: any) => {
                 }
             })
         }
-        allGroupData.forEach((item: any, index: number) => {
+         allGroupData.forEach((item: any, index: number) => {
             let membersArr = _.get(item, 'members')
             let brrFun: any = []
             let brrFers: any = []
@@ -559,7 +560,9 @@ export default (props: any) => {
                 {
                     currentStep === 0 && <Space>
                         <Button onClick={handleClose}>取消</Button>
-                        <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
+                        <Access accessible={access.testerAccess()}>
+                            <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
+                        </Access>
                         <Button disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button>
                         <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)}>下一步</Button>
                     </Space>
@@ -575,7 +578,9 @@ export default (props: any) => {
                         <Button onClick={_.partial(handleStepChange, 0)} style={{float:'left'}}>上一步</Button>
                         <Space>
                             <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
+                            <Access accessible={access.testerAccess()}>
+                                <Button type="primary" disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
+                            </Access>
                             <Button type="primary" disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button>
                         </Space>
                     </div>

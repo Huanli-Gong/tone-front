@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Dropdown, Tooltip , Breadcrumb } from 'antd'
-import { AuthMember,AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import styles from './index.less'
-import { useRequest, history, Access, useAccess } from 'umi'
+import { useRequest, history, useModel, Access, useAccess } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection } from '@/pages/WorkSpace/TestResult/services'
@@ -34,6 +33,7 @@ export default (props: any) => {
     const allReport: any = useRef(null)
     const veiwReportHeight: any = useRef(null)
     const timer: any = useRef(null)
+    const { initialState } = useModel('@@initialState');
     const { data, loading, refresh } = useRequest(
         () => querySummaryDetail({ job_id }),
         {
@@ -57,16 +57,14 @@ export default (props: any) => {
     }, [data])
 
     useEffect(() => {
-        
         if (data && JSON.stringify(data) !== '{}' && data.id) {
             timer.current = setTimeout(() => {
                 let title = `#${data.id} ${data.name} - T-One`
                 window.document.title = title
             }, 2000)
-
         }
         return () => {
-           clearTimeout(timer.current)
+            clearTimeout(timer.current)
         }
     }, [data])
 
@@ -106,16 +104,7 @@ export default (props: any) => {
 
     const EditNoteBtn: React.FC<any> = (props: any) => {
         return (
-            <Access
-                accessible={access.wsTouristFilter()}
-            >
-                <AuthMember
-                    isAuth={['sys_test_admin', 'user', 'ws_member']}
-                    children={<Button type="link" size="small" style={{ padding: 0, marginLeft: props.note && 10 }} >写备注</Button>}
-                    onClick={handleOpenEditRemark}
-                    creator_id={props.creator}
-                />
-            </Access>
+            <Button type="link" size="small" onClick={handleOpenEditRemark} style={{ padding: 0, marginLeft: props.note && 10 }} >写备注</Button>
         )
     }
 
@@ -155,6 +144,7 @@ export default (props: any) => {
 
     const { windowWidth , windowHeight } = resizeClientSize()
     const isShowStopButton = data && data.state !== 'success' && data.state !== 'fail' && data.state !== 'skip' && data.state !== 'stop'
+    
     return (
         <Spin spinning={loading} className={styles.spin_style} >
             {
@@ -212,47 +202,24 @@ export default (props: any) => {
                                                 />
                                             </Row>
                                         }
-                                        <Access
-                                            accessible={access.wsTouristFilter()}
-                                            fallback={
-                                                <Row className={styles.test_summary_row} >
-                                                <Typography.Text className={styles.test_summary_item}> Job标签 </Typography.Text>
-                                                <Row align="middle">
-                                                    {
-                                                        data.tags.length > 0 ?
-                                                        data.tags.map(
-                                                            ( tag : any , index : number ) => <Tag color={ tag.color } key={ index }>{ tag.name || '-' }</Tag>
-                                                        )
-                                                        : <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
-                                                    }
-                                                </Row> 
-                                             </Row>
-                                            }
-                                        >
-                                             <Row className={styles.test_summary_row} >
-                                                <Typography.Text className={styles.test_summary_item}> Job标签 </Typography.Text>
-                                                <AuthMemberForm
-                                                    isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                                    children={ <EditOutlined /> }
-                                                    onFirm={
-                                                        <TagsEditer
-                                                            onOk={handleEditTagsOk}
-                                                            ws_id={ws_id}
-                                                            job_id={job_id}
-                                                            tags={data.tags}
-                                                        />
-                                                    }
-                                                    creator_id={data.creator}
-                                                />
-                                             </Row>
-                                        </Access>
+                                        <Row className={styles.test_summary_row} >
+                                        <Typography.Text className={styles.test_summary_item}> Job标签 </Typography.Text>
+                                        <TagsEditer
+                                            onOk={handleEditTagsOk}
+                                            ws_id={ws_id}
+                                            job_id={job_id}
+                                            tags={data.tags}
+                                            accessible={access.testerAccess(data.creator)}
+                                            accessLabel={access.canWsAdmin()}
+                                        />
+                                        </Row>
                                         <Row>
                                             <Typography.Text className={styles.test_summary_item}>
                                                 备注
                                             </Typography.Text>
                                             <div style={{ width: 'calc(100% - 74px)', wordBreak: 'break-all' }}>
-                                                {access.wsTouristFilter() ? data.note : data.note === null ? '-' : data.note}
-                                                <EditNoteBtn note={data.note} creator={data.creator} />
+                                                {access.testerAccess(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
+                                                {access.testerAccess(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
                                             </div>
                                         </Row>
                                     </Col>
@@ -264,7 +231,7 @@ export default (props: any) => {
                                 </Row>
                             </div>
                         </div>
-                        {/* <RenderMachineItem  job_id={job_id}/> */}
+                        <RenderMachineItem job_id={job_id}/>
                         <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
@@ -273,15 +240,23 @@ export default (props: any) => {
                                 key={key}
                                 tabBarExtraContent={
                                     (
-                                        <Access accessible={access.wsTouristFilter()}>
-                                            <div style={{ display: 'flex', marginRight: 12 }}>
-                                                <ViewReport viewAllReport={allReport} dreType="bottomRight" ws_id={ws_id} jobInfo={data} origin={'jobDetail'} stylesButton={veiwReportHeight.current} />
-                                                {data.created_from === 'offline' ? null
-                                                 : <Button type={data && Array.isArray(data.report_li) && data.report_li.length ? "default" : "primary"} onClick={handleReplay} style={{marginRight: 8}}>重跑</Button>
+                                        <div style={{ display: 'flex', marginRight: 12 }}>
+                                            <ViewReport viewAllReport={allReport} dreType="bottomRight" ws_id={ws_id} jobInfo={data} origin={'jobDetail'} stylesButton={veiwReportHeight.current} />
+                                            
+                                            <Access accessible={access.testerAccess(data.creator)}
+                                                fallback={
+                                                    initialState?.authList?.ws_role_title === 'ws_tester' ?
+                                                    <>
+                                                        <Button type={data && Array.isArray(data.report_li) && data.report_li.length ? "default" : "primary"} disabled={true} style={{marginRight: 8}}>重跑</Button>
+                                                        { tab === 'testProgress' && isShowStopButton && <Button disabled={true} style={{marginRight: 8}}>停止Job</Button> }
+                                                    </>
+                                                    : null
                                                 }
-                                                {tab === 'testProgress' && isShowStopButton  && <Button onClick={handleStopJob} style={{marginRight: 8}}>停止Job</Button>}
-                                            </div>
-                                        </Access>
+                                            >
+                                                <Button type={data && Array.isArray(data.report_li) && data.report_li.length ? "default" : "primary"} onClick={handleReplay} style={{marginRight: 8}}>重跑</Button>
+                                                {tab === 'testProgress' && isShowStopButton && <Button onClick={handleStopJob} style={{marginRight: 8}}>停止Job</Button>}
+                                            </Access>
+                                        </div>
                                     )
                                 }
                             >

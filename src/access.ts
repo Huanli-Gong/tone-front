@@ -1,8 +1,14 @@
 // src/access.ts
+
+const superAdmins = ['super_admin', 'sys_admin']
+const wsAdmin = ['ws_owner', 'ws_admin','ws_tester_admin']  
+const anolisList = ['ws_tester','ws_tester_admin'] // 社区twoMember
+const anolisWs = ['ws_member','ws_tester','ws_tester_admin']  // 社区tourists
+const anolisSys = ['sys_admin','user'] // 社区登录
+const sysAdminIncludeTest = ['super_admin', 'sys_admin', 'sys_test_admin']
+const wsAdminIncludeTest = ['ws_owner', 'ws_admin', 'ws_test_admin'] //sys_test_admin
+
 export default function (initialState: any) {
-    // if (!initialState.authList) return
-    const isAdmin = initialState?.authList?.sys_role_title
-    // const wsAuth = initialState?.authList.ws_role_title
     // 系统配置权限
     const authList: any = initialState?.authList
 
@@ -11,64 +17,43 @@ export default function (initialState: any) {
     const user_id: number | string | never = authList?.user_id || null
     const sys_role_id: any = authList?.sys_role_id || null
 
-    const array: any = []
+    const canSuperAdmin = () => superAdmins.includes(sys_role_title)
+    const isWsAdmin = () => wsAdmin.includes(ws_role_title)
 
-    if (sys_role_title === 'super_admin' || sys_role_title === 'sys_admin') {
-        array.push('/system', '/system/approve', '/system/workspace', '/system/user', '/system/suite', '/system/kernel', '/system/basic', '/system/testfarm') //超级管理员可访问
-    }
-
-    if (sys_role_title === 'sys_test_admin') {
-        array.push('/system', '/system/suite', '/system/kernel', '/system/basic', '/system/testfarm') // 测试管理员
-    }
-    
+    const canSysTestAdmin = () => sysAdminIncludeTest.includes(sys_role_title)
+    const canWsTestAdmin = () => wsAdminIncludeTest.includes(ws_role_title)
+    const canAnolisWs = () => anolisWs.includes(ws_role_title)
     return {
-        sysRouteFilter: (route: any) => array.includes(route.path),
-        wsRouteFilter: () => sys_role_title === 'super_admin' || sys_role_title === 'sys_admin' ? true : ws_role_title === 'ws_owner' || ws_role_title === 'ws_admin' ? true : false,
-        //wsElementFilter : ( role : string ) => [ 'sys_test_admin', 'user', 'ws_member', 'ws_tourist' , 'sys_admin' ].includes( role ),
-        wsOwnerFilter: () => {
-            const wsRoleList = ['ws_owner']
-            if (wsRoleList.includes(ws_role_title)) return true
-            return false
-        },
-        wsRemoveFilter: () => {
-            const sysAdminRoleList = ['sys_admin', 'super_admin']
-            const wsRemoveList = ['ws_owner', 'ws_admin']
-            if (sysAdminRoleList.includes(sys_role_title)) return true
-            if (wsRemoveList.includes(ws_role_title)) return true
-            return false
-        },
-        wsTouristFilter: () => {
-            const wsRoleList = ['ws_tourist']
-            if (wsRoleList.includes(ws_role_title)) return false
-            return true
-        },
-        isTouristFilter: () => {
-            if (ws_role_title === 'ws_tourist') return true
-            return false
-        },
-        wsRoleContrl: (user?: any) => {
-            const sysAdminRoleList = ['sys_admin', 'super_admin']
-            const wsRoleLst = ['ws_owner', 'ws_admin', 'ws_test_admin'] //sys_test_admin
-
-            if (sysAdminRoleList.includes(sys_role_title)) return true
-            if (wsRoleLst.includes(ws_role_title)) return true
-
-            if ('ws_member' === ws_role_title) {
-                if (user === user_id) return true
+        canWsAdmin: () => canSuperAdmin() || isWsAdmin(),   // 等同于wsBtnAccess 设置ws按钮  创建ws类型  存为模板
+        // 判断登录按钮是否显示
+        loginBtn:() => anolisSys.includes(sys_role_title),
+        // 登录状态和消息通知
+        loginAndMsgAccess:() => canSuperAdmin() || canAnolisWs(),
+        testerAccess:( user?:any ) => {
+            if(sys_role_title === 'sys_admin') return true;
+            if( user !== undefined ){
+                if ( ws_role_title === 'ws_tester') {
+                    if ( user === user_id ) return true
+                    return false
+                }
             }
-            return false
+            if(anolisList.includes(ws_role_title)) return true;
+            return false;
         },
-        hasAdminRole: () => {
-            const sysAdminRoleList = ['sys_admin', 'super_admin']
-            const wsRoleLst = ['ws_owner', 'ws_admin']
-
-            if (sysAdminRoleList.includes(sys_role_title)) return true
-            if (wsRoleLst.includes(ws_role_title)) return true
-
-            return false
+        hiddenRoute:() => false, // 隐藏申请审批
+        canSuperAdmin,
+        canSysTestAdmin,
+        wsOwnerFilter: () => ['ws_owner'].includes(ws_role_title),
+        wsTouristFilter: () => !['ws_tourist'].includes(ws_role_title),
+        wsRoleContrl: (user?: any) => {
+            if (canSuperAdmin() || canWsTestAdmin()) return true
+            return 'ws_member' === ws_role_title && user === user_id
         },
-        helpDocFilter: () => isAdmin === 'super_admin' || isAdmin === 'sys_admin' || isAdmin === 'sys_test_admin',
+        hasAdminRole: () => canSuperAdmin() || wsAdmin.includes(ws_role_title),
         memberSysManageRole: (member_id: number) => sys_role_title === 'super_admin' ? sys_role_id > member_id : sys_role_id >= member_id,
     };
 }
+
+
+
 

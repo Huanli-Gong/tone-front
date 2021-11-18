@@ -10,7 +10,6 @@ declare module '*.jpeg';
 declare module '*.gif';
 declare module '*.bmp';
 declare module '*.tiff';
-declare module 'omit.js';
 
 // google analytics interface
 interface GAFieldsObject {
@@ -36,3 +35,7 @@ declare let ga: Function;
 declare let ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION: 'site' | undefined;
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
+
+interface FunctionComponent {
+    onClick? : any
+}

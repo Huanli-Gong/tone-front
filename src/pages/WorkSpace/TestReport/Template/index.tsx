@@ -68,7 +68,7 @@ const TemplatePage = (props: any) => {
         }, [])
     }
 
-    const [contrl, setContrl] = useState(access.wsRoleContrl())
+    const [contrl, setContrl] = useState(access.testerAccess())
 
     const perfKeys = useMemo(() => getTreeKeys(dataSource.perf_item), [dataSource])
     const funcKeys = useMemo(() => getTreeKeys(dataSource.func_item), [dataSource])
@@ -92,7 +92,7 @@ const TemplatePage = (props: any) => {
         setLoading(true)
         const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
         const { perf_item, func_item, perf_conf, func_conf } = data
-        setContrl(access.wsRoleContrl(data.creator))
+        setContrl(access.testerAccess(data.creator))
 
         const params: any = {
             func_conf: func_conf || defaultConf,
@@ -400,7 +400,7 @@ const TemplatePage = (props: any) => {
                 history.push(`/ws/${ws_id}/test_report?t=template`)
             else requestCodeMessage(data.code, data.message)
         }
-        catch (err) {
+        catch (err:any) {
             message.warning(err)
         }
         setLoading(false)

@@ -7,6 +7,10 @@ export const queryHelpDocList = async ( params ? : any ) => {
     return request(`/api/sys/help_doc/`, { params })  
 }
 
+export async function person_auth(params:any) {
+    return request('/api/auth/personal_center/',{ params});
+}
+
 export const createHelpDoc =  ( data : any ) => {
     return request(`/api/sys/help_doc/`, { method : 'post', data })
 }

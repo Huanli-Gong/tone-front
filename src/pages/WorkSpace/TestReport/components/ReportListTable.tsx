@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState, useMemo } from 'react'
-import { Space, Popconfirm, message, Spin, DatePicker } from 'antd'
-import { OptBtn, ClsResizeTable } from './styled'
-import { useRequest } from 'umi'
+import { Space, Popconfirm, message, Spin, DatePicker, Row, Col } from 'antd'
+import { OptBtn, TableContainer, ClsResizeTable } from './styled'
+import { useRequest, history, Access, useAccess } from 'umi'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -11,13 +11,15 @@ import SelectUser from '@/components/Public/SelectUser'
 import SelectProductVersion from '@/components/Public/SelectProductVersion'
 import CommonPagination from '@/components/CommonPagination'
 import { queryReportList, delReportList, } from '../services'
-import { AuthMember, AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import _ from 'lodash'
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, matchRoleEnum } from '@/utils/utils';
 const { RangePicker } = DatePicker
-
-const ReportListTable: React.FC<any> = (props) => {
-    const { ws_id, tab } = props
+const ReportListTable = (props: any) => {
+    // 权限
+    //const { currentRole, currentRoleId } = matchRoleEnum();
+    //const limitAuthority =['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
+    const access = useAccess()
+    const { ws_id, tab, tableHeght } = props
     const [autoFocus, setFocus] = useState(true)
     const defaultParmas = {
         name: '',
@@ -131,7 +133,7 @@ const ReportListTable: React.FC<any> = (props) => {
                         searchWords={[fetchParamsData.name || '']}
                         autoEscape
                         textToHighlight={_ || '-'}
-                        onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}`)}
+                        onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}/?cid=${row.creator_id}`)}
                     />
                 </PopoverEllipsis>
             )
@@ -202,44 +204,38 @@ const ReportListTable: React.FC<any> = (props) => {
             return record || '-'
         }
 
-    }, {
+    },
+    access.testerAccess() && {
         title: '操作',
         width: 200,
         fixed: 'right',
         render(row: any) {
             const id = _.get(row, 'id')
             return (
-                <Space>
-                    {
-                        <AuthMember
-                            isAuth={['sys_test_admin', 'user', 'ws_member', 'ws_tourist']}
-                            children={<OptBtn>编辑</OptBtn>}
-                            onClick={() => window.open(`/ws/${ws_id}/test_report/${id}/edit`)}
-                            creator_id={row.creator_id}
-                        />
+                <Access
+                    accessible={access.testerAccess(row.creator_id)}
+                    fallback={
+                        <Space>
+                            <OptBtn style={{ color: '#ccc', cursor: 'not-allowed' }}>编辑</OptBtn>
+                            <OptBtn style={{ color: '#ccc', cursor: 'not-allowed' }}>删除</OptBtn>
+                        </Space>
                     }
-                    {
-                        <AuthMemberForm
-                            isAuth={['sys_test_admin', 'user', 'ws_member', 'ws_tourist']}
-                            children={<OptBtn >删除</OptBtn>}
-                            onFirm={
-                                <Popconfirm
-                                    title="确认删除该报告吗？"
-                                    okText="确认"
-                                    cancelText="取消"
-                                    onConfirm={_.partial(handleReportDel, id || '')}
-                                >
-                                    <OptBtn >删除</OptBtn>
-                                </Popconfirm>
-                            }
-                            creator_id={row.creator_id}
-                        />
-
-                    }
-                </Space>
+                >
+                    <Space>
+                        <OptBtn onClick={() => window.open(`/ws/${ws_id}/test_report/${id}/edit`)}>编辑</OptBtn>
+                        <Popconfirm
+                            title="确认删除该报告吗？"
+                            okText="确认"
+                            cancelText="取消"
+                            onConfirm={_.partial(handleReportDel, id || '')}
+                        >
+                            <OptBtn>删除</OptBtn>
+                        </Popconfirm>
+                    </Space>
+                </Access>
             )
         }
-    }]
+    }].filter(Boolean);
 
     return (
         <Spin spinning={loading}>

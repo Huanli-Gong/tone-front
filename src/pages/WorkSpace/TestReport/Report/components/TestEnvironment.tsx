@@ -2,9 +2,8 @@ import React, { useEffect } from 'react';
 import { Table, Tooltip } from 'antd';
 import styles from './index.less';
 import { SettingTextArea } from '@/components/ReportEidt/index';
-import { ServerJumpBlock } from '@/components/Public';
 const TestEnvironment = (props: any) => {
-    const data = [props.data]
+    const data = [ props.data ]
     const { groupData, baseIndex, btn, switchReport, setScrollWidth, domainResult } = props
     // let test_dev_background:any = window.sessionStorage.getItem('test_dev_background')
     const handleChangeVal = (val: any, text: string) => {
@@ -33,7 +32,7 @@ const TestEnvironment = (props: any) => {
                     let array = Array.from(Array(count)).map(val => ({}))
                     return (
                         <div className="right_border">
-                            {!domainResult?.need_test_summary &&
+                            { !domainResult?.need_test_summary &&
                                 <div className="id_name">对比标识名称</div>
                             }
                             {
@@ -64,7 +63,7 @@ const TestEnvironment = (props: any) => {
                         let len = Array.from(Array(count - server_info.length)).map(val => ({}))
                         return (
                             <div className="right_border">
-                                {!domainResult?.need_test_summary &&
+                                { !domainResult?.need_test_summary &&
                                     <div className="id_name">
                                         <div className="top_test">
                                             <Tooltip placement="topLeft" title={row.base_group.tag}>
@@ -80,14 +79,14 @@ const TestEnvironment = (props: any) => {
                                             {
                                                 <>
                                                     <div className="enviroment_ip">
-                                                        <ServerJumpBlock className="enviroment_child">{item['ip/sn'] || '-'}</ServerJumpBlock>
+                                                        <span className="enviroment_child">{item['ip/sn'] || '-'}</span>
                                                     </div>
                                                     <Tooltip placement="topLeft" title={item.distro}>
                                                         <div className="enviroment_machine">
                                                             <span className="enviroment_child">{item.distro || '-'}</span>
                                                         </div>
                                                     </Tooltip>
-                                                    <Tooltip placement="topLeft" title={<div>{item.rpm?.map((i: any) => (<span>{i}<br /></span>))}</div>} overlayClassName={styles.tootip_overflow}>
+                                                    <Tooltip placement="topLeft" title={<div>{item.rpm?.map((i:any)=>(<span>{i}<br/></span>))}</div>} overlayClassName={styles.tootip_overflow}> 
                                                         <div className="enviroment_rpm">
                                                             <span className="enviroment_child">{item.rpm || '-'}</span>
                                                         </div>
@@ -117,7 +116,7 @@ const TestEnvironment = (props: any) => {
                     const len = Array.from(Array(row.count - item.server_info.length)).map(val => ({}))
                     return (
                         i === idx && <div className="right_border">
-                            {!domainResult?.need_test_summary &&
+                            { !domainResult?.need_test_summary &&
                                 <div className="id_name">
                                     <div className="top_test">
                                         <Tooltip placement="topLeft" title={item.tag}>
@@ -133,14 +132,14 @@ const TestEnvironment = (props: any) => {
                                         {
                                             <>
                                                 <div className="enviroment_ip">
-                                                    <ServerJumpBlock className="enviroment_child">{item['ip/sn'] || '-'}</ServerJumpBlock>
+                                                    <span className="enviroment_child">{item['ip/sn'] || '-'}</span>
                                                 </div>
                                                 <Tooltip placement="topLeft" title={item.distro}>
                                                     <div className="enviroment_machine">
                                                         <span className="enviroment_child">{item.distro || '-'}</span>
                                                     </div>
                                                 </Tooltip>
-                                                <Tooltip placement="topLeft" title={<div>{item.rpm?.map((i: any) => (<span>{i}<br /></span>))}</div>} overlayClassName={styles.tootip_overflow}>
+                                                <Tooltip placement="topLeft" title={<div>{item.rpm?.map((i:any)=>(<span>{i}<br/></span>))}</div>} overlayClassName={styles.tootip_overflow}>
                                                     <div className="enviroment_rpm">
                                                         <span className="enviroment_child">{item.rpm || '-'}</span>
                                                     </div>
@@ -195,26 +194,26 @@ const TestEnvironment = (props: any) => {
         <div>
             <div className="title" id="test_env"><span className="line"></span>测试环境</div>
             {
-                switchReport
-                    ?
-                    <>
-                        <div className="test_dev" id="test_dev">
-                            <SettingTextArea
-                                name={data[0]?.text || '-'}
-                                position="bottom"
-                                text="测试环境"
-                                btn={btn}
-                                onOk={(val: any) => handleChangeVal(val, 'text')}
-                            />
-                        </div>
-                        <div className="table_margin" id="test_dev">
-                            <Table className="table_bar" size="small" showHeader={false} columns={columns} dataSource={data} scroll={{ x: scrollLength }} pagination={false} rowKey="index" />
-                        </div>
-                    </>
-                    :
-                    <div className="table_margin" id="test_dev">
-                        <Table className="table_bar" size="small" showHeader={false} columns={columns} dataSource={data} scroll={{ x: scrollLength }} pagination={false} rowKey="index" />
-                    </div>
+                switchReport 
+                ? 
+                <>
+                <div className="test_dev" id="test_dev">
+                    <SettingTextArea
+                        name={data[0]?.text || '-'}
+                        position="bottom"
+                        text="测试环境"
+                        btn={btn}
+                        onOk={(val: any) => handleChangeVal(val, 'text')}
+                    />
+                </div>
+                <div className="table_margin" id="test_dev">
+                    <Table className="table_bar" size="small" showHeader={false} columns={columns} dataSource={data} scroll={{ x: scrollLength }} pagination={false} rowKey="index" />
+                </div>
+                </>
+                :
+                <div className="table_margin" id="test_dev">
+                    <Table className="table_bar" size="small" showHeader={false} columns={columns} dataSource={data} scroll={{ x: scrollLength }} pagination={false} rowKey="index" />
+                </div>
             }
         </div>
     )

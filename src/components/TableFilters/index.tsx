@@ -215,7 +215,7 @@ const CheckboxTableFilter : React.FC<any> = ({ confirm , onConfirm , list, style
     )
 }
 
-export const getCheckboxFilter = ( props : any , setProps : any , list : any , name : string,styleObj:any ) => ({
+export const getCheckboxFilter = ( props : any , setProps : any , list : any , name : string,styleObj?:any ) => ({
     filterIcon : <FilterFilled style={{ color: props[ name ] && props[ name ].length ? '#1890ff' : undefined }} />,
     filterDropdown : ({ confirm } : any ) => {
         const handleSetProps = ( val : string ) => {

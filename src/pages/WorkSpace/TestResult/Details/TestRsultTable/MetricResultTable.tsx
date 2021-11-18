@@ -32,7 +32,7 @@ export default ({ job_id, test_case_id, suite_id, state: compare_result, ws_id, 
         dataIndex: 'metric',
         render: (_: any) => <span style={{ paddingLeft: 8, paddingRight: 8 }}>{_ || '-'}</span>
     }, {
-        title: <QusetionIconTootip desc="测试结果" title="AVG ± CV" />,
+        title: <QusetionIconTootip title="测试结果" desc="AVG ± CV" />,
         dataIndex: 'test_value',
         render: (_: any, row: any, index: number) => (
             <ResultTdPopver
@@ -42,13 +42,13 @@ export default ({ job_id, test_case_id, suite_id, state: compare_result, ws_id, 
             />
         )
     }, {
-        title: <QusetionIconTootip desc="基线" title="AVG ± CV" />,
+        title: <QusetionIconTootip title="基线" desc="AVG ± CV" />,
         dataIndex: 'baseline_value',
         render: (_: any, row: any) => {
             return (
                 (_ && row.baseline_cv_value) ?
                     <Access
-                        accessible={access.wsRouteFilter()}
+                        accessible={access.canWsAdmin()}
                         fallback={<span>{`${_}±${row.baseline_cv_value}`}</span>}
                     >
                         <span
@@ -76,7 +76,7 @@ export default ({ job_id, test_case_id, suite_id, state: compare_result, ws_id, 
                 '-'
         )
     }, {
-        title: <QusetionIconTootip desc="阈值" title="AVG 阈值 / CV 阈值" />,
+        title: <QusetionIconTootip title="阈值" desc="AVG 阈值 / CV 阈值" />,
         dataIndex: 'threshold',
         render: (_: any) => (
             _ ? _ : '-'

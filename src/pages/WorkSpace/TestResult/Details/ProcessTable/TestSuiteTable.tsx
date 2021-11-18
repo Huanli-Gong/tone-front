@@ -1,17 +1,17 @@
 import { Card, message, Table, Button } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import TestConfTable from './TestConfTable'
 import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
 
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
-import { useRequest } from 'umi';
+import { useRequest,useAccess,Access } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 
 export default ({ job_id, refresh = false, testType }: any) => {
+    const access = useAccess()
     const { data, loading, run } = useRequest(
         () => queryProcessSuiteList({ job_id }),
         {
@@ -76,13 +76,13 @@ export default ({ job_id, refresh = false, testType }: any) => {
                 if (state === 'running')
                     return (
                         <>
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={<span style={style} >停止Suite</span>}
-                                onClick={() => handleStopSuite(_)}
-                                creator_id={_.creator}
-                            />
-                            
+                            <Access 
+                                accessible={access.testerAccess(_.creator)}
+                                fallback={<span style={style}>停止Suite</span>}
+                            >
+                                <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
+                                
+                            </Access>
                             <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
                         </>
                     )

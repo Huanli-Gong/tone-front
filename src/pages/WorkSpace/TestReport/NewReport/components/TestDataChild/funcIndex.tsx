@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, memo } from 'react';
+import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Button, Space, Select, Typography, Popconfirm, Empty, Tooltip, Row, Col } from 'antd';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
@@ -34,12 +34,12 @@ import {
     CloseBtn,
     PrefDataDel,
 } from '../../ReportUI';
-import produce from 'immer';
+// import produce from 'immer';
 import _ from 'lodash';
 const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
-    const { child, name, id, subObj, onChange, onDelete, dataSource, setDataSource, setEditBtn } = props
+    const { child, name, id, subObj, onChange, onDelete, dataSource, setDataSource } = props
     const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
     const { btnState, btnConfirm, allGroupData, baselineGroupIndex, } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
@@ -54,6 +54,11 @@ const FuncDataIndex: React.FC<any> = (props) => {
     useEffect(() => {
         setFuncData(child)
     }, [child])
+
+    const baseIndex = useMemo(()=>{
+        if(baselineGroupIndex === -1) return 0
+        return baselineGroupIndex
+    },[ baselineGroupIndex ])
 
     // 筛选操作
     const handleConditions = (value: any) => {
@@ -252,7 +257,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                        item.compare_data.splice(baselineGroupIndex, 0, item.result)
+                        item.compare_data.splice(baseIndex, 0, item.result)
                         const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
                         len.forEach((i) => item.compare_data.push('-'))
                         return (
@@ -307,7 +312,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         总计/通过/失败
                                     </Col>
                                     {
-                                        i !== baselineGroupIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
+                                        i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
                                             对比结果
                                             <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                 {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
@@ -345,7 +350,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             let conf_data = conf.conf_compare_data || conf.compare_conf_list
                             let metricList: any = []
                             for (let i = 0; i < allGroupData.length; i++) {
-                                if (i === baselineGroupIndex)
+                                if (i === baseIndex)
                                     metricList.push({
                                         all_case,
                                         success_case,

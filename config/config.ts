@@ -4,7 +4,7 @@ import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV } = process.env;
+const { REACT_APP_ENV, BUILD_APP_ENV } = process.env;
 
 export default defineConfig({
     // outputPath : 'build',
@@ -24,7 +24,7 @@ export default defineConfig({
         antd: true,
         baseNavigator: true,
     },
-    dynamicImport: {
+    [!BUILD_APP_ENV ? 'dynamicImport' : 'noDynamicImport']: {
         loading: '@/components/PageLoading/index',
     },
     targets: {
@@ -40,7 +40,7 @@ export default defineConfig({
     // chainWebpack,
     favicon: '/favicon.ico',
     esbuild: {},
-    // webpack5:{},
+    webpack5: {},
     fastRefresh: {},
     // mfsu : {},
     runtimePublicPath: true,
@@ -49,14 +49,4 @@ export default defineConfig({
     manifest: {
         basePath: '/',
     },
-    externals: {
-        'wangEditor': 'wangEditor'
-    },
-    scripts: [
-        'https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js'
-    ],
-    // vendor: ["styled-components"],
-    extraBabelPlugins: [
-        ["@babel/plugin-proposal-throw-expressions"]
-    ],
 });

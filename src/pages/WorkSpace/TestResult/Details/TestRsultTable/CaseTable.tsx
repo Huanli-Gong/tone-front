@@ -4,7 +4,6 @@ import { useRequest,useModel,Access, useAccess } from 'umi'
 
 import { contrastBaseline, queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
 import JoinBaseline from '../components/JoinBaseline'
 import ResultInfo   from './ResultInfo'
 import EditRemarks  from '../components/EditRemarks'
@@ -17,7 +16,6 @@ import { ReactComponent as MinusSvg } from '@/assets/svg/TestResult/conf/skip.sv
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline'
 import treeSvg from '@/assets/svg/tree.svg'
-import { ServerJumpBlock } from '@/components/Public';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default ({ 
@@ -61,10 +59,9 @@ export default ({
         width : 130,
         render : ( _ : string , row : any ) => (
             _ ?
-            <ServerJumpBlock 
-            >
+            <span>
               { _ }
-            </ServerJumpBlock>
+            </span>
               : '-'
         )
     }];
@@ -130,11 +127,16 @@ export default ({
                 title : '结束时间',
                 dataIndex : 'end_time',
                 width : 175
-            },{
+            },
+        ]
+    )
+    if(access.testerAccess(creator)){
+        columns = columns.concat([
+            {
                 title : '备注',
                 dataIndex : 'note',
                 width : 80 , 
-                render : ( _ : any , row : any ) => access.wsTouristFilter() && ellipsisEditColumn(
+                render : ( _ : any , row : any ) => ellipsisEditColumn(
                     _ , 
                     row,
                     80 , 
@@ -145,9 +147,8 @@ export default ({
                     }) 
                 )
             }
-        ]
-    )
-
+        ])
+    }
     if (['performance', 'business_performance'].includes(testType))
     {
         columns = columns.concat([
@@ -155,28 +156,21 @@ export default ({
                 title : '操作',
                 width : 145 , //175,
                 render : ( _ : any ) => (
-                    <Access
-                        accessible={access.wsTouristFilter()}
+                    <Access accessible={access.testerAccess(_.creator)}
+                        fallback={
+                            initialState?.authList?.ws_role_title === 'ws_tester' ?
+                                <Space>
+                                    <span style={{ color: '#ccc', cursor: 'pointer' }}>对比基线</span>
+                                    <span style={{ color: '#ccc', cursor: 'pointer' }}>加入基线</span>
+                                </Space>
+                                : <></>
+                        }
                     >
                         <Space>
-                        {
-                            <AuthMember 
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={ <span  style={{ color : '#1890FF' , cursor : 'pointer' }}>对比基线</span> }
-                                onClick={ () => handleContrastBaseline( _ )  }
-                                creator_id={creator}
-                            />
-                        }
-                        {
-                            <AuthMember 
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={ <span style={{ color : '#1890FF' , cursor : 'pointer' }}>加入基线</span> }
-                                onClick={ () => handleJoinBaseline( _ )  }
-                                creator_id={creator}
-                            />
-                        }
-                    </Space>
-                 </Access>
+                            <span  style={{ color : '#1890FF' , cursor : 'pointer' }} onClick={ () => handleContrastBaseline( _ )  }>对比基线</span>
+                            <span style={{ color : '#1890FF' , cursor : 'pointer' }} onClick={ () => handleJoinBaseline( _ )  }>加入基线</span> 
+                        </Space>
+                    </Access>
                 )
             }
         ])
@@ -257,6 +251,7 @@ export default ({
                                 testType={ testType }
                                 server_provider={ server_provider }
                                 job_id={ job_id } 
+                                creator={creator}
                                 suite_id={ suite_id }
                                 state={ childState }
                                 suite_name={ suite_name }

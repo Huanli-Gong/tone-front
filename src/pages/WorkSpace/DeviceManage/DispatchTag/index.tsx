@@ -5,15 +5,15 @@ import styles from './style.less';
 import ColorPicker from './components/ColorPicker';
 import Highlighter from 'react-highlight-words';
 import SearchInput from '@/components/Public/SearchInput';
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon'
 import Log from '@/components/Public/Log';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { SingleTabCard } from '@/components/UpgradeUI';
+import PermissionTootip from '@/components/Public/Permission/index';
 const SuiteManagement: React.FC<any> = props => {
 	const { ws_id } = props.match.params
 	const [formSuite] = Form.useForm();
-	//const access = useAccess()
+
 	const [data, setData] = useState<any>([]);
 	const [name, setName] = useState<string>();
 	const [description, setDescription] = useState<string>();
@@ -234,43 +234,28 @@ const SuiteManagement: React.FC<any> = props => {
 			width: 150,
 			render: (_, row) =>
 				row.create_user !== '系统预设' && <Space>
-					{<AuthCommon
-						isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-						children={<Button type="link" style={{ padding: 0, height: 'auto' }}>编辑</Button>}
-						onClick={() => editOuter({ ...row })} />
-					}
-					{<AuthForm
-						isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-						children={<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>}
-						onFirm={
-							<Popconfirm
-								title={<div style={{ color: 'red' }}>删除调度标签后，机器池、Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
-								placement="topRight"
-								okText="取消"
-								cancelText="确定删除"
-								onCancel={() => remOuter(row)}
-								icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-								overlayStyle={{ width: '300px' }}
-							>
-								<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-							</Popconfirm>
-						} />
-					}
-					{<AuthCommon
-						isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-						children={<Button type="link" style={{ padding: 0, height: 'auto' }} >日志</Button>}
-						onClick={() => handleOpenLogDrawer(row.id)} />
-					}
+					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter({ ...row })}>编辑</Button>
+					<Popconfirm
+						title={<div style={{ color: 'red' }}>删除调度标签后，机器池、Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
+						placement="topRight"
+						okText="取消"
+						cancelText="确定删除"
+						onCancel={() => remOuter(row)}
+						icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+						overlayStyle={{ width: '300px' }}
+					>
+						<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+					</Popconfirm>
+					<PermissionTootip>
+						<Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
+					</PermissionTootip>
 				</Space>,
 		},
 	];
 	return (
 		<SingleTabCard title="调度标签"
 			extra={
-				<AuthCommon
-					isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-					children={<Button key="3" type="primary" > 创建标签 </Button>}
-					onClick={newSuite} />
+				<Button key="3" type="primary" onClick={newSuite}> 创建标签 </Button>
 			}
 		>
 			<Spin spinning={loading}>

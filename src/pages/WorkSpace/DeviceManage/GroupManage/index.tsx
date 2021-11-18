@@ -4,7 +4,6 @@ import Standalone from './Standalone'
 import Cluster from './Cluster'
 import { TabCard } from '@/components/UpgradeUI'
 import { Tabs, Button } from 'antd'
-import { AuthCommon } from '@/components/Permissions/AuthCommon';
 
 /**
  * 机器管理 - 内网机器
@@ -38,16 +37,9 @@ export default (props: any) => {
             }
             extra={
                 tab === 'standalone' ?
-                    <AuthCommon
-                        key="add_device"
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button key="1" type="primary" >添加机器</Button>}
-                        onClick={handleAddTestServer}
-                    /> :
-                    <AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button key="2" type="primary" >创建集群</Button>}
-                        onClick={handleCreateServer} />
+                    <Button key="1" type="primary" onClick={handleAddTestServer}>添加机器</Button>
+                    :
+                    <Button key="2" type="primary" onClick={handleCreateServer}>创建集群</Button>
             }
         >
             {

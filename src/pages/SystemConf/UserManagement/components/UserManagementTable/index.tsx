@@ -64,7 +64,6 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             role_id: val
         }
         const data = await roleChange(params)
-        console.log('data',data)
         if(data.code === 200){
             message.success('修改成功');
             refresh()
@@ -78,7 +77,8 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
     const columns: any[] = [{
         title: '成员',
         dataIndex: 'last_name',
-        width: 125,
+        width: 200,
+        ellipsis: true,
         filterDropdown: ({ confirm }: any) => <SearchInput
             confirm={confirm}
             autoFocus={autoFocus}
@@ -114,7 +114,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             ( select && select.length > 0 ) &&
             <RoleSelect row={row} select={select} handleChange={handleChange} />
         ),
-        width: 270,
+        width: 170,
         filterIcon: () =><FilterFilled style={{ color: role_id ? '#1890ff' : undefined }} />,
         filterDropdown: ({ confirm }: any) => <SelectRadio list={rolelist} confirm={confirm} onConfirm={(val: any) => RoleChange(val)} roleType="role"/>,
     }, {
@@ -125,7 +125,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 <PopoverEllipsis title={ row.ws_list.join('、')}></PopoverEllipsis>
         ),
         ellipsis: true,
-        width: 220,
+        width: 245,
     }, {
         title: '加入时间',
         dataIndex: 'gmt_created',

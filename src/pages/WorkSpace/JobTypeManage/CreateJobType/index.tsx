@@ -317,9 +317,9 @@ export default (props: any) => {
                             { max: 20, message: 'Job类型名称最多不超过20字符' }
                         ]}
                     >
-                        <Input autoComplete="off" placeholder="请输入类型名称" style={{ width: 500 }} />
-                    </Form.Item>
-                    <Form.Item label="ServerProvider" initialValue={"aligroup"} name="server_type">
+                        <Input autoComplete="off" placeholder="请输入类型名称" style={{ width: 500}}/>
+                    </Form.Item>                    
+                    <Form.Item label="ServerProvider" initialValue={"aliyun"} name="server_type">
                         <Radio.Group onChange={handleServerChange}>
                             <Radio value="aligroup">内网环境</Radio>
                             <Radio value="aliyun">云上环境</Radio>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Tooltip, message, Space, Popover, Popconfirm} from 'antd';
-import { FormattedMessage } from 'umi';
+import { message, Space, Popover, Popconfirm} from 'antd';
+import { FormattedMessage, Access, useAccess } from 'umi';
 import { QuestionCircleOutlined  } from '@ant-design/icons'
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
@@ -14,7 +14,7 @@ export default forwardRef((props: any, ref: any) => {
   const { ws_id } = props;
   const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
   const [visible, setVisible] = useState(false);
-  
+  const access = useAccess();
   // 1.请求数据
   const getTableData = async (query: any) => {
     props.loadingCallback({ loading: true })
@@ -56,14 +56,14 @@ export default forwardRef((props: any, ref: any) => {
     getTableData({ page_num, page_size })
   }, []);
 
-	useImperativeHandle(
-		ref,
-		() => ({
-			showModal: () => {
+  useImperativeHandle(
+    ref,
+    () => ({
+      showModal: () => {
         setVisible(true);
-			},
-		})
-	)
+      },
+    })
+  )
 
   const hiddenModalCallback = (info: any) => {
     const { title } = info;
@@ -157,22 +157,36 @@ export default forwardRef((props: any, ref: any) => {
           ) : (
             <>
               <a href={record.job_link} target = "_blank" rel = "noopener noreferrer">查看</a>
-              <a onClick={()=> {
-                const a = document.createElement('a');
-                a.href = record.file_link;
-                a.click();
-              }}>下载</a>
+              <Access
+                accessible={access.testerAccess(record.creator)}
+                fallback={
+                    <span style={{opacity: 0.25}}>下载</span>
+                }
+              >
+                <a onClick={()=> {
+                  const a = document.createElement('a');
+                  a.href = record.file_link;
+                  a.click();
+                }}>下载</a>
+              </Access>
             </>
           )}
-          <Popconfirm
-            placement="topRight"
-            title="确定要删除吗？"
-            onConfirm={() => deleteClick(record)}
-            okText="确认"
-            cancelText="取消"
-          >
-            <a>删除</a>
-          </Popconfirm>
+           <Access
+              accessible={access.testerAccess(record.creator)}
+              fallback={
+                <span style={{opacity: 0.25}}>删除</span>
+              }
+            >
+              <Popconfirm
+                placement="topRight"
+                title="确定要删除吗？"
+                onConfirm={() => deleteClick(record)}
+                okText="确认"
+                cancelText="取消"
+              >
+                <a>删除</a>
+              </Popconfirm>
+          </Access>
         </Space>
       ),
     },
@@ -195,3 +209,4 @@ export default forwardRef((props: any, ref: any) => {
 
   )
 });
+

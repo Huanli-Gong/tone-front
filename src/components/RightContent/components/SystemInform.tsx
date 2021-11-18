@@ -36,8 +36,11 @@ const SystemInform = (props: any) => {
 
     const lookAll = () => {
         const is_ws = pathname.indexOf('/ws/') > -1
-        if (is_ws) window.open(`/ws/${ws_id}/message?sys`)
-        window.open('/message?sys')
+        if (is_ws) {
+            return window.open(`/ws/${ws_id}/message?sys`)
+        } else {
+            return window.open('/message?sys')
+        }
     }
 
     const jumpRoute = async (item: any) => {
@@ -74,7 +77,7 @@ const SystemInform = (props: any) => {
                                 </div>
                             )
                         })
-                        : <div style={{ height: 244, marginTop: 110 }}>
+                        : <div style={{ height: 'auto' }}>
                             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无通知" />
                         </div>
                 }

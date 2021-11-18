@@ -1,54 +1,37 @@
-import React, { useState, useEffect, useImperativeHandle } from 'react';
-import styles from './style.less';
+import React, { useState, useEffect, useImperativeHandle, useRef, useMemo } from 'react';
+import styles from '../style.less';
 import { WorkspaceTable, WorkspaceList, TableListParams } from '../../data.d';
-import { Modal, Row, Col, Avatar, Space, Button, Popover, Popconfirm, message, Spin } from 'antd';
-import { workspaceList, workspaceRemove, info, authPersonal } from '../../service';
-import { workspaceHistroy } from '@/services/Workspace'
-import CommonTable from '@/components/Public/CommonTable';
-import { history } from 'umi'
+import { Avatar, Space, Switch, Table, Typography, Row } from 'antd';
+import { HolderOutlined } from '@ant-design/icons'
+import { workspaceList, updateTopWorkspaceOrder, getWrokspaces } from '../../service';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as UnPublicIcon } from '@/assets/svg/no_public.svg'
 import AvatarCover from '@/components/AvatarCover'
+import DetailModal from '../DetailModal';
 
-const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef }) => {
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import DragableBodyRow from '@/components/Table/DrageTable'
+import CommonPagination from '@/components/CommonPagination';
+import { QusetionIconTootip } from '@/components/Product';
+import { saveWorkspaceConfig } from '@/services/Workspace';
+
+
+const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
     const [keyword, setKeyword] = useState<string>('')
-    const [visible, setVisible] = useState<boolean>(false);
-    const [show, setShow] = useState<boolean>(false)
-    const initialData = {
-        apply_reason: '',
-        creator_name: '',
-        creator: 0,
-        description: '',
-        gmt_created: '',
-        gmt_modified: '',
-        id: 0,
-        is_approved: true,
-        is_public: true,
-        logo: '',
-        member_count: 0,
-        name: '',
-        owner: 0,
-        owner_name: '',
-        owner_avatar: '',
-        show_name: '',
-        status: '',
-        proposer_dep: '',
-        creator_avatar: ''
-    };
+    const detailModalRef = useRef<{ show: (ws_id: string) => void }>(null)
+    const initParams = { page_num: 1, page_size: 20, is_approved: 1, is_public }
 
-    const [modal, setModal] = useState<WorkspaceTable>(initialData);
     const [data, setData] = useState<any>({});
-    const [authData, setAuthData] = useState<any>({});
     const [loading, setLoading] = useState(true);
-    const [modalLoading, setModalLoading] = useState(true);
-    const [page, setPage] = useState<number>(1);
-    const [size, setSize] = useState<number>(10);
-    const initParams = { page_num: 1, page_size: 10, is_approved: 1, is_public: is_public }
+    const [page, setPage] = useState<number>(initParams.page_num);
+    const [size, setSize] = useState<number>(initParams.page_size);
+
     const getList = async (initParams: TableListParams) => {
         setLoading(true)
-        const data = await workspaceList(initParams)
-        setData(data)
+        const data = tab !== '1' ? await workspaceList(initParams) : await getWrokspaces(initParams)
+        setData(data || [])
         setLoading(false)
     };
 
@@ -57,265 +40,187 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef }) => {
     }, []);
 
     const onChange = (page_num: any, page_size: any) => {
-        const initParams = { page_num: page_num, page_size: page_size, is_approved: 1, is_public: is_public, keyword: keyword }
+        const initParams = { page_num, page_size, is_approved: 1, is_public, keyword }
         getList(initParams)
         setPage(page_num)
         setSize(page_size)
     }
 
-    const handleOk = () => {
-        setVisible(false)
-    };
-
-    const handleCancel = () => {
-        setVisible(false)
-    };
-
-    const ellipsisText = (name: string) => {
-        return name.slice(0, 1)
-    }
-
     const refresh = () => {
-        let params = { page_num: page, page_size: size, is_approved: 1, is_public: is_public, keyword: keyword }
+        let params = { page_num: page, page_size: size, is_approved: 1, is_public, keyword }
         getList(params)
     }
 
     useImperativeHandle(onRef, () => ({
-        search: (keyword: string) => {
-            getList({ ...initParams, ...{ page_size: size, keyword: keyword } })
-            setKeyword(keyword)
+        search: (key: string) => {
+            getList({ ...initParams, ...{ page_size: size, keyword: key } })
+            setKeyword(key)
         },
         handleTab: refresh
     }));
 
-    const getInfo = async (id: number) => {
-        setVisible(true)
-        setModalLoading(true)
-        const data = await info(id)
-        const authData = await authPersonal({ ws_id: id })
-        if (authData.code === 200) {
-            setAuthData(authData.data)
-        }
-        data && setModal(data.data)
-        setModalLoading(false)
+    const getInfo = async (id: string) => {
+        detailModalRef.current?.show(id)
     }
 
-    const columns: any[] = [{
-        title: '封面',
-        dataIndex: 'logo',
-        className: 'row_cursor',
-        width: 70,
-        render: (_: number, row: WorkspaceTable) => <AvatarCover size="small" {...row} />,
-        // <img className={styles.img} src={row.logo}  />,
-    }, {
-        title: '名称',
-        dataIndex: 'show_name',
-        className: 'row_cursor',
-        width: 85,
-        render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.show_name || ''}></PopoverEllipsis>,
-    }, {
-        title: '所有者',
-        dataIndex: 'owner_name',
-        className: 'row_cursor',
-        width: 124,
-        render: (_: number, row: WorkspaceTable) => <Space style={{ width: '124px' }}><Avatar size={25} src={row.owner_avatar} alt={row.owner_name} /><span>{row.owner_name}</span></Space>,
-    }, {
-        title: '简介',
-        dataIndex: 'description',
-        className: 'row_cursor',
-        ellipsis: true,
-        width: 210,
-        render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.description || ''}></PopoverEllipsis>,
-    }, {
-        title: '人数',
-        dataIndex: 'member_count',
-        className: 'row_cursor',
-        width: 85,
-    }, {
-        title: '是否公开',
-        dataIndex: 'is_public',
-        className: 'row_cursor',
-        width: 106,
-        render: (_: number, row: WorkspaceTable) =>
-            <div>{row.is_public ?
-                <div className={styles.bar}>
-                    <PublicIcon />
-                    <span style={{ paddingLeft: '6px' }}>公开</span>
-                </div> :
-                <div className={styles.bar}>
-                    <UnPublicIcon />
-                    <span style={{ paddingLeft: '6px' }}>私密</span>
-                </div>
+    const columns: any[] = [
+        top && {
+            title: '',
+            width: 20,
+            className: 'dragIconWrapper',
+            render: (_: any, row: any) => (
+                (row.is_show && !row.is_common) &&
+                <Row style={{ cursor: 'pointer' }} align="middle" justify="center" className="drageIcon">
+                    <HolderOutlined />
+                </Row>
+            )
+        },
+        {
+            title: '封面',
+            dataIndex: 'logo',
+            className: 'row_cursor',
+            width: 70,
+            render: (_: number, row: WorkspaceTable) => <AvatarCover size="small" {...row} />,
+            // <img className={styles.img} src={row.logo}  />,
+        }, {
+            title: '名称',
+            dataIndex: 'show_name',
+            className: 'row_cursor',
+            width: 180,
+            render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.show_name || ''}></PopoverEllipsis>,
+        }, {
+            title: '所有者',
+            dataIndex: 'owner_name',
+            className: 'row_cursor',
+            width: 124,
+            render: (_: number, row: WorkspaceTable) => <Space style={{ width: '124px' }}><Avatar size={25} src={row.owner_avatar} alt={row.owner_name} /><span>{row.owner_name}</span></Space>,
+        }, {
+            title: '简介',
+            dataIndex: 'description',
+            className: 'row_cursor',
+            ellipsis: true,
+            width: 210,
+            render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.description || ''}></PopoverEllipsis>,
+        }, {
+            title: '人数',
+            dataIndex: 'member_count',
+            className: 'row_cursor',
+            width: 85,
+        }, {
+            title: '是否公开',
+            dataIndex: 'is_public',
+            className: 'row_cursor',
+            width: 106,
+            render: (_: number, row: WorkspaceTable) => (
+                row.is_public ?
+                    <div className={styles.bar}>
+                        <PublicIcon />
+                        <span style={{ paddingLeft: '6px' }}>公开</span>
+                    </div> :
+                    <div className={styles.bar}>
+                        <UnPublicIcon />
+                        <span style={{ paddingLeft: '6px' }}>私密</span>
+                    </div>
+            )
+        },
+        top && {
+            title: (
+                <QusetionIconTootip
+                    placement="left"
+                    title={'首页推荐'}
+                    desc={
+                        <ul style={{ listStyle: 'auto', paddingInlineStart: 25 , paddingTop: 15 }}>
+                            <li>状态为“是”，展示在首页“推荐Worksapce”模块</li>
+                            <li>可通过上下拖动调整显示顺序，首页显示顺序同该表格</li>
+                        </ul>
+                    }
+                />
+            ),
+            width: 150,
+            render(_: any, row: any) {
+                return (
+                    <Switch
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        disabled={row.is_common}
+                        checked={row.is_common || row.is_show}
+                        onClick={() => onTopChange(row)}
+                    />
+                )
             }
-            </div>
-    }]
-
-    const list: WorkspaceTable[] = data.data;
-
-    const showConfirm = () => {
-        setShow(true)
-    }
-
-    const toWS = async () => {
-        await workspaceHistroy({ ws_id: modal.id, system_entry: true })
-        history.push(`/ws/${modal.id}/dashboard`)
-    }
-
-    const confirm = async () => {
-        setShow(false)
-        setVisible(false)
-        await workspaceRemove({ id: modal.id })
-        message.success('操作成功');
-        refresh()
-    }
-
-    const cancel = (e: any) => {
-        setShow(false)
-    }
-    const judge = () => {
-        if (modal.is_public) {
-            return <span className={styles.link} onClick={toWS} >进入</span>
-        } else {
-            if (JSON.stringify(authData) !== '{}') {
-                if (authData.sys_role_title === 'super_admin' || authData.sys_role_title === 'sys_admin' || authData.role_title !== '') {
-                    return <span className={styles.link} onClick={toWS} >进入</span>
-                } else {
-                    return <span className={styles.link} style={{ display: 'none' }} onClick={toWS} >进入</span>
-                }
-            } else {
-                return <span className={styles.link} style={{ display: 'none' }} onClick={toWS} >进入</span>
+        }, {
+            title: '操作',
+            width: 80,
+            render(_: any, row: any) {
+                return <Typography.Link onClick={() => getInfo(row.id)}>详情</Typography.Link>
             }
+        }].filter(Boolean)
+
+    const onTopChange = async (row: any) => {
+        const { is_show, id } = row
+        const { code } = await saveWorkspaceConfig({ is_show: !is_show, id })
+        if (code === 200) refresh()
+    }
+
+    const components = {
+        body: {
+            row: DragableBodyRow,
+        },
+    };
+
+    const onMoveRow = async (dragIndex: number, hoverIndex: number) => {
+        if (dragIndex === hoverIndex) return
+        const { code } = await updateTopWorkspaceOrder({ from: dragIndex, to: hoverIndex })
+        if (code === 200) refresh()
+        // const dragRow = data.data[dragIndex];
+        // const putData = update(data.data, {
+        //     $splice: [
+        //         [dragIndex, 1],
+        //         [hoverIndex, 0, dragRow],
+        //     ],
+        // })
+        // setData({ ...data, data: putData });
+    }
+
+    const tableProps = useMemo(() => {
+        const defaultProps = {
+            size: "small",
+            rowKey: "id",
+            columns,
+            dataSource: data.data,
+            loading,
+            pagination: false
         }
 
-    }
-    const Content = <span onClick={showConfirm} >注销workspace</span>
-
-    const Footer = (
-        !show ?
-            <Popover
-                title={null}
-                placement="topRight"
-                content={Content}
-            >
-                <Button type="text" style={{ padding: '0 10px', border: 'none' }} >...</Button>
-            </Popover> :
-            <Popconfirm
-                title="确定要注销该workspace吗？注销后数据删除，成员解散。请慎重考虑"
-                placement="topRight"
-                defaultVisible={true}
-                overlayStyle={{ width: '312px' }}
-                onConfirm={confirm}
-                onCancel={cancel}
-                okText="确定"
-                cancelText="取消"
-            >
-                <Button type="text" style={{ padding: '0 10px', border: 'none' }} >...</Button>
-            </Popconfirm>
-    )
+        if (!top) return defaultProps
+        return {
+            ...defaultProps,
+            components,
+            onRow: (record: any, index: any) => ({
+                index,
+                onMove: onMoveRow,
+                disable: !record.is_show || record.is_common,
+                is_show: record.is_common || record.is_show
+            })
+        }
+    }, [top, data, components])
 
     return (
-        <div>
-            <Modal
-                title="Workspace详情"
-                visible={visible}
-                onOk={handleOk}
-                onCancel={handleCancel}
-                width='53.3%'
-                centered
-                footer={modal && modal.is_common ? '' : Footer}
-                maskClosable={false}
-            >
-                <Spin spinning={modalLoading} >
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4}>
-                            封面
-                        </Col>
-                        <Col className={styles.content} span={20}>
-                            <AvatarCover size="large" {...modal} />
-                        </Col>
-                    </Row>
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4}>
-                            名称
-                        </Col>
-                        <Col className={styles.company} span={20}>
-                            {/* <span onClick={toWS} style={{ cursor: 'pointer' }}>{modal.show_name}</span> */}
-                            <span style={{ cursor: 'pointer' }}>{modal.show_name}</span>
-                            {judge()}
-                        </Col>
-                    </Row>
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4}>
-                            简介
-                        </Col>
-                        <Col className={styles.content} span={20}>
-                            {modal.description}
-                        </Col>
-                    </Row>
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4}>
-                            申请理由
-                        </Col>
-                        <Col className={styles.content} span={20}>
-                            {modal.apply_reason || '无'}
-                        </Col>
-                    </Row>
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4}>
-                            权限
-                        </Col>
-                        <Col className={styles.content} span={20}>
-                            {modal.is_public ?
-                                <div className={styles.bar}>
-                                    <PublicIcon />
-                                    <span style={{ paddingLeft: '6px' }}>公开</span>
-                                </div> :
-                                <div className={styles.bar}>
-                                    <UnPublicIcon />
-                                    <span style={{ paddingLeft: '6px' }}>私密</span>
-                                </div>
-                            }
-                        </Col>
-                    </Row>
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4}>
-                            申请人
-                        </Col>
-                        <Col className={styles.content} span={20}>
-                            <div>
-                                <Space>
-                                    <Avatar size={25} src={modal.owner_avatar} />
-                                    <span>{modal.owner_name}</span>
-                                </Space>
-                            </div>
-                            <div className={styles.department} >
-                                {modal.proposer_dep}
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row gutter={12}>
-                        <Col className={styles.title} span={4} style={{ paddingBottom: 0 }} >
-                            创建时间
-                        </Col>
-                        <Col className={styles.content} span={20} style={{ paddingBottom: 0 }} >
-                            {modal.gmt_created}
-                        </Col>
-                    </Row>
-                </Spin>
-            </Modal>
-            <CommonTable
-                size="small"
-                columns={columns}
-                list={list}
-                loading={loading}
-                page={data.page_num}
+        <>
+            <DndProvider backend={HTML5Backend}>
+                <Table
+                    {...tableProps as any}
+                />
+            </DndProvider>
+
+            <CommonPagination
+                currentPage={data.page_num}
                 pageSize={data.page_size}
-                totalPage={data.total_page}
                 total={data.total}
-                handlePage={onChange}
-                onRow={(record: any) => getInfo(record.id)}
+                onPageChange={(page_num: number, page_size: any) => onChange(page_num, page_size)}
             />
-        </div>
+            <DetailModal ref={detailModalRef} refresh={refresh} />
+        </>
     );
 
 };

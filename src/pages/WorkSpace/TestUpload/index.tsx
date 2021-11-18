@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'umi';
+import { FormattedMessage, useIntl, useAccess } from 'umi';
 import { Layout, message, Tabs, Badge, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Spin } from 'antd';
 import { resizeDocumentHeightHook, writeDocumentTitle } from '@/utils/hooks'
 import UploadTable from './components/OfflineUploadTable';
@@ -12,12 +12,13 @@ import styles from './index.less'
 export default (props: any) => {
   const { formatMessage } = useIntl();
   const { ws_id } = props.match.params;
-  
   const [spinning, setSpinning] = useState(true);
   const [tab, setTab] = useState('record');
   const [itemTotal, setItemTotal] = useState(0);
   const uploadTable: any = useRef(null)
-   
+
+  const access = useAccess()
+
   // 1.获取数量(该接口废弃)
   const getItemTotal = async () => {
     try {
@@ -27,7 +28,7 @@ export default (props: any) => {
       } else {
         message.error(res.msg || '请求数据失败')
       }
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }
@@ -37,12 +38,12 @@ export default (props: any) => {
     setTab(key)
   }
   // loading
-  const loadingCallback = (info: any)=> {
+  const loadingCallback = (info: any) => {
     const { loading } = info
     setSpinning(loading)
   }
   // 刷新Total
-  const refreshTotalCallback = (num: any)=> {
+  const refreshTotalCallback = (num: any) => {
     // getItemTotal()
     if (num !== itemTotal) {
       setItemTotal(num)
@@ -57,16 +58,15 @@ export default (props: any) => {
     { name: formatMessage({ id: 'TestUpload.tab.record' }), key: 'record' },
   ]
   const layoutHeight = resizeDocumentHeightHook()
-  const itemTotalStyle = (key: any)=> {
-    const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3}
-    const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3}
+  
+  const itemTotalStyle = (key: any) => {
+    const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3 }
+    const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3 }
     return tab === key ? selectedStyle : othersStyle
   }
 
   const operations = (
-    <div>
       <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
-    </div>
   )
 
   return (
@@ -87,10 +87,11 @@ export default (props: any) => {
       </div>
       <Spin spinning={spinning}>
         <div className={styles.content_table}>
-          <UploadTable ref={uploadTable} ws_id={ws_id} loadingCallback={loadingCallback} refreshCallback={refreshTotalCallback}/>
+          <UploadTable ref={uploadTable} ws_id={ws_id} loadingCallback={loadingCallback} refreshCallback={refreshTotalCallback} />
         </div>
       </Spin>
 
     </div>
   )
 }
+

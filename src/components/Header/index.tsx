@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, useAccess } from 'umi'
+import { history, useModel, useRequest, Access, useAccess } from 'umi'
 import { Typography, Row, Menu, Col, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
 import TestJobTabs from './components/JobTab'
 import { HearderDropdown } from './components/HeaderDropdown'
 import { CaretDownOutlined } from '@ant-design/icons'
-import { resizeDocumentWidthHooks , useRemoveElementTitle } from '@/utils/hooks'
+import { resizeDocumentWidthHooks, useRemoveElementTitle } from '@/utils/hooks'
 import SwithRouteIcon from './components/SwithIcon'
 import { HeaderContainer, LogoWrapper, WorkspaceTitle } from './styled'
 import logoPng from '@/assets/img/logo.png'
@@ -109,21 +109,37 @@ export default (props: any) => {
                                 onMouseEnter={() => setBackLogo(true)}
                                 onMouseLeave={() => setBackLogo(false)}
                             >
-                                <Popover style={{ marginRight: 20 }} content="返回首页">
-                                    {
-                                        backLogo ?
-                                            <BackHome
-                                                style={{ width: 32, height: 32, cursor: 'pointer' }}
-                                                onClick={() => history.push('/')}
-                                            />
-                                            :
-                                            <Avatar shape="square" src={logoPng} size={32} />
-                                    }
-                                </Popover>
+                                {
+                                    // <Access
+                                    //     accessible={access.backHomeAccess()}
+                                    //     fallback={
+                                    //         backLogo ?
+                                    //             <BackHome
+                                    //                 style={{ width: 32, height: 32, cursor: 'pointer' }}
+                                    //             />
+                                    //             :
+                                    //             <Avatar shape="square" src={require('@/assets/img/logo.png')} size={32} />
+                                    //     }
+                                    // >
+                                        <Popover style={{ marginRight: 20 }} content={"返回首页"}>
+                                            {
+                                                backLogo ?
+
+                                                    <BackHome
+                                                        style={{ width: 32, height: 32, cursor: 'pointer' }}
+                                                        onClick={() => history.push('/')}
+                                                    />
+                                                    :
+                                                    <Avatar shape="square" src={require('@/assets/img/logo.png')} size={32} />
+                                            }
+                                        </Popover>
+                                    // </Access>
+                                }
                             </div>
                             {/* <ArrowRight style={{ marginLeft: 24, marginRight: 24, color: '#fff', fontSize: 14 }} /> */}
                             <HearderDropdown ws_id={wsId} />
                         </WorkspaceTitle>
+
                     }
                     <Menu
                         mode="horizontal"
@@ -140,12 +156,11 @@ export default (props: any) => {
                                 (item: any, index: number) => {
                                     const itemPath = item.path
                                     // console.log( itemPath )
-                                    if (item.name === '新建Job' && access.wsTouristFilter() == false) {
-                                        return false
-                                    }
+                                    // if (item.name === '新建Job') {
+                                    //     return false
+                                    // }
                                     if (isWs) {
                                         if (!item.inNav) return false
-
                                         let path: string = item.path
                                         const ws_id = pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
                                         path = path.replace(':ws_id', ws_id)
@@ -204,8 +219,10 @@ export default (props: any) => {
                                                             >
                                                                 {
                                                                     item.children.map((i: any) => {
-                                                                        if (i.name === '计划管理' && access.wsTouristFilter() == false) {
-                                                                            return false
+                                                                        if (!access.canWsAdmin()) {
+                                                                            if (i.name === '计划管理') {
+                                                                                return false
+                                                                            }
                                                                         }
                                                                         return (
                                                                             <Menu.Item
@@ -271,7 +288,7 @@ export default (props: any) => {
             <Col>
                 <RightContent wsId={wsId} isWs={isWs} />
             </Col>
-        </HeaderContainer>
+        </HeaderContainer >
     )
 }
 

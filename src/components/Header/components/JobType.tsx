@@ -24,8 +24,6 @@ export default ({ ws_id , dataSource , onOk = () => {}, getData} : any ) => {
     const dataSourceCopy = getData(dataSource)
     return (
         <div className={ styles.job_type }>
-            
-           
                 {
                     dataSourceCopy.map(
                         (item: any, index: number) => (
@@ -56,7 +54,6 @@ export default ({ ws_id , dataSource , onOk = () => {}, getData} : any ) => {
                         )
                     )
             }
-            
         </div>
     )
 }

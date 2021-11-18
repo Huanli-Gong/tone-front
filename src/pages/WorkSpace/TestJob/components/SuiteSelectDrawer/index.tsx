@@ -252,7 +252,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                 if (serverObjectType === 'server_object_id')
                     ip = run_mode === 'cluster' ? item.name : item.ip
                 if (serverObjectType === 'instance')
-                    ip = item.pub_ip ? item.pub_ip : item.instance_name
+                    ip = item.private_ip ? item.private_ip : item.instance_name
                 if (serverObjectType === 'setting')
                     ip = item.template_name
                 break;

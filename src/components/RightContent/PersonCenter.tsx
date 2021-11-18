@@ -1,52 +1,47 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
-import { ClickParam } from 'antd/es/menu';
-import { history, useModel, useRequest } from 'umi';
+import ClickParam from 'antd/es/menu';
+import { useModel } from 'umi';
+
+// import { outLogin, queryOutLogin } from '@/services/login';
 
 import styles from './index.less';
 
-import { person_auth_info } from '@/services/user'
-import request from 'umi-request';
+// import request from 'umi-request';
 
 /**
  * 退出登录，并且将当前的 url 保存
  */
-const logout = async () => {
-    request
-        .get('/api/auth/logout/')
-        .then(function (response) {
-            console.log(response);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+const logout = async (login_info:any) => {
+    window.location.href = login_info.logout_url
+    // //const url = origin
+    // let exp:any = new Date();
+    // exp.setTime(exp.getTime() - 10000);
+    // document.cookie = `name=_oc_ut;value=del;path=/;`
+    // await request
+    //     .get('/api/auth/logout/')
+    //     .then(function (response) {
+    //         console.log(response);
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     });
+    // window.location.reload()
+    //window.location.href = `https://login-test.alibaba-inc.com/ssoLogout.htm?APP_NAME=tone&BACK_URL=${url}`
 }
+
 const PersonCenter = () => {
-    const [currentUser, setCurrentUser] = useState<any>(null)
-    useRequest(
-        person_auth_info,
-        {
-            formatResult: (response: any) => {
-                if (response.code === 200) {
-                    setCurrentUser(response.data)
-                } else {
-                    setCurrentUser({ first_name: 'noData' })
-                }
-                return { data: {}, total: 0 }
-            },
-            initialData: { data: {}, total: 0 },
-            defaultParams: []
-        }
-    )
+    const { initialState } = useModel('@@initialState')
+    const { authList } = initialState
     const onMenuClick = useCallback((event: ClickParam) => {
-        const { key } = event;
+        const { key }:any = event;
         if (key === 'name') return;
         if (key === 'page') {
             window.open(`${window.location.origin}/personCenter`)
         }
         if (key === 'logout') {
-            logout()
+            logout(authList.logout_url)
         }
     }, []);
 
@@ -63,16 +58,14 @@ const PersonCenter = () => {
         </span>
     );
 
-    if (!currentUser || !(currentUser.first_name || currentUser.last_name)) {
+    if (!authList || !(authList.first_name || authList.last_name)) {
         return loading;
     }
-
     const menuHeaderDropdown = (
         <Menu className={`${styles.menu} ${styles.person_menu}`} selectedKeys={[]} onClick={onMenuClick}>
-
             <Menu.Item className={styles.person_name} key="name">
-                <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-                {currentUser.first_name || currentUser.last_name}
+                <Avatar size="small" className={styles.avatar} src={authList.avatar} alt="avatar" />
+                {authList.first_name || authList.last_name}
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="page">
@@ -90,13 +83,13 @@ const PersonCenter = () => {
     );
     return (
         <Dropdown
-            overlay={currentUser.first_name === 'noData' ? noDataMenuHeaderDropdown : menuHeaderDropdown}
+            overlay={JSON.stringify(authList) === '{}' ? noDataMenuHeaderDropdown : menuHeaderDropdown}
             placement="bottomRight"
             arrow={true}
             overlayClassName={styles.dropdownArrowHide}
         >
             <span className={`${styles.action} ${styles.account}`}>
-                <Avatar size="small" className={`${styles.avatar} ${styles.avatar_icon}`} src={currentUser.avatar} alt="avatar" />
+                <Avatar size="small" className={`${styles.avatar} ${styles.avatar_icon}`} src={authList.avatar} alt="avatar" />
             </span>
         </Dropdown>
     );

@@ -42,6 +42,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, w
 				notFoundContent={fetching ? <Spin size="small" /> : null}
 				filterOption={false}
 				showSearch
+				dropdownMatchSelectWidth={true}
 				onSearch={handleSearch}
 				style={{ width: '100%' }}
 				onChange={(value: number) => setVal(value)}

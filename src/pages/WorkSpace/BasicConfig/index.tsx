@@ -26,13 +26,14 @@ const { Text } = Typography
 
 export default (props: any) => {
     const { ws_id } = props.match.params
+    const access = useAccess();
     const { initialState, setInitialState } = useModel<any>('@@initialState')
     const [transferVisible, setTransferVisible] = useState(false)
     const [logOffVisible, setLogOffVisible] = useState(false)
     const [members, setMembers] = useState([])
     const [cropperModalVisible, setCropperModalVisible] = useState(false)
     const [cropperUrl, setCropperUrl] = useState('')
-    const access = useAccess()
+
     const [detail, setDetail]: Array<any> = useState({
         logo: '',
         show_name: '',
@@ -169,29 +170,30 @@ export default (props: any) => {
                     <Form.Item label="">
                         <Row style={{ width: '100%', marginBottom: 0 }}>
                             <AvatarCover size="large" {...detail} />
-                            <Access
-                                accessible={access.wsOwnerFilter()}
-                            >
-                                <div style={{ width: 'calc(100% - 96px - 20px)', marginLeft: 16 }} className={styles.first_part}>
-                                    <Row style={{ marginBottom: 8 }}>
+                            <div style={{ width: 'calc(100% - 96px - 20px)', marginLeft: 16 }} className={styles.first_part}>
+                                <Row style={{ marginBottom: 8 }}>
+                                    <Access
+                                        accessible={access.canSysTestAdmin()}
+                                        fallback={<Button disabled={true}>更新封面</Button>}
+                                    >
                                         <Upload {...uploadProps}>
                                             <Button>更新封面</Button>
                                         </Upload>
-                                    </Row>
-                                    <Row style={{ marginBottom: 4 }}>
-                                        <Typography.Text>支持图片类型：jpg、png，封面大小：96*96。</Typography.Text>
-                                    </Row>
-                                    <Row>
-                                        <Typography.Text></Typography.Text>
-                                    </Row>
-                                </div>
-                            </Access>
+                                    </Access>
+                                </Row>
+                                <Row style={{ marginBottom: 4 }}>
+                                    <Typography.Text>支持图片类型：jpg、png，封面大小：96*96。</Typography.Text>
+                                </Row>
+                                <Row>
+                                    <Typography.Text></Typography.Text>
+                                </Row>
+                            </div>
                         </Row>
                     </Form.Item>
                     <Form.Item
                         label="显示名 "
                         name="show_name"
-                        validateStatus={errorReg.regShowName  && 'error'}
+                        validateStatus={errorReg.regShowName ? 'error' : undefined}
                         help={errorReg.regShowName && '长度最多20位,仅允许包含汉字、字母、数字、下划线、中划线、点'}
                         >
                         <SettingEdit
@@ -200,7 +202,6 @@ export default (props: any) => {
                             auth={auth}
                             name={detail.show_name}
                             changeText={changeText}
-                            disabled={!access.wsOwnerFilter()}
                             errorReg={errorReg}
                             inputType="show_name"
                             setErrorReg={setErrorReg} />
@@ -208,7 +209,7 @@ export default (props: any) => {
                     <Form.Item
                         label="名称 "
                         name="name"
-                        validateStatus={errorReg.regName  && 'error'}
+                        validateStatus={errorReg.regName ? 'error' : undefined}
                         help={errorReg.regName && '只允许英文小写、下划线和数字，最多20个字符'}
                         >
                         <SettingEdit
@@ -222,10 +223,10 @@ export default (props: any) => {
                             errorReg={errorReg}
                             setErrorReg={setErrorReg} />
                     </Form.Item>
-                    <Form.Item 
-                    validateStatus={errorReg.regDescription  && 'error'}
+                    <Form.Item
+                    validateStatus={errorReg.regDescription  ? 'error' : undefined}
                     help={errorReg.regDescription && '长度最多200位'}
-                    label="介绍 " 
+                    label="介绍 "
                     name="description">
                         <SettingEdit
                             ws_id={ws_id}
@@ -234,7 +235,6 @@ export default (props: any) => {
                             auth={auth}
                             keyName="description"
                             name={detail.description}
-                            disabled={!access.wsOwnerFilter()}
                             changeText={changeText}
                             inputType="description"
                             errorReg={errorReg}
@@ -245,11 +245,16 @@ export default (props: any) => {
                             ws_id={ws_id}
                             title={detail.is_public}
                             keyName="is_public"
-                            disabled={_.get(detail,'is_common') || !access.wsOwnerFilter()}
+                            disabled={_.get(detail,'is_common')}
                             auth={auth}
                             changeText={changeText} />
                     </Form.Item>
-                    {access.wsOwnerFilter() && <Button style={{ marginBottom: 16 }} disabled={isOk} onClick={isOk ? '' : handleSave} type="primary">确定</Button>}
+                    <Access 
+                        accessible={access.canSysTestAdmin()}
+                        fallback={<Button style={{ marginBottom: 16 }} disabled={true} type="primary">确定</Button>}
+                    >
+                        {<Button style={{ marginBottom: 16 }} disabled={isOk} onClick={isOk ? ()=>{} : handleSave} type="primary">确定</Button>}
+                    </Access>   
                 </Form>
             </Row>
             <Row className={styles.row_box}>
@@ -283,7 +288,7 @@ export default (props: any) => {
                     </div>
                 </Form>
             </Row>
-            <Access accessible={access.wsOwnerFilter()}>
+
                 <Row className={styles.row_box}>
                     <Form
                         {...layout}
@@ -320,9 +325,12 @@ export default (props: any) => {
                                     visible={transferVisible}
                                     overlayClassName={styles.transferOwnerWs}
                                 >
-
-                                    <Button onClick={handleTransfer}>所有权转交</Button>
-
+                                <Access 
+                                    accessible={access.canSysTestAdmin()}
+                                    fallback={<Button disabled={true} >所有权转交</Button>}
+                                >
+                                    <Button onClick={handleTransfer} >所有权转交</Button>
+                                </Access>   
                                 </Popover>
                                 {!_.get(detail,'is_common') &&  <Popover
                                     content={
@@ -356,7 +364,7 @@ export default (props: any) => {
                         </Form.Item>
                     </Form>
                 </Row>
-            </Access>
+            {/* </Access> */}
             {
                 cropperModalVisible &&
                 <CropperImage

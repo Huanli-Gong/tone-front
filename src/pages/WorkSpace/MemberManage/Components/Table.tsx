@@ -22,7 +22,7 @@ const ComplateUsername: React.FC<{ user_info: any }> = ({ user_info }) => {
 export default (props: any) => {
     const { role, keyword, refresh, onOk, roleData } = props
     const { ws_id } = props.match.params
-    const access = useAccess()
+    const access = useAccess();
     const [tableData, setTableData] = useState<any>({})
     const [loading, setLoading] = useState(true)
     const [pagenat, setPagenat] = useState<any>({
@@ -45,7 +45,6 @@ export default (props: any) => {
     useEffect(() => {
         init()
     }, [pagenat, keyword, refresh])
-
     const columns: any = [
         {
             title: '成员',
@@ -59,8 +58,6 @@ export default (props: any) => {
                                 <span style={{ color: '#fff', position: 'absolute', top: 0, left: 2 }}>管</span>
                             </div>
                             : null
-
-
                     }
                     {
                         _.user_info.is_self
@@ -77,7 +74,7 @@ export default (props: any) => {
         {
             title: '角色',
             render: (_: any) => (
-                <EditableCell ws_id={ws_id} user_info={_.user_info} select={roleData} handleOk={init} onOk={onOk} is_owner={_.is_owner} />
+                <EditableCell ws_id={ws_id} user_info={_.user_info} select={roleData} handleOk={init} onOk={onOk} is_owner={_.user_info.is_admin} />
             ),
         },
         {
@@ -85,28 +82,31 @@ export default (props: any) => {
             dataIndex: 'join_date'
             // render : ( _ : any ) => <Typography.Text>{ _.user_info.gmt_created }</Typography.Text>
         },
+        access.canWsAdmin() && 
         {
-
-            title: <Access accessible={access.wsRemoveFilter()}> <>操作</></Access>,
+            title: '操作',
             align: 'center',
             render: (_: any) => (
-                <Access accessible={access.wsRemoveFilter()}>
-                    {
-                        _.is_owner
-                            ? <Button type="link" disabled={true}>移除</Button>
-                            : <Popconfirm
+                <>
+                    <Access accessible={access.canSuperAdmin()} fallback={<Button type="link" disabled={true}>移除</Button>}>
+                        {
+                            _.user_info.is_admin ? 
+                            <Button type="link" disabled={true}>移除</Button>
+                        : 
+                            <Popconfirm
                                 title="确定要移除该用户吗？"
                                 okText="确定"
                                 cancelText="取消"
                                 onConfirm={() => handleDeleteUser(_.user_info.id)}
                             >
                                 <Button type="link">移除</Button>
-                            </Popconfirm>
-                    }
-                </Access>
+                            </Popconfirm> 
+                        }
+                    </Access>
+                </>
             )
         }
-    ]
+    ].filter(Boolean)
 
 
     const handleDeleteUser = async (user_id: number) => {

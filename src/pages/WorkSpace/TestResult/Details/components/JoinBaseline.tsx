@@ -12,7 +12,7 @@ import { requestCodeMessage } from '@/utils/utils'
 
 export default forwardRef(
     (props: any, ref: any) => {
-        const { ws_id, test_type, server_provider, onOk } = props
+        const { ws_id, test_type, server_provider, onOk, accessible } = props
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [data, setData] = useState<any>({ suite_list: [], suite_data: [] })
@@ -246,7 +246,7 @@ export default forwardRef(
                                     placeholder="请选择基线"
                                     dropdownStyle={{ padding: 0, margin: 0 }}
                                     notFoundContent={
-                                        funcsSelectVal &&
+                                        funcsSelectVal && accessible &&
                                         <div
                                             style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%' }}
                                             onClick={handlePerfBaselineSelectBlur}
@@ -296,7 +296,7 @@ export default forwardRef(
                                             <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} style={{ paddingLeft: 10, height: 32, lineHeight: '32px' }}>全选</Checkbox>
                                             <Checkbox.Group options={baselineList} value={checkedList} onChange={onChange} className={styles.join_baseline} />
                                             <Divider style={{ margin: '2px 0' }} />
-                                            <div 
+                                            { accessible && <div 
                                                 style={{ display: 'inline-block', flexWrap: 'nowrap' , paddingLeft : 10 , width : '100%' }} 
                                                 onClick={handleFuncsBaselineSelectBlur} 
                                             >
@@ -305,6 +305,7 @@ export default forwardRef(
                                                     新建基线
                                                 </span>
                                             </div>
+                                            }
                                         </div>
                                     )}
                                 />

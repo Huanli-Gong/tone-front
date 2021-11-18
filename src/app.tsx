@@ -4,65 +4,69 @@ import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layou
 import { notification } from 'antd';
 import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
-import { person_auth } from './services/user';
-import { workspaceHistroy } from './services/Workspace'
+import { person_auth, person_auth_info } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
+import { workspaceHistroy } from '@/services/Workspace'
+
+const ignoreRoutePath = ['/500', '/401', '/404']
 
 export async function getInitialState(): Promise<any> {
-    let authList : any ;
-    if (history.location.pathname !== '/user/login') {
-        const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-        try {
-            if (window.location.pathname.indexOf('ws') === -1) {
-                const data = await person_auth({})
-                if (data.code === 200) {
-                    authList = Object.assign(data.data,{})
-                }
-            } else {
-                const data = await person_auth({ ws_id })
-                if (data.code === 200) {
-                    
-                    authList = Object.assign(data.data,{})
-                    if(data.data.ws_is_exist){  //这个ws是否存在
-                        if(data.data.ws_is_public){
-                            await workspaceHistroy({ ws_id }) 
-                        }else{
-                            if(data.data.sys_role_title == 'sys_test_admin' || data.data.sys_role_title == 'user'){
-                                if(data.data.ws_role_title === null)
-                                    history.push({ pathname:'/401',state: ws_id })
-                            }
-                        }
-                    }else{
-                        history.push('/404')
-                    }
-                }
-            }
-        }
-        catch (error) {
-            history.push('/user/login')
-        }
-    }
-    
-    return {
+    const initialState = {
         settings: defaultSettings,
         refreshMenu: false,
         refreshWorkspaceList: false,
         jobTypeList: [],
-        authList
+        authList: {}
     };
+    const { pathname } = window.location
+    if (!ignoreRoutePath.includes(history.location.pathname)) {
+        const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
+        const isWs = wsReg.test(pathname)
+        const matchArr = pathname.match(wsReg)
+        const ws_id = matchArr ? matchArr[1] : undefined
+        const { data, login_info } = await person_auth({ ws_id })
+        if (!data) {
+            history.push('/500')
+            return initialState
+        }
+        if (isWs) {
+            //这个ws是否存在
+            if (!data.ws_is_exist) {
+                history.push('/404')
+                return initialState
+            }
+            if (!data.ws_role_title) {
+                history.push({ pathname: '/401', state: ws_id })
+                return initialState
+            }
+            workspaceHistroy({ ws_id })  //
+        }
+        return {
+            ...initialState,
+            authList: {
+                ...data,
+                ...login_info,
+                ws_id
+            },
+        }
+    }
+
+    return initialState
 }
+
 export const layout = ({
     initialState,
 }: {
     initialState: { settings?: ProSettings };
 }): BasicLayoutProps => {
+    const origin = window.location.origin
     return {
         disableContentMargin: false,
         footerRender: false,
         menuHeaderRender: false,
         menuRender: false,
         headerRender: props => <Headers {...props} />,
-        onMenuHeaderClick: () => false ,
+        onMenuHeaderClick: () => false,
         ...initialState?.settings,
     };
 };
@@ -88,23 +92,25 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
-const errorHandler = (error: { response: Response }): Response => {
+const errorHandler = (error: { response: Response }): Response | undefined => {
     const { response } = error;
     notification.config({ top: 88 })
     // 网络状态码500报错优化
-    if (response && response.status === 500) {
-        notification.error({
-            message: '系统异常，请联系系统管理员',
-        });
-    } else if (response && response.status) {
-        const errorText = codeMessage[response.status] || response.statusText;
-        const { status, url } = response;
-
-        notification.error({
-            message: `请求错误 ${status}: ${url}`,
-            description: errorText,
-        });
-    } else if (!response) {
+    if (response) {
+        const { status, statusText, url } = response
+        if (status >= 500) {
+            // notification.error({ message: '系统异常，请联系系统管理员' });
+            history.push(`/500`)
+        }
+        else {
+            const errorText = codeMessage[status] || statusText;
+            notification.error({
+                message: `请求错误 ${status}: ${url}`,
+                description: errorText,
+            });
+        }
+    }
+    if (!response) {
         notification.error({
             description: '您的网络发生异常，无法连接服务器',
             message: '网络异常',

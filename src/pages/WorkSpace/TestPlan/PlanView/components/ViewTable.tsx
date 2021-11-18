@@ -9,7 +9,7 @@ import { getSearchFilter, getCheckboxFilter } from '@/components/TableFilters'
 import CompareBar from './compareBar'
 import styles from './compareBar.less'
 import _ from 'lodash'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, matchRoleEnum } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
 const OptionButton = styled.span`
     color:#1890FF;
@@ -32,11 +32,15 @@ const ViewAllPlan = styled.div`
 `
 
 const ViewTable = (props: ViewTableProps) => {
+    // 权限
+    const { currentRole, currentRoleId } = matchRoleEnum();
+    const limitAuthority = ['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
+    const access = useAccess()
     const { plan_id, ws_id, showPagination = false } = props
     const [pageParam, setPageParam] = useState<any>({ page_size: 10, page_num: 1, ws_id, plan_id })
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [allGroup, setAllGroup] = useState<any>([])
-    const access = useAccess()
+
     const { data, run, loading, refresh } = useRequest(
         (params: any) => queryPlanResult(params),
         {
@@ -70,7 +74,7 @@ const ViewTable = (props: ViewTableProps) => {
         message.success('操作成功')
     }
 
-    const columns = [{
+    let columns = [{
         dataIndex: 'name',
         title: '计划名称',
         render: (_ : string , record :any ) => (
@@ -120,47 +124,65 @@ const ViewTable = (props: ViewTableProps) => {
         dataIndex: 'end_time',
         title: '完成时间',
         width: 180
-    }, {
-        title: '操作',
-        width: 150, //getWidth(),
-        className: 'option',
-        render(row: any) {
-            return (
-                <Space>
-                    <OptionButton
-                        className="option-detail"
-                        onClick={
-                            () => hanldeOpenPlanDetail(row)
-                        }
-                    >
-                        详情
-                    </OptionButton>
-                    <Access
-                        accessible={access.wsTouristFilter()}
-                    >
-                        <Popconfirm
-                            title="确认删除该计划吗？"
-                            okText="确认"
-                            cancelText="取消"
-                            onConfirm={
-                                () => hanldeDeletePlan(row)
-                            }
-                        >
-                            <OptionButton className="option-delete">删除</OptionButton>
-                        </Popconfirm>
-                    </Access>
-                    <ViewReport
-                        className={'option-detail'}
-                        dreType="left"
-                        title={'报告'}
-                        ws_id={ws_id}
-                        jobInfo={row}
-                        origin={'jobList'}
-                    />
-                </Space>
-            )
-        }
-    },]
+    },
+];
+    
+    if (access.testerAccess()) {
+        columns = columns.concat([
+            {
+                title: '操作',
+                width: 150,
+                className: 'option',
+                render(row: any) {
+                    return (
+                        <Space>
+                            <OptionButton
+                                className="option-detail"
+                                onClick={
+                                    () => hanldeOpenPlanDetail(row)
+                                }
+                            >
+                                详情
+                            </OptionButton>
+                            {/* {currentRole !== 'ws_tester' || (currentRole == 'ws_tester' && row.creator === currentRoleId) ?
+                                <Popconfirm
+                                    title="确认删除该计划吗？"
+                                    okText="确认"
+                                    cancelText="取消"
+                                    onConfirm={() => hanldeDeletePlan(row)}
+                                >
+                                    <OptionButton className="option-delete">删除</OptionButton>
+                                </Popconfirm>
+                                :
+                                <span style={{color: '#00000040',cursor: 'not-allowed'}}>删除</span>
+                            } */}
+                            <Access
+                                accessible={access.testerAccess(row.creator)}
+                                fallback={<span style={{color: '#ccc',cursor: 'not-allowed'}}>删除</span>}
+                            >
+                                 <Popconfirm
+                                    title="确认删除该计划吗？"
+                                    okText="确认"
+                                    cancelText="取消"
+                                    onConfirm={() => hanldeDeletePlan(row)}
+                                >
+                                    <OptionButton className="option-delete">删除</OptionButton>
+                                </Popconfirm>
+                            </Access>
+                            <ViewReport
+                                className={'option-detail'}
+                                dreType="left"
+                                title={'报告'}
+                                ws_id={ws_id}
+                                jobInfo={row}
+                                origin={'jobList'}
+                            />
+                        </Space>
+                    )
+                }
+            }
+        ])
+    }
 
     const handleCancle = () => {
         setSelectedRowKeys([])

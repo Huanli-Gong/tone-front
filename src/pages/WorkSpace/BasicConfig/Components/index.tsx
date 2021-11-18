@@ -64,7 +64,7 @@ export const SettingEdit = ( {
     size?:string,
     type? : string,
     auth? : any,
-    disabled:boolean,
+    disabled?:boolean,
     inputType:string
     setErrorReg:any,
     errorReg: any,

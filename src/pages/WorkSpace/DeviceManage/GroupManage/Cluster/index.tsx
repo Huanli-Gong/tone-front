@@ -2,7 +2,6 @@ import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle }
 import styles from './index.less'
 
 import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table, Tooltip } from 'antd'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
 
@@ -17,7 +16,7 @@ import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
 import { resizeDocumentHeightHook } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils';
-
+import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 内网集群
  */
@@ -163,36 +162,20 @@ const Cluster = (props: any, ref: any) => {
             width: 190,
             render: (record: any, row: any) => (
                 <Space>
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button type="link" style={{ padding: 0 }} >添加</Button>}
-                        onClick={() => handleOpenAddDrawer(record)} />
-                    }
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button type="link" style={{ padding: 0 }} >编辑</Button>}
-                        onClick={() => handleUpdateServer(record)} />
-                    }
-                    {<AuthCommon
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button type="link" style={{ padding: 0 }} >日志</Button>}
-                        onClick={() => handleOpenLogDrawer(record.id)} />
-                    }
-                    {<AuthForm
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button type="link" style={{ padding: 0 }}>删除</Button>}
-                        onFirm={
-                            // <Popconfirm placement="top"
-                            //     title="确定要删除吗？" 
-                            //     okText="确定"
-                            //     cancelText="取消"
-                            //     onConfirm={() => handleDeleteServer( record.id )}
-                            // >
-                            //     <Button type="link" style={{ padding : 0 }}>删除</Button>
-                            // </Popconfirm>
-                            <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}>删除</Button>
-                        } />
-                    }
+                    <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}>添加</Button>
+                    <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}>编辑</Button>
+                    <PermissionTootip>
+                        <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}>日志</Button>
+                    </PermissionTootip>
+                    {/* <Popconfirm placement="top"
+                        title="确定要删除吗？" 
+                        okText="确定"
+                        cancelText="取消"
+                        onConfirm={() => handleDeleteServer( record.id )}
+                    >
+                        <Button type="link" style={{ padding : 0 }}>删除</Button>
+                    </Popconfirm> */}
+                    <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}>删除</Button>
                 </Space>
             )
         }

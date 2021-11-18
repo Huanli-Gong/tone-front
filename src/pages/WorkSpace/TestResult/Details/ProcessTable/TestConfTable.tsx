@@ -3,17 +3,16 @@ import { Button, Table , message, Tooltip } from 'antd'
 
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState , tooltipTd , copyTooltipColumn } from '../components'
-
+import PermissionTootip from '@/components/Public/Permission/index';
 import { updateSuiteCaseOption , queryProcessCaseList } from '../service'
-import { useRequest } from 'umi'
+import { useRequest, useAccess, Access } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
-import { ServerJumpBlock } from '@/components/Public'
 
 export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) => {
     const { data , loading , refresh } = useRequest(
         () => queryProcessCaseList({ job_id , test_suite_id })
     )
-
+    const access = useAccess();
     const columns = [
         {
             dataIndex : 'test_case_name',
@@ -27,10 +26,7 @@ export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) 
             render: (_: any, row: any) => (
                 _ ?
                     <Tooltip placement="topLeft" title={_}>
-                        <ServerJumpBlock
-                        >
-                            {_}
-                        </ServerJumpBlock>
+                        <span>{_}</span>
                     </Tooltip> :
                     '-'
             )
@@ -83,9 +79,12 @@ export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) 
                 if ( _.state === 'success' || _.state === 'fail' || _.state === 'stop' )
                 {
                     if ( _.log_file ) 
-                        return <Button type="link" style={{ padding : 0 }} onClick={( ) => window.open( _.log_file )}>日志</Button>
+                        return <PermissionTootip>
+                            <Button type="link" disabled={true} style={{ padding : 0 }} onClick={( ) => window.open( _.log_file )}>日志</Button>
+                        </PermissionTootip>
+                        
                 }
-                return <Button type="link" style={{ padding : 0 }} disabled={ true }>日志</Button>
+                return <PermissionTootip><Button type="link" style={{ padding : 0 }} disabled={ true }>日志</Button></PermissionTootip>
             }
         },{
             title : '操作',
@@ -93,12 +92,17 @@ export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) 
             render : ( _ : any ) => (
                 <>
                     {
-                        _.state === 'running' &&
-                        <Button type="link" style={{ padding : 0 }} onClick={ () => doConfServer( _ , 'stop')} >中止</Button>
-                    }
-                    {
-                        _.state === 'pending' &&
-                        <Button type="link" style={{ padding : 0 }} onClick={ () => doConfServer( _ , 'skip' )} >跳过</Button>
+                       
+                        <Access 
+                            accessible={access.testerAccess(_.creator)}
+                        >
+                            {
+                                _.state === 'running' && <Button type="link" style={{ padding : 0 }} onClick={ () => doConfServer( _ , 'stop')} >中止</Button>
+                            }
+                            {
+                                _.state === 'pending' && <Button type="link" style={{ padding : 0 }} onClick={ () => doConfServer( _ , 'skip' )} >跳过</Button>
+                            }
+                        </Access>
                     }
                 </>
             )

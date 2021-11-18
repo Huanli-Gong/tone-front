@@ -1,18 +1,25 @@
-import React  from 'react'
-import { Tooltip , Space } from 'antd'
+import React from 'react'
+import { Tooltip, Space } from 'antd'
 import styles from './index.less'
-import { QuestionCircleOutlined  } from '@ant-design/icons'
+import { QuestionCircleOutlined } from '@ant-design/icons'
+import { TooltipProps } from 'antd/es/tooltip'
 
-export const QusetionIconTootip : React.FC<any> = ({ title , desc , list } : any ) => (
+type IProps = {
+    title: React.ReactNode | null | undefined;
+    desc: React.ReactNode | null | undefined;
+} & TooltipProps
+
+export const QusetionIconTootip: React.FC<IProps> = ({ desc, title, ...rest }) => (
     <Space>
-        <span style={{ color : 'rgba(0, 0, 0, 0.85)' }} >{ desc }</span>
-        <Tooltip 
-            overlayClassName={ styles.table_question_tooltip } 
-            placement="bottomLeft" 
+        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }} >{title}</span>
+        <Tooltip
+            overlayClassName={styles.table_question_tooltip}
+            placement="bottomLeft"
             arrowPointAtCenter
-            title={ title }
+            {...rest}
+            title={desc}
         >
-            <QuestionCircleOutlined style={{ color : 'rgba(0, 0, 0, 0.65)'}}/>
+            <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)' }} />
         </Tooltip>
     </Space>
 )

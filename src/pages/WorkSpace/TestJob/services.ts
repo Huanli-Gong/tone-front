@@ -45,4 +45,3 @@ export const testYaml = async ( data : any ) => {
 export const formatYamlToJson = async ( data : any ) => {
     return request(`/api/job/data_conversion/` , { data , method : 'post' })
 }
-

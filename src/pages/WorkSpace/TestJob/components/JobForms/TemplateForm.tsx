@@ -7,7 +7,7 @@ export default forwardRef(({ disabled , template , onEnabelChange } : any , ref 
 
     useImperativeHandle( ref , () => ({
         form,
-        reset : form.resetFields,
+        reset: form.resetFields,
         setVal: (data:Object) =>{
             form.setFieldsValue(data)
         }

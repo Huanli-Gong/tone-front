@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle } from 'react';
 import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { useRequest , useParams } from 'umi'
+import { useRequest , useParams, useAccess, Access } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from './service'
 import styles from './style.less';
@@ -20,7 +20,7 @@ const SelectDrawer: React.FC<any> = ({
     const { ws_id } = useParams<any>()
     const { Search } = Input;
     const [ show, setShow ] = useState<boolean>(false)
-    
+    const access = useAccess()
     const [ selectData, setSelectData ] = useState<any>([])
     const [ checkAll, setCheckAll ] = useState<boolean>(false)
     const [ expand, setExpand ] = useState<boolean>(false)
@@ -217,14 +217,20 @@ const SelectDrawer: React.FC<any> = ({
                 ) : (
                     <div style={{ height : '100%' , width : '100%' , display : 'flex' , justifyContent : 'center' , alignItems : 'center', flexDirection: 'column' }}>
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
-                        <Button type="primary" onClick={() => {
-                            // 跳转至 ws级TestSuite管理
-                            const a = document.createElement('a');
-                            a.target = "_blank";
-                            a.rel = "noopener noreferrer"
-                            a.href = testType ? `/ws/${ws_id}/test_suite?test_type=${testType}` : `/ws/${ws_id}/test_suite`;
-                            a.click();
-                        }}>添加用例</Button>
+                        <Access accessible={access.canWsAdmin()}>
+                            <Button type="primary" 
+                                onClick={() => {
+                                    // 跳转至 ws级TestSuite管理
+                                    const a = document.createElement('a');
+                                    a.target = "_blank";
+                                    a.rel = "noopener noreferrer"
+                                    a.href = testType ? `/ws/${ws_id}/test_suite?test_type=${testType}` : `/ws/${ws_id}/test_suite`;
+                                    a.click();
+                                }}>
+                                    添加用例
+                            </Button>
+                        </Access>
+
                     </div>
                 )}
             </Spin>

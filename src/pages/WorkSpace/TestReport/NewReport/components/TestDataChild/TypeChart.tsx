@@ -34,6 +34,7 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
         let subText: any = []
         let result = [] // 组装后数组处理的容器
         let metricLen = 0
+        let dataZoom_end:number = 0        
         let len = 0
         legData.push(envData.base_group.tag)
         for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
@@ -70,6 +71,11 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                 })
             }
         } else if (chartType == '2') {
+            if(data.length > 5 ){
+                dataZoom_end = (5/data.length) * 100;
+            }else{
+                dataZoom_end = 100;
+            }
             for (let i = 0; i < data.length; i++) {
                 metricData.push({
                     value: data[i].test_value,
@@ -106,6 +112,11 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                 })
             }
         } else {
+            if(data.metric_list > 5 ){
+                dataZoom_end = (5/data.metric_list) * 100;
+            }else{
+                dataZoom_end = 100;
+            }
             for (let b = 0, metric = data.metric_list; b < metric.length; b++) {
                 metricData.push({
                     value: metric[b].test_value,
@@ -255,14 +266,14 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                     interval: 0,
                     fontSize: 10,
                     margin: 2,
-                    // formatter: function (value:any) {
-                    //     if (value >= 10000 && value < 10000000) {
-                    //         value = value / 10000 + "万";
-                    //     } else if (value >= 10000000) {
-                    //         value = value / 10000000 + "千万";
-                    //     }
-                    //     return value;
-                    // }
+                    formatter: function (value:any) {
+                        if (value >= 10000 && value < 10000000) {
+                            value = value / 10000 + "w";
+                        } else if (value >= 10000000) {
+                            value = value / 10000000 + "kw";
+                        }
+                        return value;
+                    }
                 },
                 boundaryGap: true,
 
@@ -274,7 +285,7 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                     show: chartType !== '1',
                     realtime: true,
                     start: 0,
-                    end: 100,
+                    end: dataZoom_end,
                     handleSize: 8,
                     height: 8,
                 },
@@ -282,7 +293,7 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                     type: 'inside',
                     realtime: true,
                     start: 0,
-                    end: 100,
+                    end: dataZoom_end,
                     preventDefaultMouseMove: false,
                 }],
             // dataZoom: [{

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 import { Button, Space, Popconfirm, message } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import { queryClusterMachine, delGroupMachine, queryCloudType, editGroupMachine } from '../../service';
 import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
-
+import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { useParams } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
@@ -188,34 +187,21 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'id',
             width: 140,
             render: (_: number, row: any) => <Space>
-                {<AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                    children={<Button type="link" style={{ padding: 0, height: 'auto' }} >编辑</Button>}
-                    onClick={() => { editMachine(row) }} />
-                }
-                {
-                    <AuthForm
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>}
-                        onFirm={
-                            <Popconfirm 
-                                title={<div style={{ color: 'red' }}>确认要删除吗？</div>}
-                                placement="topRight"
-                                okText="取消"
-                                cancelText="确认删除"
-                                onCancel={() => { remMachine(row) }}
-                                overlayStyle={{ width: '224px' }}
-                                icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                            >
-                                <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-                            </Popconfirm>
-                        } />
-                }
-                {<AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                    children={<Button type="link" style={{ padding: 0, height: 'auto' }} >日志</Button>}
-                    onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')} />
-                }
+                <Button type="link" style={{ padding: 0, height: 'auto' }}  onClick={() => { editMachine(row) }} >编辑</Button>
+                <Popconfirm 
+                    title={<div style={{ color: 'red' }}>确认要删除吗？</div>}
+                    placement="topRight"
+                    okText="取消"
+                    cancelText="确认删除"
+                    onCancel={() => { remMachine(row) }}
+                    overlayStyle={{ width: '224px' }}
+                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                >
+                    <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+                </Popconfirm>
+                <PermissionTootip>
+                    <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
+                </PermissionTootip>
             </Space>,
         },
     ];

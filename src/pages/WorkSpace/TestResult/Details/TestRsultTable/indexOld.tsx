@@ -3,7 +3,6 @@ import { useRequest, Access, useAccess } from 'umi'
 import { queryTestResult } from '../service'
 import { Space, Table, Row, Button, message, Popover } from 'antd'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
 import CaseTable from './CaseTable'
 import JoinBaseline from '../components/JoinBaseline'
 import EditRemarks from '../components/EditRemarks'
@@ -31,7 +30,7 @@ export default (props: any) => {
     const contrastBaselineDrawer: any = useRef(null)
     const editRemarkDrawer: any = useRef(null)
     const [openAllExpand, setOpenAllExpand] = useState(false)
-    const access = useAccess()
+
     const [refreshCaseTable, setRefreshCaseTable] = useState(false)
 
     const { data, run, params, loading, refresh } = useRequest(
@@ -152,7 +151,6 @@ export default (props: any) => {
         dataIndex: 'note',
         width: 80,
         render: (_: any, row: any) => (
-            access.wsTouristFilter() &&
             ellipsisEditColumn(
                 _,
                 row,
@@ -168,27 +166,11 @@ export default (props: any) => {
                 title: '操作',
                 width: 145,
                 render: (_: any) => (
-                    <Access accessible={access.wsTouristFilter()}>
-                        <Space>
-                            {/* <span onClick={ () => handleEditRemark( _ )        } style={{ color : '#1890FF' , cursor : 'pointer' }}>编辑</span> */}
-                            {
-                                <AuthMember
-                                    isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                    children={<span style={{ color: '#1890FF', cursor: 'pointer' }}>对比基线</span>}
-                                    onClick={() => handleContrastBaseline(_)}
-                                    creator_id={_.creator}
-                                />
-                            }
-                            {
-                                <AuthMember
-                                    isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                    children={<span style={{ color: '#1890FF', cursor: 'pointer' }}>加入基线</span>}
-                                    onClick={() => handleJoinBaseline(_)}
-                                    creator_id={_.creator}
-                                />
-                            }
-                        </Space>
-                    </Access>
+                    <Space>
+                        {/* <span onClick={ () => handleEditRemark( _ )        } style={{ color : '#1890FF' , cursor : 'pointer' }}>编辑</span> */}
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
+                    </Space>
                 )
             }
         ])
@@ -308,22 +290,10 @@ export default (props: any) => {
                             <Button onClick={handleOpenExpandBtn}>
                                 {openAllExpand ? '收起所有指标' : '展开所有指标'}
                             </Button>
-                            <Access accessible={access.wsTouristFilter()}>
-                                <Space>
-                                    <AuthMember
-                                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                        children={<Button >批量对比基线</Button>}
-                                        onClick={() => handleBatchContrastBaseline()}
-                                        creator_id={creator}
-                                    />
-                                    <AuthMember
-                                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                        children={<Button >批量加入基线</Button>}
-                                        onClick={() => handleBatchJoinBaseline()}
-                                        creator_id={creator}
-                                    />
-                                </Space>
-                            </Access>
+                            <Space>
+                                <Button onClick={() => handleBatchContrastBaseline()}>批量对比基线</Button>
+                                <Button onClick={() => handleBatchJoinBaseline()}>批量加入基线</Button>
+                            </Space>
                         </Space>
                 }
                 <Space>

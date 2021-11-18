@@ -27,7 +27,7 @@ export default (props: any) => {
 			className={styles.conf_table}
 			rowSelection={!disabled ? rowSelectionCase : undefined}
 			columns={columnsInner}
-			dataSource={record.test_case_list}
+			dataSource={record.test_case_list || []}
 			pagination={false}
 		/>
 	)

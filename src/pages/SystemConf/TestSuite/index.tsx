@@ -58,7 +58,7 @@ const TestSuite = (props: any) => {
                     <Tabs defaultActiveKey={ query.test_type || 'functional' } onChange={handleTab} activeKey={testType} >
                         <Tabs.TabPane tab="功能测试" key="functional" />
                         <Tabs.TabPane tab="性能测试" key="performance" />
-                        <Tabs.TabPane tab="业务测试" key="business" />
+                        {/* <Tabs.TabPane tab="业务测试" key="business" /> */}
                         <Tabs.TabPane tab="领域配置" key="domainconf" />
                     </Tabs>
                 }

@@ -1,6 +1,5 @@
 import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown, Menu, message, Tooltip, Popover } from 'antd'
 import React, { useState, useEffect, useRef } from 'react'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useRequest } from 'umi'
@@ -109,11 +108,7 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            {<AuthCommon
-                                isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                children={<Button type="primary" >新增仓库</Button>}
-                                onClick={handleAddWareHouse} />
-                            }
+                            <Button type="primary" onClick={handleAddWareHouse}>新增仓库</Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text>仓库名称 ({data?.length && `${data?.length}`})</Typography.Text>
@@ -134,22 +129,16 @@ export default (props: any) => {
                                                 <EllipsisPulic title={item.name} width={210}>
                                                     <Typography.Text >{item.name}</Typography.Text>
                                                 </EllipsisPulic>
-                                                {<AuthForm
-                                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                                    children={<MinusCircleOutlined className={hover === item.id ? styles.remove_active : styles.remove} />}
-                                                    onFirm={
-                                                        <Popconfirm
-                                                            title="确定要删除该仓库吗？"
-                                                            onConfirm={() => handleDelete(item)}
-                                                            okText="确认"
-                                                            cancelText="取消"
-                                                        >
-                                                            <MinusCircleOutlined
-                                                                className={hover === item.id ? styles.remove_active : styles.remove}
-                                                            />
-                                                        </Popconfirm>
-                                                    } />
-                                                }
+                                                <Popconfirm
+                                                    title="确定要删除该仓库吗？"
+                                                    onConfirm={() => handleDelete(item)}
+                                                    okText="确认"
+                                                    cancelText="取消"
+                                                >
+                                                    <MinusCircleOutlined
+                                                        className={hover === item.id ? styles.remove_active : styles.remove}
+                                                    />
+                                                </Popconfirm>
                                             </Row>
                                         </Col>
                                     )
@@ -196,22 +185,16 @@ export default (props: any) => {
                             {
                                 data.length ?
                                     <>
-                                        {<AuthForm
-                                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                            children={<MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />}
-                                            onFirm={
-                                                <Dropdown
-                                                    overlayStyle={{ cursor: 'pointer' }}
-                                                    overlay={
-                                                        <Menu>
-                                                            <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
-                                                        </Menu>
-                                                    }
-                                                >
-                                                    <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
-                                                </Dropdown>
-                                            } />
-                                        }
+                                        <Dropdown
+                                            overlayStyle={{ cursor: 'pointer' }}
+                                            overlay={
+                                                <Menu>
+                                                    <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                                                </Menu>
+                                            }
+                                        >
+                                            <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
+                                        </Dropdown>
                                     </> : null
                             }
                         </Row>
@@ -224,32 +207,22 @@ export default (props: any) => {
                                     {
                                         BranchData.data?.map((item: any) => (
                                             <div style={{ width: '22%' }}>
-                                                {  <AuthForm
-                                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                                    children={<div className={styles.right_branch_context_box_child} key={item.id}>
+                                                <div className={styles.right_branch_context_box_child} onClick={() => hanldeBranch(item)} key={item.id}>
+                                                    <EllipsisPulic title={item.name}>
+                                                        <Typography.Text className={styles.right_branch_context_box_child_firstLine}>{item.name}</Typography.Text>
+                                                        <div style={{ height : 6 }}></div>
+                                                    </EllipsisPulic>
+                                                    <EllipsisPulic title={item.description}>
+                                                        <Typography.Text className={styles.right_branch_context_box_child_secondLine}>{item.description}</Typography.Text>
+                                                        <div style={{ height : 6 }}></div>
+                                                    </EllipsisPulic>
+                                                    {/* <Tooltip title={item.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                                                         <div className={styles.right_branch_context_box_child_firstLine}>{item.name}</div>
+                                                    </Tooltip>
+                                                    <Tooltip title={item.description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                                                         <div className={styles.right_branch_context_box_child_secondLine}>{item.description}</div>
-                                                    </div>
-                                                    }
-                                                    onFirm={
-                                                        <div className={styles.right_branch_context_box_child} onClick={() => hanldeBranch(item)} key={item.id}>
-                                                            <EllipsisPulic title={item.name}>
-                                                                <Typography.Text className={styles.right_branch_context_box_child_firstLine}>{item.name}</Typography.Text>
-                                                                <div style={{ height : 6 }}></div>
-                                                            </EllipsisPulic>
-                                                            <EllipsisPulic title={item.description}>
-                                                                <Typography.Text className={styles.right_branch_context_box_child_secondLine}>{item.description}</Typography.Text>
-                                                                <div style={{ height : 6 }}></div>
-                                                            </EllipsisPulic>
-                                                            {/* <Tooltip title={item.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
-                                                                <div className={styles.right_branch_context_box_child_firstLine}>{item.name}</div>
-                                                            </Tooltip>
-                                                            <Tooltip title={item.description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
-                                                                <div className={styles.right_branch_context_box_child_secondLine}>{item.description}</div>
-                                                            </Tooltip> */}
-                                                        </div>
-                                                    } />
-                                                }
+                                                    </Tooltip> */}
+                                                </div>
                                             </div>
                                         ))
                                     }
@@ -258,11 +231,7 @@ export default (props: any) => {
                                             <>
                                                 <div className={styles.right_branch_context_box_child}>
                                                     <div className={styles.right_branch_context_box_child_empty}>
-                                                        {<AuthCommon
-                                                            isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                                            children={<span ><PlusOutlined /><i>新增Branch</i></span>}
-                                                            onClick={hanldCreateBranch} />
-                                                        }
+                                                        <span onClick={hanldCreateBranch}><PlusOutlined /><i>新增Branch</i></span>
                                                     </div>
                                                 </div>
                                             </> : null

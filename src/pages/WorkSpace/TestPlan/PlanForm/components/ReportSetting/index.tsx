@@ -149,9 +149,9 @@ export default forwardRef((props: any, ref: any) => {
                                 </Form.Item>
                                 <div style={{ position: 'absolute', right: -22, top: -4 }}>
                                     <QusetionIconTootip
-                                        desc=""
+                                        title=""
                                         placement="bottomRight"
-                                        title={
+                                        desc={
                                             <>
                                                 <Row><Typography.Text>报告名称可用占位符： </Typography.Text></Row>
                                                 <Row><Typography.Text>{`{date} {plan_name} {plan_id} {product_version}`}</Typography.Text></Row>

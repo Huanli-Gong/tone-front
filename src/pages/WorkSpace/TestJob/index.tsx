@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
+import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
 
-import { history, useRequest, useModel } from 'umi'
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
+import { history, useRequest, useModel, useAccess, Access } from 'umi'
 import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType } from '@/utils/utils'
 import { resizeDocumentHeightHook, writeDocumentTitle, resizeDocumentWidthHooks } from '@/utils/hooks'
 import styles from './index.less'
@@ -48,7 +47,7 @@ const TestJob: React.FC<any> = (props) => {
     const { ws_id, jt_id } = props.match.params
     const { query, state } = props.location
     writeDocumentTitle(`Workspace.${name}`)
-
+    const access = useAccess()
     const [test_config, setTest_config] = useState<any>([])
     const [detail, setDetail] = useState<any>({ name: '', server_type: '', test_type: '' })
     const [items, setItems] = useState<any>({ basic: {}, env: {}, suite: {}, more: {} })
@@ -600,6 +599,7 @@ const TestJob: React.FC<any> = (props) => {
     }, [layoutWidth])
 
     const [headerWidth, setHeaderWidth] = useState(0)
+
     const setChildTableWidth = () => setHeaderWidth(bodyRef.current.clientWidth + bodyPaddding * 2)
 
     useEffect(
@@ -797,7 +797,6 @@ const TestJob: React.FC<any> = (props) => {
         setIsYamlFormat(false)
         setJobInfo('')
     }
-
     useEffect(() => {
         const clipboard = new Clipboard('#copy_dom_id')
         clipboard.on('success', function (e) {
@@ -829,7 +828,12 @@ const TestJob: React.FC<any> = (props) => {
         // if (code === 200 && _.get(data, 'name')) fileName = _.get(data, 'name')
         exportRaw(`${fileName}.yaml`, jobInfo);
     }
-
+    const AuthPop = (
+        <Space>
+            <Typography.Text>无权限，请参考</Typography.Text>
+            <a href="/help_doc/2" target="_blank">帮助文档</a>
+        </Space>
+    )
     return (
         <Layout style={layoutCss} >
             {
@@ -879,14 +883,7 @@ const TestJob: React.FC<any> = (props) => {
                                 !modifyTemplate &&
                                 <>
                                     <Button className="copy_link">复制链接</Button>
-                                    {
-                                        <AuthMember
-                                            isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                            children={<Button >修改配置</Button>}
-                                            onClick={handleModifySetting}
-                                            creator_id={state?.creator}
-                                        />
-                                    }
+                                    <Button onClick={handleModifySetting}>修改配置</Button>
                                 </>
                             }
                         </Space>
@@ -977,13 +974,12 @@ const TestJob: React.FC<any> = (props) => {
                             </Col>
                         </Row>
                     </Row>
-                    <div className={styles.page_body_content} style={isYamlFormat ? { paddingTop: 0 } : { paddingLeft: bodyPaddding, paddingRight: bodyPaddding }}>
+                    <div className={styles.page_body_content} style={ isYamlFormat ? { paddingLeft: 0, paddingRight: 0, paddingTop:0 } : { paddingLeft: bodyPaddding, paddingRight: bodyPaddding, paddingTop:24 }}>
                         <Spin spinning={isloading} style={{ width: '100%' }}>
                             <Row className={styles.page_body} justify="center" >
-
-                                <div ref={bodyRef} style={{ width: '100%' }} />
-                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
-                                <div style={isYamlFormat ? { opacity: 0, width: 0, height: 0 } : { opacity: 1, width: 1000 }}>
+                                <div ref={bodyRef} style={{ width: 1000 }} />
+                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon}  style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style ={{marginRight: 5}} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
+                                <div style={isYamlFormat ? { opacity: 0, width: 1240, height: 0 } : { opacity: 1, width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>
                                         {name === 'TestJob' && <Row className={styles.page_body_title}>新建Job</Row>}
                                         {name === 'TestExport' && <Row className={styles.page_body_title}>导入配置</Row>}
@@ -1076,7 +1072,7 @@ const TestJob: React.FC<any> = (props) => {
                                     </Col>
 
                                 </div>
-                                {isYamlFormat && <div className={styles.yaml_container}><Col span={24} className={styles.yaml_operate}>
+                                {isYamlFormat && <div className={styles.yaml_container} ><Col span={24} className={styles.yaml_operate} >
                                     <span className={styles.yaml_copy_link} onClick={handleTestYaml}><YamlTest className={styles.operate_icon} />验证</span>
                                     <span className={styles.yaml_copy_link} id='copy_dom_id' data-clipboard-text={jobInfo.replace('---', '')} style={{ marginLeft: 10 }}> <YamlCopy className={styles.operate_icon} />复制</span>
                                     <span className={styles.yaml_copy_link} onClick={handleDownload} style={{ marginLeft: 10 }}><YamlDownload className={styles.operate_icon} />下载</span>
@@ -1106,8 +1102,21 @@ const TestJob: React.FC<any> = (props) => {
                             >
                                 <Button >重 置</Button>
                             </Popconfirm>
-                            <Button onClick={handleOpenTemplate}>存为模板</Button>
-                            <Button type="primary" onClick={handleSubmit} >提交测试</Button>
+                            <Access
+                                accessible={access.canWsAdmin()}
+                            >
+                                <Button onClick={handleOpenTemplate}>存为模板</Button>
+                            </Access>
+                            <Access
+                                accessible={access.testerAccess()}
+                                fallback={
+                                    <Tooltip placement="topLeft" title={AuthPop} color="#fff">
+                                        <Button type="primary">提交测试</Button>
+                                    </Tooltip>
+                                }
+                            >
+                                <Button type="primary" onClick={handleSubmit} >提交测试</Button>
+                            </Access>
                         </Space>
                     </Row>
                 }

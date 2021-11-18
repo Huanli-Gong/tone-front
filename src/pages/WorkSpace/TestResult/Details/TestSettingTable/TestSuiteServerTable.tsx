@@ -5,7 +5,7 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SuiteCaseExpandTable from './SuiteCaseExpandTable'
 
 export default ({ data = [] , loading = true, testType } : any ) => {
-    let columns = [
+    let columns : any = [
         {
             title : 'Test Suite',
             dataIndex : 'test_suite_name',

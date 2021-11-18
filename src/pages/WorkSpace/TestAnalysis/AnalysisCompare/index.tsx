@@ -24,14 +24,16 @@ import { ReactComponent as BaseIcon } from '@/assets/svg/BaseIcon.svg'
 import SaveReport from '../../TestReport/components/SaveReport'
 import {handleCompareOk,getJobRefSuit} from './CommonMethod'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
-import { writeDocumentTitle } from '@/utils/hooks';
+// import { writeDocumentTitle } from '@/utils/hooks';
 const {Text} = Typography;
 const { Option } = Select;
 const transformFn: any = (arr: any) => {
     return arr.map((item: any, index:number) => {
         item.product_version = item.product_version || item.name
         if (_.isArray(item.members) && item.members[0]) {
-            const defaultVersion = item.members[0].product_version || item.members[0].version // gai
+            // const defaultVersion = item.members[0].product_version || item.members[0].version
+            // item.product_version = defaultVersion
+            const defaultVersion = item.members[0].product_version || item.members[0].version
             if(defaultVersion) item.product_version = defaultVersion
         }
         item.id = +new Date() + index
@@ -129,7 +131,8 @@ export default (props: any) => {
     useEffect(() =>{
      if(groupData.length) seGroupingButton(true)
      if(!groupData.length) seGroupingButton(false)
-    },[groupData])
+     if( baselineGroupIndex === -1) setBaselineGroup(groupData[0])
+    },[groupData,baselineGroupIndex])
 
     document.title = '配置页-T-One'
     const versionGroupingFn = (arrGroup:any, newGroup:any) => {
@@ -549,7 +552,7 @@ export default (props: any) => {
         let baseMembers = _.get(arr, 'members')
         baseMembers = _.isArray(baseMembers) ? baseMembers : []
         baseMembers = baseMembers.filter((val: any) => val)
-        const flag = arr.type === 'baseline'
+        const flag = arr?.type === 'baseline'
         baseMembers.forEach((item: any) => {
             if (!flag) {
                 brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {}})
@@ -703,7 +706,7 @@ export default (props: any) => {
             </Tooltip>
         )
     }
-    
+
     const reorderGroup = (list:any, startIndex:number, endIndex:number) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
@@ -721,8 +724,8 @@ export default (props: any) => {
         const [removed] = groupArr[startGroupIndex].members.splice(startIndex, 1);
         groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
         const productMark = _.get(groupArr[endGroupIndex].members[0],'product_version')
-        if((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = productMark // gai
+        if ((!arr || !arr.length) && productMark) {
+            groupArr[endGroupIndex].product_version = productMark
         }
         return groupArr;
     };
@@ -731,7 +734,7 @@ export default (props: any) => {
         const [removed] = noGoupArr.splice(startIndex, 1);
         groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
         const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
-        if ((!arr || !arr.length) && productMark ) {
+        if ((!arr || !arr.length) && productMark) {
             groupArr[endGroupIndex].product_version = productMark
         }
         return { groupArr, noGoupArr }

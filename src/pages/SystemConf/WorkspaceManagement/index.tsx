@@ -30,39 +30,19 @@ const WorkspaceManagement: React.FC<{}> = () => {
 		getNum()
 	}, []);
 
+	const getForwardEle = (key: string) => new Map([
+		['1', all.current],
+		['2', overt.current],
+		['3', secret.current],
+	]).get(key)
+
 	const handleTab = (key: string) => {
 		setIndex(key)
-		switch (key) {
-			case '1':
-				all.current && all.current.handleTab()
-				break;
-			case '2':
-				overt.current && overt.current.handleTab()
-				break;
-			case '3':
-				secret.current && secret.current.handleTab()
-				break;
-			default:
-				break;
-		}
+		getForwardEle(key)?.handleTab()
 		getNum()
 	}
 
-	const onSearch = (val: string) => {
-		switch (index) {
-			case '1':
-				all.current.search(val)
-				break;
-			case '2':
-				overt.current.search(val)
-				break;
-			case '3':
-				secret.current.search(val)
-				break;
-			default:
-				break;
-		}
-	}
+	const onSearch = (val: string) => getForwardEle(index)?.search(val)
 
 	const operations = <Space>
 		<Search
@@ -86,11 +66,11 @@ const WorkspaceManagement: React.FC<{}> = () => {
 					<TabPane tab={"私密 " + num.un_public_count} key="3" />
 				</Tabs>
 			}
-			extra={ operations }
+			extra={operations}
 		>
-			{ index === '1' && <WorkspaceTable onRef={all} />}
-			{ index === '2' && <WorkspaceTable onRef={overt} is_public={1} />}
-			{ index === '3' && <WorkspaceTable onRef={secret} is_public={0} />}
+			{index === '1' && <WorkspaceTable tab={ index } onRef={all} top />}
+			{index === '2' && <WorkspaceTable tab={ index } onRef={overt} is_public={1} />}
+			{index === '3' && <WorkspaceTable tab={ index } onRef={secret} is_public={0} />}
 		</TabCard>
 	);
 };

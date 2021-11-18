@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Table, Tooltip, Row, Button, message } from 'antd';
-import { history } from 'umi'
+import { Access, history, useAccess } from 'umi'
 import styles from './index.less';
 import { compareForm } from '../service';
 import Clipboard from 'clipboard'
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport'
 import _ from 'lodash'
-import { ServerJumpBlock } from '@/components/Public';
 
 const TestEnvironment = (props: any) => {
     const saveReportDraw: any = useRef(null)
@@ -22,7 +21,7 @@ const TestEnvironment = (props: any) => {
         testDataParam,
         envDataParam
     } = props
-
+    const access = useAccess()
     const data = [props.data]
     const form_search = window.location.search
     const handleShare = useCallback(
@@ -35,7 +34,7 @@ const TestEnvironment = (props: any) => {
             }
             const data = await compareForm({ form_data })
             // setFormId(data.data)
-
+    
             const clipboard = new Clipboard('.test_result_copy_link', {
                 text: function (trigger) {
                     return `${location.href}/?form_id=${data.data}`;
@@ -45,12 +44,12 @@ const TestEnvironment = (props: any) => {
                 message.success('复制成功')
                 e.clearSelection();
             })
-
+    
             document.querySelector('.test_result_copy_link')?.click()
             clipboard.destroy()
-        }, [groupData, baseIndex]
+        } , [ groupData , baseIndex ]
     )
-
+    
     useEffect(() => {
         const clipboard = new Clipboard('.copy_link', {
             text: () => window.location.href
@@ -171,7 +170,7 @@ const TestEnvironment = (props: any) => {
                                     {
                                         <>
                                             <div className={styles.enviroment_ip}>
-                                                <ServerJumpBlock className={styles.enviroment_child}>{server['ip/sn']}</ServerJumpBlock>
+                                                <span className={styles.enviroment_child}>{server['ip/sn']}</span>
                                             </div>
                                             <Tooltip placement="topLeft" title={server.distro}>
                                                 <div className={styles.enviroment_machine}>
@@ -230,16 +229,17 @@ const TestEnvironment = (props: any) => {
                 <div className={styles.environment_title} >测试环境</div>
                 <div>
                     {
-                        form_search == '' ?
-                            <>
-                                <span className="test_result_copy_link"></span>
-                                <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
-                            </>
-                            :
-                            <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
+                        form_search == '' ? 
+                        <>
+                            <span className="test_result_copy_link"></span>
+                            <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
+                        </>
+                        :
+                        <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
                     }
-
-                    <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>
+                    <Access accessible={access.testerAccess()}> 
+                        <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>
+                    </Access>
                 </div>
             </Row>
             <Table

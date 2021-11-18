@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Space, Popconfirm, Button,message, Popover } from 'antd';
-import { history } from 'umi'
+import { history, Access, useAccess } from 'umi'
 import _ from 'lodash'
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -13,6 +13,7 @@ import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
     const {selectedChange, wsId, setIsloading, allSelectRowData} = props
+    const access = useAccess()
     const scrollbarsRef:any = useRef(null)
     const [padding, setPadding] = useState(false)
     const [firstRowData, setFirstRowData] = useState([])
@@ -294,7 +295,9 @@ export default (props: any) => {
                     <Space>
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0, marginLeft: 16, marginRight: 8 }} />
                         <Button onClick={handleCancle}>取消</Button>
-                        <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}>生成报告</Button>
+                        <Access accessible={access.testerAccess()}>
+                            <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}>生成报告</Button>
+                        </Access>
                         <Button type="primary" onClick={_.partial(handleNext,'test_analysis/compare')}>对比分析</Button>
                     </Space>
                 </div>

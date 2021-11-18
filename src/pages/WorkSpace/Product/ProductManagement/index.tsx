@@ -2,7 +2,6 @@ import { Form, Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dr
 import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import { useLocation, useParams, useRequest } from 'umi'
 import { queryProductList, deleteProduct, queryProjectList, updateProject } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -146,11 +145,7 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            {<AuthCommon
-                                isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                children={<Button type="primary" >新增产品</Button>}
-                                onClick={handleAddProduct} />
-                            }
+                            <Button type="primary" onClick={handleAddProduct}>新增产品</Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text>所有产品 ({data?.length && `${data?.length}`})</Typography.Text>
@@ -174,38 +169,34 @@ export default (props: any) => {
                                                 <EllipsisPulic title={item.name} width={210}>
                                                     <Typography.Text >{item.name}</Typography.Text>
                                                 </EllipsisPulic>
-                                                {<AuthForm
-                                                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                                    children={<MinusCircleOutlined className={hover === item.id ? styles.remove_active : styles.remove} />}
-                                                    onFirm={
-                                                        item.is_default
-                                                            ? <Popconfirm
-                                                                title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
-                                                                onConfirm={() => handleDelete(item)}
-                                                                cancelText="取消"
-                                                                okText="确定删除"
-                                                                icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                                okButtonProps={{
-                                                                    type: 'default',
-                                                                    disabled: true
-                                                                }}
-                                                            >
-                                                                <MinusCircleOutlined
-                                                                    className={hover === item.id ? styles.remove_active : styles.remove}
-                                                                />
-                                                            </Popconfirm>
-                                                            : <Popconfirm
-                                                                title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
-                                                                onCancel={() => handleDelete(item)}
-                                                                cancelText="确定删除"
-                                                                okText="取消"
-                                                                icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                            >
-                                                                <MinusCircleOutlined
-                                                                    className={hover === item.id ? styles.remove_active : styles.remove}
-                                                                />
-                                                            </Popconfirm>
-                                                    } />
+                                                {
+                                                    item.is_default
+                                                    ? <Popconfirm
+                                                        title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
+                                                        onConfirm={() => handleDelete(item)}
+                                                        cancelText="取消"
+                                                        okText="确定删除"
+                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                        okButtonProps={{
+                                                            type: 'default',
+                                                            disabled: true
+                                                        }}
+                                                    >
+                                                        <MinusCircleOutlined
+                                                            className={hover === item.id ? styles.remove_active : styles.remove}
+                                                        />
+                                                    </Popconfirm>
+                                                    : <Popconfirm
+                                                        title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
+                                                        onCancel={() => handleDelete(item)}
+                                                        cancelText="确定删除"
+                                                        okText="取消"
+                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                    >
+                                                        <MinusCircleOutlined
+                                                            className={hover === item.id ? styles.remove_active : styles.remove}
+                                                        />
+                                                    </Popconfirm>
                                                 }
                                             </Row>
                                         </Col>
@@ -238,22 +229,16 @@ export default (props: any) => {
                                     </Col>
                                 </Row>
                             </Col>
-                            {<AuthForm
-                                isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                children={<MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />}
-                                onFirm={
-                                    <Dropdown
-                                        overlayStyle={{ cursor: 'pointer' }}
-                                        overlay={
-                                            <Menu>
-                                                <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
-                                            </Menu>
-                                        }
-                                    >
-                                        <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
-                                    </Dropdown>
-                                } />
-                            }
+                            <Dropdown
+                                overlayStyle={{ cursor: 'pointer' }}
+                                overlay={
+                                    <Menu>
+                                        <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                                    </Menu>
+                                }
+                            >
+                                <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
+                            </Dropdown>
                         </Row>
                         <Row className={styles.right_project}>
                             <Row style={{ width: '100%', height: 62 }}>
@@ -274,11 +259,7 @@ export default (props: any) => {
                                                 (item: any) => {
                                                     return (
                                                         <div className={styles.right_project_child} key={item.id}>
-                                                            {  <AuthCommon
-                                                                isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                                                children={<div className={item.is_default ? styles.right_project_default : styles.right_project_icon}></div>}
-                                                                onClick={() => handleIcon(item)} />
-                                                            }
+                                                            <div onClick={() => handleIcon(item)} className={item.is_default ? styles.right_project_default : styles.right_project_icon}></div>
                                                             <div className={styles.right_project_child_warp} onClick={() => hanldeProject(item)}>
                                                                 <EllipsisPulic title={item.name}>
                                                                     <Typography.Text className={styles.right_project_child_firstLine}>{item.name}</Typography.Text>
@@ -302,11 +283,7 @@ export default (props: any) => {
                                         {clickType === 'menu' && (
                                             <div className={styles.right_project_create} >
                                                 <div className={styles.right_project_create_empty}>
-                                                    {<AuthCommon
-                                                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                                        children={<span ><PlusOutlined /><i>创建项目</i></span>}
-                                                        onClick={hanldCreateProject} />
-                                                    }
+                                                    <span onClick={hanldCreateProject}><PlusOutlined /><i>创建项目</i></span>
                                                 </div>
                                             </div>
                                         )

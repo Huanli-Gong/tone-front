@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperat
 import { Button, Pagination, Popconfirm, Space, Tag, Drawer, Row, Col, Form, Input, Select, Spin, Empty, message, Table, Modal } from 'antd';
 import styles from './style.less';
 import { CaretRightFilled, CaretDownFilled,ExclamationCircleOutlined } from '@ant-design/icons';
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import { querysCluster, queryTag, queryMember, addGroup, editGroup, delGroup } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import GroupTree from './GroupTree';
@@ -17,7 +16,7 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
 import { useParams } from 'umi';
 import { resizeClientSize } from '@/utils/hooks';
-
+import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上集群
  * 
@@ -305,38 +304,21 @@ const Aligroup: React.FC<any> = (props, ref) => {
             dataIndex: 'id',
             width: 180,
             render: (_:any, row:any) => <Space>
-                {<AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                    children={<Button type="link" style={{ padding: 0, height: 'auto' }}>添加</Button>}
-                    onClick={() => { addMachine(row.id) }} />
-                }
-                {<AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                    children={<Button type="link" style={{ padding: 0, height: 'auto' }}>编辑</Button>}
-                    onClick={() => modifyGroup(row)} />
-                }
-                {
-                    <AuthForm
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                        children={<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>}
-                        onFirm={
-                            // <Popconfirm title="确定要删除吗？"
-                            //     placement="topRight"
-                            //     okText="确定"
-                            //     cancelText="取消"
-                            //     onConfirm={() => { removeGroup(row.id) }}
-                            //     overlayStyle={{ width: '224px' }}
-                            // >
-                            //     <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-                            // </Popconfirm>
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row })}>删除</Button>
-                        } />
-                }
-                {<AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-                    children={<Button type="link" style={{ padding: 0, height: 'auto' }}>日志</Button>}
-                    onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')} />
-                }
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { addMachine(row.id) }}>添加</Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => modifyGroup(row)}>编辑</Button>
+                    {/* <Popconfirm title="确定要删除吗？"
+                        placement="topRight"
+                        okText="确定"
+                        cancelText="取消"
+                        onConfirm={() => { removeGroup(row.id) }}
+                        overlayStyle={{ width: '224px' }}
+                    >
+                        <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+                    </Popconfirm> */}
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row })}>删除</Button>
+                <PermissionTootip>
+                    <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}>日志</Button>
+                </PermissionTootip>
             </Space>,
         },
     ];

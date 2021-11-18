@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useState, forwardRef } from 'react'
 import { Drawer, Form, Input, Radio, Space, Button, message } from 'antd'
 
-import { createKernel, updateKernel } from '../services'
+import { createKernel, updateKernel } from './services'
 import { requestCodeMessage } from '@/utils/utils'
 
 export default forwardRef(

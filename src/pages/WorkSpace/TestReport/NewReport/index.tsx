@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { Col, Breadcrumb, Button, message, Spin } from 'antd';
 import { ReactComponent as IconEdit } from '@/assets/svg/icon_edit.svg';
+import { ReactComponent as IconWarp } from '@/assets/svg/iconEdit.svg';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
 import ReportHeader from './components/ReportHeader';
 import ReportBasicInfo from './components/ReportBasicInfo';
@@ -11,7 +12,7 @@ import { resizeClientSize } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 // import { writeDocumentTitle } from '@/utils/hooks';
 import { editReport, saveReport, detailTemplate, reportDetail } from '../services';
-import { history } from 'umi';
+import { history, useAccess, Access } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
@@ -26,7 +27,7 @@ const Report = (props: any) => {
     const [editBtn,setEditBtn] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
     const { windowHeight } = resizeClientSize()
-    
+    const access = useAccess();
     const bodyRef = useRef<any>(null)
     const [obj, setObj] = useState<any>({
         test_item:{
@@ -90,6 +91,7 @@ const Report = (props: any) => {
         }
         return result
     }
+    const creator_id = window.location.search
     // 面包屑
     const BreadcrumbItem: React.FC<any> = () => (
         <ReportBread>
@@ -104,7 +106,14 @@ const Report = (props: any) => {
                             <Button type="primary" disabled={btnConfirm} onClick={handleSubmit}>{saveReportData?.id ? '更新' : '保存'}</Button>
                             : <>
                                 <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link"><IconLink style={{ marginRight: 4 }} />分享</span>
-                                <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                <Access
+                                    accessible={access.testerAccess(Number(creator_id.substring(5,creator_id.length)))}
+                                    fallback={
+                                        <span style={{ cursor: 'pointer',color:'#ccc' }}><IconWarp style={{ marginRight: 4 }} />编辑</span>
+                                    }
+                                >
+                                    <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                </Access>
                             </>
                     }
                 </Btn>
@@ -136,7 +145,6 @@ const Report = (props: any) => {
         obj.tmpl_id = saveReportData.template
         obj.ws_id = ws_id
         obj.job_li = getSelAllJob()
-        // console.log('saveobj',obj)
         if (saveReportData.id) {
             obj.report_id = saveReportData.id
             const res = await editReport(obj)

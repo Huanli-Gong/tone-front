@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography, Spin } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { AuthCommon } from '@/components/Permissions/AuthCommon';
 import { querySuiteList, queryDomains } from './service';
 import { history } from 'umi'
 import { suiteChange } from '@/components/Public/TestSuite/index.js';
@@ -224,10 +223,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 				</Tabs>
 			}
 			extra={
-				<AuthCommon
-					key="manage"
-					isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin', 'ws_test_admin']}
-					children={<Button type="primary" key="createSuite">Test Suite管理</Button>}
+				<Button type="primary" key="createSuite" 
 					onClick={() => {
 						if (['functional', 'performance', 'business'].includes(fetchParams.test_type)) {
 							// history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
@@ -236,8 +232,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 						// else if (fetchParams.test_type === 'business') {
 						//   history.push(`/test_suite/add_business?ws=${ws_id}&test_type=${fetchParams.test_type}`)
 						// }
-					}}
-				/>
+					}}>
+					Test Suite管理
+				</Button>
 			}
 		>
 

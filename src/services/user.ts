@@ -1,5 +1,4 @@
 import { request } from 'umi';
-import { stringify } from 'querystring'
 
 export async function query() {
     return request<API.CurrentUser[]>('/api/users');

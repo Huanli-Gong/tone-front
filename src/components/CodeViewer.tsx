@@ -31,10 +31,9 @@ const Viewer = styled.div`
     code, pre { background-color: #f9f9f9; }
     pre { padding : 8px }
 `
-
 marked.setOptions({
     renderer: new marked.Renderer(),
-    highlight: function (code, lang) {
+    highlight: function (code:any, lang:any) {
         return hljs.highlightAuto(code).value;
     },
     pedantic: false,

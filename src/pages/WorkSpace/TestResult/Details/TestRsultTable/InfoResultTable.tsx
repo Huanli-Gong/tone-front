@@ -1,10 +1,9 @@
-import { Space, Table, Tooltip, Input, Button, Typography } from 'antd'
+import { Space, Table, Tooltip, Input, Button, Typography, message } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
 import React, { useRef, useEffect, useState } from 'react'
 import { useRequest, Access, useAccess, useParams } from 'umi'
 import { queryCaseResult } from '../service'
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon'
 import EditRemarks from '../components/EditRemarks'
 import JoinBaseline from '../components/JoinBaseline'
 
@@ -19,12 +18,12 @@ import { targetJump } from '@/utils/utils'
 
 export default (props: any) => {
     const { ws_id } = useParams<{ ws_id: string }>()
+    const access = useAccess()
     const {
-        job_id, test_case_id, suite_id, testType,
+        job_id, test_case_id, suite_id, testType,creator,
         server_provider, state = '', suite_name, conf_name,
         refreshId, setRefreshId
     } = props
-    const access = useAccess()
     const editRemark: any = useRef(null)
     const joinBaseline: any = useRef(null)
 
@@ -156,7 +155,7 @@ export default (props: any) => {
             let context = row.description
             if (row.match_baseline && row.result === 'Fail')
                 context = _ ? `${_}(匹配基线)` : '匹配基线'
-            if (access.wsRouteFilter()) {
+            if (access.canWsAdmin()) 
                 return (
                     <Tooltip placement="topLeft" title={context}>
                         <Typography.Link
@@ -174,7 +173,6 @@ export default (props: any) => {
                         </Typography.Link>
                     </Tooltip >
                 )
-            }
             return (
                 <Tooltip placement="topLeft" title={context}>
                     <Typography>{context}</Typography>
@@ -213,24 +211,18 @@ export default (props: any) => {
         render: (_: any) => {
             let flag = _.result === 'Fail' && !_.bug
             return (
-                <Access accessible={access.wsTouristFilter()}>
+                <Access
+                    accessible={access.testerAccess(creator)}
+                    fallback={
+                        <Space>
+                            <span style={{ color: '#ccc',cursor: 'not-allowed' }} >编辑</span>
+                            {flag && <span style={{ color: '#ccc',cursor: 'not-allowed' }}>加入基线</span>}
+                        </Space> 
+                    }
+                >
                     <Space>
-                        {
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={<span style={{ color: '#1890FF', cursor: 'pointer' }} >编辑</span>}
-                                onClick={() => handleOpenEditRemark(_)}
-                                creator_id={_.creator}
-                            />
-                        }
-                        {
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user', 'ws_member']}
-                                children={flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} >加入基线</span>}
-                                onClick={() => handleOpenJoinBaseline(_)}
-                                creator_id={_.creator}
-                            />
-                        }
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}>编辑</span>
+                        {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>加入基线</span>}
                     </Space>
                 </Access>
             )
@@ -270,6 +262,7 @@ export default (props: any) => {
                 test_type={testType}
                 ws_id={ws_id}
                 server_provider={server_provider}
+                accessible = {access.canWsAdmin()}
             />
         </>
     )

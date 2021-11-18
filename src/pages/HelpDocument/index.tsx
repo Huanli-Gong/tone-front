@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { message, Breadcrumb, Row, Spin, Space, Layout } from 'antd'
 
-import { history, useRequest, useModel } from 'umi'
+import { history, useRequest, useModel, useAccess, Access } from 'umi'
 import styles from './index.less'
 import { EditOutlined } from '@ant-design/icons'
 import { queryHelpDocList } from './services'
-import { AuthCommon } from '@/components/Permissions/AuthCommon'
-import wangeditor from 'wangeditor'
+import wangEditor from 'wangeditor'
 import _ from 'lodash'
 import Editor from './Editor'
 import dropDown from '@/assets/svg/dropDown.svg'
@@ -33,10 +32,11 @@ export default (props: any) => {
     const [helpId, setHelpId] = useState(help_id)
     const [currentDoc, setCurrentDoc] = useState<any>({})
     const [rightLoading, setRightLoading] = useState(false)
-    const [paddingBottomVal,setPaddingBottomVal] = useState(166)
+    const [paddingBottomVal, setPaddingBottomVal] = useState(166)
     const [layoutHeight, setLayoutHeight] = useState(innerHeight)
     const typePath = /^\/help_doc/.test(props.match.path) ? 'help_doc' : 'notice'
     const { initialState } = useModel('@@initialState');
+    const access = useAccess();
     const sysAuth = initialState?.authList
     const { sys_role_title, ws_role_title } = sysAuth
     const isAuth = ['super_admin', 'sys_admin', 'sys_test_admin']
@@ -71,10 +71,10 @@ export default (props: any) => {
     useEffect(() => {
         odivContenteditable = document.querySelector('div[contenteditable = "false"]')
         odivContenteditable && odivContenteditable.addEventListener('click', handleClickImage, true)
-        window.addEventListener('resize',resizeFn,false)
+        window.addEventListener('resize', resizeFn, false)
         return () => {
             odivContenteditable && odivContenteditable.removeEventListener('click', handleClickImage, true)
-            window.addEventListener('resize',resizeFn,false)
+            window.addEventListener('resize', resizeFn, false)
         }
     }, [currentDoc])
 
@@ -88,7 +88,7 @@ export default (props: any) => {
                     id = _.isArray(data) && data[index] && data[index]['id']
                 } else {
                     id = _.isArray(data) && data[0] && data[0]['id']
-                    
+
                 }
 
                 editor2.txt.html('')
@@ -98,7 +98,7 @@ export default (props: any) => {
 
             setHelps(data || [])
         } else {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
         }
     }
 
@@ -127,14 +127,14 @@ export default (props: any) => {
         }
     }
     useEffect(() => {
-            const oTitle = document.querySelector('#edit_doc_title')
-            if (odiv2 && oTitle) {
-                const titleHeight = oTitle.clientHeight
-                odiv2.style.paddingBottom = 120 + titleHeight
-                setPaddingBottomVal(84 + titleHeight)
-            }
-        
-    },[currentDoc])
+        const oTitle = document.querySelector('#edit_doc_title')
+        if (odiv2 && oTitle) {
+            const titleHeight = oTitle.clientHeight
+            odiv2.style.paddingBottom = 120 + titleHeight
+            setPaddingBottomVal(84 + titleHeight)
+        }
+
+    }, [currentDoc])
     const closeFn = (box: any, arr: [], currentTagNum: any, number: any, that: any) => {
         number = Number(number)
         const nextLevelTag = arr[number + 1].tag,
@@ -256,12 +256,12 @@ export default (props: any) => {
     const debounced = (id: any = help_id, wait: any = 200) => {
         if (!String(id)) return;
         if (timeout !== null) clearTimeout(timeout);  //清除这个定时器			
-        timeout = setTimeout(_.partial(handleGetDoc2,id), wait);
+        timeout = setTimeout(_.partial(handleGetDoc2, id), wait);
     }
-    const resizeFn = () =>{ 
+    const resizeFn = () => {
         let oImg: any = document.querySelector('#image_box img')
-        if(oImg && innerWidth <= 1280) oImg.style.maxWidth = '80%'
-        if(oImg && innerWidth > 1280) oImg.style.maxWidth = '70%'
+        if (oImg && innerWidth <= 1280) oImg.style.maxWidth = '80%'
+        if (oImg && innerWidth > 1280) oImg.style.maxWidth = '70%'
     }
     const handleClickImage = (e: any) => {
         e.stopPropagation();
@@ -275,7 +275,7 @@ export default (props: any) => {
         }
         oBox.style.width = '100%'
         oBox.style.height = '100%'
-        if(innerWidth <= 1280) oImg.style.maxWidth = '80%'
+        if (innerWidth <= 1280) oImg.style.maxWidth = '80%'
         oImg.src = url
     }
     useEffect(() => {
@@ -287,11 +287,11 @@ export default (props: any) => {
                 odiv.blur()
             }
             return;
-        } 
+        }
     }, [helpId])
-    
+
     useEffect(() => {
-        editor2 = new wangeditor('#showContentBox') // 传入两个元素
+        editor2 = new wangEditor('#showContentBox') // 传入两个元素
         editor2.config.minHeight = 500
         editor2.config.placeholder = ''
         editor2.config.onCatalogChange = function (arr) {
@@ -309,11 +309,11 @@ export default (props: any) => {
                     4: "---",
                     5: "----"
                 };
-            arr = arr.filter((item:any) => item && item.text.trim())
+            arr = arr.filter((item: any) => item && item.text.trim())
             box.style.paddingBottom = 0
             if (arr.length) box.style.paddingBottom = '20px'
             let isFlag = false
-            arr.forEach((item:any, index:any) => {
+            arr.forEach((item: any, index: any) => {
                 // item 里有 tag:H1,H2,H3,H4,H5, text:标签内文本, id:唯一id
 
                 if (index > 0) {
@@ -376,7 +376,7 @@ export default (props: any) => {
                 }
                 */
                 a.onclick = function (e: any) {
-                    const ali:any = document.querySelectorAll('#catalogBox2 li')
+                    const ali: any = document.querySelectorAll('#catalogBox2 li')
                     const oa = document.querySelectorAll('#catalogBox2 li a')
                     Array.from(oa).forEach((ele: any, num: number) => {
                         ali[num].style.borderLeft = '1px solid rgba(0,0,0,0.1)'
@@ -398,15 +398,15 @@ export default (props: any) => {
             });
             if (!isFlag) {
                 const ospan = document.querySelectorAll('#catalogBox2 span')
-                Array.from(ospan).forEach((item:any) => item.style.display = 'none')
+                Array.from(ospan).forEach((item: any) => item.style.display = 'none')
             }
-            const editDoc:any = document.querySelector('#edit_doc')
-            const content:any = document.querySelector('#center_content')
+            const editDoc: any = document.querySelector('#edit_doc')
+            const content: any = document.querySelector('#center_content')
 
             if (!arr.length && editDoc && content) {
                 editDoc.style.width = 'calc(100% - 0px)'
                 content.style.width = 'calc(100% - 0px)'
-                box.style.opacity = 0 
+                box.style.opacity = 0
                 box.style.right = '-240px'
             }
             if (arr.length && editDoc && content) {
@@ -447,88 +447,79 @@ export default (props: any) => {
     return (
         <div className={styles.container}>
             <Layout className={styles.layout}>
-            <Spin spinning={loading}>
-                <div>
-                    <Breadcrumb style={{ marginBottom: '19px' }}>
-                        <Breadcrumb.Item >
-                            <span style={{ cursor: 'pointer' }} onClick={() => history.push('/')}>首页</span>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>{typePath === 'help_doc' ? '使用帮助' : '公告'}</Breadcrumb.Item>
-                    </Breadcrumb>
-                </div>
-                <div >
-                    <Row >
-                        {/*左侧 */}
-                        <div
-                            // style={{height: layoutHeight - 159}}
-                            style={{ height: layoutHeight - 112 }}
-                            className={styles.script_left}>
-                            <div className={styles.use_help}>
-                                {typePath === 'help_doc' ? '使用帮助' : '公告'}
-                                {<AuthCommon isAuth={['super_admin', 'sys_admin', 'sys_test_admin']} children={<AddDoc className={styles.add_help} />} onClick={_.partial(handleClick, 'new')} />}
-                            </div>
+                <Spin spinning={loading}>
+                    <div>
+                        <Breadcrumb style={{ marginBottom: '19px' }}>
+                            <Breadcrumb.Item >
+                                <span style={{ cursor: 'pointer' }} onClick={() => history.push('/')}>首页</span>
+                            </Breadcrumb.Item>
+                            <Breadcrumb.Item>{typePath === 'help_doc' ? '使用帮助' : '公告'}</Breadcrumb.Item>
+                        </Breadcrumb>
+                    </div>
+                    <div >
+                        <Row >
+                            {/*左侧 */}
                             <div
-                                id='dataTable'
-                                style={{
-                                    overflow: 'auto'
-                                }}>
-                                <Editor
-                                    setHelpId={setHelpId}
-                                    getHelpDocs={wsHelpDoc}
-                                    allHelpsData={helps}
-                                    setRightLoading={setRightLoading}
-                                    typePath={typePath}
-                                    isPermier={isPermier}
-                                    handleGetDocDetailFn={debounced}
-                                    helpId={helpId} />
+                                // style={{height: layoutHeight - 159}}
+                                style={{ height: layoutHeight - 112 }}
+                                className={styles.script_left}>
+                                <div className={styles.use_help}>
+                                    {typePath === 'help_doc' ? '使用帮助' : '公告'}
+                                    <Access accessible={access.canSysTestAdmin()}>
+                                        <AddDoc className={styles.add_help} onClick={_.partial(handleClick, 'new')} />
+                                    </Access>
+                                </div>
+                                <div
+                                    id='dataTable'
+                                    style={{
+                                        overflow: 'auto'
+                                    }}>
+                                    <Editor
+                                        setHelpId={setHelpId}
+                                        getHelpDocs={wsHelpDoc}
+                                        allHelpsData={helps}
+                                        setRightLoading={setRightLoading}
+                                        typePath={typePath}
+                                        isPermier={isPermier}
+                                        handleGetDocDetailFn={debounced}
+                                        helpId={helpId} />
+                                </div>
                             </div>
-                        </div>
+                            {/*右侧 */}
+                            <div
+                                style={{
+                                    background: '#fff',
+                                    // height: layoutHeight - 112
+                                }}
+                                className={`${styles.script_middle} ${styles.show_script_middle}`}>
+                                <Spin spinning={rightLoading}>
 
-                        {/*右侧 */}
-                        <div
-                            style={{
-                                background: '#fff',
-                                // height: layoutHeight - 112
-                            }}
-                            className={`${styles.script_middle} ${styles.show_script_middle}`}>
-                            <Spin spinning={rightLoading}>
-                            
-                                <div className={styles.edit_doc} id="edit_doc">
-                                    <div className={styles.edit_doc_title} style={{ opacity: helps.length ? 1 : 0 }} id='edit_doc_title'>
-                                        {currentDoc && currentDoc.title}
-                                        <div className={styles.create_time}>{`创建时间：${currentDoc && currentDoc.gmt_created}`}</div>
-                                    </div>
-                                    <AuthCommon
-                                        isAuth={['super_admin', 'sys_admin', 'sys_test_admin']}
-                                        children={
-                                            <div className={styles.edit_doc_botton} style={{ opacity: helps.length ? 1 : 0 }} >
+                                    <div className={styles.edit_doc} id="edit_doc">
+                                        <div className={styles.edit_doc_title} style={{ opacity: helps.length ? 1 : 0 }} id='edit_doc_title'>
+                                            {currentDoc && currentDoc.title}
+                                            <div className={styles.create_time}>{`创建时间：${currentDoc && currentDoc.gmt_created}`}</div>
+                                        </div>
+                                        <div className={styles.edit_doc_botton} style={{ opacity: helps.length ? 1 : 0 }} >
+                                            <Access accessible={access.canSysTestAdmin()}>
                                                 <Space>
                                                     <EditOutlined />
-                                                    <span className={styles.edit_doc_span} >编辑文档</span>
+                                                    <span className={styles.edit_doc_span} onClick={handleEdit}>编辑文档</span>
                                                 </Space>
-                                            </div>
-                                        }
-                                        onClick={handleEdit} />
-                                </div>
-
-                                <div className={styles.center_content} id="center_content">
-                                    <div id="showContentBox" className={styles.showContentBox} style={{ height: layoutHeight - 84,paddingBottom: paddingBottomVal }}>                                       
+                                            </Access>
+                                        </div>
                                     </div>
-
-                                </div>
-
-                            </Spin>
-                        </div>
-                        <ul id="catalogBox2"
-                            style={{
-                                maxHeight: layoutHeight - 159
-                            }}
-                            className={`${styles.catalogBox2} ${styles.catalogBox3}`}
-                        />
-                    </Row>
-                </div>
-                <div className={styles.image_box} id="image_box" />
-            </Spin>
+                                </Spin>
+                            </div>
+                            <ul id="catalogBox2"
+                                style={{
+                                    maxHeight: layoutHeight - 159
+                                }}
+                                className={`${styles.catalogBox2} ${styles.catalogBox3}`}
+                            />
+                        </Row>
+                    </div>
+                    <div className={styles.image_box} id="image_box" />
+                </Spin>
             </Layout>
         </div>
     )

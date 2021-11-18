@@ -31,7 +31,7 @@ const ViewDetailDrawer = forwardRef(
             setLoading(true)
             // const { data = {} } = await queryTestServerDetail(id)
             // setDetails(data)
-            const { code, data: detailData } = await queryChannelState({ ip: row.pub_ip, channel_type: row.channel_type })
+            const { code, data: detailData } = await queryChannelState({ ip: row.private_ip, channel_type: row.channel_type })
             if (code === 200) {
                 setChannelState(detailData)
             } else {
@@ -77,7 +77,7 @@ const ViewDetailDrawer = forwardRef(
                         {type !== '0' &&
                             <Row gutter={20} className={styles.row} >
                                 <Col span={6}>IP地址:</Col>
-                                <Col span={18}>{details?.pub_ip}</Col>
+                                <Col span={18}>{details?.private_ip}</Col>
                             </Row>
                         }
                         {/* <Row gutter={20} className={styles.row} >
@@ -136,7 +136,7 @@ const ViewDetailDrawer = forwardRef(
                                 <Col span={6}>Channel:</Col>
                                 <Col span={18}>
                                     <span>{details?.channel_type}</span>
-                                    <span className={styles.btn_style} onClick={() => deployClick([details?.pub_ip])}>重新部署</span>
+                                    <span className={styles.btn_style} onClick={() => deployClick([details?.private_ip])}>重新部署</span>
                                 </Col>
                             </Row>
                             <Row gutter={20} className={styles.row}>

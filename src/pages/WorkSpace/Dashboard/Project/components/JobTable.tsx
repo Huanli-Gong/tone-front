@@ -49,8 +49,7 @@ const JobTable = (props: any) => {
         data: [],
         total: 0,
     })
-    const access = useAccess()
-
+    const access = useAccess();
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -62,7 +61,7 @@ const JobTable = (props: any) => {
     const getProjectJobs = async (params: any = DEFAULT_TABLE_PARAMS) => {
         setLoading(true)
         const { code, msg, ...data } = await queryTestResultList(params)
-        if (code !== 200) return requestCodeMessage( code , msg )
+        if (code !== 200) return requestCodeMessage(code, msg)
         // console.log(data)
         setJobs(data)
         setPageParams(params)
@@ -71,7 +70,7 @@ const JobTable = (props: any) => {
     const handleDelete = async (_: any) => {
         const { code, msg } = await deleteJobTest({ job_id: _.id })
         if (code !== 200) {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
             return
         }
         const { page_num, page_size } = pageParams
@@ -81,13 +80,13 @@ const JobTable = (props: any) => {
 
     const handleTestReRun = (_: any) => rerunModal.current.show(_)
 
-    const columns: any = [
+    let columns: any = [
         {
             title: 'JobID',
             dataIndex: 'id',
             fixed: 'left',
             width: 80,
-            render: (_: any) => <span onClick={() => window.open(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
+            render: (_: any) => <span onClick={() => window.open(`/ws/${ws_id}/test_result/${_}`)} style={{ cursor: 'pointer' }}>{_}</span>
         }, {
             title: 'Job名称',
             dataIndex: 'name',
@@ -140,6 +139,7 @@ const JobTable = (props: any) => {
         }, {
             title: '创建人',
             width: 80,
+            ellipsis: true,
             dataIndex: 'creator_name'
         }, {
             title: '开始时间',
@@ -151,39 +151,51 @@ const JobTable = (props: any) => {
             width: 180,
             ellipsis: true,
             dataIndex: 'end_time'
-        }, {
-            title: '操作',
-            width: 160,
-            fixed: 'right',
-            render: (_: any) => {
-                return (
-                    <Access accessible={access.wsRoleContrl()} >
+        },
+    ]
+
+    columns = access.testerAccess() ? columns.concat({
+        title: '操作',
+        width: 160,
+        fixed: 'right',
+        render: (_: any) => {
+            return (
+                <Space>
+                    <Access accessible={access.testerAccess(_.creator)} 
+                        fallback={
+                            <Space>
+                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }} >重跑</Typography.Text>
+                                <Typography.Text
+                                    style={{ color: '#ccc', cursor: 'no-drop' }}
+                                >
+                                    删除
+                                </Typography.Text>
+                            </Space>
+                        }
+                    >
                         <Space>
                             <span onClick={() => handleTestReRun(_)}>
                                 <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
                             </span>
-                            {
-                                access.wsRoleContrl(_.creator) &&
-                                <Popconfirm
-                                    title="确定要删除吗？"
-                                    onConfirm={() => handleDelete(_)}
-                                    okText="确认"
-                                    cancelText="取消"
+                            <Popconfirm
+                                title="确定要删除吗？"
+                                onConfirm={() => handleDelete(_)}
+                                okText="确认"
+                                cancelText="取消"
+                            >
+                                <Typography.Text
+                                    style={{ color: '#1890FF', cursor: 'pointer' }}
                                 >
-                                    <Typography.Text
-                                        style={{ color: '#1890FF', cursor: 'pointer' }}
-                                    >
-                                        删除
-                                    </Typography.Text>
-                                </Popconfirm>
-                            }
-                            <ViewReports {..._} />
+                                    删除
+                                </Typography.Text>
+                            </Popconfirm>
                         </Space>
                     </Access>
-                )
-            }
+                    <ViewReports {..._} />
+                </Space>
+            )
         }
-    ]
+    }) : columns
 
     return (
         <Spin spinning={loading}>

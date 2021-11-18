@@ -4,7 +4,6 @@ import { QusetionIconTootip } from '@/components/Product/index'
 import styles from './index.less'
 import { deleteProject, updateBranchAndRelation, queryProjectBranch, deleteBranchAndRelation } from '../services'
 import { CheckCircleOutlined, CheckCircleFilled, MoreOutlined } from '@ant-design/icons'
-import { AuthCommon, AuthForm } from '@/components/Permissions/AuthCommon';
 import UpdateProjectModal from './UpdateProject'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddCodeModal from './NewCodeModal'
@@ -67,7 +66,7 @@ export default forwardRef(
                 message.success('操作成功!')
             }
             else
-                requestCodeMessage( ret.code , ret.msg )
+                requestCodeMessage(ret.code, ret.msg)
         }
         const handleDelete = async (_: any) => {
             const { code, msg } = await deleteBranchAndRelation({ relation_id: _.id })
@@ -76,7 +75,7 @@ export default forwardRef(
                 message.success('操作成功!')
             }
             else {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
             }
         }
 
@@ -84,29 +83,26 @@ export default forwardRef(
             title: '仓库名称',
             dataIndex: 'branch_name',
             ellipsis: true,
-            render: (text: string) => <EllipsisPulic title={text}/>,
+            render: (text: string) => <EllipsisPulic title={text} />,
         },
         {
             title: 'GitUrl',
             dataIndex: 'git_url',
             ellipsis: true,
-            render: (text: string) => <EllipsisPulic title={text}/>,
+            render: (text: string) => <EllipsisPulic title={text} />,
         },
         {
             title: 'Branch',
             dataIndex: 'branch_name',
             ellipsis: true,
-            render: (text: any) => <EllipsisPulic title={text}/>,
+            render: (text: any) => <EllipsisPulic title={text} />,
         },
         {
-            title: <QusetionIconTootip desc="主仓库" title="通过设置主仓库可以建立代码与job之间的关系。" />,
+            title: <QusetionIconTootip title="主仓库" desc="通过设置主仓库可以建立代码与job之间的关系。" />,
             width: 90,
             dataIndex: 'is_master',
             render: (_: any, data: any) => (
-                 <AuthCommon
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                    children={data.is_master ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined  style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />}
-                    onClick={() => handleSetDefault(_, data)} />
+                data.is_master ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} onClick={() => handleSetDefault(_, data)} />
             )
 
         },
@@ -115,11 +111,8 @@ export default forwardRef(
             width: 80,
             render: (_: any) => (
                 <div>
-                    {  <AuthForm
-                        isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                        children={ <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}> 删除 </Typography.Text> }
-                        onFirm={
-                            _.is_master
+                    {
+                        _.is_master
                             ? <Space>
                                 <Popconfirm
                                     title="不可删除主仓库，请切换主仓库后再删除！"
@@ -153,7 +146,6 @@ export default forwardRef(
                                     </Typography.Text>
                                 </Popconfirm>
                             </Space>
-                        } />
                     }
                 </div>
             )
@@ -180,49 +172,41 @@ export default forwardRef(
         const hanldeCodeModal = (projectItem: any) => {
             addCodeModal.current.show(projectItem, data)
         }
-        
+
         return (
-            <Drawer 
-                maskClosable={ false }
-                keyboard={ false }
+            <Drawer
+                maskClosable={false}
+                keyboard={false}
                 title={title}
                 width="680"
                 onClose={handleClose}
                 visible={visible}
                 className={styles.drawer_warpper}
             >
-                {  <AuthForm
-                    isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                    children={ <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 55, top: 21 }} /> }
-                    onFirm={
-                        <Dropdown
-                            placement="topLeft"
-                            overlayStyle={{ cursor: 'pointer' }}
-                            overlay={
-                                <Menu>
-                                    <Menu.Item onClick={() => hanldeEdit(projectItem)}>编辑项目</Menu.Item>
-                                    <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}>删除项目</i></Menu.Item>
-                                </Menu>
-                            }
-                        >
-                            <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 55, top: 21 }} />
-                        </Dropdown>
-                    } />
-                }
-                
-                
+                <Dropdown
+                    placement="topLeft"
+                    overlayStyle={{ cursor: 'pointer' }}
+                    overlay={
+                        <Menu>
+                            <Menu.Item onClick={() => hanldeEdit(projectItem)}>编辑项目</Menu.Item>
+                            <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}>删除项目</i></Menu.Item>
+                        </Menu>
+                    }
+                >
+                    <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 55, top: 21 }} />
+                </Dropdown>
                 <div className={styles.content_warpper}>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}>项目名称：</Typography.Text>
-                        <EllipsisPulic title={projectItem.name} width={540}/>
+                        <EllipsisPulic title={projectItem.name} width={540} />
                     </Space>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}>产品版本：</Typography.Text>
-                        <EllipsisPulic title={projectItem.product_version} width={540}/>
+                        <EllipsisPulic title={projectItem.product_version} width={540} />
                     </Space>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}>项目描述：</Typography.Text>
-                        <EllipsisPulic title={projectItem.description} width={540}/>
+                        <EllipsisPulic title={projectItem.description} width={540} />
                     </Space>
                 </div>
 
@@ -233,11 +217,7 @@ export default forwardRef(
                             代码管理
                         </Col>
                         <Col span={5} style={{ textAlign: 'right' }}>
-                            {  <AuthCommon
-                                isAuth={['super_admin', 'sys_admin', 'ws_owner', 'ws_admin']}
-                                children={<Button type="primary" >添加代码</Button>}
-                                onClick={() => hanldeCodeModal(projectItem)} />
-                            }
+                            <Button type="primary" onClick={() => hanldeCodeModal(projectItem)}>添加代码</Button>
                         </Col>
                     </Row>
                     <Table

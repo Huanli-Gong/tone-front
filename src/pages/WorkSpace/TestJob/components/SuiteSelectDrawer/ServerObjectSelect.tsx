@@ -154,10 +154,10 @@ const ServerObjectSelect = (props: any) => {
                             serverList.filter((i: any) => i.is_instance).map((item: any) => {
                                 return (
                                     <Select.Option value={item.id} key={item.id}>
-                                        {item.pub_ip ? (
+                                        {item.private_ip ? (
                                             ~item.instance_name.indexOf(' / ') ?
                                                 item.instance_name :
-                                                `${item.pub_ip} / ${item.instance_name}`
+                                                `${item.private_ip} / ${item.instance_name}`
                                         ) : item.instance_name}
                                     </Select.Option>
                                 )

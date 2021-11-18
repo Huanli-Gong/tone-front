@@ -1,29 +1,47 @@
-import React,{ useEffect } from 'react'
-import { history, useRequest , useModel } from 'umi'
+import React, { useMemo, useEffect } from 'react'
+import { history, useModel } from 'umi'
 import { person_auth } from '@/services/user';
+import { workspaceHistroy } from '@/services/Workspace'
 
-export default ( props : any ) => {
+export default (props: any) => {
+    const { children } = props
     const { ws_id } = props.match.params
-    const { pathname } = location
-    const { data, run } = useRequest(() => person_auth({ ws_id }),{ manual:true })
-    const { initialState } = useModel('@@initialState')
-    
-    useEffect(()=>{
-        run()
-    },[pathname])
-    
-    if(data){
-        initialState.authList = Object.assign(data,{})
-    }
-    // console.log(data,initialState,'data')
-    if ( initialState.authList.sys_role_title === 'super_admin' || initialState.authList.sys_role_title === 'sys_admin'){
-        return props.children
-    }else{
-        if(!data?.ws_is_public){
-            if( data?.ws_role_title === null ) {
-                history.push({ pathname:'/401',state: ws_id })
+    const { initialState, setInitialState } = useModel('@@initialState')
+    const { authList } = initialState
+
+    const checkAccess = async () => {
+        let access = authList
+
+        if (ws_id !== authList.ws_id) {
+            const { data } = await person_auth({ ws_id })
+            setInitialState({ ...initialState, authList: { ...data, ws_id } })
+            access = data
+
+            if (!data) {
+                history.push('/500')
+                return
             }
+
+            if (data.ws_role_title)
+                workspaceHistroy({ ws_id })  //
         }
-        return props.children
+
+        const { ws_role_title, ws_is_exist } = access
+
+        if (!ws_is_exist) {
+            history.push(`/404`)
+            return
+        }
+
+        if (!ws_role_title) {
+            history.push({ pathname: '/401', state: ws_id })
+            return
+        }
     }
+
+    useEffect(() => {
+        checkAccess()
+    }, [location.pathname])
+
+    return children
 }

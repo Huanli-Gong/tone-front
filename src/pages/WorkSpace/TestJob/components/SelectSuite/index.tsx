@@ -356,5 +356,3 @@ const SelectSuite: React.FC<any> = (
 };
 
 export default SelectSuite;
-
-

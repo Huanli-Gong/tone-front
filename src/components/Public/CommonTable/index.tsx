@@ -11,9 +11,10 @@ const CommonTable: React.FC<UserTable> = ({
     expandable, onRow = () => { return false }, handlePage,
     showPagination = true,
     page = 1,
-    className='',
+    className = '',
     paginationBottom = false,
     pageSize = 10,
+    components,
 }) => {
     const table = useRef<any>(null)
     const getTop = (e: any) => {
@@ -44,7 +45,8 @@ const CommonTable: React.FC<UserTable> = ({
                 rowSelection={rowSelection}
                 expandable={expandable}
                 scroll={{ x: scrollType }}
-                onRow={record => {
+                components={components}
+                onRow={(record, index) => {
                     return {
                         onClick: () => onRow(record),
                     };
@@ -64,7 +66,7 @@ const CommonTable: React.FC<UserTable> = ({
                                 showQuickJumper
                                 showSizeChanger
                                 current={page}
-                                pageSize={ pageSize }
+                                pageSize={pageSize}
                                 defaultCurrent={1}
                                 size="small"
                                 onChange={

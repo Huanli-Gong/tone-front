@@ -1,16 +1,20 @@
 import React, { useCallback, useState } from 'react';
 import { writeDocumentTitle, resizeDocumentHeightHook, resizeDocumentWidthHooks } from '@/utils/hooks';
 import { Button, Layout, Tabs } from 'antd';
-import { history, useModel, Access, useAccess } from 'umi'
+import { history, Access, useAccess } from 'umi';
 
 import { ReportBody } from './styled'
 import ReportListTable from './components/ReportListTable'
 import ReportTemplateTable from './components/ReportTemplateTable'
-import { AuthMember } from '@/components/Permissions/AuthMemberCommon';
+// import { matchRoleEnum } from '@/utils/utils';
+
 export default (props: any) => {
     const { match, location } = props
     const { ws_id } = match.params
     const intalMessage = `menu.Workspace.TestReport.${props.route.name}`
+    // 权限
+    //const { currentRole } = matchRoleEnum();
+    //const limitAuthority =['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
     const access = useAccess()
     writeDocumentTitle(intalMessage)
     const layoutWidth = resizeDocumentWidthHooks(),
@@ -44,23 +48,17 @@ export default (props: any) => {
                         background: '#FAFBFC'
                     }}
                     tabBarExtraContent={
-                        <Access
-                            accessible={access.wsTouristFilter()}
-                        >
-                            <AuthMember
-                                isAuth={['sys_test_admin', 'user']}
-                                children={tab === 'list' ?
-                                    <Button type="primary" onClick={handleCreateReport}>新建报告</Button> :
-                                    <Button type="primary" onClick={hanldeCreateTemplate}>新建报告模版</Button>}
-                                onClick={tab === 'list' ? handleCreateReport : hanldeCreateTemplate}
-                            />
-                        </Access>
+                        tab === 'list' ? (
+                            access.testerAccess() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button> 
+                        ) : (
+                            access.testerAccess() && <Button type="primary" onClick={hanldeCreateTemplate}>新建模版</Button>
+                        )
                     }
                 >
                     <Tabs.TabPane key="list" tab="测试报告">
                         <ReportListTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                     </Tabs.TabPane>
-                    { access.wsTouristFilter() && 
+                    {access.testerAccess() &&
                         <Tabs.TabPane key="template" tab="报告模版">
                             <ReportTemplateTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                         </Tabs.TabPane>

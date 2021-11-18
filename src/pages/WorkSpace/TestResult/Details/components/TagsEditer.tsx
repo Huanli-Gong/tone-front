@@ -22,7 +22,7 @@ export const tagRender = ( { label, closable, onClose , value } : any ) => (
     </Tag>
 )
 
-export default ({ tags = [] , onOk , ws_id , job_id, creator_id } : any ) => {
+export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessible, accessLabel } : any ) => {
     const [ state , setState ] = useState( false )
     const [ keys , setKeys ] = useState([])
 
@@ -71,12 +71,18 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id } : any ) => {
             {
             !state ?
             <Row align="middle">
-                {
-                    tags.map(
-                        ( tag : any , index : number ) => <Tag color={ tag.color } key={ index }>{ tag.name }</Tag>
-                    )
-                }
-                <EditOutlined onClick={ handleSetTags }/>
+                <Space>
+                    {
+                        tags.length > 0 
+                        ?
+                            tags.map(
+                                ( tag : any , index : number ) => <Tag color={ tag.color } key={ index }>{ tag.name }</Tag>
+                            )
+                        :
+                        !accessible && <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
+                    }
+                    { accessible ? <EditOutlined onClick={ handleSetTags }/> : <></>}
+                </Space>
             </Row> :
             <Row >
                 <Select 
@@ -92,9 +98,11 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id } : any ) => {
                     dropdownRender={menu => (
                         <div>
                             {menu}
-                            <div style={{ display: 'flex', flexWrap: 'nowrap' }} onClick={newLabel}>
-                                <span className={ styles.test_summary_job }><PlusOutlined style={{ marginRight:6 }}/>新建标签</span>
-                            </div>
+                            { accessLabel && 
+                                <div style={{ display: 'flex', flexWrap: 'nowrap' }} onClick={newLabel}>
+                                    <span className={ styles.test_summary_job }><PlusOutlined style={{ marginRight:6 }}/>新建标签</span>
+                                </div>
+                            }
                         </div>
                         )}
                 >

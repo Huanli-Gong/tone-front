@@ -3,7 +3,7 @@ import { Col, Button, message, Spin } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
 import TestEnv from './components/TestEnv';
 // import { resizeClientSize } from '@/utils/hooks'
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 // import { writeDocumentTitle } from '@/utils/hooks';
 import { queryForm, compareForm } from './service';
 import { UpOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport';
 import { queryCompareResultList, queryEenvironmentResultList } from '../AnalysisCompare/services';
 import PerformanceTest from './components/PerformanceTest';
 import FunctionalTest from './components/FunctionalTest';
+// import dataSouce from './JSON.js';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
 import _ from 'lodash';
@@ -21,6 +22,7 @@ import { useScroll } from 'ahooks'
 
 const Report = (props: any) => {
     const { ws_id } = props.match.params
+    const access = useAccess();
     const local = props.history.location
     const id = local.query.form_id
     const [testDataParam, setTestDataParam] = useState({})
@@ -209,7 +211,9 @@ const Report = (props: any) => {
                                             :
                                             <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
                                     }
-                                    {form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
+                                    <Access accessible={access.testerAccess()}> 
+                                        { form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
+                                    </Access>
                                 </span>
                             </ResultTitle>
                             <ResultContent >

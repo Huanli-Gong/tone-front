@@ -20,7 +20,9 @@ const UserManagement: React.FC<{}> = () => {
 	const [ tab , setTab ] = useState('1')
 	const getNum = async () => {
 		const data = await quantity()
-		data && setNum(data.data)
+		if (data.code === 200) {
+      setNum(data.data)
+		}
 	};
 
 	useEffect(() => {

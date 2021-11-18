@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Table, Tooltip } from 'antd';
 import { SettingTextArea } from '@/components/ReportEidt/index';
 import styles from './index.less';
-import { ServerJumpBlock } from '@/components/Public';
 const TestEnvironment = (props: any) => {
     const data = [props.data]
     const { groupData, baseIndex, btn, template, setScrollWidth } = props
@@ -26,7 +25,7 @@ const TestEnvironment = (props: any) => {
                     let array = Array.from(Array(count)).map(val => ({}))
                     return (
                         <div className="right_border" key={index}>
-                            {!template?.need_test_summary && <div className="id_name">对比标识名称</div>}
+                            { !template?.need_test_summary && <div className="id_name">对比标识名称</div> }
                             {
                                 array.map((item: any, index: number) => {
                                     return (
@@ -56,26 +55,25 @@ const TestEnvironment = (props: any) => {
                             let len = Array.from(Array(count - server_info?.length)).map(val => ({}))
                             return (
                                 <div className="right_border">
-                                    {
-                                        !template?.need_test_summary && <div className="id_name">
-                                            <div className="top_test">{row.base_group.tag}</div>
-                                            <div className="bottom_base">BaseGroup</div>
-                                        </div>
-                                    }
+                                    { !template?.need_test_summary && <div className="id_name">
+                                        <div className="top_test">{row.base_group.tag}</div>
+                                        <div className="bottom_base">BaseGroup</div>
+                                    </div>
+                                    }   
                                     {
                                         server_info.concat(len).map((item: any, idx: number) => (
                                             <div key={idx} style={{ height: 154 }}>
                                                 {
                                                     <>
                                                         <div className="enviroment_ip">
-                                                            <ServerJumpBlock className="enviroment_child">{item['ip/sn'] || '-'}</ServerJumpBlock>
+                                                            <span className="enviroment_child">{item['ip/sn'] || '-'}</span>
                                                         </div>
                                                         <Tooltip placement="topLeft" title={item.distro}>
                                                             <div className="enviroment_machine">
                                                                 <span className="enviroment_child">{item.distro || '-'}</span>
                                                             </div>
                                                         </Tooltip>
-                                                        <Tooltip overlayClassName={styles.tootip_overflow} placement="topLeft" title={<div>{item.rpm?.map((i: any) => (<span>{i}<br /></span>))}</div>}>
+                                                        <Tooltip overlayClassName={ styles.tootip_overflow } placement="topLeft" title={<div>{item.rpm?.map((i:any)=>(<span>{i}<br/></span>))}</div>}>
                                                             <div className="enviroment_rpm">
                                                                 <span className="enviroment_child">{item.rpm}</span>
                                                             </div>
@@ -105,76 +103,76 @@ const TestEnvironment = (props: any) => {
             width: 248,
             render: (row: any) => (
                 // row.compare_groups.length > 0 ?
-                row.compare_groups?.map((item: any, idx: number) => {
-                    if (item.server_info && row.count !== undefined) {
-                        const len = Array.from(Array(row.count - item.server_info.length)).map(val => ({}))
-                        return (
-                            i === idx && <div className="right_border">
-                                {!template?.need_test_summary &&
-                                    <div className="id_name">
-                                        <div className="top_test">{item.tag}</div>
-                                        <div className="bottom_test"></div>
-                                    </div>
-                                }
-                                {
-                                    item.server_info.concat(len).map((item: any, idx: number) => (
-                                        <div key={idx} style={{ height: 154 }}>
-                                            {
-                                                <>
-                                                    <div className="enviroment_ip">
-                                                        <ServerJumpBlock className="enviroment_child">{item['ip/sn'] || '-'}</ServerJumpBlock>
-                                                    </div>
-                                                    <Tooltip placement="topLeft" title={item.distro}>
-                                                        <div className="enviroment_machine">
-                                                            <span className="enviroment_child">{item.distro || '-'}</span>
-                                                        </div>
-                                                    </Tooltip>
-                                                    <Tooltip placement="topLeft" title={<div>{item.rpm?.map((i: any) => (<span>{i}<br /></span>))}</div>} overlayClassName={styles.tootip_overflow}>
-                                                        <div className="enviroment_rpm">
-                                                            <span className="enviroment_child">{item.rpm || '-'}</span>
-                                                        </div>
-                                                    </Tooltip>
-                                                    <Tooltip placement="topLeft" title={item.gcc}>
-                                                        <div className="enviroment_machine">
-                                                            <span className="enviroment_child">{item.gcc || '-'}</span>
-                                                        </div>
-                                                    </Tooltip>
-                                                </>
-                                            }
+                    row.compare_groups?.map((item: any, idx: number) => {
+                        if (item.server_info && row.count !== undefined) {
+                            const len = Array.from(Array(row.count - item.server_info.length)).map(val => ({}))
+                            return (
+                                i === idx && <div className="right_border"> 
+                                    { !template?.need_test_summary &&
+                                        <div className="id_name">
+                                            <div className="top_test">{item.tag}</div>
+                                            <div className="bottom_test"></div>
                                         </div>
-                                    ))
-                                }
-                            </div>
-                        )
-                    } else {
-                        return false;
-                    }
-                })
-                // :
-                // <div>
-                //     {
-                //         <div style={{ height: 154 }}>
-                //             {
-                //                 <>
-                //                     <div className="enviroment_ip">
-                //                         <a>
-                //                             <span className="enviroment_child"></span>
-                //                         </a>
-                //                     </div>
-                //                     <div className="enviroment_machine">
-                //                         <span className="enviroment_child"></span>
-                //                     </div>
-                //                     <div className="enviroment_rpm">
-                //                         <span className="enviroment_child"></span>
-                //                     </div>
-                //                     <div className="enviroment_machine">
-                //                         <span className="enviroment_child"></span>
-                //                     </div>
-                //                 </>
-                //             }
-                //         </div>
-                //     }
-                // </div>
+                                    }
+                                    {
+                                        item.server_info.concat(len).map((item: any, idx: number) => (
+                                            <div key={idx} style={{ height: 154 }}>
+                                                {
+                                                    <>
+                                                        <div className="enviroment_ip">
+                                                            <span className="enviroment_child">{item['ip/sn'] || '-'}</span>
+                                                        </div>
+                                                        <Tooltip placement="topLeft" title={item.distro}>
+                                                            <div className="enviroment_machine">
+                                                                <span className="enviroment_child">{item.distro || '-'}</span>
+                                                            </div>
+                                                        </Tooltip>
+                                                        <Tooltip placement="topLeft" title={<div>{item.rpm?.map((i:any)=>(<span>{i}<br/></span>))}</div>} overlayClassName={ styles.tootip_overflow }>
+                                                            <div className="enviroment_rpm">
+                                                                <span className="enviroment_child">{item.rpm || '-'}</span>
+                                                            </div>
+                                                        </Tooltip>
+                                                        <Tooltip placement="topLeft" title={item.gcc}>
+                                                            <div className="enviroment_machine">
+                                                                <span className="enviroment_child">{item.gcc || '-'}</span>
+                                                            </div>
+                                                        </Tooltip>
+                                                    </>
+                                                }
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            )
+                        } else {
+                            return false;
+                        }
+                    })
+                    // :
+                    // <div>
+                    //     {
+                    //         <div style={{ height: 154 }}>
+                    //             {
+                    //                 <>
+                    //                     <div className="enviroment_ip">
+                    //                         <a>
+                    //                             <span className="enviroment_child"></span>
+                    //                         </a>
+                    //                     </div>
+                    //                     <div className="enviroment_machine">
+                    //                         <span className="enviroment_child"></span>
+                    //                     </div>
+                    //                     <div className="enviroment_rpm">
+                    //                         <span className="enviroment_child"></span>
+                    //                     </div>
+                    //                     <div className="enviroment_machine">
+                    //                         <span className="enviroment_child"></span>
+                    //                     </div>
+                    //                 </>
+                    //             }
+                    //         </div>
+                    //     }
+                    // </div>
             )
         })
     }

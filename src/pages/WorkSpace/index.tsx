@@ -8,16 +8,15 @@ import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 const { document }: any = window
 
 const WorkspaceLayout = (props: any) => {
+    // const { initialState } = useModel('@@initialState')
     const { ws_id }: any = useParams()
     const { pathname } = props.location
     const { routes } = props.route
     const { windowHeight } = resizeClientSize()
 
     const timeStampKey = useMemo(() => new Date().getTime(), [props.location])
-
     const intl = useIntl()
-    const { initialState } = useModel('@@initialState')
-
+    
     const [openKeys, setOpenKeys] = useState<any>([])
 
     const realPath = pathname.replace(ws_id, ':ws_id')
@@ -117,7 +116,6 @@ const WorkspaceLayout = (props: any) => {
                     selectedKeys={[realPath]}
                     className={styles.ws_menu_styles}
                     mode="inline"
-                    // expandIcon={}
                     triggerSubMenuAction={'hover'}
                     openKeys={openKeys}
                     onOpenChange={onOpenChange}
@@ -126,50 +124,26 @@ const WorkspaceLayout = (props: any) => {
                         routeRight.map(
                             (item: any) => {
                                 if (item.hideInMenu) return false
-                                if (item.routes && item.routes.length > 0)
+                                if (item.routes && item.routes.length > 0) {
                                     return (
-                                        <Menu.SubMenu
-                                            key={item.path}
-                                            title={
-                                                <Space>
-                                                    {WorkspaceMenuIcon(item.name)}
-                                                    <FormattedMessage id={`Workspace.${item.name}`} />
-                                                </Space>
-                                            }
+                                        <Menu.SubMenu key={item.path}
+                                            title={<Space>{WorkspaceMenuIcon(item.name)}<FormattedMessage id={`Workspace.${item.name}`} /></Space>}
                                             popupClassName={styles.ws_sb_st}
                                         >
-                                            {
-                                                item.routes.map(
-                                                    (child: any): any => {
-                                                        if (initialState?.authList.sys_role_title === 'super_admin' || initialState?.authList.sys_role_title === 'sys_admin') {
-                                                            if (child.name === 'JoinDetail') child.hideInMenu = false
-                                                        } else {
-                                                            if (initialState?.authList.ws_role_title === 'ws_owner' || initialState?.authList.ws_role_title === 'ws_admin') {
-                                                                if (child.name === 'JoinDetail') child.hideInMenu = false
-                                                            } else {
-                                                                if (child.name === 'JoinDetail') child.hideInMenu = true
-                                                            }
-                                                        }
-                                                        if (!child.hideInMenu)
-                                                            return (
-                                                                <Menu.Item
-                                                                    key={child.path}
-                                                                    onClick={() => onMenuClick(child)}
-                                                                >
-                                                                    <FormattedMessage id={`Workspace.${item.name}.${child.name}`} />
-                                                                </Menu.Item>
-                                                            )
-
-                                                    }
-                                                )
-                                            }
+                                            {item.routes.map((child: any): any => {
+                                                if (!child.hideInMenu && !child.unaccessible) {
+                                                    return (
+                                                        <Menu.Item key={child.path} onClick={()=> onMenuClick(child)}>
+                                                            <FormattedMessage id={`Workspace.${item.name}.${child.name}`} />
+                                                        </Menu.Item>
+                                                    )
+                                                }    
+                                            })}
                                         </Menu.SubMenu>
                                     )
+                                }    
                                 return (
-                                    <Menu.Item
-                                        key={item.path}
-                                        onClick={() => onMenuClick(item)}
-                                    >
+                                    <Menu.Item key={item.path} onClick={()=> onMenuClick(item)}>
                                         <Space>
                                             {WorkspaceMenuIcon(item.name)}
                                             <FormattedMessage id={`Workspace.${item.name}`} />
@@ -191,24 +165,3 @@ const WorkspaceLayout = (props: any) => {
 }
 
 export default WorkspaceLayout
-
-
-    // console.log('state',props.location)
-
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/dashboard/.test(pathname))          return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/job\/preview/.test(pathname))       return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_job/.test( pathname ) )        return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_template/.test( pathname ) )   return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_analysis/.test( pathname ) )   return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_report/.test( pathname ) )     return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_result/.test( pathname ) )     return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/suite_search/.test(pathname))       return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/suite_tab_search/.test(pathname))   return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_plan/.test(pathname))          return props.children
-    // if ( /\/ws\/[a-zA-Z0-9]{8}\/test_create_report/.test(pathname)) return props.children
-
-    // {state === 'permission' && <div style={{ textAlign: 'center', position: 'relative', top: '50%', transform: 'translateY(-50%)' }}>
-    //                 <img alt="icon" src={RoleIcon}></img>
-    //                 <span style={{ color: '#000', fontSize: 18, fontWeight: 'bold', display: 'block', marginTop: 20 }}>无权限</span>
-    //             </div>}
-    //             {state !== 'permission' && props.children}

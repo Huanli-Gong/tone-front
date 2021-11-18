@@ -2,7 +2,6 @@ import { Space, Typography, Badge, message, Button, Modal, Spin } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
 import { useRequest, history, useModel } from 'umi'
 import { queryTestTemplateList, deleteTestTemplate, queryTemplateDel } from './service'
-import { AuthMember, AuthMemberForm } from '@/components/Permissions/AuthMemberCommon';
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import CopyModal from './components/CopyModal'
 import CommonPagination from '@/components/CommonPagination'
@@ -180,42 +179,19 @@ export default (props: any) => {
         render: (_: any, row: any) => (
             <Space>
                 <span onClick={() => handlePreview(_)} style={{ color: '#1890FF', cursor: 'pointer' }}>预览</span>
-                {
-                    <AuthMember
-                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                        children={<span style={{ color: '#1890FF', cursor: 'pointer' }}>复制</span>}
-                        onClick={() => handleCopy(_)}
-                        creator_id={_.creator}
-                    />
-                }
-                {
-                    <AuthMember
-                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                        children={<span style={{ color: '#1890FF', cursor: 'pointer' }}>编辑</span>}
-                        onClick={() => handleEdit(_)}
-                        creator_id={_.creator}
-                    />
-                }
-                {
-                    <AuthMemberForm
-                        isAuth={['sys_test_admin', 'user', 'ws_member']}
-                        children={<span style={{ color: '#1890FF', cursor: 'pointer' }}> 删除 </span>}
-                        onFirm={
-                            // <Popconfirm
-                            // title="确定要删除改模板吗？"
-                            // onConfirm={() => handleDelete(_)}
-                            // okText="确认"
-                            // cancelText="取消"
-                            // >
-                            //     <span style={{ color: '#1890FF', cursor: 'pointer' }}>
-                            //         删除
-                            //     </span>
-                            // </Popconfirm>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}>删除</span>
-                        }
-                        creator_id={_.creator}
-                    />
-                }
+                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}>复制</span>
+                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}>编辑</span>
+                {/* <Popconfirm
+                    title="确定要删除改模板吗？"
+                    onConfirm={() => handleDelete(_)}
+                    okText="确认"
+                    cancelText="取消"
+                    >
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }}>
+                            删除
+                        </span>
+                </Popconfirm> */}
+                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}>删除</span>
             </Space>
         )
     },]

@@ -103,7 +103,7 @@ export default memo(
                                             (server_type === 'aliyun' && run_mode === 'standalone') ?
                                                 <>
                                                     <Select.Option value={'instance'}>指定机器实例</Select.Option>
-                                                    <Select.Option value={'setting'}>指定机器配置</Select.Option>
+                                                    {/* <Select.Option value={'setting'}>指定机器配置</Select.Option> */}
                                                 </> :
                                                 <Select.Option value={'server_object_id'}>指定</Select.Option>
                                         }
