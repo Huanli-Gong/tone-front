@@ -50,3 +50,10 @@ export async function member ( params:any ) {
 }
 
 
+// 获取结果对比图表数据
+export async function compareChart(data:any) {
+    return request('/api/job/result/compare/chart/',{
+        data,
+        method : 'post',
+    })
+}

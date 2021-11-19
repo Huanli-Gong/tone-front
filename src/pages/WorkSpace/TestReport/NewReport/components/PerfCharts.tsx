@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import TypeChart from '../components/TestDataChild/TypeChart';
 import NoTypeChart from '../components/TestDataChild/noTypeChart';
-import { compareChart } from '../../../AnalysisResult/service';
+import { compareChart } from '@/pages/WorkSpace/TestReport/services';
+
 const FullRow = styled(Row)`
     width:100%;
 `

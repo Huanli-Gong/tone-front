@@ -226,19 +226,19 @@ export function resetECI(list: any, typeName: string) {
     }
     return []
 }
-export const enumerChinese =  ( name:any ) => {
+export const enumerChinese = (name: any) => {
     const list = {
-        '公共镜像':'system',
-        '自定义镜像':'self',
-        '共享镜像':'others'
+        '公共镜像': 'system',
+        '自定义镜像': 'self',
+        '共享镜像': 'others'
     }
     return list[name];
 }
-export const enumerEnglish =  ( name:any ) => {
+export const enumerEnglish = (name: any) => {
     const list = {
-        system:'公共镜像',
-        self:'自定义镜像',
-        others:'共享镜像'
+        system: '公共镜像',
+        self: '自定义镜像',
+        others: '共享镜像'
     }
     return list[name];
 }
@@ -338,13 +338,16 @@ export const role_type_enum = [
 ];
 
 export const deepObject = (data: any) => {
+    if (Object.prototype.toString.call(data) !== '[object Object]') return data
     return Object.keys(data).reduce((p, c) => {
         const ctx = data[c]
-        const len = Object.keys( ctx )
-        if ( len.length > 0 ) {
-            len.forEach(( t ) => {
-                p[t] = ctx[t]
-            })
+        if (Object.prototype.toString.call(ctx) === '[object Object]') {
+            const len = Object.keys(ctx)
+            if (len.length > 0) {
+                len.forEach((t) => {
+                    p[t] = ctx[t]
+                })
+            }
         }
         else
             p[c] = data[c]

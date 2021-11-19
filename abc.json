@@ -4,7 +4,7 @@
         "command": {
             "cmd": [
                 "tnpm install",
-                "tnpm run build",
+                "tnpm run build:tone",
                 "mv ./dist $BUILD_DEST"
             ]
         }
