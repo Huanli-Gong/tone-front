@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react';
 import { UserTable, UserList, RoleChangeParams, TableListParams } from '../../data.d';
-import { Avatar, Space, message } from 'antd';
-import { userManagementList, roleChange } from '../../service';
+import { Avatar, Space, message, Popconfirm, Typography } from 'antd';
+import { userManagementList, roleChange, requestResetPassword } from '../../service';
 import CommonTable from '@/components/Public/CommonTable';
 import RoleSelect from '../RoleSelect';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
@@ -9,8 +9,11 @@ import SelectRadio from '@/components/Public/SelectRadio';
 import Highlighter from 'react-highlight-words';
 import SearchInput from '@/components/Public/SearchInput';
 import { FilterFilled } from '@ant-design/icons';
+import ResetModal from '../ResetModal';
+import { useRef } from 'react';
+import AvatarCover from '@/components/AvatarCover';
 
-const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, onSearch, rolelist } : any ) => {
+const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, onSearch, rolelist }: any) => {
     const [data, setData] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [page, setPage] = useState<number>(1);
@@ -23,13 +26,13 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
 
     const getManagementList = async (initParams: TableListParams) => {
         setLoading(true)
-        setData({data:[]})
+        setData({ data: [] })
         const dataSource = await userManagementList(initParams)
-        setData( dataSource )
+        setData(dataSource)
         setLoading(false)
     };
-    
-    
+
+
     useEffect(() => {
         refresh()
     }, []);
@@ -64,14 +67,14 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             role_id: val
         }
         const data = await roleChange(params)
-        if(data.code === 200){
+        if (data.code === 200) {
             message.success('修改成功');
             refresh()
-        }else{
+        } else {
             message.error(data.msg);
         }
         // 
-        
+
     }
 
     const columns: any[] = [{
@@ -91,9 +94,13 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () =><FilterFilled style={{ color: lastName ? '#1890ff' : undefined }} />,
-        render: (_: number, row: UserTable) => <Space>
-            <Avatar size={25} src={row.avatar} alt={row.last_name} />
+        filterIcon: () => <FilterFilled style={{ color: lastName ? '#1890ff' : undefined }} />,
+        render: (_: number, row: any) => <Space>
+            {
+                row.avatar ?
+                    <Avatar size={25} src={row.avatar} alt={row.last_name} /> :
+                    <AvatarCover size={25} show_name={row.last_name || row.username} theme_color={row.avatar_color} shape="circle" />
+            }
             <Highlighter
                 highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                 searchWords={[lastName || '']}
@@ -110,19 +117,19 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
     }, {
         title: '角色',
         dataIndex: 'role_list',
-        render: (_: number, row: any ) => (
-            ( select && select.length > 0 ) &&
+        render: (_: number, row: any) => (
+            (select && select.length > 0) &&
             <RoleSelect row={row} select={select} handleChange={handleChange} />
         ),
         width: 170,
-        filterIcon: () =><FilterFilled style={{ color: role_id ? '#1890ff' : undefined }} />,
-        filterDropdown: ({ confirm }: any) => <SelectRadio list={rolelist} confirm={confirm} onConfirm={(val: any) => RoleChange(val)} roleType="role"/>,
+        filterIcon: () => <FilterFilled style={{ color: role_id ? '#1890ff' : undefined }} />,
+        filterDropdown: ({ confirm }: any) => <SelectRadio list={rolelist} confirm={confirm} onConfirm={(val: any) => RoleChange(val)} roleType="role" />,
     }, {
         title: 'Workspace',
         dataIndex: 'ws_list',
         render: (_: number, row: UserTable) => (
-            ( row.ws_list && row.ws_list.length > 0 ) && 
-                <PopoverEllipsis title={ row.ws_list.join('、')}></PopoverEllipsis>
+            (row.ws_list && row.ws_list.length > 0) &&
+            <PopoverEllipsis title={row.ws_list.join('、')}></PopoverEllipsis>
         ),
         ellipsis: true,
         width: 245,
@@ -130,9 +137,34 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         title: '加入时间',
         dataIndex: 'gmt_created',
         width: 145,
+    },
+    BUILD_APP_ENV === 'opensource' && {
+        title: '操作',
+        render: (_: any, row: any) => (
+            <Popconfirm
+                title="该操作会使原密码失效，且不可逆，请谨慎操作"
+                onConfirm={() => resetPasswordConfirm(row)}
+                okButtonProps={{ type: "primary", danger: true }}
+                okText="重置密码"
+                onVisibleChange={() => console.log('visible change')}
+            >
+                <Typography.Link>重置密码</Typography.Link>
+            </Popconfirm>
+        )
     }];
 
+    const resetPasswordConfirm = async (row: any) => {
+        const { code, data, msg } = await requestResetPassword({ user_id: row.id })
+        if (code !== 200) {
+            message.error(msg ?? data)
+            return
+        }
+        resetRef.current?.show({ password: data, username: row.username })
+    }
+
     const list: UserTable[] = data.data
+
+    const resetRef = useRef<{ show: (p: { password: string, username: string }) => void }>(null)
 
     return (
         <div>
@@ -147,6 +179,10 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 total={data.total}
                 handlePage={onChange}
             />
+            {
+                BUILD_APP_ENV === 'opensource' &&
+                <ResetModal ref={resetRef} />
+            }
         </div>
     );
 

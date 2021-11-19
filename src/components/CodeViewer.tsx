@@ -1,8 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import marked from 'marked'
-import hljs from 'highlight.js'
+import { marked } from 'marked';
 
 import 'highlight.js/styles/default.css'
 import 'highlight.js/styles/github.css'
@@ -33,15 +32,17 @@ const Viewer = styled.div`
 `
 marked.setOptions({
     renderer: new marked.Renderer(),
-    highlight: function (code:any, lang:any) {
-        return hljs.highlightAuto(code).value;
+    highlight: function (code, lang) {
+        const hljs = require('highlight.js');
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, { language }).value;
     },
+    langPrefix: 'hljs language-', // highlight.js css expects a top-level 'hljs' class.
     pedantic: false,
     gfm: true,
     breaks: false,
     sanitize: false,
     smartLists: true,
-    langPrefix: "language-",
     smartypants: false,
     xhtml: false
 });
@@ -52,7 +53,7 @@ const CodeViewer = (props: any) => {
     return (
         <Viewer
             className="hljs"
-            dangerouslySetInnerHTML={{ __html: marked(code) }}
+            dangerouslySetInnerHTML={{ __html: marked.parse(code) }}
         />
     )
 }

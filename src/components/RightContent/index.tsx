@@ -1,19 +1,13 @@
 import { Row, Dropdown, Menu, Tabs, Badge, message, Button, Space } from 'antd';
-//import { SearchOutlined , SettingOutlined , MessageOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { useModel, history, useAccess, Access } from 'umi';
 import SelectLang from './SelectLang'
-// import { ReactComponent as HeaderSetting } from '@/assets/svg/header_setting.svg'
 import styles from './index.less';
 import { ReactComponent as MessageIcon } from '@/assets/svg/Nav/icon_notice.svg'
 import { ReactComponent as SettingIcon } from '@/assets/svg/Nav/icon_ws_setting.svg'
 import PersonCenter from './PersonCenter';
 import TaskInform from './components/TaskInform'
 import SystemInform from './components/SystemInform'
-// import Avatar from 'antd/es/avatar/avatar';
-// import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
-// import { requestCodeMessage } from '@/utils/utils';
-// import { loginAnolis, registerAnolis } from '../../services/Workspace';
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, wsId }) => {
@@ -36,34 +30,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
     }
-    const { login_url , register_url } = initialState?.authList || {};
-    // const queryTask = async () => {
-    //     setLoading(true)
-    //     const data = await queryTaskMsg({ is_read: '0', page_num: 1, page_size: 4 })
-    //     if (data.code === 200) {
-    //         setTaskMsgList(data.data)
-    //         setLoading(false)
-    //     } else {
-    //         requestCodeMessage( data.code , data.msg )
-    //     }
-    // }
-    // const querySysMsg = async () => {
-    //     setLoading(true)
-    //     const data = await queryApplyMsg({ is_read: '0', page_num: 1, page_size: 4 })
-    //     if (data.code === 200) {
-    //         setSysMsgList(data.data)
-    //         setLoading(false)
-    //     } else {
-    //         requestCodeMessage( data.code , data.msg )
-    //     }
-    // }
-    // useEffect(() => {
-    //     if (tab === '1') {
-    //         queryTask()
-    //     } else {
-    //         querySysMsg()
-    //     }
-    // }, [tab])
+    const { login_url, register_url } = initialState?.authList || {};
 
     useEffect(() => {
         setDropVisible(false)
@@ -131,21 +98,25 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                 <PersonCenter />
             </Access>
             {
-                !access.loginBtn() &&
+                (BUILD_APP_ENV === 'openanolis' && !access.loginBtn()) &&
                 <Space>
                     <Button type="text" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
                     <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
                 </Space>
             }
-        </Row>
+            {
+                (BUILD_APP_ENV === 'opensource' && !access.loginBtn()) &&
+                <Space>
+                    <Button
+                        type="text"
+                        style={{ color: '#fff', fontWeight: 500 }}
+                        onClick={() => history.push(`/login?redirect_url=${window.location.href.replace(window.location.origin, '')}`)}
+                    >
+                        登录
+                    </Button>
+                </Space>
+            }
+        </Row >
     );
 };
 export default GlobalHeaderRight;
-
-
-{/* {
-                !access.loginAndMsgAccess() && <Space>
-                    <Button type="text" style={{ color:'#fff',fontWeight:500 }} onClick={()=>loginAnolis()}>登录</Button>
-                    <Button type="primary" onClick={()=>registerAnolis()}>注册</Button>
-                </Space>
-            } */}

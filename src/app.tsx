@@ -4,11 +4,12 @@ import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layou
 import { notification } from 'antd';
 import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
-import { person_auth, person_auth_info } from '@/services/user';
+import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
 import { workspaceHistroy } from '@/services/Workspace'
+import { deepObject } from '@/utils/utils';
 
-const ignoreRoutePath = ['/500', '/401', '/404']
+const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
 
 export async function getInitialState(): Promise<any> {
     const initialState = {
@@ -24,7 +25,8 @@ export async function getInitialState(): Promise<any> {
         const isWs = wsReg.test(pathname)
         const matchArr = pathname.match(wsReg)
         const ws_id = matchArr ? matchArr[1] : undefined
-        const { data, login_info } = await person_auth({ ws_id })
+        const { data } = await person_auth({ ws_id })
+
         if (!data) {
             history.push('/500')
             return initialState
@@ -41,12 +43,12 @@ export async function getInitialState(): Promise<any> {
             }
             workspaceHistroy({ ws_id })  //
         }
+
         return {
             ...initialState,
             authList: {
-                ...data,
-                ...login_info,
-                ws_id
+                ws_id,
+                ...deepObject(data),
             },
         }
     }
@@ -59,7 +61,6 @@ export const layout = ({
 }: {
     initialState: { settings?: ProSettings };
 }): BasicLayoutProps => {
-    const origin = window.location.origin
     return {
         disableContentMargin: false,
         footerRender: false,

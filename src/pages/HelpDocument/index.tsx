@@ -9,18 +9,11 @@ import wangEditor from 'wangeditor'
 import _ from 'lodash'
 import Editor from './Editor'
 import dropDown from '@/assets/svg/dropDown.svg'
-import expand from '@/assets/svg/expand.svg'
-// const AddDoc = require('@/assets/svg/addDoc.svg')
-// const dropDown = require('@/assets/svg/dropDown.svg')
-// const expand = require('@/assets/svg/expand.svg')
-
-// const background = `url(${AddDoc}) center center / 38.6px 32px`
-const close = `url("${dropDown}") center center / 16px 16px`
-const open = `url("${expand}") center center / 16px 16px`
 import { ReactComponent as AddDoc } from '@/assets/svg/addDoc.svg'
 import { requestCodeMessage } from '@/utils/utils'
 
 let editor2: any = null
+const close = `url("${dropDown}") center center / 16px 16px`
 
 let odiv2: any = null
 let openNextElementSibling: any = null
@@ -108,10 +101,11 @@ export default (props: any) => {
         }
         setRightLoading(true)
         const { data, code } = await queryHelpDocList({ id: Number(id) })
+        console.log(data, odiv2)
         timeout = null
         if (code === 200) {
             setRightLoading(false)
-            const odiv = odiv2.querySelector('div[contenteditable = "true"]')
+            const odiv = odiv2?.querySelector('div[contenteditable = "true"]')
             if (data[0] && data[0].content) {
                 const re = /^(\<p\>\<br\>\<\/p\>)+|(\<p\>\<br\>\<\/p\>)+$/g;
                 let text = data[0].content.replace(re, '')
@@ -506,6 +500,11 @@ export default (props: any) => {
                                                     <span className={styles.edit_doc_span} onClick={handleEdit}>编辑文档</span>
                                                 </Space>
                                             </Access>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.center_content} id="center_content">
+                                        <div id="showContentBox" className={styles.showContentBox} style={{ height: layoutHeight - 84, paddingBottom: paddingBottomVal }}>
                                         </div>
                                     </div>
                                 </Spin>

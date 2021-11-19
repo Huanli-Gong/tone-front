@@ -336,3 +336,18 @@ export const role_type_enum = [
     { key: 'ws_tester_admin', name: '测试管理员' },
     { key: 'sys_admin', name: '系统管理员' },
 ];
+
+export const deepObject = (data: any) => {
+    return Object.keys(data).reduce((p, c) => {
+        const ctx = data[c]
+        const len = Object.keys( ctx )
+        if ( len.length > 0 ) {
+            len.forEach(( t ) => {
+                p[t] = ctx[t]
+            })
+        }
+        else
+            p[c] = data[c]
+        return p
+    }, {})
+}

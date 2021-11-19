@@ -6,6 +6,8 @@ import routes from './routes';
 
 const { REACT_APP_ENV, BUILD_APP_ENV } = process.env;
 
+console.log(BUILD_APP_ENV)
+
 export default defineConfig({
     // outputPath : 'build',
     hash: false,
@@ -17,6 +19,9 @@ export default defineConfig({
         name: 'T-One',
         locale: true,
     },
+    define: {
+        BUILD_APP_ENV
+    },
     locale: {
         // default zh-CN
         default: 'zh-CN',
@@ -24,7 +29,7 @@ export default defineConfig({
         antd: true,
         baseNavigator: true,
     },
-    [!BUILD_APP_ENV ? 'dynamicImport' : 'noDynamicImport']: {
+    dynamicImport: BUILD_APP_ENV !== 'openanolis' && {
         loading: '@/components/PageLoading/index',
     },
     targets: {
@@ -39,8 +44,8 @@ export default defineConfig({
     },
     // chainWebpack,
     favicon: '/favicon.ico',
-    esbuild: {},
-    webpack5: {},
+    // esbuild: {},
+    // webpack5: {},
     fastRefresh: {},
     // mfsu : {},
     runtimePublicPath: true,

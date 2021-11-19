@@ -9,6 +9,7 @@ const sysAdminIncludeTest = ['super_admin', 'sys_admin', 'sys_test_admin']
 const wsAdminIncludeTest = ['ws_owner', 'ws_admin', 'ws_test_admin'] //sys_test_admin
 
 export default function (initialState: any) {
+    console.log( initialState )
     // 系统配置权限
     const authList: any = initialState?.authList
 

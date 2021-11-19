@@ -6,12 +6,14 @@
  * https://pro.ant.design/docs/deploy
  */
 
-import { opoenSourceProxyTarget } from '../../wsConfig'
+import { getTarget } from '../../wsConfig'
+
+const { BUILD_APP_ENV } = process.env
 
 export default {
     dev: {
         '/api/': {
-            target: opoenSourceProxyTarget,
+            target: getTarget(BUILD_APP_ENV),
             changeOrigin: true,
             secure: false,
             // withCredentials: true,

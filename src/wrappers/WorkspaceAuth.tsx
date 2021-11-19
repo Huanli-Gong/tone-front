@@ -2,6 +2,7 @@ import React, { useMemo, useEffect } from 'react'
 import { history, useModel } from 'umi'
 import { person_auth } from '@/services/user';
 import { workspaceHistroy } from '@/services/Workspace'
+import { deepObject } from '@/utils/utils';
 
 export default (props: any) => {
     const { children } = props
@@ -14,8 +15,9 @@ export default (props: any) => {
 
         if (ws_id !== authList.ws_id) {
             const { data } = await person_auth({ ws_id })
-            setInitialState({ ...initialState, authList: { ...data, ws_id } })
-            access = data
+            const accessData = deepObject(data)
+            setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
+            access = accessData
 
             if (!data) {
                 history.push('/500')

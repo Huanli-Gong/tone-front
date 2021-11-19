@@ -10,6 +10,7 @@ import { history, useModel, useLocation, useAccess, Access } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { resizeDocumentHeightHook } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils'
+import AvatarCover from '@/components/AvatarCover'
 
 const reqUrlMap = new Map([
     ['workspace', queryWorkspace],
@@ -73,7 +74,11 @@ export default (props: any) => {
                 <div className={styles.current_user}>
                     <Space>
                         <div className={styles.avatar}>
-                            <Avatar size="small" src={authList.avatar || ''} alt="avatar" className={styles.avatar} />
+                            {
+                                authList.avatar ?
+                                    <Avatar size="small" src={authList.avatar || ''} alt="avatar" className={styles.avatar} /> :
+                                    <AvatarCover shape="circle" size={ 56 } fontSize={ 28 } theme_color={authList.avatar_color} show_name={authList.last_name} />
+                            }
                         </div>
                         <div >
                             <div className={styles.name}>{authList.first_name || authList.last_name} <Tag className={styles.role} style={{ opacity: authList.sys_role_title === 'user' ? 0 : 1 }}>{handleSys_Role(authList.sys_role_title)}</Tag></div>

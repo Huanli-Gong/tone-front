@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
-import { Layout, message, Spin } from 'antd'
+import React, { useState, useRef } from 'react'
+import { Layout, message, Space, Spin } from 'antd'
 
 import styles from './index.less'
 import { updatePutToken } from './services'
 import { resizeDocumentHeightHook } from '@/utils/hooks'
 import _ from 'lodash'
+import ModifyPassModal from './ModifyPassModal'
+
 let flag = true
 
 const forFn = () => {
@@ -44,22 +46,46 @@ export default (props: any) => {
             })
         }
     }
+
+    const modifyPassword = () => modifyRef.current?.show()
+    const modifyRef = useRef<{ show: () => void }>(null)
+
     return (
         <Layout.Content style={{ height: layoutHeight - 270 - 40 }} className={styles.token_content}>
             <Spin spinning={loading}>
-                <div className={styles.first_row}>
-                    <span className={styles.token_label}> Token </span>
-                    <span className={styles.operate}> 操作 </span>
-                </div>
-                <div className={styles.second_row}>
-                    <span >{tokenValue} </span>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                    {
+                        BUILD_APP_ENV === 'opensource' &&
+                        <div>
+                            <div className={styles.first_row}>
+                                <span className={styles.token_label}> 登录密码 </span>
+                                <span className={styles.operate}> 操作 </span>
+                            </div>
+                            <div className={styles.second_row}>
+                                <span >{forFn()} </span>
+                                <Space align="end">
+                                    <span className={styles.show}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    <span className={styles.reset} onClick={modifyPassword}>修改</span>
+                                </Space>
+                            </div>
+                        </div>
+                    }
                     <div>
-                        <span className={styles.show} onClick={handleShow}>查看</span>
-                        <span className={styles.reset} onClick={handleReset}>重置</span>
+                        <div className={styles.first_row}>
+                            <span className={styles.token_label}> Token </span>
+                            <span className={styles.operate}> 操作 </span>
+                        </div>
+                        <div className={styles.second_row}>
+                            <span >{tokenValue} </span>
+                            <div>
+                                <span className={styles.show} onClick={handleShow}>查看</span>
+                                <span className={styles.reset} onClick={handleReset}>重置</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
+                </Space>
             </Spin>
+            <ModifyPassModal ref={modifyRef} />
         </Layout.Content>
     )
 }

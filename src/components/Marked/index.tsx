@@ -3,7 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout'
 
 import './index.less'
 
-import marked from 'marked'
+import { marked } from 'marked'
 
 import 'highlight.js/styles/default.css'
 import 'highlight.js/styles/monokai-sublime.css'
@@ -34,7 +34,7 @@ export default () : React.ReactNode => {
     const [ context , setContext ] = useState( '' )
 
     useEffect(() => {
-        setCode( marked( context ) )
+        setCode( marked.parse( context ) )
     }, [ context ])
 
     return (

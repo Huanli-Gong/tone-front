@@ -1,6 +1,6 @@
 const { BUILD_APP_ENV } = process.env;
 
-export default [
+const routes = [
 	{
 		path: '/',
 		name: 'home',
@@ -16,14 +16,6 @@ export default [
 		hideInMenu: true,
 		component: './PersonCenter',
 	},
-	// {
-	// 	path: '/test_suite/new',
-	// 	name: 'TestSuiteCreate',
-	// 	layout: false,
-	// 	hideInMenu: true,
-	// 	component: './TestSuiteCreate',
-	// 	access: 'canWsAdmin',
-	// },
 	{
 		name: 'Dashboard',
 		path: '/dashboard',
@@ -97,7 +89,7 @@ export default [
 		name: 'helpDoc',
 		hideInMenu: true,
 		path: '/help_doc',
-		
+
 		routes: [
 			{
 				path: '/help_doc',
@@ -108,7 +100,7 @@ export default [
 					},
 					{
 						path: '/help_doc/new',
-						access:'canSysTestAdmin',
+						access: 'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -117,7 +109,7 @@ export default [
 					},
 					{
 						path: '/help_doc/:help_id/edit',
-						access:'canSysTestAdmin',
+						access: 'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -142,7 +134,7 @@ export default [
 					},
 					{
 						path: '/notice/new',
-						access:'canSysTestAdmin',
+						access: 'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -151,7 +143,7 @@ export default [
 					},
 					{
 						path: '/notice/:help_id/edit',
-						access:'canSysTestAdmin',
+						access: 'canSysTestAdmin',
 						component: './HelpDocument/EditOrNew',
 					},
 					{
@@ -454,13 +446,13 @@ export default [
 						path: '/ws/:ws_id/config',
 						name: 'BasicConfig',
 						component: './WorkSpace/BasicConfig',
-						access:'canWsAdmin',
+						access: 'canWsAdmin',
 					},
 					{
 						path: '/ws/:ws_id/config/member',
 						name: 'MemberManage',
 						component: './WorkSpace/MemberManage',
-						access:'canWsAdmin'
+						access: 'canWsAdmin'
 					},
 					{
 						path: '/ws/:ws_id/config/join',
@@ -473,7 +465,7 @@ export default [
 			{
 				path: '/ws/:ws_id/job',
 				name: 'JobConfig',
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/job/types',
@@ -515,7 +507,7 @@ export default [
 				name: 'Baseline',
 				// hideInMenu : true ,
 				component: '@/pages/WorkSpace/Baseline',
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/baseline/group',
@@ -532,7 +524,7 @@ export default [
 			{
 				path: '/ws/:ws_id/device',
 				name: 'DeviceManage',
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/device/group',
@@ -564,7 +556,7 @@ export default [
 				path: '/ws/:ws_id/test_suite',
 				name: 'TestSuiteManage',
 				component: './WorkSpace/TestSuiteManage',
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 			},
 			{
 				path: '/ws/:ws_id/new_suite/:test_type',
@@ -578,14 +570,14 @@ export default [
 				path: '/ws/:ws_id/product',
 				name: 'Product',
 				component: '@/pages/WorkSpace/Product',
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 			},
 			{
 				path: '/ws/:ws_id/test_template',
 				hideInMenu: true,
 				inNav: true,
 				layout: false,
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 				routes: [
 					{
 						path: '/ws/:ws_id/test_template/:jt_id/edit',
@@ -609,7 +601,7 @@ export default [
 			},
 			{
 				path: '/ws/:ws_id/devOps',
-				access:'canWsAdmin',
+				access: 'canWsAdmin',
 				name: 'DevOps',
 				component: '@/pages/WorkSpace/DevOps'
 			},
@@ -621,17 +613,20 @@ export default [
 			}
 		]
 	},
+	BUILD_APP_ENV === 'opensource' &&
+	{
+		path: '/login',
+		layout: false,
+		hiseInMenu: true,
+		component: './Login'
+	},
 	{
 		path: '/workspace/create',
 		layout: false,
 		hideInMenu: true,
 		component: './WorkSpace/CreateWorkspace',
-		access:'canSuperAdmin'
+		access: 'canSuperAdmin'
 	},
-	// {
-	// 	path: '/list/table',
-	// 	component: './ListTableList'
-	// },
 	{
 		path: '/401',
 		layout: false,
@@ -652,14 +647,10 @@ export default [
 		name: 'nofoundpage.404',
 		component: './404',
 	},
-	// {
-	// 	component: './500',
-	// 	wrappers: [
-	// 		'@/pages/auth/ErrorPage',
-	// 	],
-	// },
 	{
 		path: '*',
 		redirect: '/'
 	}
-]
+].filter(Boolean)
+
+export default routes

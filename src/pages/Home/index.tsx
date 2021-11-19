@@ -60,10 +60,10 @@ export default (): React.ReactNode => {
     const [loading, setLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
     const { user_id, ws_role_title } = initialState?.authList || {}
-    const [wsParmas, setWsPasmas] = useState<wsParmas>({ 
-        page_size: 50, 
-        page_num: 1, 
-        scope: ws_role_title == 'ws_tourist' ? 'all' : 'history' 
+    const [wsParmas, setWsPasmas] = useState<wsParmas>({
+        page_size: 50,
+        page_num: 1,
+        scope: ws_role_title == 'ws_tourist' ? 'all' : 'history'
     })
     const access = useAccess();
     document.title = 'T-One'
@@ -88,7 +88,7 @@ export default (): React.ReactNode => {
     }
 
     const [topWs, setTopWs] = useState([])
-    
+
     const queryWsTopList = async () => {
         const { data, code } = await queryWorkspaceTopList()
         if (code === 200) setTopWs(data)
@@ -117,8 +117,8 @@ export default (): React.ReactNode => {
     /**
      * @author wb-cy860729
      */
-    const onSearch = (value:string) => {
-        setWsPasmas({ ...wsParmas,keyword: value,page_num: 1})
+    const onSearch = (value: string) => {
+        setWsPasmas({ ...wsParmas, keyword: value, page_num: 1 })
     }
 
     const wsHelpDoc = async () => {
@@ -148,7 +148,7 @@ export default (): React.ReactNode => {
             width: 210,
             render: (_: any, record: any) => {
                 const id = record && record.id
-                if (record.is_member || record.is_public )
+                if (record.is_member || record.is_public)
                     return (
                         <div
                             onClick={
@@ -171,12 +171,12 @@ export default (): React.ReactNode => {
                     )
                 // else return <JoinPopover {...record} type={'show_name'} />
                 else {
-                    return(
+                    return (
                         <div onClick={() => _.is_member ? history.push(`/ws/${_.id}/dashboard`) : message.warning('无权限进入')} className={styles.showName}>
-                             <LogoEllipsis props={record} size={'small'} />
+                            <LogoEllipsis props={record} size={'small'} />
                         </div>
                     )
-                   
+
                 }
             }
         },
@@ -212,7 +212,7 @@ export default (): React.ReactNode => {
             align: 'center',
             width: 120,
             render: (_: any) => {
-                if (_.is_member || _.is_public )
+                if (_.is_member || _.is_public)
                     return (
                         <Button
                             onClick={
@@ -232,14 +232,19 @@ export default (): React.ReactNode => {
                             进入
                         </Button>
                     )
-                // else return <JoinPopover {..._} type={'operate'} />
                 else {
-                    return(
-                        <Button onClick={() => _.is_member ? history.push(`/ws/${_.id}/dashboard`) : message.warning('无权限进入')}>
+                    return (
+                        <Button
+                            onClick={
+                                () => _.is_member ?
+                                    history.push(`/ws/${_.id}/dashboard`) :
+                                    history.push({ pathname: '/401', state: _.id })
+                            }
+                        >
                             进入
                         </Button>
                     )
-                   
+
                 }
             }
         }
@@ -366,7 +371,7 @@ export default (): React.ReactNode => {
                                                                     <div className={styles.right_part}>
                                                                         <b className={styles.ws_name}>{item.show_name}</b>
                                                                         <Space>
-                                                                            <Typography.Text type="secondary"  ellipsis={true}>{item.owner_name} </Typography.Text>
+                                                                            <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
                                                                         </Space>
                                                                         <EllipsisRect text={item.description} wsPublic={wsPublic} />
                                                                     </div>
@@ -407,7 +412,7 @@ export default (): React.ReactNode => {
                                 showHeader={false}
                                 pagination={false}
                             />
-                            <Col span={24} style={{ paddingLeft: 20 , paddingRight: 20 }}>
+                            <Col span={24} style={{ paddingLeft: 20, paddingRight: 20 }}>
                                 <CommonPagination
                                     pageSize={wsData.page_size}
                                     total={wsData.total}

@@ -3,48 +3,38 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import ClickParam from 'antd/es/menu';
 import { useModel } from 'umi';
-
-// import { outLogin, queryOutLogin } from '@/services/login';
-
+import { logoutUrl } from '../../../../wsConfig';
 import styles from './index.less';
-
-// import request from 'umi-request';
+import request from 'umi-request';
+import AvatarCover from '../AvatarCover';
 
 /**
  * 退出登录，并且将当前的 url 保存
  */
-const logout = async (login_info:any) => {
-    window.location.href = login_info.logout_url
-    // //const url = origin
-    // let exp:any = new Date();
-    // exp.setTime(exp.getTime() - 10000);
-    // document.cookie = `name=_oc_ut;value=del;path=/;`
-    // await request
-    //     .get('/api/auth/logout/')
-    //     .then(function (response) {
-    //         console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //         console.log(error);
-    //     });
-    // window.location.reload()
-    //window.location.href = `https://login-test.alibaba-inc.com/ssoLogout.htm?APP_NAME=tone&BACK_URL=${url}`
-}
 
 const PersonCenter = () => {
     const { initialState } = useModel('@@initialState')
     const { authList } = initialState
-    const onMenuClick = useCallback((event: ClickParam) => {
-        const { key }:any = event;
+    const onMenuClick = useCallback(async (event: ClickParam) => {
+        const { key }: any = event;
         if (key === 'name') return;
         if (key === 'page') {
             window.open(`${window.location.origin}/personCenter`)
         }
         if (key === 'logout') {
-            logout(authList.logout_url)
+            if (BUILD_APP_ENV === 'opensource') {
+                window.location.href = `/api/auth/logout/`
+                return
+            }
+            if (BUILD_APP_ENV === 'openanolis') {
+                return window.location.href = authList.logout_url
+            }
+            await request
+                .get('/api/auth/logout/')
+
+            window.location.href = logoutUrl(location.href)
         }
     }, []);
-
 
     const loading = (
         <span className={`${styles.action} ${styles.account}`}>
@@ -62,7 +52,7 @@ const PersonCenter = () => {
         return loading;
     }
     const menuHeaderDropdown = (
-        <Menu className={`${styles.menu} ${styles.person_menu}`} selectedKeys={[]} onClick={onMenuClick}>
+        <Menu className={`${styles.menu} ${styles.person_menu}`} selectedKeys={[]} onClick={onMenuClick as any}>
             <Menu.Item className={styles.person_name} key="name">
                 <Avatar size="small" className={styles.avatar} src={authList.avatar} alt="avatar" />
                 {authList.first_name || authList.last_name}
@@ -70,8 +60,8 @@ const PersonCenter = () => {
             <Menu.Divider />
             <Menu.Item key="page">
                 <UserOutlined />
-                    个人主页
-                </Menu.Item>
+                个人主页
+            </Menu.Item>
             <Menu.Item key="logout">
                 <LogoutOutlined rotate={-90} />
                 退出登录
@@ -89,7 +79,11 @@ const PersonCenter = () => {
             overlayClassName={styles.dropdownArrowHide}
         >
             <span className={`${styles.action} ${styles.account}`}>
-                <Avatar size="small" className={`${styles.avatar} ${styles.avatar_icon}`} src={authList.avatar} alt="avatar" />
+                {
+                    authList.avatar ?
+                        <Avatar size="small" className={styles.avatar} src={authList.avatar} alt="avatar" /> :
+                        <AvatarCover style={{ display: 'inline-block', marginRight: 8 }} shape="circle" size="small" theme_color={authList.avatar_color} show_name={authList.last_name} />
+                }
             </span>
         </Dropdown>
     );
