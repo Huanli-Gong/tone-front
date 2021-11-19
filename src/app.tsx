@@ -11,6 +11,8 @@ import { deepObject } from '@/utils/utils';
 
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
 
+const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
+
 export async function getInitialState(): Promise<any> {
     const initialState = {
         settings: defaultSettings,
@@ -21,23 +23,25 @@ export async function getInitialState(): Promise<any> {
     };
     const { pathname } = window.location
     if (!ignoreRoutePath.includes(history.location.pathname)) {
-        const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
         const isWs = wsReg.test(pathname)
         const matchArr = pathname.match(wsReg)
         const ws_id = matchArr ? matchArr[1] : undefined
-        const { data } = await person_auth({ ws_id })
 
-        if (!data) {
+        const { data } = await person_auth({ ws_id })
+        const accessList: any = deepObject(data)
+        const { ws_is_exist, ws_role_title } = accessList
+
+        if (!accessList) {
             history.push('/500')
             return initialState
         }
         if (isWs) {
             //这个ws是否存在
-            if (!data.ws_is_exist) {
+            if (!ws_is_exist) {
                 history.push('/404')
                 return initialState
             }
-            if (!data.ws_role_title) {
+            if (!ws_role_title) {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState
             }
@@ -48,7 +52,7 @@ export async function getInitialState(): Promise<any> {
             ...initialState,
             authList: {
                 ws_id,
-                ...deepObject(data),
+                ...accessList,
             },
         }
     }

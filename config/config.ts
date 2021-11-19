@@ -6,8 +6,6 @@ import routes from './routes';
 
 const { REACT_APP_ENV, BUILD_APP_ENV } = process.env;
 
-console.log(BUILD_APP_ENV)
-
 export default defineConfig({
     // outputPath : 'build',
     hash: false,
@@ -47,7 +45,6 @@ export default defineConfig({
     // esbuild: {},
     // webpack5: {},
     fastRefresh: {},
-    // mfsu : {},
     runtimePublicPath: true,
     ignoreMomentLocale: true,
     proxy: proxy[REACT_APP_ENV || 'dev'],

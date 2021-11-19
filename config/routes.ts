@@ -1,4 +1,4 @@
-const { BUILD_APP_ENV } = process.env;
+const { BUILD_APP_ENV } = process.env
 
 const routes = [
 	{

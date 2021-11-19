@@ -9,7 +9,6 @@ const sysAdminIncludeTest = ['super_admin', 'sys_admin', 'sys_test_admin']
 const wsAdminIncludeTest = ['ws_owner', 'ws_admin', 'ws_test_admin'] //sys_test_admin
 
 export default function (initialState: any) {
-    console.log( initialState )
     // 系统配置权限
     const authList: any = initialState?.authList
 
@@ -24,6 +23,7 @@ export default function (initialState: any) {
     const canSysTestAdmin = () => sysAdminIncludeTest.includes(sys_role_title)
     const canWsTestAdmin = () => wsAdminIncludeTest.includes(ws_role_title)
     const canAnolisWs = () => anolisWs.includes(ws_role_title)
+    
     return {
         canWsAdmin: () => canSuperAdmin() || isWsAdmin(),   // 等同于wsBtnAccess 设置ws按钮  创建ws类型  存为模板
         // 判断登录按钮是否显示
