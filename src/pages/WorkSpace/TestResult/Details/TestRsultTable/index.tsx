@@ -179,7 +179,7 @@ export default (props: any) => {
         dataIndex: 'end_time',
         width: 175
     },])
-    if (access.testerAccess(creator)) {
+    if (access.wsRoleContrl(creator)) {
         columns = columns.concat([
             {
                 title: '备注',
@@ -202,7 +202,7 @@ export default (props: any) => {
                 title: '操作',
                 width: 145,
                 render: (_: any) => (
-                    <Access accessible={access.testerAccess(_.creator)}
+                    <Access accessible={access.wsRoleContrl(_.creator)}
                         fallback={
                             initialState?.authList?.ws_role_title === 'ws_tester' ?
                                 <Space>
@@ -333,7 +333,7 @@ export default (props: any) => {
                         <Button onClick={handleOpenExpandBtn}>
                             {openAllExpand ? '收起所有指标' : '展开所有指标'}
                         </Button>
-                        <Access accessible={access.testerAccess(data.creator)}
+                        <Access accessible={access.wsRoleContrl(data.creator)}
                             fallback={
                                 initialState?.authList?.ws_role_title === 'ws_tester' ?
                                     <Space>

@@ -268,7 +268,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
               <FormattedMessage id="Drawer.btn.close" />
             </Button>
             <Access  
-              accessible={access.testerAccess()} 
+              accessible={access.wsRoleContrl()} 
               fallback={
                 <Tooltip placement="topLeft" title={AuthPop} color="#fff">
                   <Button type="primary"><FormattedMessage id="Drawer.btn.confirm" /></Button>

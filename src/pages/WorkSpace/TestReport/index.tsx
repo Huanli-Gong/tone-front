@@ -49,16 +49,16 @@ export default (props: any) => {
                     }}
                     tabBarExtraContent={
                         tab === 'list' ? (
-                            access.testerAccess() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button> 
+                            access.wsRoleContrl() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button> 
                         ) : (
-                            access.testerAccess() && <Button type="primary" onClick={hanldeCreateTemplate}>新建模版</Button>
+                            access.wsRoleContrl() && <Button type="primary" onClick={hanldeCreateTemplate}>新建模版</Button>
                         )
                     }
                 >
                     <Tabs.TabPane key="list" tab="测试报告">
                         <ReportListTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                     </Tabs.TabPane>
-                    {access.testerAccess() &&
+                    {access.wsRoleContrl() &&
                         <Tabs.TabPane key="template" tab="报告模版">
                             <ReportTemplateTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                         </Tabs.TabPane>

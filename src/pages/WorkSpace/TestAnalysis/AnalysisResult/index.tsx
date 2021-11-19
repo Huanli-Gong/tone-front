@@ -211,7 +211,7 @@ const Report = (props: any) => {
                                             :
                                             <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
                                     }
-                                    <Access accessible={access.testerAccess()}> 
+                                    <Access accessible={access.wsRoleContrl()}> 
                                         { form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
                                     </Access>
                                 </span>

@@ -295,7 +295,7 @@ export default (props: any) => {
                     <Space>
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0, marginLeft: 16, marginRight: 8 }} />
                         <Button onClick={handleCancle}>取消</Button>
-                        <Access accessible={access.testerAccess()}>
+                        <Access accessible={access.wsRoleContrl()}>
                             <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}>生成报告</Button>
                         </Access>
                         <Button type="primary" onClick={_.partial(handleNext,'test_analysis/compare')}>对比分析</Button>

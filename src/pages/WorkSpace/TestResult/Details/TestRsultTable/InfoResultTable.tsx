@@ -212,7 +212,7 @@ export default (props: any) => {
             let flag = _.result === 'Fail' && !_.bug
             return (
                 <Access
-                    accessible={access.testerAccess(creator)}
+                    accessible={access.wsRoleContrl(creator)}
                     fallback={
                         <Space>
                             <span style={{ color: '#ccc',cursor: 'not-allowed' }} >编辑</span>

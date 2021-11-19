@@ -127,7 +127,7 @@ const ViewTable = (props: ViewTableProps) => {
     },
 ];
     
-    if (access.testerAccess()) {
+    if (access.wsRoleContrl()) {
         columns = columns.concat([
             {
                 title: '操作',
@@ -157,7 +157,7 @@ const ViewTable = (props: ViewTableProps) => {
                                 <span style={{color: '#00000040',cursor: 'not-allowed'}}>删除</span>
                             } */}
                             <Access
-                                accessible={access.testerAccess(row.creator)}
+                                accessible={access.wsRoleContrl(row.creator)}
                                 fallback={<span style={{color: '#ccc',cursor: 'not-allowed'}}>删除</span>}
                             >
                                  <Popconfirm

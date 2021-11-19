@@ -156,10 +156,8 @@ const routes = [
 	},
 	{
 		path: '/message',
-		//layout: false,
 		showInWs: true,
 		hideInMenu: true,
-		// access: 'loginAndMsgAccess',
 		component: './TaskMessage',
 	},
 
@@ -167,7 +165,6 @@ const routes = [
 		path: '/ws/:ws_id/message',
 		//layout: false,
 		hideInMenu: true,
-		access: 'loginAndMsgAccess',
 		component: './TaskMessage',
 	},
 	{
@@ -446,7 +443,7 @@ const routes = [
 						path: '/ws/:ws_id/config',
 						name: 'BasicConfig',
 						component: './WorkSpace/BasicConfig',
-						access: 'canWsAdmin',
+						access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 					},
 					{
 						path: '/ws/:ws_id/config/member',
@@ -458,14 +455,14 @@ const routes = [
 						path: '/ws/:ws_id/config/join',
 						name: 'JoinDetail',
 						component: './WorkSpace/JoinDetail',
-						access: BUILD_APP_ENV ? 'hiddenRoute' : 'canWsAdmin',
+						access: BUILD_APP_ENV ? 'hiddenRoute' : 'wsTouristFilter',
 					}
 				]
 			},
 			{
 				path: '/ws/:ws_id/job',
 				name: 'JobConfig',
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 				routes: [
 					{
 						path: '/ws/:ws_id/job/types',
@@ -507,7 +504,7 @@ const routes = [
 				name: 'Baseline',
 				// hideInMenu : true ,
 				component: '@/pages/WorkSpace/Baseline',
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 				routes: [
 					{
 						path: '/ws/:ws_id/baseline/group',
@@ -524,7 +521,7 @@ const routes = [
 			{
 				path: '/ws/:ws_id/device',
 				name: 'DeviceManage',
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 				routes: [
 					{
 						path: '/ws/:ws_id/device/group',
@@ -556,7 +553,7 @@ const routes = [
 				path: '/ws/:ws_id/test_suite',
 				name: 'TestSuiteManage',
 				component: './WorkSpace/TestSuiteManage',
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 			},
 			{
 				path: '/ws/:ws_id/new_suite/:test_type',
@@ -570,14 +567,14 @@ const routes = [
 				path: '/ws/:ws_id/product',
 				name: 'Product',
 				component: '@/pages/WorkSpace/Product',
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 			},
 			{
 				path: '/ws/:ws_id/test_template',
 				hideInMenu: true,
 				inNav: true,
 				layout: false,
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 				routes: [
 					{
 						path: '/ws/:ws_id/test_template/:jt_id/edit',
@@ -601,7 +598,7 @@ const routes = [
 			},
 			{
 				path: '/ws/:ws_id/devOps',
-				access: 'canWsAdmin',
+				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 				name: 'DevOps',
 				component: '@/pages/WorkSpace/DevOps'
 			},
@@ -625,7 +622,7 @@ const routes = [
 		layout: false,
 		hideInMenu: true,
 		component: './WorkSpace/CreateWorkspace',
-		access: 'canSuperAdmin'
+		access: BUILD_APP_ENV ? 'canSuperAdmin' : 'wsTouristFilter',
 	},
 	{
 		path: '/401',

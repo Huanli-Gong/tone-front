@@ -77,7 +77,7 @@ export default ({ job_id, refresh = false, testType }: any) => {
                     return (
                         <>
                             <Access 
-                                accessible={access.testerAccess(_.creator)}
+                                accessible={access.wsRoleContrl(_.creator)}
                                 fallback={<span style={style}>停止Suite</span>}
                             >
                                 <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>

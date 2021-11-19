@@ -152,50 +152,50 @@ const JobTable = (props: any) => {
             ellipsis: true,
             dataIndex: 'end_time'
         },
-    ]
-
-    columns = access.testerAccess() ? columns.concat({
-        title: '操作',
-        width: 160,
-        fixed: 'right',
-        render: (_: any) => {
-            return (
-                <Space>
-                    <Access accessible={access.testerAccess(_.creator)} 
-                        fallback={
+        access.wsRoleContrl() &&
+        {
+            title: '操作',
+            width: 160,
+            fixed: 'right',
+            render: (_: any) => {
+                return (
+                    <Space>
+                        <Access accessible={access.wsRoleContrl(_.creator)}
+                            fallback={
+                                <Space>
+                                    <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }} >重跑</Typography.Text>
+                                    <Typography.Text
+                                        style={{ color: '#ccc', cursor: 'no-drop' }}
+                                    >
+                                        删除
+                                    </Typography.Text>
+                                </Space>
+                            }
+                        >
                             <Space>
-                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }} >重跑</Typography.Text>
-                                <Typography.Text
-                                    style={{ color: '#ccc', cursor: 'no-drop' }}
+                                <span onClick={() => handleTestReRun(_)}>
+                                    <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                </span>
+                                <Popconfirm
+                                    title="确定要删除吗？"
+                                    onConfirm={() => handleDelete(_)}
+                                    okText="确认"
+                                    cancelText="取消"
                                 >
-                                    删除
-                                </Typography.Text>
+                                    <Typography.Text
+                                        style={{ color: '#1890FF', cursor: 'pointer' }}
+                                    >
+                                        删除
+                                    </Typography.Text>
+                                </Popconfirm>
                             </Space>
-                        }
-                    >
-                        <Space>
-                            <span onClick={() => handleTestReRun(_)}>
-                                <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
-                            </span>
-                            <Popconfirm
-                                title="确定要删除吗？"
-                                onConfirm={() => handleDelete(_)}
-                                okText="确认"
-                                cancelText="取消"
-                            >
-                                <Typography.Text
-                                    style={{ color: '#1890FF', cursor: 'pointer' }}
-                                >
-                                    删除
-                                </Typography.Text>
-                            </Popconfirm>
-                        </Space>
-                    </Access>
-                    <ViewReports {..._} />
-                </Space>
-            )
+                        </Access>
+                        <ViewReports {..._} />
+                    </Space>
+                )
+            }
         }
-    }) : columns
+    ].filter(Boolean)
 
     return (
         <Spin spinning={loading}>

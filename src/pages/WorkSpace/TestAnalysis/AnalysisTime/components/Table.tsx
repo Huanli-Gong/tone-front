@@ -50,7 +50,7 @@ export default memo(
         //         }
         //     ]);
         // }
-        if(access.testerAccess()){
+        if(access.wsRoleContrl()){
             columns = columns.concat([
                 {
                     title : '标注',

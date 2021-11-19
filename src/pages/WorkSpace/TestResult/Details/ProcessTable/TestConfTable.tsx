@@ -94,7 +94,7 @@ export default ( { test_suite_name , test_suite_id , job_id, testType } : any ) 
                     {
                        
                         <Access 
-                            accessible={access.testerAccess(_.creator)}
+                            accessible={access.wsRoleContrl(_.creator)}
                         >
                             {
                                 _.state === 'running' && <Button type="link" style={{ padding : 0 }} onClick={ () => doConfServer( _ , 'stop')} >中止</Button>

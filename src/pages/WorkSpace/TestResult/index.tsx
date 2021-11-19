@@ -615,7 +615,7 @@ export default (props: any) => {
 
     ]
 
-    columns = access.testerAccess() ? [{
+    columns = access.wsRoleContrl() ? [{
         title: '',
         width: 30,
         align: 'center',
@@ -632,14 +632,14 @@ export default (props: any) => {
         )
     }, ...columns] : columns
 
-    columns = access.testerAccess() ? columns.concat({
+    columns = access.wsRoleContrl() ? columns.concat({
         title: '操作',
         width: 160,
         fixed: 'right',
         render: (_: any) => {
             return (
                 <Space>
-                    <Access accessible={access.testerAccess(_.creator)}
+                    <Access accessible={access.wsRoleContrl(_.creator)}
                         fallback={
                             <Space>
                                 <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
@@ -1156,7 +1156,7 @@ export default (props: any) => {
         setSelectRowData(lodash.differenceBy(selectRowData, arr, 'id'))
     }
 
-    const rowSelection = access.testerAccess() ? {
+    const rowSelection = access.wsRoleContrl() ? {
         selectedRowKeys,
         onSelect: selectedChange,
         getCheckboxProps: (record: any) => {
@@ -1189,7 +1189,7 @@ export default (props: any) => {
     const handleSearchList = () => {
         queryTestListTableData({ ...pageParams, search: searchInp })
     }
-    const tabsKey = access.testerAccess() ? tabThree : tabSingle
+    const tabsKey = access.wsRoleContrl() ? tabThree : tabSingle
     return (
         <Layout.Content
             style={{
@@ -1256,7 +1256,7 @@ export default (props: any) => {
                                                 </Space>
                                                 <Space>
                                                     {
-                                                        access.testerAccess() &&
+                                                        access.wsRoleContrl() &&
                                                         <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
                                                             <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
                                                             <Radio.Group onChange={handleRadioChange} value={radioValue}>

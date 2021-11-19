@@ -158,7 +158,7 @@ export default forwardRef((props: any, ref: any) => {
             <>
               <a href={record.job_link} target = "_blank" rel = "noopener noreferrer">查看</a>
               <Access
-                accessible={access.testerAccess(record.creator)}
+                accessible={access.wsRoleContrl(record.creator)}
                 fallback={
                     <span style={{opacity: 0.25}}>下载</span>
                 }
@@ -172,7 +172,7 @@ export default forwardRef((props: any, ref: any) => {
             </>
           )}
            <Access
-              accessible={access.testerAccess(record.creator)}
+              accessible={access.wsRoleContrl(record.creator)}
               fallback={
                 <span style={{opacity: 0.25}}>删除</span>
               }

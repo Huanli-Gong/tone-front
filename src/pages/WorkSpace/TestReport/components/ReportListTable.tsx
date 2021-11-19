@@ -205,7 +205,7 @@ const ReportListTable = (props: any) => {
         }
 
     },
-    access.testerAccess() && {
+    access.wsRoleContrl() && {
         title: '操作',
         width: 200,
         fixed: 'right',
@@ -213,7 +213,7 @@ const ReportListTable = (props: any) => {
             const id = _.get(row, 'id')
             return (
                 <Access
-                    accessible={access.testerAccess(row.creator_id)}
+                    accessible={access.wsRoleContrl(row.creator_id)}
                     fallback={
                         <Space>
                             <OptBtn style={{ color: '#ccc', cursor: 'not-allowed' }}>编辑</OptBtn>

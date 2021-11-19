@@ -59,7 +59,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                 </Access>
             }
             {/* <Input prefix={ <SearchOutlined /> } size="large" style={{ width : 192 , marginRight : 34 , borderRadius : 2 }} placeholder="搜索" />  */}
-            <Access accessible={access.loginAndMsgAccess()}>
+            <Access accessible={access.wsTouristFilter()}>
                 <Dropdown
                     arrow={true}
                     overlayClassName={styles.messageDropdownArrowHide}

@@ -130,7 +130,7 @@ export default ({
             },
         ]
     )
-    if(access.testerAccess(creator)){
+    if(access.wsRoleContrl(creator)){
         columns = columns.concat([
             {
                 title : '备注',
@@ -156,7 +156,7 @@ export default ({
                 title : '操作',
                 width : 145 , //175,
                 render : ( _ : any ) => (
-                    <Access accessible={access.testerAccess(_.creator)}
+                    <Access accessible={access.wsRoleContrl(_.creator)}
                         fallback={
                             initialState?.authList?.ws_role_title === 'ws_tester' ?
                                 <Space>

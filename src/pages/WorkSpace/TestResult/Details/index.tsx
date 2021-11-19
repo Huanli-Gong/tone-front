@@ -209,7 +209,7 @@ export default (props: any) => {
                                             ws_id={ws_id}
                                             job_id={job_id}
                                             tags={data.tags}
-                                            accessible={access.testerAccess(data.creator)}
+                                            accessible={access.wsRoleContrl(data.creator)}
                                             accessLabel={access.canWsAdmin()}
                                         />
                                         </Row>
@@ -218,8 +218,8 @@ export default (props: any) => {
                                                 备注
                                             </Typography.Text>
                                             <div style={{ width: 'calc(100% - 74px)', wordBreak: 'break-all' }}>
-                                                {access.testerAccess(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
-                                                {access.testerAccess(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
+                                                {access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
+                                                {access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
                                             </div>
                                         </Row>
                                     </Col>
@@ -243,7 +243,7 @@ export default (props: any) => {
                                         <div style={{ display: 'flex', marginRight: 12 }}>
                                             <ViewReport viewAllReport={allReport} dreType="bottomRight" ws_id={ws_id} jobInfo={data} origin={'jobDetail'} stylesButton={veiwReportHeight.current} />
                                             
-                                            <Access accessible={access.testerAccess(data.creator)}
+                                            <Access accessible={access.wsRoleContrl(data.creator)}
                                                 fallback={
                                                     initialState?.authList?.ws_role_title === 'ws_tester' ?
                                                     <>

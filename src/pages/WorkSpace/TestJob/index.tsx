@@ -1108,7 +1108,7 @@ const TestJob: React.FC<any> = (props) => {
                                 <Button onClick={handleOpenTemplate}>存为模板</Button>
                             </Access>
                             <Access
-                                accessible={access.testerAccess()}
+                                accessible={access.wsRoleContrl()}
                                 fallback={
                                     <Tooltip placement="topLeft" title={AuthPop} color="#fff">
                                         <Button type="primary">提交测试</Button>

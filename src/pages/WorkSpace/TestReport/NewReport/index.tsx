@@ -107,7 +107,7 @@ const Report = (props: any) => {
                             : <>
                                 <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link"><IconLink style={{ marginRight: 4 }} />分享</span>
                                 <Access
-                                    accessible={access.testerAccess(Number(creator_id.substring(5,creator_id.length)))}
+                                    accessible={access.wsRoleContrl(Number(creator_id.substring(5,creator_id.length)))}
                                     fallback={
                                         <span style={{ cursor: 'pointer',color:'#ccc' }}><IconWarp style={{ marginRight: 4 }} />编辑</span>
                                     }
