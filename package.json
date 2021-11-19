@@ -6,13 +6,10 @@
     "scripts": {
         "start": "cross-env BUILD_APP_ENV=\"opensource\" PORT=8888 umi dev",
         "build": "cross-env BUILD_APP_ENV=\"opensource\" umi build",
-
         "start:openanolis": "cross-env PORT=8888 BUILD_APP_ENV=\"openanolis\" umi dev",
         "build:openanolis": "cross-env BUILD_APP_ENV=\"openanolis\" umi build",
-
         "start:tone": "umi dev",
         "build:tone": "umi build",
-
         "analyze": "cross-env ANALYZE=1 umi build",
         "build:cdn": "cross-env NODE_ENV=cluster-dev umi build",
         "deploy": "npm run site && npm run gh-pages",
@@ -78,6 +75,8 @@
         "ant-mobile": "^0.0.0",
         "antd": "4.9.1",
         "array-move": "^3.0.1",
+        "browserslist": "^4.18.1",
+        "caniuse-lite": "^1.0.30001282",
         "classnames": "^2.2.6",
         "clipboard": "^2.0.6",
         "codemirror": "^5.54.0",
@@ -117,6 +116,7 @@
         "wangeditor": "4.5.3"
     },
     "devDependencies": {
+        "@ant-design/pro-cli": "^2.0.2",
         "@types/classnames": "^2.2.7",
         "@types/express": "^4.17.0",
         "@types/history": "^4.7.2",
@@ -126,7 +126,6 @@
         "@types/react": "^17.0.0",
         "@types/react-dom": "^16.8.4",
         "@types/react-helmet": "^5.0.13",
-        "@ant-design/pro-cli": "^2.0.2",
         "@umijs/fabric": "^2.0.5",
         "@umijs/plugin-blocks": "^2.0.5",
         "@umijs/plugin-esbuild": "^1.0.0-beta.2",
