@@ -4,12 +4,16 @@
     "private": true,
     "description": "Tone front",
     "scripts": {
-        "analyze": "cross-env ANALYZE=1 umi build",
-        "build": "umi build",
-        "build:opensource": "cross-env BUILD_APP_ENV=\"opensource\" umi build",
-        "build:openanolis": "cross-env BUILD_APP_ENV=\"openanolis\" umi build",
-        "start:opensource": "cross-env PORT=8888 BUILD_APP_ENV=\"opensource\" umi dev",
+        "start": "cross-env BUILD_APP_ENV=\"opensource\" PORT=8888 umi dev",
+        "build": "cross-env BUILD_APP_ENV=\"opensource\" umi build",
+
         "start:openanolis": "cross-env PORT=8888 BUILD_APP_ENV=\"openanolis\" umi dev",
+        "build:openanolis": "cross-env BUILD_APP_ENV=\"openanolis\" umi build",
+
+        "start:tone": "umi dev",
+        "build:tone": "umi build",
+
+        "analyze": "cross-env ANALYZE=1 umi build",
         "build:cdn": "cross-env NODE_ENV=cluster-dev umi build",
         "deploy": "npm run site && npm run gh-pages",
         "dev": "npm run start:dev",
@@ -24,7 +28,6 @@
         "lint:prettier": "prettier --check \"**/*\" --end-of-line auto",
         "lint:style": "stylelint --fix \"src/**/*.less\" --syntax less",
         "prettier": "prettier -c --write \"**/*\"",
-        "start": "cross-env PORT=8888 umi dev",
         "start:dev": "cross-env REACT_APP_ENV=dev MOCK=none umi dev",
         "start:no-mock": "cross-env MOCK=none umi dev",
         "start:no-ui": "cross-env UMI_UI=none umi dev",
