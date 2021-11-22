@@ -5,7 +5,7 @@ const wsAdmin = ['ws_owner', 'ws_admin', 'ws_tester_admin', BUILD_APP_ENV && 'ws
 const anolisSys = ['sys_admin', 'user'] // 社区登录
 const sysAdminIncludeTest = ['super_admin', 'sys_admin', 'sys_test_admin']
 const wsAdminIncludeTest = ['ws_owner', 'ws_admin', 'ws_test_admin'] //sys_test_admin
-
+console.log('hello')
 export default function (initialState: any) {
     // 系统配置权限
     const authList: any = initialState?.authList
