@@ -138,7 +138,8 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         dataIndex: 'gmt_created',
         width: 145,
     },
-    BUILD_APP_ENV === 'opensource' && {
+    BUILD_APP_ENV === 'opensource' &&
+    {
         title: '操作',
         render: (_: any, row: any) => (
             <Popconfirm
