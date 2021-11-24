@@ -5,6 +5,7 @@ import { queryClusterMachine, delGroupMachine, queryCloudType, editGroupMachine 
 import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
+import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
 import PermissionTootip from '@/components/Public/Permission/index';
@@ -173,6 +174,16 @@ const GroupTree: React.FC<any> = (props) => {
             title: '运行变量名',
             dataIndex: 'var_name',
             width: 110,
+        },
+        {
+            title: '机器状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+        },
+        {
+            title: '实际状态',
+            width  :120,
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
         },
         {
             title: '备注',

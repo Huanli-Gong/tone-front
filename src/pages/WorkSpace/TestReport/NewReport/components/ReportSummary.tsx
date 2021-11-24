@@ -1,6 +1,6 @@
 import React, { useContext, memo } from 'react';
 import { ReportContext } from '../Provider';
-import { Space } from 'antd';
+import { Space, Tooltip } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import {
@@ -38,11 +38,14 @@ const ReportSummary = () => {
                 <Group>
                     <GroupTitle gLen={group}>对比组名称</GroupTitle>
                     {
-                        Array.isArray(envData) && envData.length > 0 && envData.map((item: any, idx: number) => {
+                        Array.isArray(envData) && !!envData.length && envData.map((item: any, idx: number) => {
                             return (
                                 <GroupData gLen={group} key={idx}>
                                     <Space>
-                                        {item.is_base ? <BaseIcon style={{ marginRight: 4, marginTop: 17 }} title="基准组"/> : null}
+                                        { item.is_base ? 
+                                         <Tooltip title="基准组">
+                                            <BaseIcon style={{ marginRight: 4, marginTop: 17 }} />
+                                        </Tooltip> : null }
                                     </Space>
                                     <EllipsisPulic title={item.tag} />
                                 </GroupData>

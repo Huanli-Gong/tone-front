@@ -2,13 +2,12 @@ import React, { useContext, useState, useEffect, useRef, memo, useMemo } from 'r
 import { Space, Popconfirm, Empty } from 'antd';
 import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
-import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import { SettingTextArea } from './EditPublic';
 import Performance from './TestDataChild/prefIndex'
 import _ from 'lodash';
 import { useScroll } from 'ahooks';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import produce from 'immer'
 import styled from 'styled-components';
 import {
@@ -21,7 +20,6 @@ import {
     TestWrapper,
     TestItemText,
     PerfGroupTitle,
-    PerfGroupData,
     CloseBtn,
 } from '../ReportUI';
 
@@ -58,21 +56,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
                  <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
                         <Group>
                             <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
-                            {
-                                Array.isArray(envData) && envData.length > 0 && envData.map((item: any, idx: number) => {
-                                    return (
-                                        <PerfGroupData gLen={groupLen} key={idx}>
-                                            <Space>
-                                                {
-                                                    item.is_base &&
-                                                    <BaseIcon style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }} title="基准组" />
-                                                }
-                                            </Space>
-                                            <EllipsisPulic title={item.tag} />
-                                        </PerfGroupData>
-                                    )
-                                })
-                            }
+                            <Identify envData={envData} group={groupLen} isData={true}/>
                         </Group>
                     </Summary>
             </GroupBar>
@@ -84,7 +68,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
-    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm, setEditBtn } = useContext(ReportContext)
+    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm } = useContext(ReportContext)
     let group = allGroupData?.length
     const testDataRef = useRef(null)
     const data = useMemo(() => {
@@ -136,14 +120,12 @@ const ReportTestPref = () => {
         return item
     }
     const handleGroupChange = (field: any, name: string, rowKey: string) => {
-        setEditBtn(true)
         setDataSource(dataSource.map((item: any) => filterGroup(item, name, field, rowKey)))
     }
     /* 
         ** 删除测试项 测试组
     */
     const handleDelete = (name: string, domain: any, rowKey: any) => {
-        setEditBtn(true)
         if (name === 'group') {
             setDataSource(dataSource.map((i: any, idx: number) => {
                 let ret: any = []
@@ -207,7 +189,7 @@ const ReportTestPref = () => {
     }
     useEffect(() => {
         let new_pref_data: any = []
-        if (dataSource !== undefined && dataSource.length > 0) {
+        if (dataSource && !!dataSource.length) {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list?.map((child: any, listId: number) => {
@@ -240,18 +222,7 @@ const ReportTestPref = () => {
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>
                     <PerfGroupTitle gLen={group}>对比组名称</PerfGroupTitle>
-                    {
-                        Array.isArray(envData) && envData.length > 0 && envData.map((item: any, idx: number) => {
-                            return (
-                                <PerfGroupData gLen={group} key={idx}>
-                                    <Space>
-                                        {item.is_base ? <BaseIcon style={{ marginRight: 4, marginTop: 17 }} title="基准组" /> : null}
-                                    </Space>
-                                    <EllipsisPulic title={item.tag} />
-                                </PerfGroupData>
-                            )
-                        })
-                    }
+                    <Identify envData={envData} group={group} isData={true}/>
                 </Group>
             </Summary>
             <GroupBarWrapper
@@ -266,7 +237,7 @@ const ReportTestPref = () => {
                     <TestDataTitle id="perf_item">性能测试</TestDataTitle>
                     <TestWrapper>
                         {
-                            Array.isArray(dataSource) && dataSource.length > 0 ?
+                            Array.isArray(dataSource) && !!dataSource.length ?
                                 dataSource?.map((item: any, idx: number) => {
                                     return (
                                         <div key={idx}>

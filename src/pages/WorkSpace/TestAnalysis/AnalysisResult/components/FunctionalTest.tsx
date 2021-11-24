@@ -1,11 +1,11 @@
 import React, { useContext, memo, useMemo, useState, useEffect } from 'react';
-import { Empty, Row, Col, Tooltip, Typography, Space, Button, Select } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons'
+import { Empty, Row, Col, Typography, Space, Button, Select } from 'antd';
 import { ReportContext } from '../Provider';
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
 import { targetJump } from '@/utils/utils'
 const { Option } = Select
@@ -30,8 +30,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { allGroupData, compareResult, baselineGroupIndex, ws_id } = useContext(ReportContext)
-    //const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
+    const { allGroupData, compareResult, baselineGroupIndex, ws_id, group } = useContext(ReportContext)
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
     const [btnName, setBtnName] = useState<string>('')
@@ -40,7 +39,6 @@ const ReportTestFunc: React.FC<any> = () => {
     const [filterName, setFilterName] = useState('All')
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [dataSource, setDataSource] = useState<any>([])
-    let group = allGroupData?.length
 
     useEffect(() => {
         if (Array.isArray(func_data_result) && !!func_data_result.length) {
@@ -66,8 +64,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
-
-                                    item.compare_data.length > 0 ?
+                                    !!item.compare_data.length ?
                                         item.compare_data.map((cur: any, id: number) => {
                                             return (
                                                 <SubCaseText gLen={group} key={id}>
@@ -79,7 +76,6 @@ const ReportTestFunc: React.FC<any> = () => {
                                         <SubCaseText gLen={group} >
                                             <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
                                         </SubCaseText>
-
                                 }
                             </TestSubCase>
                         )
@@ -88,6 +84,7 @@ const ReportTestFunc: React.FC<any> = () => {
             </>
         )
     }
+    
     const hanldeExpand = (id: any) => {
         const expand = expandKeys.includes(id)
         if (expand)
@@ -95,6 +92,7 @@ const ReportTestFunc: React.FC<any> = () => {
         else
             setExpandKeys(expandKeys.concat(id))
     }
+
     // 差异化排序
     const handleArrow = (conf: any, i: any) => {
         setNum(i)
@@ -230,24 +228,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                     <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                                         {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow title="差异化排序" />}
                                                                     </span>
-                                                                    <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
-                                                                        title={
-                                                                            <span style={{ color: 'rgba(0,0,0,0.65)' }}>功能测试与基准组结果不一致越多差异化越大。
-                                                                                <br />规则如下：由上到下<br />
-                                                                                <div style={{ width: 320, height: 200, border: '1px solid #ccc' }}>
-                                                                                    <Row>
-                                                                                        <Col span={16}><div style={{ height: 40, lineHeight: '20px' }}><span style={{ height: 22, width: 88, textAlign: 'center', background: '#0089FF', borderRadius: 4, color: '#fff', float: 'right', margin: '8px 8px 0 0' }}>基准组</span></div></Col>
-                                                                                    </Row>
-                                                                                    <Row>
-                                                                                        <Col span={8}><div style={{ borderRight: '1px solid #ccc', height: 150, textAlign: 'center' }}><span style={{ paddingTop: 60, display: 'block' }}>由上到下</span></div></Col>
-                                                                                        <Col span={8}><div style={{ borderRight: '1px solid #ccc', height: 150, paddingLeft: 12 }}><p>pass</p><p>fail</p><p>fail</p><p>pass</p></div></Col>
-                                                                                        <Col span={8}><div style={{ height: 150, paddingLeft: 12 }}><p>fail</p><p>pass</p><p>fail</p><p>pass</p></div></Col>
-                                                                                    </Row>
-                                                                                </div>
-                                                                            </span>
-                                                                        }>
-                                                                        <QuestionCircleOutlined />
-                                                                    </Tooltip>
+                                                                    <DiffTootip />
                                                                 </Col>
                                                             }
                                                         </Row>
@@ -308,8 +289,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                     </EllipsisPulic>
                                                                 </CaseTitle>
                                                                 {
-                                                                    metricList?.map((item: any, idx: number) => {
-                                                                        return (
+                                                                    metricList?.map((item: any, idx: number) => (
                                                                             <CaseText gLen={group} key={idx}>
                                                                                 <Space size={16}>
                                                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
@@ -323,7 +303,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                                 }
                                                                             </CaseText>
                                                                         )
-                                                                    })
+                                                                    )
                                                                 }
                                                             </TestCase>
                                                             <ExpandSubcases

@@ -1,31 +1,28 @@
 import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
 import { Col, Button, message, Spin } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
-import TestEnv from './components/TestEnv';
-// import { resizeClientSize } from '@/utils/hooks'
 import { history, Access, useAccess } from 'umi';
-// import { writeDocumentTitle } from '@/utils/hooks';
-import { queryForm, compareForm } from './service';
+import { useScroll } from 'ahooks';
 import { UpOutlined } from '@ant-design/icons';
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport';
+import { queryForm, compareForm } from './service';
 import { queryCompareResultList, queryEenvironmentResultList } from '../AnalysisCompare/services';
+import TestEnv from './components/TestEnv';
 import PerformanceTest from './components/PerformanceTest';
 import FunctionalTest from './components/FunctionalTest';
-// import dataSouce from './JSON.js';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
 import _ from 'lodash';
 import { AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
-// import { CreatePageData, EditPageData } from './hooks';
-
-import { useScroll } from 'ahooks'
 
 const Report = (props: any) => {
     const { ws_id } = props.match.params
     const access = useAccess();
     const local = props.history.location
+    const form_search = window.location.search
     const id = local.query.form_id
-    const [testDataParam, setTestDataParam] = useState({})
+    const testDataRef = useRef(null)
+    const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
@@ -36,6 +33,7 @@ const Report = (props: any) => {
 
     const scrollDom = document.querySelector('.ant-layout-has-sider .ant-layout')
     const { top } = useScroll(scrollDom as any)
+    const group = allGroupData?.length
 
     useEffect(() => {
         window.addEventListener('resize', windowHeight)
@@ -56,7 +54,7 @@ const Report = (props: any) => {
     }
 
     useEffect(() => {
-        if (JSON.stringify(id) !== '{}' && id !== undefined) {
+        if (id && JSON.stringify(id) !== '{}') {
             queryCompareForm()
         } else {
             if (local.state && JSON.stringify(local.state) !== '{}') {
@@ -66,57 +64,90 @@ const Report = (props: any) => {
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
             }
         }
-    }, [id])
+    }, [id,local])
 
     const backTop = () => (document.querySelector('.ant-layout-has-sider .ant-layout') as any).scrollTop = 0
 
     const [compareResult, setCompareResult] = useState<any>({})
     const [environmentResult, setEnvironmentResult] = useState<any>({})
-
     const queryCompareResultFn = async (paramData: any) => {
         const result = await queryCompareResultList(paramData)
         return result
     }
-    const queryEenvironmentResultFn = async (paramData: any) => {
-        const result = await queryEenvironmentResultList(paramData)
-        return result
-    }
-    const handleData = () => {
+    const handleData = async() => {
         setLoading(true)
-        Promise.all([queryCompareResultFn(testDataParam), queryEenvironmentResultFn(paramEenvironment)])
+        const { perf_suite_dic, func_suite_dic } = testDataParam
+        let perfArr: any = []
+        let funcArr: any = []
+        if (perf_suite_dic && JSON.stringify(perf_suite_dic) !== '{}') {
+            Object.keys(perf_suite_dic).map((key: any) => {
+                perfArr.push({
+                    async_request: '1',
+                    suite_id: key,
+                    suite_info: perf_suite_dic[key]
+                })
+            })
+        }
+        if (func_suite_dic && JSON.stringify(func_suite_dic) !== '{}') {
+            Object.keys(func_suite_dic).map((key: any) => {
+                funcArr.push({
+                    async_request: '1',
+                    suite_id: key,
+                    suite_info: func_suite_dic[key]
+                })
+            })
+        }
+        let resLen:any = perfArr.length > funcArr.length  ? perfArr : funcArr
+        let obj = {
+            func_data_result:[],
+            perf_data_result:[]
+        }
+        resLen.map(( item : any, i : number ) => queryCompareResultFn({ func_suite_dic:funcArr[i], perf_suite_dic:perfArr[i] })
             .then(res => {
-                if (res[0].code == 200 && res[1].code == 200) {
-                    console.log(res)
-                    setCompareResult(res[0].data)
-                    setEnvironmentResult(res[1].data)
+                if(res.data.func_data_result ){
+                    obj.func_data_result = obj.func_data_result.concat(res.data.func_data_result)
+                }
+
+                if(res.data.perf_data_result ){
+                    obj.perf_data_result = obj.perf_data_result.concat(res.data.perf_data_result)
+                }
+
+                if (res.code == 200) {
+                    setCompareResult(obj)
                     setLoading(false)
                 }
-                if (res[1].code === 1358) {
-                    message.error('请添加对比组数据')
+
+                if (res.code !== 200) {
+                    message.error(res.msg)
                     return
                 }
-                if (res[0].code !== 200) {
-                    message.error(res[0].msg)
-                    return
-                }
-                if (res[1].code !== 200) {
-                    message.error(res[1].msg)
-                }
+
             })
             .catch((e) => {
                 setLoading(false)
                 message.error('请求失败')
                 console.log(e)
-            })
+            }))
+        const res = await queryEenvironmentResultList(paramEenvironment)
+        if (res.code == 200) {
+            setEnvironmentResult(res.data)
+            setLoading(false)
+        }
+        if (res.code === 1358) {
+            message.error('请添加对比组数据')
+            return
+        }
+        if (res.code !== 200) {
+            message.error(res.msg)
+        }
     }
     useEffect(() => {
         if (JSON.stringify(testDataParam) !== '{}' && JSON.stringify(paramEenvironment) !== '{}') {
             handleData()
         }
     }, [testDataParam, paramEenvironment])
-    //writeDocumentTitle(`Workspace.${props.route.name}`)
-    //window.document.title = saveReportData.name || 'T-one'
-    const form_search = window.location.search
+
+
     const handleShare = useCallback(
         async () => {
             let form_data: any = {
@@ -138,7 +169,7 @@ const Report = (props: any) => {
                 message.success('复制成功')
                 e.clearSelection();
             });
-            
+
             (document.querySelector('.test_result_copy_link') as any).click()
             clipboard.destroy()
         }, [allGroupData, baselineGroupIndex]
@@ -163,7 +194,6 @@ const Report = (props: any) => {
         })
     }
 
-    // console.log(compareResult)
     useEffect(() => {
         if (JSON.stringify(environmentResult) !== '{}') {
             const deep = _.cloneDeep(environmentResult)
@@ -175,9 +205,7 @@ const Report = (props: any) => {
         }
     }, [environmentResult])
 
-    const testDataRef = useRef(null)
-
-    let group = allGroupData?.length
+   
     return (
         <ReportContext.Provider
             value={{
@@ -187,6 +215,7 @@ const Report = (props: any) => {
                 compareResult,
                 envData,
                 ws_id,
+                group,
             }}
         >
             <Spin spinning={loading}>
@@ -197,7 +226,7 @@ const Report = (props: any) => {
                         position: 'relative'
                     }}
                 >
-                    <AnalysisWarpper style={{ width: group > 4 ? group * 300 : 1180 }}>
+                    <AnalysisWarpper style={{ width: group > 4 ? group * 300 : 1200 }}>
                         <Col span={24}>
                             <ResultTitle>
                                 <TypographyText>对比分析结果</TypographyText>
@@ -211,8 +240,8 @@ const Report = (props: any) => {
                                             :
                                             <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
                                     }
-                                    <Access accessible={access.wsRoleContrl()}> 
-                                        { form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
+                                    <Access accessible={access.wsRoleContrl()}>
+                                        {form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
                                     </Access>
                                 </span>
                             </ResultTitle>
@@ -229,7 +258,6 @@ const Report = (props: any) => {
                                             parentDom={testDataRef}
                                         />
                                     }
-                                    {/* { JSON.stringify(data) !== '{}' && <PerformanceTest scrollbarsRef={scrollbarsRef}/> } */}
                                     {
                                         JSON.stringify(compareResult.func_data_result) !== '{}' &&
                                         <FunctionalTest />

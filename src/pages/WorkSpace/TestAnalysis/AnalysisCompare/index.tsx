@@ -441,22 +441,22 @@ export default (props: any) => {
         setLoading(true)
         const confIdArr:any = handleCompareOk(suiteData).confIdArr
         const paramCompare = handleCompareOk(suiteData).paramData
-        
+        // queryCompareResultFn(paramCompare), queryEenvironmentResultFn(paramEenvironment)
         const paramEenvironment = handlEenvironment(suiteData)
-        Promise.all([queryCompareResultFn(paramCompare), queryEenvironmentResultFn(paramEenvironment),queryDomainGroupFn(confIdArr)])
+        Promise.all([queryDomainGroupFn(confIdArr)])
             .then((result: any) => {
                 setLoading(false)
-                if (result[0].code === 200 && result[1].code === 200 && result[2].code === 200) {
+                if (result[0].code === 200) {
                     history.push({
                         pathname: `/ws/${ws_id}/test_analysis/result`,
                         state: {
                             wsId: ws_id,
-                            environmentResult: result[1].data,
+                            // environmentResult: result[1].data,
                             baselineGroupIndex: baselineGroupIndex,
                             allGroupData: handleGroupData(),
-                            compareResult: _.cloneDeep(result[0].data),
+                            // compareResult: _.cloneDeep(result[0].data),
                             compareGroupData: paramEenvironment.compare_groups,
-                            domainGroupResult: result[2].data,
+                            domainGroupResult: result[0].data,
                             testDataParam:paramCompare,
                             envDataParam:paramEenvironment,
                         }
@@ -464,17 +464,17 @@ export default (props: any) => {
                     window.sessionStorage.setItem('compareData', JSON.stringify(groupData))
                     return
                 }
-                if (result[1].code === 1358) {
-                    message.error('请添加对比组数据')
-                    return
-                }
-                if (result[0].code !== 200) {
-                    message.error(result[0].msg)
-                    return
-                }
-                if (result[1].code !== 200) {
-                    message.error(result[1].msg)
-                }
+                // if (result[1].code === 1358) {
+                //     message.error('请添加对比组数据')
+                //     return
+                // }
+                // if (result[0].code !== 200) {
+                //     message.error(result[0].msg)
+                //     return
+                // }
+                // if (result[1].code !== 200) {
+                //     message.error(result[1].msg)
+                // }
             })
             .catch((e) => {
                 setLoading(false)

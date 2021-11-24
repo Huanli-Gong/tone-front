@@ -107,7 +107,7 @@ const ConfChart: React.FC<ConfChartProp> = ({ setLegend, legend, envData, loadin
                             (metric: any, idx: any) => (
                                 <Spin spinning={loading}>
                                     <TypeChart
-                                    setLegend={setLegend}
+                                    // setLegend={setLegend}
                                     name={legend}
                                     envData={envData}
                                     key={idx}
@@ -127,7 +127,7 @@ const ConfChart: React.FC<ConfChartProp> = ({ setLegend, legend, envData, loadin
                         <NoTypeChart chartType={chartType} data={['']} is_active={is_active} />
                         :
                         <TypeChart
-                        setLegend={setLegend}
+                        // setLegend={setLegend}
                         name={legend}
                         envData={envData}
                         chartType={chartType}
@@ -190,6 +190,9 @@ const ChartModal = (props: any) => {
     }
     const handleToggle = (name: any) => {
         setLegend(name)
+        setTimeout(() => {
+            setLegend('')
+        }, 100)
     }
     const legData = useMemo(() => {
         let color = ['#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB']
@@ -281,7 +284,7 @@ const ChartModal = (props: any) => {
                                                 </div>
                                                 <Spin spinning={loading}>
                                                 <TypeChart
-                                                    setLegend={setLegend}
+                                                    // setLegend={setLegend}
                                                     name={legend}
                                                     key={idx}
                                                     envData={envData}
@@ -331,7 +334,7 @@ const ChartModal = (props: any) => {
                                             {
                                                 chartConf !== null && 
                                                     <ConfChart 
-                                                        setLegend={setLegend} 
+                                                        // setLegend={setLegend} 
                                                         legend={legend} 
                                                         envData={envData} 
                                                         loading={loading} 
