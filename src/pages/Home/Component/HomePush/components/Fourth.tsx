@@ -7,7 +7,7 @@ export default ({ style={}, }) => {
 
   const contextList = [
     { 
-      text: 'OS发布测试，每次AnolisOS的发布，社区测试团队会根据发布测试策略进行大规模测试，保障产品发布质量，外部用户可以在Testfarm查看发布测试数据。',
+      text: '每次AnolisOS的发布，社区测试团队会根据发布测试策略进行大规模测试，保障产品发布质量，外部用户可以在Testfarm查看发布测试数据。',
       img: <FourthLocation />
     },
     { 
@@ -40,7 +40,7 @@ export default ({ style={}, }) => {
     <div className={styles['fourth-root']} style={style}>
         <h1 className={styles['fourth-header']}>应用场景</h1>
         <div className={styles['fourth-content']}>
-          {['OS发布测试', '开源软件包CI', '自定义测试', '离线测试', '独立部署', '登陆测试环境', '缺陷定位诊断'].map((item, index)=>
+          {['Release测试', '开源软件包CI', '自定义测试', '离线测试', '独立部署', '登陆测试环境', '缺陷定位诊断'].map((item, index)=>
             <div className={selectedKey === index ? `${styles.menuItem} ${styles.selectedMenu}` : styles.menuItem} key={index} 
               onClick={()=> { setSelectedKey(index) }}>
               {item}
