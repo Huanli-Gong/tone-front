@@ -58,7 +58,7 @@ export default forwardRef((props: any, ref: any ) => {
         title={null}
         visible={visible}
         maskClosable={false}
-        closeIcon={openInitial ? <span className={styles.close_btn_text}>{current == 3 ? '进入系统' : '跳过'}</span> : null}
+        closeIcon={openInitial ? <span className={styles.close_btn_text}>{current == 3 ? '进入T-One' : '跳过'}</span> : null}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
@@ -87,8 +87,8 @@ export default forwardRef((props: any, ref: any ) => {
             <Fourth style={contentStyle} />
           </div>
         </Carousel>
-        <LeftOutlined className={styles.prev} style={current == 0 ? {opacity: 0.2} : {}} onClick={prevClick} />
-        <RightOutlined className={styles.next} style={current == 3 ? {opacity: 0.2} : {}} onClick={nextClick} />
+        <LeftOutlined className={styles.prev} style={current == 0 ? {opacity: 0.05} : {}} onClick={prevClick} />
+        <RightOutlined className={styles.next} style={current == 3 ? {opacity: 0.05} : {}} onClick={nextClick} />
       </Modal>
     </div>
   )
