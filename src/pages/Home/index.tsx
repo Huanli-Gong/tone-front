@@ -331,9 +331,9 @@ export default (): React.ReactNode => {
                         <Row>
                             <Space>
                                 <Typography.Text style={{ color: 'rgba(0,0,0,0.50)' }}>新一代自动化测试系统T-One(test in one),可以进行一站式自动化测试集成、管理、执行、分析；方便扩展各种产品测试。</Typography.Text>
-                                <Button className={styles.homePushButton} onClick={()=> { homePushRef?.current?.show({ initial: false}) }}>
+                                <span className={styles.homePushButton} onClick={()=> { homePushRef?.current?.show({ initial: false}) }}>
                                     查看系统介绍
-                                </Button>
+                                </span>
                             </Space>
                         </Row>
                     </Row>
