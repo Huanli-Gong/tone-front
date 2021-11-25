@@ -54,7 +54,7 @@ export default ({ style={}, }) => {
                   <div className={styles.menuItem}>测试分析</div>
                   <div className={styles.menuItem}>测试报告</div>
                 </div>
-                <div className={styles.menu_content} style={{marginTop: 6,}}>
+                <div className={styles.menu_content} style={{marginTop: 10,}}>
                   <div className={styles.menuItem}>用例集成认证</div>
                   <div className={styles.menuItem}>测试流程管理</div>
                   <div className={styles.menuItem}>Workspace管理</div>
@@ -92,7 +92,7 @@ export default ({ style={}, }) => {
                   <div className={styles.menuItem}>业务测试</div>
                   <div className={styles.menuItem}>云上测试</div>
                 </div>
-                <div className={styles.menu_content} style={{marginTop: 6}}>
+                <div className={styles.menu_content} style={{marginTop: 10}}>
                   <div className={styles.menuItem}>分布式任务调度</div>
                   <div className={styles.menuItem}>DAG流程引擎</div>
                   <div className={styles.menuItem}>Tone wrapper</div>

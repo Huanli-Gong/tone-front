@@ -87,8 +87,8 @@ export default forwardRef((props: any, ref: any ) => {
             <Fourth style={contentStyle} />
           </div>
         </Carousel>
-        {current !== 0 && <LeftOutlined className={styles.prev} onClick={prevClick} />}
-        {current !== 3 && <RightOutlined className={styles.next} onClick={nextClick} />}
+        <LeftOutlined className={styles.prev} style={current == 0 ? {opacity: 0.2} : {}} onClick={prevClick} />
+        <RightOutlined className={styles.next} style={current == 3 ? {opacity: 0.2} : {}} onClick={nextClick} />
       </Modal>
     </div>
   )
