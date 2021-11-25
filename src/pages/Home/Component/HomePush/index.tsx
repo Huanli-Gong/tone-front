@@ -14,7 +14,6 @@ export default forwardRef((props: any, ref: any ) => {
   const [current, setCurrent] = useState(0);
   const [openInitial, setOpenInitial] = useState(false);
   const carouselRef = useRef<any>(null);
-  console.log('current:', current)
    
   useImperativeHandle(ref, ()=> ({
     show: ({ initial }: any) => {
