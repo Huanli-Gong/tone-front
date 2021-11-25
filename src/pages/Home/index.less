@@ -1,16 +1,16 @@
 .welcome {
+    display: block;
     height: 110px;
     background: #FFFFFF;
     border-radius: 2px;
-    background-color: #FFFFFF;
-    margin-bottom: 20px;
-    background: url('~@/assets/img/bg.png') no-repeat center center / 100% 100%;
-    flex-direction : column;
+    // background-color: #FFFFFF;
+    // margin-bottom: 20px;
+    // background: url('~@/assets/img/bg.png') no-repeat center center / 100% 100%;
+    // flex-direction : column;
     padding-left: 20px;
     padding-top: 20px;
     padding-bottom: 20px;
     position: relative;
-    min-width: 1240px;
     h2 {
         height: 32px;
         font-family: PingFangSC-Regular;
@@ -82,7 +82,19 @@
     padding: 20px;
     background: #f0f2f5;
     .welcome_box{
-        min-width: 1260px
+        min-width: 1260px;
+        margin-bottom: 20px;
+        background: #fff;
+        display: flex;
+        justify-content: space-between;
+        .homePushButton { opacity: 0.65; }
+        .homePushButton:hover { opacity: 1; }
+
+        .home_push_background_img {
+            height: 112px;
+            width: 262px;
+            margin-right: 42px;
+        }
     }
     .showName{
         display: inline-block;
