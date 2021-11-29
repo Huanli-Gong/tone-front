@@ -74,14 +74,14 @@ export default ({ style={}, }) => {
           {/** 第三行 */}
           <div className={styles.row}>
             <div className={styles.left}>
-              <div className={styles.project} style={{height: 112,background: '#FF8134'}}>
+              <div className={styles.project} style={{height: 112}}>
                 <div>tone-runner</div>
                 <div>分布式任务执</div>
                 <div>行引擎</div>
               </div>
               <div className={styles.bridge}>
-                <div className={styles.globule} style={{background: '#FF8134'}}></div>
-                <div className={styles.line} style={{background: '#FF8134'}}></div>
+                <div className={styles.globule}></div>
+                <div className={styles.line}></div>
               </div>
             </div>
             <div className={styles.right}>
