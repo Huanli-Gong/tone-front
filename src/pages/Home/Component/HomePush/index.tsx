@@ -53,7 +53,7 @@ export default forwardRef((props: any, ref: any ) => {
   };
 
   return (
-    <div>
+    <div className={styles.HomePush_Modal_root}>
       <Modal className={styles.HomePush_root}
         title={null}
         visible={visible}
@@ -64,6 +64,7 @@ export default forwardRef((props: any, ref: any ) => {
         footer={null}
         width={1340}
         bodyStyle={{ height:704, padding:'50px 75px 0 75px',position: 'relative' }}
+        style={{ background: '#f00'}}
       >
 
         <Carousel ref={carouselRef}

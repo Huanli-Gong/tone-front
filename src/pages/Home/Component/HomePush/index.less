@@ -1,6 +1,15 @@
 
+// 对话框 
+  :global(.ant-modal-wrap) { 
+    display: flex;
+    align-items: center;
+  }
+
 .HomePush_root {
   min-width: 1340px;
+  // 覆盖原来组件样式。
+  top: unset;
+  padding-bottom: unset;
 
   // 轮播小点
   :global(.ant-carousel .slick-dots li.slick-active button) { 
