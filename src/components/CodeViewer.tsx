@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import marked from 'marked';
+import { marked } from 'marked';
 
 import 'highlight.js/styles/default.css'
 import 'highlight.js/styles/github.css'
