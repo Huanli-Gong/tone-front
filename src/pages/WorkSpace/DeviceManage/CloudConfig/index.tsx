@@ -226,6 +226,38 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
+            title: '资源组ID',
+            width: 120,
+            dataIndex: 'resource_group_id',
+            ellipsis: true,
+            filterDropdown: ({ confirm }: any) => <SearchInput
+                confirm={confirm}
+                autoFocus={autoFocus}
+                styleObj={styleObj}
+                onConfirm={(val: any) => { setFetchParams({ ...fetchParams, resource_group_id: val }) }}
+                currentBaseline={{ server_provider: ws_id, test_type: key, id: 'resource_group_id' }}
+                placeholder="支持搜索资源组ID"
+            />,
+            onFilterDropdownVisibleChange: (visible: any) => {
+                if (visible) {
+                    setFocus(!autoFocus)
+                }
+            },
+            filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
+            render: (_, row: any) => {
+                return (
+                    <PopoverEllipsis title={row.resource_group_id} >
+                        <Highlighter
+                            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                            searchWords={[fetchParams.resource_group_id || '']}
+                            autoEscape
+                            textToHighlight={row.resource_group_id}
+                        />
+                    </PopoverEllipsis>
+                )
+            }
+        },
+		{
 			title: () => (
 				<CheckboxColumnFilterTitle
 					title="云服务商"

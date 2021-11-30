@@ -14,6 +14,7 @@ export default forwardRef(
         const [nameStatus, setNameStatus] = useState(true) // 校验名称是否为空
         const [idStatus, setIDStatus] = useState(true) // 校验名称是否为空
         const [keyStatus, setKeytatus] = useState(true) // 校验名称是否为空
+        const [resourceId, setResourceId] = useState(true) // 校验名称是否为空
         const [providerStatus, setProviderStatus] = useState(true) // 校验名称是否为空
         const [queryNameStatus, setQuerynameStatus] = useState(true) // 校验名称重复的校验
         useImperativeHandle(
@@ -69,6 +70,10 @@ export default forwardRef(
             }
             if (!form.getFieldValue('access_key')) {
                 setKeytatus(false)
+                return
+            }
+            if (!form.getFieldValue('resource_group_id')) {
+                setResourceId(false)
                 return
             }
             setPadding(true)
@@ -191,11 +196,20 @@ export default forwardRef(
                             setKeytatus(true)
                         }} />
                     </Form.Item>
+                    {/* 开源和社区版需要 */}
                     <Form.Item
                         label="资源组ID"
                         name="resource_group_id"
+                        validateStatus={(!resourceId) && 'error'}
+                        help={(!resourceId && `资源组ID不能为空`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入资源组ID" />
+                        <Input autoComplete="auto" placeholder="请输入资源组ID" onChange={(e) => {
+                            if (!e.target.value) {
+                                setResourceId(false)
+                                return
+                            }
+                            setResourceId(true)
+                        }}/>
                     </Form.Item>
                     <Form.Item label="描述（选填）" name="description">
                         <Input.TextArea placeholder="请输入描述信息" />
