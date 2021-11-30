@@ -52,11 +52,13 @@
       line-height: 24px;
     }
     .img {
-      height: 306px;
       width: 576px;
-      background: #D8D8D8;
-      border-radius: 10px;
-      background-color: #D8D8D8;
+      height: 306px;
+      // background-color: #D8D8D8;
+      & > img {
+        width: auto;
+        height: 306px;
+      }
     }
   }
 }
