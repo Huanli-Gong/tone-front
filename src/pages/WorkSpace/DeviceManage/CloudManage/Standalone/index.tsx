@@ -235,9 +235,7 @@ export default (props: any) => {
                             String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row },false)}>{'删除'}</Button>
                         }
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row },String(type) !== '0')}>{type == '0' ? '删除' : '释放'}</Button>
-                        <PermissionTootip>
-                            <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
-                        </PermissionTootip>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },
         ]
@@ -333,185 +331,182 @@ export default (props: any) => {
             setType(is_instance ? '1' : '0')
         }
     }
+    // useEffect(() => {
+    //     const columns: any = [
+    //         {
+    //             title: type - 0 === 0 ? '配置名称' : '实例名称',
+    //             fixed: 'left',
+    //             width: 140,
+    //             dataIndex: 'name',
+    //             filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
+    //             onFilterDropdownVisibleChange: ( visible  :any ) => {
+    //                 if (visible) {
+    //                     setFocus(!autoFocus)
+    //                 }
+    //             },
+    //             filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
+    //             render: (_:any, row:any) => (
+    //                 <EllipsisPulic title={row.name}>
+    //                     <Highlighter
+    //                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+    //                         searchWords={[name || '']}
+    //                         autoEscape
+    //                         textToHighlight={row.name.toString()}
+    //                     />
+    //                 </EllipsisPulic>
+    //             )
+    //         },
+    //         {
+    //             title: 'IP',
+    //             dataIndex: 'private_ip', // pub_ip
+    //             width: type == '0' ? 0 : 140,
+    //             // hideInTable: !(type - 0),
+    //             render: (text:any, row:any) => <EllipsisPulic title={text}/>
+    //         },
+    //         {
+    //             title: 'SN',
+    //             dataIndex: 'sn',
+    //             width: type == '0' ? 0 : 140,
+    //             // hideInTable: !(type - 0),
+    //             render: (_:any, row:any) => <EllipsisPulic title={row.sn}/>
+    //         },
 
-    useEffect(() => {
-        const columns: any = [
-            {
-                title: type - 0 === 0 ? '配置名称' : '实例名称',
-                fixed: 'left',
-                width: 140,
-                dataIndex: 'name',
-                filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
-                onFilterDropdownVisibleChange: ( visible  :any ) => {
-                    if (visible) {
-                        setFocus(!autoFocus)
-                    }
-                },
-                filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
-                render: (_:any, row:any) => (
-                    <EllipsisPulic title={row.name}>
-                        <Highlighter
-                            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[name || '']}
-                            autoEscape
-                            textToHighlight={row.name.toString()}
-                        />
-                    </EllipsisPulic>
-                )
-            },
-            {
-                title: 'IP',
-                dataIndex: 'private_ip', // pub_ip
-                width: type == '0' ? 0 : 140,
-                // hideInTable: !(type - 0),
-                render: (text:any, row:any) => <EllipsisPulic title={text}/>
-            },
-            {
-                title: 'SN',
-                dataIndex: 'sn',
-                width: type == '0' ? 0 : 140,
-                // hideInTable: !(type - 0),
-                render: (_:any, row:any) => <EllipsisPulic title={row.sn}/>
-            },
-
-            {
-                title: '云厂商/Ak',
-                dataIndex: 'manufacturer',
-                width: 160,
-                ellipsis: true,
-                render: (_:any, row:any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`}/>
-            },
-            {
-                title: 'Region/Zone',
-                width: 160,
-                dataIndex: 'region',
-                ellipsis: true,
-                render: (_:any, row:any) => <EllipsisPulic title={`${row.region}/${row.zone}`}/>
-            },
-            {
-                title: '规格',
-                width: 110,
-                dataIndex: 'instance_type',
-                render: (_:any, row:any) => <EllipsisPulic title={row.instance_type}/>
-            },
-            {
-                title: '镜像',
-                dataIndex: 'image',
-                width: 160,
-                render: (_:any, row:any) => <EllipsisPulic title={row.image}>{row.image_name}</EllipsisPulic>
-            },
-            {
-                title: '带宽',
-                width: 70,
-                dataIndex: 'bandwidth',
-            },
-            {
-                title: '数据盘',
-                dataIndex: 'storage_type',
-                width: 90,
-                render: (_:any, row:any) => <DataSetPulic name={row.storage_type} />
-            },
-            {
-                title: '用完释放',
-                align: 'center',
-                dataIndex: 'release_rule',
-                width: 90,
-                hideInTable: !!(type - 0),
-                render: (_:any, row:any) => <div>{row.release_rule ? '是' : '否'}</div>
-            },
-            {
-                title: 'Console配置',
-                width: 100,
-                dataIndex: 'console_conf',
-                render: (_:any, row:any) => <EllipsisPulic title={_} />
-            },
-            {
-                title: '控制通道',
-                width : 100,
-                dataIndex: 'channel_type',
-            },
-            {
-                title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
-                dataIndex: 'state',
-                width : 100,
-                hideInTable: !(type - 0),
-                render: StateBadge,
-            },
-            {
-                title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
-                width : 100,
-                dataIndex: 'real_state',
-                hideInTable: !(type - 0),
-                render: StateBadge,
-            },
-            {
-                title: 'Owner',
-                width : 120,
-                dataIndex: 'owner_name',
-                filterIcon: () => <FilterFilled style={{ color: owner ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setPage(1), setOwner(val) }} />,
-            },
-            {
-                title: '标签',
-                dataIndex: 'tags',
-                width: 140,
-                filterIcon: () => <FilterFilled style={{ color: tags && tags.length > 0 ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => <SelectTags run_mode={'standalone'} autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setPage(1), setTags(val) }} />,
-                render: (_:any, row:any) => <div>
-                    {
-                        row.tag_list.map((item: any, index: number) => {
-                            return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
-                        })
-                    }
-                    {
-                        row.tag_list.length == 0 ? '-' : ''
-                    }
-                </div>
-            },
-            {
-                title: '备注',
-                width: 140,
-                dataIndex: 'description',
-                filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setDescription(val) }} />,
-                onFilterDropdownVisibleChange: ( visible : any ) => {
-                    if (visible) {
-                        setFocus(!autoFocus)
-                    }
-                },
-                render: (_:any, row:any) => (
-                    <EllipsisPulic title={row.description} >
-                        <Highlighter
-                            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[description || '']}
-                            autoEscape
-                            textToHighlight={row.description ? row.description.toString() : '-'}
-                        />
-                    </EllipsisPulic>
-                )
-            },
-            {
-                title: '操作',
-                fixed: 'right',
-                valueType: 'option',
-                dataIndex: 'id',
-                width: type == '0' ? 170 : 240,
-                render: (_:any, row:any) =>
-                    <Space>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }}  onClick={() => viewDetailRef.current.show(row, type)}>详情</Button>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }}>编辑</Button>
-                        { String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>deployClick([row.private_ip] || [])}>部署</Button>}
-                        { String(type) !== '0' &&  <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row },false)}>{'删除'}</Button> }
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row },String(type) !== '0')}>{type == '0' ? '删除' : '释放'}</Button>
-                        <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
-                    </Space>,
-            },
-        ];
-        setTableColumns(columns.reduce((p:any, c:any) => c.width ? p.concat(c) : p, []))
-    }, [type])
-
+    //         {
+    //             title: '云厂商/Ak',
+    //             dataIndex: 'manufacturer',
+    //             width: 160,
+    //             ellipsis: true,
+    //             render: (_:any, row:any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`}/>
+    //         },
+    //         {
+    //             title: 'Region/Zone',
+    //             width: 160,
+    //             dataIndex: 'region',
+    //             ellipsis: true,
+    //             render: (_:any, row:any) => <EllipsisPulic title={`${row.region}/${row.zone}`}/>
+    //         },
+    //         {
+    //             title: '规格',
+    //             width: 110,
+    //             dataIndex: 'instance_type',
+    //             render: (_:any, row:any) => <EllipsisPulic title={row.instance_type}/>
+    //         },
+    //         {
+    //             title: '镜像',
+    //             dataIndex: 'image',
+    //             width: 160,
+    //             render: (_:any, row:any) => <EllipsisPulic title={row.image}>{row.image_name}</EllipsisPulic>
+    //         },
+    //         {
+    //             title: '带宽',
+    //             width: 70,
+    //             dataIndex: 'bandwidth',
+    //         },
+    //         {
+    //             title: '数据盘',
+    //             dataIndex: 'storage_type',
+    //             width: 90,
+    //             render: (_:any, row:any) => <DataSetPulic name={row.storage_type} />
+    //         },
+    //         {
+    //             title: '用完释放',
+    //             align: 'center',
+    //             dataIndex: 'release_rule',
+    //             width: 90,
+    //             hideInTable: !!(type - 0),
+    //             render: (_:any, row:any) => <div>{row.release_rule ? '是' : '否'}</div>
+    //         },
+    //         {
+    //             title: 'Console配置',
+    //             width: 100,
+    //             dataIndex: 'console_conf',
+    //             render: (_:any, row:any) => <EllipsisPulic title={_} />
+    //         },
+    //         {
+    //             title: '控制通道',
+    //             width : 100,
+    //             dataIndex: 'channel_type',
+    //         },
+    //         {
+    //             title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
+    //             dataIndex: 'state',
+    //             width : 100,
+    //             hideInTable: !(type - 0),
+    //             render: StateBadge,
+    //         },
+    //         {
+    //             title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
+    //             width : 100,
+    //             dataIndex: 'real_state',
+    //             hideInTable: !(type - 0),
+    //             render: StateBadge,
+    //         },
+    //         {
+    //             title: 'Owner',
+    //             width : 120,
+    //             dataIndex: 'owner_name',
+    //             filterIcon: () => <FilterFilled style={{ color: owner ? '#1890ff' : undefined }} />,
+    //             filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setPage(1), setOwner(val) }} />,
+    //         },
+    //         {
+    //             title: '标签',
+    //             dataIndex: 'tags',
+    //             width: 140,
+    //             filterIcon: () => <FilterFilled style={{ color: tags && tags.length > 0 ? '#1890ff' : undefined }} />,
+    //             filterDropdown: ({ confirm }: any) => <SelectTags run_mode={'standalone'} autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setPage(1), setTags(val) }} />,
+    //             render: (_:any, row:any) => <div>
+    //                 {
+    //                     row.tag_list.map((item: any, index: number) => {
+    //                         return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+    //                     })
+    //                 }
+    //                 {
+    //                     row.tag_list.length == 0 ? '-' : ''
+    //                 }
+    //             </div>
+    //         },
+    //         {
+    //             title: '备注',
+    //             width: 140,
+    //             dataIndex: 'description',
+    //             filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
+    //             filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setDescription(val) }} />,
+    //             onFilterDropdownVisibleChange: ( visible : any ) => {
+    //                 if (visible) {
+    //                     setFocus(!autoFocus)
+    //                 }
+    //             },
+    //             render: (_:any, row:any) => (
+    //                 <EllipsisPulic title={row.description} >
+    //                     <Highlighter
+    //                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+    //                         searchWords={[description || '']}
+    //                         autoEscape
+    //                         textToHighlight={row.description ? row.description.toString() : '-'}
+    //                     />
+    //                 </EllipsisPulic>
+    //             )
+    //         },
+    //         {
+    //             title: '操作',
+    //             fixed: 'right',
+    //             valueType: 'option',
+    //             dataIndex: 'id',
+    //             width: type == '0' ? 170 : 240,
+    //             render: (_:any, row:any) =>
+    //                 <Space>
+    //                     <Button type="link" style={{ padding: 0, height: 'auto' }}  onClick={() => viewDetailRef.current.show(row, type)}>详情</Button>
+    //                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }}>编辑</Button>
+    //                     { String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>deployClick([row.private_ip] || [])}>部署</Button>}
+    //                     { String(type) !== '0' &&  <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row },false)}>{'删除'}</Button> }
+    //                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row },String(type) !== '0')}>{type == '0' ? '删除' : '释放'}</Button>
+    //                     <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
+    //                 </Space>,
+    //         },
+    //     ];
+    //     setTableColumns(columns.reduce((p:any, c:any) => c.width ? p.concat(c) : p, []))
+    // }, [type])
     const [tableColumns, setTableColumns] = useState<any>([])
-
     return (
 
         <div className={styles.warp}>
