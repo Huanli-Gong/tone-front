@@ -191,6 +191,12 @@ export default forwardRef(
                             setKeytatus(true)
                         }} />
                     </Form.Item>
+                    <Form.Item
+                        label="资源组ID"
+                        name="resource_group_id"
+                        rules={[{ required: true }]}>
+                        <Input autoComplete="auto" placeholder="请输入资源组ID" />
+                    </Form.Item>
                     <Form.Item label="描述（选填）" name="description">
                         <Input.TextArea placeholder="请输入描述信息" />
                     </Form.Item>
