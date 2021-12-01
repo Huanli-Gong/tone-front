@@ -10,9 +10,9 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
             name,
             type: "legendToggleSelect"
         });
-        setTimeout(() => {
-            setLegend('')
-        }, 300)
+        // setTimeout(() => {
+        //     setLegend('')
+        // }, 300)
     }, [name])
 
     const handleColor = (name: any) => {
@@ -269,9 +269,10 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                     formatter: function (value:any) {
                         if (value >= 10000 && value < 10000000) {
                             value = value / 10000 + "w";
-                        } else if (value >= 10000000) {
-                            value = value / 10000000 + "kw";
-                        }
+                        } 
+                        // else if (value >= 10000000) {
+                        //     value = value / 10000000 + "kw";
+                        // }
                         return value;
                     }
                 },
@@ -296,28 +297,7 @@ const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, l
                     end: dataZoom_end,
                     preventDefaultMouseMove: false,
                 }],
-            // dataZoom: [{
-            //     show: chartType !== '1',
-            //     realtime: true,
-            //     start: 0,
-            //     end: rageMax,
-            //     left: '20%',
-            //     height: 8,
-            //     right: '20%',
-            // },
-            // {
-            //     id: 'dataZoomX',
-            //     type: 'slider',
-            //     xAxisIndex: [0],
-            //     filterMode: 'filter'
-            // },
-            // {
-            //     type: 'inside',
-            //     realtime: true,
-            //     zoomOnMouseWheel: false,
-            //     start: 0,
-            //     end: rageMax
-            // }],
+            
         })
         //myChart.hideLoading()
     }, [chartType])

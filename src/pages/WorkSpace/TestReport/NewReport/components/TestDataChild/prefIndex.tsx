@@ -46,7 +46,7 @@ const { Option } = Select;
 
 const Performance = (props: any) => {
     const { child, name, id, onChange, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, setEditBtn, environmentResult } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, environmentResult } = useContext(ReportContext)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
     const [chartType, setChartType] = useState('1')
@@ -147,7 +147,6 @@ const Performance = (props: any) => {
     }
 
     const handleDelete = (name: string, row: any, rowKey: any) => {
-        setEditBtn(true)
         if (name == 'suite') {
             setDataSource(dataSource.map((item: any) => {
                 if (item.is_group) {

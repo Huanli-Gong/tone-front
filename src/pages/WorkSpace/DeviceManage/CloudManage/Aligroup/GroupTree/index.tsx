@@ -5,6 +5,7 @@ import { queryClusterMachine, delGroupMachine, queryCloudType, editGroupMachine 
 import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
+import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
 // import PermissionTootip from '@/components/Public/Permission/index';
@@ -175,6 +176,16 @@ const GroupTree: React.FC<any> = (props) => {
             width: 110,
         },
         {
+            title: '机器状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+        },
+        {
+            title: '实际状态',
+            width  :120,
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+        },
+        {
             title: '备注',
             width: 120,
             dataIndex: 'description',
@@ -199,10 +210,10 @@ const GroupTree: React.FC<any> = (props) => {
                 >
                     <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
                 </Popconfirm>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
                 {/* <PermissionTootip>
                     <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
                 </PermissionTootip> */}
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
             </Space>,
         },
     ];

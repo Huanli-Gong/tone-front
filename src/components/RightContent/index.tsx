@@ -7,7 +7,10 @@ import { ReactComponent as MessageIcon } from '@/assets/svg/Nav/icon_notice.svg'
 import { ReactComponent as SettingIcon } from '@/assets/svg/Nav/icon_ws_setting.svg'
 import PersonCenter from './PersonCenter';
 import TaskInform from './components/TaskInform'
-import SystemInform from './components/SystemInform'
+import SystemInform from './components/SystemInform';
+import { allTagRead, allTagApplyRead } from '@/services/Workspace';
+import { requestCodeMessage } from '@/utils/utils';
+
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, wsId }) => {
@@ -43,6 +46,16 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     const jumpPage = async () => {
         history.push(`/ws/${wsId}/config`)
     }
+
+    const handleAllRead = async () => {
+        const data =  tab == '1' ? await allTagRead() : await allTagApplyRead()
+        if (data.code === 200) {
+            setTab(tab)
+            increment()
+        } else {
+            requestCodeMessage(data.code, data.msg)
+        }
+    }
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
@@ -66,7 +79,17 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                     overlay={
                         <Menu>
                             <div className={styles.msg_warp}>
-                                <Tabs defaultActiveKey={tab} onTabClick={handleTabClick} style={{ width: 384, height: 'auto' }} >
+                                <Tabs 
+                                    defaultActiveKey={tab} 
+                                    onTabClick={handleTabClick} 
+                                    style={{ width: 384, height: 'auto' }} 
+                                    tabBarExtraContent={
+                                        <Button type="link" 
+                                            onClick={handleAllRead} 
+                                            disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
+                                        >
+                                            全部已读
+                                        </Button>}>
                                     <Tabs.TabPane key="1" tab={<Badge dot={msgNum.task_msg_state}>任务通知</Badge>}>
                                         <TaskInform tab={tab} />
                                     </Tabs.TabPane>

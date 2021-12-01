@@ -66,7 +66,7 @@ const ReportTestEnv = () => {
             <EnvGroup>
                 <EnvGroupL>对比组名称</EnvGroupL>
                 {
-                    Array.isArray(envData) && envData.length > 0 && envData.map((item: any, idx: number) => {
+                    Array.isArray(envData) && !!envData.length && envData.map((item: any, idx: number) => {
                         return (
                             <EnvGroupR gLen={group} key={idx}>
                                 <Space>
@@ -84,7 +84,7 @@ const ReportTestEnv = () => {
                     <MachineGroup key={i}>
                         <MachineGroupL style={{ background: '#fafafa' }}>IP/SN</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx && <MachineGroupR style={{ background: '#fafafa', color: '#1890FF' }} gLen={group} key={idx}>
@@ -95,7 +95,7 @@ const ReportTestEnv = () => {
                         }
                         <MachineGroupL>机型</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx && <MachineGroupR gLen={group} key={idx}>
@@ -106,7 +106,7 @@ const ReportTestEnv = () => {
                         }
                         <MachineGroupL>RPM</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return  server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx && <MachineGroupR gLen={group} key={idx}>
@@ -124,7 +124,7 @@ const ReportTestEnv = () => {
                         }
                         <MachineGroupL>GCC</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return  server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx &&  <MachineGroupR gLen={group} key={idx}>

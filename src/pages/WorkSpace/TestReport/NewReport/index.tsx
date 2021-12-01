@@ -12,6 +12,7 @@ import { resizeClientSize } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 // import { writeDocumentTitle } from '@/utils/hooks';
 import { editReport, saveReport, detailTemplate, reportDetail } from '../services';
+import { FixedSizeList as List } from 'react-window';
 import { history, useAccess, Access } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 import { ReportContext } from './Provider';
@@ -24,7 +25,6 @@ const Report = (props: any) => {
     const { ws_id } = props.match.params
     const [btnState, setBtnState] = useState<Boolean>(false)
     const [btnConfirm, setBtnConfirm ] = useState<boolean>(false)
-    const [editBtn,setEditBtn] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
     const { windowHeight } = resizeClientSize()
     const access = useAccess();
@@ -49,8 +49,6 @@ const Report = (props: any) => {
         summaryData,
         domainResult,
         setDomainResult,
-        compareResult,
-        domainGroupResult,
         loading,
         saveReportData,
         queryReport,
@@ -185,7 +183,6 @@ const Report = (props: any) => {
             summaryData,
             environmentResult,
             collapsed,
-            setEditBtn,
             // groupRowRef,
             // fixedRow,
             bodyRef,
@@ -214,12 +211,11 @@ const Report = (props: any) => {
                                         </>
                                         :
                                         <>
-                                        { domainResult?.need_test_summary && <ReportSummary /> }
-                                        { domainResult?.need_test_env && <ReportTestEnv /> }
-                                        <ReportTestPref />
+                                            { domainResult?.need_test_summary && <ReportSummary /> }
+                                            { domainResult?.need_test_env && <ReportTestEnv /> }
+                                            <ReportTestPref />
                                         </>
                                     }
-                                   
                                 </div>
                             </Col>
                         </ReportWarpper>

@@ -203,12 +203,12 @@ export default forwardRef(
                         validateStatus={(!resourceId) && 'error'}
                         help={(!resourceId && `资源组ID不能为空`)}
                         rules={[{ required: true }]}>
-                       <Input autoComplete="auto" placeholder="请输入资源组ID" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入资源组ID" onChange={(e) => {
                             if (!e.target.value) {
                                 setResourceId(false)
                                 return
-                           }
-                           setResourceId(true)
+                            }
+                            setResourceId(true)
                         }}/>
                     </Form.Item>
                     <Form.Item label="描述（选填）" name="description">

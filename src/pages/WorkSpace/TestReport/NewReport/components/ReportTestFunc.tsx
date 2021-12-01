@@ -15,7 +15,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { obj, setObj, domainResult, btnConfirm, btnState, routeName, setEditBtn } = useContext(ReportContext)
+    const { obj, setObj, domainResult, btnConfirm, btnState, routeName } = useContext(ReportContext)
     const data = useMemo(() => {
         if (Array.isArray(domainResult.func_item)) {
             let data = _.cloneDeep(domainResult.func_item)
@@ -50,7 +50,6 @@ const ReportTestFunc: React.FC<any> = () => {
         return item
     }
     const handleGroupChange = (field: any, name: string, rowKey: string) => {
-        setEditBtn(true)
         setDataSource(dataSource.map((item: any) => filterGroup(item, name, field, rowKey)))
     }
     /* 
@@ -82,14 +81,12 @@ const ReportTestFunc: React.FC<any> = () => {
         return item
     }
     const handleFieldChange = (field: any, name: string, rowKey: string) => {
-        setEditBtn(true)
         setDataSource(dataSource.map((item: any) => filterData(item, name, field, rowKey)))
     }
     /* 
         ** 删除测试项 测试组
     */
     const handleDelete = (name: string, domain: any, rowKey: any) => {
-        setEditBtn(true)
         if (name === 'group') {
             setDataSource(dataSource.map((i: any, idx: number) => {
                 let ret: any = []
@@ -148,7 +145,7 @@ const ReportTestFunc: React.FC<any> = () => {
     // 保存报告数据整理
     useEffect(() => {
         let new_func_data: any = []
-        if (dataSource.length > 0) {
+        if (!!dataSource.length) {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list.map((child: any, index: number) => {
@@ -179,7 +176,7 @@ const ReportTestFunc: React.FC<any> = () => {
             <TestWrapper>
                 {/* 有组有项 */}
                 {
-                    (Array.isArray(dataSource) && dataSource.length > 0) ?
+                    (Array.isArray(dataSource) && !!dataSource.length) ?
                         dataSource.map((item: any, idx: number) => {
                             return (
                                 <div key={idx}>

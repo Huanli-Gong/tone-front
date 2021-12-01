@@ -21,7 +21,7 @@ import { useParams } from 'umi';
 import _ from 'lodash'
 import { requestCodeMessage } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
-import PermissionTootip from '@/components/Public/Permission/index';
+// import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上单机
  *
@@ -508,7 +508,6 @@ export default (props: any) => {
     // }, [type])
     const [tableColumns, setTableColumns] = useState<any>([])
     return (
-
         <div className={styles.warp}>
             <Tabs
                 type="card"
