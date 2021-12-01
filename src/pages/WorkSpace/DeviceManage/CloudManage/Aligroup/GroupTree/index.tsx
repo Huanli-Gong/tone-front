@@ -8,7 +8,7 @@ import DataSetPulic from '../../DataSetPulic';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
-import PermissionTootip from '@/components/Public/Permission/index';
+// import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { useParams } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
@@ -210,9 +210,10 @@ const GroupTree: React.FC<any> = (props) => {
                 >
                     <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
                 </Popconfirm>
-                <PermissionTootip>
+                {/* <PermissionTootip>
                     <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
-                </PermissionTootip>
+                </PermissionTootip> */}
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
             </Space>,
         },
     ];
