@@ -16,7 +16,7 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
 import { useParams } from 'umi';
 import { resizeClientSize } from '@/utils/hooks';
-import PermissionTootip from '@/components/Public/Permission/index';
+// import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上集群
  * 
@@ -316,9 +316,10 @@ const Aligroup: React.FC<any> = (props, ref) => {
                         <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
                     </Popconfirm> */}
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={()=>handleDelServer({ ...row })}>删除</Button>
-                <PermissionTootip>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}>日志</Button>
+                {/* <PermissionTootip>
                     <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}>日志</Button>
-                </PermissionTootip>
+                </PermissionTootip> */}
             </Space>,
         },
     ];
