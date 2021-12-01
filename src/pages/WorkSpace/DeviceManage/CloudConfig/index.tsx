@@ -125,6 +125,15 @@ const CloudConfig: React.FC<any> = (props) => {
 		container: 180,
 		button_width: 90
 	}
+	
+	const plusMessage = (str:string,frontLen:number,endLen:number) => {
+		let len = str.length - frontLen - endLen;
+		let xing = '';
+		for (var i=0;i<len;i++) {
+			xing+='*';
+		}
+		return str.substring(0,frontLen) + xing + str.substring(str.length - endLen);
+	}
 
 	const columnsAk: any = [
 		{
@@ -182,12 +191,12 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_id ? '#1890ff' : undefined }} />,
 			render: (_, row: any) => {
 				return (
-					<PopoverEllipsis title={row.access_id} >
+					<PopoverEllipsis title={plusMessage(row.access_id,6,6)} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_id || '']}
 							autoEscape
-							textToHighlight={row.access_id}
+							textToHighlight={plusMessage(row.access_id,6,6)}
 						/>
 					</PopoverEllipsis>
 				)
@@ -214,12 +223,12 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_key ? '#1890ff' : undefined }} />,
 			render: (_, row: any) => {
 				return (
-					<PopoverEllipsis title={row.access_key} >
+					<PopoverEllipsis title={plusMessage(row.access_key,6,6)} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_key || '']}
 							autoEscape
-							textToHighlight={row.access_key}
+							textToHighlight={plusMessage(row.access_key,6,6)}
 						/>
 					</PopoverEllipsis>
 				)
@@ -246,12 +255,12 @@ const CloudConfig: React.FC<any> = (props) => {
             filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
             render: (_, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.resource_group_id} >
+                    <PopoverEllipsis title={plusMessage(row.resource_group_id,6,6)} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[fetchParams.resource_group_id || '']}
                             autoEscape
-                            textToHighlight={row.resource_group_id}
+                            textToHighlight={plusMessage(row.resource_group_id,6,6)}
                         />
                     </PopoverEllipsis>
                 )
