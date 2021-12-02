@@ -10,9 +10,9 @@ import styles from './Third.less';
 export default ({ style={}, }) => {
   
   return (
-    <div className={styles['third-root']} style={style}>
-        <h1 className={styles['third-header']}>产品优势</h1>
-        <div className={styles['third-content']}>
+    <div className={styles['third_root']} style={style}>
+        <h1 className={styles['third_header']}>产品优势</h1>
+        <div className={styles['third_content']}>
             <div className={styles.row_item}>
               <div><Sec1 /></div>
               <p>一站式质量平台</p>

@@ -7,9 +7,9 @@ import styles from './First.less';
 export default ({ style={}, }) => {
   
   return (
-    <div className={styles['first-root']} style={style}>
-        <h1 className={styles['first-header']}>T-One系统介绍</h1>
-        <div className={styles['first-content']}>
+    <div className={styles['first_root']} style={style}>
+        <h1 className={styles['first_header']}>T-One系统介绍</h1>
+        <div className={styles['first_content']}>
             <div className={styles.left}>
               <div className={styles.title}>
                 <Avatar shape="square" src={logoPng} size={64} style={{ marginRight: 9 }} />

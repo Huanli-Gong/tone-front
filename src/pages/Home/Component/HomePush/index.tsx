@@ -45,12 +45,7 @@ export default forwardRef((props: any, ref: any ) => {
       carouselRef?.current?.next();
       setCurrent(current + 1)
     }
-    
   }
-
-  const contentStyle = {
-    height: 650,
-  };
 
   return (
     <div className={styles.HomePush_Modal_root}>
@@ -66,26 +61,24 @@ export default forwardRef((props: any, ref: any ) => {
         bodyStyle={{ height:704, padding:'50px 75px 0 75px',position: 'relative' }}
         style={{ background: '#f00'}}
       >
-
         <Carousel ref={carouselRef}
-          autoplay={current !== 3}
+          autoplay={visible && current !== 3}
           afterChange={(curr)=> { setCurrent(curr) }}
           dots={{
             className: 'dotsClass',
           }}
         >
-          <div>
-            <First style={contentStyle}/>
+          <div className={styles.banner_item}>
+            <First/>
           </div>
-          <div>
-            <Second style={contentStyle} />
+          <div className={styles.banner_item}>
+            <Second />
           </div>
-
-          <div>
-            <Third style={contentStyle}/>
+          <div className={styles.banner_item}>
+            <Third />
           </div>
-          <div>
-            <Fourth style={contentStyle} />
+          <div className={styles.banner_item}>
+            <Fourth />
           </div>
         </Carousel>
         <LeftOutlined className={styles.prev} style={current == 0 ? {opacity: 0.05} : {}} onClick={prevClick} />

@@ -38,11 +38,11 @@ export default ({ style={}, }) => {
   ]
    
   return (
-    <div className={styles['fourth-root']} style={style}>
-        <h1 className={styles['fourth-header']}>应用场景</h1>
-        <div className={styles['fourth-content']}>
+    <div className={styles['fourth_root']} style={style}>
+        <h1 className={styles['fourth_header']}>应用场景</h1>
+        <div className={styles['fourth_content']}>
           {contextList.map((item, index)=>
-            <div className={selectedKey === index? `${styles.menuItem} ${styles.selectedMenu}`: styles.menuItem} key={index} 
+            <div className={selectedKey === index? `${styles.menu_item} ${styles.selectedMenu}`: styles.menu_item} key={index} 
               onClick={()=> { setSelectedKey(index) }}>
               {item.title}
             </div>
