@@ -40,3 +40,4 @@ declare const BUILD_APP_ENV : 'opensource' | 'openanolis' | false | undefined
 interface FunctionComponent {
     onClick? : any
 }
+declare module 'react-beautiful-dnd';
