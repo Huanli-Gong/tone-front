@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { useLocation, useParams, useRequest } from 'umi'
-import { queryProductList, deleteProduct, queryProjectList, updateProject } from '../services'
+import { queryProductList, deleteProduct, queryProjectList, updateProject, dropProduct } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddProductDrawer from './AddProduct'
 import ShowProjectDrawer from './ViewProjectDetails'
@@ -138,12 +138,13 @@ export default (props: any) => {
     }, [current.id])
 
     
-    const onDragEnd = (result:any) => {
+    const onDragEnd = async(result:any) => {
         if (!result.destination) {
             return;
         }
-        console.log('==',result.source.index,result.destination.index)
-       
+        console.log('==',result.source.index + 1,result.destination.index +1)
+        const data = await dropProduct({ from: result.source.index + 1, to: result.destination.index + 1 })
+        console.log('data',data)
     }
 
     return (
@@ -172,7 +173,7 @@ export default (props: any) => {
                                                     <Draggable
                                                         index={index}
                                                         key={item.key}
-                                                        draggableId={String(index)}
+                                                        draggableId={String(index + 1)}
                                                     >
                                                         {(provided:any, snapshot:any) => (
                                                             //在这里写你的拖拽组件的样式 dom 等等...

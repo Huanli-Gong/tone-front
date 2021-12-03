@@ -15,6 +15,10 @@ export const createProduct = async ( data : any ) => {
 export const updateProduct = async ( data : any ) => {
     return request(`/api/sys/product/` , { method : 'put' , data })
 }
+// 拖拽产品
+export const dropProduct = async ( data : any ) => {
+    return request(`/api/product/drag/` , { method : 'put' , data })
+}
 // 创建项目
 export const createProject = async ( data : any ) => {
     return request(`/api/sys/project/` , { method : 'post' , data })
