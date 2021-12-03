@@ -142,9 +142,11 @@ export default (props: any) => {
         if (!result.destination) {
             return;
         }
-        console.log('==',result.source.index + 1,result.destination.index +1)
-        const data = await dropProduct({ from: result.source.index + 1, to: result.destination.index + 1 })
-        console.log('data',data)
+        const data = await dropProduct({ 
+            ws_id,
+            from: result.source.index + 1, 
+            to: result.destination.index + 1  //后端要从1开始。。
+        })
     }
 
     return (
@@ -174,6 +176,7 @@ export default (props: any) => {
                                                         index={index}
                                                         key={item.key}
                                                         draggableId={String(index + 1)}
+                                                        product={item.id}
                                                     >
                                                         {(provided:any, snapshot:any) => (
                                                             //在这里写你的拖拽组件的样式 dom 等等...
