@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { useLocation, useParams, useRequest } from 'umi'
-import { queryProductList, deleteProduct, queryProjectList, updateProject, dropProduct } from '../services'
+import { queryProductList, deleteProduct, queryProjectList, updateProject, dropProduct, dropProject } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddProductDrawer from './AddProduct'
 import ShowProjectDrawer from './ViewProjectDetails'
@@ -142,12 +142,38 @@ export default (props: any) => {
         if (!result.destination) {
             return;
         }
-        const data = await dropProduct({ 
+        const { code, msg } = await dropProduct({ 
             ws_id,
             from: result.source.index + 1, 
             to: result.destination.index + 1  //后端要从1开始。。
         })
+        if(code === 200){
+            run({ ws_id }).then(res => {
+                if (res.code === 200) {
+                    projectRun({ product_id: current.id, ws_id })
+                }
+            })
+        }else{
+            requestCodeMessage( code , msg )
+        }
     }
+    const onDragProjectEnd = async(result:any) => {
+        if (!result.destination) {
+            return;
+        }
+        const { code, msg } = await dropProject({ 
+            product_id: current.id,
+            ws_id,
+            from: result.source.index + 1, 
+            to: result.destination.index + 1  //后端要从1开始。。
+        })
+        if(code === 200){
+            projectRun({ product_id: current.id, ws_id })
+        }else{
+            requestCodeMessage( code , msg )
+        }
+    }
+    
 
     return (
         <Layout.Content>
@@ -284,7 +310,7 @@ export default (props: any) => {
                                 </Form>
                             </Row>
                             <Spin spinning={projectLoading}>
-                                <DragDropContext onDragEnd={onDragEnd}>
+                                <DragDropContext onDragEnd={onDragProjectEnd}>
                                     <Droppable droppableId="droppable" direction="horizontal">
                                             {(provided:any, snapshot:any) => (
                                             //这里是拖拽容器 在这里设置容器的宽高等等...

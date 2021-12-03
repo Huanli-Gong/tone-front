@@ -19,7 +19,7 @@ const TreeFileIcon : React.FC<any> = ( props : any ) => (
 const handlePathClick = async(ctx : any, job_id : number | string, state: string ) => {
     let obj = {}
     if(state == 'download'){
-        obj = { path: ctx.path , job_id, download: 1 }
+        obj = { path: ctx.path , job_id, download: '1' }
     }
     if(state == 'look'){
         obj = { path: ctx.path , job_id }
