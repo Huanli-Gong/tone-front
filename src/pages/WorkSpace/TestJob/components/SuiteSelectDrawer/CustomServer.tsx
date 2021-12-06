@@ -7,11 +7,11 @@ import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/C
 
 const CustomServer = (props: any) => {
     const { mask, multipInfo, form, loading } = props
-    const { setMask , setLoading } = useContext<any>(DrawerProvider)
+    const { setMask, setLoading } = useContext<any>(DrawerProvider)
 
     // 校验成功/失败的标识
-    const [validate, setValidate] = useState<any>( undefined )
-    const [validateMsg, setValidateMsg] = useState<any>( undefined );
+    const [validate, setValidate] = useState<any>(undefined)
+    const [validateMsg, setValidateMsg] = useState<any>(undefined);
     /**
      * @author jpt 部署Agent对话框
      * @description 机器类型为：自持有机器、且channelType为'toneagent'选项，校验失败时，则可以进行部署Agent。
@@ -19,7 +19,7 @@ const CustomServer = (props: any) => {
     const deployModal: any = useRef(null);
     // 部署Agent
     const deployClick = (selectedRow: any) => {
-        deployModal?.current?.show({ detailData: selectedRow });
+        deployModal.current?.show({ ...selectedRow, detailData: selectedRow?.errors || [] });
     }
 
     // 部署回调
@@ -44,7 +44,7 @@ const CustomServer = (props: any) => {
                 channelType == 'toneagent' &&
                 <span
                     className={styles.btn_style}
-                    onClick={() => deployClick(data?.errors || [])}
+                    onClick={() => deployClick(data)}
                 >
                     部署ToneAgent
                 </span>
@@ -109,9 +109,9 @@ const CustomServer = (props: any) => {
                 // rules={[{ required : true , message : '请输入IP/SN' }]}
                 help={validate === 'error' && validateMsg}
             >
-                <Input 
+                <Input
                     allowClear
-                    placeholder={multipInfo.selfServer ? '多个数值' : '请输入IP/SN'} 
+                    placeholder={multipInfo.selfServer ? '多个数值' : '请输入IP/SN'}
                     autoComplete="off"
                     onBlur={handleCustomBlur}
                 />

@@ -48,7 +48,7 @@ const ViewDetailDrawer = forwardRef(
 
         // 部署Agent
         const deployClick = (selectedRow: any) => {
-            deployModal.current?.show({ detailData: selectedRow, radio_type: 'cloudManage' });
+            deployModal.current?.show({ ...selectedRow, detailData: [selectedRow?.private_ip], radio_type: 'cloudManage' });
         }
         // 部署回调
         const deployCallback = (info: any) => {
@@ -136,7 +136,7 @@ const ViewDetailDrawer = forwardRef(
                                 <Col span={6}>Channel:</Col>
                                 <Col span={18}>
                                     <span>{details?.channel_type}</span>
-                                    <span className={styles.btn_style} onClick={() => deployClick([details?.private_ip])}>重新部署</span>
+                                    <span className={styles.btn_style} onClick={() => deployClick(details)}>重新部署</span>
                                 </Col>
                             </Row>
                             <Row gutter={20} className={styles.row}>

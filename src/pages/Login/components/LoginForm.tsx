@@ -6,7 +6,7 @@ import { history, useLocation, useModel } from 'umi';
 import { deepObject } from '@/utils/utils';
 
 const LoginWrapper = styled(Form)`
-    width:300px
+    width:300px;
 `
 
 const LoginButton = styled(Button)`
@@ -36,7 +36,9 @@ const LoginForm: React.FC = () => {
                         ...deepObject(data)
                     }
                 })
-                history.push(query?.redirect_url || '/')
+                setTimeout(() => {
+                    history.push(query?.redirect_url || '/')
+                }, 100)
                 message.success('登陆成功')
                 form.resetFields()
             })

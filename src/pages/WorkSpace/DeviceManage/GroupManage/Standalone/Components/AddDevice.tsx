@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { Drawer, Space, Button, Form, Select, Input, Badge, message, Alert, Spin, Tooltip } from 'antd'
-import { queryServerTagList, checkTestServerIps, addTestServer, putTestServer, batchPutTestServer} from '../../services'
+import { queryServerTagList, checkTestServerIps, addTestServer, putTestServer, batchPutTestServer } from '../../services'
 import _ from 'lodash'
 import Owner from '@/components/Owner/index';
 import { TagSelect } from '../../Components'
@@ -10,7 +10,7 @@ import styles from './AddDevice.less'
 import { useParams } from 'umi'
 
 const AddDeviceDrawer = (props: any, ref: any) => {
-    const { ws_id } : any = useParams()
+    const { ws_id }: any = useParams()
     const { onFinish } = props
 
     const [visible, setVisible] = useState(false)
@@ -29,7 +29,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const [selectIpsValue, setSelectIpsValue] = useState('')
     const [vals, setVals] = useState([])
     const [validateResult, setValidateResult] = useState<any>({});
-    const [isMoreEdit,setIsMoreEdit] = useState<boolean>(false)
+    const [isMoreEdit, setIsMoreEdit] = useState<boolean>(false)
     const SELECT_IPS_PLACEHOLDER_STRING = "输入IP/SN,多个以空格或英文逗号分隔"
 
     // 机器状态是occupied--编辑时：控制通道、机器、使用状态不能编辑。
@@ -40,7 +40,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             data && setModifyProps(_)
             if (data) {
                 setModifyProps(data)
-                setIsMoreEdit(_.get(data,'opreateType') === 'moreEdit')
+                setIsMoreEdit(_.get(data, 'opreateType') === 'moreEdit')
                 data.ip && form.setFieldsValue({ ips: [data.ip] })
             }
         }
@@ -127,17 +127,17 @@ const AddDeviceDrawer = (props: any, ref: any) => {
 
     // 部署Agent
     const deployClick = (selectedRow: any) => {
-        deployModal.current?.show({ detailData: selectedRow });
+        deployModal.current?.show({ ...selectedRow, detailData: selectedRow.errors || [] });
     }
     // 部署回调
     const deployCallback = (info: any) => {
         // step1.Agent部署结果信息
-        const { success_servers= [], } = info;
-        const successIps = success_servers?.map((item: any)=> item.ip);
+        const { success_servers = [], } = info;
+        const successIps = success_servers?.map((item: any) => item.ip);
         // step2.数据回填
         if (successIps?.length) {
             setIps({ success: successIps, errors: [] })
-            form.setFieldsValue({ ips: successIps })            
+            form.setFieldsValue({ ips: successIps })
         }
     }
 
@@ -152,8 +152,8 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const ValidateIps: React.FC<any> = ({ data, channelType }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color:'#1890ff' }}>详细信息</span></Tooltip>
-            {channelType === 'toneagent' && <span className={styles.btn_style} onClick={()=> deployClick(data?.data?.errors || [])}>部署ToneAgent</span> }
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}>详细信息</span></Tooltip>
+            {channelType === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick(data.data)}>部署ToneAgent</span>}
         </Space>
     )
 
@@ -260,15 +260,15 @@ const AddDeviceDrawer = (props: any, ref: any) => {
         setModifyProps(null)
         setValidateResult({})
         setValidateMsg('')
-        setVals( [] )
+        setVals([])
         setSelectIpsValue('')
         setIps({ success: [], errors: [] })
     }
 
     return (
-        <Drawer 
-            keyboard={ false }
-            maskClosable={ false }
+        <Drawer
+            keyboard={false}
+            maskClosable={false}
             forceRender={true}
             title={!modifyProps ? '添加机器' : '编辑机器'}
             width="376"
@@ -322,7 +322,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                             name="ips"
                             validateStatus={ips.errors.length > 0 ? 'error' : ''}
                             help={ips.errors.length > 0 && validateMsg}
-                            rules={[{ required : true }]}
+                            rules={[{ required: true }]}
                         // validateTrigger={ 'onBlur' }
                         >
                             <Select
@@ -338,7 +338,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                                 {
                                     ips.success.map((item: any, index: number) => (
                                         <Select.Option key={index} value={item}>
-                                            { item}
+                                            {item}
                                         </Select.Option>
                                     ))
                                 }
@@ -369,7 +369,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         </>
                     }
 
-{/*                     <Form.Item name="add_parent" label="添加物理机" initialValue={ true }>
+                    {/*                     <Form.Item name="add_parent" label="添加物理机" initialValue={ true }>
                         <Radio.Group>
                             <Radio value={ true }>是</Radio>
                             <Radio value={ false }>否</Radio>
