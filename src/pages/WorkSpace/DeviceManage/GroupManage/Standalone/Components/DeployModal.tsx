@@ -51,10 +51,9 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     useEffect(() => {
-        if (selectedRow.length) {
-            // 请求版本数据
+        // 请求版本数据
+        if (useBuildEnv || selectedRow.length)
             getVersionData()
-        }
     }, [selectedRow, arch])
 
     useImperativeHandle(
@@ -117,7 +116,7 @@ export default forwardRef((props: any, ref: any) => {
                 setTip('')
             });
     };
-    
+
     const handleCancel = () => {
         if (!loading) {
             // case1.重置表单数据&&重置状态数据
