@@ -62,16 +62,18 @@ export default forwardRef((props: any, ref: any) => {
         () => ({
             show: (_: any) => {
                 const { detailData, radio_type, instance_id } = _
-                console.log(_)
                 setVisible(true)
                 setRadioType(radio_type)
-                const restList = detailData.map((item: any) => ({ ip: item, id: item }))
-                setSelectedRow(restList)
-                form.setFieldsValue({ ips: detailData })
-                useBuildEnv &&
+                if (useBuildEnv) {
                     form.setFieldsValue({
                         instance_id
                     })
+                    return
+                }
+
+                const restList = detailData.map((item: any) => ({ ip: item, id: item }))
+                setSelectedRow(restList)
+                form.setFieldsValue({ ips: detailData })
             }
         })
     )
@@ -85,34 +87,37 @@ export default forwardRef((props: any, ref: any) => {
     };
 
     const handleOk = () => {
-        form.validateFields().then(async (values) => {
-            setLoading(true);
-            setTip('正在部署中...')
-            // Agent部署接口
-            const { code, msg, data = {} } = await agentDeploy(values);
-            if (code === 200) {
-                if (data.fail_servers?.length) {
-                    setDeployResult(data);
-                } else {
-                    message.success('部署完成');
-                    // case1.重置状态数据&&重置表单数据
-                    form.resetFields();
-                    resetInitialState();
-                    // case2.回调父级函数
-                    props.callback(data);
+        form
+            .validateFields()
+            .then(async (values) => {
+                setLoading(true);
+                setTip('正在部署中...')
+                // Agent部署接口
+                const { code, msg, data = {} } = await agentDeploy(values);
+                if (code === 200) {
+                    if (data.fail_servers?.length) {
+                        setDeployResult(data);
+                    } else {
+                        message.success('部署完成');
+                        // case1.重置状态数据&&重置表单数据
+                        form.resetFields();
+                        resetInitialState();
+                        // case2.回调父级函数
+                        props.callback(data);
+                    }
                 }
-            }
-            else {
-                message.error(msg || '部署失败');
-            }
-            setLoading(false);
-            setTip('')
-        }).catch(() => {
-            // 接口报错
-            setLoading(false);
-            setTip('')
-        });
+                else {
+                    message.error(msg || '部署失败');
+                }
+                setLoading(false);
+                setTip('')
+            }).catch(() => {
+                // 接口报错
+                setLoading(false);
+                setTip('')
+            });
     };
+    
     const handleCancel = () => {
         if (!loading) {
             // case1.重置表单数据&&重置状态数据
@@ -184,14 +189,17 @@ export default forwardRef((props: any, ref: any) => {
                             arch
                         }}
                     >
-                        <Form.Item label="IP"
-                            name="ips"
-                            rules={[{
-                                required: true,
-                                message: formatMessage({ id: "DeployModal.ids.message" }),
-                            }]}>
-                            <ShowDeployIPList dataSource={selectedRow} delCallback={delIP} />
-                        </Form.Item>
+                        {
+                            !useBuildEnv &&
+                            <Form.Item label="IP"
+                                name="ips"
+                                rules={[{
+                                    required: true,
+                                    message: formatMessage({ id: "DeployModal.ids.message" }),
+                                }]}>
+                                <ShowDeployIPList dataSource={selectedRow} delCallback={delIP} />
+                            </Form.Item>
+                        }
 
                         {
                             useBuildEnv &&
