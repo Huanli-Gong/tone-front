@@ -19,9 +19,17 @@ export const updateProduct = async ( data : any ) => {
 export const dropProduct = async ( data : any ) => {
     return request(`/api/sys/product/drag/` , { method : 'put' , data })
 }
+// 拖拽产品的查询
+export const queryDropProduct = async ( params : any ) => {
+    return request(`/api/sys/product/drag/` , { params })
+}
 // 拖拽项目
 export const dropProject = async ( data : any ) => {
     return request(`/api/sys/project/drag/` , { method : 'put' , data })
+}
+// 拖拽项目的查询
+export const queryDropProject = async ( params : any ) => {
+    return request(`/api/sys/project/drag/` , { params })
 }
 // 创建项目
 export const createProject = async ( data : any ) => {

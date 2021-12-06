@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { useLocation, useParams, useRequest } from 'umi'
-import { queryProductList, deleteProduct, queryProjectList, updateProject, dropProduct, dropProject } from '../services'
+import { queryProductList, deleteProduct, queryProjectList, updateProject, dropProduct, dropProject, queryDropProduct, queryDropProject } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddProductDrawer from './AddProduct'
 import ShowProjectDrawer from './ViewProjectDetails'
@@ -25,7 +25,7 @@ export default (props: any) => {
     const [form] = Form.useForm()
 
     const { data: { data = [] }, refresh, loading, run } = useRequest(
-        (params: any) => queryProductList(params),
+        (params: any) => queryDropProduct(params),
         {
             defaultParams: [{ ws_id }],
             initialData: {
@@ -36,7 +36,7 @@ export default (props: any) => {
     )
 
     const { data: projectData, refresh: projectRefresh, loading: projectLoading, run: projectRun } = useRequest(
-        (params: any) => queryProjectList(params),
+        (params: any) => queryDropProject(params),
         {
             //defaultParams: [{ ws_id, product_id: current.id }],
             initialData: {
@@ -148,6 +148,8 @@ export default (props: any) => {
             to: result.destination.index + 1  //后端要从1开始。。
         })
         if(code === 200){
+            // const data = await queryDropProduct({ ws_id })
+            // console.log('data',data)
             run({ ws_id }).then(res => {
                 if (res.code === 200) {
                     projectRun({ product_id: current.id, ws_id })
