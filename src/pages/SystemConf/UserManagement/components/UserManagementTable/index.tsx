@@ -152,7 +152,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 <Typography.Link>重置密码</Typography.Link>
             </Popconfirm>
         )
-    }];
+    }].filter(Boolean);
 
     const resetPasswordConfirm = async (row: any) => {
         const { code, data, msg } = await requestResetPassword({ user_id: row.id })

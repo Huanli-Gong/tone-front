@@ -109,8 +109,8 @@ export default ({ job_id, refresh = false, testType }: any) => {
             requestCodeMessage(code, msg)
             return
         }
-        message.success('操作成功')
         run()
+        message.success('操作成功')
     }
 
     const [expandedKeys, setExpandedKeys] = useState<any>([])

@@ -21,7 +21,7 @@ import { useParams } from 'umi';
 import _ from 'lodash'
 import { requestCodeMessage } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
-import PermissionTootip from '@/components/Public/Permission/index';
+// import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上单机
  *
@@ -235,9 +235,7 @@ export default (props: any) => {
                             String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>
                         }
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(type) !== '0')}>{type == '0' ? '删除' : '释放'}</Button>
-                        <PermissionTootip>
-                            <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
-                        </PermissionTootip>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },
         ]
@@ -504,9 +502,7 @@ export default (props: any) => {
                         {String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>}
 
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(type) !== '0')}>{type == '0' ? '删除' : '释放'}</Button>
-                        <PermissionTootip>
-                            <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
-                        </PermissionTootip>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },
         ];
@@ -514,9 +510,7 @@ export default (props: any) => {
     }, [type])
 
     const [tableColumns, setTableColumns] = useState<any>([])
-
     return (
-
         <div className={styles.warp}>
             <Tabs
                 type="card"

@@ -1,7 +1,66 @@
 import styled from 'styled-components';
 import { Row,Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
-
+export const MyLoading = styled.div`
+    position:fixed;
+    left:50%;
+    top:50%;
+    z-index:999;
+    transform: translate(-50%,-50%);
+    cursor:pointer;
+    font-size:14px;
+    .my-loading-span {
+        position: relative;
+        display: inline-block;
+        font-size: 32px;
+        width: 1em;
+        height: 1em;
+        transform: rotateZ(45deg);
+        transition: transform .3s cubic-bezier(.78, .14, .15, .86);
+        animation: Rotate45 1.2s infinite linear;
+    }
+    .my-loading-span > i {
+        height: 14px;
+        width: 14px;
+        background-color: #00D8FF;
+        display: block;
+        position: absolute;
+        border-radius: 100%;
+        transform: scale(.75);
+        transform-origin: 50% 50%;
+        opacity: .3;
+        animation: myAnimationMove 1s infinite linear alternate;
+    }
+    .my-loading-span:nth-child(1) {
+        top: 0;
+        left: 0;
+    }
+    .my-loading-span :nth-child(2) {
+        top: 0;
+        right: 0;
+        animation-delay: .4s;
+    }
+    .my-loading-span :nth-child(3) {
+        bottom: 0;
+        right: 0;
+        animation-delay: .8s;
+    }
+    .my-loading-span :nth-child(4) {
+        left: 0;
+        bottom: 0;
+        animation-delay: 1.2s;
+    }
+    @keyframes Rotate45 {
+        to {
+        transform: rotate(405deg);
+        }
+    };
+    @keyframes myAnimationMove {
+        to {
+            opacity: 1;
+        }
+    }
+`
 export const AnalysisWarpper = styled(Row)`
     margin:0 auto !important;
     height:100%;   

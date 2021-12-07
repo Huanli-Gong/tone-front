@@ -429,23 +429,13 @@ export const CreatePageData = (props:any) => {
         *** 统计性能测试、功能测试总数据
     */
     const countCase = ( data : any , countField : string , inital : any , index : any ) => {
-        return data?.reduce(( pre : any , cur : any  ) => {
-            return cur[ countField ]?.reduce(( p : any  , c : any , idx : number ) => {
+        return data.reduce(( pre : any , cur : any  ) => {
+            return cur[ countField ].reduce(( p : any  , c : any , idx : number ) => {
                 if ( index === idx ) for ( let x in c ) p[ x ] += c[ x ]
                 return p
             } , inital )
         } , inital )
     }
-    // const countBaseCase = (data: any, countField: string, inital: any, index: any) => {
-    //     return data.reduce(( pre : any , cur : any, idx: number ) => {
-    //         cur[countField].map((item:any)=>{
-    //             pre[ 'all_case' ] += item[ 'all_case' ]
-    //             pre[ 'success_case' ] += item[ 'success_case' ]
-    //             pre[ 'fail_case' ] += item[ 'fail_case' ]
-    //         })
-    //         return pre
-    //     } , inital )
-    // }
 
     const { func_data_result, perf_data_result } = compareResult
     const summaryData = useMemo(() => {
@@ -466,12 +456,6 @@ export const CreatePageData = (props:any) => {
                         success: funcCount?.success_case,
                         fail: funcCount?.fail_case,
                     }
-                    // const baseCount = countBaseCase(func_data_result, 'conf_list', { all_case: 0, success_case: 0, fail_case: 0 }, idx)
-                    // base_group.func_data = {
-                    //     all: baseCount?.all_case,
-                    //     success: baseCount.success_case,
-                    //     fail: baseCount.fail_case,
-                    // }
                 }
                 if (perf_data_result && perf_data_result.length > 0) {
                     const perfCount = countCase(perf_data_result, 'compare_count', { all: 0, decline: 0, increase: 0 }, idx)
@@ -567,9 +551,9 @@ export const EditPageData = (props:any) => {
     
     const queryReport = async () => {
         setLoading(true)
-        const { code, msg, data: [data] } = await reportDetail({ report_id })
+        const { code, msg, data } = await reportDetail({ report_id })
         if (code == 200) {
-            setDataSource(data)
+            setDataSource(data[0])
             setLoading(false)
         } else {
             requestCodeMessage( code , msg )
@@ -604,62 +588,60 @@ export const EditPageData = (props:any) => {
     const temp = async () => {
         setLoading(true)
         const res = await detailTemplate({ id: dataSource.tmpl_id, ws_id })
-        if (res.code == 200)
-            if (JSON.stringify(dataSource) !== '{}') {
-                setLoading(false)
-                let perf_data = dataSource.test_item.perf_data
-                let perf_item: any = []
-                if (JSON.stringify(perf_data) !== '{}') {
-                    Object.keys(perf_data).map((i: any, index: number) => {
-                        if (_.isArray(perf_data[i])) {
-                            perf_item.push({
-                                name: i,
-                                rowKey:index,
-                                list: perf_data[i]?.map((suite:any,id:number)=> { 
-                                    return {
-                                        ...suite,
-                                        rowKey:`${index}-${id}`
-                                    }
-                                })
+        if (res.code == 200 && JSON.stringify(dataSource) !== '{}')
+            setLoading(false)
+            let perf_data = dataSource.test_item.perf_data
+            let perf_item: any = []
+            if (JSON.stringify(perf_data) !== '{}') {
+                Object.keys(perf_data).map((i: any, index: number) => {
+                    if (_.isArray(perf_data[i])) {
+                        perf_item.push({
+                            name: i,
+                            rowKey:index,
+                            list: perf_data[i]?.map((suite:any,id:number)=> { 
+                                return {
+                                    ...suite,
+                                    rowKey:`${index}-${id}`
+                                }
                             })
-                        } else {
-                            const list = changeChild(perf_data[i],index)
-                            perf_item.push({
-                                name: i,
-                                rowKey:index,
-                                is_group: true,
-                                list
-                            })
-                        }
-                    })
-                }
-                let func_data = dataSource.test_item.func_data
-                let func_item: any = []
-                if (JSON.stringify(func_data) !== '{}') {
-                    Object.keys(func_data).map((i: any, index: number) => {
-                        if (_.isArray(func_data[i])) {
-                            func_item.push({
-                                name: i,
-                                rowKey:index,
-                                list: func_data[i]
-                            })
-                        } else {
-                            const list = changeChild(func_data[i],index)
-                            func_item.push({
-                                name: i,
-                                rowKey:index,
-                                is_group: true,
-                                list
-                            })
-                        }
-                    })
-                }
-                setTemplate({
-                    ...res.data,
-                    perf_item,
-                    func_item,
+                        })
+                    } else {
+                        const list = changeChild(perf_data[i],index)
+                        perf_item.push({
+                            name: i,
+                            rowKey:index,
+                            is_group: true,
+                            list
+                        })
+                    }
                 })
             }
+            let func_data = dataSource.test_item.func_data
+            let func_item: any = []
+            if (JSON.stringify(func_data) !== '{}') {
+                Object.keys(func_data).map((i: any, index: number) => {
+                    if (_.isArray(func_data[i])) {
+                        func_item.push({
+                            name: i,
+                            rowKey:index,
+                            list: func_data[i]
+                        })
+                    } else {
+                        const list = changeChild(func_data[i],index)
+                        func_item.push({
+                            name: i,
+                            rowKey:index,
+                            is_group: true,
+                            list
+                        })
+                    }
+                })
+            }
+            setTemplate({
+                ...res.data,
+                perf_item,
+                func_item,
+            })
     }
     //更新需要的数据结构
     useEffect(() => {
@@ -672,6 +654,7 @@ export const EditPageData = (props:any) => {
                 newArr.push(env[i])
             }
             setAllGroupData(newArr)
+            // setAllGroupData(Array.from({ length: dataSource.group_count }).map((val)=> ({})))
             setBaselineGroupIndex(test_env?.base_index === undefined ? 0 : test_env?.base_index)
         }
         window.document.title = dataSource?.name || 'T-one'

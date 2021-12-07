@@ -109,7 +109,7 @@ export default (props: any) => {
     }
 
     const getWorkspace = async () => {
-        let { data } = await queryWorkspace()
+        let { data } = await queryWorkspace({ page_num:1,page_size:200 })
         return data
     }
     const getProject = async (parmas: any) => {

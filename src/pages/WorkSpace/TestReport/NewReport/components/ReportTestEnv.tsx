@@ -1,17 +1,15 @@
 import React, { useContext , memo } from 'react';
 import { SettingTextArea } from './EditPublic';
 import { ReportContext } from '../Provider';
-import { Tooltip, Space } from 'antd';
+import { Tooltip } from 'antd';
 import _ from 'lodash'; 
-import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import {
     ModuleWrapper,
     EditTitle,
     SubTitle,
     EnvGroup,
     EnvGroupL,
-    EnvGroupR,
     MachineGroup,
     MachineGroupL,
     MachineGroupR,
@@ -23,15 +21,13 @@ const ReportTestEnv = () => {
         saveReportData,
         obj, 
         setObj, 
-        allGroupData, 
         envData, 
         baselineGroupIndex, 
         environmentResult,
         routeName,
         btnConfirm,
+        groupLen,
     } = useContext(ReportContext)
-
-    let group = allGroupData?.length
     const handleChangeVal = (val: any, text: string) => {
         if(environmentResult && environmentResult !== undefined){
             let env = _.cloneDeep(environmentResult) 
@@ -46,7 +42,7 @@ const ReportTestEnv = () => {
     // 获取最多行展示
     const len = Array.from(Array(environmentResult?.count)).map(val => ({}))
     return (
-        <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1200 }} id="need_test_env">
+        <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env">
             <SubTitle><span className="line"></span>测试环境</SubTitle>
             <EditTitle>环境描述</EditTitle>
             <SettingTextArea
@@ -65,18 +61,7 @@ const ReportTestEnv = () => {
             <EditTitle style={{ margin: '17px 0 14px 0' }}>机器环境</EditTitle>
             <EnvGroup>
                 <EnvGroupL>对比组名称</EnvGroupL>
-                {
-                    Array.isArray(envData) && envData.length > 0 && envData.map((item: any, idx: number) => {
-                        return (
-                            <EnvGroupR gLen={group} key={idx}>
-                                <Space>
-                                    {item.is_base ? <BaseIcon style={{ marginRight: 4, marginTop: 17, width:10, height:14 }} title="基准组"/> : null}
-                                </Space>
-                                <EllipsisPulic title={item.tag} />
-                            </EnvGroupR>
-                        )
-                    })
-                }
+                <Identify envData={envData} group={groupLen}/>
             </EnvGroup>
             {/* 机器信息 */}
             {
@@ -84,21 +69,21 @@ const ReportTestEnv = () => {
                     <MachineGroup key={i}>
                         <MachineGroupL style={{ background: '#fafafa' }}>IP/SN</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR style={{ background: '#fafafa', color: '#1890FF' }} gLen={group} key={idx}>
-                                            <span>{item['ip/sn'] || '-'}</span>
+                                    i === idx && <MachineGroupR style={{ background: '#fafafa', color: '#1890FF' }} gLen={groupLen} key={idx}>
+                                        <span>{item['ip/sn'] || '-'}</span>
                                     </MachineGroupR>
                                 ))
                             })
                         }
                         <MachineGroupL>机型</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
+                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
                                         <span>{item.distro || '-'}</span>
                                     </MachineGroupR>
                                 ))
@@ -106,10 +91,10 @@ const ReportTestEnv = () => {
                         }
                         <MachineGroupL>RPM</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return  server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
+                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
                                         <Tooltip
                                             placement="bottomLeft"
                                             autoAdjustOverflow={false}
@@ -124,10 +109,10 @@ const ReportTestEnv = () => {
                         }
                         <MachineGroupL>GCC</MachineGroupL>
                         {
-                            Array.isArray(envData) && envData.length > 0 && envData.map((server: any, index: number) => {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return  server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx &&  <MachineGroupR gLen={group} key={idx}>
+                                    i === idx &&  <MachineGroupR gLen={groupLen} key={idx}>
                                         <Tooltip 
                                             placement="bottomLeft" 
                                             autoAdjustOverflow={false}

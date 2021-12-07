@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
-import { Button, Space, Select, Typography, Popconfirm, Empty, Tooltip, Row, Col } from 'antd';
+import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col } from 'antd';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
@@ -9,9 +9,8 @@ import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.sv
 import { SettingTextArea } from '../EditPublic';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-
+import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { deleteSuite, deleteConf } from './methodPulic.js';
 import {
     TestItemText,
@@ -41,7 +40,7 @@ const { Option } = Select;
 const FuncDataIndex: React.FC<any> = (props) => {
     const { child, name, id, subObj, onChange, onDelete, dataSource, setDataSource } = props
     const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-    const { btnState, btnConfirm, allGroupData, baselineGroupIndex, } = useContext(ReportContext)
+    const { btnState, btnConfirm, allGroupData, baselineGroupIndex, groupLen } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -49,7 +48,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [funcData, setFuncData] = useState<any>({})
-    let group = allGroupData?.length
+    // let group = allGroupData?.length
+    console.log('groupl',groupLen)
 
     useEffect(() => {
         setFuncData(child)
@@ -172,7 +172,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
     //     })
     // }
     const handleDelete = (name: string, row: any, rowKey: any) => {
-        //setEditBtn(true)
         if (name == 'suite') {
             setDataSource(dataSource.map((item: any) => {
                 if (item.is_group) {
@@ -263,20 +262,20 @@ const FuncDataIndex: React.FC<any> = (props) => {
                         return (
                             <TestSubCase key={idx}>
                                 <DelBtnEmpty />
-                                <SubCaseTitle gLen={group}>
+                                <SubCaseTitle gLen={groupLen}>
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
                                     item.compare_data.length > 0 ?
                                         item.compare_data.map((cur: any) => {
                                             return (
-                                                <SubCaseText gLen={group} btnState={btnState}>
+                                                <SubCaseText gLen={groupLen} btnState={btnState}>
                                                     <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
                                                 </SubCaseText>
                                             )
                                         })
                                         :
-                                        <SubCaseText gLen={group} btnState={btnState}>
+                                        <SubCaseText gLen={groupLen} btnState={btnState}>
                                             <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
                                         </SubCaseText>
 
@@ -303,10 +302,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     </Popconfirm>
                 </SuiteName>
                 <TestConf>
-                    <ConfTitle gLen={group} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
+                    <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
                     {
                         allGroupData?.map((cont: any, i: number) => (
-                            <ConfData gLen={group} btnState={btnState} key={i}>
+                            <ConfData gLen={groupLen} btnState={btnState} key={i}>
                                 <Row>
                                     <Col span={12}>
                                         总计/通过/失败
@@ -317,24 +316,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                 {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                             </span>
-                                            <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
-                                                title={
-                                                    <span style={{ color: 'rgba(0,0,0,0.65)' }}>功能测试与基准组结果不一致越多差异化越大。
-                                                        <br />规则如下：由上到下<br />
-                                                        <div style={{ width: 320, height: 200, border: '1px solid #ccc' }}>
-                                                            <Row>
-                                                                <Col span={16}><div style={{ height: 40, lineHeight: '20px' }}><span style={{ height: 22, width: 88, textAlign: 'center', background: '#0089FF', borderRadius: 4, color: '#fff', float: 'right', margin: '8px 8px 0 0' }}>基准组</span></div></Col>
-                                                            </Row>
-                                                            <Row>
-                                                                <Col span={8}><div style={{ borderRight: '1px solid #ccc', height: 150, textAlign: 'center' }}><span style={{ paddingTop: 60, display: 'block' }}>由上到下</span></div></Col>
-                                                                <Col span={8}><div style={{ borderRight: '1px solid #ccc', height: 150, paddingLeft: 12 }}><p>pass</p><p>fail</p><p>fail</p><p>pass</p></div></Col>
-                                                                <Col span={8}><div style={{ height: 150, paddingLeft: 12 }}><p>fail</p><p>pass</p><p>fail</p><p>pass</p></div></Col>
-                                                            </Row>
-                                                        </div>
-                                                    </span>
-                                                }>
-                                                <QuestionCircleOutlined />
-                                            </Tooltip>
+                                            <DiffTootip />
                                         </Col>
                                     }
                                 </Row>
@@ -387,7 +369,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                 <>
                                     <TestCase expand={expand}>
                                         <DelBtn conf={conf} cid={cid} />
-                                        <CaseTitle gLen={group}>
+                                        <CaseTitle gLen={groupLen}>
                                             <EllipsisPulic title={conf.conf_name}>
                                                 <ExpandIcon
                                                     rotate={expand ? 90 : 0}
@@ -399,7 +381,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         {
                                             metricList?.map((item: any) => {
                                                 return (
-                                                    <CaseText gLen={group} btnState={btnState}>
+                                                    <CaseText gLen={groupLen} btnState={btnState}>
                                                         <Space size={16}>
                                                             <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
@@ -508,160 +490,3 @@ const FuncDataIndex: React.FC<any> = (props) => {
     )
 }
 export default memo(FuncDataIndex);
-
-
-// const RenderSuite: React.FC<any> = (props) => {
-//     const { id, suite } = props
-//     return (
-//         <TestSuite key={id}>
-//             <SuiteName>
-//                 {suite.suite_name}
-//                 <Popconfirm
-//                     title='确认要删除吗！'
-//                     onConfirm={() => handleDelete('suite', suite, id)}
-//                     cancelText="取消"
-//                     okText="删除"
-//                 >
-//                     {btnState && <CloseBtn />}
-//                 </Popconfirm>
-//             </SuiteName>
-//             <TestConf>
-//                 <ConfTitle gLen={group} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
-//                 {
-//                     allGroupData?.map((cont: any, i: number) => (
-//                         <ConfData gLen={group} btnState={btnState} key={i}> 总计/通过/失败 </ConfData>
-//                     ))
-//                 }
-//             </TestConf>
-//             <TestConfWarpper>
-//                 {
-//                     suite.conf_list.map((conf: any, cid: number) => {
-//                         const expand = expandKeys.includes(conf.conf_id)
-//                         const { all_case, success_case, fail_case } = conf.conf_source || conf
-//                         let conf_data = conf.conf_compare_data || conf.compare_conf_list
-//                         return (
-//                             <>
-//                                 <TestCase expand={expand}>
-//                                     <DelBtn conf={conf} cid={cid} />
-//                                     <CaseTitle gLen={group}>
-//                                         <ExpandIcon
-//                                             rotate={expand ? 90 : 0}
-//                                             onClick={() => hanldeExpand(conf.conf_id)}
-//                                         />
-//                                         <Typography.Text>{conf.conf_name}</Typography.Text>
-//                                     </CaseTitle>
-//                                     {
-//                                         Array.isArray(conf_data) && conf_data.length > 0 ?
-//                                             conf_data?.map((item: any, i: number) => {
-//                                                 if (item !== null) {
-//                                                     const { all_case, success_case, fail_case } = item || item.conf_source
-//                                                     return i !== baselineGroupIndex ?
-//                                                         <CaseText gLen={group} btnState={btnState}>
-//                                                             <Space size={16}>
-//                                                                 <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(all_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(success_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(fail_case)}</Typography.Text>
-//                                                             </Space>
-//                                                         </CaseText>
-//                                                         :
-//                                                         <>
-//                                                             <CaseText gLen={group} btnState={btnState}>
-//                                                                 <Space size={16}>
-//                                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum((conf.conf_source || conf).all_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#81BF84' }}>{toShowNum((conf.conf_source || conf).success_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum((conf.conf_source || conf).fail_case)}</Typography.Text>
-//                                                                 </Space>
-//                                                             </CaseText>
-//                                                             <CaseText gLen={group} btnState={btnState}>
-//                                                                 <Space size={16}>
-//                                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(all_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(success_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(fail_case)}</Typography.Text>
-//                                                                 </Space>
-//                                                             </CaseText>
-//                                                         </>
-//                                                 } else {
-//                                                     return (
-//                                                         <CaseText gLen={group} btnState={btnState}>
-//                                                             <Space size={16}>
-//                                                                 <Typography.Text style={{ color: '#649FF6' }}>{toShowNum((conf.conf_source || conf).all_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#81BF84' }}>{toShowNum((conf.conf_source || conf).success_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum((conf.conf_source || conf).fail_case)}</Typography.Text>
-//                                                             </Space>
-//                                                         </CaseText>
-//                                                     )
-//                                                 }
-//                                             })
-//                                             :
-//                                             <CaseText gLen={group} btnState={btnState}>
-//                                                 <Space size={16}>
-//                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(all_case)}</Typography.Text>
-//                                                     <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(success_case)}</Typography.Text>
-//                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(fail_case)}</Typography.Text>
-//                                                 </Space>
-//                                             </CaseText>
-//                                     }
-//                                     {/* {
-//                                         Array.isArray(conf_data) && conf_data.length > 0 ?
-//                                             conf_data?.map((item: any, i: number) => {
-//                                                 if (item !== null) {
-//                                                     const { all_case, success_case, fail_case } = item || item.conf_source
-//                                                     return i !== baselineGroupIndex ?
-//                                                         <CaseText gLen={group} btnState={btnState}>
-//                                                             <Space size={16}>
-//                                                                 <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(all_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(success_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(fail_case)}</Typography.Text>
-//                                                             </Space>
-//                                                         </CaseText>
-//                                                         :
-//                                                         <>
-//                                                             <CaseText gLen={group} btnState={btnState}>
-//                                                                 <Space size={16}>
-//                                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum((conf.conf_source || conf).all_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#81BF84' }}>{toShowNum((conf.conf_source || conf).success_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum((conf.conf_source || conf).fail_case)}</Typography.Text>
-//                                                                 </Space>
-//                                                             </CaseText>
-//                                                             <CaseText gLen={group} btnState={btnState}>
-//                                                                 <Space size={16}>
-//                                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(all_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(success_case)}</Typography.Text>
-//                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(fail_case)}</Typography.Text>
-//                                                                 </Space>
-//                                                             </CaseText>
-//                                                         </>
-//                                                 } else {
-//                                                     return(
-//                                                         <CaseText gLen={group} btnState={btnState}>
-//                                                             <Space size={16}>
-//                                                                 <Typography.Text style={{ color: '#649FF6' }}>{toShowNum((conf.conf_source || conf).all_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#81BF84' }}>{toShowNum((conf.conf_source || conf).success_case)}</Typography.Text>
-//                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum((conf.conf_source || conf).fail_case)}</Typography.Text>
-//                                                             </Space>
-//                                                         </CaseText>
-//                                                     )
-//                                                 }
-//                                             })
-//                                             :
-//                                             <CaseText gLen={group} btnState={btnState}>
-//                                                 <Space size={16}>
-//                                                     <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(all_case)}</Typography.Text>
-//                                                     <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(success_case)}</Typography.Text>
-//                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(fail_case)}</Typography.Text>
-//                                                 </Space>
-//                                             </CaseText>
-//                                     } */}
-//                                 </TestCase>
-//                                 <ExpandSubcases
-//                                     {...conf}
-//                                     btn={btnState}
-//                                 />
-//                             </>
-//                         )
-//                     })
-//                 }
-//             </TestConfWarpper>
-//         </TestSuite>
-//     )
-// }

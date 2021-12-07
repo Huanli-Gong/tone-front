@@ -5,9 +5,10 @@ import { queryClusterMachine, delGroupMachine, queryCloudType, editGroupMachine 
 import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
+import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
-import PermissionTootip from '@/components/Public/Permission/index';
+// import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { useParams } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
@@ -175,6 +176,16 @@ const GroupTree: React.FC<any> = (props) => {
             width: 110,
         },
         {
+            title: '机器状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+        },
+        {
+            title: '实际状态',
+            width  :120,
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+        },
+        {
             title: '备注',
             width: 120,
             dataIndex: 'description',
@@ -199,9 +210,10 @@ const GroupTree: React.FC<any> = (props) => {
                 >
                     <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
                 </Popconfirm>
-                <PermissionTootip>
+                {/* <PermissionTootip>
                     <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
-                </PermissionTootip>
+                </PermissionTootip> */}
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
             </Space>,
         },
     ];
@@ -219,9 +231,21 @@ const GroupTree: React.FC<any> = (props) => {
         setColumns([...catagory])
     }
     useEffect(()=>{
+        const serverState = {
+            title: '机器状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+        }
+        const serverRealState = {
+            title: '实际状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+        }
         if(Array.isArray(data.data) && data.data.length){
             if (data.data[0].test_server.is_instance) {
                 catagory[0].title = '机器实例'
+                catagory.splice(16, 0, serverState)
+                catagory.splice(17, 0, serverRealState)
             } else {
                 catagory[0].title = '配置名称'
             }

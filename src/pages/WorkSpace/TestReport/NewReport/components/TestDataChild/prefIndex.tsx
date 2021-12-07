@@ -46,7 +46,7 @@ const { Option } = Select;
 
 const Performance = (props: any) => {
     const { child, name, id, onChange, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, setEditBtn, environmentResult } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, environmentResult, groupLen } = useContext(ReportContext)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
     const [chartType, setChartType] = useState('1')
@@ -54,7 +54,7 @@ const Performance = (props: any) => {
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
-    let group = allGroupData?.length
+    // let group = allGroupData?.length
     const switchMode = () => {
         setBtn(!btn)
         setChartType('1')
@@ -147,7 +147,6 @@ const Performance = (props: any) => {
     }
 
     const handleDelete = (name: string, row: any, rowKey: any) => {
-        setEditBtn(true)
         if (name == 'suite') {
             setDataSource(dataSource.map((item: any) => {
                 if (item.is_group) {
@@ -271,7 +270,7 @@ const Performance = (props: any) => {
         objList.splice(baseIndex, 0, obj)
         return (
             objList.map((item: any) => (
-                item !== undefined && <PrefDataText gLen={group} btnState={btnState}>
+                item !== undefined && <PrefDataText gLen={groupLen} btnState={btnState}>
                     <a style={{ cursor: 'pointer' }}
                         href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
                         target="_blank"
@@ -282,7 +281,6 @@ const Performance = (props: any) => {
             ))
         )
     }
-    
     // suite遍历
     const RenderSuite = () => {
         return (
@@ -386,10 +384,10 @@ const Performance = (props: any) => {
                                 (suite.conf_list && !!suite.conf_list.length) ? suite.conf_list.map((conf: any, cid: number) => (
                                     <div key={cid}>
                                         <TestConf>
-                                            <ConfTitle gLen={group} style={{ marginLeft: btnState ? 39 : 0 }}>Test Conf / 指标 </ConfTitle>
+                                            <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Test Conf / 指标 </ConfTitle>
                                             {
                                                 allGroupData?.map((cont: any, i: number) => (
-                                                    <ConfData gLen={group} key={i} btnState={btnState}>
+                                                    <ConfData gLen={groupLen} key={i} btnState={btnState}>
                                                         {
                                                             i !== baselineGroupIndex ?
                                                                 <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', justifyContent: 'space-between' }}>
@@ -416,33 +414,15 @@ const Performance = (props: any) => {
                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                             <PrefData>
                                                 <DelBtn conf={conf} cid={cid} />
-                                                <PrefDataTitle gLen={group}>{conf.conf_name} </PrefDataTitle>
+                                                <PrefDataTitle gLen={groupLen}>{conf.conf_name} </PrefDataTitle>
                                                 {renderShare(conf)}
-                                                {/* {
-                                                    allGroupData?.map((cont: any, i: number) => (
-                                                        <PrefDataText gLen={group} btnState={btnState} key={i}>
-                                                            {
-                                                                i !== baselineGroupIndex ?
-                                                                    <span
-                                                                        style={{ cursor: 'pointer' }}
-                                                                        onClick={() => window.open(`/ws/${ws_id}/test_result/${(conf.conf_compare_data || conf.compare_conf_list)[i - 1]?.obj_id}`)}>
-                                                                        {(conf.conf_compare_data || conf.compare_conf_list)[i - 1]?.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                                                                    </span>
-                                                                    :
-                                                                    <span style={{ cursor: 'pointer' }} onClick={() => window.open(`/ws/${ws_id}/test_result/${(conf?.conf_source || conf).obj_id}`)}>
-                                                                        {(conf?.conf_source || conf).obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                                                                    </span>
-                                                            }
-                                                        </PrefDataText>
-                                                    ))
-                                                } */}
                                             </PrefData>
                                             {
                                                 conf.metric_list.map((metric: any, idx: number) => (
                                                     <PrefMetric key={idx}>
                                                         <DelBtn conf={conf} cid={cid} />
                                                         {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
-                                                        <MetricTitle gLen={group}>
+                                                        <MetricTitle gLen={groupLen}>
                                                             <Row justify="space-between">
                                                                 <Col span={16} >
                                                                 <Row justify="start">
@@ -466,17 +446,17 @@ const Performance = (props: any) => {
                                                         {
                                                             Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
                                                             metric.compare_data.map((item: any, i: number) => (
-                                                                <MetricText gLen={group} btnState={btnState} key={i}>
+                                                                <MetricText gLen={groupLen} btnState={btnState} key={i}>
                                                                     <Row justify="space-between">
-                                                                        <Col span={12}>
+                                                                        <Col span={item && item.compare_result ? 12 : 20}>
                                                                             <Row justify="start">
                                                                                 <EllipsisPulic
-                                                                                    title={`${item.test_value}±${item.cv_value}`}
+                                                                                    title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
                                                                                     width={210}
                                                                                 >
                                                                                     <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
                                                                                         {
-                                                                                            JSON.stringify(item) === '{}'
+                                                                                            !item || JSON.stringify(item) === '{}'
                                                                                                 ? '-'
                                                                                                 : `${item.test_value}±${item.cv_value}`
                                                                                         }
@@ -485,7 +465,7 @@ const Performance = (props: any) => {
                                                                             </Row>
                                                                         </Col>
                                                                         {
-                                                                            item.compare_result &&
+                                                                            item && item.compare_result &&
                                                                             <Col span={12}>
                                                                                 <Row justify="end">
                                                                                     <RightResult>
@@ -582,31 +562,3 @@ const Performance = (props: any) => {
     )
 }
 export default memo(Performance);
-
-
-// const handleDescChange = (field: any, name: string, data: any) => {
-//     perData.list.map((item: any) => {
-//         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
-//             const { suite_id  }= item
-//             setSource({
-//                 ...source,
-//                 suite_id,
-//                 test_description:field,
-//             })
-//         }
-//         return item
-//     })
-// }
-// const handleEnvChange = (field: any, name: string, data: any) => {
-//     perData.list.map((item: any) => {
-//         if (item.suite_id == data.suite_id && item.rowKey == data.rowKey) {
-//             const { suite_id  }= item
-//             setSource({
-//                 ...source,
-//                 suite_id,
-//                 test_env:field,
-//             })
-//         }
-//         return item
-//     })
-// }

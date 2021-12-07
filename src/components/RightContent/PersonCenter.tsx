@@ -15,7 +15,7 @@ import AvatarCover from '../AvatarCover';
 const PersonCenter = () => {
     const { initialState } = useModel('@@initialState')
     const { authList } = initialState
-    // console.log( authList )
+
     const onMenuClick = useCallback(async (event: ClickParam) => {
         const { key }: any = event;
         if (key === 'name') return;

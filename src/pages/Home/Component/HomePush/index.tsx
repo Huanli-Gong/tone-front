@@ -8,20 +8,20 @@ import styles from './index.less';
 /**
  * tone首页
  */
-export default forwardRef((props: any, ref: any ) => {
+export default forwardRef((props: any, ref: any) => {
   const { formatMessage } = useIntl();
-  const [visible, setVisible] = useState(false); 
+  const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState(0);
   const [openInitial, setOpenInitial] = useState(false);
   const carouselRef = useRef<any>(null);
-   
-  useImperativeHandle(ref, ()=> ({
+
+  useImperativeHandle(ref, () => ({
     show: ({ initial }: any) => {
       setVisible(true);
       setOpenInitial(initial)
     }
   }))
-  useEffect(()=> {
+  useEffect(() => {
     carouselRef?.current?.goTo(current);
   }, [visible])
 
@@ -34,13 +34,13 @@ export default forwardRef((props: any, ref: any ) => {
     setCurrent(0);
   };
 
-  const prevClick = ()=> {
+  const prevClick = () => {
     if (current !== 0) {
       carouselRef?.current?.prev();
       setCurrent(current - 1)
     }
   }
-  const nextClick = ()=> {
+  const nextClick = () => {
     if (current !== 3) {
       carouselRef?.current?.next();
       setCurrent(current + 1)
@@ -58,19 +58,19 @@ export default forwardRef((props: any, ref: any ) => {
         onCancel={handleCancel}
         footer={null}
         width={1340}
-        destroyOnClose
-        bodyStyle={{ height:704, padding:'50px 75px 0 75px',position: 'relative' }}
-        style={{ background: '#f00'}}
+        destroyOnClose={true}
+        bodyStyle={{ height: 704, padding: '50px 75px 0 75px', position: 'relative' }}
+        style={{ background: '#f00' }}
       >
         <Carousel ref={carouselRef}
           autoplay={visible && current !== 3}
-          afterChange={(curr)=> { setCurrent(curr) }}
+          afterChange={(curr) => { setCurrent(curr) }}
           dots={{
             className: 'dotsClass',
           }}
         >
           <div className={styles.banner_item}>
-            <First/>
+            <First />
           </div>
           <div className={styles.banner_item}>
             <Second />
@@ -82,8 +82,8 @@ export default forwardRef((props: any, ref: any ) => {
             <Fourth />
           </div>
         </Carousel>
-        <LeftOutlined className={styles.prev} style={current == 0 ? {opacity: 0.05} : {}} onClick={prevClick} />
-        <RightOutlined className={styles.next} style={current == 3 ? {opacity: 0.05} : {}} onClick={nextClick} />
+        <LeftOutlined className={styles.prev} style={current == 0 ? { opacity: 0.05 } : {}} onClick={prevClick} />
+        <RightOutlined className={styles.next} style={current == 3 ? { opacity: 0.05 } : {}} onClick={nextClick} />
       </Modal>
     </div>
   )
