@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Empty, Typography, Spin, message } from 'antd';
 import { useModel } from 'umi';
 import { singleSystemRead, queryApplyMsg } from '@/services/Workspace'
 import { handleMsgType, jumpPage, NoticeItem } from './utils'
 import styles from './index.less';
-import { useEffect } from 'react';
 
 const SystemInform = (props: any) => {
     const { pathname } = location
