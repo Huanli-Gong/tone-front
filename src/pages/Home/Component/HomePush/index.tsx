@@ -58,7 +58,6 @@ export default forwardRef((props: any, ref: any ) => {
         onCancel={handleCancel}
         footer={null}
         width={1340}
-        destroyOnClose
         bodyStyle={{ height:704, padding:'50px 75px 0 75px',position: 'relative' }}
         style={{ background: '#f00'}}
       >
