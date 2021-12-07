@@ -12,7 +12,6 @@ import { resizeClientSize } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 // import { writeDocumentTitle } from '@/utils/hooks';
 import { editReport, saveReport, detailTemplate, reportDetail } from '../services';
-import { FixedSizeList as List } from 'react-window';
 import { history, useAccess, Access } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 import { ReportContext } from './Provider';
@@ -165,8 +164,7 @@ const Report = (props: any) => {
             }
         }
     }
-
-    
+    let groupLen = allGroupData?.length
     return (
         <ReportContext.Provider value={{
             btnState,
@@ -183,8 +181,7 @@ const Report = (props: any) => {
             summaryData,
             environmentResult,
             collapsed,
-            // groupRowRef,
-            // fixedRow,
+            groupLen,
             bodyRef,
             ws_id,
             setCollapsed,

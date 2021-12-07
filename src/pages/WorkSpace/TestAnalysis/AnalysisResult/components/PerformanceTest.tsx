@@ -111,23 +111,24 @@ const ReportTestPref: React.FC<any> = (props) => {
     const [filterName, setFilterName] = useState('all')
     const groupRowRef = useRef<any>(null)
     const { perf_data_result } = compareResult
-
+    // 当没有定义基准组时baseIndex的值
     const baseIndex = useMemo(()=>{
         if(baselineGroupIndex === -1) return 0
         return baselineGroupIndex
     },[ baselineGroupIndex ])
-
+    // 只在列表中调换基准组位置
     useEffect(() => {
         let dataArr = _.cloneDeep(perf_data_result)
         setDataSource(
             btn ? handleDataArr(dataArr,baseIndex) : perf_data_result
         )
     }, [perf_data_result,btn])
-
+    // 图表、列表模式切换
     const switchMode = () => {
         setBtn(!btn)
-        setChartType('1')
+        // setChartType('1')
     }
+    // 图表模式的type切换
     const hanldeChangeChartType = (val: string) => setChartType(val)
 
     useEffect(() => {
@@ -356,14 +357,14 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                 metric.compare_data.map((item: any, i: number) => (
                                                                                     <MetricText gLen={group} key={i}>
                                                                                         <Row justify="space-between">
-                                                                                            <Col span={12}>
+                                                                                            <Col span={item && item.compare_result ? 12 : 20}>
                                                                                                 <Row justify="start">
                                                                                                     <EllipsisPulic
-                                                                                                        title={`${item.test_value}±${item.cv_value}`}
+                                                                                                        title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
                                                                                                     >
                                                                                                         <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
                                                                                                             {
-                                                                                                                JSON.stringify(item) === '{}'
+                                                                                                                !item || JSON.stringify(item) === '{}'
                                                                                                                     ? '-'
                                                                                                                     : `${item.test_value}±${item.cv_value}`
                                                                                                             }
@@ -372,7 +373,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                                 </Row>
                                                                                             </Col>
                                                                                             {
-                                                                                                item.compare_result && 
+                                                                                                item && item.compare_result && 
                                                                                                 <Col span={12}>
                                                                                                     <Row justify="end">
                                                                                                         <RightResult>

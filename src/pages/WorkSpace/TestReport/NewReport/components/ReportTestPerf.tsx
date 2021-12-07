@@ -68,8 +68,8 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
-    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm } = useContext(ReportContext)
-    let group = allGroupData?.length
+    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm, groupLen } = useContext(ReportContext)
+    // let group = allGroupData?.length
     const testDataRef = useRef(null)
     const data = useMemo(() => {
         if (Array.isArray(domainResult.perf_item)) {
@@ -217,19 +217,19 @@ const ReportTestPref = () => {
     const groupRowRef = useRef<any>(null)
 
     return (
-        <ModuleWrapper style={{ width: group > 4 ? group * 300 : 1200, position: 'relative' }} id="test_data" ref={testDataRef}>
+        <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200, position: 'relative' }} id="test_data" ref={testDataRef}>
             <SubTitle><span className="line"></span>测试数据</SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>
-                    <PerfGroupTitle gLen={group}>对比组名称</PerfGroupTitle>
-                    <Identify envData={envData} group={group} isData={true}/>
+                    <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
+                    <Identify envData={envData} group={groupLen} isData={true}/>
                 </Group>
             </Summary>
             <GroupBarWrapper
                 groupRowRef={groupRowRef}
                 parentDom={testDataRef}
                 envData={envData}
-                groupLen={group}
+                groupLen={groupLen}
             />
             {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&

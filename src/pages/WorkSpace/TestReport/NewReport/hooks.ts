@@ -429,8 +429,8 @@ export const CreatePageData = (props:any) => {
         *** 统计性能测试、功能测试总数据
     */
     const countCase = ( data : any , countField : string , inital : any , index : any ) => {
-        return data?.reduce(( pre : any , cur : any  ) => {
-            return cur[ countField ]?.reduce(( p : any  , c : any , idx : number ) => {
+        return data.reduce(( pre : any , cur : any  ) => {
+            return cur[ countField ].reduce(( p : any  , c : any , idx : number ) => {
                 if ( index === idx ) for ( let x in c ) p[ x ] += c[ x ]
                 return p
             } , inital )
@@ -551,9 +551,9 @@ export const EditPageData = (props:any) => {
     
     const queryReport = async () => {
         setLoading(true)
-        const { code, msg, data: [data] } = await reportDetail({ report_id })
+        const { code, msg, data } = await reportDetail({ report_id })
         if (code == 200) {
-            setDataSource(data)
+            setDataSource(data[0])
             setLoading(false)
         } else {
             requestCodeMessage( code , msg )
@@ -654,6 +654,7 @@ export const EditPageData = (props:any) => {
                 newArr.push(env[i])
             }
             setAllGroupData(newArr)
+            // setAllGroupData(Array.from({ length: dataSource.group_count }).map((val)=> ({})))
             setBaselineGroupIndex(test_env?.base_index === undefined ? 0 : test_env?.base_index)
         }
         window.document.title = dataSource?.name || 'T-one'

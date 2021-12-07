@@ -40,7 +40,7 @@ const { Option } = Select;
 const FuncDataIndex: React.FC<any> = (props) => {
     const { child, name, id, subObj, onChange, onDelete, dataSource, setDataSource } = props
     const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-    const { btnState, btnConfirm, allGroupData, baselineGroupIndex, } = useContext(ReportContext)
+    const { btnState, btnConfirm, allGroupData, baselineGroupIndex, groupLen } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -48,7 +48,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [funcData, setFuncData] = useState<any>({})
-    let group = allGroupData?.length
+    // let group = allGroupData?.length
+    console.log('groupl',groupLen)
 
     useEffect(() => {
         setFuncData(child)
@@ -261,20 +262,20 @@ const FuncDataIndex: React.FC<any> = (props) => {
                         return (
                             <TestSubCase key={idx}>
                                 <DelBtnEmpty />
-                                <SubCaseTitle gLen={group}>
+                                <SubCaseTitle gLen={groupLen}>
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
                                     item.compare_data.length > 0 ?
                                         item.compare_data.map((cur: any) => {
                                             return (
-                                                <SubCaseText gLen={group} btnState={btnState}>
+                                                <SubCaseText gLen={groupLen} btnState={btnState}>
                                                     <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
                                                 </SubCaseText>
                                             )
                                         })
                                         :
-                                        <SubCaseText gLen={group} btnState={btnState}>
+                                        <SubCaseText gLen={groupLen} btnState={btnState}>
                                             <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
                                         </SubCaseText>
 
@@ -301,10 +302,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     </Popconfirm>
                 </SuiteName>
                 <TestConf>
-                    <ConfTitle gLen={group} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
+                    <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Conf</ConfTitle>
                     {
                         allGroupData?.map((cont: any, i: number) => (
-                            <ConfData gLen={group} btnState={btnState} key={i}>
+                            <ConfData gLen={groupLen} btnState={btnState} key={i}>
                                 <Row>
                                     <Col span={12}>
                                         总计/通过/失败
@@ -368,7 +369,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                 <>
                                     <TestCase expand={expand}>
                                         <DelBtn conf={conf} cid={cid} />
-                                        <CaseTitle gLen={group}>
+                                        <CaseTitle gLen={groupLen}>
                                             <EllipsisPulic title={conf.conf_name}>
                                                 <ExpandIcon
                                                     rotate={expand ? 90 : 0}
@@ -380,7 +381,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         {
                                             metricList?.map((item: any) => {
                                                 return (
-                                                    <CaseText gLen={group} btnState={btnState}>
+                                                    <CaseText gLen={groupLen} btnState={btnState}>
                                                         <Space size={16}>
                                                             <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>

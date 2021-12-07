@@ -1,11 +1,10 @@
-import React, { memo, useEffect, useRef, useState, useMemo } from 'react'
-import { Row, Space, Typography, Empty, Spin } from 'antd'
+import React, { memo, useEffect, useState, useMemo } from 'react'
+import { Row, Space, Typography, Spin } from 'antd'
 import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import TypeChart from '../components/TestDataChild/TypeChart';
 import NoTypeChart from '../components/TestDataChild/noTypeChart';
-import { compareChart } from '@/pages/WorkSpace/TestReport/services';
-
+import { compareChart } from '../../services';
 const FullRow = styled(Row)`
     width:100%;
 `
@@ -95,7 +94,8 @@ interface ConfChartProp {
     conf_name?: string,
 }
 
-const ConfChart: React.FC<ConfChartProp> = ({ setLegend, legend, envData, loading, chartData, is_active, chartType, }) => {
+const ConfChart = (props: any) => {
+    const { callBackColor, legend, envData, loading, chartData, is_active, chartType } = props
     if (chartType === '1') {
         return (
             <ConfMetricRow is_active={is_active}>
@@ -103,19 +103,17 @@ const ConfChart: React.FC<ConfChartProp> = ({ setLegend, legend, envData, loadin
                     chartData.metric_list.length === 0 ?
                         <NoTypeChart chartType={chartType} data={['']} is_active={is_active} />
                         :
-                        chartData.metric_list.map(
-                            (metric: any, idx: any) => (
-                                <Spin spinning={loading}>
-                                    <TypeChart
-                                    // setLegend={setLegend}
+                        chartData.metric_list.map((metric: any, idx: any) => (
+                            <Spin spinning={loading}>
+                                <TypeChart
+                                    callBackColor={callBackColor}
                                     name={legend}
                                     envData={envData}
-                                    key={idx}
                                     chartType={chartType}
                                     data={metric}
                                     is_active={is_active} />
-                                </Spin>
-                            ))
+                            </Spin>
+                        ))
                 }
             </ConfMetricRow>
         )
@@ -127,12 +125,12 @@ const ConfChart: React.FC<ConfChartProp> = ({ setLegend, legend, envData, loadin
                         <NoTypeChart chartType={chartType} data={['']} is_active={is_active} />
                         :
                         <TypeChart
-                        // setLegend={setLegend}
-                        name={legend}
-                        envData={envData}
-                        chartType={chartType}
-                        data={chartData}
-                        is_active={is_active} />
+                            callBackColor={callBackColor}
+                            name={legend}
+                            envData={envData}
+                            chartType={chartType}
+                            data={chartData}
+                            is_active={is_active} />
                 }
             </ConfMetricRow>
         )
@@ -151,37 +149,39 @@ const ChartModal = (props: any) => {
     const [loading, setLoading] = useState(false)
     const [chartConf, setChartConf] = useState<any>(null)
     const [chartMetric, setChartMetric] = useState<any>(null)
-
-    const queryChart = async (newObj: any, type: string) => {
+    const [color, setColor] = useState<any>([])
+    const queryChart = async (newObj: any) => {
         setLoading(true)
         const res = await compareChart(newObj)
         if (res.code === 200) {
             setLoading(false)
-            if (type === '1' || type === '3')
+            if (chartType === '1' || chartType === '3') 
                 setChartConf(res.data)
             else
                 setChartMetric(res.data)
         }
     }
-    let obj: any = {}
     useEffect(() => {
-        obj.show_type = chartType === '3' ? 1 : Number(chartType)
+        let obj: any = {}
+        obj.show_type = 1
         obj.base_suite_obj = {
             suite_id,
             suite_name,
             conf_dic: {}
         },
-
-            conf_list?.map((conf: any, index: number) => {
-                obj.base_suite_obj.conf_dic[conf.conf_id] = {
-                    conf_name: conf.conf_name,
-                    is_job: conf.is_job || conf.conf_source.is_job,
-                    obj_id: conf.obj_id || conf.conf_source.obj_id,
-                    compare_objs: conf.conf_compare_data || conf.compare_conf_list
-                }
-            })
-        queryChart(obj, chartType)
-    }, [conf_list, chartType])
+        conf_list?.map((conf: any, index: number) => {
+            obj.base_suite_obj.conf_dic[conf.conf_id] = {
+                conf_name: conf.conf_name,
+                is_job: conf.is_job || conf.conf_source.is_job,
+                obj_id: conf.obj_id || conf.conf_source.obj_id,
+                compare_objs: conf.conf_compare_data || conf.compare_conf_list
+            }
+        })
+        if(chartType === '2'){
+            obj.show_type = 2
+        }
+        queryChart(obj)
+    }, [ chartType ])
 
     const handleJumpChart = ({ conf_name }: JumpChartProp, idx: number) => {
         const id = `${conf_name}-${idx}`
@@ -194,8 +194,11 @@ const ChartModal = (props: any) => {
             setLegend('')
         }, 100)
     }
+    const handleChartColor = (arr: any) => {
+        setColor(arr)
+    }
     const legData = useMemo(() => {
-        let color = ['#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB']
+        // let color = ['#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB']
         let le: any = []
         le.push({
             name: `${envData?.base_group.tag}`,
@@ -206,9 +209,8 @@ const ChartModal = (props: any) => {
             </Space>
         })
 
-
         for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
-            if (compare.length > 3) color.push('#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB')
+            // if (compare.length > 3) color.push('#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB')
             le.push({
                 name: `${compare[k].tag}`,
                 inner: <Space align="start" style={{ cursor: 'pointer' }}>
@@ -219,8 +221,7 @@ const ChartModal = (props: any) => {
             })
         }
         return le
-    }, [envData])
-    const chartDataConf = chartType === '1' ? conf_list : chartConf?.conf_list
+    }, [envData, color])
     return (
         <Wrapper>
             <ModalHeader>
@@ -229,7 +230,7 @@ const ChartModal = (props: any) => {
                         <Typography.Text strong>对比组图例</Typography.Text>
                     </Space>
                     {
-                        legData.map((i: any, idx: number) => 
+                        legData.map((i: any, idx: number) =>
                             <Space size={28} style={{ marginRight: 16 }} key={idx}>
                                 <span onClick={() => handleToggle(i.name)}>{i.inner}</span>
                             </Space>
@@ -237,13 +238,9 @@ const ChartModal = (props: any) => {
                     }
                 </Space>
             </ModalHeader>
-
             {
                 chartType === '2' ?
                     <ModalBody>
-                        {/* <FullRow >
-                        <Typography.Title level={5} >{suite_name}</Typography.Title>
-                    </FullRow> */}
                         <ModalSlider>
                             <Space direction="vertical">
                                 <SliderTitle>
@@ -262,16 +259,12 @@ const ChartModal = (props: any) => {
                         </ModalSlider>
                         <ModalContent>
                             {
-                                // chartMetric == null ? 
-                                // <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                // :
-                                chartMetric !== null && <>
+                                chartMetric &&
+                                <>
                                     {
-                                        JSON.stringify(chartMetric.metric_dic) === '{}' 
-                                        ? 
-                                            <NoTypeChart chartType={chartType} data={['']} />
-                                        : 
-                                            Object.keys(chartMetric.metric_dic).map((key: any, idx: number) => (
+                                        JSON.stringify(chartMetric.metric_dic) === '{}'
+                                        ? <NoTypeChart chartType={chartType} data={['']} />
+                                        : Object.keys(chartMetric.metric_dic).map((key: any, idx: number) => (
                                             <div
                                                 key={idx}
                                                 id={`${key}-${idx}`}
@@ -283,13 +276,14 @@ const ChartModal = (props: any) => {
                                                     </Typography.Title>
                                                 </div>
                                                 <Spin spinning={loading}>
-                                                <TypeChart
-                                                    // setLegend={setLegend}
-                                                    name={legend}
-                                                    key={idx}
-                                                    envData={envData}
-                                                    data={chartMetric.metric_dic[key]}
-                                                    chartType={chartType} />
+                                                    <TypeChart
+                                                        // setLegend={setLegend}
+                                                        callBackColor={handleChartColor}
+                                                        name={legend}
+                                                        key={idx}
+                                                        envData={envData}
+                                                        data={chartMetric.metric_dic[key]}
+                                                        chartType={chartType} />
                                                 </Spin>
                                             </div>
                                         ))
@@ -319,7 +313,7 @@ const ChartModal = (props: any) => {
                         </ModalSlider>
                         <ModalContent>
                             {
-                                chartDataConf?.map(
+                                chartConf && chartConf.conf_list.map(
                                     (conf: any, idx: number) => (
                                         <div
                                             key={idx}
@@ -332,15 +326,16 @@ const ChartModal = (props: any) => {
                                                 </Typography.Title>
                                             </div>
                                             {
-                                                chartConf !== null && 
-                                                    <ConfChart 
-                                                        // setLegend={setLegend} 
-                                                        legend={legend} 
-                                                        envData={envData} 
-                                                        loading={loading} 
-                                                        chartData={conf} 
-                                                        is_active={current === `${conf.conf_name}-${idx}` ? true : false} 
-                                                        chartType={chartType} />
+                                                <ConfChart
+                                                    callBackColor={handleChartColor}
+                                                    legend={legend}
+                                                    envData={envData}
+                                                    loading={loading}
+                                                    chartData={conf}
+                                                    is_active={current === `${conf.conf_name}-${idx}` ? true : false}
+                                                    chartType={chartType}
+                                                />
+
                                             }
                                         </div>
                                     )
@@ -353,4 +348,4 @@ const ChartModal = (props: any) => {
     )
 }
 
-export default memo(ChartModal)
+export default React.memo(ChartModal)

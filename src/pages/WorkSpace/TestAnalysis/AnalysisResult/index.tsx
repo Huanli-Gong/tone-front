@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, memo, useRef, useMemo, useCallback } from 'react';
 import { Col, Button, message, Spin } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
 import { history, Access, useAccess } from 'umi';
@@ -13,20 +13,21 @@ import FunctionalTest from './components/FunctionalTest';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
 import _ from 'lodash';
-import { AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
+import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
 
 const Report = (props: any) => {
     const { ws_id } = props.match.params
-    const access = useAccess();
     const local = props.history.location
     const form_search = window.location.search
     const id = local.query.form_id
+    const access = useAccess();
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
     const [envData, setEnvData] = useState<Array<{}>>([])
+    const [suiteLen, setSuiteLen] = useState(1)
     const [layoutHeight, setLayoutHeight] = useState(innerHeight)
     const [loading, setLoading] = useState(true)
     const windowHeight = () => setLayoutHeight(innerHeight)
@@ -64,18 +65,34 @@ const Report = (props: any) => {
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
             }
         }
-    }, [id,local])
+    }, [id, local])
 
     const backTop = () => (document.querySelector('.ant-layout-has-sider .ant-layout') as any).scrollTop = 0
 
-    const [compareResult, setCompareResult] = useState<any>({})
+    const [compareResult, setCompareResult] = useState<any>({
+        func_data_result: [],
+        perf_data_result: []
+    })
     const [environmentResult, setEnvironmentResult] = useState<any>({})
     const queryCompareResultFn = async (paramData: any) => {
         const result = await queryCompareResultList(paramData)
         return result
     }
-    const handleData = async() => {
-        setLoading(true)
+
+    const handleData = async () => {
+        // setLoading(true)
+        const res = await queryEenvironmentResultList(paramEenvironment)
+        if (res.code == 200) {
+            setEnvironmentResult(res.data)
+        }
+        if (res.code === 1358) {
+            message.error('请添加对比组数据')
+            return
+        }
+        if (res.code !== 200) {
+            message.error(res.msg)
+        }
+
         const { perf_suite_dic, func_suite_dic } = testDataParam
         let perfArr: any = []
         let funcArr: any = []
@@ -97,56 +114,41 @@ const Report = (props: any) => {
                 })
             })
         }
-        let resLen:any = perfArr.length > funcArr.length  ? perfArr : funcArr
-        let obj = {
-            func_data_result:[],
-            perf_data_result:[]
-        }
-        resLen.map(( item : any, i : number ) => queryCompareResultFn({ func_suite_dic:funcArr[i], perf_suite_dic:perfArr[i] })
+
+        let resLen: any = perfArr.length > funcArr.length ? perfArr : funcArr
+        setSuiteLen(resLen.length)
+        resLen.map((item: any, i: number) => queryCompareResultFn({ func_suite_dic: funcArr[i], perf_suite_dic: perfArr[i] })
             .then(res => {
-                if(res.data.func_data_result ){
-                    obj.func_data_result = obj.func_data_result.concat(res.data.func_data_result)
+                if (res.data.func_data_result) {
+                    compareResult.func_data_result = compareResult.func_data_result.concat(res.data.func_data_result)
                 }
-
-                if(res.data.perf_data_result ){
-                    obj.perf_data_result = obj.perf_data_result.concat(res.data.perf_data_result)
+                if (res.data.perf_data_result) {
+                    compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data.perf_data_result)
                 }
-
-                if (res.code == 200) {
-                    setCompareResult(obj)
-                    setLoading(false)
-                }
-
+                setCompareResult({
+                    ...compareResult
+                })
                 if (res.code !== 200) {
                     message.error(res.msg)
                     return
                 }
-
             })
-            .catch((e) => {
-                setLoading(false)
-                message.error('请求失败')
-                console.log(e)
-            }))
-        const res = await queryEenvironmentResultList(paramEenvironment)
-        if (res.code == 200) {
-            setEnvironmentResult(res.data)
-            setLoading(false)
-        }
-        if (res.code === 1358) {
-            message.error('请添加对比组数据')
-            return
-        }
-        if (res.code !== 200) {
-            message.error(res.msg)
-        }
+        )
+        // setLoading(false)
     }
+
+    const compareLen = useMemo(() => {
+        const { func_data_result, perf_data_result } = compareResult
+        let perf = perf_data_result.length
+        let func = func_data_result.length
+        return func > perf ? func : perf
+    }, [compareResult])
+
     useEffect(() => {
         if (JSON.stringify(testDataParam) !== '{}' && JSON.stringify(paramEenvironment) !== '{}') {
             handleData()
         }
     }, [testDataParam, paramEenvironment])
-
 
     const handleShare = useCallback(
         async () => {
@@ -158,7 +160,6 @@ const Report = (props: any) => {
             }
             const data = await compareForm({ form_data })
             // setFormId(data.data)
-
             const clipboard = new Clipboard('.test_result_copy_link', {
                 text: function (trigger) {
                     return `${location.href}/?form_id=${data.data}`;
@@ -205,7 +206,6 @@ const Report = (props: any) => {
         }
     }, [environmentResult])
 
-   
     return (
         <ReportContext.Provider
             value={{
@@ -218,71 +218,72 @@ const Report = (props: any) => {
                 group,
             }}
         >
-            <Spin spinning={loading}>
-                <div
-                    style={{
-                        width: '100%',
-                        height: layoutHeight - 50,
-                        position: 'relative'
-                    }}
-                >
-                    <AnalysisWarpper style={{ width: group > 4 ? group * 300 : 1200 }}>
-                        <Col span={24}>
-                            <ResultTitle>
-                                <TypographyText>对比分析结果</TypographyText>
-                                <span className="btn">
-                                    {
-                                        form_search == '' ?
-                                            <>
-                                                <span className="test_result_copy_link"></span>
-                                                <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
-                                            </>
-                                            :
-                                            <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
-                                    }
-                                    <Access accessible={access.wsRoleContrl()}>
-                                        {form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
-                                    </Access>
-                                </span>
-                            </ResultTitle>
-                            <ResultContent >
+            <div
+                style={{
+                    width: '100%',
+                    height: layoutHeight - 50,
+                    position: 'relative',
+                    overflow: 'auto'
+                }}
+            >
+                {
+                    compareLen !== suiteLen && <MyLoading>
+                        <span className="my-loading-span">
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                        </span>
+                    </MyLoading>
+                }   
+                <AnalysisWarpper style={{ width: group > 3 ? group * 390 : 1200 }}>
+                    <Col span={24}>
+                        <ResultTitle>
+                            <TypographyText>对比分析结果</TypographyText>
+                            <span className="btn">
                                 {
-                                    (environmentResult && JSON.stringify(environmentResult) !== '{}') &&
-                                    <TestEnv />
+                                    form_search == '' ?
+                                        <>
+                                            <span className="test_result_copy_link"></span>
+                                            <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
+                                        </>
+                                        :
+                                        <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
                                 }
-                                <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
-                                    <SubTitle><span className="line"></span>测试数据</SubTitle>
-                                    {
-                                        JSON.stringify(compareResult.perf_data_result) !== '{}' &&
-                                        <PerformanceTest
-                                            parentDom={testDataRef}
-                                        />
-                                    }
-                                    {
-                                        JSON.stringify(compareResult.func_data_result) !== '{}' &&
-                                        <FunctionalTest />
-                                    }
-                                </ModuleWrapper>
-                            </ResultContent>
-                        </Col>
-                    </AnalysisWarpper>
-                    {
-                        top > 600 &&
-                        <div
-                            style={{ width: 44, height: 44, borderRadius: 2, backgroundColor: 'rgb(0, 0, 0, 0.1)', position: 'fixed', bottom: 10, right: 20 }}
-                            onClick={backTop}
-                        >
-                            <UpOutlined style={{ fontSize: 30, padding: 7, color: 'rgb(0, 0, 0, 0.7)' }} />
-                        </div>
-                    }
-                    <SaveReport
-                        ref={saveReportDraw}
-                        onOk={creatReportCallback}
-                        ws_id={ws_id}
-                        allGroup={allGroupData}
-                    />
-                </div>
-            </Spin>
+                                <Access accessible={access.wsRoleContrl()}>
+                                    {form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
+                                </Access>
+                            </span>
+                        </ResultTitle>
+                        <ResultContent >
+                            {
+                                (environmentResult && JSON.stringify(environmentResult) !== '{}') &&
+                                <TestEnv />
+                            }
+                            <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
+                                <SubTitle><span className="line"></span>测试数据</SubTitle>
+                                <PerformanceTest parentDom={testDataRef} />
+                                <FunctionalTest />
+                            </ModuleWrapper>
+                        </ResultContent>
+                    </Col>
+                </AnalysisWarpper>
+                {
+                    top > 600 &&
+                    <div
+                        style={{ width: 44, height: 44, borderRadius: 2, backgroundColor: 'rgb(0, 0, 0, 0.1)', position: 'fixed', bottom: 10, right: 20 }}
+                        onClick={backTop}
+                    >
+                        <UpOutlined style={{ fontSize: 30, padding: 7, color: 'rgb(0, 0, 0, 0.7)' }} />
+                    </div>
+                }
+                <SaveReport
+                    ref={saveReportDraw}
+                    onOk={creatReportCallback}
+                    ws_id={ws_id}
+                    allGroup={allGroupData}
+                />
+            </div>
         </ReportContext.Provider>
     )
 }

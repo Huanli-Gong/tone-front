@@ -231,9 +231,21 @@ const GroupTree: React.FC<any> = (props) => {
         setColumns([...catagory])
     }
     useEffect(()=>{
+        const serverState = {
+            title: '机器状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+        }
+        const serverRealState = {
+            title: '实际状态',
+            width:120,
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+        }
         if(Array.isArray(data.data) && data.data.length){
             if (data.data[0].test_server.is_instance) {
                 catagory[0].title = '机器实例'
+                catagory.splice(16, 0, serverState)
+                catagory.splice(17, 0, serverRealState)
             } else {
                 catagory[0].title = '配置名称'
             }

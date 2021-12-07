@@ -18,8 +18,8 @@ export const deleteConfig = async ( data : any ) => {
     return request(`/api/sys/push_config/`, { method : 'delete', data })
 }
 
-export const queryWorkspace = async () => {
-    return request(`/api/sys/workspace/list/`)
+export const queryWorkspace = async (params : any) => {
+    return request(`/api/sys/workspace/list/`,{ params })
 }
 export const queryProject = async ( params : any ) => {
     return request(`/api/sys/project/list/`,{params})
