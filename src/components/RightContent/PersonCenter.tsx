@@ -23,13 +23,16 @@ const PersonCenter = () => {
             window.open(`${window.location.origin}/personCenter`)
         }
         if (key === 'logout') {
-            if (BUILD_APP_ENV === 'opensource') {
-                window.location.href = `/api/auth/logout/`
-                return
+            if ( BUILD_APP_ENV ) {
+                if (BUILD_APP_ENV === 'opensource') {
+                    window.location.href = `/api/auth/logout/`
+                    return
+                }
+                if (BUILD_APP_ENV === 'openanolis') {
+                    return window.location.href = authList.logout_url
+                }
             }
-            if (BUILD_APP_ENV === 'openanolis') {
-                return window.location.href = authList.logout_url
-            }
+            
             await request
                 .get('/api/auth/logout/')
 

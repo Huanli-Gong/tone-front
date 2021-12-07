@@ -122,27 +122,20 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                     <Access
                         accessible={access.loginBtn()}
                         fallback={
-                            <>
-                                {
-                                    BUILD_APP_ENV === 'openanolis' &&
-                                    <Space>
-                                        <Button type="text" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
-                                        <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
-                                    </Space>
-                                }
-                                {
-                                    BUILD_APP_ENV === 'opensource' &&
-                                    <Space>
-                                        <Button
-                                            type="text"
-                                            style={{ color: '#fff', fontWeight: 500 }}
-                                            onClick={() => history.push(`/login?redirect_url=${window.location.href.replace(window.location.origin, '')}`)}
-                                        >
-                                            登录
-                                        </Button>
-                                    </Space>
-                                }
-                            </>
+                            BUILD_APP_ENV === 'openanolis' ?
+                                <Space>
+                                    <Button type="text" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
+                                    <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
+                                </Space> :
+                                <Space>
+                                    <Button
+                                        type="text"
+                                        style={{ color: '#fff', fontWeight: 500 }}
+                                        onClick={() => history.push(`/login?redirect_url=${window.location.href.replace(window.location.origin, '')}`)}
+                                    >
+                                        登录
+                                    </Button>
+                                </Space>
                         }
                     >
                         <PersonCenter />

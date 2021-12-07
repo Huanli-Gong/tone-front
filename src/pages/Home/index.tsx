@@ -5,11 +5,13 @@ import { Layout, Row, Col, Button, Table, Space, Typography, notification, messa
 import { UserOutlined } from '@ant-design/icons'
 // import JoinPopover from './Component/JoinPopover'
 import { enterWorkspaceHistroy, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
+import { ReactComponent as HomeBackground } from '@/assets/svg/home/home_background.svg';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
 import LogoEllipsis from '@/components/LogoEllipsis/index'
 import _ from 'lodash'
 import { queryHelpDocList } from '../HelpDocument/services'
+import HomePush from './Component/HomePush'
 // import { ReactComponent as WsPrivate } from '@/assets/svg/ws_private.svg'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
@@ -68,6 +70,7 @@ export default (): React.ReactNode => {
     const access = useAccess();
     document.title = 'T-One'
     const [helps, setHelps] = useState<Array<any>>([])
+    const homePushRef = useRef<any>(null);
     /**
      * @author wb-cy860729
      */
@@ -133,6 +136,12 @@ export default (): React.ReactNode => {
         queryWsTopList()
         wsTableData({ scope: 'public', page_size: 999, page_num: 1 })
         wsHelpDoc()
+
+        const homePushFlag = localStorage.getItem('homePush_Flag')
+        if (!homePushFlag) {
+            homePushRef?.current?.show({ initial: true })
+            localStorage.setItem('homePush_Flag', '1')
+        }
     }, [])
     /**
      * @author wb-cy860729
@@ -314,17 +323,23 @@ export default (): React.ReactNode => {
 
     return (
         <Layout className={styles.content} style={{ minHeight: layoutHeight - 50, height: layoutHeight - 50, overflowY: 'scroll' }}>
-
+            <HomePush ref={homePushRef} />
             {
-                <div className={styles.welcome_box}>
-                    <Row className={styles.welcome} style={{ marginRight: layoutWidth <= 1280 ? 20 : 0 }}>
+                <div className={styles.welcome_box} style={{ marginRight: layoutWidth <= 1280 ? 20 : 0 }}>
+                    <Row className={styles.welcome}>
                         <Typography.Title level={2} style={{ fontWeight: 'normal' }}>Hi, 欢迎使用自动化测试系统 T-One !</Typography.Title>
                         <Row>
                             <Space>
                                 <Typography.Text style={{ color: 'rgba(0,0,0,0.50)' }}>新一代自动化测试系统T-One(test in one),可以进行一站式自动化测试集成、管理、执行、分析；方便扩展各种产品测试。</Typography.Text>
+                                <span className={styles.home_push_button} onClick={()=> { homePushRef?.current?.show({ initial: false}) }}>
+                                    查看系统介绍
+                                </span>
                             </Space>
                         </Row>
                     </Row>
+                    <div className={styles.home_push_background_img}>
+                        <HomeBackground />
+                    </div>
                 </div>
             }
             <Row gutter={20} justify="space-between" style={{ marginLeft: 0, marginRight: 0, minWidth: 1240 }}>

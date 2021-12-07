@@ -1,0 +1,79 @@
+
+// 对话框 
+  :global(.ant-modal-wrap) { 
+    display: flex;
+    align-items: center;
+  }
+
+.HomePush_root {
+  min-width: 1340px;
+  // 覆盖原来组件样式。
+  top: unset;
+  padding-bottom: unset;
+
+  // 轮播小点
+  :global(.ant-carousel .slick-dots li.slick-active button) { 
+    background: #1890FF;
+    opacity: 1;
+  }
+  :global(.ant-carousel .slick-dots li button) {
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background: #000;
+    opacity: 0.2;
+  }
+  :global(.ant-carousel .slick-dots li.slick-active) {
+    width: 16px;
+  }
+
+  // 对话框关闭按钮
+  :global(.ant-modal-close-x) {
+    width: unset;
+    line-height: unset;
+    margin-top: 20px;
+    margin-right: 20px;
+    text-align: right;
+  }
+  .close_btn_text {
+    display: inline-block;
+    font-weight: 400;
+    white-space: nowrap;
+    text-align: center;
+    height: 32px;
+    padding: 4px 15px;
+    font-size: 14px;
+    border-radius: 2px;
+    color: #000000d9;
+    border: 1px solid #d9d9d9;
+    line-height: 22px;
+  }
+  .close_btn_text:hover {
+    color: #40a9ff;
+    border-color: #40a9ff;
+    cursor: pointer;
+  }
+
+  .banner_item {
+    height: 650px,
+  }
+
+  .prev {
+    opacity: 0.2;
+    color: #333333;
+    font-size: 52px;
+    //
+    position: absolute;
+    top: 324px;
+    left: 10px;
+  }
+  .next {
+    opacity: 0.2;
+    color: #333333;
+    font-size: 52px;
+    //
+    position: absolute;
+    top: 324px;
+    right: 10px;
+  }
+}
