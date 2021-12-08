@@ -176,16 +176,6 @@ const GroupTree: React.FC<any> = (props) => {
             width: 110,
         },
         {
-            title: '机器状态',
-            width:120,
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
-        },
-        {
-            title: '实际状态',
-            width  :120,
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
-        },
-        {
             title: '备注',
             width: 120,
             dataIndex: 'description',

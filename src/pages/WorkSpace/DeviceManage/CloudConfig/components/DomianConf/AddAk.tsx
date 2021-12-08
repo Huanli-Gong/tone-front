@@ -72,9 +72,11 @@ export default forwardRef(
                 setKeytatus(false)
                 return
             }
-            if (!form.getFieldValue('resource_group_id')) {
-                setResourceId(false)
-                return
+            if (BUILD_APP_ENV){
+                if (!form.getFieldValue('resource_group_id')) {
+                    setResourceId(false)
+                    return
+                }
             }
             setPadding(true)
             form.validateFields() // 触发表单验证，返回Promise
