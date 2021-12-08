@@ -22,7 +22,7 @@ export const MyLoading = styled.div`
     .my-loading-span > i {
         height: 14px;
         width: 14px;
-        background-color: #00D8FF;
+        background-color: #1890ff;
         display: block;
         position: absolute;
         border-radius: 100%;

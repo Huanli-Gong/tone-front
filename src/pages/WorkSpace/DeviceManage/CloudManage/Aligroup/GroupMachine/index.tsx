@@ -419,22 +419,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         newMachine: (id: number) => { newMachine(id) },
         editMachine: (row: any) => { editMachine(row) }
     }));
-    const enumer =  ( name:any ) => {
-        const list = {
-            '公共镜像':'system',
-            '自定义镜像':'self',
-            '共享镜像':'others'
-        }
-        return list[name];
-    }
-    const enumers =  ( name:any ) => {
-        const list = {
-            system:'公共镜像',
-            self:'自定义镜像',
-            others:'共享镜像'
-        }
-        return list[name];
-    }
+
     // 编辑时，镜像字段数据回填
     useEffect(() => {
         if (Object.keys(editData).length && editData.image && image.length) {
@@ -498,7 +483,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 param.image = params.image[2]
                 // 获取镜像名
                 const imageSource = resetImage(image, 'owner_alias', 'platform') || []
-                const LevelOne = imageSource?.find((item: any) => enumer(item.value) == params.image[0]) || {}
+                const LevelOne = imageSource?.find((item: any) => enumerChinese(item.value) == params.image[0]) || {}
                 const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
                 const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
                 param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
@@ -638,11 +623,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     rules={[{ required: true, message: '请选择' }]}
                                     initialValue={0}
                                 >
-                                    {/* <Select placeholder="请选择" disabled={cloudType != 0} onChange={(value: any) => setIs_instance(value)}>
-                                        <Option value={0}>立即购买</Option>
-                                        <Option value={1}>选择已有</Option>
-                                    </Select> */}
-                                    <Select placeholder="请选择" disabled={true} onChange={(value: any) => setIs_instance(value)}>
+                                    <Select placeholder="请选择" disabled={cloudType != 0} onChange={(value: any) => setIs_instance(value)}>
                                         <Option value={0}>立即购买</Option>
                                         <Option value={1}>选择已有</Option>
                                     </Select>
