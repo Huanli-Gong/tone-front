@@ -197,20 +197,22 @@ export default forwardRef(
                         }} />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
-                    <Form.Item
-                        label="资源组ID"
-                        name="resource_group_id"
-                        validateStatus={(!resourceId) && 'error'}
-                        help={(!resourceId && `资源组ID不能为空`)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入资源组ID" onChange={(e) => {
-                            if (!e.target.value) {
-                                setResourceId(false)
-                                return
-                            }
-                            setResourceId(true)
-                        }}/>
-                    </Form.Item>
+                    {
+                        BUILD_APP_ENV && <Form.Item
+                            label="资源组ID"
+                            name="resource_group_id"
+                            validateStatus={(!resourceId) && 'error'}
+                            help={(!resourceId && `资源组ID不能为空`)}
+                            rules={[{ required: true }]}>
+                            <Input autoComplete="auto" placeholder="请输入资源组ID" onChange={(e) => {
+                                if (!e.target.value) {
+                                    setResourceId(false)
+                                    return
+                                }
+                                setResourceId(true)
+                            }}/>
+                        </Form.Item>
+                    }
                     <Form.Item label="描述（选填）" name="description">
                         <Input.TextArea placeholder="请输入描述信息" />
                     </Form.Item>

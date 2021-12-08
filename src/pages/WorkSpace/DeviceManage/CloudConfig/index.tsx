@@ -237,7 +237,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				)
 			}
 		},
-		{
+		BUILD_APP_ENV && {
             title: '资源组ID',
             width: 120,
             dataIndex: 'resource_group_id',
@@ -384,7 +384,8 @@ const CloudConfig: React.FC<any> = (props) => {
 				)
 			}
 		}
-	]
+	].filter(Boolean);
+	
 	const columnsImage: any = [
 		{
 			title: 'ImageName',
