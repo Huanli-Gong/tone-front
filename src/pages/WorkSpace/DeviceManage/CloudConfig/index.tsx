@@ -194,12 +194,12 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_id ? '#1890ff' : undefined }} />,
 			render: (_, row: any) => {
 				return (
-					<PopoverEllipsis title={plusMessage(row.access_id,6,6)} >
+					<PopoverEllipsis title={plusMessage(row.access_id,4,4)} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_id || '']}
 							autoEscape
-							textToHighlight={plusMessage(row.access_id,6,6)}
+							textToHighlight={plusMessage(row.access_id,4,4)}
 						/>
 					</PopoverEllipsis>
 				)
@@ -226,12 +226,12 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_key ? '#1890ff' : undefined }} />,
 			render: (_, row: any) => {
 				return (
-					<PopoverEllipsis title={plusMessage(row.access_key,6,6)} >
+					<PopoverEllipsis title={plusMessage(row.access_key,4,4)} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_key || '']}
 							autoEscape
-							textToHighlight={plusMessage(row.access_key,6,6)}
+							textToHighlight={plusMessage(row.access_key,4,4)}
 						/>
 					</PopoverEllipsis>
 				)
@@ -258,12 +258,12 @@ const CloudConfig: React.FC<any> = (props) => {
             filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
             render: (_, row: any) => {
                 return (
-                    <PopoverEllipsis title={plusMessage(row.resource_group_id,6,6)} >
+                    <PopoverEllipsis title={plusMessage(row.resource_group_id,4,4)} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[fetchParams.resource_group_id || '']}
                             autoEscape
-                            textToHighlight={plusMessage(row.resource_group_id,6,6)}
+                            textToHighlight={plusMessage(row.resource_group_id,4,4)}
                         />
                     </PopoverEllipsis>
                 )

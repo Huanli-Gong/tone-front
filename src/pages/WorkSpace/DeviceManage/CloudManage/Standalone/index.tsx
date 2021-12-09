@@ -230,7 +230,7 @@ export default (props: any) => {
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, type)}>详情</Button>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
                         {
-                            String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick([row.private_ip] || [])}>部署</Button>
+                            String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>
                         }
                         {
                             String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>

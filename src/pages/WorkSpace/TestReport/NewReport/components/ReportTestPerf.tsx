@@ -148,7 +148,10 @@ const ReportTestPref = () => {
             setDataSource(dataSource.filter((item: any) => item.name !== domain && item.rowKey !== rowKey))
         }
     }
-
+    const transField = (conf: any, key: string) => {
+        const { conf_source } = conf
+        return conf[key] ? conf[key] : conf_source ? conf_source[key] : ''
+    }
     const simplify = (child: any, idx: number, listId: number, name: string) => {
         let suite_list: any = []
         child.list?.map((suite: any, suiteId: number) => {
@@ -166,8 +169,8 @@ const ReportTestPref = () => {
                     conf_id: conf.conf_id,
                     conf_name: conf.conf_name,
                     conf_source: {
-                        is_job: conf.is_job,
-                        obj_id: conf.obj_id,
+                        is_job: transField(conf, 'is_job'),
+                        obj_id: transField(conf, 'obj_id'),
                     },
                     compare_conf_list: conf.conf_compare_data,
                     metric_list: conf.metric_list

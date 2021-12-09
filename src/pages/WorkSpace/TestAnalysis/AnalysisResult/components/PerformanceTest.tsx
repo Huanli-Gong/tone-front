@@ -366,7 +366,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                                             {
                                                                                                                 !item || JSON.stringify(item) === '{}'
                                                                                                                     ? '-'
-                                                                                                                    : `${item.test_value}±${item.cv_value}`
+                                                                                                                    : item.test_value && `${item.test_value}±${item.cv_value}`
                                                                                                             }
                                                                                                         </Typography.Text>
                                                                                                     </EllipsisPulic>

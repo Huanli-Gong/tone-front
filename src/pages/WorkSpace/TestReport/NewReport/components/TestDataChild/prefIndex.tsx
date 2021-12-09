@@ -454,11 +454,11 @@ const Performance = (props: any) => {
                                                                                     title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
                                                                                     width={210}
                                                                                 >
-                                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} ellipsis={true}>
+                                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
                                                                                         {
                                                                                             !item || JSON.stringify(item) === '{}'
                                                                                                 ? '-'
-                                                                                                : `${item.test_value}±${item.cv_value}`
+                                                                                                : item.test_value && `${item.test_value}±${item.cv_value}`
                                                                                         }
                                                                                     </Typography.Text>
                                                                                 </EllipsisPulic>
