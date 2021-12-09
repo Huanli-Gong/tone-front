@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { Col, Layout, message, Row, Space, Spin, Statistic, Typography, DatePicker } from 'antd'
 import { queryWorkspaceProductInfo, queryWorkspaceProjectChart } from '../services'
 import { renderChart, filterChartSource } from './utils'
+import { requestCodeMessage } from '@/utils/utils';
 import JobTable from './components/JobTable'
 import moment from 'moment';
 interface ContainerProps {
@@ -91,7 +92,8 @@ const ProjectDashboard = (props: any) => {
     const suiteChart: any = useRef()
 
     const [info, setInfo] = useState<any>(null)
-    const [loading, setLoading] = useState(true)
+    const [jobChartLoading, setJobChartLoading] = useState(false)
+    const [caseChartLoading, setCaseChartLoading] = useState(false)
 
     const getProjectInfo = async () => {
         const { data, code, msg } = await queryWorkspaceProductInfo({ ws_id, project_id })
@@ -102,86 +104,107 @@ const ProjectDashboard = (props: any) => {
     const statusChartApi: any = useRef()
     const suiteChartApi: any = useRef()
 
-    const getChartData = async (dateStrings: any = []) => {
-        const { data, code, msg } = await queryWorkspaceProjectChart({
-            ws_id, project_id, 
-            start_time: dateStrings[0] || '',
-            end_time: dateStrings[1] || ''
-        })
-        if (code !== 200) return requestCodeMessage( code , msg )
-        if (statusChartApi.current)
-            statusChartApi.current.changeData(filterChartSource(data, 'Job' , true ))
-        else
-            statusChartApi.current = renderChart(statusChart.current, filterChartSource(data, 'Job' , true ))
-
-        if (suiteChartApi.current)
-            suiteChartApi.current.changeData(filterChartSource(data, 'Job' , false ))
-        else
-            suiteChartApi.current = renderChart(suiteChart.current, filterChartSource(data, 'Job' , false ))
+    const getChartData = (dateStrings: any = []) => {
+        getChartJob(dateStrings)
+        getChartCase(dateStrings)
     }
-
-    const initPage = async () => {
-        setLoading(true)
-        await getProjectInfo()
-        await getChartData()
-        setLoading(false)
+    const getChartJob = async (dateStrings: any = []) => {
+        setJobChartLoading(true)
+        try {
+            const { data, code, msg } = await queryWorkspaceProjectChart({
+                ws_id, project_id, 
+                chart_type: 'job',
+                start_time: dateStrings[0] || '',
+                end_time: dateStrings[1] || ''
+            })
+            setJobChartLoading(false)
+            if (code !== 200) return requestCodeMessage( code , msg )
+            if (statusChartApi.current)
+                statusChartApi.current.changeData(filterChartSource(data, 'Job' , true ))
+            else
+                statusChartApi.current = renderChart(statusChart.current, filterChartSource(data, 'Job' , true ))
+        } catch (e) {
+            setJobChartLoading(false)
+        }
+    }
+    const getChartCase = async (dateStrings: any = []) => {
+        setCaseChartLoading(true)
+        try {
+            const { data, code, msg } = await queryWorkspaceProjectChart({
+                ws_id, project_id, 
+                chart_type: 'case',
+                start_time: dateStrings[0] || '',
+                end_time: dateStrings[1] || ''
+            })
+            setCaseChartLoading(false)
+            if (code !== 200) return requestCodeMessage( code , msg )
+            if (suiteChartApi.current)
+                suiteChartApi.current.changeData(filterChartSource(data, 'Job' , false ))
+            else
+                suiteChartApi.current = renderChart(suiteChart.current, filterChartSource(data, 'Job' , false ))
+        } catch (e) {
+            setCaseChartLoading(false)
+        }
     }
 
     useEffect(() => {
-        initPage()
+        getProjectInfo()
+        getChartData()
     }, [])
     let startDate:any = moment().subtract(30, "days").format('YYYY-MM-DD')
     let endDate:any =  moment().format('YYYY-MM-DD')
     return (
         <Container height={layoutHeight - 50}>
-            <Spin spinning={loading} >
-                <InfoBanner >
-                    <Row justify="space-between" align="middle">
-                        <Space direction="vertical">
-                            <Typography.Title level={3}>{info?.project_name}</Typography.Title>
-                            <Typography.Text>{info?.project_description}</Typography.Text>
-                        </Space>
-                        <InfoRightSpace>
-                            <Statistic title="Pending" value={info?.pending_num} />
-                            <Statistic title="Running" value={info?.running_num} />
-                            <Statistic title="Complete" value={info?.complete_num} />
-                            <Statistic title="Fail" value={info?.fail_num} />
-                        </InfoRightSpace>
-                    </Row>
-                </InfoBanner>
-                <TableContainer>
-                    <TableTitle>列表详情</TableTitle>
-                    <JobTable />
-                </TableContainer>
-                <ChartWrapper>
-                    <ChartTitle align="middle">
-                        <Col span={24}>
-                            <Typography.Text>趋势图</Typography.Text>
-                            <RangeTime>
-                                <RangePicker
-                                    defaultValue = {[moment(startDate),moment(endDate)]}
-                                    ranges={{
-                                        '今天': [moment(), moment()],
-                                        '一个月': [moment().startOf('month'), moment().endOf('month')],
-                                    }}
-                                    format="YYYY-MM-DD"
-                                    onChange={( d, t ) => getChartData(t)}
-                                />
-                            </RangeTime>
-                        </Col>
-                        <Col span={24}>
-                            <Typography.Text type="secondary">Job成功/失败</Typography.Text>
-                        </Col>
-                    </ChartTitle>
+            <InfoBanner >
+                <Row justify="space-between" align="middle">
+                    <Space direction="vertical">
+                        <Typography.Title level={3}>{info?.project_name}</Typography.Title>
+                        <Typography.Text>{info?.project_description}</Typography.Text>
+                    </Space>
+                    <InfoRightSpace>
+                        <Statistic title="Pending" value={info?.pending_num} />
+                        <Statistic title="Running" value={info?.running_num} />
+                        <Statistic title="Complete" value={info?.complete_num} />
+                        <Statistic title="Fail" value={info?.fail_num} />
+                    </InfoRightSpace>
+                </Row>
+            </InfoBanner>
+            <TableContainer>
+                <TableTitle>列表详情</TableTitle>
+                <JobTable />
+            </TableContainer>
+            <ChartWrapper>
+                <ChartTitle align="middle">
+                    <Col span={24}>
+                        <Typography.Text>趋势图</Typography.Text>
+                        <RangeTime>
+                            <RangePicker
+                                defaultValue = {[moment(startDate),moment(endDate)]}
+                                ranges={{
+                                    '今天': [moment(), moment()],
+                                    '一个月': [moment().startOf('month'), moment().endOf('month')],
+                                }}
+                                format="YYYY-MM-DD"
+                                onChange={( d, t ) => getChartData(t)}
+                            />
+                        </RangeTime>
+                    </Col>
+                    <Col span={24}>
+                        <Typography.Text type="secondary">Job成功/失败</Typography.Text>
+                    </Col>
+                </ChartTitle>
+                <Spin spinning={jobChartLoading}>
                     <ChartContent ref={statusChart} />
-                </ChartWrapper>
-                <ChartWrapper>
-                    <ChartTitle align="middle">
-                        <Typography.Text type="secondary">用例失败</Typography.Text>
-                    </ChartTitle>
+                </Spin>
+            </ChartWrapper>
+            <ChartWrapper>
+                <ChartTitle align="middle">
+                    <Typography.Text type="secondary">用例失败</Typography.Text>
+                </ChartTitle>
+                <Spin spinning={caseChartLoading}>
                     <ChartContent ref={suiteChart} />
-                </ChartWrapper>
-            </Spin>
+                </Spin>
+            </ChartWrapper>
         </Container>
     )
 }
