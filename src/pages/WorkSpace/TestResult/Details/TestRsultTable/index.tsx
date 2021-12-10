@@ -123,13 +123,13 @@ export default (props: any) => {
             width: 50,
             render: (_: any) => {
                 if (_ === 'NA')
-                    return <StopCircle style={{ width: 16, height: 16 }} />
+                    return <StopCircle style={{ width: 16, height: 16, verticalAlign:'text-bottom' }} />
                 if (_ === '-')
                     return _
                 if (_ === 'fail')
-                    return <ErrorCircle style={{ width: 16, height: 16 }} />
+                    return <ErrorCircle style={{ width: 16, height: 16, verticalAlign:'text-bottom' }} />
                 if (_ === 'success')
-                    return <SuccessCircle style={{ width: 16, height: 16 }} />
+                    return <SuccessCircle style={{ width: 16, height: 16, verticalAlign:'text-bottom' }} />
                 return <></>
             }
         }])

@@ -154,7 +154,7 @@ export const MachineGroupL = styled(EnvGroupL)`
 export const MachineGroupR = styled.div<GroupRowProps>`
     width: ${({ gLen }) => setEnvGroupWdith(gLen)};
     float:left;
-    padding-left:13px;
+    padding:0px 13px;
     border-right:1px solid rgba(0,0,0,0.10);
     overflow: hidden;
     text-overflow: ellipsis;

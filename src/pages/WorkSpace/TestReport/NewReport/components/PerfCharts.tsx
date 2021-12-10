@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState, useMemo } from 'react'
-import { Row, Space, Typography, Spin } from 'antd'
+import { Row, Space, Typography, Spin, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import TypeChart from '../components/TestDataChild/TypeChart';
@@ -204,7 +204,11 @@ const ChartModal = (props: any) => {
             name: `${envData?.base_group.tag}`,
             inner: <Space align="start" style={{ cursor: 'pointer' }}>
                 <Dot color={color[0]} />
-                <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
+                { !!envData.compare_groups.length && 
+                    <Tooltip title="基准组">
+                        <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} /> 
+                    </Tooltip>
+                }
                 <Typography.Text strong>{envData?.base_group.tag}</Typography.Text>
             </Space>
         })

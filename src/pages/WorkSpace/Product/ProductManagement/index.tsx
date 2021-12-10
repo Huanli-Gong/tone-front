@@ -11,7 +11,7 @@ import CreateProjectDrawer from './NewProject'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { requestCodeMessage } from '@/utils/utils';
-
+// import { resizeClientSize } from '@/utils/hooks'
 export default (props: any) => {
     const { ws_id } = useParams<any>()
     const { query } : any = useLocation()
@@ -23,7 +23,8 @@ export default (props: any) => {
     const showProject: any = useRef(null)
     const createProject: any = useRef(null)
     const [form] = Form.useForm()
-
+    // const { windowHeight } = resizeClientSize()
+    // console.log('windowHeight',windowHeight)
     const { data: { data = [] }, refresh, loading, run } = useRequest(
         (params: any) => queryDropProduct(params),
         {
