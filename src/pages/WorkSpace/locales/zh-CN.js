@@ -46,7 +46,7 @@ export default {
     "Workspace.Baseline.GroupBaseline" : '内网基线',
     "Workspace.Baseline.ClusterBaseline" : '云上基线',
 
-    "Workspace.DevOps" : '运维管理',
+    "Workspace.DevOps" : 'ws系统配置',
 
     "Workspace.TestSuiteManage"  : "Test suite管理",
     "Workspace.WorkspaceCreate"  : '创建工作台',

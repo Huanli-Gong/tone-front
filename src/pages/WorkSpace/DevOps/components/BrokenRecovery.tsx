@@ -1,4 +1,4 @@
-import { InputNumber, Space, Typography, Button, Switch, Spin } from 'antd'
+import { InputNumber, Space, Typography, Button, Switch } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -19,9 +19,9 @@ const BrokenRecovery = (props: any) => {
 
         const getHours: number = minute % day
 
-        const dayStr: string = minute / day >= 1 ? `${parseInt(minute / day)}天` : ''
-        const hourStr: string = getHours >= 60 ? `${parseInt(getHours / hours)}小时` : ''
-        const minuteStr: string = `${parseInt(getHours % hours)}分钟`
+        const dayStr: string = minute / day >= 1 ? `${parseInt((minute / day) as any)}天` : ''
+        const hourStr: string = getHours >= 60 ? `${parseInt((getHours / hours) as any)}小时` : ''
+        const minuteStr: string = `${parseInt((getHours % hours) as any)}分钟`
 
         return dayStr + hourStr + minuteStr
     }, [minute])
