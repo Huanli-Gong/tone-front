@@ -62,7 +62,7 @@ const DevOps = (props: any) => {
 
     const update = async (params: any) => {
         setLoading(true)
-        const { code, msg } = await updateDevOpsConfig({ ws_id, ...params })
+        const { code, msg } = await updateDevOpsConfig({ ws_id, ...dataSource, ...params })
         if (code !== 200) {
             setLoading(false)
             return message.warning(msg)
