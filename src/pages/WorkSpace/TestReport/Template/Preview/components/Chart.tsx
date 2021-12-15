@@ -135,8 +135,7 @@ const TypeChart: React.FC<any> = memo(
                 show={show}
             />
         )
-    },
-    (prev, next) => prev.modal === next.modal
+    }
 )
 
 interface ConfRowProp {
