@@ -172,7 +172,7 @@ const ReportTestPref = () => {
                         is_job: transField(conf, 'is_job'),
                         obj_id: transField(conf, 'obj_id'),
                     },
-                    compare_conf_list: conf.conf_compare_data,
+                    compare_conf_list: (conf.conf_compare_data || conf.compare_conf_list),
                     metric_list: conf.metric_list
                 })
             })

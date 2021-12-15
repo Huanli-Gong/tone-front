@@ -60,7 +60,7 @@ export default forwardRef((props: any, ref: any) => {
         width={1340}
         destroyOnClose={true}
         bodyStyle={{ height: 704, padding: '50px 75px 0 75px', position: 'relative' }}
-        style={{ background: '#f00' }}
+        style={{ background: '#fff' }}
       >
         <Carousel ref={carouselRef}
           autoplay={visible && current !== 3}

@@ -205,65 +205,65 @@ const TemplateCatalog = (props: any) => {
                         <LittleRound />
                     </CatalogRound>
                     }
-                <Space direction="vertical">
-                    {
-                        domainResult.need_test_background &&
-                        <span onClick={() => handleCatalogItemClick('need_test_background', 0)} id="left_need_test_background" style={{ color: count === 0 ? '#1890FF' : '', cursor: 'pointer' }}>测试背景</span>
-                    }
-                    {
-                        domainResult.need_test_method &&
-                        <span onClick={() => handleCatalogItemClick('need_test_method', 1)} id="left_need_test_method" style={{ color: count === 1 ? '#1890FF' : '', cursor: 'pointer' }}>测试方法</span>
-                    }
-                    {
-                        domainResult.need_test_conclusion &&
-                        <span onClick={(e) => handleCatalogItemClick('need_test_conclusion', 2)} id="left_need_test_conclusion" style={{ color: count === 2 ? '#1890FF' : '', cursor: 'pointer' }}>测试结论</span>
-                    }
-                    {
-                        domainResult.need_test_summary &&
-                        <span onClick={(e) => handleCatalogItemClick('need_test_summary', 3)} id="left_need_test_summary" style={{ color: count === 3 ? '#1890FF' : '', cursor: 'pointer' }}>Summary</span>
-                    }
-                    {
-                        (domainResult.need_test_env || domainResult.need_env_description) &&
-                        <span onClick={(e) => handleCatalogItemClick('need_test_env', 4)} id="left_need_test_env" style={{ color: count === 4 ? '#1890FF' : '', cursor: 'pointer' }}>测试环境</span>
-                    }
-                    {
-                        (domainResult.need_perf_data || domainResult.need_func_data) &&
-                        <span onClick={(e) => handleCatalogItemClick('test_data', 5)} id="left_test_data" style={{ color: count === 5 ? '#1890FF' : '', cursor: 'pointer' }}>测试数据</span>
-                    }
-                    {
-                        catalogSource.map(
-                            (item: any, index: number) => (
-                                item.show ?
-                                    <CatalogDrageSpace key={index}>
-                                        <span onClick={(e) => handleCatalogItemClick(item.id, 6 + index)} id={`left_${item.id}`} style={{ color: count === 6 + index ? '#1890FF' : '', cursor: 'pointer' }}>
-                                            {item.name}
-                                        </span>
-                                        <CatalogDrageSpace id={`left_tree_${item.id}`} style={{ marginTop: item.treeData.length > 0 ? 8 : 0 }}>
-                                            <Tree
-                                                treeData={item.treeData}
-                                                onDrop={onDrop}
-                                                draggable
-                                                switcherIcon={<></>}
-                                                blockNode
-                                                titleRender={(node: any) => {
-                                                    return(
-                                                        <Typography.Text 
-                                                            id={`left_${node.rowKey}`} 
-                                                            style={{ color: `${node.name}_${node.rowKey}` === count ? '#1890FF' : '' }}>
-                                                                {node.title}
-                                                        </Typography.Text>
-                                                    ) 
-                                                }}
-                                                expandedKeys={item.expandkeys}
-                                                onSelect={handleSelectTree}
-                                            />
+                    <Space direction="vertical" style={{ width:'100%' }}>
+                        {
+                            domainResult.need_test_background &&
+                            <span onClick={() => handleCatalogItemClick('need_test_background', 0)} id="left_need_test_background" style={{ color: count === 0 ? '#1890FF' : '', cursor: 'pointer' }}>测试背景</span>
+                        }
+                        {
+                            domainResult.need_test_method &&
+                            <span onClick={() => handleCatalogItemClick('need_test_method', 1)} id="left_need_test_method" style={{ color: count === 1 ? '#1890FF' : '', cursor: 'pointer' }}>测试方法</span>
+                        }
+                        {
+                            domainResult.need_test_conclusion &&
+                            <span onClick={(e) => handleCatalogItemClick('need_test_conclusion', 2)} id="left_need_test_conclusion" style={{ color: count === 2 ? '#1890FF' : '', cursor: 'pointer' }}>测试结论</span>
+                        }
+                        {
+                            domainResult.need_test_summary &&
+                            <span onClick={(e) => handleCatalogItemClick('need_test_summary', 3)} id="left_need_test_summary" style={{ color: count === 3 ? '#1890FF' : '', cursor: 'pointer' }}>Summary</span>
+                        }
+                        {
+                            (domainResult.need_test_env || domainResult.need_env_description) &&
+                            <span onClick={(e) => handleCatalogItemClick('need_test_env', 4)} id="left_need_test_env" style={{ color: count === 4 ? '#1890FF' : '', cursor: 'pointer' }}>测试环境</span>
+                        }
+                        {
+                            (domainResult.need_perf_data || domainResult.need_func_data) &&
+                            <span onClick={(e) => handleCatalogItemClick('test_data', 5)} id="left_test_data" style={{ color: count === 5 ? '#1890FF' : '', cursor: 'pointer' }}>测试数据</span>
+                        }
+                        {
+                            catalogSource.map(
+                                (item: any, index: number) => (
+                                    item.show ?
+                                        <CatalogDrageSpace key={index}>
+                                            <span onClick={(e) => handleCatalogItemClick(item.id, 6 + index)} id={`left_${item.id}`} style={{ color: count === 6 + index ? '#1890FF' : '', cursor: 'pointer' }}>
+                                                {item.name}
+                                            </span>
+                                            <CatalogDrageSpace id={`left_tree_${item.id}`} style={{ marginTop: item.treeData.length > 0 ? 8 : 0 }}>
+                                                <Tree
+                                                    treeData={item.treeData}
+                                                    onDrop={onDrop}
+                                                    draggable
+                                                    switcherIcon={<></>}
+                                                    blockNode
+                                                    titleRender={(node: any) => {
+                                                        return(
+                                                            <Typography.Text 
+                                                                id={`left_${node.rowKey}`} 
+                                                                style={{ color: `${node.name}_${node.rowKey}` === count ? '#1890FF' : '' }}>
+                                                                    {node.title}
+                                                            </Typography.Text>
+                                                        ) 
+                                                    }}
+                                                    expandedKeys={item.expandkeys}
+                                                    onSelect={handleSelectTree}
+                                                />
+                                            </CatalogDrageSpace>
                                         </CatalogDrageSpace>
-                                    </CatalogDrageSpace>
-                                    : null
+                                        : null
+                                )
                             )
-                        )
-                    }
-                </Space>
+                        }
+                    </Space>
                 </Row>
             </CatalogBody>
         </Catalog>

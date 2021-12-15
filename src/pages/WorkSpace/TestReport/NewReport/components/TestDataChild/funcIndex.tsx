@@ -49,7 +49,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const [btn, setBtn] = useState<boolean>(false)
     const [funcData, setFuncData] = useState<any>({})
     // let group = allGroupData?.length
-    console.log('groupl',groupLen)
 
     useEffect(() => {
         setFuncData(child)
@@ -379,9 +378,9 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             </EllipsisPulic>
                                         </CaseTitle>
                                         {
-                                            metricList?.map((item: any) => {
+                                            metricList?.map((item: any,idx: number) => {
                                                 return (
-                                                    <CaseText gLen={groupLen} btnState={btnState}>
+                                                    <CaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                         <Space size={16}>
                                                             <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>

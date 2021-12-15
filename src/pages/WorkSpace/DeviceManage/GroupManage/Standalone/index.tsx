@@ -229,7 +229,7 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
             )
         },
-        {
+        !BUILD_APP_ENV && {
             title: '机器名称',
             dataIndex: 'name',
             width: 130,
@@ -240,7 +240,7 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: totalParam })} />
             )
         },
-        {
+        !BUILD_APP_ENV && {
             title: '机器类型',
             dataIndex: 'device_type', width: 100,
             ellipsis: true,
@@ -253,7 +253,7 @@ const Standalone = (props: any, ref: any) => {
                 />
             ),
         },
-        {
+        !BUILD_APP_ENV && {
             title: '机型',
             dataIndex: 'sm_name', width: 100,
             ellipsis: true,
@@ -262,12 +262,12 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: totalParam })} />
             )
         },
-        {
+        !BUILD_APP_ENV && {
             title: 'IDC',
             width: 100, ellipsis: true,
             dataIndex: 'idc',
         },
-        {
+        !BUILD_APP_ENV && {
             title: 'Console配置', 
             ellipsis: true,
             width: 100,
@@ -288,7 +288,7 @@ const Standalone = (props: any, ref: any) => {
                 />
             ),
         },
-        {
+        !BUILD_APP_ENV && {
             title: '分组',
             dataIndex: 'app_group',
             ellipsis: true,
@@ -337,6 +337,7 @@ const Standalone = (props: any, ref: any) => {
             title: '标签',
             // align: 'center',
             dataIndex: 'tag_list',
+            width: 160,
             render: (record: any) => {
                 if (record.length > 0) {
                     const firstTag = record[0]
@@ -367,41 +368,46 @@ const Standalone = (props: any, ref: any) => {
         {
             title: '操作',
             fixed: 'right',
-            width: 240,
+            width: !BUILD_APP_ENV ? 240 : 190,
             // align: 'center',
             render: (_: any, row: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}>详情</Button>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)} /*disabled={ _.state === 'Occupied' ? true : false }*/>编辑</Button>
                     <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
-                    <PermissionTootip>
-                        <Button disabled={true} style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
-                    </PermissionTootip>
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
                     {
-                         row.sub_server_list && row.device_type === '物理机' ? 
-                         <Dropdown
-                             placement="bottomRight"
-                             overlay={
-                                 <Menu
-                                     onClick={(item) => hanldeClickMenu(item, _)}
-                                 >
-                                     <Menu.Item key={'data'}>同步数据</Menu.Item>
-                                     <Menu.Item key={'vm'}>同步机器</Menu.Item>
-                                 </Menu>
-                             }
-                             trigger={['click', 'hover']}
-                         >
-                             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                 同步 <DownOutlined />
-                             </a>
-                         </Dropdown> :
-                         <Button style={{ padding: 0 }} size="small" type="link" onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id) }>同步</Button>
+                        !BUILD_APP_ENV ? 
+                            row.sub_server_list && row.device_type === '物理机' ? 
+                            <Dropdown
+                                placement="bottomRight"
+                                overlay={
+                                    <Menu
+                                        onClick={(item) => hanldeClickMenu(item, _)}
+                                    >
+                                        <Menu.Item key={'data'}>同步数据</Menu.Item>
+                                        <Menu.Item key={'vm'}>同步机器</Menu.Item>
+                                    </Menu>
+                                }
+                                trigger={['click', 'hover']}
+                            >
+                                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                    同步 <DownOutlined />
+                                </a>
+                            </Dropdown> :
+                            <Button 
+                                style={{ padding: 0 }} 
+                                size="small" 
+                                type="link" 
+                                onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id) }>
+                                    同步
+                            </Button>
+                        : null
                     }
-                    
                 </Space>
             )
         }
-    ]
+    ].filter(Boolean);
 
     const hanldeClickMenu = (item: any, row: any) => {
         switch (item.key) {
@@ -432,7 +438,7 @@ const Standalone = (props: any, ref: any) => {
                     expandedRowKeys: defaultExpandRowKeys,
                     expandIcon: () => false,
                 }}
-                scroll={{ x: 2000, y: layoutHeight - 50 - 66 - 30 - 20 }}
+                scroll={{ x: 'max-content', y: layoutHeight - 50 - 66 - 30 - 20 }}
             />
             <CommonPagination
                 pageSize={urlParmas.page_size}
@@ -465,7 +471,7 @@ const Standalone = (props: any, ref: any) => {
                             </Space>
                             <Space>
                                 <Button onClick={() => handleEdit({selectRowKeys,opreateType:'moreEdit'})}>批量编辑</Button>
-                                <Button onClick={handleBatchOption}>批量同步</Button>
+                                { !BUILD_APP_ENV && <Button onClick={handleBatchOption}>批量同步</Button>}
                             </Space>
                         </Row>
                     ) : null

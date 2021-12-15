@@ -30,7 +30,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const [vals, setVals] = useState([])
     const [validateResult, setValidateResult] = useState<any>({});
     const [isMoreEdit, setIsMoreEdit] = useState<boolean>(false)
-    const SELECT_IPS_PLACEHOLDER_STRING = "输入IP/SN,多个以空格或英文逗号分隔"
+    const SELECT_IPS_PLACEHOLDER_STRING = `输入${BUILD_APP_ENV ? '机器IP' : 'IP/SN'},多个以空格或英文逗号分隔`
 
     // 机器状态是occupied--编辑时：控制通道、机器、使用状态不能编辑。
     useImperativeHandle(ref, () => ({
@@ -292,7 +292,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     form={form}
                     className={styles.form_styles}
                     initialValues={{
-                        channel_type: 'staragent'
+                        channel_type: BUILD_APP_ENV ? 'toneagent' : 'staragent'
                     }}
                 >
                     {!isMoreEdit && <Form.Item label="控制通道"
@@ -308,7 +308,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                             <ValidateDisplayMessage data={validateResult} />
                         }
                     >
-                        <Select onChange={handleIpsChange} disabled={disabledState} placeholder="请选择控制通道">
+                        <Select onChange={handleIpsChange} disabled={BUILD_APP_ENV ? true : disabledState} placeholder="请选择控制通道" >
                             <Select.Option value="staragent">StarAgent</Select.Option>
                             <Select.Option value="toneagent">ToneAgent</Select.Option>
                         </Select>
@@ -318,7 +318,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     {/** 添加 */}
                     {!isMoreEdit && !modifyProps &&
                         <Form.Item
-                            label="机器"
+                            label= { BUILD_APP_ENV ? "机器IP" : '机器'}
                             name="ips"
                             validateStatus={ips.errors.length > 0 ? 'error' : ''}
                             help={ips.errors.length > 0 && validateMsg}
