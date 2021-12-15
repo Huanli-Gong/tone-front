@@ -27,7 +27,6 @@ const ReportHeader = () => {
                 defaultHolder="请输入报告名称"
                 space="14px"
                 style={{ 
-                    height:40,
                     lineHeight:'40px',
                     marginBottom:8,
                 }} 
