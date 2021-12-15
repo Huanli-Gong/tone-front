@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef, useEffect } from 'react'
+import React, { memo, useState, useRef } from 'react'
 import { Row, Typography, Space, Button, Select } from 'antd'
 import styled from 'styled-components'
 import { QuestionCircleOutlined } from '@ant-design/icons'
@@ -13,9 +13,10 @@ import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg'
 const Wrapper = styled(Row)`
     
 `
-const FullRow = styled(Row)`width:100%`
+const FullRow = styled(Row)`width:100%;`
 
-const CaseTable = styled(FullRow)`
+const CaseTable = styled(FullRow) <{ show?: boolean }>`
+    ${({ show }) => !show ? 'display:none;' : ''};
     border-radius: 2px;
     border-top:1px solid rgba(0,0,0,0.1);
     border-left:1px solid rgba(0,0,0,0.1);
@@ -30,7 +31,7 @@ const TestItemStyles = `
 
 const Term = styled(FullRow)`
     margin-bottom:24px;
-    ${TestItemStyles}
+    ${TestItemStyles};
 `
 
 const TermTitle = styled(FullRow)`
@@ -98,7 +99,7 @@ const ToolsIssue = styled(FullRow)`
     background:#fff;
     margin-top:20px;
     border-top:1px solid rgba(0,0,0,0.1);
-    border-left:1px solid rgba(0,0,0,.1)
+    border-left:1px solid rgba(0,0,0,.1);
 `
 
 const IssueRow = styled(FullRow)`
@@ -142,7 +143,8 @@ const TableBorder = `
     }
 `
 
-const SuiteCaseOption = styled(FullRow)`
+const SuiteCaseOption = styled(FullRow) <{ show?: boolean }>`
+    ${({ show }) => !show ? 'display:none;' : ''};
     ${CaseTableRow}
 
     &>div {
@@ -171,17 +173,18 @@ const CaseTr = styled(FullRow)`
     &>div{ background:#fff;}
     &>div:first-child{
         padding-left:36px;
+        word-break: break-all;
     }
 `
 
-const TableHeaderOptionRow = () => (
-    <SuiteCaseOption >
+const TableHeaderOptionRow: React.FC<any> = (props) => (
+    <SuiteCaseOption {...props} >
         <Row align="bottom">Test Conf / 指标 </Row>
         {
             new Array(3).fill('').map((i: any, idx: number) => (
                 <Row justify="space-between" key={idx}>
                     <Typography.Text>结果</Typography.Text>
-                    { idx !== 0 && <Space>
+                    {idx !== 0 && <Space>
                         <Typography.Text>对比结果/跟踪结果</Typography.Text>
                         <IconArrow />
                         <QuestionCircleOutlined />
@@ -193,11 +196,11 @@ const TableHeaderOptionRow = () => (
 )
 
 const ConfTable: React.FC<any> = memo(
-    ({ test_conf_name, metric_list = [] }) => {
+    ({ test_conf_name, metric_list = [], show }) => {
         return (
-            <CaseTable>
+            <CaseTable show={show}>
                 <CaseHeader>
-                    <div><Typography.Text strong>{test_conf_name}</Typography.Text></div>
+                    <div><Typography.Text strong ellipsis>{test_conf_name}</Typography.Text></div>
                     <div></div>
                     <div><IconLink /></div>
                     <div><IconLink /></div>
@@ -243,107 +246,107 @@ const ToolHeaderRow: React.FC<any> = ({ data, title }) => (
 )
 
 const SuiteConfTools: React.FC<SuiteConfToolsProps> = ({ perf_conf }) => (
-    perf_conf ?
-        <ToolsIssue>
-            <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} />
-            <ToolRow title={'测试环境'} data={perf_conf.need_test_env} />
-            <ToolRow title={'测试说明'} data={perf_conf.need_test_description} />
-            <ToolRow title={'测试结论'} data={perf_conf.need_test_conclusion} />
-        </ToolsIssue> :
-        <></>
+    <ToolsIssue>
+        <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} />
+        <ToolRow title={'测试环境'} data={perf_conf.need_test_env} />
+        <ToolRow title={'测试说明'} data={perf_conf.need_test_description} />
+        <ToolRow title={'测试结论'} data={perf_conf.need_test_conclusion} />
+    </ToolsIssue>
 )
 
-const TermItem: React.FC<any> = ({ name, list, perf_conf, rowkey, field, is_default }) => {
-    const [modalType, setModalType] = useState(perf_conf.show_type === 'list')
-    const [chartType, setChartType] = useState('1')
+const TermItem: React.FC<any> = memo(
+    ({ name, list, perf_conf, rowkey, field, is_default, time }) => {
+        const [modalType, setModalType] = useState(perf_conf.show_type === 'list')
 
-    useEffect(() => {
-        setModalType(perf_conf.show_type === 'list')
-    }, [perf_conf.show_type])
+        const title = useRef<any>()
+        const titleWidth = useRefWidth(title)
 
-    const title = useRef<any>()
-    const titleWidth = useRefWidth(title)
+        const handleChangeModal = () => setModalType(!modalType)
 
-    const hanldeChangeChartType = (val: string) => setChartType(val)
-
-    const handleChangeModal = () => {
-        setModalType(!modalType)
-        setChartType('1')
-    }
-
-    return (
-        <Term >
-            <TermTitle justify="space-between" id={`${field}-${rowkey}`} ref={title}>
-                <Typography.Text strong>
+        return (
+            <Term >
+                <TermTitle justify="space-between" id={`${field}-${rowkey}`} ref={title}>
+                    <Typography.Text strong>
+                        <Space align="start">
+                            <TermIcon style={{ transform: 'translate(0px, 2px)' }} />
+                            <Typography.Text strong style={{ width: titleWidth - 410, display: 'inline-block' }}>
+                                {name}
+                            </Typography.Text>
+                        </Space>
+                    </Typography.Text>
                     <Space align="start">
-                        <TermIcon style={{ transform: 'translate(0px, 2px)' }} />
-                        <Typography.Text strong style={{ width: titleWidth - 410, display: 'inline-block' }}>
-                            {name}
-                        </Typography.Text>
+                        <Space>
+                            <Typography.Text>筛选：</Typography.Text>
+                            <Select value={''} style={{ width: 200 }}>
+                                <Select.Option value="">全部</Select.Option>
+                            </Select>
+                        </Space>
+                        <Button onClick={handleChangeModal}>
+                            {!modalType ? '列表视图' : '图表视图'}
+                        </Button>
                     </Space>
-                </Typography.Text>
-                <Space align="start">
-                    <Space>
-                        <Typography.Text>筛选：</Typography.Text>
-                        <Select value={''} style={{ width: 200 }}>
-                            <Select.Option value="">全部</Select.Option>
-                        </Select>
-                    </Space>
-                    <Button onClick={handleChangeModal}>
-                        {!modalType ? '列表视图' : '图表视图'}
-                    </Button>
-                </Space>
-            </TermTitle>
-            <TermBody>
-                {
-                    list.map(
-                        (suite: any, index: number) => (
-                            <Suite key={index}>
-                                <SuiteTitle justify="space-between" style={{ paddingTop: 8 , paddingBottom : 8 }}>
-                                    <Typography.Text strong style={{ width: titleWidth - (!modalType ? 410 : 60) }}>
-                                        {suite.suite_show_name}
-                                    </Typography.Text>
-                                    {
-                                        !modalType &&
-                                        <Space style={{ height: 32 }}>
-                                            <Typography.Text>视图：</Typography.Text>
-                                            <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
-                                                <Select.Option value="1">所有指标拆分展示(type1)</Select.Option>
-                                                <Select.Option value="2">多Conf同指标合并(type2)</Select.Option>
-                                                <Select.Option value="3">单Conf多指标合并(type3)</Select.Option>
-                                            </Select>
-                                        </Space>
-                                    }
-                                </SuiteTitle>
-                                <SuiteBody >
-                                    {(!is_default && perf_conf) && <SuiteConfTools perf_conf={perf_conf} />}
-                                    {
-                                        !modalType ?
-                                            <ChartModal {...suite} chartType={chartType} /> :
-                                            <>
-                                                <TableHeaderOptionRow />
-                                                {
-                                                    suite.case_source.map(
-                                                        (conf: any, idx: any) => (
-                                                            <ConfTable
-                                                                key={idx}
-                                                                test_suite_id={suite.test_suite_id}
-                                                                {...conf}
-                                                            />
-                                                        )
+                </TermTitle>
+                <TermBody>
+                    {
+                        list.map(
+                            (suite: any, index: number) => {
+                                const [chartType, setChartType] = useState<number>(1)
+                                const hanldeChangeChartType = (val: number) => setChartType(val)
+
+                                return (
+                                    <Suite key={index}>
+                                        <SuiteTitle justify="space-between" style={{ paddingTop: 8, paddingBottom: 8 }}>
+                                            <Typography.Text strong style={{ width: titleWidth - (!modalType ? 410 : 60) }}>
+                                                {suite.suite_show_name}
+                                            </Typography.Text>
+                                            {
+                                                !modalType &&
+                                                <Space style={{ height: 32 }}>
+                                                    <Typography.Text>视图：</Typography.Text>
+                                                    <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
+                                                        <Select.Option value={1}>所有指标拆分展示(type1)</Select.Option>
+                                                        <Select.Option value={2}>多Conf同指标合并(type2)</Select.Option>
+                                                        <Select.Option value={3}>单Conf多指标合并(type3)</Select.Option>
+                                                    </Select>
+                                                </Space>
+                                            }
+                                        </SuiteTitle>
+                                        <SuiteBody >
+                                            {(!is_default && JSON.stringify(perf_conf) !== '{}') &&
+                                                <SuiteConfTools perf_conf={perf_conf} />}
+                                            <ChartModal
+                                                {...suite}
+                                                show={!modalType}
+                                                chartType={chartType}
+                                                time={time.concat(index)}
+                                            />
+                                            <TableHeaderOptionRow show={modalType} />
+                                            {
+                                                suite.case_source.map(
+                                                    (conf: any, idx: any) => (
+                                                        <ConfTable
+                                                            {...conf}
+                                                            show={modalType}
+                                                            key={idx}
+                                                            test_suite_id={suite.test_suite_id}
+                                                        />
                                                     )
-                                                }
-                                            </>
-                                    }
-                                </SuiteBody>
-                            </Suite>
+                                                )
+                                            }
+                                        </SuiteBody>
+                                    </Suite>
+                                )
+                            }
                         )
-                    )
-                }
-            </TermBody>
-        </Term>
-    )
-}
+                    }
+                </TermBody>
+            </Term>
+        )
+    },
+    (prevProps, nextProps) => {
+        return prevProps.list === nextProps.list
+    }
+)
 
 const PerformanceTest: React.FC<any> = ({ perf_item, perf_conf, field, is_default }) => {
     const title = useRef<any>()
@@ -353,7 +356,7 @@ const PerformanceTest: React.FC<any> = ({ perf_item, perf_conf, field, is_defaul
         <Wrapper>
             {
                 perf_item.map(
-                    (item: any) => (
+                    (item: any, index: number) => (
                         item.is_group ?
                             <Group id={`${field}-${item.rowkey}`} key={item.rowkey} ref={title}>
                                 <GroupTitle >
@@ -365,12 +368,26 @@ const PerformanceTest: React.FC<any> = ({ perf_item, perf_conf, field, is_defaul
                                 <GroupBody>
                                     {
                                         item.list.map((i: any) => (
-                                            <TermItem is_default={is_default} field={field} key={i.rowkey} {...i} perf_conf={perf_conf} />
+                                            <TermItem
+                                                {...i}
+                                                is_default={is_default}
+                                                field={field}
+                                                key={i.rowkey}
+                                                perf_conf={perf_conf}
+                                                time={[index]}
+                                            />
                                         ))
                                     }
                                 </GroupBody>
                             </Group> :
-                            <TermItem is_default={is_default} field={field} key={item.rowkey} {...item} perf_conf={perf_conf} />
+                            <TermItem
+                                {...item}
+                                key={item.rowkey}
+                                is_default={is_default}
+                                field={field}
+                                perf_conf={perf_conf}
+                                time={[index]}
+                            />
                     )
                 )
             }
