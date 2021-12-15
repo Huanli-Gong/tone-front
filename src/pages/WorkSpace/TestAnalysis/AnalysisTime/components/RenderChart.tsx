@@ -1,6 +1,6 @@
 import { Card } from 'antd'
 import React, { memo, useEffect, useRef, useState } from 'react'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import _ from 'lodash'
 import { useParams } from 'umi'
 

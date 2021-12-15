@@ -1,12 +1,15 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
-import { Row, Space, Typography, Empty, Col } from 'antd'
+import React, { memo, useEffect, useRef, useState, useMemo } from 'react'
+import { Row, Space, Typography } from 'antd'
 import styled from 'styled-components'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/TestReport/GaryBase.svg'
 
-const FullRow = styled(Row)`width:100%;`
+const FullRow = styled(Row)`
+    width:100%;
+`
 
-const Wrapper = styled(FullRow)`
+const Wrapper = styled(FullRow) <{ show?: boolean }>`
+    ${({ show }) => !show ? 'display:none;' : null};
     margin-top:20px;
 `
 
@@ -45,6 +48,7 @@ const SliderTitle = styled(Typography.Text)`
 interface ConfNameProp {
     is_active?: number
 }
+
 const ConfName = styled(Typography.Text) <ConfNameProp>`
     cursor:pointer;
     ${({ is_active }) => is_active && 'color:#1890FF;'}
@@ -55,77 +59,95 @@ const ModalContent = styled.div`
     .ant-typography { margin-bottom:0;}
 `
 
-const TypeChart: React.FC<any> = ({ data, chartType }) => {
-    const chart = useRef<any>()
+const ChartWrapper = styled.div<{ chartWidth?: string | number, show?: boolean }>`
+    height: 376px;
+    display: ${({ show }) => !show ? 'none' : 'inline-block'};
+    flex-shrink: 0 ;
+`
 
-    useEffect(() => {
-        const rageMax: number = data.length > 4 ? parseInt(parseFloat(4 / data.length) * 100) : data.length
-        const myChart = echarts.init(chart.current)
-        myChart.clear()
-        myChart.setOption({
-            title: {
-                subtext: 'more is better'
-            },
-            grid: {
-                left: 40,
-                right: 8
-            },
-            animation: false,
-            xAxis: {
-                data,
-                axisTick: { show: false },
-                axisLabel: {
-                    interval: 0,
-                    width: 110,
-                    formatter: (value: string) => {
-                        return value.length > 16 ? value.substr(0, 16) + '...' : value
-                    }
+const TypeChart: React.FC<any> = memo(
+    ({ data, chartType = 1, time, show = false, modal }) => {
+        const chart = useRef<any>()
+        const myChart = useRef<any>()
+
+        useEffect(() => {
+            if (modal) {
+                // const duration = time.reduce((p: any, c: any, i: number) => parseInt(p += (c * Math.pow(2, i))), 0)
+                const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
+                // console.log(duration)
+                const rageMax: number = data.length > 4 ? parseInt((parseFloat((4 / data.length) as any) * 100) as any) : data.length
+                const opt: any = {
+                    animation: false,
+                    title: { subtext: 'more is better' },
+                    grid: { left: 40, right: 8 },
+                    xAxis: {
+                        data, axisTick: { show: false },
+                        axisLabel: {
+                            interval: 0, width: 110,
+                            formatter: (value: string) => value.length > 16 ? value.substr(0, 16) + '...' : value
+                        }
+                    },
+                    yAxis: {
+                        type: 'value', axisLine: { show: false }, axisTick: { show: false },
+                        splitLine: { show: true, lineStyle: { type: 'dashed' }, },
+                        axisLabel: { showMinLabel: true, showMaxLabel: true, fontSize: 10, },
+                        // boundaryGap: true,
+                        min: 0, max: 5000
+                    },
                 }
-            },
-            yAxis: {
-                type: 'value',
-                axisLine: { show: false },
-                axisTick: { show: false },
-                splitLine: { show: true, lineStyle: { type: 'dashed' }, },
-                axisLabel: {
-                    showMinLabel: true,
-                    showMaxLabel: true,
-                    fontSize: 10,
-                },
-                boundaryGap: true,
-                min: 0,
-                max: 5000
-            },
-            dataZoom: [{
-                show: chartType !== '1',
-                realtime: true,
-                start: 0,
-                end: rageMax,
-                left: '20%',
-                height: 8,
-                right: '20%',
-            },
-            {
-                type: 'inside',
-                realtime: true,
-                zoomOnMouseWheel: false,
-                start: 0,
-                end: rageMax
-            }],
-        })
-    }, [chartType])
+                opt.dataZoom = [
+                    chartType !== 1 &&
+                    {
+                        show: true, realtime: true, start: 0, end: rageMax,
+                        left: '20%', height: 8, right: '20%',
+                    },
+                    {
+                        type: 'inside', realtime: true, zoomOnMouseWheel: false,
+                        start: 0, end: rageMax
+                    }
+                ].filter(Boolean);
 
-    return (
-        <div ref={chart} style={{ width: chartType !== '1' ? '100%' : 268, height: 376, display: 'inline-block', flexShrink: 0 }} />
-    )
-}
+                const timer = setTimeout(() => {
+                    const chartObj = echarts.init(
+                        chart.current, undefined,
+                        {
+                            renderer: 'svg', height: 376,
+                            width: chartType === 1 ? 268 : modal?.clientWidth
+                        }
+                    )
+                    chartObj.showLoading()
+                    chartObj.setOption(opt as any)
+                    chartObj.hideLoading()
+                    myChart.current = chartObj
+                }, duration)
+
+                return () => {
+                    timer && clearTimeout(timer)
+                    myChart.current && myChart.current.dispose()
+                }
+            }
+        }, [modal, time])
+
+        return (
+            <ChartWrapper
+                ref={chart}
+                style={{ width: chartType === 1 ? 268 : modal?.clientWidth }}
+                show={show}
+            />
+        )
+    },
+    (prev, next) => prev.modal === next.modal
+)
 
 interface ConfRowProp {
     is_active: boolean
+    show?: boolean
 }
+
 const ConfMetricRow = styled.div<ConfRowProp>`
     height:376px;
     width:100%;
+    /* display: ${({ show }) => show ? 'flex' : 'none'}; */
     display: flex;
     overflow-x:auto;
     overflow-y:hidden;
@@ -139,35 +161,49 @@ interface ConfChartProp {
     is_active: boolean
     chartType: string | number
     test_conf_name?: string
+    time?: any
+    show?: boolean
+    [k: string]: any
 }
 
-const ConfChart: React.FC<ConfChartProp> = ({ metric_list = [], is_active, chartType }) => {
-    if (chartType === '1')
-        return (
-            <ConfMetricRow is_active={is_active}>
-                {
-                    metric_list.map(
-                        (metric: string) => (
-                            <TypeChart chartType={chartType} key={metric} data={[metric]} is_active={is_active} />
-                        )
-                    )
-                }
-                {
-                    metric_list.length === 0 &&
-                    <TypeChart chartType={chartType} data={['']} is_active={is_active} />
-                }
-            </ConfMetricRow>
-        )
-
-    if (chartType === '3')
-        return (
-            <ConfMetricRow is_active={is_active}>
-                <TypeChart data={metric_list} chartType={chartType} />
-            </ConfMetricRow>
-        )
-
+const ConfChart: React.FC<ConfChartProp> = (props) => {
+    const { metric_list = [], is_active, chartType, time } = props
     return (
-        <></>
+        <ConfMetricRow is_active={is_active}>
+            <TypeChart
+                {...props}
+                data={metric_list}
+                chartType={3}
+                show={chartType === 3}
+                time={time}
+            />
+            {
+                metric_list.map(
+                    (metric: string, idx: number) => (
+                        <TypeChart
+                            {...props}
+                            chartType={1}
+                            key={metric}
+                            data={[metric]}
+                            is_active={is_active}
+                            show={chartType === 1}
+                            time={time.concat(idx)}
+                        />
+                    )
+                )
+            }
+            {
+                metric_list.length === 0 &&
+                <TypeChart
+                    {...props}
+                    chartType={1}
+                    data={['']}
+                    show={chartType === 1}
+                    is_active={is_active}
+                    time={time}
+                />
+            }
+        </ConfMetricRow>
     )
 }
 
@@ -176,8 +212,23 @@ interface JumpChartProp {
     test_conf_id?: number
 }
 
-const ChartModal = (props: any) => {
-    const { case_source, chartType, suite_show_name } = props
+const ModalItem = styled.div<{ show?: boolean }>`
+    width: 100%;
+    overflow: hidden ;
+    ${({ show }) => !show ? 'display:none;' : ''}
+`
+
+const LevelTitle = styled(Typography.Title)``
+
+const ModalItemTitle = styled.div<{ isActive: boolean }>`
+    ${({ isActive }) => isActive ? 'background:rgba(59,160,255,0.05)' : ''}
+    ${LevelTitle} {
+        ${({ isActive }) => isActive ? 'color:#1890FF' : ''}
+    }
+`
+
+const ChartModal: React.FC<any> = (props: any) => {
+    const { case_source, chartType, suite_show_name, time, show } = props
 
     const [current, setCurrent] = useState<any>(null)
 
@@ -187,8 +238,11 @@ const ChartModal = (props: any) => {
         document.getElementById(id)?.scrollIntoView()
     }
 
+    const caseLen = case_source.length
+    const modalContent = useRef<HTMLDivElement>(null)
+
     return (
-        <Wrapper>
+        <Wrapper show={show}>
             <ModalHeader>
                 <Space>
                     <Typography.Text strong>对比组图例</Typography.Text>
@@ -209,74 +263,78 @@ const ChartModal = (props: any) => {
                     </Space>
                 </Space>
             </ModalHeader>
-            {
-                chartType === '2' ?
-                    <ModalBody>
-                        <FullRow >
-                            <Typography.Title level={5} >{suite_show_name}</Typography.Title>
-                        </FullRow>
-                        <ModalSlider>
-                            <Space direction="vertical">
-                                <SliderTitle>
-                                    Test Conf列表({case_source.length})
-                                </SliderTitle>
-                                {
-                                    case_source.map(
-                                        (conf: any, idx: number) => (
-                                            <span
-                                                key={idx}
-                                            >
-                                                <ConfName>{conf.test_conf_name}</ConfName>
-                                            </span>
-                                        )
-                                    )
-                                }
-                            </Space>
-                        </ModalSlider>
-                        <ModalContent>
-                            <TypeChart data={case_source.map((i: any) => i.test_conf_name)} chartType={chartType} />
-                        </ModalContent>
-                    </ModalBody> :
-                    <ModalBody>
-                        <ModalSlider>
-                            <Space direction="vertical">
-                                <SliderTitle>
-                                    Test Conf列表({case_source.length})
-                                </SliderTitle>
-                                {
-                                    case_source.map((conf: any, idx: any) => (
+            <ModalBody>
+                {
+                    chartType === 2 &&
+                    <FullRow>
+                        <Typography.Title level={5} >{suite_show_name}</Typography.Title>
+                    </FullRow>
+                }
+                <ModalSlider>
+                    <Space direction="vertical">
+                        <SliderTitle>
+                            Test Conf列表({caseLen})
+                        </SliderTitle>
+                        {
+                            case_source.map(
+                                (conf: any, idx: number) => (
+                                    chartType === 2 ?
+                                        <span key={idx} >
+                                            <ConfName>{conf.test_conf_name}</ConfName>
+                                        </span> :
                                         <span
                                             onClick={() => handleJumpChart(conf, idx)}
                                             key={idx}
                                         >
-                                            <ConfName is_active={current === `${conf.test_conf_name}-${idx}` ? 1 : 0}>{conf.test_conf_name}</ConfName>
+                                            <ConfName
+                                                is_active={current === `${conf.test_conf_name}-${idx}` ? 1 : 0}
+                                            >
+                                                {conf.test_conf_name}
+                                            </ConfName>
                                         </span>
-                                    ))
-                                }
-                            </Space>
-                        </ModalSlider>
-                        <ModalContent>
-                            {
-                                case_source.map(
-                                    (conf: any, idx: number) => (
-                                        <div
-                                            key={idx}
-                                            id={`${conf.test_conf_name}-${idx}`}
-                                            style={{ width: '100%', overflow: 'hidden' }}
-                                        >
-                                            <div style={current === `${conf.test_conf_name}-${idx}` ? { background: 'rgba(59,160,255,0.05)' } : {}}>
-                                                <Typography.Title level={5} style={current === `${conf.test_conf_name}-${idx}` ? { color: '#1890FF' } : {}}>{conf.test_conf_name}</Typography.Title>
-                                            </div>
-                                            <ConfChart chartType={chartType} {...conf} is_active={current === `${conf.test_conf_name}-${idx}` ? 1 : 0} />
-                                        </div>
-                                    )
+                                )
+                            )
+                        }
+                    </Space>
+                </ModalSlider>
+                <ModalContent ref={modalContent}>
+                    <TypeChart
+                        data={case_source.map((i: any) => i.test_conf_name)}
+                        chartType={2}
+                        show={chartType === 2}
+                        time={time}
+                        modal={modalContent.current}
+                    />
+                    {
+                        case_source.map(
+                            (conf: any, idx: number) => {
+                                const rowId = `${conf.test_conf_name}-${idx}`
+                                const isActive = current === rowId
+                                return (
+                                    <ModalItem
+                                        key={idx}
+                                        id={rowId}
+                                        show={chartType !== 2}
+                                    >
+                                        <ModalItemTitle isActive={isActive}>
+                                            <LevelTitle level={5} >{conf.test_conf_name}</LevelTitle>
+                                        </ModalItemTitle>
+                                        <ConfChart
+                                            {...conf}
+                                            chartType={chartType}
+                                            is_active={isActive}
+                                            modal={modalContent.current}
+                                            time={time.concat(idx)}
+                                        />
+                                    </ModalItem>
                                 )
                             }
-                        </ModalContent>
-                    </ModalBody>
-            }
-        </Wrapper >
+                        )
+                    }
+                </ModalContent>
+            </ModalBody>
+        </Wrapper>
     )
 }
 
-export default memo(ChartModal)
+export default ChartModal

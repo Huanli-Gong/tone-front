@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import echarts from 'echarts';
+import * as echarts from 'echarts';
 const TypeChart: React.FC<any> = ({ setLegend, name, envData, data, chartType, loading }) => {
     const chart = useRef<any>()
     useEffect(() => {
