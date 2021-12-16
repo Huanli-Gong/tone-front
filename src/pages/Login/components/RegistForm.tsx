@@ -59,8 +59,8 @@ const LoginForm: React.FC = () => {
                         // 账号必须字母开头，6-18位字母数字或字符
                         if (!val)
                             return Promise.reject('账号不能为空')
-                        if (!/^[a-zA-Z][0-9a-zA-Z-_.!@#$%^&*?]{5,17}$/.test(val))
-                            return Promise.reject('账号必须字母开头，6-18位字母数字或字符')
+                        if (!/^[a-zA-Z][0-9a-zA-Z]{5,17}$/.test(val))
+                            return Promise.reject('账号必须字母开头，6-18位字母数字，不允许特殊字符')
                         return Promise.resolve()
                     }
                 }]}
