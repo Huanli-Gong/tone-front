@@ -1,5 +1,5 @@
 import React , { useEffect , useRef } from 'react'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import { matchTestType } from '@/utils/utils'
 
 const switchState = ( state : string, testType: string ) => {

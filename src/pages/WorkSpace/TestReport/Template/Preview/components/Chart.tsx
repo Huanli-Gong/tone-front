@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { Row, Space, Typography, Empty, Col } from 'antd'
 import styled from 'styled-components'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/TestReport/GaryBase.svg'
 
 const FullRow = styled(Row)`width:100%;`

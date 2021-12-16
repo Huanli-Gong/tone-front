@@ -63,8 +63,7 @@ export default (props: any) => {
                             </div>
                             <div className={styles.second_row}>
                                 <span >{forFn()} </span>
-                                <Space align="end">
-                                    <span className={styles.show}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                <Space align="start">
                                     <span className={styles.reset} onClick={modifyPassword}>修改</span>
                                 </Space>
                             </div>

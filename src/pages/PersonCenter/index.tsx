@@ -101,7 +101,7 @@ export default (props: any) => {
                             {tab === 'approve' && <PersonApprove loading={loading} approveData={data} handleTabClick={handleTabClick} userId={Number(authList.id)}/>}
                         </Tabs.TabPane>
                     )}         
-                    <Tabs.TabPane tab="Token配置" key="tokenConfig">
+                    <Tabs.TabPane tab="安全配置" key="tokenConfig">
                         {tab === 'tokenConfig' && <TokenConfig loading={loading} tokenData={data} />}
                     </Tabs.TabPane>
                 </Tabs>

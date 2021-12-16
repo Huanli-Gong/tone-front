@@ -146,7 +146,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 title="该操作会使原密码失效，且不可逆，请谨慎操作"
                 onConfirm={() => resetPasswordConfirm(row)}
                 okButtonProps={{ type: "primary", danger: true }}
-                okText="重置密码"
+                okText="确认重置"
                 onVisibleChange={() => console.log('visible change')}
             >
                 <Typography.Link>重置密码</Typography.Link>
