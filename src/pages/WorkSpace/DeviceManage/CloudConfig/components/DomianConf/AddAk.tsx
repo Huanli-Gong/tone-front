@@ -3,6 +3,7 @@ import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { createCloudAk, updateCloudAk } from '../../service'
 import styles from './index.less'
 import _ from 'lodash'
+
 export default forwardRef(
     (props: any, ref: any) => {
         const [form] = Form.useForm()
@@ -11,12 +12,6 @@ export default forwardRef(
         const [title, setTitle] = useState('新建ak') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
 
-        const [nameStatus, setNameStatus] = useState(true) // 校验名称是否为空
-        const [idStatus, setIDStatus] = useState(true) // 校验名称是否为空
-        const [keyStatus, setKeytatus] = useState(true) // 校验名称是否为空
-        const [resourceId, setResourceId] = useState(true) // 校验名称是否为空
-        const [providerStatus, setProviderStatus] = useState(true) // 校验名称是否为空
-        const [queryNameStatus, setQuerynameStatus] = useState(true) // 校验名称重复的校验
         useImperativeHandle(
             ref,
             () => ({
@@ -24,7 +19,6 @@ export default forwardRef(
                     setVisible(true)
                     setTitle(title)
                     setEditer(data)
-                    setQuerynameStatus(true)
                     form.setFieldsValue(data) // 动态改变表单值
                 }
             })
@@ -33,7 +27,6 @@ export default forwardRef(
             form.resetFields() // 重置一组字段到 initialValues
             setPadding(false)
             setVisible(false)
-            setQuerynameStatus(true)
         }
 
         const defaultOption = (code: number, msg: string, type: string) => {
@@ -45,39 +38,17 @@ export default forwardRef(
                 form.resetFields() //重置一组字段到 initialValues
             }
             else {
-                if(code === 201){
-                    setQuerynameStatus(false)            
+                if (code === 201) {
+                    form.setFields([{ name: 'name', errors: ["akName不能重复"] }])
                 } else {
                     message.error(msg)
                 }
-
             }
             setPadding(false)
         }
 
-        const handleOk = () => {          
-            if (!form.getFieldValue('provider')) {
-                setProviderStatus(false)
-                return
-            }
-            if (!form.getFieldValue('name')) {
-                setNameStatus(false)
-                return
-            }
-            if (!form.getFieldValue('access_id')) {
-                setIDStatus(false)
-                return
-            }
-            if (!form.getFieldValue('access_key')) {
-                setKeytatus(false)
-                return
-            }
-            if (BUILD_APP_ENV){
-                if (!form.getFieldValue('resource_group_id')) {
-                    setResourceId(false)
-                    return
-                }
-            }
+        const handleOk = () => {
+            if (padding) return
             setPadding(true)
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
@@ -91,15 +62,19 @@ export default forwardRef(
                         const { code, msg } = await updateCloudAk({ id: editer.id, ...valuesCopy, ws_id: props.ws_id })
                         defaultOption(code, msg, 'edit')
                     }
+                    setPadding(false)
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.log(err)
+                    setPadding(false)
+                })
         }
-        const providerArr = [{id:'aliyun_ecs',name: '阿里云ECS'},{id:'aliyun_eci',name: '阿里云ECI'}]
+        const providerArr = [{ id: 'aliyun_ecs', name: '阿里云ECS' }, { id: 'aliyun_eci', name: '阿里云ECI' }]
 
         return (
-            <Drawer 
-                maskClosable={ false }
-                keyboard={ false }
+            <Drawer
+                maskClosable={false}
+                keyboard={false}
                 title={title}
                 width="375"
                 onClose={handleClose}
@@ -117,27 +92,27 @@ export default forwardRef(
                 <Form
                     form={form}
                     layout="vertical" // 表单布局 ，垂直
-                    /*hideRequiredMark*/
-                    >
+                    initialValues={{
+                        enable: editer.enable || true,
+                    }}
+                >
                     <Form.Item
                         label="云服务商"
                         name="provider"
-                        validateStatus={(!providerStatus) && 'error'}
-                        help={(!providerStatus && `云服务商不能为空`)}
-                        rules={[{ required: true }]}>
-
-
+                        rules={[{ required: true, message: '云服务商不能为空' },]}
+                    >
                         <Select
-                            onSelect={()=>{setProviderStatus(true)}}
                             placeholder="请选择云服务商"
                             filterOption={(input, option: any) => {
                                 return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }}
-                            optionFilterProp="children">
+                            optionFilterProp="children"
+                        >
                             {
                                 providerArr.map(
                                     (item: any) => (
                                         <Select.Option
+                                            key={item.id}
                                             value={item.id}
                                         >
                                             {item.name}
@@ -146,73 +121,45 @@ export default forwardRef(
                                 )
                             }
                         </Select>
-
-
                     </Form.Item>
-                    <Form.Item initialValue={editer.enable || true} label="是否启用" name="enable">
-                            <Radio.Group>
-                                <Radio value={true}>是</Radio>
-                                <Radio value={false}>否</Radio>
-                            </Radio.Group>
-                        </Form.Item>
+                    <Form.Item label="是否启用" name="enable">
+                        <Radio.Group>
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group>
+                    </Form.Item>
                     <Form.Item
                         label="akName"
                         name="name"
-                        validateStatus={(!nameStatus || !queryNameStatus) && 'error'}
-                        help={(!nameStatus && `akName不能为空`)||(!queryNameStatus && `akName不能重复`)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入akName" onChange={(e) => {
-                            if (!e.target.value) {
-                                setNameStatus(false)
-                                return
-                            }
-                            setQuerynameStatus(true)
-                            setNameStatus(true)
-                        }} />
+                        rules={[{ required: true, message: 'akName不能为空' }]}
+                    >
+                        <Input autoComplete="auto" placeholder="请输入akName" />
                     </Form.Item>
                     <Form.Item
                         label="accessID"
                         name="access_id"
-                        validateStatus={(!idStatus) && 'error'}
-                        help={(!idStatus && `accessID不能为空`)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入akaccessID" onChange={(e) => {
-                            if (!e.target.value) {
-                                setIDStatus(false)
-                                return
-                            }
-                            setIDStatus(true)
-                        }} />
+                        rules={[{ required: true, message: 'accessID不能为空' }]}
+                    >
+                        <Input autoComplete="auto" placeholder="请输入akaccessID" />
                     </Form.Item>
                     <Form.Item
                         label="accessKEY"
                         name="access_key"
-                        validateStatus={(!keyStatus) && 'error'}
-                        help={(!keyStatus && `accessKEY不能为空`)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入accessKEY" onChange={(e) => {
-                            if (!e.target.value) {
-                                setKeytatus(false)
-                                return
-                            }
-                            setKeytatus(true)
-                        }} />
+                        rules={[{ required: true, message: 'accessKEY不能为空' }]}
+                    >
+                        <Input autoComplete="auto" placeholder="请输入accessKEY" />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
                     {
-                        BUILD_APP_ENV && <Form.Item
+                        BUILD_APP_ENV &&
+                        <Form.Item
                             label="资源组ID"
                             name="resource_group_id"
-                            validateStatus={(!resourceId) && 'error'}
-                            help={(!resourceId && `资源组ID不能为空`)}
-                            rules={[{ required: true }]}>
-                            <Input autoComplete="auto" placeholder="请输入资源组ID" onChange={(e) => {
-                                if (!e.target.value) {
-                                    setResourceId(false)
-                                    return
-                                }
-                                setResourceId(true)
-                            }}/>
+                        >
+                            <Input
+                                autoComplete="auto"
+                                placeholder="请输入资源组ID"
+                            />
                         </Form.Item>
                     }
                     <Form.Item label="描述（选填）" name="description">
