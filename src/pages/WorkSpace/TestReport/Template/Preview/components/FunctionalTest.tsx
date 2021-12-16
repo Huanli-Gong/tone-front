@@ -7,7 +7,7 @@ import { ReactComponent as GroupIcon } from '@/assets/svg/TestReport/TestGroup.s
 import { ReactComponent as TermIcon } from '@/assets/svg/TestReport/TestItem.svg'
 import { useRefWidth } from '../../hooks'
 
-const FullRow = styled(Row)`width:100%`
+const FullRow = styled(Row)`width:100%;`
 const AlignItems = `align-items:center;`
 const TitlePadding = `padding:0 20px;`
 

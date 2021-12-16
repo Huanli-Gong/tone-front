@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import echarts from 'echarts';
+import * as echarts from 'echarts';
 import { toPercentage, handleIcon } from '@/components/AnalysisMethods/index';
 const TypeChart = (props: any) => {
     const { name, envData, data, chartType } = props
