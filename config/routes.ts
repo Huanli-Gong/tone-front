@@ -14,7 +14,6 @@ const routes = [
 		path: '/personCenter',
 		name: 'PersonCenter',
 		hideInMenu: true,
-		access : "wsTouristFilter",
 		component: './PersonCenter',
 	},
 	{
