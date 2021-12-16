@@ -9,8 +9,8 @@ export default {
   'menu.exception.500': '500',
   'menu.nofoundpage.404': '404页面',
   'menu.server.500': '500页面',
-  
-  "menu.home":'首页',
+
+  "menu.home": '首页',
   'menu.workspace': '工作台',
   'menu.setting': '基础配置',
   'menu.basicConfig': '基础配置',
@@ -121,6 +121,5 @@ export default {
 
   "menu.Workspace.TestAnalysis.ResultAnalysis": '结果分析',
 
-  "menu.Workspace.DevOps": '运维管理'
-
+  "menu.Workspace.DevOps": 'ws系统配置'
 };

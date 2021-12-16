@@ -7,12 +7,11 @@ import produce from 'immer'
 
 import {
     CatalogExpand, CatalogExpandInnerIcon, Catalog, CatalogBody, CatalogTitle,
-    CatalogDrageSpace, CatalogLine, CatalogRound, LittleRound
+    CatalogDrageSpace, CatalogRound, LittleRound
 } from '../styled'
-import { useProvider } from '../Provider'
 
 const TemplateCatalog = (props: any) => {
-    const { dataSource, collapsed, contrl, setDataSource, setCollapsed } = useProvider()
+    const { dataSource, collapsed, contrl, setDataSource, setCollapsed } = props
     const [count, setCount] = useState<any>(0)
     const [roundHeight, setRoundHeight] = useState<Number>(3)
     /* 
@@ -189,7 +188,7 @@ const TemplateCatalog = (props: any) => {
             <CatalogExpand onClick={() => setCollapsed(!collapsed)} >
                 <CatalogCollapsed />
                 <CatalogExpandInnerIcon>
-                    {collapsed ? <RightOutlined title="展开"/> : <LeftOutlined title="收起"/>}
+                    {collapsed ? <RightOutlined title="展开" /> : <LeftOutlined title="收起" />}
                 </CatalogExpandInnerIcon>
             </CatalogExpand>
             {/* 内容部分 */}

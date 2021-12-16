@@ -1,6 +1,5 @@
 import { resizeClientSize } from '@/utils/hooks'
-import React, { memo, useEffect, useState, useRef } from 'react'
-import { ReportTemplateContext } from '../Provider'
+import React, { memo, useEffect, useState, useRef, useLayoutEffect } from 'react'
 import { ReportBodyContainer, ReportBody } from '../styled'
 import Catalog from '@/pages/WorkSpace/TestReport/Template/components/TemplateCatalog'
 // import TemplateBreadcrumb from '@/pages/WorkSpace/TestReport/Template/components/TemplateBreadcrumb'
@@ -13,9 +12,10 @@ import TestEnv from './components/TestEnv'
 import FunctionalTest from './components/FunctionalTest'
 import PerformanceTest from './components/Performance'
 import { queryReportTemplateDetails } from '../services'
-import { history , useParams } from 'umi'
+import { history, useParams } from 'umi'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
-
+import lodash from 'lodash'
+import produce from 'immer'
 import styled from 'styled-components'
 interface PreviewContainerProps {
     height: number;
@@ -86,16 +86,17 @@ const TemplatePreview = (props: any) => {
     const groupRowRef = useRef<any>(null)
     const refreshRowkey = (data: any, parentRowkey: any = null) => {
         const rowkey = parentRowkey ? `${parentRowkey}-` : ''
-
         return data.map((item: any, index: number) => {
+            const itemKey = `${rowkey}${index}`
+
             if (item.list) {
                 return {
                     ...item,
-                    rowkey: `${rowkey}${index}`,
-                    list: refreshRowkey(item.list, `${rowkey}${index}`)
+                    rowkey: itemKey,
+                    list: refreshRowkey(item.list, itemKey)
                 }
             }
-            return { ...item, rowkey: `${rowkey}${index}` }
+            return { ...item, rowkey: itemKey }
         })
     }
 
@@ -112,23 +113,26 @@ const TemplatePreview = (props: any) => {
         initData()
     }, [])
 
+
     const initData = async () => {
-        setLoading(true)
-        const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
-        const { perf_item, func_item, perf_conf, func_conf } = data
+        try {
+            setLoading(true)
+            const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
+            const { perf_item, func_item, perf_conf, func_conf, name } = data
+            document.title = `${name} - T-One`
 
-        const params: any = {
-            func_conf: func_conf || defaultConf,
-            perf_conf: perf_conf || defaultConf,
-            perf_item: refreshRowkey(perf_item),
-            func_item: refreshRowkey(func_item)
+            setDataSource(produce(data, (draft: any) => {
+                draft.func_conf = func_conf || defaultConf
+                draft.perf_conf = perf_conf || defaultConf
+                draft.perf_item = refreshRowkey(perf_item)
+                draft.func_item = refreshRowkey(func_item)
+            }))
+
+            setLoading(false)
         }
-
-        // console.log(params)
-        document.title = `${data.name} - T-One`
-        setDataSource(Object.assign(data, params))
-
-        setLoading(false)
+        catch (error) {
+            console.log(error)
+        }
     }
 
     const handleBack = () => {
@@ -141,13 +145,13 @@ const TemplatePreview = (props: any) => {
         show: false
     })
 
-    const hanldeScrollChange = ({ target }: any) => {
+    const hanldeScrollChange = lodash.debounce(({ target }: any) => {
         setFixedRow({
             left: groupRowRef.current?.offsetLeft,
             width: groupRowRef.current?.offsetWidth,
             show: target.scrollTop > groupRowRef.current.offsetTop
         })
-    }
+    }, 30)
 
     useEffect(() => {
         setFixedRow({
@@ -158,6 +162,7 @@ const TemplatePreview = (props: any) => {
     }, [groupRowRef.current, collapsed])
 
     useEffect(() => {
+        console.log('layout effect')
         document.querySelector('#report-body-container').addEventListener('scroll', hanldeScrollChange)
         return () => {
             document.querySelector('#report-body-container').removeEventListener('scroll', hanldeScrollChange)
@@ -167,9 +172,9 @@ const TemplatePreview = (props: any) => {
     const [bodyWidth, setBodyWidth] = useState(1200)
     const bodyRef = useRef<any>(null)
 
-    const hanldePageResize = () => setBodyWidth(bodyRef.current.offsetWidth)
+    const hanldePageResize = lodash.debounce(() => setBodyWidth(bodyRef.current.offsetWidth), 30)
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const targetNode = document.getElementById('report-body-container');
         const config = { attributes: true, childList: true, subtree: true };
         const observer = new MutationObserver(hanldePageResize);
@@ -180,114 +185,122 @@ const TemplatePreview = (props: any) => {
     }, [])
 
     return (
-        <ReportTemplateContext.Provider value={{ dataSource, setDataSource, collapsed, setCollapsed, bodyWidth }}>
-            <Spin spinning={loading}>
-                <PreviewContainer height={windowHeight}>
-                    <PreviewBar>
-                        <Row align="middle">
-                            <Space>
-                                <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20 }} /></span>
-                                <Space size={0}>
-                                    <Typography.Title level={4} >报告模板预览</Typography.Title>
-                                    <span style={{ color: 'rgba(0,0,0,0.45)' }}>（以3个对比组为例）</span>
-                                </Space>
+        <Spin spinning={loading}>
+            <PreviewContainer height={windowHeight}>
+                <PreviewBar>
+                    <Row align="middle">
+                        <Space>
+                            <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20 }} /></span>
+                            <Space size={0}>
+                                <Typography.Title level={4} >报告模板预览</Typography.Title>
+                                <span style={{ color: 'rgba(0,0,0,0.45)' }}>（以3个对比组为例）</span>
                             </Space>
-                        </Row>
-                    </PreviewBar>
-                    <Catalog style={{ height: windowHeight - 50 }} />
-                    <ReportBodyContainer id="report-body-container" collapsed={collapsed} style={{ height: windowHeight - 50 }}>
-                        <ReportBody ref={bodyRef}>
-                            {/* <TemplateBreadcrumb {...props} /> */}
+                        </Space>
+                    </Row>
+                </PreviewBar>
+                <Catalog {...{ dataSource, setDataSource, collapsed, setCollapsed, bodyWidth }} style={{ height: windowHeight - 50 }} />
+                <ReportBodyContainer id="report-body-container" collapsed={collapsed} style={{ height: windowHeight - 50 }}>
+                    <ReportBody ref={bodyRef}>
+                        {/* <TemplateBreadcrumb {...props} /> */}
 
-                            <CustomRow style={{ marginTop: 20 }}>
-                                <TemplateName >
-                                    <Typography.Title level={3}>{dataSource?.name}</Typography.Title>
-                                </TemplateName>
-                                <Description>
-                                    {dataSource?.description}
-                                </Description>
-                            </CustomRow>
+                        <CustomRow style={{ marginTop: 20 }}>
+                            <TemplateName >
+                                <Typography.Title level={3}>{dataSource?.name}</Typography.Title>
+                            </TemplateName>
+                            <Description>
+                                {dataSource?.description}
+                            </Description>
+                        </CustomRow>
 
-                            <SettingRow title="测试背景" id={'need_test_background'} show={dataSource?.need_test_background} />
-                            <SettingRow title="测试方法" id={'need_test_method'} show={dataSource?.need_test_method} />
-                            <SettingRow title="测试结论" id={'need_test_conclusion'} show={dataSource?.need_test_conclusion} />
+                        <SettingRow title="测试背景" id={'need_test_background'} show={dataSource?.need_test_background} />
+                        <SettingRow title="测试方法" id={'need_test_method'} show={dataSource?.need_test_method} />
+                        <SettingRow title="测试结论" id={'need_test_conclusion'} show={dataSource?.need_test_conclusion} />
 
+                        {
+                            dataSource.need_test_summary &&
+                            <Summary />
+                        }
+
+                        <TestEnv
+                            need_test_env={dataSource?.need_test_env}
+                            need_env_description={dataSource?.need_env_description}
+                        />
+
+                        <CustomRow >
+                            <div id={'test_data'} style={{ marginBottom: 8 }}><Typography.Text strong>测试数据</Typography.Text></div>
+                            <GroupTableRow ref={groupRowRef} >
+                                <div><Typography.Text strong>对比组</Typography.Text></div>
+                                <div>
+                                    <Space>
+                                        <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
+                                        <Typography.Text strong>基准组</Typography.Text>
+                                    </Space>
+                                </div>
+                                <div><Typography.Text strong>对比组1</Typography.Text></div>
+                                <div><Typography.Text strong>对比组2</Typography.Text></div>
+                            </GroupTableRow>
                             {
-                                dataSource.need_test_summary &&
-                                <Summary />
+                                fixedRow.show &&
+                                <div style={{ width: fixedRow.width, background: '#fff', position: 'fixed', top: 50, height: 50, border: '1px solid rgba(0,0,0,0.10)', zIndex: 5, }}>
+                                    <GroupTableRow style={{ border: 'none', paddingLeft: 32, paddingRight: 32 }} >
+                                        <div><Typography.Text strong>对比组</Typography.Text></div>
+                                        <div>
+                                            <Space>
+                                                <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
+                                                <Typography.Text strong>基准组</Typography.Text>
+                                            </Space>
+                                        </div>
+                                        <div><Typography.Text strong>对比组1</Typography.Text></div>
+                                        <div><Typography.Text strong>对比组2</Typography.Text></div>
+                                    </GroupTableRow>
+                                </div>
                             }
 
-                            <TestEnv
-                                need_test_env={dataSource?.need_test_env}
-                                need_env_description={dataSource?.need_env_description}
-                            />
-
-                            <CustomRow >
-                                <div id={'test_data'} style={{ marginBottom: 8 }}><Typography.Text strong>测试数据</Typography.Text></div>
-                                <GroupTableRow ref={groupRowRef} >
-                                    <div><Typography.Text strong>对比组</Typography.Text></div>
-                                    <div>
-                                        <Space>
-                                            <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                                            <Typography.Text strong>基准组</Typography.Text>
-                                        </Space>
+                            {
+                                (dataSource?.need_perf_data) &&
+                                <>
+                                    <div
+                                        id={'perf_item'}
+                                        style={{ marginBottom: 8 }}
+                                    >
+                                        <Typography.Text strong>
+                                            性能测试
+                                        </Typography.Text>
                                     </div>
-                                    <div><Typography.Text strong>对比组1</Typography.Text></div>
-                                    <div><Typography.Text strong>对比组2</Typography.Text></div>
-                                </GroupTableRow>
-                                {
-                                    fixedRow.show &&
-                                    <div style={{ width: fixedRow.width, background: '#fff', position: 'fixed', top: 50, height: 50, border: '1px solid rgba(0,0,0,0.10)', zIndex: 5, }}>
-                                        <GroupTableRow style={{ border: 'none', paddingLeft: 32, paddingRight: 32 }} >
-                                            <div><Typography.Text strong>对比组</Typography.Text></div>
-                                            <div>
-                                                <Space>
-                                                    <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                                                    <Typography.Text strong>基准组</Typography.Text>
-                                                </Space>
-                                            </div>
-                                            <div><Typography.Text strong>对比组1</Typography.Text></div>
-                                            <div><Typography.Text strong>对比组2</Typography.Text></div>
-                                        </GroupTableRow>
+                                    <PerformanceTest
+                                        is_default={dataSource.is_default}
+                                        field={'perf_item'}
+                                        perf_conf={dataSource.perf_conf}
+                                        perf_item={dataSource.perf_item}
+                                    />
+                                </>
+                            }
+
+                            {
+                                (dataSource?.need_func_data) &&
+                                <>
+                                    <div
+                                        id={'func_item'}
+                                        style={{ marginBottom: 8 }}
+                                    >
+                                        <Typography.Text strong>
+                                            功能测试
+                                        </Typography.Text>
                                     </div>
-                                }
-
-                                {
-                                    (dataSource?.need_perf_data) &&
-                                    <>
-                                        <div id={'perf_item'} style={{ marginBottom: 8 }}><Typography.Text strong>性能测试</Typography.Text></div>
-                                        <PerformanceTest is_default={dataSource.is_default} field={'perf_item'} perf_conf={dataSource.perf_conf} perf_item={dataSource.perf_item} />
-                                    </>
-                                }
-
-                                {
-                                    (dataSource?.need_func_data) &&
-                                    <>
-                                        <div id={'func_item'} style={{ marginBottom: 8 }}><Typography.Text strong>功能测试</Typography.Text></div>
-                                        <FunctionalTest is_default={dataSource.is_default} field={'func_item'} func_conf={dataSource.func_conf} func_item={dataSource.func_item} />
-                                    </>
-                                }
-                            </CustomRow>
-                        </ReportBody>
-                    </ReportBodyContainer>
-                </PreviewContainer>
-            </Spin>
-        </ReportTemplateContext.Provider >
+                                    <FunctionalTest
+                                        is_default={dataSource.is_default}
+                                        field={'func_item'}
+                                        func_conf={dataSource.func_conf}
+                                        func_item={dataSource.func_item}
+                                    />
+                                </>
+                            }
+                        </CustomRow>
+                    </ReportBody>
+                </ReportBodyContainer>
+            </PreviewContainer>
+        </Spin>
     )
 }
 
 export default memo(TemplatePreview)
-
-
-{/* <Row justify="space-between">
-                                <Space>
-                                    <Space>
-                                        <LinkOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
-                                        <Typography.Text disabled style={{ cursor: 'default' }}>分享</Typography.Text>
-                                    </Space>
-                                    <Space>
-                                        <FormOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
-                                        <Typography.Text disabled style={{ cursor: 'default' }}>编辑</Typography.Text>
-                                    </Space>
-                                </Space>
-                            </Row> */}
