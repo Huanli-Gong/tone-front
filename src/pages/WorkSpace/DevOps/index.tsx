@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Typography, message, Spin, Radio, InputNumber, Button, Row, Col } from 'antd'
-import { FormattedMessage } from 'umi'
+import { FormattedMessage, useParams } from 'umi'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestJob/components/untils'
 
 import { queryDevOpsConfig, updateDevOpsConfig } from './service'
 import { OperationTabCard } from '@/components/UpgradeUI'
 import styled from 'styled-components'
+
+import ResultStatusType from './components/ResultStatusType'
 
 const RowWrapper = styled(Row)`
     margin-top:16px;
@@ -13,38 +15,59 @@ const RowWrapper = styled(Row)`
         margin-top:0px;
     }
 `
+
 const ColTitle = styled(Col)`
     text-align:right;
 `
+
 const TypographyText = styled(Typography.Text)`
     margin-left:9px;
 `
+
 const TypographyIcon = styled(Typography.Text)`
     position: relative;
     top: -5px;
     left: -5px;
 `
+
 const DevOps = (props: any) => {
-    const { ws_id } = props.match.params
-    const [loading,setLoading] = useState<boolean>(false)
-    const [btnSwitch,setBtnSwitch] = useState(true)
+    const { ws_id } = useParams() as any
+    const [loading, setLoading] = useState<boolean>(false)
+    const [btnSwitch, setBtnSwitch] = useState(true)
     const [autoServe, setAutoServe] = useState<string>('0')
     const [minute, setMinute] = useState<number>(5)
+    const [dataSource, setDataSource] = useState<any>({})
+
     const initConfig = async () => {
         setLoading(true)
         const { data, code, msg } = await queryDevOpsConfig({ ws_id })
         if (code !== 200) return message.warning(msg)
+        setDataSource(data)
         setAutoServe(data.auto_recover_server)
         setMinute(data.recover_server_protect_duration)
         setLoading(false)
     }
-    
+
     const updateConfig = async (params: any) => {
+        setLoading(true)
         const { code, msg } = await updateDevOpsConfig({ ws_id, ...params })
-        if (code !== 200) return message.warning(msg)
+        if (code !== 200) {
+            setLoading(false)
+            return message.warning(msg)
+        }
         initConfig()
         //message.success('操作成功!')
         setBtnSwitch(true)
+    }
+
+    const update = async (params: any) => {
+        setLoading(true)
+        const { code, msg } = await updateDevOpsConfig({ ws_id, ...dataSource, ...params })
+        if (code !== 200) {
+            setLoading(false)
+            return message.warning(msg)
+        }
+        initConfig()
     }
 
     const hanldeChange = (e: any) => {
@@ -58,7 +81,7 @@ const DevOps = (props: any) => {
             recover_server_protect_duration: `${minute}`
         })
     }
-    const handleSwitch = (val:any) => {
+    const handleSwitch = (val: any) => {
         setMinute(val)
         setBtnSwitch(false)
     }
@@ -71,7 +94,7 @@ const DevOps = (props: any) => {
             <OperationTabCard
                 title={<FormattedMessage id={`Workspace.${props.route.name}`} />}
             >
-                <RowWrapper gutter={ 20 }>
+                <RowWrapper gutter={20}>
                     <ColTitle span={4}>
                         <Typography.Text>
                             broken机器自动恢复：
@@ -91,9 +114,9 @@ const DevOps = (props: any) => {
                     </Col>
                 </RowWrapper>
                 {
-                    autoServe == '1' && 
+                    autoServe == '1' &&
                     <>
-                        <RowWrapper gutter={ 20 }>
+                        <RowWrapper gutter={20}>
                             <ColTitle span={4}>
                                 <Typography.Text>
                                     时间：
@@ -110,13 +133,18 @@ const DevOps = (props: any) => {
                                 <TypographyText>分钟</TypographyText>
                             </Col>
                         </RowWrapper>
-                        <RowWrapper gutter={ 20 }>
+                        <RowWrapper gutter={20}>
                             <Col span={20} offset={4}>
                                 <Button size="small" type="primary" onClick={handleOk} disabled={btnSwitch}>更新</Button>
                             </Col>
                         </RowWrapper>
                     </>
                 }
+                <ResultStatusType
+                    field="func_result_view_type"
+                    dataSource={dataSource}
+                    update={update}
+                />
             </OperationTabCard>
         </Spin>
     )

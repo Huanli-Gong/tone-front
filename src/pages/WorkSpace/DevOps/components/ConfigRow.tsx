@@ -1,27 +1,38 @@
 import React, { memo } from 'react'
-import { Row , Col } from 'antd'
+import { Row, Col } from 'antd'
 import styled from 'styled-components'
 
 const RowWrapper = styled(Row)`
-    margin-top:8px;
-    .anticon-edit { cursor : pointer ;}
-    & div:first-child {
-        text-align:right;
+    margin-top:16px;
+    &:first-child {
+        margin-top:0px;
     }
 `
-const ConfigRow = ( props : any ) => {
-    const { title , setting } = props
+const ColTitle = styled(Col)`
+    text-align:right;
+    &::after {
+        content: '：';
+    }
+`
+
+type IProps = {
+    title: string;
+    children: React.ReactNode | string
+}
+
+const ConfigRow = (props: IProps) => {
+    const { title, children } = props
 
     return (
-        <RowWrapper gutter={ 20 }>
-            <Col span={ 4 }>
-                { title }
-            </Col>
-            <Col span={ 16 }>
-                { setting }
+        <RowWrapper gutter={20}>
+            <ColTitle span={4}>
+                {title}
+            </ColTitle>
+            <Col span={20}>
+                {children}
             </Col>
         </RowWrapper>
     )
 }
 
-export default memo( ConfigRow )
+export default memo(ConfigRow)
