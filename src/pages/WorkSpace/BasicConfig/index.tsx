@@ -289,83 +289,91 @@ export default (props: any) => {
                 </Form>
             </Row>
 
-            <Row className={styles.row_box}>
-                <Form
-                    {...layout}
-                    colon={false}
-                    layout="vertical"
-                    style={{ width: '100%' }}
-                    className={styles.three_part}
-                >
-                    <PartDom text='更多操作' />
-                    <Form.Item>
-                        <Space>
-                            <Popover
-                                content={
-                                    <TransferContent
-                                        handleCancel={() => setTransferVisible(false)}
-                                        handleSubmit={
-                                            async (id: number) => {
-                                                const { code, msg } = await saveWorkspaceConfig({ id: ws_id, owner: id })
-                                                if (code === 200) {
-                                                    setTransferVisible(false)
-                                                    workspaceInit()
-                                                    message.success('操作成功！')
-                                                }
-                                                else
-                                                    requestCodeMessage(code, msg)
-                                            }
-                                        }
-                                        member={members}
-                                    />
-                                }
-                                trigger="click"
-                                title="转交所有权"
-                                onVisibleChange={visible => setTransferVisible(visible)}
-                                visible={transferVisible}
-                                overlayClassName={styles.transferOwnerWs}
-                            >
-                                <Access
-                                    accessible={access.canSysTestAdmin()}
-                                    fallback={<Button disabled={true} >所有权转交</Button>}
-                                >
-                                    <Button onClick={handleTransfer} >所有权转交</Button>
-                                </Access>
-                            </Popover>
-                            {
-                                (access.wsOwnerFilter() && !_.get(detail, 'is_common')) &&
+            <Access
+                accessible={
+                    BUILD_APP_ENV ?
+                        access.canSuperAdmin() :
+                        access.canSysTestAdmin()
+                }
+            >
+                <Row className={styles.row_box}>
+                    <Form
+                        {...layout}
+                        colon={false}
+                        layout="vertical"
+                        style={{ width: '100%' }}
+                        className={styles.three_part}
+                    >
+                        <PartDom text='更多操作' />
+                        <Form.Item>
+                            <Space>
                                 <Popover
                                     content={
-                                        <LogOffContent
-                                            handleCancel={
-                                                () => setLogOffVisible(false)
-                                            }
+                                        <TransferContent
+                                            handleCancel={() => setTransferVisible(false)}
                                             handleSubmit={
-                                                async (reason: string) => {
-                                                    const { code, msg } = await deleteWorkspace({ id: ws_id, reason }) // user_id 么有
+                                                async (id: number) => {
+                                                    const { code, msg } = await saveWorkspaceConfig({ id: ws_id, owner: id })
                                                     if (code === 200) {
-                                                        history.push('/')
-                                                        setLogOffVisible(false)
+                                                        setTransferVisible(false)
+                                                        workspaceInit()
+                                                        message.success('操作成功！')
                                                     }
                                                     else
                                                         requestCodeMessage(code, msg)
                                                 }
                                             }
+                                            member={members}
                                         />
                                     }
-                                    visible={logOffVisible}
-                                    onVisibleChange={visible => setLogOffVisible(visible)}
-                                    overlayClassName={styles.cancleWs}
                                     trigger="click"
-                                    title="提示"
+                                    title="转交所有权"
+                                    onVisibleChange={visible => setTransferVisible(visible)}
+                                    visible={transferVisible}
+                                    overlayClassName={styles.transferOwnerWs}
                                 >
-                                    <Button onClick={() => setLogOffVisible(true)}>注销</Button>
+                                    <Access
+                                        accessible={access.canSysTestAdmin()}
+                                        fallback={<Button disabled={true} >所有权转交</Button>}
+                                    >
+                                        <Button onClick={handleTransfer} >所有权转交</Button>
+                                    </Access>
                                 </Popover>
-                            }
-                        </Space>
-                    </Form.Item>
-                </Form>
-            </Row>
+                                {
+                                    !_.get(detail, 'is_common') &&
+                                    <Popover
+                                        content={
+                                            <LogOffContent
+                                                handleCancel={
+                                                    () => setLogOffVisible(false)
+                                                }
+                                                handleSubmit={
+                                                    async (reason: string) => {
+                                                        const { code, msg } = await deleteWorkspace({ id: ws_id, reason }) // user_id 么有
+                                                        if (code === 200) {
+                                                            history.push('/')
+                                                            setLogOffVisible(false)
+                                                        }
+                                                        else
+                                                            requestCodeMessage(code, msg)
+                                                    }
+                                                }
+                                            />
+                                        }
+                                        visible={logOffVisible}
+                                        onVisibleChange={visible => setLogOffVisible(visible)}
+                                        overlayClassName={styles.cancleWs}
+                                        trigger="click"
+                                        title="提示"
+                                    >
+                                        <Button onClick={() => setLogOffVisible(true)}>注销</Button>
+                                    </Popover>
+                                }
+                            </Space>
+                        </Form.Item>
+                    </Form>
+                </Row>
+            </Access>
             {/* </Access> */}
             {
                 cropperModalVisible &&
