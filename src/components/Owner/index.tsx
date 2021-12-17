@@ -41,7 +41,7 @@ export default () => {
                                 value={item.emp_id}
                                 key={index}
                             >
-                                {item.last_name}({item.first_name === "" ?item.last_name : item.first_name}) - {item.emp_id}
+                                {item.last_name}({item.first_name === "" ? item.last_name : item.first_name})
                             </Select.Option>
                         )
                     })

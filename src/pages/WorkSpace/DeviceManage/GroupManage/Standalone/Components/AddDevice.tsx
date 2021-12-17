@@ -153,7 +153,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
         <Space>
             <span>{data.msg[0]}</span>
             <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}>详细信息</span></Tooltip>
-            {channelType === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick(data.data)}>部署ToneAgent</span>}
+            {BUILD_APP_ENV ? <></> : channelType === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick(data.data)}>部署ToneAgent</span>}
         </Space>
     )
 
