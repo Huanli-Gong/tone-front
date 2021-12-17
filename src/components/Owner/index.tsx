@@ -5,7 +5,7 @@ import { member } from './service'
 
 export default () => {
     const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
-        (keyword = '') => member({ keyword, scope: 'aligroup' }),
+        (keyword = '') => member({ keyword, scope: 'aligroup', page_num:1, page_size:200 }),
         {
             initialData: [],
             debounceInterval: 300,
@@ -41,7 +41,7 @@ export default () => {
                                 value={item.emp_id}
                                 key={index}
                             >
-                                {item.last_name}({item.first_name === "" ? item.last_name : item.first_name})
+                                {item.first_name === "" ? item.last_name : item.first_name}
                             </Select.Option>
                         )
                     })

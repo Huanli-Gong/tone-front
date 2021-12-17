@@ -177,6 +177,7 @@ export default (props: any) => {
                 title: 'Owner',
                 width: 120,
                 dataIndex: 'owner_name',
+                ellipsis: true,
                 filterIcon: () => <FilterFilled style={{ color: owner ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setPage(1), setOwner(val) }} />,
             },
