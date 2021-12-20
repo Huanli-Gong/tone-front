@@ -69,19 +69,19 @@ export default (props: any) => {
             setInitFormStatus(data)
             setFirstDetail(data)
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
 
     useEffect(() => {
         workspaceInit()
     }, [location.pathname])
 
-    const setInitFormStatus = (data:any) =>{
+    const setInitFormStatus = (data: any) => {
         const { show_name, name, description } = data
         let regShowName = !(/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/g.test(show_name))
         let regName = !(/^[a-z0-9_-]{1,20}$/.test(name))
         let regDescription = !(/^([\w\W]){1,200}$/.test(description))
-        setErrorReg({regShowName,regName,regDescription})
+        setErrorReg({ regShowName, regName, regDescription })
     }
     const layout = {
         labelCol: { span: 4 },
@@ -94,7 +94,7 @@ export default (props: any) => {
             setMembers(data)
             setTransferVisible(true)
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
 
     const uploadProps = {
@@ -117,7 +117,7 @@ export default (props: any) => {
                     workspaceInit()
                     message.success('更新成功！')
                 }
-                else requestCodeMessage( code , msg )
+                else requestCodeMessage(code, msg)
             } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} file upload failed.`);
             }
@@ -135,26 +135,26 @@ export default (props: any) => {
             show_name: detail.show_name,
             name: detail.name,
             description: detail.description,
-            id:ws_id,
+            id: ws_id,
             is_public: detail.is_public,
         }
-        const { code , msg } = await saveWorkspaceConfig( obj )
-        if ( code === 200 ) {
+        const { code, msg } = await saveWorkspaceConfig(obj)
+        if (code === 200) {
             workspaceInit()
             message.success('成功保存')
         }
         else {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
         }
     }
-    const changeText= (data:any) =>{
-        setDetail({...detail,...data})
+    const changeText = (data: any) => {
+        setDetail({ ...detail, ...data })
     }
     let isOk = errorReg.regShowName || errorReg.regShowName || errorReg.regDescription
-    isOk = isOk ? isOk : (_.get(detail,'show_name') === _.get(firstDetail,'show_name')
-    && _.get(detail,'name') === _.get(firstDetail,'name')
-    && _.get(detail,'description') === _.get(firstDetail,'description')
-    && _.get(detail,'is_public') === _.get(firstDetail,'is_public'))
+    isOk = isOk ? isOk : (_.get(detail, 'show_name') === _.get(firstDetail, 'show_name')
+        && _.get(detail, 'name') === _.get(firstDetail, 'name')
+        && _.get(detail, 'description') === _.get(firstDetail, 'description')
+        && _.get(detail, 'is_public') === _.get(firstDetail, 'is_public'))
     const auth = window.localStorage.getItem('role_ws_title')
 
     return (
@@ -164,7 +164,7 @@ export default (props: any) => {
                     {...layout}
                     colon={true}
                     layout="vertical"
-                    style={{width:'100%'}}
+                    style={{ width: '100%' }}
                 >
                     <PartDom text='封面信息' />
                     <Form.Item label="">
@@ -195,7 +195,7 @@ export default (props: any) => {
                         name="show_name"
                         validateStatus={errorReg.regShowName ? 'error' : undefined}
                         help={errorReg.regShowName && '长度最多20位,仅允许包含汉字、字母、数字、下划线、中划线、点'}
-                        >
+                    >
                         <SettingEdit
                             ws_id={ws_id}
                             keyName="show_name"
@@ -211,7 +211,7 @@ export default (props: any) => {
                         name="name"
                         validateStatus={errorReg.regName ? 'error' : undefined}
                         help={errorReg.regName && '只允许英文小写、下划线和数字，最多20个字符'}
-                        >
+                    >
                         <SettingEdit
                             ws_id={ws_id}
                             keyName="show_name"
@@ -224,10 +224,10 @@ export default (props: any) => {
                             setErrorReg={setErrorReg} />
                     </Form.Item>
                     <Form.Item
-                    validateStatus={errorReg.regDescription  ? 'error' : undefined}
-                    help={errorReg.regDescription && '长度最多200位'}
-                    label="介绍 "
-                    name="description">
+                        validateStatus={errorReg.regDescription ? 'error' : undefined}
+                        help={errorReg.regDescription && '长度最多200位'}
+                        label="介绍 "
+                        name="description">
                         <SettingEdit
                             ws_id={ws_id}
                             type="textarea"
@@ -245,16 +245,16 @@ export default (props: any) => {
                             ws_id={ws_id}
                             title={detail.is_public}
                             keyName="is_public"
-                            disabled={_.get(detail,'is_common')}
+                            disabled={_.get(detail, 'is_common')}
                             auth={auth}
                             changeText={changeText} />
                     </Form.Item>
-                    <Access 
+                    <Access
                         accessible={access.canSysTestAdmin()}
                         fallback={<Button style={{ marginBottom: 16 }} disabled={true} type="primary">确定</Button>}
                     >
-                        {<Button style={{ marginBottom: 16 }} disabled={isOk} onClick={isOk ? ()=>{} : handleSave} type="primary">确定</Button>}
-                    </Access>   
+                        {<Button style={{ marginBottom: 16 }} disabled={isOk} onClick={isOk ? () => { } : handleSave} type="primary">确定</Button>}
+                    </Access>
                 </Form>
             </Row>
             <Row className={styles.row_box}>
@@ -289,6 +289,13 @@ export default (props: any) => {
                 </Form>
             </Row>
 
+            <Access
+                accessible={
+                    BUILD_APP_ENV ?
+                        access.canSuperAdmin() :
+                        access.canSysTestAdmin()
+                }
+            >
                 <Row className={styles.row_box}>
                     <Form
                         {...layout}
@@ -313,7 +320,7 @@ export default (props: any) => {
                                                         message.success('操作成功！')
                                                     }
                                                     else
-                                                        requestCodeMessage( code , msg )
+                                                        requestCodeMessage(code, msg)
                                                 }
                                             }
                                             member={members}
@@ -325,45 +332,48 @@ export default (props: any) => {
                                     visible={transferVisible}
                                     overlayClassName={styles.transferOwnerWs}
                                 >
-                                <Access 
-                                    accessible={access.canSysTestAdmin()}
-                                    fallback={<Button disabled={true} >所有权转交</Button>}
-                                >
-                                    <Button onClick={handleTransfer} >所有权转交</Button>
-                                </Access>   
+                                    <Access
+                                        accessible={access.canSysTestAdmin()}
+                                        fallback={<Button disabled={true} >所有权转交</Button>}
+                                    >
+                                        <Button onClick={handleTransfer} >所有权转交</Button>
+                                    </Access>
                                 </Popover>
-                                {!_.get(detail,'is_common') &&  <Popover
-                                    content={
-                                        <LogOffContent
-                                            handleCancel={
-                                                () => setLogOffVisible(false)
-                                            }
-                                            handleSubmit={
-                                                async (reason: string) => {
-                                                    const { code, msg } = await deleteWorkspace({ id: ws_id, reason }) // user_id 么有
-                                                    if (code === 200) {
-                                                        history.push('/')
-                                                        setLogOffVisible(false)
-                                                    }
-                                                    else
-                                                        requestCodeMessage( code , msg )
+                                {
+                                    !_.get(detail, 'is_common') &&
+                                    <Popover
+                                        content={
+                                            <LogOffContent
+                                                handleCancel={
+                                                    () => setLogOffVisible(false)
                                                 }
-                                            }
-                                        />
-                                    }
-                                    visible={logOffVisible}
-                                    onVisibleChange={visible => setLogOffVisible(visible)}
-                                    overlayClassName={styles.cancleWs}
-                                    trigger="click"
-                                    title="提示"
-                                >
-
-                                    <Button onClick={() => setLogOffVisible(true)}>注销</Button>
-                                </Popover>}
+                                                handleSubmit={
+                                                    async (reason: string) => {
+                                                        const { code, msg } = await deleteWorkspace({ id: ws_id, reason }) // user_id 么有
+                                                        if (code === 200) {
+                                                            history.push('/')
+                                                            setLogOffVisible(false)
+                                                        }
+                                                        else
+                                                            requestCodeMessage(code, msg)
+                                                    }
+                                                }
+                                            />
+                                        }
+                                        visible={logOffVisible}
+                                        onVisibleChange={visible => setLogOffVisible(visible)}
+                                        overlayClassName={styles.cancleWs}
+                                        trigger="click"
+                                        title="提示"
+                                    >
+                                        <Button onClick={() => setLogOffVisible(true)}>注销</Button>
+                                    </Popover>
+                                }
                             </Space>
                         </Form.Item>
                     </Form>
                 </Row>
+            </Access>
             {/* </Access> */}
             {
                 cropperModalVisible &&
@@ -380,7 +390,7 @@ export default (props: any) => {
                                 message.success('更新成功！')
                             }
                             else
-                                requestCodeMessage( code , msg )
+                                requestCodeMessage(code, msg)
                         }
                     }
                 />

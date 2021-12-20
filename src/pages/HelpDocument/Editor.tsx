@@ -6,7 +6,7 @@ import arrayMove from 'array-move';
 import _ from 'lodash';
 import styles from './index.less';
 import { deleteHelpDoc, updateHelpDoc } from './services'
-import { history , useAccess } from 'umi'
+import { history, useAccess, Access } from 'umi'
 import { ReactComponent as Ellipsis } from '@/assets/svg/ellipsis.svg'
 import { requestCodeMessage } from '@/utils/utils';
 
@@ -84,12 +84,13 @@ const EllipsisRect = ({ record, text, helpId, reactNode, handleClick, index }: a
 
                 </span>
             }
-            <Popover placement="bottom" content={reactNode(record)} trigger="click" className={styles.popover}>
-                <div className={styles.del_doc_icon} onClick={_.partial(handleDelClick, _, index)}>
-                    <Ellipsis />
-                </div>
-            </Popover>
-
+            <Access accessible={access.canSysTestAdmin()}>
+                <Popover placement="bottom" content={reactNode(record)} trigger="click" className={styles.popover}>
+                    <div className={styles.del_doc_icon} onClick={_.partial(handleDelClick, _, index)}>
+                        <Ellipsis />
+                    </div>
+                </Popover>
+            </Access>
         </div>
     )
 }

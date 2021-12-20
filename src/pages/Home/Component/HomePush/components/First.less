@@ -39,6 +39,25 @@
         color: rgba(0,0,0,0.85);
         line-height: 24px;
       }
+      .first_ul {
+        padding-left: 0;
+        margin-top: 12px;
+        & > li {
+          display: flex;
+          margin-bottom: 8px;
+          & > svg {
+            height: 24px;
+            margin-right: 8px;
+            flex-shrink: 0;
+          }
+          & > span {
+            line-height: 24px;
+            font-family: PingFangSC-Regular;
+            font-size: 16px;
+            color: rgba(0,0,0,0.85);
+          }
+        }
+      }
     }
     .right {
       height: 351px;

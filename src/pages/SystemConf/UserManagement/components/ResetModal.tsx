@@ -27,6 +27,7 @@ const ResetModal: React.ForwardRefRenderFunction<{}, {}> = (props, ref) => {
             visible={visible}
             onCancel={handleCancel}
             okText="确定"
+            footer={false}
             onOk={handleCancel}
             width={'40%'}
         >

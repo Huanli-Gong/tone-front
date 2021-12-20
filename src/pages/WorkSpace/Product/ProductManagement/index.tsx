@@ -3,13 +3,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { useLocation, useParams, useRequest } from 'umi'
-import { queryProductList, deleteProduct, queryProjectList, updateProject, dropProduct, dropProject, queryDropProduct, queryDropProject } from '../services'
+import { queryProductList, deleteProduct, queryProjectList, updateProject } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddProductDrawer from './AddProduct'
 import ShowProjectDrawer from './ViewProjectDetails'
 import CreateProjectDrawer from './NewProject'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
 import { requestCodeMessage } from '@/utils/utils';
 // import { resizeClientSize } from '@/utils/hooks'
 export default (props: any) => {
@@ -26,7 +24,7 @@ export default (props: any) => {
     // const { windowHeight } = resizeClientSize()
     // console.log('windowHeight',windowHeight)
     const { data: { data = [] }, refresh, loading, run } = useRequest(
-        (params: any) => queryDropProduct(params),
+        (params: any) => queryProductList(params),
         {
             defaultParams: [{ ws_id }],
             initialData: {
@@ -37,7 +35,7 @@ export default (props: any) => {
     )
 
     const { data: projectData, refresh: projectRefresh, loading: projectLoading, run: projectRun } = useRequest(
-        (params: any) => queryDropProject(params),
+        (params: any) => queryProjectList(params),
         {
             //defaultParams: [{ ws_id, product_id: current.id }],
             initialData: {
@@ -70,6 +68,8 @@ export default (props: any) => {
         //projectRun({ product_id: item.id, ws_id })
     }
 
+
+
     const handleAddProduct = () => {
         addProduct.current?.show('新增产品信息')
     }
@@ -82,6 +82,7 @@ export default (props: any) => {
         }
         else requestCodeMessage( code , msg )
     }
+
     const handleDelete = async (item: any) => {
         const { code, msg } = await deleteProduct({ ws_id, prd_id: item.id })
         fetchFinally(code, msg)
@@ -134,49 +135,10 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-        if (current.id)
+        if (current.id !== undefined)
             projectRun({ product_id: current.id, ws_id })
     }, [current.id])
 
-    
-    const onDragEnd = async(result:any) => {
-        if (!result.destination) {
-            return;
-        }
-        const { code, msg } = await dropProduct({ 
-            ws_id,
-            from: result.source.index + 1, 
-            to: result.destination.index + 1  //后端要从1开始。。
-        })
-        if(code === 200){
-            // const data = await queryDropProduct({ ws_id })
-            // console.log('data',data)
-            run({ ws_id }).then(res => {
-                if (res.code === 200) {
-                    projectRun({ product_id: current.id, ws_id })
-                }
-            })
-        }else{
-            requestCodeMessage( code , msg )
-        }
-    }
-    const onDragProjectEnd = async(result:any) => {
-        if (!result.destination) {
-            return;
-        }
-        const { code, msg } = await dropProject({ 
-            product_id: current.id,
-            ws_id,
-            from: result.source.index + 1, 
-            to: result.destination.index + 1  //后端要从1开始。。
-        })
-        if(code === 200){
-            projectRun({ product_id: current.id, ws_id })
-        }else{
-            requestCodeMessage( code , msg )
-        }
-    }
-    
 
     return (
         <Layout.Content>
@@ -189,82 +151,60 @@ export default (props: any) => {
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text>所有产品 ({data?.length && `${data?.length}`})</Typography.Text>
                         </Row>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId="droppable">
-                                    {(provided:any, snapshot:any) => (
-                                    //这里是拖拽容器 在这里设置容器的宽高等等...
-                                    <Row 
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        className={styles.all_product}
-                                    >
-                                        {
-                                            data?.map((item:any, index:number) => {
-                                                return (
-                                                    <Draggable
-                                                        index={index}
-                                                        key={item.key}
-                                                        draggableId={String(index + 1)}
-                                                        product={item.id}
+                        <Row className={styles.all_product}>
+                            {
+                                data?.map(
+                                    (item: any) => (
+                                        <Col
+                                            span={24}
+                                            className={item.is_default ? styles.product_item_default : styles.product_item_old}
+                                            key={item.id}
+                                            onClick={() => handleCurrentChange(item)}
+                                            onMouseEnter={() => setHover(item.id)}
+                                            onMouseLeave={() => setHover(null)}
+                                        >
+                                            <Row justify="space-between" className={+ current.id === + item.id ? styles.product_item_active : styles.product_item}>
+                                                {/* <Tooltip title={item.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                                                    <Typography.Text className={styles.text_ellip}>{item.name}</Typography.Text>
+                                                </Tooltip> */}
+                                                <EllipsisPulic title={item.name} width={210}>
+                                                    <Typography.Text >{item.name}</Typography.Text>
+                                                </EllipsisPulic>
+                                                {
+                                                    item.is_default
+                                                    ? <Popconfirm
+                                                        title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
+                                                        onConfirm={() => handleDelete(item)}
+                                                        cancelText="取消"
+                                                        okText="确定删除"
+                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                        okButtonProps={{
+                                                            type: 'default',
+                                                            disabled: true
+                                                        }}
                                                     >
-                                                        {(provided:any, snapshot:any) => (
-                                                            //在这里写你的拖拽组件的样式 dom 等等...
-                                                            <Col
-                                                                span={24}
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                className={item.is_default ? styles.product_item_default : styles.product_item_old}
-                                                                key={item.id}
-                                                                onClick={() => handleCurrentChange(item)}
-                                                                onMouseEnter={() => setHover(item.id)}
-                                                                onMouseLeave={() => setHover(null)}
-                                                            >
-                                                                <Row justify="space-between" className={+ current.id === + item.id ? styles.product_item_active : styles.product_item}>
-                                                                    <EllipsisPulic title={item.name} width={210}>
-                                                                        <Typography.Text >{item.name}</Typography.Text>
-                                                                    </EllipsisPulic>
-                                                                    {
-                                                                        item.is_default
-                                                                        ? <Popconfirm
-                                                                            title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
-                                                                            onConfirm={() => handleDelete(item)}
-                                                                            cancelText="取消"
-                                                                            okText="确定删除"
-                                                                            icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                                            okButtonProps={{
-                                                                                type: 'default',
-                                                                                disabled: true
-                                                                            }}
-                                                                        >
-                                                                            <MinusCircleOutlined
-                                                                                className={hover === item.id ? styles.remove_active : styles.remove}
-                                                                            />
-                                                                        </Popconfirm>
-                                                                        : <Popconfirm
-                                                                            title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
-                                                                            onCancel={() => handleDelete(item)}
-                                                                            cancelText="确定删除"
-                                                                            okText="取消"
-                                                                            icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                                        >
-                                                                            <MinusCircleOutlined
-                                                                                className={hover === item.id ? styles.remove_active : styles.remove}
-                                                                            />
-                                                                        </Popconfirm>
-                                                                    }
-                                                                </Row>
-                                                            </Col>
-                                                        )}
-                                                    </Draggable>
-                                                )
-                                            })
-                                        }
-                                        {provided.placeholder}
-                                    </Row>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
+                                                        <MinusCircleOutlined
+                                                            className={hover === item.id ? styles.remove_active : styles.remove}
+                                                        />
+                                                    </Popconfirm>
+                                                    : <Popconfirm
+                                                        title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
+                                                        onCancel={() => handleDelete(item)}
+                                                        cancelText="确定删除"
+                                                        okText="取消"
+                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                    >
+                                                        <MinusCircleOutlined
+                                                            className={hover === item.id ? styles.remove_active : styles.remove}
+                                                        />
+                                                    </Popconfirm>
+                                                }
+                                            </Row>
+                                        </Col>
+                                    )
+                                )
+                            }
+                        </Row>
                     </div>
                     <div className={styles.product_right}>
                         <Row className={styles.product_right_detail} align="middle">
@@ -313,64 +253,44 @@ export default (props: any) => {
                                 </Form>
                             </Row>
                             <Spin spinning={projectLoading}>
-                                <DragDropContext onDragEnd={onDragProjectEnd}>
-                                    <Droppable droppableId="droppable" direction="horizontal">
-                                            {(provided:any, snapshot:any) => (
-                                            //这里是拖拽容器 在这里设置容器的宽高等等...
-                                            <div 
-                                                {...provided.droppableProps}
-                                                ref={provided.innerRef}
-                                                className={styles.right_project_father}
-                                            >
-                                                {
-                                                    projectData.data?.map((item:any, index:number) => {
-                                                        return (
-                                                            <Draggable
-                                                                index={index}
-                                                                key={item.key}
-                                                                draggableId={String(index)}
-                                                            >
-                                                                {(provided:any, snapshot:any) => (
-                                                                    //在这里写你的拖拽组件的样式 dom 等等...
-                                                                    <div className={styles.right_project_child} 
-                                                                        ref={provided.innerRef}
-                                                                        {...provided.draggableProps}
-                                                                        {...provided.dragHandleProps}
-                                                                    >
-                                                                        <div onClick={() => handleIcon(item)} className={item.is_default ? styles.right_project_default : styles.right_project_icon}></div>
-                                                                        <div className={styles.right_project_child_warp} onClick={() => hanldeProject(item)}>
-                                                                            <EllipsisPulic title={item.name}>
-                                                                                <Typography.Text className={styles.right_project_child_firstLine}>{item.name}</Typography.Text>
-                                                                                <div style={{ height : 6 }}></div>
-                                                                            </EllipsisPulic>
-                                                                            <EllipsisPulic title={item.product_version}>
-                                                                                <Typography.Text className={styles.right_project_child_secondLine}>{item.product_version}</Typography.Text>
-                                                                                <div style={{ height : 2 }}></div>
-                                                                            </EllipsisPulic>
-                                                                            <EllipsisPulic title={item.description}>
-                                                                                <Typography.Text className={styles.right_project_child_secondLine}>{item.description}</Typography.Text>
-                                                                                <div style={{ height : 2 }}></div>
-                                                                            </EllipsisPulic>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </Draggable>
-                                                        )
-                                                    })
-                                                }
-                                                {clickType === 'menu' && (
-                                                        <div className={styles.right_project_create} onClick={hanldCreateProject}>
-                                                            <div className={styles.right_project_create_empty}>
-                                                                <span><PlusOutlined /><i>创建项目</i></span>
+                                <Row >
+                                    <div className={styles.right_project_father}>
+                                        {
+                                            projectData.data?.map(
+                                                (item: any) => {
+                                                    return (
+                                                        <div className={styles.right_project_child} key={item.id}>
+                                                            <div onClick={() => handleIcon(item)} className={item.is_default ? styles.right_project_default : styles.right_project_icon}></div>
+                                                            <div className={styles.right_project_child_warp} onClick={() => hanldeProject(item)}>
+                                                                <EllipsisPulic title={item.name}>
+                                                                    <Typography.Text className={styles.right_project_child_firstLine}>{item.name}</Typography.Text>
+                                                                    <div style={{ height : 6 }}></div>
+                                                                </EllipsisPulic>
+                                                                <EllipsisPulic title={item.product_version}>
+                                                                    <Typography.Text className={styles.right_project_child_secondLine}>{item.product_version}</Typography.Text>
+                                                                    <div style={{ height : 2 }}></div>
+                                                                </EllipsisPulic>
+                                                                <EllipsisPulic title={item.description}>
+                                                                    <Typography.Text className={styles.right_project_child_secondLine}>{item.description}</Typography.Text>
+                                                                    <div style={{ height : 2 }}></div>
+                                                                </EllipsisPulic>
                                                             </div>
                                                         </div>
                                                     )
                                                 }
-                                                {provided.placeholder}
+
+                                            )
+                                        }
+                                        {clickType === 'menu' && (
+                                            <div className={styles.right_project_create} >
+                                                <div className={styles.right_project_create_empty}>
+                                                    <span onClick={hanldCreateProject}><PlusOutlined /><i>创建项目</i></span>
+                                                </div>
                                             </div>
-                                        )}
-                                    </Droppable>
-                                </DragDropContext>
+                                        )
+                                        }
+                                    </div>
+                                </Row>
                             </Spin>
                         </Row>
                     </div>
@@ -382,6 +302,3 @@ export default (props: any) => {
         </Layout.Content>
     )
 }
-
-
-
