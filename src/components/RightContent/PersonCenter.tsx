@@ -58,7 +58,14 @@ const PersonCenter = () => {
     const menuHeaderDropdown = (
         <Menu className={`${styles.menu} ${styles.person_menu}`} selectedKeys={[]} onClick={onMenuClick as any}>
             <Menu.Item className={styles.person_name} key="name">
-                <Avatar size="small" className={styles.avatar} src={authList.avatar} alt="avatar" />
+                <Avatar size="small" 
+                    className={styles.avatar} 
+                    style={{ background: authList.avatar_color }} 
+                    src={authList.avatar} 
+                    alt="avatar" 
+                >
+                    {authList.first_name || authList.last_name?.slice(0, 1)}
+                </Avatar>
                 {authList.first_name || authList.last_name}
             </Menu.Item>
             <Menu.Divider />
