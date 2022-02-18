@@ -3,7 +3,6 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import ClickParam from 'antd/es/menu';
 import { useModel } from 'umi';
-import { logoutUrl } from '../../../../wsConfig';
 import styles from './index.less';
 import request from 'umi-request';
 import AvatarCover from '../AvatarCover';
@@ -36,7 +35,7 @@ const PersonCenter = () => {
             await request
                 .get('/api/auth/logout/')
 
-            window.location.href = logoutUrl(location.href)
+            window.location.href = '/'
         }
     }, []);
 
