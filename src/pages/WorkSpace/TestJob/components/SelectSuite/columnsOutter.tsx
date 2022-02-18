@@ -39,7 +39,9 @@ export default ({
     const name = {
         title : 'Test Suite',
         dataIndex : 'title',
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         width : 200,
         render : ( _ : any ) => (
             _ ? 

@@ -177,7 +177,9 @@ export default forwardRef(
                 dataIndex: 'metric',
                 title: 'Metric',
                 key: 'metric',
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 textWrap: 'word-break',
                 render: (text:any) => {
                     return (

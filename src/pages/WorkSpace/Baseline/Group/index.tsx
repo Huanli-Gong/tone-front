@@ -10,6 +10,7 @@ import BaselineDetail from './BaselineDetail'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import _ from 'lodash';
 import { requestCodeMessage } from '@/utils/utils';
+import { useClientSize } from '@/utils/hooks'
 
 const { Search } = Input;
 
@@ -81,7 +82,7 @@ export default (props: any) => {
     }, [baselineData, query.baseline_id])
 
     useEffect(() => {
-        input.current.focus()
+        input.current?.focus()
     }, []);
 
     const fn = () => setFilterVisible(false)
@@ -195,11 +196,15 @@ export default (props: any) => {
     server_provider = server_provider === 'aligroup' ? '内网环境' : '云上环境'
     const baelineTotal = data && data.total ? data.total : 0
 
+    const clientSize = useClientSize()
+
+    const layoutHeight = clientSize.height - 90 - 48 - 48;
+
     return (
         <Layout.Content>
-            <Spin spinning={loading} >
-                <Row justify="space-between">
-                    <div className={styles.script_left}>
+            <Spin spinning={loading}>
+                <Row justify="space-between" >
+                    <div className={styles.script_left} style={{ height: layoutHeight }}>
                         <div className={styles.create_button_wrapper}>
                             <Button type="primary" onClick={handleAddScript}>新增基线</Button>
                         </div>
@@ -231,13 +236,12 @@ export default (props: any) => {
                                 </Col>
                             </Row>
                         </Row>
-                        <Row className={styles.all_script}>
+                        <Row className={styles.all_script} style={{ flexDirection: "column", flexFlow: "column" }}>
                             {
                                 baselineData?.map(
                                     (item: any) => (
                                         item &&
-                                        <Col
-                                            span={24}
+                                        <div
                                             className={+ current?.id === + item.id ? styles.script_item_active : styles.script_item}
                                             key={item.id}
                                             onClick={() => handleCurrentChange(item)}
@@ -249,8 +253,8 @@ export default (props: any) => {
                                                 <Typography.Text className={styles.baseline_name}>{item.name}</Typography.Text>
                                             </Tooltip>
                                             <Popconfirm
-                                                title={<div style={{color:'red'}}>删除基线将可能导致Job无法正常运行，<br/>请谨慎删除！！</div>}
-                                                onCancel={()=>handleDelete(item)}
+                                                title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
+                                                onCancel={() => handleDelete(item)}
                                                 cancelText="确定删除"
                                                 cancelButtonProps={{ disabled: data.is_first ? true : false }}
                                                 okText="取消"
@@ -258,9 +262,9 @@ export default (props: any) => {
                                             >
                                                 <MinusCircleOutlined
                                                     className={hover === item.id ? styles.remove_active : styles.remove}
-                                                />  
+                                                />
                                             </Popconfirm>
-                                        </Col>
+                                        </div>
                                     )
                                 )
                             }
@@ -281,45 +285,42 @@ export default (props: any) => {
                             }
                         </Row>
                     </div>
-                    <div className={styles.script_right}>
-                        {
-                            <>
-                                <Row className={styles.script_right_detail} align="middle">
-                                    <Col span={12}>
-                                        <div className={styles.title_detail_item}>
-                                            <Typography.Text className={`${styles.script_right_name}`} strong={true}>基线名称：</Typography.Text>
-                                            <EllipsisPulic title={current?.name} style={{ width: 318 }} />
-                                        </div>
-                                    </Col>
-                                    <Col span={12}>
-                                        <div className={styles.title_detail_item}>
-                                            <Typography.Text className={styles.script_right_name} strong={true}>产品版本：</Typography.Text>
-                                            <EllipsisPulic title={current?.version} style={{ width: 318 }} />
-                                        </div>
-                                    </Col>
-                                    <Col span={12}>
-                                        <div className={styles.title_detail_item}>
-                                            <Typography.Text className={styles.script_right_name} strong={true} style={{ minWidth: 108 }}>ServerProvider：</Typography.Text>
-                                            <EllipsisPulic title={baselineData.length ? server_provider : '-'} style={{ width: 230 }} />
-                                        </div>
-                                    </Col>
-                                    <Col span={12}>
-                                        <div className={styles.title_detail_item}>
-                                            <Typography.Text className={styles.script_right_name} strong={true}>基线描述：</Typography.Text>
-                                            <EllipsisPulic title={current?.description} style={{ width: 318 }} />
-                                        </div>
-                                    </Col>
-                                    {dropdown}
-                                </Row>
-                                <Row className={styles.right_code_context}>
-                                    <BaselineDetail
-                                        isOpen={isOpen}
-                                        setIsOpen={setIsOpen}
-                                        currentBaseline={current}
-                                    />
-                                </Row>
-                            </>
-                        }
+                    <div className={styles.script_right} style={{ height: layoutHeight }}>
+                        <Row className={styles.script_right_detail} align="middle">
+                            <Col span={12}>
+                                <div className={styles.title_detail_item}>
+                                    <Typography.Text className={`${styles.script_right_name}`} strong>基线名称：</Typography.Text>
+                                    <EllipsisPulic title={current?.name} style={{ width: 318 }} />
+                                </div>
+                            </Col>
+                            <Col span={12}>
+                                <div className={styles.title_detail_item}>
+                                    <Typography.Text className={styles.script_right_name} strong>产品版本：</Typography.Text>
+                                    <EllipsisPulic title={current?.version} style={{ width: 318 }} />
+                                </div>
+                            </Col>
+                            <Col span={12}>
+                                <div className={styles.title_detail_item}>
+                                    <Typography.Text className={styles.script_right_name} strong style={{ minWidth: 118 }}>ServerProvider：</Typography.Text>
+                                    <EllipsisPulic title={baselineData.length ? server_provider : '-'} style={{ width: 230 }} />
+                                </div>
+                            </Col>
+                            <Col span={12}>
+                                <div className={styles.title_detail_item}>
+                                    <Typography.Text className={styles.script_right_name} strong>基线描述：</Typography.Text>
+                                    <EllipsisPulic title={current?.description} style={{ width: 318 }} />
+                                </div>
+                            </Col>
+                            {dropdown}
+                        </Row>
+                        <Row className={styles.right_code_context} >
+                            <BaselineDetail
+                                isOpen={isOpen}
+                                setIsOpen={setIsOpen}
+                                currentBaseline={current}
+                                layoutHeight={layoutHeight}
+                            />
+                        </Row>
                     </div>
                 </Row>
             </Spin>
@@ -327,7 +328,6 @@ export default (props: any) => {
                 ref={addScript}
                 onOk={refresh}
                 baselineType={props.baselineType}
-                ws_id={ws_id}
                 setCurrent={setCurrent}
             />
             <Modal
@@ -352,6 +352,6 @@ export default (props: any) => {
             >
                 <span>该操作将删除当前基线，请谨慎操作</span>
             </Modal>
-        </Layout.Content>
+        </Layout.Content >
     )
 }

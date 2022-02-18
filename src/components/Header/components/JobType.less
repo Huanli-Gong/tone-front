@@ -1,54 +1,59 @@
-//自动移滚动条样式
-::-webkit-scrollbar{
-    width: 5px;
-    height: 5px;
-  }
-  ::-webkit-scrollbar-thumb{
-    border-radius: 1em;
-    background-color: rgba(50,50,50,.3);
-  }
-  ::-webkit-scrollbar-track{
-    border-radius: 1em;
-    background-color: rgba(50,50,50,.1);
-  }
-  
-.job_type{
-    position: relative;
-    max-height: 320px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    padding: 0 12px 4px 12px;
-    .type_modal_item {
-        width: 206px;
-        box-sizing: border-box;
-        height: 84px;
-        background: #FFFFFF;
-        border:1px solid rgba(0,0,0,0.1);
-        box-shadow: 0 0px 6px 0 rgba(0,0,0,0.04);
-        cursor: pointer;
-        border-radius: 4px;
-        //margin:0 8px 16px 8px;
-        &:hover {
-            box-shadow: 0 0px 8px 0 rgba(0,0,0,0.15);
-        }
-        .right_default{
-            height: 31px;
-            width: 31px;
-            float: right;
-            background: #fff url('~@/assets/img/project_default_icon.svg') no-repeat right top / 31px 31px;
-            cursor: pointer;
-        }
-        .type_modal_title {
-            margin: 16px 16px 9px 16px;
-            font-size: 14px;
-            color: rgba(0,0,0,0.85);
-            width: 172px;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
+.job_type {
+  position: relative;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0 12px 4px 12px;
+
+  //自动移滚动条样式
+  :global {
+    & {
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 1em;
+        background-color: rgba(50, 50, 50, 0.3);
+      }
+      ::-webkit-scrollbar-track {
+        border-radius: 1em;
+        background-color: rgba(50, 50, 50, 0.1);
+      }
     }
+  }
+
+  .type_modal_item {
+    width: 206px;
+    box-sizing: border-box;
+    height: 84px;
+    background: #ffffff;
+    border: 1px solid rgba(44, 40, 40, 0.1);
+    box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    border-radius: 4px;
+    //margin:0 8px 16px 8px;
+    &:hover {
+      box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.15);
+    }
+    .right_default {
+      height: 31px;
+      width: 31px;
+      float: right;
+      background: #fff url('~@/assets/img/project_default_icon.svg') no-repeat right top / 31px 31px;
+      cursor: pointer;
+    }
+    .type_modal_title {
+      margin: 16px 16px 9px 16px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.85);
+      width: 172px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
 }

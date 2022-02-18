@@ -89,7 +89,7 @@ export default ({ style={}, }) => {
                 <div className={styles.menu_content}>
                   <div className={styles.menu_item}>功能、性能测试</div>
                   <div className={styles.menu_item}>单机、多机测试</div>
-                  <div className={styles.menu_item}>业务测试</div>
+                  <div className={styles.menu_item}>应用集群测试</div>
                   <div className={styles.menu_item}>云上测试</div>
                 </div>
                 <div className={styles.menu_content} style={{marginTop: 10}}>
@@ -117,7 +117,7 @@ export default ({ style={}, }) => {
             </div>
             <div className={styles.menu_item} style={{width: '100%'}}>
               <div>测试机器池   tone测试框架</div>
-              <p>内网、云上、隔离等多环境支持  phy/vm/docker等</p>
+              <p>企业内网、云上、隔离等多环境支持  phy/vm/docker等</p>
             </div>
           </div>
 

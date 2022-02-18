@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Breadcrumb, Collapse, message, Table, Tooltip } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import CommonPagination from '@/components/CommonPagination';
 import { history } from 'umi';
 import styled from 'styled-components';
@@ -69,7 +69,7 @@ const Refenerce = (props: any) => {
     const [TempData, setTempData] = useState<any>([])
     let param =  new URLSearchParams(search);
     let [ id, name, test_type ] = [param.get('id'),param.get('name'),param.get('test_type')]
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     let obj: any = {}
     if (type == 1) obj.path = `/ws/${ws_id}/test_suite`, obj.name = 'Test Suite管理'
@@ -227,7 +227,9 @@ const Refenerce = (props: any) => {
             dataIndex: 'case_name_list',
             key: 'case_name_list',
             width:400,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any, row: any) => (
                 <Tooltip 
                     overlayStyle={{ maxWidth: 390 }}
@@ -278,7 +280,9 @@ const Refenerce = (props: any) => {
             dataIndex: 'case_name_list',
             key: 'case_name_list',
             width: test_type ? 400 : 1,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any, row: any) => (
                 test_type &&  <Tooltip 
                     overlayStyle={{ maxWidth: 390 }}

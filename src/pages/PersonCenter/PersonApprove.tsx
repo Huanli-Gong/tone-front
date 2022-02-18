@@ -6,7 +6,7 @@ import styles from './index.less'
 import JoinPopover from './JoinPopover'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
@@ -14,7 +14,7 @@ import { requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
     const { approveData, loading, handleTabClick, userId } = props
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     let approveDataList = _.isArray(approveData) ? approveData : []
     approveDataList = approveDataList.filter(item => _.get(item,'ws_info'))
     const statusColorFn = (status: any) => {

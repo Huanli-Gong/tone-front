@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import { Dropdown, Menu, Space, Avatar, Typography, Row, Spin } from 'antd'
-import { CaretDownOutlined, CheckOutlined , LoadingOutlined } from '@ant-design/icons'
+import { CaretDownOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons'
 import { queryWorkspaceHistory, enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './index.less'
 import { history, useModel, Redirect } from 'umi'
@@ -94,8 +94,12 @@ export const HearderDropdown: React.FC<any> = (props) => {
     }
 
     useEffect(() => {
-        setPageParams(DEFAULT_PAGE_PARAMS)
-        setIsOver(false)
+        const { refreshWorkspaceList } = initialState
+        if ( refreshWorkspaceList !== undefined ) {
+            setPageParams(DEFAULT_PAGE_PARAMS)
+            queryWorkspaceList(DEFAULT_PAGE_PARAMS)
+            setIsOver(false)
+        }
     }, [initialState?.refreshWorkspaceList])
 
     useEffect(() => {
@@ -120,7 +124,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
     if (workspaces.length === 0)
         return (
             <WorkspaceTitle align="middle" justify="space-between">
-                <Spin indicator={ <LoadingOutlined style={{ fontSize: 24 }} spin /> }/>
+                <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
             </WorkspaceTitle>
         )
     return (

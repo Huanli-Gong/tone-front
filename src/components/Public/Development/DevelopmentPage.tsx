@@ -1,17 +1,11 @@
-import React,{ useEffect, useState } from 'react';
+import React from 'react';
 import { Layout } from 'antd';
 import DevelopmentIcon from '@/assets/svg/development_bg.svg';
+import { useClientSize } from '@/utils/hooks';
+
 export default () => {
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-
-    const windowHeight = () => setLayoutHeight(innerHeight)
-
-    useEffect(() => {
-        window.addEventListener('resize', windowHeight)
-        return () => {
-            window.removeEventListener('resize', windowHeight)
-        }
-    }, [])
+    const { height: layoutHeight } = useClientSize()
+    
     return (
         <Layout style={{ padding: 20, height: layoutHeight - 50, minHeight: 0, overflow: 'auto' }}>
             <Layout.Content style={{ background: '#fff' }}>

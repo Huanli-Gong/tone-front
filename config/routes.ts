@@ -86,72 +86,61 @@ const routes = [
 		],
 	},
 	{
-		name: 'helpDoc',
+		name: 'HelpDoc',
 		hideInMenu: true,
 		path: '/help_doc',
-
 		routes: [
 			{
 				path: '/help_doc',
-				routes: [
-					{
-						path: '/help_doc',
-						component: './HelpDocument',
-					},
-					{
-						path: '/help_doc/new',
-						access: 'canSysTestAdmin',
-						component: './HelpDocument/EditOrNew',
-					},
-					{
-						path: '/help_doc/:help_id',
-						component: './HelpDocument',
-					},
-					{
-						path: '/help_doc/:help_id/edit',
-						access: 'canSysTestAdmin',
-						component: './HelpDocument/EditOrNew',
-					},
-					{
-						path: '*',
-						component: './404',
-					}
-				]
+				component: './HelpDocument',
 			},
+			{
+				path: '/help_doc/new',
+				access: 'canSysTestAdmin',
+				component: './HelpDocument/EditOrNew',
+			},
+			{
+				path: '/help_doc/:help_id',
+				component: './HelpDocument',
+			},
+			{
+				path: '/help_doc/:help_id/edit',
+				access: 'canSysTestAdmin',
+				component: './HelpDocument/EditOrNew',
+			},
+			{
+				path: '*',
+				component: './404',
+			}
 		]
 	},
 	{
-		name: 'helpDoc',
+		name: 'NoticeDoc',
 		hideInMenu: true,
 		path: '/notice',
 		routes: [
 			{
 				path: '/notice',
-				routes: [
-					{
-						path: '/notice',
-						component: './HelpDocument',
-					},
-					{
-						path: '/notice/new',
-						access: 'canSysTestAdmin',
-						component: './HelpDocument/EditOrNew',
-					},
-					{
-						path: '/notice/:help_id',
-						component: './HelpDocument',
-					},
-					{
-						path: '/notice/:help_id/edit',
-						access: 'canSysTestAdmin',
-						component: './HelpDocument/EditOrNew',
-					},
-					{
-						path: '*',
-						component: './404',
-					}
-				]
+				component: './HelpDocument',
 			},
+			{
+				path: '/notice/new',
+				access: 'canSysTestAdmin',
+				component: './HelpDocument/EditOrNew',
+			},
+			{
+				path: '/notice/:help_id',
+				component: './HelpDocument',
+			},
+			{
+				path: '/notice/:help_id/edit',
+				access: 'canSysTestAdmin',
+				component: './HelpDocument/EditOrNew',
+			},
+			{
+				path: '*',
+				component: './404',
+			}
 		]
 	},
 	{
@@ -160,7 +149,17 @@ const routes = [
 		hideInMenu: true,
 		component: './TaskMessage',
 	},
-
+	{
+		path: '/share/report/:report_id',
+		hideInMenu: true,
+		name: 'ShareReport',
+		component: '@/pages/WorkSpace/TestReport/NewReport'
+	},
+	{
+		path: '/share/analysis_result/:form_id',
+		hideInMenu: true,
+		component: '@/pages/WorkSpace/TestAnalysis/AnalysisResult'
+	},
 	{
 		path: '/ws/:ws_id/message',
 		//layout: false,
@@ -384,11 +383,7 @@ const routes = [
 						name: 'EditReport',
 						component: '@/pages/WorkSpace/TestReport/NewReport'
 					},
-					// {
-					// 	path: '/ws/:ws_id/test_report/report',
-					// 	component: '@/pages/WorkSpace/TestReport/NewReport',
-					// 	name: 'Report',
-					// },
+					
 					{
 						path: '*',
 						redirect: '/',

@@ -3,7 +3,6 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import ClickParam from 'antd/es/menu';
 import { useModel } from 'umi';
-import { logoutUrl } from '../../../../wsConfig';
 import styles from './index.less';
 import request from 'umi-request';
 import AvatarCover from '../AvatarCover';
@@ -23,7 +22,7 @@ const PersonCenter = () => {
             window.open(`${window.location.origin}/personCenter`)
         }
         if (key === 'logout') {
-            if ( BUILD_APP_ENV ) {
+            if (BUILD_APP_ENV) {
                 if (BUILD_APP_ENV === 'opensource') {
                     window.location.href = `/api/auth/logout/`
                     return
@@ -32,11 +31,11 @@ const PersonCenter = () => {
                     return window.location.href = authList.logout_url
                 }
             }
-            
+
             await request
                 .get('/api/auth/logout/')
 
-            window.location.href = logoutUrl(location.href)
+            window.location.href = logoutUrl + location.href
         }
     }, []);
 
@@ -58,11 +57,11 @@ const PersonCenter = () => {
     const menuHeaderDropdown = (
         <Menu className={`${styles.menu} ${styles.person_menu}`} selectedKeys={[]} onClick={onMenuClick as any}>
             <Menu.Item className={styles.person_name} key="name">
-                <Avatar size="small" 
-                    className={styles.avatar} 
-                    style={{ background: authList.avatar_color }} 
-                    src={authList.avatar} 
-                    alt="avatar" 
+                <Avatar size="small"
+                    className={styles.avatar}
+                    style={{ background: authList.avatar_color }}
+                    src={authList.avatar}
+                    alt="avatar"
                 >
                     {authList.first_name || authList.last_name?.slice(0, 1)}
                 </Avatar>

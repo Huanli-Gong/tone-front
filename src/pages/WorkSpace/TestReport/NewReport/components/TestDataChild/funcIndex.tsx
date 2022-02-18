@@ -142,34 +142,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 []
         )
     }, [btn])
-    // const deleteSuite = (item:any, row:any) => {
-    //     let ret = item.list.reduce((pre: any, suite: any) => {
-    //          if (suite.suite_id == row.suite_id) return pre
-    //          return pre.concat(suite)
-    //      }, [])
-    //      return {
-    //          ...item,
-    //          list:ret,
-    //      }
-    // }
-    // const deleteConf = (item:any, row:any) => {
-    //     return produce(item, (draft: any) => {
-    //         draft.list = item.list.map(
-    //             (suite: any) => {
-    //                 let conf_list = suite.conf_list.reduce(
-    //                     (pre: any, conf: any) => {
-    //                         if (conf.conf_id == row.conf_id) return pre
-    //                         return pre.concat(conf)
-    //                     },
-    //                     []
-    //                 )
-    //                 return {
-    //                     ...suite,
-    //                     conf_list
-    //                 }
-    //             })
-    //     })
-    // }
+   
     const handleDelete = (name: string, row: any, rowKey: any) => {
         if (name == 'suite') {
             setDataSource(dataSource.map((item: any) => {
@@ -265,10 +238,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
-                                    item.compare_data.length > 0 ?
-                                        item.compare_data.map((cur: any) => {
+                                    !!item.compare_data.length ?
+                                        item.compare_data.map((cur: any,idx:number) => {
                                             return (
-                                                <SubCaseText gLen={groupLen} btnState={btnState}>
+                                                <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                     <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
                                                 </SubCaseText>
                                             )
@@ -286,14 +259,14 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </>
         )
     }
-    let functionTable = Array.isArray(funcData.list) && funcData.list.length > 0 ?
-        funcData.list.map((suite: any, id: number) => (
-            <TestSuite key={id}>
+    let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
+        funcData.list.map((suite: any, idx: number) => (
+            <TestSuite key={idx}>
                 <SuiteName>
                     {suite.suite_name}
                     <Popconfirm
                         title='确认要删除吗！'
-                        onConfirm={() => handleDelete('suite', suite, id)}
+                        onConfirm={() => handleDelete('suite', suite, idx)}
                         cancelText="取消"
                         okText="删除"
                     >
@@ -338,7 +311,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         fail_case,
                                         obj_id,
                                     })
-                                conf_data.length > 0 ?
+                                !!conf_data.length ?
                                     conf_data?.map((item: any, idx: number) => {
                                         if (item !== null) {
                                             const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
@@ -365,7 +338,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
 
                             }
                             return (
-                                <>
+                                <div key={cid}>
                                     <TestCase expand={expand}>
                                         <DelBtn conf={conf} cid={cid} />
                                         <CaseTitle gLen={groupLen}>
@@ -400,7 +373,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         {...conf}
                                         btn={btnState}
                                     />
-                                </>
+                                </div>
                             )
                         })
                     }
@@ -411,8 +384,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
 
     return (
         name === 'group' ?
-            <div key={id}>
-                <TestGroupItem >
+            <>
+                <TestGroupItem id={`func_item-${id}`} className="tree_mark">
                     <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                     <TestItemText>
                         <SettingTextArea
@@ -442,15 +415,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     {!btnState && <ItemFunc />}
                 </TestGroupItem>
                 {functionTable}
-                {/* {
-                    funcData?.list?.map((suite: any, idx: number) => (
-                        <RenderSuite suite={suite} id={idx} />
-                    ))
-                } */}
-            </div>
+            </>
             :
-            <div key={id}>
-                <TestItem >
+            <>
+                <TestItem id={`func_item-${id}`} className="tree_mark">
                     <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                     <TestItemText>
                         <SettingTextArea
@@ -480,12 +448,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     {!btnState && <ItemFunc />}
                 </TestItem>
                 {functionTable}
-                {/* {
-                    funcData?.list?.map((suite: any, idx: number) => (
-                        <RenderSuite suite={suite} id={idx} />
-                    ))
-                } */}
-            </div>
+            </>
     )
 }
 export default memo(FuncDataIndex);

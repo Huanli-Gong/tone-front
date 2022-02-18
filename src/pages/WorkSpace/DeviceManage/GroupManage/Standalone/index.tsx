@@ -14,10 +14,9 @@ import SelectDropSync from '@/components/Public/SelectDropSync';
 import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTestServer, queryServerDel } from '../services'
 import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
-import { resizeDocumentHeightHook } from '@/utils/hooks'
-import PermissionTootip from '@/components/Public/Permission/index';
+import { useClientSize } from '@/utils/hooks'
 import ResizeTable from '@/components/ResizeTable';
-import { requestCodeMessage } from '@/utils/utils';
+import { agent_list, requestCodeMessage } from '@/utils/utils';
 
 import SelectVmServer from './Components/SelectVmServer';
 
@@ -45,7 +44,7 @@ const Standalone = (props: any, ref: any) => {
         open: addDeviceRef.current.show
     }))
 
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const [urlParmas, setUrlParams] = useState<any>({
         ws_id,
@@ -67,7 +66,7 @@ const Standalone = (props: any, ref: any) => {
     const logDrawer: any = useRef()
 
     const deviceTypeList = [{ id: 'phy_server', name: '物理机' }, { id: 'vm', name: '虚拟机' }]
-    const channelTypeList = [{ id: 'staragent', name: 'staragent' }, { id: 'toneagent', name: 'toneagent' }]
+    const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
     const getTestServerList = async () => {
         setLoading(true)
@@ -83,7 +82,7 @@ const Standalone = (props: any, ref: any) => {
     const handleTablePageChange = (page: number, size: number = 10) => {
         setUrlParams({ ...urlParmas, page_size: size, page_num: page })
     }
-    
+
     const handleUpdateTestServer = useCallback(async (id: number) => {
         setSyncLoading(true)
         const data = await updateTestServer(id)
@@ -122,8 +121,8 @@ const Standalone = (props: any, ref: any) => {
     //     pageNo < 1 && (pageNo = 1)
     //     return pageNo
     // }
-    const calcPageNo = (total:number, page_num:number, pageSize = 10) => {
-        let totalPage = Math.ceil(Number(total - 1) / pageSize )
+    const calcPageNo = (total: number, page_num: number, pageSize = 10) => {
+        let totalPage = Math.ceil(Number(total - 1) / pageSize)
         page_num = page_num > totalPage && totalPage > 0 ? totalPage : page_num
         return page_num
     }
@@ -141,11 +140,11 @@ const Standalone = (props: any, ref: any) => {
     //     }
     //     else requestCodeMessage(data.code, data.msg)
     // }, [])
-    const handleDeleteTestServer = async(id: number) => {
+    const handleDeleteTestServer = async (id: number) => {
         let param = { ws_id: ws_id }
         const data = await deleteTestServer(id, param)
         //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
-        let pageNo = calcPageNo(total,urlParmas.page_num,urlParmas.page_size)
+        let pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
         if (data.code === 200) {
             message.success('操作成功！')
             setDeleteVisible(false)
@@ -179,7 +178,7 @@ const Standalone = (props: any, ref: any) => {
         }
     }
 
-    
+
 
     const handleSelectedRowKeys = useCallback(
         (selectedRowKeys) => {
@@ -208,7 +207,7 @@ const Standalone = (props: any, ref: any) => {
                 else
                     return (
                         <Row justify="start" align="middle">
-                            <TreeSvg style={{ marginRight : 8 , height : 40 }}/>
+                            <TreeSvg style={{ marginRight: 8, height: 40 }} />
                             <span>{_ || '-'}</span>
                         </Row>
                     )
@@ -222,8 +221,10 @@ const Standalone = (props: any, ref: any) => {
             title: 'SN',
             dataIndex: 'sn',
             width: 130,
-            ellipsis: true,
-            render: (record: any) => <EllipsisPulic title={record} color={'#1890ff'}/>,
+            ellipsis: {
+                shwoTitle: false,
+            },
+            render: (record: any) => <EllipsisPulic title={record} />,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
@@ -233,8 +234,10 @@ const Standalone = (props: any, ref: any) => {
             title: '机器名称',
             dataIndex: 'name',
             width: 130,
-            ellipsis: true,
-            render: (text: any) => <EllipsisPulic title={text} color={'#1890ff'}/>,
+            ellipsis: {
+                shwoTitle: false,
+            },
+            render: (text: any) => <EllipsisPulic title={text} />,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: totalParam })} />
@@ -268,11 +271,11 @@ const Standalone = (props: any, ref: any) => {
             dataIndex: 'idc',
         },
         !BUILD_APP_ENV && {
-            title: 'Console配置', 
+            title: 'Console配置',
             ellipsis: true,
             width: 100,
             dataIndex: 'console_conf',
-            render:(text:string)=> <>{text || '-'}</>
+            render: (text: string) => <>{text || '-'}</>
         },
         {
             title: '控制通道',
@@ -304,9 +307,9 @@ const Standalone = (props: any, ref: any) => {
             render: StateBadge,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: totalParam })} stateVal = {urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}/>
+                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: totalParam })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
             )
-            
+
         },
         {
             title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
@@ -315,7 +318,7 @@ const Standalone = (props: any, ref: any) => {
             render: StateBadge,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: totalParam })} stateVal = {urlParmas.real_state} dataArr={['Available','Broken']}/>
+                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: totalParam })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
             )
         },
         {
@@ -356,7 +359,7 @@ const Standalone = (props: any, ref: any) => {
                                         )
                                     }
                                 >
-                                    <Typography.Text style={{ cursor : 'default' }}>...</Typography.Text>
+                                    <Typography.Text style={{ cursor: 'default' }}>...</Typography.Text>
                                 </Tooltip>
                             </Typography.Text>
                         )
@@ -377,32 +380,32 @@ const Standalone = (props: any, ref: any) => {
                     <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
                     <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
                     {
-                        !BUILD_APP_ENV ? 
-                            row.sub_server_list && row.device_type === '物理机' ? 
-                            <Dropdown
-                                placement="bottomRight"
-                                overlay={
-                                    <Menu
-                                        onClick={(item) => hanldeClickMenu(item, _)}
-                                    >
-                                        <Menu.Item key={'data'}>同步数据</Menu.Item>
-                                        <Menu.Item key={'vm'}>同步机器</Menu.Item>
-                                    </Menu>
-                                }
-                                trigger={['click', 'hover']}
-                            >
-                                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                    同步 <DownOutlined />
-                                </a>
-                            </Dropdown> :
-                            <Button 
-                                style={{ padding: 0 }} 
-                                size="small" 
-                                type="link" 
-                                onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id) }>
+                        !BUILD_APP_ENV ?
+                            row.sub_server_list && row.device_type === '物理机' ?
+                                <Dropdown
+                                    placement="bottomRight"
+                                    overlay={
+                                        <Menu
+                                            onClick={(item) => hanldeClickMenu(item, _)}
+                                        >
+                                            <Menu.Item key={'data'}>同步数据</Menu.Item>
+                                            <Menu.Item key={'vm'}>同步机器</Menu.Item>
+                                        </Menu>
+                                    }
+                                    trigger={['click', 'hover']}
+                                >
+                                    <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                        同步 <DownOutlined />
+                                    </a>
+                                </Dropdown> :
+                                <Button
+                                    style={{ padding: 0 }}
+                                    size="small"
+                                    type="link"
+                                    onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}>
                                     同步
-                            </Button>
-                        : null
+                                </Button>
+                            : null
                     }
                 </Space>
             )
@@ -423,7 +426,6 @@ const Standalone = (props: any, ref: any) => {
                 loading={loading}
                 rowKey="id"
                 columns={columns}
-                bordered
                 pagination={false}
                 size={'small'}
                 className={styles.pro_table_card}
@@ -470,8 +472,8 @@ const Standalone = (props: any, ref: any) => {
                                 <Button type="link" onClick={() => setSelectRowKeys([])}>取消</Button>
                             </Space>
                             <Space>
-                                <Button onClick={() => handleEdit({selectRowKeys,opreateType:'moreEdit'})}>批量编辑</Button>
-                                { !BUILD_APP_ENV && <Button onClick={handleBatchOption}>批量同步</Button>}
+                                <Button onClick={() => handleEdit({ selectRowKeys, opreateType: 'moreEdit' })}>批量编辑</Button>
+                                {!BUILD_APP_ENV && <Button onClick={handleBatchOption}>批量同步</Button>}
                             </Space>
                         </Row>
                     ) : null
@@ -534,73 +536,3 @@ const Standalone = (props: any, ref: any) => {
 
 
 export default memo(forwardRef(Standalone))
-
-
-
-                                // <Popconfirm
-                                //     title="确定要删除吗？"
-                                //     okText="确定"
-                                //     placement="bottomLeft"
-                                //     cancelText="取消"
-                                //     overlayStyle={{ width: 160 }}
-                                //     onConfirm={() => handleDeleteTestServer(_.id)}
-                                // >
-                                //     <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
-                                // </Popconfirm>
-
-                                /* 
-                                
-                                
-
-                    expandedRowRender: (record, index, indent, expanded) => (
-                        <ResizeTable
-                            rowSelection={{
-                                selectedRowKeys: selectRowKeys,
-                                onChange: handleSelectedRowKeys
-                            }}
-                            showHeader={false}
-                            rowKey="id"
-                            columns={columns}
-                            bordered
-                            size="small"
-                            pagination={false}
-                            dataSource={record.sub_server_list}
-                        />
-                    )
-                                */
-
-
-
-    /* const tableRenderTags = (record: any): any => {
-        if (record.length > 0) {
-            const tags: any = []
-            record.forEach(
-                (item: any, index: number) => {
-                    if (index === 0)
-                        tags.push(
-                            <Tag
-                                key={item.id}
-                                color={item.tag_color}
-                            >
-                                {
-                                    item.name.toString().length > 10 ?
-                                        item.name.toString().substr(0, 10).concat('...') :
-                                        item.name.toString()
-                                }
-                            </Tag>
-                        )
-                }
-            )
-            return (
-                <Row align="middle">
-                    {tags}
-                    {
-                        record.length > 1 &&
-                        <Typography.Text>...</Typography.Text>
-                        //  style={{ marginBottom: 8 }}
-                    }
-                </Row>
-            )
-        }
-        else return '-'
-    } */

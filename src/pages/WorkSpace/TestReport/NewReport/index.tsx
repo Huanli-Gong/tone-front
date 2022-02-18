@@ -8,11 +8,11 @@ import ReportBasicInfo from './components/ReportBasicInfo';
 import ReportSummary from './components/ReportSummary';
 import ReportTestEnv from './components/ReportTestEnv';
 import ReportTestPref from './components/ReportTestPerf';
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 // import { writeDocumentTitle } from '@/utils/hooks';
 import { editReport, saveReport, detailTemplate, reportDetail } from '../services';
-import { history, useAccess, Access } from 'umi';
+import { history, useAccess, Access, useParams } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
@@ -22,10 +22,11 @@ import { CreatePageData, EditPageData } from './hooks';
 
 const Report = (props: any) => {
     const { ws_id } = props.match.params
+    // const { report_id, creator_id } = useParams();
     const [btnState, setBtnState] = useState<Boolean>(false)
     const [btnConfirm, setBtnConfirm ] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
-    const { windowHeight } = resizeClientSize()
+    const { height: windowHeight } = useClientSize()
     const access = useAccess();
     const bodyRef = useRef<any>(null)
     const [obj, setObj] = useState<any>({
@@ -37,7 +38,7 @@ const Report = (props: any) => {
     
     const routeName = props.route.name
     
-    const basicData:any = routeName === 'Report' || routeName === 'EditReport' ? EditPageData(props) : CreatePageData(props);
+    const basicData:any = routeName === 'Report' || routeName === 'EditReport' || routeName === 'ShareReport' ? EditPageData(props) : CreatePageData(props);
     
     const {
         environmentResult,
@@ -59,7 +60,9 @@ const Report = (props: any) => {
     useEffect(() => {
         if (routeName === 'Report') {
             setBtnState(false)
-        } else {
+        } else if(routeName === 'ShareReport'){
+            setBtnState(false)
+        }else {
             setBtnState(true)
             //env?.base_index = baselineGroupIndex
             obj.test_env = _.cloneDeep(environmentResult) 
@@ -100,17 +103,19 @@ const Report = (props: any) => {
                 <Btn btnState={btnState}>
                     {
                         btnState ?
-                            <Button type="primary" disabled={btnConfirm} onClick={handleSubmit}>{saveReportData?.id ? '更新' : '保存'}</Button>
+                            routeName !== 'ShareReport' && <Button type="primary" disabled={btnConfirm} onClick={handleSubmit}>{saveReportData?.id ? '更新' : '保存'}</Button>
                             : <>
                                 <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link"><IconLink style={{ marginRight: 4 }} />分享</span>
-                                <Access
-                                    accessible={access.wsRoleContrl(Number(creator_id.substring(5,creator_id.length)))}
-                                    fallback={
-                                        <span style={{ cursor: 'pointer',color:'#ccc' }}><IconWarp style={{ marginRight: 4 }} />编辑</span>
-                                    }
-                                >
-                                    <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
-                                </Access>
+                                {
+                                    routeName !== 'ShareReport' && <Access
+                                        accessible={access.wsRoleContrl(Number(creator_id.substring(5,creator_id.length)))}
+                                        fallback={
+                                            <span style={{ cursor: 'pointer',color:'#ccc' }}><IconWarp style={{ marginRight: 4 }} />编辑</span>
+                                        }
+                                    >
+                                        <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                    </Access>
+                                }
                             </>
                     }
                 </Btn>
@@ -120,7 +125,8 @@ const Report = (props: any) => {
 
     // 复制功能
     useEffect(() => {
-        const clipboard = new Clipboard('.test_report_copy_link', { text: () => location.href })
+        let report_id = String(window.location.pathname.match(/\d+/g))
+        const clipboard = new Clipboard('.test_report_copy_link', { text: () => location.origin + `/share/report/${report_id}`})
         clipboard.on('success', function (e) {
             message.success('报告链接复制成功')
             e.clearSelection();

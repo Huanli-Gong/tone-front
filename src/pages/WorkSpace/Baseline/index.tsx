@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Tabs } from 'antd'
 import Group from './Group'
 import styles from './Group/index.less'

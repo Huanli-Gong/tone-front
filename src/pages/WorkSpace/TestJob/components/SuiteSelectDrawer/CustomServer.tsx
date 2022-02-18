@@ -4,6 +4,7 @@ import { DrawerProvider } from './Provider'
 import styles from '../SelectSuite/style.less'
 import { checkIpAndSn } from './services';
 import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal'
+import { AgentSelect } from '@/components/utils';
 
 const CustomServer = (props: any) => {
     const { mask, multipInfo, form, loading } = props
@@ -89,17 +90,14 @@ const CustomServer = (props: any) => {
                 style={{ width: '100%' }}
                 rules={!mask ? [{ required: true, message: '请选择机器类型' }] : []}
             >
-                <Select
+                <AgentSelect
                     style={{ width: '100%' }}
                     placeholder={multipInfo.selfServer ? '多个数值' : '请选择机器类型(agent)'}
-                    onChange={(value) => {
+                    onChange={(value: any) => {
                         setMask(false)
                         value && handleCustomChannel(value)
                     }}
-                >
-                    <Select.Option value="staragent">StarAgent</Select.Option>
-                    <Select.Option value="toneagent">ToneAgent</Select.Option>
-                </Select>
+                />
             </Form.Item>
 
             <Form.Item

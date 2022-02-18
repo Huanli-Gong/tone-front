@@ -1,30 +1,25 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Layout, Tabs, Badge } from 'antd';
 import styles from './msg.less'
-import { useModel, history } from 'umi';
+import { useModel } from 'umi';
 import TaskInformIndex from './MsgDetail/TaskInformIndex'
 import SystemInformIndex from './MsgDetail/SystemInformIndex'
+import { useClientSize } from '@/utils/hooks';
 
 const msg: React.FC<any> = () => {
-    //let state = history.location.state
     let state = window.location.search.substring(1)
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
     const [tab, setTab] = useState(state === 'task' ? '1' : '2')
     const { TabPane } = Tabs;
-    const windowHeight = () => setLayoutHeight(innerHeight)
     const { msgNum } = useModel('msg');
     // tab切换
     const handleTabClick = (tab: string) => {
         setTab(tab)
     }
     document.title = '消息通知 T-One'
-    useEffect(() => {
-        window.addEventListener('resize', windowHeight)
-        return () => {
-            window.removeEventListener('resize', windowHeight)
-        }
-    }, [])
+
+    const { height: layoutHeight } = useClientSize()
+    
     return (
         <Layout style={{ padding: '14px 20px 0 20px', height: layoutHeight - 50, minHeight: 0, overflow: 'auto' }}>
             <Layout.Content style={{ background: '#fff' }}>

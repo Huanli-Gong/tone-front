@@ -88,13 +88,15 @@ const SuiteDetails: React.FC<any> = (props: any) => {
     }
 
     useEffect(() => {
-        if (suite_name) {
-            window.document.title = `${suite_name}`
-        }
+        window.document.title = suite_name
+        const timer = setTimeout(()=> {
+            window.document.title = suite_name || 'T-One'
+        }, 1000)
         return () => {
-            window.document.title = 'T-One'
+            timer && clearTimeout(timer)
         }
-    }, [suite_name])
+    }, [suite_name, window.document.title])
+
 
     useEffect(() => {
         if (suite_id) {
@@ -129,59 +131,59 @@ const SuiteDetails: React.FC<any> = (props: any) => {
         return pagination.total > pagination.pageSize ? 'have-borderBottom' : 'no-borderBottom'
     }
 
-  // 详细信息
-  const detailInfo = [
-    {name:'创建人', value: dataSet.owner_name},
-    {name: '运行模式', value: matchType(dataSet.run_mode)},
-    {name: '集成日期', value: dataSet.gmt_created},
-  ]
-  
-	return (
-    <ContentContainer>
-      <div className={styles.TestSuiteDetails_wrap}>
-        {noPage ? (
-          <NotResult />
-        ) : (
-          <div className={styles.content} style={{ width: 1000 }}>
-            <BreadcrumbMatch suiteName={suite_name} />
-            <Spin spinning={loading}>
-              <div style={{ display: 'flex' }}>
-                  <div className={styles.content_left}>
-                    <div className={styles['test-card-border']}>
-                      <div style={{ fontSize: 32, marginTop: -12 }}>
-                        {suite_name}
-                      </div>
-                      <div className={styles['details-description-tag']}>
-                        {dataSet.test_type && <TypeTag type={dataSet.test_type} />}
-                        {dataSet.domain_name_list && dataSet.domain_name_list.split(',').map((item: string) => 
-                          <Tag color='#F2F4F6' style={{ color : '#515B6A' }}>{item}</Tag>
-                        )}
-                      </div>
-                      <span>说明：</span>
-                      { dataSet.doc && <CodeViewer code={ dataSet.doc } /> }
-                      <p>备注：{dataSet.description}</p> 
-                    </div>
-                    <div className={styles[`${dataSource.length ? 'no-borderBottom' : 'have-borderBottom'}`]} style={{ marginRight: 20 }}>
-                      <Table size="small"
-                        rowKey={record => record.id}
-                        dataSource={dataSource}
-                        columns={[
-                          {
-                            title: `Test Conf(${dataSource.length})`,
-                            dataIndex: 'name',
-                            render: (text: string, record: any)=> {
-                              return <span className={styles['click-a-text']} onClick={()=> suiteNameClick(record)}>{text}</span>
-                            }
-                          },
-                        ]}
-                        expandable={{
-                          expandIcon: () => (
-                            <IconArrowOn className={styles.enterOutlined} />
-                          )
-                        }}
-                        pagination={false} />
-                    </div>
-                  </div>
+    // 详细信息
+    const detailInfo = [
+        { name: '创建人', value: dataSet.owner_name },
+        { name: '运行模式', value: matchType(dataSet.run_mode) },
+        { name: '集成日期', value: dataSet.gmt_created },
+    ]
+
+    return (
+        <ContentContainer>
+            <div className={styles.TestSuiteDetails_wrap}>
+                {noPage ? (
+                    <NotResult />
+                ) : (
+                    <div className={styles.content} style={{ width: 1000 }}>
+                        <BreadcrumbMatch suiteName={suite_name} />
+                        <Spin spinning={loading}>
+                            <div style={{ display: 'flex' }}>
+                                <div className={styles.content_left}>
+                                    <div className={styles['test-card-border']}>
+                                        <div style={{ fontSize: 32, marginTop: -12 }}>
+                                            {suite_name}
+                                        </div>
+                                        <div className={styles['details-description-tag']}>
+                                            {dataSet.test_type && <TypeTag type={dataSet.test_type} />}
+                                            {dataSet.domain_name_list && dataSet.domain_name_list.split(',').map((item: string) =>
+                                                <Tag color='#F2F4F6' style={{ color: '#515B6A' }}>{item}</Tag>
+                                            )}
+                                        </div>
+                                        <span>说明：</span>
+                                        {dataSet.doc && <CodeViewer code={dataSet.doc} />}
+                                        <p>备注：{dataSet.description}</p>
+                                    </div>
+                                    <div className={styles[`${dataSource.length ? 'no-borderBottom' : 'have-borderBottom'}`]} style={{ marginRight: 20 }}>
+                                        <Table size="small"
+                                            rowKey={record => record.id}
+                                            dataSource={dataSource}
+                                            columns={[
+                                                {
+                                                    title: `Test Conf(${dataSource.length})`,
+                                                    dataIndex: 'name',
+                                                    render: (text: string, record: any) => {
+                                                        return <span className={styles['click-a-text']} onClick={() => suiteNameClick(record)}>{text}</span>
+                                                    }
+                                                },
+                                            ]}
+                                            expandable={{
+                                                expandIcon: () => (
+                                                    <IconArrowOn className={styles.enterOutlined} />
+                                                )
+                                            }}
+                                            pagination={false} />
+                                    </div>
+                                </div>
 
                                 <div className={styles.content_right}>
                                     <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>

@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState, useContext } from 'react'
+import React, { memo, useMemo, useEffect, useState, useContext } from 'react'
 import { ReactComponent as CatalogCollapsed } from '@/assets/svg/Report/collapsed.svg'
 
 import { Typography, Space, Tree, Row } from 'antd'
@@ -12,15 +12,12 @@ import {
     CatalogBody, 
     CatalogTitle, 
     CatalogDrageSpace,
-    CatalogLine, 
     CatalogRound, 
     LittleRound
 } from '../ReportUI';
-
 import { ReportContext } from '../Provider';
 const TemplateCatalog = (props: any) => {
     const { domainResult, collapsed, setDomainResult, setCollapsed } = useContext(ReportContext)
-    const [count, setCount] = useState<any>(0)
     const [roundHeight, setRoundHeight] = useState<Number>(3)
     /* 
             dragOverGapTop 拖拽上
@@ -129,6 +126,29 @@ const TemplateCatalog = (props: any) => {
         )
     }, [domainResult])
 
+    const leftArr = useMemo(() => {
+        let leftNav:any = []
+        if (domainResult.need_test_background) {
+            leftNav.push('need_test_background')
+        } 
+        if (domainResult.need_test_method) {
+            leftNav.push('need_test_method')
+        } 
+        if (domainResult.need_test_conclusion) {
+            leftNav.push('need_test_conclusion')
+        } 
+        if (domainResult.need_test_summary) {
+            leftNav.push('need_test_summary')
+        } 
+        if (domainResult.need_test_env || domainResult.need_env_description) {
+            leftNav.push('need_test_env')
+        } 
+        if (domainResult.need_perf_data || domainResult.need_func_data) {
+            leftNav.push('test_data')
+        }
+        return leftNav;
+    }, [domainResult])
+
     const delNode = (pre: any, cur: any, dragNode: any) => {
         if (cur.key === dragNode.key) return pre
         if (cur.is_group) {
@@ -170,23 +190,91 @@ const TemplateCatalog = (props: any) => {
             }
         })
     }
-
-    const handleCatalogItemClick = (name: string, num: number) => {
-        setRoundHeight((document.querySelector(`#left_${name}`) as any)?.offsetTop)
-        setCount(num)
+   
+    const dictNav = (name:string) => {
+        const list = {
+            'need_test_background':'测试背景',
+            'need_test_method':'测试方法',
+            'need_test_conclusion':'测试结论',
+            'need_test_summary':'Summary',
+            'need_test_env':'测试环境',
+            'test_data':'测试数据'
+        }
+        return list[name]
+    }
+    const handleScroll = (e:any) => {
+        let bst = e.target.scrollTop
+        let treeArr = document.querySelectorAll('.tree_mark') as any
+        // for (let i = 0; i < treeArr.length; i++) {
+        //     treeArr[i].classList.remove('toc-selected');
+        // }
+        let arr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
+        let leftArr = document.querySelectorAll('.position_mark')
+        for (let i = 0; i < leftArr.length; i++) {
+            let title = document.querySelector(`#${leftArr[i].id}`) as any
+            let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
+            if( title.offsetParent.offsetTop + title?.offsetTop <= bst){
+                i > 0 && arr[i -1].classList.remove('toc-selected');
+                leftTitle.classList.add('toc-selected');
+                setRoundHeight(leftTitle?.offsetTop) 
+            }else{
+                arr[i].classList.remove('toc-selected')
+            }
+        }
+        
+        for (let b = 0; b < treeArr.length; b++) {
+            let treeTitle = document.querySelector(`#${treeArr[b].id}`) as any
+            let leftTreeTitle = document.querySelector(`#left_${treeArr[b].id}`) as any
+            if( treeTitle.offsetParent.offsetTop + treeTitle?.offsetTop <= bst){
+                b > 0 && leftTreeTitle.classList.remove('toc-selected');
+                leftTreeTitle.classList.add('toc-selected');
+                let treeName = treeTitle?.id.substring(0,9)
+                setRoundHeight((document.querySelector(`#left_tree_${treeName}`) as any).offsetTop + leftTreeTitle.offsetParent.offsetTop)
+                for (let i = 0; i < leftArr.length; i++) {
+                    arr[i].classList.remove('toc-selected')
+                }
+            }else{
+                leftTreeTitle.classList.remove('toc-selected');
+                
+            }
+        }
+    }
+    useEffect( ()=> {
+        window.addEventListener('scroll', handleScroll, true)
+        return () => {
+            window.removeEventListener('scroll', handleScroll, true)
+        }
+    },[])
+    const handleCatalogItemClick = (name: string) => {
+        let arr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
+        for (let i = 0; i < arr.length; i++) {
+            arr[i].classList.remove('toc-selected');
+        }
+        let leftName =  document.querySelector(`#left_${name}`) as any
+        leftName.classList.add('toc-selected');
+        setRoundHeight(leftName?.offsetTop)
         document.querySelector(`#${name}`)?.scrollIntoView()
-        // document.getElementsByTagName()
     }
 
     const handleSelectTree = (_: any, evt: any) => {
+        let brr = document.querySelectorAll(`.spaceWarpper .ant-space-item .markSpace span`) as any
+        for (let i = 0; i < brr.length; i++) {
+            brr[i].classList.remove('toc-selected');
+        }
+        let arr = document.querySelectorAll('.tree_mark') as any
+        for (let i = 0; i < arr.length; i++) {
+            arr[i].classList.remove('toc-selected');
+        }
         const { node } = evt
         const { rowKey, name } = node
         const id = rowKey ? `${name}-${rowKey}` : `${name}`
+        let tree_name = rowKey === 0 ? `${name}-${rowKey}` : id
+        let leftName =  document.querySelector(`#left_${tree_name}`) as any
+        leftName.classList.add('toc-selected');
         const nativeEvent = evt?.nativeEvent
         const target = nativeEvent.target
         setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
-        setCount(`${name}_${rowKey}`)
-        document.querySelector(`#${id}`)?.scrollIntoView()
+        document.querySelector(`#${tree_name}`)?.scrollIntoView()
     }
     return (
         <Catalog collapsed={collapsed}>
@@ -205,37 +293,26 @@ const TemplateCatalog = (props: any) => {
                         <LittleRound />
                     </CatalogRound>
                     }
-                    <Space direction="vertical" style={{ width:'100%' }}>
+                    <Space direction="vertical" style={{ width:'100%' }} className="spaceWarpper">
                         {
-                            domainResult.need_test_background &&
-                            <span onClick={() => handleCatalogItemClick('need_test_background', 0)} id="left_need_test_background" style={{ color: count === 0 ? '#1890FF' : '', cursor: 'pointer' }}>测试背景</span>
-                        }
-                        {
-                            domainResult.need_test_method &&
-                            <span onClick={() => handleCatalogItemClick('need_test_method', 1)} id="left_need_test_method" style={{ color: count === 1 ? '#1890FF' : '', cursor: 'pointer' }}>测试方法</span>
-                        }
-                        {
-                            domainResult.need_test_conclusion &&
-                            <span onClick={(e) => handleCatalogItemClick('need_test_conclusion', 2)} id="left_need_test_conclusion" style={{ color: count === 2 ? '#1890FF' : '', cursor: 'pointer' }}>测试结论</span>
-                        }
-                        {
-                            domainResult.need_test_summary &&
-                            <span onClick={(e) => handleCatalogItemClick('need_test_summary', 3)} id="left_need_test_summary" style={{ color: count === 3 ? '#1890FF' : '', cursor: 'pointer' }}>Summary</span>
-                        }
-                        {
-                            (domainResult.need_test_env || domainResult.need_env_description) &&
-                            <span onClick={(e) => handleCatalogItemClick('need_test_env', 4)} id="left_need_test_env" style={{ color: count === 4 ? '#1890FF' : '', cursor: 'pointer' }}>测试环境</span>
-                        }
-                        {
-                            (domainResult.need_perf_data || domainResult.need_func_data) &&
-                            <span onClick={(e) => handleCatalogItemClick('test_data', 5)} id="left_test_data" style={{ color: count === 5 ? '#1890FF' : '', cursor: 'pointer' }}>测试数据</span>
+                            leftArr.map((item:any,idx:number) => (
+                                <div className='markSpace' key={idx}>
+                                    <span 
+                                        onClick={() => handleCatalogItemClick(item)} 
+                                        id={`left_${item}`} 
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        {dictNav(item)}
+                                    </span>
+                                </div>
+                            ))
                         }
                         {
                             catalogSource.map(
                                 (item: any, index: number) => (
                                     item.show ?
-                                        <CatalogDrageSpace key={index}>
-                                            <span onClick={(e) => handleCatalogItemClick(item.id, 6 + index)} id={`left_${item.id}`} style={{ color: count === 6 + index ? '#1890FF' : '', cursor: 'pointer' }}>
+                                        <CatalogDrageSpace key={index} className='markSpace'>
+                                            <span onClick={(e) => handleCatalogItemClick(item.id)} id={`left_${item.id}`} style={{ cursor: 'pointer' }}>
                                                 {item.name}
                                             </span>
                                             <CatalogDrageSpace id={`left_tree_${item.id}`} style={{ marginTop: item.treeData.length > 0 ? 8 : 0 }}>
@@ -247,11 +324,7 @@ const TemplateCatalog = (props: any) => {
                                                     blockNode
                                                     titleRender={(node: any) => {
                                                         return(
-                                                            <Typography.Text 
-                                                                id={`left_${node.rowKey}`} 
-                                                                style={{ color: `${node.name}_${node.rowKey}` === count ? '#1890FF' : '' }}>
-                                                                    {node.title}
-                                                            </Typography.Text>
+                                                            <span id={`left_${node.name}-${node.rowKey}`}>{node.title}</span>
                                                         ) 
                                                     }}
                                                     expandedKeys={item.expandkeys}

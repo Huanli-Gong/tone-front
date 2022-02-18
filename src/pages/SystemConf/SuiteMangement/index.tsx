@@ -312,7 +312,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 			dataIndex: 'name',
 			width: 300,
 			fixed: 'left',
-			ellipsis: true,
+			ellipsis: {
+				showTitle: false
+			},
 			filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -510,7 +512,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 			width: 300,
 			fixed: 'left',
 			dataIndex: 'name',
-			ellipsis: true,
+			ellipsis: {
+				showTitle: false
+			},
 			filterDropdown: ({ confirm }: any) => (
 				<SearchInput
 					confirm={confirm}

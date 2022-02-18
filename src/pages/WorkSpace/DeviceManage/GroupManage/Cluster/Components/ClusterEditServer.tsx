@@ -4,6 +4,7 @@ import { Drawer, Space, Button, Form, Input, Select, Radio, Badge } from 'antd'
 import { updateClusterServer } from '../../services'
 import { useParams } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
+import { AgentSelect } from '@/components/utils'
 
 
 const EditServerDrawer = (props: any, ref: any) => {
@@ -87,10 +88,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                     <Input autoComplete="off" placeholder="请输入私有IP" />
                 </Form.Item>
                 <Form.Item name="channel_type" label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]} >
-                    <Select >
-                        <Select.Option value="staragent">starAgent</Select.Option>
-                        <Select.Option value="toneagent">toneAgent</Select.Option>
-                    </Select>
+                    <AgentSelect />
                 </Form.Item>
                 <Form.Item
                     label="使用状态"
@@ -135,18 +133,3 @@ const EditServerDrawer = (props: any, ref: any) => {
 }
 
 export default forwardRef(EditServerDrawer)
-
-
-{/* <Row>
-                        <Col span={ 19 }>
-                            <Form.Item name="channel_type" initialValue={ modifyProps.test_server.channel_type || ''}>
-                                <Select >
-                                    <Select.Option value="staragent">starAgent</Select.Option>
-                                    <Select.Option value="toneagent">toneAgent</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </Col>
-                        <Col span={ 5  }>
-                            <Button>部署</Button>
-                        </Col>
-                    </Row> */}

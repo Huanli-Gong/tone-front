@@ -101,7 +101,7 @@ const TemplateCatalog = (props: any) => {
             (i: any) => {
                 const name = i === 'perf_item' ? '性能测试' : '功能测试'
                 const show = i === 'perf_item' ? 'need_perf_data' : 'need_func_data'
-                if (dataSource[i] && dataSource[show]) {
+                if (dataSource && dataSource[i] && dataSource[show]) {
                     const treeData = dataSource[i].map(
                         (item: any, index: number) => filterItem(item, i, index, index + '')
                     )
@@ -140,8 +140,6 @@ const TemplateCatalog = (props: any) => {
         if (!contrl) return false
         // if (!dragNode.allowDrop) return false
         // if ( dragNode.is_group && !node.is_group ) return false
-        console.log('node ', node)
-        console.log('dragNode', dragNode)
 
         catalogSource.forEach((item: any) => {
             if (item.id === node.name) {

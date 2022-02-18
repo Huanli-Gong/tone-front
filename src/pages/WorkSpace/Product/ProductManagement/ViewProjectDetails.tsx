@@ -1,22 +1,22 @@
-import { Drawer, Space, Typography, Tooltip, Table, Button, message, Popconfirm, Row, Col, Dropdown, Menu, Modal, Popover } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle, useRef, useEffect } from 'react'
-import { QusetionIconTootip } from '@/components/Product/index'
-import styles from './index.less'
-import { deleteProject, updateBranchAndRelation, queryProjectBranch, deleteBranchAndRelation } from '../services'
+import React, { forwardRef, useState, useImperativeHandle, useRef, useEffect } from 'react';
+import { useRequest, useParams } from 'umi'
+import { isUndefined } from 'lodash'
+import { Drawer, Space, Typography, Table, Button, message, Popconfirm, Row, Col, Dropdown, Menu, Modal } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled, MoreOutlined } from '@ant-design/icons'
+import { deleteProject, updateBranchAndRelation, queryProjectBranch, deleteBranchAndRelation } from '../services'
+import { QusetionIconTootip } from '@/components/Product/index'
 import UpdateProjectModal from './UpdateProject'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddCodeModal from './NewCodeModal'
-import { useRequest } from 'umi'
-import { isUndefined } from 'lodash'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage } from '@/utils/utils';
+import styles from './index.less'
 export default forwardRef(
     (props: any, ref: any) => {
-        const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
+        const { ws_id } = useParams<any>()
+        // const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
         const [visible, setVisible] = useState(false)
         const [title, setTitle] = useState('项目详情')
         const [projectItem, setProject] = useState<any>({})
-        //const [current, setCurrent] = useState<any>({})
         const projectModal: any = useRef(null)
         const addCodeModal: any = useRef(null)
         const [deleteVisible, setDeleteVisible] = useState(false);
@@ -24,7 +24,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "项目详情", data: any = {}) => {
+                show: (title: string, data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     setProject(data)
@@ -50,6 +50,7 @@ export default forwardRef(
                 setProject(newData)
             }
         }, [props.projectData])
+        
         const handleClose = () => {
             setVisible(false)
         }
@@ -208,6 +209,10 @@ export default forwardRef(
                         <Typography.Text className={styles.product_right_name}>项目描述：</Typography.Text>
                         <EllipsisPulic title={projectItem.description} width={540} />
                     </Space>
+                    <Space className={styles.title_detail_items}>
+                        <Typography.Text className={styles.product_right_name}>Dashboard统计：</Typography.Text>
+                        <EllipsisPulic title={projectItem.is_show == 1 ? '是' : '否'} />
+                    </Space>
                 </div>
 
                 <div style={{ height: 10, backgroundColor: '#f5f5f5' }}></div>
@@ -265,8 +270,8 @@ export default forwardRef(
                             <p>你确定要删除【{projectItem.name}】项目吗？</p>
                         </Modal>
                 }
-                <UpdateProjectModal ref={projectModal} onOk={hanldeSubmit} />
-                <AddCodeModal ref={addCodeModal} /* current={current} */ onOk={handleRefresh} />
+                <UpdateProjectModal ref={projectModal} onOk={hanldeSubmit} setVisible={setVisible}/>
+                <AddCodeModal ref={addCodeModal} onOk={handleRefresh} />
             </Drawer>
         )
     }

@@ -4,6 +4,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons'
 import { useRequest } from 'umi'
 import { test_type_enum, runList } from '@/utils/utils'
 import { validateSuite, member,  addSuite2, editSuite  } from '../../../../../service'
+import Owner from '@/components/Owner/index';
 import styles from './index.less'
 
 const viewType = [{ id: 'Type1',name:'所有指标拆分展示(Type1)'}, { id: 'Type2',name:'多Conf同指标合并(Type2)' },{ id: 'Type3',name:'单Conf多指标合并(Type3)' }]
@@ -240,29 +241,7 @@ export default forwardRef((props: any, ref: any) => {
 
         {(testType === 'functional' || testType === 'performance') && (
           <>
-            <Form.Item label="Owner"
-              name="emp_id"
-              rules={[{ required: true, message: '请选择' }]}
-            >
-                <Select allowClear
-                  notFoundContent={
-                    fetchLoading ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                  }
-                  filterOption={false}
-                  onSearch={ handleSearch }
-                  style={{ width: '100%' }}
-                  showArrow={false}
-                  showSearch
-                  getPopupContainer={ node => node.parentNode }
-                >
-                  {user?.map((item:any, index:number) =>
-                    <Select.Option value={item.emp_id} key={index}>
-                      {item.last_name}({item.first_name === "" ?item.last_name : item.first_name}) - {item.emp_id}
-                    </Select.Option>
-                  )}
-                </Select>
-            </Form.Item>
-
+            <Owner />
             <Form.Item label="默认用例"
               initialValue={1}
               name="is_default"

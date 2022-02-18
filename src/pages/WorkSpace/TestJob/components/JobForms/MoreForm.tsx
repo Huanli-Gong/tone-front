@@ -10,7 +10,7 @@ import { useParams } from 'umi'
 import _ from 'lodash'
 
 const { Option } = Select;
-export default ({ contrl, disabled = false, onRef = null, template = {}, isReset,tagsDataRef,reportTemplateDataRef }: FormProps) => {
+export default ({ contrl, disabled = false, onRef = null, template = {}, isReset, tagsDataRef, reportTemplateDataRef }: FormProps) => {
     const { ws_id }: any = useParams()
     const [form] = Form.useForm()
     const [tags, setTags] = useState<Array<any>>([])
@@ -19,6 +19,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     const [defaultTemplate, setDefaultTemplate] = useState({})
     const [callbackUrl, setCallbackUrl] = useState('')
     const [regCallbackUrl, setRegCallbackUrl] = useState(false)
+
     useImperativeHandle(
         onRef,
         () => ({
@@ -26,12 +27,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             reset: () => {
                 form.resetFields()
             },
-            setVal: (data:Object) =>{
+            setVal: (data: Object) => {
                 let reg = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
-                const callbackApi = _.get(data,'callback_api')
+                const callbackApi = _.get(data, 'callback_api')
                 const flag = reg.test(callbackApi)
                 setRegCallbackUrl(callbackApi && !flag)
-                setCheckedList(_.get(data,'report_name') || '')
+                setCheckedList(_.get(data, 'report_name') || '')
                 setCallbackUrl(callbackApi)
                 form.setFieldsValue(data)
             }
@@ -39,8 +40,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     )
 
     const queryTagList = async () => {
-        const { data } = await tagList({ ws_id })
-        if(tagsDataRef) tagsDataRef.current = data
+        const { data } = await tagList({ ws_id, page_size: 500 })
+        if (tagsDataRef) tagsDataRef.current = data
         setTags(data)
     }
 
@@ -50,7 +51,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             if (code === 200) {
                 let dataSource = _.isArray(data) ? data : []
                 const defaultTem = _.find(dataSource, { is_default: true })
-                if(reportTemplateDataRef) reportTemplateDataRef.current = dataSource
+                if (reportTemplateDataRef) reportTemplateDataRef.current = dataSource
                 setReportTemplate(dataSource)
                 setDefaultTemplate(defaultTem)
                 // form.setFieldsValue({ report_template: defaultTem.name })
@@ -72,14 +73,6 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
         }
     }, [isReset])
     useEffect(() => {
-
-        // const values: any = _.cloneDeep(form.getFieldsValue())
-        // if (JSON.stringify(template) === '{}' && JSON.stringify(defaultTemplate) !== '{}') {
-        //     form.setFieldsValue({
-        //         ...values,
-        //         report_template: _.get(defaultTemplate, 'id')
-        //     })
-        // }
         if (JSON.stringify(template) !== '{}') {
             let notice_subject, email, ding_token
             const { cleanup_info, tags, notice_info, report_name, callback_api } = template
@@ -116,10 +109,11 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     const onReportChange = (e: any) => {
         const reportSelectVal = e.target.value
         const values = _.cloneDeep(form.getFieldsValue())
-        const reportTemplate = _.get(values,'report_template') || _.get(defaultTemplate, 'id')
+        const reportTemplate = _.get(values, 'report_template') || _.get(defaultTemplate, 'id')
         form.setFieldsValue({ ...values, report_name: reportSelectVal, report_template: reportTemplate })
         setCheckedList(reportSelectVal)
     }
+
     const handleCallbackURLChange = (evt: any) => {
         const value = evt.target.value
         setCallbackUrl(value)
@@ -129,11 +123,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
         const flag = reg.test(value)
         setRegCallbackUrl(value && !flag)
     }
+
     const callbackTips = () => {
         return (
             <>
                 <span>详细信息请查看</span>
-                <span className={styles.create_doc} onClick={() => window.open(`https://tone.aliyun-inc.com/help_doc/17`)}>回调接口帮助文档</span>
+                <span className={styles.create_doc} onClick={() => window.open(`/help_doc/17`)}>回调接口帮助文档</span>
             </>
         )
     }
@@ -264,10 +259,14 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                         autoComplete="off"
                         disabled={disabled}
                         placeholder="请输入回调接口的URL" />
-                    <QuestionCircleComponent contextNode={<div>
-                        {"T-one平台会在Job状态发生变化时携带该Job信息并以POST方式主动请求该API。"}
-                        <p style={{ marginBottom: 0 }}>{callbackTips()}</p>
-                    </div>} />
+                    <QuestionCircleComponent
+                        contextNode={
+                            <div>
+                                {"T-one平台会在Job状态发生变化时携带该Job信息并以POST方式主动请求该API。"}
+                                <p style={{ marginBottom: 0 }}>{callbackTips()}</p>
+                            </div>
+                        }
+                    />
                 </Form.Item>
             }
         </Form>

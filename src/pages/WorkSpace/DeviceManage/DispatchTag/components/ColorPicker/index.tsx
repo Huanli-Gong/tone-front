@@ -65,7 +65,7 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 		}
 	}
 
-	const styles = reactCSS({
+	const styles: any = reactCSS({
 		'default': {
 			color: {
 				position: 'relative',

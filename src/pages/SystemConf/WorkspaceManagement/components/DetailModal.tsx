@@ -4,7 +4,7 @@ import { workspaceRemove, info, authPersonal } from '@/pages/SystemConf/Workspac
 
 import AvatarCover from '@/components/AvatarCover'
 import { history } from 'umi'
-import { workspaceHistroy } from '@/services/Workspace'
+import { enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './style.less';
 
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
@@ -50,7 +50,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
 
     const toWS = async () => {
-        await workspaceHistroy({ ws_id, system_entry: true })
+        await enterWorkspaceHistroy({ ws_id, system_entry: true })
         history.push(`/ws/${ws_id}/dashboard`)
     }
 

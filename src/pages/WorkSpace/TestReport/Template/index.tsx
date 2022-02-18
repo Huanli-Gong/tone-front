@@ -3,7 +3,7 @@ import { history, Access, useAccess } from 'umi'
 
 import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Button, Spin, Input, Tooltip, Divider } from 'antd'
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import SuiteSelectDrawer from './components/SuiteSelectDrawer'
 import { createReportTemplate, queryReportTemplateDetails, updateReportTemplate } from './services'
 import produce from 'immer'
@@ -34,7 +34,7 @@ const TemplatePage = (props: any) => {
     const { ws_id, temp_id } = props.match.params
     const access = useAccess()
     const [loading, setLoading] = useState(false)
-    const { windowHeight } = resizeClientSize()
+    const { height: windowHeight } = useClientSize()
     const suiteSelectRef = useRef<any>()
 
     const [dataSource, setDataSource] = useState<any>({
@@ -579,7 +579,7 @@ const TemplatePage = (props: any) => {
             <Spin spinning={loading}>
                 <ReportTemplate height={windowHeight - 50} >
                     {/* 目录部分 */}
-                    <Catalog />
+                    <Catalog {...{ dataSource, setDataSource, collapsed, setCollapsed, contrl }}/>
                     {/* body */}
                     <ReportBodyContainer id={'report-body-container'} collapsed={collapsed}>
                         <ReportBody ref={bodyRef}>

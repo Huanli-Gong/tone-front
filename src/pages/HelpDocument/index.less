@@ -401,8 +401,7 @@
         //   }
           .showContentBox{
               width: 100%;
-            //   padding-bottom: 120px;
-            padding-bottom: 20px;
+              padding-bottom: 20px;
               display: inline-block;
               padding-top: 16px;
               :global(.w-e-toolbar){
@@ -419,7 +418,10 @@
               :global(.w-e-text-container > .w-e-content-mantle){
                 display: none !important;
               } 
-              
+              /* 覆盖框架提供的样式 */
+              :global(ul > li){
+                list-style-type: disc;
+              }
           }
           .showContentBox2{
             margin-top: 0px;

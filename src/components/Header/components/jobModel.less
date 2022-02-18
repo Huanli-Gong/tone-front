@@ -1,48 +1,54 @@
-::-webkit-scrollbar{
-    width: 5px;
-    height: 5px;
-  }
-  ::-webkit-scrollbar-thumb{
-    border-radius: 1em;
-    background-color: rgba(50,50,50,.3);
-  }
-  ::-webkit-scrollbar-track{
-    border-radius: 1em;
-    background-color: rgba(50,50,50,.1);
-  }
-.job_type{
-    position: relative;
-    max-height: 320px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    padding: 0 12px 4px 12px;
-    .type_modal_item {
-        width: 206px;
-        box-sizing: border-box;
-        height: 84px;
-        background: #FFFFFF;
-        border:1px solid rgba(0,0,0,0.1);
-        box-shadow: 0 0px 6px 0 rgba(0,0,0,0.04);
-        cursor: pointer;
-        border-radius: 4px;
-        &:hover {
-            box-shadow: 0 0px 8px 0 rgba(0,0,0,0.15);
-        }
-        //margin:0 8px 16px 8px;
-        .type_modal_title {
-            margin: 16px 16px 9px 16px;
-            font-size: 14px;
-            color: rgba(0,0,0,0.85);
-            width: 172px;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
+.job_type {
+  position: relative;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0 12px 4px 12px;
+
+  :global {
+    & {
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 1em;
+        background-color: rgba(50, 50, 50, 0.3);
+      }
+      ::-webkit-scrollbar-track {
+        border-radius: 1em;
+        background-color: rgba(50, 50, 50, 0.1);
+      }
     }
+  }
+
+  .type_modal_item {
+    width: 206px;
+    box-sizing: border-box;
+    height: 84px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    border-radius: 4px;
+    &:hover {
+      box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.15);
+    }
+    //margin:0 8px 16px 8px;
+    .type_modal_title {
+      margin: 16px 16px 9px 16px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.85);
+      width: 172px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
 }
 .job_search_inp {
-    overflow: auto;
+  overflow: auto;
 }

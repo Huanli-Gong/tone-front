@@ -5,17 +5,51 @@ import { Tooltip } from 'antd'
 
 const { document, location }: any = window
 
-export const resizeClientSize = () => {
-    const [layout, setLayout] = useState({
-        windowHeight: innerHeight,
-        windowWidth: innerWidth
-    })
+export const useDetectZoom = () => {
+    const [ratio, setRatio] = useState<any>(1)
 
+    const detectZoom = () => {
+        var ratio: number = 0,
+            screen: any = window.screen,
+            ua: any = navigator.userAgent.toLowerCase();
+
+        if (window.devicePixelRatio !== undefined) {
+            ratio = window.devicePixelRatio;
+        }
+        else if (~ua.indexOf('msie')) {
+            if (screen.deviceXDPI && screen.logicalXDPI) {
+                ratio = screen.deviceXDPI / screen.logicalXDPI;
+            }
+        }
+        else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+            ratio = window.outerWidth / window.innerWidth;
+        }
+
+        if (ratio) {
+            ratio = 1.5 / ratio
+        }
+        console.log(ratio)
+        setRatio(ratio)
+    }
+
+    useEffect(() => {
+        detectZoom()
+        window.addEventListener('resize', detectZoom);
+        return () => {
+            window.removeEventListener('resize', detectZoom);
+        }
+    }, []);
+
+    return ratio
+}
+
+export const useClientSize = () => {
+    const [ layout , setLayout ] = useState({ height : innerHeight , width : innerWidth })
     const onResize = useCallback(
         () => {
             setLayout({
-                windowHeight: innerHeight,
-                windowWidth: innerWidth
+                height: innerHeight,
+                width: innerWidth
             })
         }, []
     )
@@ -39,38 +73,9 @@ export const useRemoveElementTitle = () => {
     }, [location.pathname])
 }
 
-export const resizeDocumentHeightHook = function (defaultHeight = innerHeight) {
-    const [layoutHeight, setLayoutHeight] = useState(defaultHeight)
-
-    const onResizeWindowHeight = () => setLayoutHeight(innerHeight)
-
-    useEffect(() => {
-        window.addEventListener('resize', onResizeWindowHeight)
-        return () => {
-            window.removeEventListener('resize', onResizeWindowHeight)
-        }
-    }, [])
-
-    return layoutHeight
-}
-
 export const writeDocumentTitle = function (title: string) {
     const intl = useIntl()
     document.title = `${intl.messages[title]} - T-One`
-}
-
-export const resizeDocumentWidthHooks = function () {
-    const [layoutWidth, setLayoutWidth] = useState(innerWidth)
-    const onResizeWidth = () => setLayoutWidth(innerWidth)
-
-    useEffect(() => {
-        window.addEventListener('resize', onResizeWidth)
-        return () => {
-            window.removeEventListener('resize', onResizeWidth)
-        }
-    }, [])
-
-    return layoutWidth
 }
 
 type ListProps = {
@@ -79,11 +84,11 @@ type ListProps = {
 }
 
 export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='top' >{name}</Tooltip>
-export const enumer =  ( name:any ) => {
+export const enumer = (name: any) => {
     const list = {
-        system:'公共镜像',
-        self:'自定义镜像',
-        others:'共享镜像'
+        system: '公共镜像',
+        self: '自定义镜像',
+        others: '共享镜像'
     }
     return list[name];
 }

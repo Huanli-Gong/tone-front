@@ -46,6 +46,7 @@ export default {
   "menu.Workspace.TestReport.TemplateEdit": '编辑报告模版',
   "menu.Workspace.TestReport.Report": '测试报告',
   "menu.Workspace.TestReport.EditReport": '编辑报告',
+  // "menu.Workspace.TestReport.ShareReport": '分享报告',
   "menu.Workspace.TestReport.CompareAnalysisConf": '结果页',
 
   "menu.Workspace.CreateReport": '创建报告',

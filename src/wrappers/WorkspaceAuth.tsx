@@ -1,7 +1,7 @@
-import React, { useMemo, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { history, useModel } from 'umi'
 import { person_auth } from '@/services/user';
-import { workspaceHistroy } from '@/services/Workspace'
+import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { deepObject } from '@/utils/utils';
 
 export default (props: any) => {
@@ -25,7 +25,7 @@ export default (props: any) => {
             }
 
             if (data.ws_role_title)
-                workspaceHistroy({ ws_id })  //
+                enterWorkspaceHistroy({ ws_id })  //
         }
 
         const { ws_role_title, ws_is_exist } = access

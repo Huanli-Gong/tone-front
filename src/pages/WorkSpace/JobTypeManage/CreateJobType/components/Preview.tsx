@@ -11,7 +11,7 @@ import styles from '@/pages/WorkSpace/TestJob/index.less'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { switchServerType, switchTestType } from '@/utils/utils'
 import { useParams } from 'umi'
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 
 interface PreviewProps {
     item_dict: any,
@@ -28,7 +28,7 @@ export default forwardRef(
         const [visible, setVisible] = useState(false)
 
         const bodyRef = useRef<any>()
-        const { windowWidth }: any = resizeClientSize()
+        const { width: windowWidth }: any = useClientSize()
 
         const bodyPaddding = useMemo(() => {
             if (windowWidth >= 1240) return (1240 - 1000) / 2

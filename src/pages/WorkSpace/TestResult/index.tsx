@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Radio, Tag, Tooltip, Layout, Space, Typography, Popconfirm, message, Tabs, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Checkbox, Spin } from 'antd';
 import { useAccess, Access } from 'umi'
-import { resizeDocumentHeightHook, writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { DownOutlined, UpOutlined, PlusCircleTwoTone, MinusCircleTwoTone, StarOutlined, StarFilled, SearchOutlined, CloseOutlined } from '@ant-design/icons'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { ReactComponent as Refresh } from '@/assets/svg/refresh.svg'
@@ -33,8 +33,6 @@ import Clipboard from 'clipboard'
 
 import ResizeTable from '@/components/ResizeTable'
 import moment from 'moment';
-import { useMemo } from 'react';
-import { useCallback } from 'react';
 
 const { RangePicker } = DatePicker
 
@@ -520,37 +518,55 @@ export default (props: any) => {
         }
     }
     let columns: any = [
+        access.wsRoleContrl() && {
+            title: '',
+            width: 30,
+            align: 'center',
+            fixed: 'left',
+            className: 'collection_star result_job_hover_span',
+            render: (_: any) => (
+                <div onClick={() => handleClickStar(_, !_.collection)}>
+                    {
+                        _.collection ?
+                            <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
+                            <StarOutlined className="no_collection_star" />
+                    }
+                </div>
+            )
+        },
         {
             title: 'JobID',
             dataIndex: 'id',
             fixed: 'left',
             width: 80,
             ellipsis: true,
+            className: 'result_job_hover_span',
             render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
         }, {
             title: 'Job名称',
             dataIndex: 'name',
             width: 200,
-            ellipsis: true,
-            render: (_: any, row: any) =>
-                <>
-                    {row.created_from === 'offline' ?
-                        <>
-                            <span className={styles.offline_flag}>离</span>
-                            <Tooltip placement="topLeft" title={_}>
-                                <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
-                                    {_}
-                                </span>
-                            </Tooltip>
-                        </>
-                        :
-                        <Tooltip title={_}>
+            ellipsis: {
+                shwoTitle: false,
+            },
+            className: 'result_job_hover_span',
+            render: (_: any, row: any) => (
+                row.created_from === 'offline' ?
+                    <>
+                        <span className={styles.offline_flag}>离</span>
+                        <Tooltip placement="topLeft" title={_}>
                             <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
                                 {_}
                             </span>
                         </Tooltip>
-                    }
-                </>
+                    </>
+                    :
+                    <Tooltip title={_}>
+                        <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                            {_}
+                        </span>
+                    </Tooltip>
+            )
         }, {
             title: '状态',
             width: 120,
@@ -583,92 +599,98 @@ export default (props: any) => {
                             <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
                         </Row>
                     )
-
                 }
             }
         }, {
             title: '所属项目',
             width: 120,
             dataIndex: 'project_name',
-            ellipsis: true,
-            render: (_: any) => _ && <Tooltip title={_}>{_}</Tooltip>
+            ellipsis: {
+                shwoTitle: false,
+            },
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
         }, {
             title: '创建人',
             width: 80,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             dataIndex: 'creator_name',
-
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
         }, {
             title: '开始时间',
             width: 180,
             dataIndex: 'start_time',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             sorter: true,
-            render: (_: any) => (_ || '-')
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
         }, {
             title: '完成时间',
             width: 180,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             dataIndex: 'end_time',
-            render: (_: any) => (_ || '-')
-        },
-
-    ]
-
-    columns = access.wsRoleContrl() ? [{
-        title: '',
-        width: 30,
-        align: 'center',
-        fixed: 'left',
-        className: 'collection_star',
-        render: (_: any) => (
-            <div onClick={() => handleClickStar(_, !_.collection)}>
-                {
-                    _.collection ?
-                        <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
-                        <StarOutlined className="no_collection_star" />
-                }
-            </div>
-        )
-    }, ...columns] : columns
-
-    columns = access.wsRoleContrl() ? columns.concat({
-        title: '操作',
-        width: 160,
-        fixed: 'right',
-        render: (_: any) => {
-            return (
-                <Space>
-                    <Access accessible={access.wsRoleContrl(_.creator)}
-                        fallback={
-                            <Space>
-                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
-                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>删除</Typography.Text>
-                            </Space>
-                        }
-                    >
-                        <Space>
-                            <span onClick={() => handleTestReRun(_)}><Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>重跑</Typography.Text></span>
-                            <Popconfirm
-                                title="确定要删除吗？"
-                                onConfirm={() => handleDelete(_)}
-                                okText="确认"
-                                cancelText="取消"
-                            >
-                                <Typography.Text
-                                    style={{ color: '#1890FF', cursor: 'pointer' }}
-                                >
-                                    删除
-                                </Typography.Text>
-                            </Popconfirm>
-                        </Space>
-                    </Access>
-                    <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
-                </Space>
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
             )
+        },
+        access.wsRoleContrl() &&
+        {
+            title: '操作',
+            width: 160,
+            fixed: 'right',
+            render: (_: any) => {
+                const disableStyle = { color: '#ccc', cursor: 'no-drop' }
+                const commonStyle = { color: '#1890FF', cursor: 'pointer' }
+                return (
+                    <Space>
+                        <Access accessible={access.wsRoleContrl(_.creator)}
+                            fallback={
+                                <Space>
+                                    <Typography.Text style={disableStyle}>重跑</Typography.Text>
+                                    <Typography.Text style={disableStyle}>删除</Typography.Text>
+                                </Space>
+                            }
+                        >
+                            <Space>
+                                <span onClick={_.created_from === 'offline'? undefined: ()=> handleTestReRun(_)}>
+                                    <Typography.Text style={_.created_from === 'offline'? disableStyle: commonStyle}>重跑</Typography.Text>
+                                </span>
+                                <Popconfirm
+                                    title="确定要删除吗？"
+                                    onConfirm={() => handleDelete(_)}
+                                    okText="确认"
+                                    cancelText="取消"
+                                >
+                                    <Typography.Text style={commonStyle}>
+                                        删除
+                                    </Typography.Text>
+                                </Popconfirm>
+                            </Space>
+                        </Access>
+                        <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
+                    </Space>
+                )
+            }
         }
-    }) : columns
-
+    ].filter(Boolean)
 
     const handleTestReRun = (row: any) => {
         setModalData(row)
@@ -973,7 +995,7 @@ export default (props: any) => {
         // }else{
         //     testServerSetFormDataFn(serverVal)
         // }
-        if(!isValidIp(serverVal)){
+        if (!isValidIp(serverVal)) {
             // message.warning('请输入正确的ip')
             testServerSetFormDataFn('')
         } else {
@@ -990,7 +1012,7 @@ export default (props: any) => {
 
     const getRightReactNode = (field: any, index: number, project: any) => {
         const name = project[index] && project[index].name;
-        let childrenNode = (<Input allowClear={true} placeholder={getText(name) || "请输入过滤条件"} autocomplete="off" />)
+        let childrenNode = (<Input allowClear={true} placeholder={getText(name) || "请输入过滤条件"} autoComplete="off" />)
         if (project.length && name !== 'job_id' && name !== 'name' && name !== 'fail_case' && lodash.isArray(projectData[name])) {
             let arr: any[] = projectData[name];
             arr = arr.filter(val => lodash.get(val, 'name') && val.name.trim() !== '')
@@ -1116,7 +1138,7 @@ export default (props: any) => {
         setFormFieldsValue(fieldsValue)
     }
 
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
@@ -1193,15 +1215,15 @@ export default (props: any) => {
     return (
         <Layout.Content
             style={{
-                height: heightVal,
+                // height: heightVal,
                 minHeight: layoutHeight - 50,
-                overflowY: 'scroll',
+                // overflowY: 'scroll',
                 background: "#fff"
             }}
             className={styles.result_container}
         >
             <Spin spinning={isloading}>
-                <Layout.Content style={{ background: '#fff', height: heightVal - 82 }}>
+                <Layout.Content style={{ background: '#fff', minHeight: heightVal - 82 }}>
                     <Tabs
                         defaultActiveKey={tab}
                         onTabClick={handleTabClick}
@@ -1561,7 +1583,7 @@ export default (props: any) => {
                                                         dataSource={dataSource?.data}
                                                         onChange={(pagination: any, filters: any, sorter: any) => sortStartTime(sorter)}
                                                         pagination={false}
-                                                        scroll={{ x: innerWidth - 40 }}
+                                                        scroll={{ x: '100%' }}
                                                         size="small"
                                                     />
                                                     <CommonPagination

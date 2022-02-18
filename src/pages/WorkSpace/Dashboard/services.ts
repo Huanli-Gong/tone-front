@@ -1,7 +1,7 @@
 import { request } from 'umi'
 
 export async function queryWorkspaceProductData(params:any) {
-    return request(`/api/sys/ws_data/`, { params })
+    return request(`/api/sys/ws_data_list/`, { params })
 }
 
 export async function queryWorkspaceProjectChart(params:any) {

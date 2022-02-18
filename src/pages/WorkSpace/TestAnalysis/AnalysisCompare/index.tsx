@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from './services'
 import { history } from 'umi'
 
@@ -90,7 +90,7 @@ export default (props: any) => {
 
     const originType = _.get(state,'originType') || ''
 
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const { ws_id } = props.match.params
     const [groupData, setGroupData] = useState<any>(selectedJob)
     const [noGroupData, setNoGroupData] = useState<any>(noGroupJob)
@@ -111,7 +111,7 @@ export default (props: any) => {
     const draggleRef = useRef(null);
     const newProductVersionGroup = useRef([]);
     const newNoGroup = useRef([]);
-
+    const [ labelBlinking,setLabelBlinking ] = useState(false)
     const [visibleBaseGroup, setVisibleBaseGroup] = useState(false)
     const [currentDelJobDom,setCurrentDelJobDom] = useState<any>(null)
     const [isExpand,seIsExpand] = useState<boolean>(true)
@@ -295,6 +295,7 @@ export default (props: any) => {
     const handleGroupClick = (obj:any, num:number) => {
         setBaselineGroupIndex(num)
         setBaselineGroup(obj)
+       
     }
     const handleNoGroupJobDel = (num:number) =>{
         setCurrentDelJobDom(`ongroup${num}`)
@@ -406,10 +407,24 @@ export default (props: any) => {
         groupData.forEach((item:any)=>{
             if(item.members.length > 0) num++
         })
-        if(num > 1 && baselineGroupIndex === -1) return message.warning('请先设置基准组')
+        if(num > 1 && baselineGroupIndex === -1) {
+            setLabelBlinking(true)
+            return message.warning('请先设置基准组')
+        }
         setVisibleBaseGroup(true)
         // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
     }
+
+    useEffect(()=>{
+        let timer:any;
+        if(labelBlinking){
+            timer = setTimeout(() => {
+                setLabelBlinking(false)
+            }, 3000);
+        }else{
+            clearTimeout(timer)
+        }
+    },[ labelBlinking ])
     // const queryCompareResultFn = function* (paramData: any) {
     //     yield queryCompareResultList(paramData)
 
@@ -895,7 +910,7 @@ export default (props: any) => {
                                 <span className={styles.opreate_button}> 
                                     <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
                                 </span>
-                                {index !== baselineGroupIndex && <span className={`${styles.baseGroupColorFn}`} onClick={_.partial(handleGroupClick, groupData[index], index)}>
+                                {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
                                     设为基准组
                                 </span>}
                             </div>
@@ -914,7 +929,7 @@ export default (props: any) => {
                     <span className={styles.opreate_button}>
                         <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
                     </span>
-                    {index !== baselineGroupIndex && <span className={`${styles.baseGroupColorFn}`} onClick={_.partial(handleGroupClick, groupData[index], index)}>
+                    {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
                         设为基准组
                     </span>}
                 </div>
@@ -1092,6 +1107,7 @@ export default (props: any) => {
         // if (originType === 'test_result') return isExpand ? 'calc(100% - 276px)' : 'calc(100% - 16px)'
         // return 'calc(100% - 20px)'
         if (originType === 'test_result') return isExpand ? innerWidth - 276 - 20 : innerWidth - 16 - 20
+        if(newGroupData.length > 4) return '100%'
         return innerWidth - 40
     }
    

@@ -98,7 +98,9 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
             title: '简介',
             dataIndex: 'description',
             className: 'row_cursor',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: 210,
             render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.description || ''}></PopoverEllipsis>,
         }, {
@@ -129,7 +131,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     placement="left"
                     title={'首页推荐'}
                     desc={
-                        <ul style={{ listStyle: 'auto', paddingInlineStart: 25 , paddingTop: 15 }}>
+                        <ul style={{ listStyle: 'auto', paddingInlineStart: 25, paddingTop: 15 }}>
                             <li>状态为“是”，展示在首页“推荐Worksapce”模块</li>
                             <li>可通过上下拖动调整显示顺序，首页显示顺序同该表格</li>
                         </ul>
@@ -189,7 +191,10 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
             columns,
             dataSource: data.data,
             loading,
-            pagination: false
+            pagination: false,
+            scroll: {
+                x: '100%'
+            }
         }
 
         if (!top) return defaultProps

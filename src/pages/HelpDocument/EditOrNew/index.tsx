@@ -6,7 +6,7 @@ import styles from '../index.less'
 import { queryHelpDocList, createHelpDoc, updateHelpDoc } from '../services'
 import wangEditor from 'wangeditor'
 import _ from 'lodash'
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils'
 
 import dropDown from '@/assets/svg/dropDown.svg'
@@ -32,7 +32,7 @@ export default (props: any) => {
     const [isActive, setIsActive] = useState(true)
     const [paddingBottomVal, setPaddingBottomVal] = useState(0)
     const [key, setKey] = useState(0)
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const [form] = Form.useForm()
     const clickTargetTop: any = useRef(null)
     const { loading, data } = useRequest(
@@ -278,24 +278,7 @@ export default (props: any) => {
                     num = tag.replace("H", "")
                 odiv.style.paddingLeft = (Number(num) - 1) * 0.6 + 'rem'
                 span.setAttribute('index', index)
-                /*
-                span.onclick = function (e) {
-                    // let number = index
-                    let number = e.target.getAttribute('index')
-                    const levelTag = arr[number].tag,
-                        currentTagNum = +levelTag.replace("H", "")
-
-                    if (String(this.style.background) === String(close)) {
-                        this.style.background = open
-                        closeFn(box, arr, currentTagNum, number, this)
-                    } else 
-                        this.style.background = close
-                       openNextElementSibling = this.parentNode.parentNode.nextElementSibling
-                        // openFn(box, arr, currentTagNum, number, this,item)
-                        openFn(box, arr, currentTagNum, number, this,arr[number+1])
-                    }
-                }
-                */
+                
                 a.href = "javascript:void(0)";
                 a.onclick = function (e: any) {
                     e.stopPropagation()
@@ -393,62 +376,8 @@ export default (props: any) => {
         ]
         // 自定义检查插入的链接  待开发
         editor.config.linkCheck = function (text, link) {
-            // 以下情况，请三选一
-
-            // 1. 返回 true ，说明检查通过
             return true
-
-            // // 2. 返回一个字符串，说明检查未通过，编辑器会阻止链接插入。会 alert 出错误信息（即返回的字符串）
-            // return '链接有 xxx 错误'
-
-            // 3. 返回 undefined（即没有任何返回），说明检查未通过，编辑器会阻止链接插入。
-            // 此处，你可以自定义提示错误信息，自由发挥
         }
-
-        /*
-        editor.config.uploadImgServer = '/api/sys/upload/'
-        editor.config.uploadImgAccept = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
-        editor.config.uploadImgMaxLength = 5
-        editor.config.uploadImgTimeout = 30 * 1000
-        editor.config.uploadImgHooks = {
-            // 上传图片之前
-            // before: function(xhr:any) {
-            //     console.log(xhr)
-        
-            //     // 可阻止图片上传
-            //     return {
-            //         prevent: true,
-            //         msg: '需要提示给用户的错误信息'
-            //     }
-            // },
-            // 图片上传并返回了结果，图片插入已成功
-            success: function(xhr:any) {
-                console.log('success', xhr)
-            },
-            // 图片上传并返回了结果，但图片插入时出错了
-            fail: function(xhr:any, editor:any, resData:any) {
-                console.log('fail', resData)
-            },
-            // 上传图片出错，一般为 http 请求的错误
-            error: function(xhr:any, editor:any, resData:any) {
-                console.log(editor,111111111111111)
-                console.log('error', xhr, resData)
-            },
-            // 上传图片超时
-            timeout: function(xhr:any) {
-                console.log('timeout')
-            },
-            // 图片上传并返回了结果，想要自己把图片插入到编辑器中
-            // 例如服务器端返回的不是 { errno: 0, data: [...] } 这种格式，可使用 customInsert
-            customInsert: function(insertImgFn:any, result:any) {
-                // result 即服务端返回的接口
-                console.log('customInsert', result)
-        
-                // insertImgFn 可把图片插入到编辑器，传入图片 src ，执行函数即可
-                insertImgFn(result.data[0])
-            }
-        }
-        */
 
         //可隐藏插入网络图片的功能，即只保留上传本地图片
         editor.config.showLinkImg = false
@@ -465,6 +394,7 @@ export default (props: any) => {
                 for (let i = 0, len = files.length; i < len; i++) {
                     const formData = new FormData()
                     formData.append('file', files[i])
+                    formData.append('file_type', 'doc_img')
                     // 上传图片
                     const data: any = await request(
                         `/api/sys/upload/`,
@@ -513,38 +443,6 @@ export default (props: any) => {
     const pasteFn = async (event: any) => {
         event.stopPropagation();
         event.preventDefault()
-        // const items = (event.clipboardData || window.clipboardData).items;
-        // let blob = null;
-        // if (items && items.length) {
-        //     for (let i = 0; i < items.length; i++) {
-        //         if (items[i].kind == 'file' && items[i].type.indexOf('image') !== -1) {
-        //             blob = items[i].getAsFile();
-        //             if (!blob) return;
-        //             const formData = new FormData()
-        //             // 添加要上传的文件
-        //             formData.append('file', blob)
-        //             // 上传图片
-        //             const data: any = await request(
-        //                 `/api/sys/upload/`,
-        //                 {
-        //                     method: 'post',
-        //                     data: formData
-        //                 }
-        //             )
-        //             const img: any = document.createElement('img');
-        //             img.src = data && data.link;
-        //             img.alt = " ";
-        //             insertHtmlAtCaret(img);
-        //             break;
-        //         }
-        //         //  else if(items[i].kind === "string" && items[i].type.indexOf('text/plain') != -1) {
-        //         //     items[i].getAsString(function (str) {
-        //         //         insertHtmlAtCaret(document.createTextNode(str));//插入文本到光标处并移动光标到新位置
-        //         //     })
-        //         //     return;
-        //         // }
-        //     }
-        // }
     }
 
     const insertHtmlAtCaret = (childElement: any) => {
@@ -631,22 +529,22 @@ export default (props: any) => {
     }
 
     const handlePublish = async () => {
-        // setPadding(true)
-        form.validateFields() // 触发表单验证，返回Promise
-            .then(async (values) => {
+        form.validateFields().then(async (values) => {
                 const param: any = {
                     ...values,
                     title,
                     content: editor.txt.html(),
                     doc_type: typePath
                 }
-                let fetchFn = createHelpDoc
+                // let fetchFn = createHelpDoc
+                // if (operationType === 'edit') {
+                //     fetchFn = updateHelpDoc
+                //     param.id = Number(help_id)
+                // }
+                // const { code, msg, data } = await fetchFn(param)
+                const { code, msg, data } = operationType === 'edit' ?
+                    await updateHelpDoc({ ...param, id: Number(help_id) }) : await createHelpDoc(param)
 
-                if (operationType === 'edit') {
-                    fetchFn = updateHelpDoc
-                    param.id = Number(help_id)
-                }
-                const { code, msg, data } = await fetchFn(param)
                 fetchFinally(code, msg, data)
             })
             .catch(err => console.log(err))
@@ -702,19 +600,14 @@ export default (props: any) => {
                             {
                                 typePath !== 'help_doc' && <Breadcrumb.Item>{operationType === 'new' ? (title || '新建公告') : (title || '编辑公告')}</Breadcrumb.Item>
                             }
-
                         </Breadcrumb>
                     </div>
                     <div className={styles.container_box}>
-                        {/*左侧 */}
+                        {/* 左侧表单 */}
                         <div
                             style={{ height: 246 }}
                             className={styles.new_script_left}>
-                            <Form
-                                form={form}
-                                layout="vertical" // 表单布局 ，垂直
-                            /*hideRequiredMark*/
-                            >
+                            <Form layout="vertical" form={form}>
                                 <Form.Item
                                     label="是否生效"
                                     name="active"
@@ -724,7 +617,6 @@ export default (props: any) => {
                                         <Radio value={0}>否</Radio>
                                     </Radio.Group>
                                 </Form.Item>
-
                                 <Form.Item
                                     label="类型"
                                     name="tags"
@@ -754,24 +646,22 @@ export default (props: any) => {
                                 </Form.Item>
                             </Form>
                         </div>
-                        {/*中间 */}
+
+                        {/* 中间 */}
                         <div className={styles.fixed_part} >
                             {/* <div className={styles.script_top}>
-                            <Space>
-                                <Button onClick={handleCancle}>取消编辑</Button>
-                                <Button type="primary" onClick={handlePublish}>发布</Button>
-                            </Space>
-                        </div> */}
+                                <Space>
+                                    <Button onClick={handleCancle}>取消编辑</Button>
+                                    <Button type="primary" onClick={handlePublish}>发布</Button>
+                                </Space>
+                            </div> */}
 
-                            {/*菜单 */}
+                            {/* 富文本编辑器菜单栏的Dom容器 */}
                             <div id="toolbar-container" className={styles.toolbar} />
                         </div>
-                        <div
-                            style={{
-                                margin: 'auto',
-                            }}
-                            className={`${styles.script_middle} ${styles.script_eidt_middle}`}>
-
+                        <div className={`${styles.script_middle} ${styles.script_eidt_middle}`}
+                            style={{ margin: 'auto' }}
+                        >
                             <div className={styles.editor_content} style={{ height: layoutHeight - 230 }}>
                                 <div id="text-container-title"
                                     className={styles.text_title}>

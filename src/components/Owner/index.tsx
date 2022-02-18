@@ -33,6 +33,7 @@ export default () => {
                 style={{ width: '100%' }}
                 showArrow={false}
                 showSearch
+                getPopupContainer={node => node.parentNode}
             >
                 {
                     user?.map((item: any, index: number) => {
@@ -41,7 +42,7 @@ export default () => {
                                 value={item.emp_id}
                                 key={index}
                             >
-                                {item.first_name === "" ? item.last_name : item.first_name}
+                                {item.last_name}({item.first_name === "" ? item.last_name : item.first_name}){ !BUILD_APP_ENV && ` - ${item.emp_id}`}
                             </Select.Option>
                         )
                     })

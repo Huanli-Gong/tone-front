@@ -256,7 +256,9 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
         { title: '默认运行次数', width: '120px', dataIndex: 'repeat', ellipsis: true },
         {
             title: '变量',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: 100,
             render: (_: number, row: any) =>
                 <PopoverEllipsis
@@ -306,7 +308,9 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
         {
             title: '创建时间',
             dataIndex: 'gmt_created',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: '190px',
             render: (_: number, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },

@@ -547,7 +547,7 @@ export const EditPageData = (props:any) => {
     const [allGroupData, setAllGroupData] = useState<any>([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(0)
     const [template, setTemplate] = useState<any>({})
-    const { ws_id, report_id } = props.match.params
+    const { report_id } = props.match.params
     
     const queryReport = async () => {
         setLoading(true)
@@ -587,7 +587,8 @@ export const EditPageData = (props:any) => {
     }
     const temp = async () => {
         setLoading(true)
-        const res = await detailTemplate({ id: dataSource.tmpl_id, ws_id })
+        const { tmpl_id, ws_id } = dataSource
+        const res = await detailTemplate({ id: tmpl_id, ws_id })
         if (res.code == 200 && JSON.stringify(dataSource) !== '{}')
             setLoading(false)
             let perf_data = dataSource.test_item.perf_data

@@ -39,7 +39,10 @@ export const SearchColumnFilterTitle : React.FC<InputFilterProps> = ({ title , c
                                     const obj = {}
                                     obj[ name ] = val;
                                     setVisible( false )
-                                    setParams({ ...params , ...obj })
+                                    setParams({ ...params , ...obj,
+                                        // 每次查询后，分页参数都要重置为初始状态。
+                                        page_num: 1, 
+                                    })
                                 }
                             } 
                         />
@@ -83,7 +86,10 @@ export const CheckboxColumnFilterTitle : React.FC<InputFilterProps> = ({ title ,
                                     const obj = {}
                                     obj[ name ] = val;
                                     setVisible( false )
-                                    setParams({ ...params , ...obj })
+                                    setParams({ ...params , ...obj,
+                                        // 每次查询后，分页参数都要重置为初始状态。
+                                        page_num: 1, 
+                                    })
                                 }
                             } 
                             list={ list }

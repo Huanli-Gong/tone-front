@@ -3,7 +3,7 @@ import { Avatar, Spin, Space, message } from 'antd'
 import styles from './index.less'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
@@ -12,7 +12,7 @@ import { history } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 export default (props: any) => {
     const {workspaceList,loading, userId} = props
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const workspaceDataList = _.isArray(workspaceList.workspace_list) ? workspaceList.workspace_list : []
     const wsNameEllipsis = useRef<any>(null)
     const desEllipsis = useRef<any>(null)

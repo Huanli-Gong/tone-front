@@ -8,7 +8,7 @@ import { queryWorkspace, queryApprove, queryGetToken } from './services'
 import _ from 'lodash'
 import { history, useModel, useLocation, useAccess, Access } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils'
 import AvatarCover from '@/components/AvatarCover'
 
@@ -23,7 +23,7 @@ export default (props: any) => {
     const { authList } = initialState
     const access = useAccess();
     const { query } = useLocation() as any
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const [tab, setTab] = useState(query.person ?? 'workspace')
     const [data, setData] = useState<any>([])

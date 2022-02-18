@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { writeDocumentTitle, resizeDocumentHeightHook } from '@/utils/hooks';
+import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Layout, Tabs, Row, Radio, message, Spin } from 'antd';
 import styles from './index.less'
 import TabPaneCard from './components/TabPaneCard'
@@ -14,7 +14,7 @@ export default (props: any) => {
 
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
     writeDocumentTitle(routeIntlName)
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const [testType, setTestType] = useState(query.test_type || 'performance')
     // const [ testType, setTestType ] = useState( query.test_type || 'functional' )
     const [provider, setProvider] = useState(query.provider_env || 'aliyun')

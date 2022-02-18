@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { Layout, Menu, Space } from 'antd'
 import styles from './index.less'
 import { FormattedMessage, history, useIntl, useModel, useParams } from 'umi'
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 
 const { document }: any = window
@@ -12,11 +12,11 @@ const WorkspaceLayout = (props: any) => {
     const { ws_id }: any = useParams()
     const { pathname } = props.location
     const { routes } = props.route
-    const { windowHeight } = resizeClientSize()
+    const { height: windowHeight } = useClientSize()
 
     const timeStampKey = useMemo(() => new Date().getTime(), [props.location])
     const intl = useIntl()
-    
+
     const [openKeys, setOpenKeys] = useState<any>([])
 
     const realPath = pathname.replace(ws_id, ':ws_id')
@@ -105,13 +105,13 @@ const WorkspaceLayout = (props: any) => {
 
     if (!hasLeftMenu)
         return (
-            <div key={ timeStampKey }>
+            <div key={timeStampKey} style={{ minHeight: windowHeight - 50, background: "#fff" }}>
                 {props.children}
             </div>
         )
     return (
         <Layout key={timeStampKey} className={styles.layout} >
-            <Layout.Sider theme="light" className={styles.ws_slider} style={{ height: windowHeight - 50 }} >
+            <Layout.Sider theme="light" className={styles.ws_slider}>
                 <Menu
                     selectedKeys={[realPath]}
                     className={styles.ws_menu_styles}
@@ -133,17 +133,17 @@ const WorkspaceLayout = (props: any) => {
                                             {item.routes.map((child: any): any => {
                                                 if (!child.hideInMenu && !child.unaccessible) {
                                                     return (
-                                                        <Menu.Item key={child.path} onClick={()=> onMenuClick(child)}>
+                                                        <Menu.Item key={child.path} onClick={() => onMenuClick(child)}>
                                                             <FormattedMessage id={`Workspace.${item.name}.${child.name}`} />
                                                         </Menu.Item>
                                                     )
-                                                }    
+                                                }
                                             })}
                                         </Menu.SubMenu>
                                     )
-                                }    
+                                }
                                 return (
-                                    <Menu.Item key={item.path} onClick={()=> onMenuClick(item)}>
+                                    <Menu.Item key={item.path} onClick={() => onMenuClick(item)}>
                                         <Space>
                                             {WorkspaceMenuIcon(item.name)}
                                             <FormattedMessage id={`Workspace.${item.name}`} />
@@ -155,8 +155,8 @@ const WorkspaceLayout = (props: any) => {
                     }
                 </Menu>
             </Layout.Sider>
-            <Layout.Content className={styles.content} style={{ height: windowHeight - 50 }}>
-                <div style={{ background: '#fff', width: '100%', minHeight: windowHeight - 90 }}>
+            <Layout.Content className={styles.content} style={{ minHeight: windowHeight - 50 }}>
+                <div style={{ width: '100%', minHeight: windowHeight - 90 , background: "#fff"}}>
                     {props.children}
                 </div>
             </Layout.Content>

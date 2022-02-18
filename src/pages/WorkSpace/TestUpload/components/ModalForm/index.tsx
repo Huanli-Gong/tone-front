@@ -125,7 +125,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
       // console.log('validateFields:', aa)
       let flag = false
       Object.keys(aa)?.forEach((item=> {
-        if (!aa[item] && item !== 'baseline_id') {
+        if (!aa[item] && item !== 'baseline_id' && item !== 'ip') {
           flag = true
         }
       }))
@@ -382,12 +382,24 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                   </Form.Item>
                   : null}
                 {/** ----------end 选基线------------------------ */}
+                <Form.Item label='测试机IP'
+                  name="ip"
+                  rules={[{
+                    required: false,
+                    // max: 32,
+                    // pattern: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+                    // message: '请输入正确格式的IP'
+                  }]}
+                >
+                  <Input placeholder='请输入测试机IP'/>
+                </Form.Item>
+
 
                 <Form.Item label="结果数据" name="file" rules={[{
                   required: true,
                   message: formatMessage({id: 'upload.list.Drawer.upload.message'}),
                 }]}
-                  extra={formatMessage({id: 'upload.list.Drawer.upload.supportText'}) + ': .tar'}
+                  extra={formatMessage({id: 'upload.list.Drawer.upload.supportText'}) + ': .tar、.tar.gz'}
                 >
                   <BizUpload callback={validateFields} />
                 </Form.Item>

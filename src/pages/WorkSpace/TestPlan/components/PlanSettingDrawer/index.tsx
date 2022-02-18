@@ -155,6 +155,10 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <SettingSpaceItem name="名称" val={dataSource?.name} />
                 <SettingSpaceItem name="创建人" val={dataSource?.creator_name} />
                 <SettingSpaceItem name="所属项目" val={dataSource?.project_name} />
+                <SettingSpaceItem name="内网功能基线" val={dataSource?.func_baseline_name} />
+                <SettingSpaceItem name="内网性能基线" val={dataSource?.perf_baseline_name} />
+                <SettingSpaceItem name="云上功能基线" val={dataSource?.func_baseline_aliyun_name} />
+                <SettingSpaceItem name="云上性能基线" val={dataSource?.perf_baseline_aliyun_name} />
                 <SettingSpaceItem name="描述" val={dataSource?.description} />
                 <SettingSpaceItem name="通知主题" val={dataSource?.notice_name ||((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
                 <SettingSpaceItem name="邮件通知" val={dataSource?.email_info} />
@@ -179,14 +183,14 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <PrepSpaceItem name="功能基线" val={dataSource?.func_baseline_name} />
                 <PrepSpaceItem name="性能基线" val={dataSource?.perf_baseline_name} />
                 {
-                    (dataSource?.test_obj === 'kernel' && JSON.stringify(dataSource?.build_info) !== '{}') &&
+                    (dataSource?.test_obj === 'kernel' && JSON.stringify(dataSource?.build_pkg_info) !== '{}') &&
                     <>
-                        <PrepSpaceItem isLink name="代码仓库" val={dataSource?.build_info.code_repo} />
-                        <PrepSpaceItem isLink name="编译分支" val={dataSource?.build_info.compile_branch} />
-                        <PrepSpaceItem name="CpuArch" val={dataSource?.build_info.cpu_arch} />
-                        <PrepSpaceItem name="Commit ID" val={dataSource?.build_info.commit_id} />
-                        <PrepSpaceItem name="Build config" val={dataSource?.build_info.build_config} />
-                        <PrepSpaceItem name="Build machine" val={dataSource?.build_info.build_machine} />
+                        <PrepSpaceItem isLink name="代码仓库" val={dataSource?.build_pkg_info.code_repo} />
+                        <PrepSpaceItem isLink name="编译分支" val={dataSource?.build_pkg_info.compile_branch} />
+                        <PrepSpaceItem name="CpuArch" val={dataSource?.build_pkg_info.cpu_arch} />
+                        <PrepSpaceItem name="Commit ID" val={dataSource?.build_pkg_info.commit_id} />
+                        <PrepSpaceItem name="Build config" val={dataSource?.build_pkg_info.build_config} />
+                        <PrepSpaceItem name="Build machine" val={dataSource?.build_pkg_info.build_machine} />
                     </>
                 }
                 {

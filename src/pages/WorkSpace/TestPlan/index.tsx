@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { resizeDocumentHeightHook , writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { Space, Table, Tabs, Button, message, Popconfirm, Spin } from 'antd'
-import { useRequest, history , FormattedMessage } from 'umi'
+import { useRequest, history, FormattedMessage } from 'umi'
 import CommonPagination from '@/components/CommonPagination'
 
 import styled from 'styled-components'
 import PlanSettingDrawer from './components/PlanSettingDrawer'
-import { queryPlanManageList, deleteTestPlan , copyTestPlan } from './services'
-import { getUserFilter , getSearchFilter , getRadioFilter } from '@/components/TableFilters'
+import { queryPlanManageList, deleteTestPlan, copyTestPlan } from './services'
+import { getUserFilter, getSearchFilter, getRadioFilter } from '@/components/TableFilters'
 import { requestCodeMessage } from '@/utils/utils'
 
 interface OptionBtnProp {
@@ -26,25 +26,25 @@ const TestPlanManage = (props: any) => {
     const { route } = props
     const { ws_id } = props.match.params
 
-    writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
+    writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const viewSettingRef: any = useRef()
 
     const [pageParams, setPageParams] = useState<any>({ ws_id, page_num: 1, page_size: 10 })
 
     const { data, run, refresh, loading } = useRequest(
-        (params: any = pageParams ) => queryPlanManageList(params),
+        (params: any = pageParams) => queryPlanManageList(params),
         {
             initialData: {},
             formatResult: (req: any) => req,
-            manual : true
+            manual: true
         }
     )
 
     useEffect(() => {
-        run( pageParams )
-    }, [ pageParams ])
+        run(pageParams)
+    }, [pageParams])
 
     const handleRun = async (row: any) => {
         if (!row.enable) return;
@@ -56,10 +56,10 @@ const TestPlanManage = (props: any) => {
     }
 
     const handleCopy = async (row: any) => {
-        const { code , msg } = await copyTestPlan({ plan_id : row.id , ws_id })
-        if ( code !== 200 ) {
-            requestCodeMessage( code , msg )
-            return 
+        const { code, msg } = await copyTestPlan({ plan_id: row.id, ws_id })
+        if (code !== 200) {
+            requestCodeMessage(code, msg)
+            return
         }
         message.success('复制成功!')
         refresh()
@@ -72,17 +72,17 @@ const TestPlanManage = (props: any) => {
     const handleDelete = async (row: any) => {
         const { code, msg } = await deleteTestPlan({ plan_id: row.id, ws_id })
         if (code === 200) refresh()
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
 
     const columns = [{
         dataIndex: 'name',
         title: '计划名称',
-        ...getSearchFilter( pageParams , setPageParams , 'name' )
+        ...getSearchFilter(pageParams, setPageParams, 'name')
     }, {
         dataIndex: 'cron_info',
         title: '触发规则',
-        render ( _ : any ) {
+        render(_: any) {
             return _ || '-'
         }
     }, {
@@ -90,19 +90,19 @@ const TestPlanManage = (props: any) => {
         title: '启用',
         render: (_: any) => (
             _ ? '是' : '否'
-                // <Badge status="processing" text="是" /> :
-                // <Badge status="default" text="否" />
+            // <Badge status="processing" text="是" /> :
+            // <Badge status="default" text="否" />
         ),
-        ...getRadioFilter( 
-            pageParams , 
-            setPageParams , 
-            [{ name : '是' , value : 'True' } , { name : '否' , value : 'False' }],
+        ...getRadioFilter(
+            pageParams,
+            setPageParams,
+            [{ name: '是', value: 'True' }, { name: '否', value: 'False' }],
             'enable'
         )
     }, {
         dataIndex: 'creator_name',
         title: '创建人',
-        ...getUserFilter({ name : 'creator_name' , data : pageParams , setDate : setPageParams })
+        ...getUserFilter({ name: 'creator_name', data: pageParams, setDate: setPageParams })
     }, {
         dataIndex: 'gmt_created',
         title: '创建时间',
@@ -117,9 +117,9 @@ const TestPlanManage = (props: any) => {
                 <OptButton onClick={() => handleCopy(row)}>复制</OptButton>
                 <OptButton onClick={() => handleEdit(row)}>编辑</OptButton>
                 <Popconfirm title="确认删除该计划吗？"
-                   onConfirm={() => handleDelete(row) }
-                   okText="确认"
-                   cancelText="取消">
+                    onConfirm={() => handleDelete(row)}
+                    okText="确认"
+                    cancelText="取消">
                     <OptButton>删除</OptButton>
                 </Popconfirm>
             </Space>
@@ -128,12 +128,12 @@ const TestPlanManage = (props: any) => {
 
     return (
         <Spin spinning={loading} >
-            <div style={{ width: '100%', height: layoutHeight - 50, overflow: 'auto' }}>
-                <div style={{ width: '100%', background: '#fff' , minHeight : '100%' }}>
+            <div style={{ width: '100%', minHeight: layoutHeight - 50 }}>
+                <div style={{ width: '100%', background: '#fff', minHeight: '100%' }}>
                     <Tabs
                         tabBarStyle={{
-                            height :64,
-                            background : '#FAFBFC'
+                            height: 64,
+                            background: '#FAFBFC'
                         }}
                         tabBarExtraContent={
                             <Button
@@ -141,11 +141,11 @@ const TestPlanManage = (props: any) => {
                                 style={{ marginRight: 20 }}
                                 onClick={() => history.push(`/ws/${ws_id}/test_plan/create`)}
                             >
-                                <FormattedMessage id={ 'Workspace.TestPlan.Create'} />
+                                <FormattedMessage id={'Workspace.TestPlan.Create'} />
                             </Button>
                         }
                     >
-                        <Tabs.TabPane key={'list'} tab={ <FormattedMessage id={ `Workspace.TestPlan.${ route.name }` } />} >
+                        <Tabs.TabPane key={'list'} tab={<FormattedMessage id={`Workspace.TestPlan.${route.name}`} />} >
                             <div style={{ paddingLeft: 20, paddingRight: 20 }}>
                                 <Table
                                     columns={columns}
@@ -158,7 +158,7 @@ const TestPlanManage = (props: any) => {
                                     onPageChange={
                                         (page_num, page_size) => {
                                             const params = { ...pageParams, page_num, page_size }
-                                            setPageParams( params )
+                                            setPageParams(params)
                                         }
                                     }
                                     currentPage={data.page_num}

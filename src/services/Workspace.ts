@@ -108,21 +108,17 @@ export async function addWorkspaceMember(data: {
     })
 }
 
-export async function enterWorkspaceHistroy(data: { ws_id: number }) {
-    return request(`/api/sys/workspace/history/`, {
-        method: 'post',
-        data,
-    })
-}
 export async function checkWorkspace(params: any) {
     return request(`/api/sys/workspace/check/`, { params })
 }
-export async function workspaceHistroy(data: any) {
+
+export async function enterWorkspaceHistroy(data: any) {
     return request(`/api/sys/workspace/history/`, {
         method: 'post',
         data,
     })
 }
+
 export async function saveWorkspaceConfig(data: {
     id: number | string,
     name?: string,

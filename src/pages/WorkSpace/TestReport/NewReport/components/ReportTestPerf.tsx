@@ -220,7 +220,12 @@ const ReportTestPref = () => {
     const groupRowRef = useRef<any>(null)
 
     return (
-        <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200, position: 'relative' }} id="test_data" ref={testDataRef}>
+        <ModuleWrapper 
+            style={{ width: groupLen > 3 ? groupLen * 390 : 1200, position: 'relative' }} 
+            ref={testDataRef} 
+            id="test_data" 
+            className="position_mark" 
+        >
             <SubTitle><span className="line"></span>测试数据</SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>
@@ -237,8 +242,8 @@ const ReportTestPref = () => {
             {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
-                    <TestDataTitle id="perf_item">性能测试</TestDataTitle>
-                    <TestWrapper>
+                    <TestDataTitle>性能测试</TestDataTitle>
+                    <TestWrapper id="perf_item" className="position_mark">
                         {
                             Array.isArray(dataSource) && !!dataSource.length ?
                                 dataSource?.map((item: any, idx: number) => {
@@ -247,7 +252,7 @@ const ReportTestPref = () => {
                                             {
                                                 item.is_group ?
                                                     <>
-                                                        <TestGroup id={`pref_item-${item.rowKey}`}>
+                                                        <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
                                                             <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                             <TestItemText>
                                                                 <SettingTextArea
@@ -275,16 +280,18 @@ const ReportTestPref = () => {
                                                         {
                                                             item.list.map((child: any, id: number) => {
                                                                 return (
-                                                                    <Performance
+                                                                    <div key={id}>
+                                                                        <Performance
                                                                         child={child}
                                                                         name="group"
-                                                                        key={id}
                                                                         id={child.rowKey}
                                                                         dataSource={dataSource}
                                                                         setDataSource={setDataSource}
                                                                         onDelete={handleDelete}
                                                                         onChange={handleFieldChange}
                                                                     />
+                                                                    </div>
+                                                                    
                                                                 )
                                                             })
                                                         }

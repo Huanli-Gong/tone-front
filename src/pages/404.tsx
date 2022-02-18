@@ -1,19 +1,15 @@
 import { Layout } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Icon from '@/assets/img/loss.png';
+import { useClientSize } from '@/utils/hooks';
 
 const NoFoundPage: React.FC<{}> = () => {
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-    const windowHeight = () => setLayoutHeight(innerHeight)
-    
     useEffect(() => {
         const otitle = document.getElementsByTagName("title")[0]
         if (otitle) otitle.innerText = '404页面'
-        window.addEventListener('resize', windowHeight)
-        return () => {
-            window.removeEventListener('resize', windowHeight)
-        }
     }, [])
+
+    const { height: layoutHeight } = useClientSize()
 
     return (
         <Layout.Content style={{ background: '#fff' }}>

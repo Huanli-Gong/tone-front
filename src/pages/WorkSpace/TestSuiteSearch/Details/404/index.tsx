@@ -1,18 +1,9 @@
-import { Button, Layout, Breadcrumb } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Layout } from 'antd';
+import React from 'react';
 import Icon from '@/assets/img/loss.png';
 import styles from './style.less';
 
 const NoFoundPage: React.FC<{}> = () => {
-  // const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-  // const windowHeight = () => setLayoutHeight(innerHeight)
-  // useEffect(() => {
-  //     window.addEventListener('resize', windowHeight)
-  //     return () => {
-  //         window.removeEventListener('resize', windowHeight)
-  //     }
-  // }, [])
-
   return (
     <Layout style={{ padding: 20,  minHeight: 0, background: '#f5f5f5' }}>
       <Layout.Content style={{ background: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

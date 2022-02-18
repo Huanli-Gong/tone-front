@@ -35,12 +35,12 @@ const BasicSetting = (props: any, ref: any) => {
     const [testObject, setTestObject] = useState('rpm')
 
     const { data: projectList } = useRequest(
-        () => queryProjectList({ ws_id }),
+        () => queryProjectList({ ws_id, page_size: 500 }),
         { initialData: [] } //manual : true , , run : getProjectList 
     )
 
     const { data: baselineList } = useRequest(
-        () => queryBaselineList({ ws_id }),
+        () => queryBaselineList({ ws_id, page_size: 500 }),
         { initialData: [] } //manual : true , , run : getBaselineList 
     )
 

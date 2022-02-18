@@ -8,6 +8,7 @@ import DeployServer from '../../Components/DeployServer'
 import DeployModal from './DeployModal'
 import styles from './AddDevice.less'
 import { useParams } from 'umi'
+import { AgentSelect } from '@/components/utils';
 
 const AddDeviceDrawer = (props: any, ref: any) => {
     const { ws_id }: any = useParams()
@@ -53,7 +54,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
 
     const queryTagList = async () => {
         setLoading(true)
-        const { data } = await queryServerTagList({ ws_id }) //run_mode, run_environment, 
+        const { data } = await queryServerTagList({ ws_id, page_size: 500 }) //run_mode, run_environment, 
         setTagList(data || [])
         /*  let memberList = await getMembers()
          setMembers( memberList ) */
@@ -292,7 +293,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     form={form}
                     className={styles.form_styles}
                     initialValues={{
-                        channel_type: BUILD_APP_ENV ? 'toneagent' : 'staragent'
+                        channel_type: BUILD_APP_ENV ? open_agent : self_agent
                     }}
                 >
                     {!isMoreEdit && <Form.Item label="控制通道"
@@ -308,17 +309,18 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                             <ValidateDisplayMessage data={validateResult} />
                         }
                     >
-                        <Select onChange={handleIpsChange} disabled={BUILD_APP_ENV ? true : disabledState} placeholder="请选择控制通道" >
-                            <Select.Option value="staragent">StarAgent</Select.Option>
-                            <Select.Option value="toneagent">ToneAgent</Select.Option>
-                        </Select>
+                        <AgentSelect
+                            onChange={handleIpsChange}
+                            disabled={BUILD_APP_ENV ? true : disabledState}
+                            placeholder="请选择控制通道"
+                        />
                     </Form.Item>}
 
 
                     {/** 添加 */}
                     {!isMoreEdit && !modifyProps &&
                         <Form.Item
-                            label= { BUILD_APP_ENV ? "机器IP" : '机器'}
+                            label={BUILD_APP_ENV ? "机器IP" : '机器'}
                             name="ips"
                             validateStatus={ips.errors.length > 0 ? 'error' : ''}
                             help={ips.errors.length > 0 && validateMsg}

@@ -10,6 +10,7 @@ export const ReportTemplate = styled.div<ReportTamplateProps>`
     height: ${({ height }) => height}px;
     position: relative;
     display: flex;
+    background: #f5f5f5;
     //padding-bottom: 56px;
 `
 
@@ -51,6 +52,9 @@ export const CatalogBody = styled.div`
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+    #left-catalog-wrapper .spaceWarpper .ant-space-item .toc-selected {
+        color: #1890FF;
     }
 `
 

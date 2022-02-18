@@ -2,6 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react
 import { Drawer, Button, Form, Spin, Col, Row, Select, Input, Radio, Empty, Popover } from 'antd'
 import styles from '../style.less'
 import { member, validateSuite } from '../../service'
+import Owner from '@/components/Owner/index';
 import { useLocation, useRequest } from 'umi'
 import _ from 'lodash'
 import { QuestionCircleOutlined } from '@ant-design/icons'
@@ -232,39 +233,7 @@ export default forwardRef(
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
-                                <Form.Item
-                                    name="emp_id"
-                                    label="Owner"
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Select
-                                        allowClear
-                                        notFoundContent={
-                                            fetchLoading ?
-                                                <Spin size="small" /> :
-                                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                        }
-                                        filterOption={false}
-                                        onSearch={handleSearch}
-                                        style={{ width: '100%' }}
-                                        showArrow={false}
-                                        showSearch
-                                        getPopupContainer={node => node.parentNode}
-                                    >
-                                        {
-                                            user?.map((item: any, index: number) => {
-                                                return (
-                                                    <Select.Option
-                                                        value={item.emp_id}
-                                                        key={index}
-                                                    >
-                                                        {item.last_name}({item.first_name === "" ? item.last_name : item.first_name}) - {item.emp_id}
-                                                    </Select.Option>
-                                                )
-                                            })
-                                        }
-                                    </Select>
-                                </Form.Item>
+                                <Owner />
                             </Col>
                             <Col span={24}>
                                 <Form.Item

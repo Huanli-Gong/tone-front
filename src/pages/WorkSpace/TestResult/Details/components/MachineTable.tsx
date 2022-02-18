@@ -31,7 +31,7 @@ const RenderMachineItem = (props: any) => {
             render: (_: any, row: any) => {
                 if(row.device_type){
                     return(
-                        <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${row.ip}`} target="_blank">{row.ip || '-'}</a>
+                        <span>{row.ip || '-'}</span>
                     )
                 }else{
                     return <span>{row.pub_ip}</span>
@@ -76,9 +76,9 @@ const RenderMachineItem = (props: any) => {
                                 Array.isArray(dataSource) && dataSource.map((item:any)=>{
                                     if(item.device_type){
                                         return (
-                                            <a href={`https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&ip=${item.ip}`} target="_blank" style={{ marginRight: 20 }}>
+                                            <span style={{ marginRight: 20 }}>
                                                 {item.ip}/{item.sn}
-                                            </a>
+                                            </span>
                                         )
                                     }else{
                                         return(

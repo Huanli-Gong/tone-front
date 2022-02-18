@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/GaryBaseIcon.svg';
 import TypeChart from '../components/TestDataChild/TypeChart';
 import NoTypeChart from '../components/TestDataChild/noTypeChart';
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { compareChart } from '../../services';
 const FullRow = styled(Row)`
     width:100%;
@@ -104,7 +105,7 @@ const ConfChart = (props: any) => {
                         <NoTypeChart chartType={chartType} data={['']} is_active={is_active} />
                         :
                         chartData.metric_list.map((metric: any, idx: any) => (
-                            <Spin spinning={loading}>
+                            <Spin spinning={loading} key={idx}>
                                 <TypeChart
                                     callBackColor={callBackColor}
                                     name={legend}
@@ -143,7 +144,7 @@ interface JumpChartProp {
 }
 
 const ChartModal = (props: any) => {
-    const { conf_list, suite_id, suite_name, chartType, envData } = props
+    const { chartType, suite_id, conf_list, suite_name, envData } = props
     const [legend, setLegend] = useState<string>('')
     const [current, setCurrent] = useState<any>(null)
     const [loading, setLoading] = useState(false)
@@ -254,7 +255,7 @@ const ChartModal = (props: any) => {
                                     conf_list.map(
                                         (conf: any, idx: number) => (
                                             <span key={idx}>
-                                                <ConfName>{conf.conf_name}</ConfName>
+                                                <ConfName><EllipsisPulic width={330} title={conf.conf_name}/></ConfName>
                                             </span>
                                         )
                                     )
@@ -268,7 +269,7 @@ const ChartModal = (props: any) => {
                                     {
                                         JSON.stringify(chartMetric.metric_dic) === '{}'
                                         ? <NoTypeChart chartType={chartType} data={['']} />
-                                        : Object.keys(chartMetric.metric_dic).map((key: any, idx: number) => (
+                                        : chartMetric.metric_dic && Object.keys(chartMetric.metric_dic).map((key: any, idx: number) => (
                                             <div
                                                 key={idx}
                                                 id={`${key}-${idx}`}
@@ -309,7 +310,9 @@ const ChartModal = (props: any) => {
                                             onClick={() => handleJumpChart(conf, idx)}
                                             key={idx}
                                         >
-                                            <ConfName is_active={current === `${conf.conf_name}-${idx}` ? 1 : 0}>{conf.conf_name}</ConfName>
+                                            <ConfName is_active={current === `${conf.conf_name}-${idx}` ? 1 : 0}>
+                                                <EllipsisPulic width={330} title={conf.conf_name}/>
+                                            </ConfName>
                                         </span>
                                     ))
                                 }

@@ -1,4 +1,4 @@
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { Col, Layout, Row, Statistic, Typography, Space, message, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
@@ -22,8 +22,8 @@ interface CommentProps {
 
 const Container = styled(Layout) <CommentProps>`
     padding:20px;
-    overflow:auto;
-    ${({ height }) => `height:${height}px;` || ''}
+    /* overflow:auto; */
+    ${({ height }) => `min-height:${height}px;` || ''}
     min-height:unset;
 `
 
@@ -117,7 +117,7 @@ const ItemIcon = styled.div<ItemIconProps>`
 `
 
 export default () => {
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const [realtime, setRealtime] = useState<any>(null)
     const [workspace, setWorkspace] = useState<any>(null)
@@ -125,7 +125,7 @@ export default () => {
 
     const getRealtimeData = async () => {
         const { data, code, msg } = await queryLiveData()
-        if (code !== 200) return requestCodeMessage( code , msg )
+        if (code !== 200) return requestCodeMessage(code, msg)
         setRealtime(data)
     }
 
@@ -139,7 +139,7 @@ export default () => {
 
     const getWorkspaceData = async () => {
         const { data, code, msg } = await querySysData()
-        if (code !== 200) return requestCodeMessage( code , msg )
+        if (code !== 200) return requestCodeMessage(code, msg)
         setWorkspace(data)
     }
 
@@ -213,7 +213,7 @@ export default () => {
                                 <UnMarginStatistic title={'Workspace数(个)'} value={workspace?.workspace_num} />
                             </Col>
                             <Col span={24}>
-                                <Space size={ 48 }>
+                                <Space size={48}>
                                     <SmailStatistic title={'产品数'} value={workspace?.product_num} />
                                     <SmailStatistic title={'项目数'} value={workspace?.project_num} />
                                 </Space>
@@ -239,7 +239,7 @@ export default () => {
                             <Col span={24}>
                                 <UnMarginStatistic title={'Benchmark数(个)'} value={workspace?.benchmark_num} />
                             </Col>
-                            <Space size={ 48 }>
+                            <Space size={48}>
                                 <SmailStatistic title={'TestConf'} value={workspace?.test_conf_num} />
                                 <SmailStatistic title={'TestCase'} value={workspace?.test_case_num} />
                                 <SmailStatistic title={'Metric'} value={workspace?.test_metric_num} />
@@ -254,7 +254,7 @@ export default () => {
                             <Col span={24}>
                                 <UnMarginStatistic title={'总基线数(个)'} value={workspace?.baseline_total_num} />
                             </Col>
-                            <Space size={ 48 }>
+                            <Space size={48}>
                                 <SmailStatistic title={'功能数据'} value={workspace?.func_baseline_res_num} />
                                 <SmailStatistic title={'性能数据'} value={workspace?.perf_baseline_res_num} />
                             </Space>

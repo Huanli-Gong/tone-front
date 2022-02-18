@@ -11,13 +11,13 @@ export default ({ style={}, }) => {
   
   return (
     <div className={styles['third_root']} style={style}>
-        <h1 className={styles['third_header']}>产品优势</h1>
+        <h1 className={styles['third_header']}>产品特点</h1>
         <div className={styles['third_content']}>
             <div className={styles.row_item}>
               <div><Sec1 /></div>
               <p>一站式质量平台</p>
               <span>
-                平台打通了从测试准备、测试执行、测试分析、测试计划、测试报告、覆盖率检测、智能Bisect、智能巡检等流程全闭环，为社区研发提供一站式测试支撑
+                平台打通了测试准备、测试执行、测试分析、测试计划、测试报告、覆盖率检测、智能Bisect、智能巡检等流程全闭环，为社区研发提供一站式测试支撑
               </span>
             </div>
 
@@ -41,7 +41,7 @@ export default ({ style={}, }) => {
               <div><Sec4 /></div>
               <p>开源软件包CI服务</p>
               <span>
-              社区开发者可以将自己的软件包(可来自代码托管平台如github/gitte/codeup等)注册到Testfarm, 平台会监控软件包的代码变更，一旦有变更则会立即触发测试，并将测试结果通知开发者，方便开源软件包引入
+              社区开发者可以将自己的软件包(可来自代码托管平台如github/gitee/codeup等)注册到Testfarm, 平台会监控软件包的代码变更，一旦有变更则会立即触发测试，并将测试结果通知开发者，方便开源软件包引入
               </span>
             </div>
 
@@ -57,7 +57,7 @@ export default ({ style={}, }) => {
               <div><Sec6 /></div>
               <p>缺陷定位诊断服务</p>
               <span>
-              对于发现的软件缺陷，平台可以提供了缺陷的自动化定位诊断能力，可以发现引入缺陷的commit地址
+              对于发现的软件缺陷，平台可以提供缺陷的自动化定位诊断能力，可以发现引入缺陷的commit地址
               </span>
             </div>
         </div>

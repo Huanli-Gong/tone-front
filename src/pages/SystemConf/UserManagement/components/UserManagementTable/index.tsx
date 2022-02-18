@@ -81,7 +81,9 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         title: '成员',
         dataIndex: 'last_name',
         width: 200,
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         filterDropdown: ({ confirm }: any) => <SearchInput
             confirm={confirm}
             autoFocus={autoFocus}
@@ -111,8 +113,9 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
     }, {
         title: '账号',
         dataIndex: 'email',
-        ellipsis: true,
-        width: 200,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: number, row: UserTable) => <PopoverEllipsis title={row.email}></PopoverEllipsis>,
     }, {
         title: '角色',
@@ -131,8 +134,10 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             (row.ws_list && row.ws_list.length > 0) &&
             <PopoverEllipsis title={row.ws_list.join('、')}></PopoverEllipsis>
         ),
-        ellipsis: true,
-        width: 245,
+        ellipsis: {
+            showTitle: false
+        },
+        width: 200,
     }, {
         title: '加入时间',
         dataIndex: 'gmt_created',
@@ -177,6 +182,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 page={data.page_num}
                 pageSize={data.page_size}
                 totalPage={data.total_page}
+                scroll={{ x: '100%' }}
                 total={data.total}
                 handlePage={onChange}
             />

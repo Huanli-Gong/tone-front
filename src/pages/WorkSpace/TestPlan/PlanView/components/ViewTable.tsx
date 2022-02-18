@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { Space, Table, Popconfirm, message, Spin } from 'antd'
+import { Space, Table, Popconfirm, message, Spin, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { StateTagRender, RenderCountTags } from './'
 import { useRequest, history, Access, useAccess } from 'umi'
@@ -74,115 +74,110 @@ const ViewTable = (props: ViewTableProps) => {
         message.success('操作成功')
     }
 
-    let columns = [{
-        dataIndex: 'name',
-        title: '计划名称',
-        render: (_ : string , record :any ) => (
-            <span
-                style={{ cursor : 'pointer' }}
-                onClick={
-                    () => hanldeOpenPlanDetail(record)
-                }
-            >
-                {_ || '-'}
-            </span>
-        ),
-        ...getSearchFilter(pageParam, setPageParam, 'name')
-    }, {
-        dataIndex: 'state',
-        title: '状态',
-        width: 120,
-        render(_: string) {
-            return <StateTagRender state={_} />
-        },
-        ...getCheckboxFilter(
-            pageParam,
-            setPageParam,
-            [
-                { name: 'Complate', value: 'success' },
-                { name: 'Fail', value: 'fail' },
-                { name: 'Running', value: 'running' },
-                { name: 'Pedding', value: 'pedding' },
-            ],
-            'state'
-        )
-    }, {
-        title: '总计/成功/失败',
-        width: 180,
-        render: (row: any) => (
-            <RenderCountTags {...row.statistics} />
-        )
-    }, {
-        dataIndex: 'trigger_name',
-        width: 100,
-        title: '触发者'
-    }, {
-        dataIndex: 'start_time',
-        title: '开始时间',
-        width: 180
-    }, {
-        dataIndex: 'end_time',
-        title: '完成时间',
-        width: 180
-    },
-];
-    
-    if (access.wsRoleContrl()) {
-        columns = columns.concat([
-            {
-                title: '操作',
-                width: 150,
-                className: 'option',
-                render(row: any) {
-                    return (
-                        <Space>
-                            <OptionButton
-                                className="option-detail"
-                                onClick={
-                                    () => hanldeOpenPlanDetail(row)
-                                }
-                            >
-                                详情
-                            </OptionButton>
-                            {/* {currentRole !== 'ws_tester' || (currentRole == 'ws_tester' && row.creator === currentRoleId) ?
-                                <Popconfirm
-                                    title="确认删除该计划吗？"
-                                    okText="确认"
-                                    cancelText="取消"
-                                    onConfirm={() => hanldeDeletePlan(row)}
-                                >
-                                    <OptionButton className="option-delete">删除</OptionButton>
-                                </Popconfirm>
-                                :
-                                <span style={{color: '#00000040',cursor: 'not-allowed'}}>删除</span>
-                            } */}
-                            <Access
-                                accessible={access.wsRoleContrl(row.creator)}
-                                fallback={<span style={{color: '#ccc',cursor: 'not-allowed'}}>删除</span>}
-                            >
-                                 <Popconfirm
-                                    title="确认删除该计划吗？"
-                                    okText="确认"
-                                    cancelText="取消"
-                                    onConfirm={() => hanldeDeletePlan(row)}
-                                >
-                                    <OptionButton className="option-delete">删除</OptionButton>
-                                </Popconfirm>
-                            </Access>
-                            <ViewReport
-                                className={'option-detail'}
-                                dreType="left"
-                                title={'报告'}
-                                ws_id={ws_id}
-                                jobInfo={row}
-                                origin={'jobList'}
-                            />
-                        </Space>
-                    )
-                }
+    let columns = [
+        {
+            dataIndex: 'name',
+            title: '计划名称',
+            render: (_: string, record: any) => (
+                <span
+                    style={{ cursor: 'pointer' }}
+                    onClick={
+                        () => hanldeOpenPlanDetail(record)
+                    }
+                >
+                    {_ || '-'}
+                </span>
+            ),
+            ...getSearchFilter(pageParam, setPageParam, 'name')
+        }, {
+            dataIndex: 'state',
+            title: '状态',
+            width: 120,
+            render(_: string) {
+                return <StateTagRender state={_} />
+            },
+            ...getCheckboxFilter(
+                pageParam,
+                setPageParam,
+                [
+                    { name: 'Complate', value: 'success' },
+                    { name: 'Fail', value: 'fail' },
+                    { name: 'Running', value: 'running' },
+                    { name: 'Pedding', value: 'pedding' },
+                ],
+                'state'
+            )
+        }, {
+            title: '总计/成功/失败',
+            width: 180,
+            render: (row: any) => (
+                <RenderCountTags {...row.statistics} />
+            )
+        }, {
+            dataIndex: 'trigger_name',
+            width: 100,
+            title: '触发者',
+            ellipsis: {
+                showTitle: false,
+            },
+            render(_: string = '-') {
+                return (
+                    <Tooltip placement='topLeft' title={_}>
+                        {_}
+                    </Tooltip>
+                )
             }
-        ])
-    }
+        }, {
+            dataIndex: 'start_time',
+            title: '开始时间',
+            width: 180
+        }, {
+            dataIndex: 'end_time',
+            title: '完成时间',
+            width: 180
+        },
+        access.wsRoleContrl() &&
+        {
+            title: '操作',
+            width: 150,
+            className: 'option',
+            render(row: any) {
+                return (
+                    <Space>
+                        <OptionButton
+                            className="option-detail"
+                            onClick={
+                                () => hanldeOpenPlanDetail(row)
+                            }
+                        >
+                            详情
+                        </OptionButton>
+                        <Access
+                            accessible={access.wsRoleContrl(row.creator)}
+                            fallback={<span style={{ color: '#ccc', cursor: 'not-allowed' }}>删除</span>}
+                        >
+                            <Popconfirm
+                                title="确认删除该计划吗？"
+                                okText="确认"
+                                cancelText="取消"
+                                onConfirm={() => hanldeDeletePlan(row)}
+                            >
+                                <OptionButton className="option-delete">删除</OptionButton>
+                            </Popconfirm>
+                        </Access>
+                        <ViewReport
+                            className={'option-detail'}
+                            dreType="left"
+                            title={'报告'}
+                            ws_id={ws_id}
+                            jobInfo={row}
+                            origin={'jobList'}
+                        />
+                    </Space>
+                )
+            }
+        }
+    ].filter(Boolean);
 
     const handleCancle = () => {
         setSelectedRowKeys([])

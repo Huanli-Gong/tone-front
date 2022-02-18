@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { queryBaelineList, queryProductList } from './services'
 import styles from './index.less'
 import CommonPagination from '@/components/CommonPagination';
@@ -20,7 +20,7 @@ const defaultResult = {
                 success_job: 0,
             }
 export default ( props : any ) => {
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const scollMaxHeight = maxHeight - 339 > 430 ? 430 : maxHeight - 339
     resizeDocumentHeight(scollMaxHeight)

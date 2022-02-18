@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react'
 import { useRequest, useModel, Access, useAccess } from 'umi'
 import { queryTestResult } from '../service'
-import { Space, Table, Row, Button, message, Popover } from 'antd'
-import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
+import { Space, Table, Row, Button, message, Popover, Menu, Dropdown } from 'antd'
+import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { matchTestType } from '@/utils/utils'
 import CaseTable from './CaseTable'
@@ -39,15 +39,18 @@ export default (props: any) => {
 
     const serverProvider = ~provider_name.indexOf('云上') ? 'aliyun' : 'aligroup'
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
+    // ??
     const [openAllRows, setOpenAllRows] = useState(false)
     const [suiteCaseSelectKeys, setSuiteCaseSelectKeys] = useState<any>([])
     const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
     const editRemarkDrawer: any = useRef(null)
-    const [openAllExpand, setOpenAllExpand] = useState(false)
+    // const [openAllExpand, setOpenAllExpand] = useState(false)
     const access = useAccess()
     const [refreshCaseTable, setRefreshCaseTable] = useState(false)
+    // 展开指标级的标志
+    const [indexExpandFlag, setIndexExpandFlag] = useState(false)
 
     const { data, run, params, loading, refresh } = useRequest(
         (p) => queryTestResult(p),
@@ -259,29 +262,42 @@ export default (props: any) => {
         })
     }
 
-    const handleOnExpand = (expanded: boolean, record: any) => {
-        if (expanded) {
-            setExpandedRowKeys(expandedRowKeys.concat([record.suite_id]))
-        }
-        else {
-            setExpandedRowKeys(expandedRowKeys.filter((i: number) => i !== record.suite_id))
-        }
-    }
-
     const handleOpenAll = () => {
         setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id))
         setOpenAllRows(true)
     }
 
+    // conf级
     const handleOpenExpandBtn = () => {
-        openAllExpand === false ?
-            setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id)) :
-            setExpandedRowKeys([])
-        setOpenAllExpand(!openAllExpand)
-
-        if (openAllExpand === false && testType === 'performance')
+        if (!openAllRows) {
+            // case1.展开
+            setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id))
+            // case2. 展开状态标志
             setOpenAllRows(true)
-        else setOpenAllRows(false)
+        } else {
+            // case1.收起 & 收起子级表格
+            setExpandedRowKeys([])
+            setIndexExpandFlag(false)
+            // case2.收起的状态标志
+            setOpenAllRows(false)
+        }
+    }
+
+    // index级
+    const indexExpandClick = () => {
+        // step1.修改标志状态
+        setIndexExpandFlag(!indexExpandFlag)
+        if (!indexExpandFlag) {
+          // case1.展开，收集所有行号
+          setOpenAllRows(true)
+          setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id))
+          // case2.控制子级表格
+          // 子级表格会通过监听传入的状态做出动作
+        } else {
+          // case1. 收起
+          // case2.控制子级表格
+          // 子级表格会通过监听传入的状态做出动作
+        }
     }
 
     const handleStateChange = (state: string) => {
@@ -319,20 +335,27 @@ export default (props: any) => {
         setSuiteCaseSelectKeys(uniqBy(suiteData, 'suite_id'))
     }
 
+    const expandBtnText = openAllRows? '收起所有Conf': '展开所有Conf'
+    const expandIndexBtnText = indexExpandFlag? '收起所有指标': '展开所有指标'
+    const menu = (
+        <Menu>
+          <Menu.Item key="1" className={styles.expandConf} onClick={handleOpenExpandBtn}>{expandBtnText}</Menu.Item>
+          <Menu.Item key="2" className={styles.expandIndex} onClick={indexExpandClick}>{expandIndexBtnText}</Menu.Item>
+        </Menu>
+    )
+
     return (
         <div style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, marginTop: 20 }}>
             <Row justify="space-between" style={{ marginBottom: 20 }}>
                 {['functional', 'business_functional', 'business_business'].includes(testType) ?
                     <Button onClick={handleOpenExpandBtn}>
-                        {openAllExpand ? '收起所有Conf' : '展开所有Conf'}
+                        {openAllRows ? '收起所有Conf' : '展开所有Conf'}
                     </Button>
                     :
                     <Space>
-                        {/* <Button onClick={ handleOpenAll }>展开</Button>
-                        <Button onClick={ handleCloseAll }>收起</Button> */}
-                        <Button onClick={handleOpenExpandBtn}>
-                            {openAllExpand ? '收起所有指标' : '展开所有指标'}
-                        </Button>
+                        <Dropdown.Button onClick={handleOpenExpandBtn} placement="bottomLeft" icon={<DownOutlined />} overlay={menu}>
+                             {openAllRows ? '收起所有' : '展开所有'}
+                        </Dropdown.Button>
                         <Access accessible={access.wsRoleContrl(data.creator)}
                             fallback={
                                 initialState?.authList?.ws_role_title === 'ws_tester' ?
@@ -382,7 +405,25 @@ export default (props: any) => {
                 expandable={{
                     defaultExpandAllRows: openAllRows,
                     expandedRowKeys: expandedRowKeys,
-                    onExpand: handleOnExpand,
+                    onExpand: (expanded: boolean, record: any) => {
+                        if (expanded) {
+                            const tempList = expandedRowKeys.concat([record.suite_id])
+                            setExpandedRowKeys(tempList)
+                            if (tempList?.length === data?.test_suite.length) {
+                                // 展开的状态标志
+                                setOpenAllRows(true)
+                            }
+                        }
+                        else {
+                            const tempList = expandedRowKeys.filter((i: number) => i !== record.suite_id)
+                            setExpandedRowKeys(tempList)
+                            if (!tempList.length) {
+                                // 收起的状态标志
+                                setOpenAllRows(false)
+                                setIndexExpandFlag(false)
+                            }
+                        }
+                    },
                     expandedRowRender: (record) => (
                         <CaseTable
                             key={refreshCaseTable}
@@ -392,7 +433,7 @@ export default (props: any) => {
                             server_provider={serverProvider}
                             testType={testType}
                             job_id={job_id}
-                            openAllRows={openAllRows}
+                            openAllRows={indexExpandFlag}
                             state={params[0].state}
                             suiteSelect={selectedRowKeys}
                             onCaseSelect={handleCaseSelect}

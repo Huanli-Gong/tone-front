@@ -56,7 +56,9 @@ export default (props: any) => {
             dataIndex: 'server_sn',
             title: 'SN',
             key: 'server_sn',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             textWrap: 'word-break',
             render: (text: any) => (
                 <Tooltip title={text} overlayStyle={{ wordBreak: 'break-all' }} placement="topLeft">
@@ -85,7 +87,9 @@ export default (props: any) => {
             dataIndex: 'source_job_id',
             title: '来源Job',
             key: 'source_job_id',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             textWrap: 'word-break',
             render: (text: any) => {
                 return (
@@ -133,7 +137,9 @@ export default (props: any) => {
             dataIndex: 'source_job_id',
             title: '来源Job',
             key: 'source_job_id',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             textWrap: 'word-break',
             render: (text: any) => {
                 return (

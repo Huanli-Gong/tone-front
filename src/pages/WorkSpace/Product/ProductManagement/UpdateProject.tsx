@@ -1,5 +1,5 @@
 import { requestCodeMessage } from '@/utils/utils'
-import { Input, Modal, message, Form,Space,Button } from 'antd'
+import { Input, Modal, message, Form, Space, Button, Radio } from 'antd'
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
 
 import { updateProject } from '../services'
@@ -19,9 +19,6 @@ export default forwardRef(
                     setPadding(true)
                     setInfo(item)
                     form.setFieldsValue(item)
-                    // form.setFieldsValue({ 'name': item.name })
-                    // form.setFieldsValue({ 'product_version': item.product_version })
-                    // form.setFieldsValue({ 'description': item.description })
                 }
             })
         )
@@ -30,9 +27,9 @@ export default forwardRef(
             
         }
         const handleChange = (e:any) => {
-            if(e.target.value){
-                setPadding( false )
-            }
+            // if(e.target.value || e.target.value === 0 ){
+            setPadding( false )
+            // }
         }
         const handleOk = async () => {
             form.validateFields()
@@ -44,6 +41,7 @@ export default forwardRef(
                     })
                     if (code === 200) {
                         props.onOk();
+                        props.setVisible(false)
                         setVisible(false)
                     }
                     else {
@@ -75,8 +73,6 @@ export default forwardRef(
                 <Form
                     form={form}
                     layout="vertical"
-                    /*hideRequiredMark*/
-                    //initialValues={{product_version:'uname -r'}}
                 >
                     <Form.Item label="项目名称" name="name"
                         rules={[{
@@ -92,6 +88,12 @@ export default forwardRef(
                     </Form.Item>
                     <Form.Item label="项目描述（选填）" name="description">
                         <Input.TextArea placeholder="请输入备注信息" rows={4} onChange={handleChange}/>
+                    </Form.Item>
+                    <Form.Item label="Dashboard统计" name="is_show">
+                        <Radio.Group onChange={handleChange}>
+                            <Radio value={1}>是</Radio>
+                            <Radio value={0}>否</Radio>
+                        </Radio.Group>
                     </Form.Item>
                 </Form>
             </Modal>

@@ -1,12 +1,11 @@
 import { Button, Popover, Layout, Modal } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/assets/img/compareHome.png';
-import { writeDocumentTitle } from '@/utils/hooks';
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks';
 import { history } from 'umi'
 import styles from './AnalysisCompare/index.less'
 import Draggable from 'react-draggable';
 import AddJob from './AnalysisCompare/AddJob'
-import { CaretDownOutlined } from '@ant-design/icons'
 // import Icon from '@/assets/img/loss.png';
 const addGroup = {
     members: [],
@@ -18,18 +17,11 @@ const addGroup = {
 export default (props: any) => {
     const { ws_id } = props.match.params
     writeDocumentTitle(`Workspace.TestAnalysis.${props.route.name}`)
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
     const [disabled, setDisabled] = useState(true)
     const [visibleAddGroupItem, setVisibleAddGroupItem] = useState(false);
     const [bounds, setBounds] = useState<any>({ left: 0, top: 0, bottom: 0, right: 0 })
     const draggleRef = useRef(null);
-    const windowHeight = () => setLayoutHeight(innerHeight)
-    useEffect(() => {
-        window.addEventListener('resize', windowHeight)
-        return () => {
-            window.removeEventListener('resize', windowHeight)
-        }
-    }, [])
+    const { height: layoutHeight } = useClientSize()
 
     const handleAddJobGroup = () => {
         setVisibleAddGroupItem(true)

@@ -103,6 +103,10 @@
                cursor: pointer;
            }
        }
+       @keyframes blink {
+           0% { opacity: 1;}
+           100% { opacity: 0;}
+       }
         .group_info{
             box-sizing: border-box;
             width: 262px;
@@ -112,6 +116,15 @@
             .line{
                 margin: 0;
                 padding: 0 12px;
+            }
+            &:hover{
+                .workspace_name{
+                    max-width: 142px;
+                }
+                &>.first_part>.baseGroupColorFn{
+                    opacity: 1;
+                    display: inline-block;
+                }
             }
             .first_part{
                 height: 40px;
@@ -137,15 +150,7 @@
                     opacity: 1 !important;
                     display: inline-block !important;
                 }
-                &:hover{
-                    .workspace_name{
-                        max-width: 142px;
-                    }
-                    &>.baseGroupColorFn{
-                        opacity: 1;
-                        display: inline-block;
-                    }
-                }
+               
                 .icon{
                     transform: translateY(6px);
                     &:hover{
@@ -161,6 +166,16 @@
                 float: right;
                 font-size: 12px;
                 color: #0089FF;
+                .icon{
+                    cursor: pointer;
+                    width: 16px;
+                }
+            }
+            .first_part .baseTag{
+                float: right;
+                font-size: 12px;
+                color: #0089FF;
+                animation: blink 1s linear infinite;
                 .icon{
                     cursor: pointer;
                     width: 16px;

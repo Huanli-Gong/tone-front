@@ -66,7 +66,9 @@ export default (props: any) => {
             dataIndex: 'name',
             title: '报告名称',
             width: 165,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}

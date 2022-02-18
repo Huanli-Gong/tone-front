@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, Access, useAccess } from 'umi'
+import { history, useModel, useRequest, useAccess } from 'umi'
 import { Typography, Row, Menu, Col, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
 import TestJobTabs from './components/JobTab'
 import { HearderDropdown } from './components/HeaderDropdown'
 import { CaretDownOutlined } from '@ant-design/icons'
-import { resizeDocumentWidthHooks, useRemoveElementTitle } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import SwithRouteIcon from './components/SwithIcon'
 import { HeaderContainer, LogoWrapper, WorkspaceTitle } from './styled'
 import logoPng from '@/assets/img/logo.png'
@@ -24,7 +24,6 @@ export default (props: any) => {
     const [selectedKeys, setSelectedKeys] = useState<any>([])
     const [routes, setRoutes] = useState([])
     const [visible, setVisible] = useState(false)
-    useRemoveElementTitle()
 
     const { data: types, run } = useRequest(
         () => queryJobTypeList({ ws_id: wsId, enable: 'True' }),
@@ -88,11 +87,11 @@ export default (props: any) => {
 
     const handleMenuOpenChange = (keys: any) => setOpenKeys(keys)
 
-    const layoutWidth = resizeDocumentWidthHooks()
+    const { width: layoutWidth } = useClientSize()
 
     return (
         <HeaderContainer align="middle" justify="space-between">
-            <Col style={{ flex: 1 }}>
+            <div>
                 <Row align="middle" wrap={false}>
                     {
                         !isWs &&
@@ -110,33 +109,20 @@ export default (props: any) => {
                                 onMouseLeave={() => setBackLogo(false)}
                             >
                                 {
-                                    // <Access
-                                    //     accessible={access.backHomeAccess()}
-                                    //     fallback={
-                                    //         backLogo ?
-                                    //             <BackHome
-                                    //                 style={{ width: 32, height: 32, cursor: 'pointer' }}
-                                    //             />
-                                    //             :
-                                    //             <Avatar shape="square" src={require('@/assets/img/logo.png')} size={32} />
-                                    //     }
-                                    // >
-                                        <Popover style={{ marginRight: 20 }} content={"返回首页"}>
-                                            {
-                                                backLogo ?
+                                    <Popover style={{ marginRight: 20 }} content={"返回首页"}>
+                                        {
+                                            backLogo ?
 
-                                                    <BackHome
-                                                        style={{ width: 32, height: 32, cursor: 'pointer' }}
-                                                        onClick={() => history.push('/')}
-                                                    />
-                                                    :
-                                                    <Avatar shape="square" src={require('@/assets/img/logo.png')} size={32} />
-                                            }
-                                        </Popover>
-                                    // </Access>
+                                                <BackHome
+                                                    style={{ width: 32, height: 32, cursor: 'pointer' }}
+                                                    onClick={() => history.push('/')}
+                                                />
+                                                :
+                                                <Avatar shape="square" src={require('@/assets/img/logo.png')} size={32} />
+                                        }
+                                    </Popover>
                                 }
                             </div>
-                            {/* <ArrowRight style={{ marginLeft: 24, marginRight: 24, color: '#fff', fontSize: 14 }} /> */}
                             <HearderDropdown ws_id={wsId} />
                         </WorkspaceTitle>
 
@@ -149,16 +135,12 @@ export default (props: any) => {
                         subMenuOpenDelay={.5}
                         key={layoutWidth}
                         className={styles.menu}
-                        overflowedIndicator={false}
                     >
                         {
                             routes.map(
                                 (item: any, index: number) => {
                                     const itemPath = item.path
-                                    // console.log( itemPath )
-                                    // if (item.name === '新建Job') {
-                                    //     return false
-                                    // }
+
                                     if (isWs) {
                                         if (!item.inNav) return false
                                         let path: string = item.path
@@ -284,33 +266,10 @@ export default (props: any) => {
                         }
                     </Menu>
                 </Row>
-            </Col>
-            <Col>
+            </div>
+            <div>
                 <RightContent wsId={wsId} isWs={isWs} />
-            </Col>
+            </div>
         </HeaderContainer >
     )
 }
-
-
-
-        // wsRoutes.forEach(
-        //     (item: any) => {
-        //         if (is_ws) {
-        //             const routerPath = pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\//,'/ws/:ws_id/')
-        //             if ( routerPath.indexOf(item.path) > -1 ) {
-        //                 setSelectedKeys( [item.path] )
-        //                 return 
-        //             }
-        //         }
-        //         else {
-        //             if (~pathname.indexOf(item.path)) {
-        //                 setSelectedKeys([item.path])
-        //                 return
-        //             }
-        //         }
-        //     }
-        // )
-
-        // if (/\/ws\/[a-zA-Z0-9]{8}\/test_job\/\d+$/.test(pathname))
-        //     setSelectedKeys(['/ws/:ws_id/test_job/:jt_id'])

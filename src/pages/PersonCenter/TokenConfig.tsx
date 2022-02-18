@@ -3,7 +3,7 @@ import { Layout, message, Space, Spin } from 'antd'
 
 import styles from './index.less'
 import { updatePutToken } from './services'
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import ModifyPassModal from './ModifyPassModal'
 
@@ -18,7 +18,7 @@ export default (props: any) => {
     const { tokenData, loading } = props
     const initTokenData = forFn()
     const [tokenValue, setTokenValue] = useState<any>(initTokenData)
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const tokenDataList = _.isString(tokenData) ? tokenData : ''
 
     const handleShow = () => {

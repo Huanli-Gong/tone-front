@@ -6,7 +6,7 @@ import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
-import { workspaceHistroy } from '@/services/Workspace'
+import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { deepObject } from '@/utils/utils';
 
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
@@ -17,7 +17,7 @@ export async function getInitialState(): Promise<any> {
     const initialState = {
         settings: defaultSettings,
         refreshMenu: false,
-        refreshWorkspaceList: false,
+        refreshWorkspaceList: undefined,
         jobTypeList: [],
         authList: {}
     };
@@ -45,7 +45,7 @@ export async function getInitialState(): Promise<any> {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState
             }
-            workspaceHistroy({ ws_id })  //
+            enterWorkspaceHistroy({ ws_id })  //
         }
 
         return {

@@ -29,8 +29,9 @@ import {
 } from '../AnalysisUI';
 import _ from 'lodash';
 
-const ReportTestFunc: React.FC<any> = () => {
+const ReportTestFunc: React.FC<any> = (props) => {
     const { allGroupData, compareResult, baselineGroupIndex, ws_id, group } = useContext(ReportContext)
+    const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
     const [btnName, setBtnName] = useState<string>('')
@@ -197,7 +198,7 @@ const ReportTestFunc: React.FC<any> = () => {
     }
     return (
         <>
-            <Row>
+            <Row style={{ maxWidth : document.body.clientWidth - 40 + scrollLeft }}>
                 <Col span={12}>
                     <TestDataTitle id="func_item">功能测试</TestDataTitle>
                 </Col>

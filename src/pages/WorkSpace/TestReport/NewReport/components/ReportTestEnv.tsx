@@ -42,7 +42,7 @@ const ReportTestEnv = () => {
     // 获取最多行展示
     const len = Array.from(Array(environmentResult?.count)).map(val => ({}))
     return (
-        <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env">
+        <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env" className="position_mark">
             <SubTitle><span className="line"></span>测试环境</SubTitle>
             <EditTitle>环境描述</EditTitle>
             <SettingTextArea

@@ -2,7 +2,7 @@ import React , { useState, useEffect, useCallback , useRef } from 'react'
 import { Breadcrumb , Typography, Row , Space, Tag, Button, Dropdown, Menu, Tooltip, Spin, message } from 'antd'
 import styled from 'styled-components'
 import { FormattedMessage , history } from 'umi'
-import { resizeDocumentHeightHook , resizeDocumentWidthHooks , writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
 import BasicInfoDrawer from './components/BasicInfoDrawer'
 import PipLine from './components/PipLine'
 import ConsoleDrawer from './components/ConsoleDrawer'
@@ -10,14 +10,15 @@ import { queryPlanResultDetail } from './services'
 import { requestCodeMessage } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
 interface ContainerProps {
-    width : number
-    height:number
+    width : number;
+    height:number;
 }
 
 const SummaryContainer = styled.div<ContainerProps>`
     width:${ props => props.width }px;
     height:${ props => props.height }px;
-    overflow:auto;
+    /* overflow:auto; */
+    background: #f5f5f5;
 `
 
 const SummaryHeader = styled.div`
@@ -50,8 +51,8 @@ const ViewDetail = ( props : any ) => {
 
     writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
 
-    const layoutHeight = resizeDocumentHeightHook()
-    const layoutWidth = resizeDocumentWidthHooks()
+    const { height: layoutHeight, width: layoutWidth } = useClientSize()
+
     const [loading, setLoading] = useState(false)
     const [dataSet, setDataSet] = useState<any>({})
     //

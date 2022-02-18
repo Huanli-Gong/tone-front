@@ -156,7 +156,7 @@ export default ({
                 title : '操作',
                 width : 145 , //175,
                 render : ( _ : any ) => (
-                    <Access accessible={access.wsRoleContrl(_.creator)}
+                    <Access accessible={access.wsRoleContrl(creator)}
                         fallback={
                             initialState?.authList?.ws_role_title === 'ws_tester' ?
                                 <Space>
@@ -211,17 +211,18 @@ export default ({
         }
     }
 
+    // 行选回调
     useEffect(() => {
-        // 行选回调
         onCaseSelect( suite_id , selectedRowKeys )
     }, [ selectedRowKeys ])
 
-    useEffect(() =>{
-        if ( openAllRows && data.length > 0 ) {
+    // 子级表格会通过监听传入的状态：展开全部/收起。
+    useEffect(() => {
+        if ( data.length && openAllRows) {
             setExpandedRowKeys( data.map(( i : any ) => i.test_case_id ))
-        }
-        else 
+        } else {
             setExpandedRowKeys([])
+        }
     } , [ data , openAllRows ])
 
     return (
@@ -244,7 +245,7 @@ export default ({
                     expandable={{
                         defaultExpandAllRows : openAllRows,
                         expandedRowKeys : expandedRowKeys,
-                        onExpand : handleOnExpand,
+                        onExpand: handleOnExpand,
                         expandedRowRender : ( record : any ) => (
                             <ResultInfo 
                                 { ...record } 

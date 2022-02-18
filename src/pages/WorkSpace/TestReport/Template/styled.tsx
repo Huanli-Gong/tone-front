@@ -11,7 +11,7 @@ export const CreateTemplateBody = styled.div`
 
 export const CreateHeader = styled.div`
     background:#fff;
-    padding:20px
+    padding:20px;
 `
 
 export const GrayLine = styled.div`
@@ -23,7 +23,7 @@ export const GrayLine = styled.div`
 export const ProjectTitle = styled.div`
     display: flex;
     align-items: center;
-    font-weigth:600;
+    font-weight:600;
     font-size: 16px;
     line-height: 26px;
     font-weight: 600;
@@ -93,7 +93,7 @@ margin-bottom:10px;
 export const TestItemRow = styled(Row)`
     height:48px;
     width:100%;
-    margin-buttom:10px;
+    margin-bottom:10px;
     .ant-typography {
         margin-bottom:0;
     }
@@ -176,6 +176,7 @@ export const ReportTemplate = styled.div<ReportTamplateProps>`
     position: relative;
     display: flex;
     padding-bottom: 56px;
+    background: #f5f5f5;
 `
 
 /* body container */
@@ -388,7 +389,7 @@ export const TermTitle = styled(Col)`
     background: rgba(0,0,0,0.03);
     min-height: 40px;
     padding: 8px 16px;
-    position: relative
+    position: relative;
 `
 
 /* 测试组  */

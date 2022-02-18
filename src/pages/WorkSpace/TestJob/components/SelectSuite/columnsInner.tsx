@@ -50,7 +50,9 @@ export default ( props : ColumnsProp ) => {
         title: 'Test Conf',
         dataIndex: 'title',
         width: 200,
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         render: (_: any) => (
             _ ?
                 <Tooltip placement="topLeft" title={_}>
@@ -62,7 +64,9 @@ export default ( props : ColumnsProp ) => {
 
     const ip = {
         title: '机器',
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         width : 150,
         render: (_: any, row: any) => {
             const { server_tag_id } = row

@@ -109,7 +109,9 @@ const ReportListTable = (props: any) => {
         dataIndex: 'name',
         title: '报告名称',
         width: 200,
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         className: 'no_tourist',
         filterDropdown: ({ confirm }: any) => <SearchInput
             confirm={confirm}
@@ -141,7 +143,9 @@ const ReportListTable = (props: any) => {
     },
     {
         title: '所属项目',
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         width: 150,
         dataIndex: 'project',
         filterDropdown: ({ confirm }: any) => <SelectProject autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleProjectFilter(val, 'project_id')} page_size={9999} ws_id={ws_id} />,
@@ -154,7 +158,9 @@ const ReportListTable = (props: any) => {
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'product_version',
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         width: 150,
         title: '产品版本',
         filterDropdown: ({ confirm }: any) => <SelectProductVersion autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleVersiontFilter(val, 'product_version')} page_size={9999} ws_id={ws_id} />,
@@ -181,7 +187,9 @@ const ReportListTable = (props: any) => {
         dataIndex: 'description',
         width: 200,
         title: '描述',
-        ellipsis: true,
+        ellipsis: {
+            shwoTitle: false,
+        },
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'gmt_modified',

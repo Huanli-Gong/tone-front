@@ -12,6 +12,7 @@ import { queryBusinessList, deleteBusiness } from '../../service';
 import styles from './index.less';
 import { AddBusinessDrawer } from '@/pages/SystemConf/TestSuite/BusinessTest';
 import { TestContext } from '../../Provider'
+import { useClientSize } from '@/utils/hooks';
 
 /**
  * 系统级-业务测试
@@ -208,15 +209,7 @@ export default forwardRef(( props : any, ref: any) => {
 	}
 
 	// 监听当前页面宽度尺寸变化
-	const [layoutWidth, setLayoutWidth] = useState(innerWidth)
-	const getWindowWidth = () => setLayoutWidth(innerWidth)
-	useEffect(() => {
-		window.addEventListener('resize', getWindowWidth)
-		return () => {
-			window.removeEventListener('resize', getWindowWidth)
-		}
-	}, [])
-
+	const { width: layoutWidth } = useClientSize()
 
 	let list = data.data, total = data.total, pageNum = data.page_num
 	return (

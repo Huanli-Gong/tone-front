@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export const ViewLayout = styled.div<LayoutProps>`
     width:${ props => props.width }px;
-    height:${ props => props.height }px;
+    min-height:${ props => props.height }px;
     // padding: 12px 20px 0;
     overflow:auto;
 `

@@ -5,6 +5,7 @@ import { requestCodeMessage } from '@/utils/utils'
 import { checkTestServerIps } from '@/pages/WorkSpace/DeviceManage/GroupManage/services'
 import { useParams, request } from 'umi'
 import { AlertProps } from 'antd/lib/alert'
+import { AgentSelect } from '@/components/utils'
 
 const SelectVmServer = (props: any, ref: any) => {
     const { onOk } = props
@@ -14,23 +15,23 @@ const SelectVmServer = (props: any, ref: any) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState<Array<any>>([])
     const [dataSource, setDataSource] = useState([])
     const [loading, setLoading] = useState(true)
-    const [channelType, setChannelType] = useState('staragent')
+    const [channelType, setChannelType] = useState(BUILD_APP_ENV ? open_agent : self_agent)
 
     const [alertInfo, setAlertInf] = useState<AlertProps>({ type: undefined, message: null })
 
     useImperativeHandle(
         ref, () => ({
             show(_: any) {
-                console.log( _ )
+                console.log(_)
                 queryVmList(_)
             }
         })
     )
 
     const queryVmList = async (id: string | number) => {
-        setLoading( true )
+        setLoading(true)
         const { code, msg, data } = await request(`/api/server/sync_vm/?server_id=${id}`)
-        setLoading( false )
+        setLoading(false)
         if (code !== 200) {
             requestCodeMessage(code, msg)
             return
@@ -150,10 +151,11 @@ const SelectVmServer = (props: any, ref: any) => {
 
                 <Space style={{ marginBottom: 16 }} >
                     <Typography.Text>控制通道：</Typography.Text>
-                    <Select value={channelType} onChange={onChannelTypeChange} placeholder="请选择控制通道">
-                        <Select.Option value="staragent">StarAgent</Select.Option>
-                        <Select.Option value="toneagent">ToneAgent</Select.Option>
-                    </Select>
+                    <AgentSelect
+                        value={channelType}
+                        onChange={onChannelTypeChange}
+                        placeholder="请选择控制通道"
+                    />
                 </Space>
 
                 <Table

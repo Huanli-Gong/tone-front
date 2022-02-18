@@ -1,7 +1,7 @@
 import { Space, Button, Spin, Table, Typography, message, Divider, Tabs, Steps, Collapse, Empty } from 'antd'
 import { CaretRightFilled, CaretDownFilled, CaretRightOutlined } from '@ant-design/icons'
 import React, { useState, useEffect, useRef } from 'react'
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { querySuiteList } from './services'
 import styles from './index.less'
 import _ from 'lodash'
@@ -13,7 +13,7 @@ import { Access, useAccess } from 'umi';
 const { Panel } = Collapse;
 const { Step } = Steps;
 export default (props: any) => {
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const access = useAccess()
     const { baselineGroup, handleCancle, onOk, baselineGroupIndex, creatReportOk } = props

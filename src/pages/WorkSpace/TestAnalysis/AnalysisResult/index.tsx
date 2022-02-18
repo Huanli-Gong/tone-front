@@ -14,37 +14,33 @@ import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
 import _ from 'lodash';
 import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
+import { useClientSize } from '@/utils/hooks';
 
 const Report = (props: any) => {
-    const { ws_id } = props.match.params
+    const { ws_id, form_id } = props.match.params
     const local = props.history.location
-    const form_search = window.location.search
-    const id = local.query.form_id
+    // const id = local.query.form_id
     const access = useAccess();
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
+    const [environmentResult, setEnvironmentResult] = useState<any>({})
     const [envData, setEnvData] = useState<Array<{}>>([])
     const [suiteLen, setSuiteLen] = useState(1)
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-    const [loading, setLoading] = useState(true)
-    const windowHeight = () => setLayoutHeight(innerHeight)
+    const [scrollLeft, setScrollLeft] = useState(0)
+    // const windowHeight = () => setLayoutHeight(innerHeight)
+    const saveReportDraw: any = useRef(null)
 
     const scrollDom = document.querySelector('.ant-layout-has-sider .ant-layout')
     const { top } = useScroll(scrollDom as any)
     const group = allGroupData?.length
 
-    useEffect(() => {
-        window.addEventListener('resize', windowHeight)
-        return () => {
-            window.removeEventListener('resize', windowHeight)
-        }
-    }, [])
+    const { height: layoutHeight } = useClientSize()
     // 请求对比数据
     const queryCompareForm = async () => {
-        const data = await queryForm({ form_id: id })
+        const data = await queryForm({ form_id })
         if (data.code == 200) {
             const shareData = JSON.parse(data.data.req_form)
             setTestDataParam(shareData.testDataParam)
@@ -55,7 +51,7 @@ const Report = (props: any) => {
     }
 
     useEffect(() => {
-        if (id && JSON.stringify(id) !== '{}') {
+        if (form_id) {
             queryCompareForm()
         } else {
             if (local.state && JSON.stringify(local.state) !== '{}') {
@@ -65,7 +61,7 @@ const Report = (props: any) => {
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
             }
         }
-    }, [id, local])
+    }, [form_id, local])
 
     const backTop = () => (document.querySelector('.ant-layout-has-sider .ant-layout') as any).scrollTop = 0
 
@@ -73,7 +69,7 @@ const Report = (props: any) => {
         func_data_result: [],
         perf_data_result: []
     })
-    const [environmentResult, setEnvironmentResult] = useState<any>({})
+
     const queryCompareResultFn = async (paramData: any) => {
         const result = await queryCompareResultList(paramData)
         return result
@@ -159,10 +155,9 @@ const Report = (props: any) => {
                 envDataParam: paramEenvironment
             }
             const data = await compareForm({ form_data })
-            // setFormId(data.data)
             const clipboard = new Clipboard('.test_result_copy_link', {
                 text: function (trigger) {
-                    return `${location.href}/?form_id=${data.data}`;
+                    return location.origin + `/share/analysis_result/${data.data}`
                 }
             });
 
@@ -175,10 +170,11 @@ const Report = (props: any) => {
             clipboard.destroy()
         }, [allGroupData, baselineGroupIndex]
     )
-    const saveReportDraw: any = useRef(null)
+    
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
     }
+
     const creatReportCallback = (reportData: any) => { // suiteData：已选的
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
@@ -194,6 +190,17 @@ const Report = (props: any) => {
             }
         })
     }
+
+    const slidingLeft = (e:any) => {
+        const scrollWidth =  e.srcElement.scrollLeft || 0;
+            setScrollLeft(scrollWidth)
+    }
+        useEffect(()=>{
+        window.addEventListener('scroll',slidingLeft,true)
+        return () => {
+            window.removeEventListener('scroll',slidingLeft,true)
+        }
+    },[])
 
     useEffect(() => {
         if (JSON.stringify(environmentResult) !== '{}') {
@@ -221,9 +228,10 @@ const Report = (props: any) => {
             <div
                 style={{
                     width: '100%',
-                    height: layoutHeight - 50,
+                    minHeight: layoutHeight - 50,
                     position: 'relative',
-                    overflow: 'auto'
+                    // overflow: 'auto',
+                    background: "#f5f5f5"
                 }}
             >
                 {
@@ -235,23 +243,19 @@ const Report = (props: any) => {
                             <i></i>
                         </span>
                     </MyLoading>
-                }   
+                }
                 <AnalysisWarpper style={{ width: group > 3 ? group * 390 : 1200 }}>
                     <Col span={24}>
-                        <ResultTitle>
+                        <ResultTitle style={{ maxWidth : document.body.clientWidth - 40 + scrollLeft }}>
                             <TypographyText>对比分析结果</TypographyText>
                             <span className="btn">
-                                {
-                                    form_search == '' ?
-                                        <>
-                                            <span className="test_result_copy_link"></span>
-                                            <span onClick={handleShare} style={{ cursor: 'pointer' }} ><IconLink style={{ marginRight: 5 }} />分享</span>
-                                        </>
-                                        :
-                                        <span className="copy_link" style={{ cursor: 'pointer' }}><IconLink style={{ marginRight: 5 }} />分享</span>
+                                <span className="test_result_copy_link"></span>
+                                { !form_id && <span  onClick={handleShare} style={{ cursor: 'pointer' }} >
+                                        <IconLink style={{ marginRight: 5 }} />分享
+                                    </span>
                                 }
                                 <Access accessible={access.wsRoleContrl()}>
-                                    {form_search == '' && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
+                                    {!form_id && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
                                 </Access>
                             </span>
                         </ResultTitle>
@@ -262,8 +266,8 @@ const Report = (props: any) => {
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
                                 <SubTitle><span className="line"></span>测试数据</SubTitle>
-                                <PerformanceTest parentDom={testDataRef} />
-                                <FunctionalTest />
+                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft}/>
+                                <FunctionalTest scrollLeft={scrollLeft}/>
                             </ModuleWrapper>
                         </ResultContent>
                     </Col>

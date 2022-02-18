@@ -5,15 +5,14 @@ import { ViewContent , ViewLayout , TabContainer } from './styled'
 import ViewCollapse from './components/ViewCollapse'
 import { FormattedMessage } from 'umi'
 
-import { resizeDocumentHeightHook , resizeDocumentWidthHooks , writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
 
 const PalnView = (props: any) => {
     const { route , match } = props
     const { ws_id } = match.params 
 
-    const layoutHeight = resizeDocumentHeightHook()
-    const layoutWidth = resizeDocumentWidthHooks()
-    
+    const { height: layoutHeight, width: layoutWidth } = useClientSize()
+
     writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
 
     return (

@@ -14,6 +14,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { deleteSuite, deleteConf } from './methodPulic.js';
 // import ChartsIndex from '../../../../AnalysisResult/components/ChartIndex';
 import ChartsIndex from '../PerfCharts';
+import ChartTypeChild from './ChartTypeChild'
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import {
@@ -49,7 +50,6 @@ const Performance = (props: any) => {
     const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, environmentResult, groupLen } = useContext(ReportContext)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
-    const [chartType, setChartType] = useState('1')
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
@@ -57,30 +57,29 @@ const Performance = (props: any) => {
     // let group = allGroupData?.length
     const switchMode = () => {
         setBtn(!btn)
-        setChartType('1')
+        // setChartType('1')
     }
-    const hanldeChangeChartType = (val: string) => setChartType(val)
 
     useEffect(() => {
         setBtnName(btn ? '图表模式' : '列表模式')
     }, [btn])
 
-    const baseIndex = useMemo(()=>{
-        if(baselineGroupIndex === -1) return 0
+    const baseIndex = useMemo(() => {
+        if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
-    },[ baselineGroupIndex ])
+    }, [baselineGroupIndex])
 
-    const handleDataArr = (dataArr:any,baseIndex:number) => {
+    const handleDataArr = (dataArr: any, baseIndex: number) => {
         if (Array.isArray(dataArr.list) && !!dataArr.list.length) {
-            dataArr.list.forEach((per:any)=>(
-                per.conf_list.forEach((conf:any,i:number)=>(
-                    conf.metric_list.forEach((metric:any,idx:number)=>
-                        (
-                            metric.compare_data.splice(baseIndex,0,{
-                                cv_value: metric.cv_value,
-                                test_value: metric.test_value,
-                            })
-                        )
+            dataArr.list.forEach((per: any) => (
+                per.conf_list.forEach((conf: any, i: number) => (
+                    conf.metric_list.forEach((metric: any, idx: number) =>
+                    (
+                        metric.compare_data.splice(baseIndex, 0, {
+                            cv_value: metric.cv_value,
+                            test_value: metric.test_value,
+                        })
+                    )
                     )
                 ))
             ))
@@ -91,24 +90,29 @@ const Performance = (props: any) => {
     useEffect(() => {
         let dataArr = _.cloneDeep(child)
         setPerData(
-            btn ? handleDataArr(dataArr,baseIndex) : child
+            btn ? handleDataArr(dataArr, baseIndex) : {
+                ...child, list: child.list.map((item: any) => {
+                    return {
+                        ...item,
+                        chartType: '1'
+                    }
+                })
+            }
         )
-        // setPerData(child)
-    }, [child,btn])
-
+    }, [child, btn])
     // 筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
-        let dataSource = handleDataArr(_.cloneDeep(child),baseIndex)
-        let num = baseIndex === 0 ? 1 : 0
+        let dataSource = handleDataArr(_.cloneDeep(child), baseIndex)
+        let num = baseIndex ? 0 : 1
         if (value === 'all') {
             setPerData(dataSource)
-        }  else {
+        } else {
             let list = dataSource.list.map((item: any) => {
-                 let conf_list =  item.conf_list.map((conf:any) => {
-                    let metric_list = conf.metric_list.filter((metric:any) => value === 'volatility' 
-                    ? (metric.compare_data[num]?.compare_result === 'increase' || metric.compare_data[num]?.compare_result === 'decline')
-                    : metric.compare_data[num]?.compare_result === value )
+                let conf_list = item.conf_list.map((conf: any) => {
+                    let metric_list = conf.metric_list.filter((metric: any) => value === 'volatility'
+                        ? (metric.compare_data[num]?.compare_result === 'increase' || metric.compare_data[num]?.compare_result === 'decline')
+                        : metric.compare_data[num]?.compare_result === value)
                     return {
                         ...conf,
                         metric_list,
@@ -269,8 +273,8 @@ const Performance = (props: any) => {
         })
         objList.splice(baseIndex, 0, obj)
         return (
-            objList.map((item: any) => (
-                item !== undefined && <PrefDataText gLen={groupLen} btnState={btnState}>
+            objList.map((item: any, idx: number) => (
+                item !== undefined && <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                     <a style={{ cursor: 'pointer' }}
                         href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
                         target="_blank"
@@ -296,15 +300,7 @@ const Performance = (props: any) => {
                         >
                             {btnState && <CloseBtn />}
                         </Popconfirm>
-                        {!btn && <Space style={{ position: 'absolute', right: 12 }}>
-                            <Typography.Text>视图：</Typography.Text>
-                            <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
-                                <Select.Option value="1">所有指标拆分展示(type1)</Select.Option>
-                                <Select.Option value="2">多Conf同指标合并(type2)</Select.Option>
-                                <Select.Option value="3">单Conf多指标合并(type3)</Select.Option>
-                            </Select>
-                        </Space>
-                        }
+                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
                     </SuiteName>
                     <TestConfWarpper>
                         {!domainResult.is_default &&
@@ -425,21 +421,21 @@ const Performance = (props: any) => {
                                                         <MetricTitle gLen={groupLen}>
                                                             <Row justify="space-between">
                                                                 <Col span={16} >
-                                                                <Row justify="start">
-                                                                    <EllipsisPulic
-                                                                        title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
+                                                                    <Row justify="start">
+                                                                        <EllipsisPulic
+                                                                            title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
                                                                         // width={210}
-                                                                    >
-                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
-                                                                            {metric.metric}{metric.unit && <span>({metric.unit})</span>}
-                                                                        </Typography.Text>
-                                                                    </EllipsisPulic>
+                                                                        >
+                                                                            <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
+                                                                                {metric.metric}{metric.unit && <span>({metric.unit})</span>}
+                                                                            </Typography.Text>
+                                                                        </EllipsisPulic>
                                                                     </Row>
                                                                 </Col>
                                                                 <Col span={8}>
-                                                                <Row justify="end">
-                                                                    <RightResult>({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})</RightResult>
-                                                                </Row>
+                                                                    <Row justify="end">
+                                                                        <RightResult>({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})</RightResult>
+                                                                    </Row>
                                                                 </Col>
                                                             </Row>
                                                         </MetricTitle>
@@ -490,7 +486,7 @@ const Performance = (props: any) => {
                                     </div>
                                 )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 :
-                                <ChartsIndex {...suite} chartType={chartType} envData={environmentResult} />
+                                <ChartsIndex {...suite} envData={environmentResult} />
                         }
                     </TestConfWarpper>
                 </TestSuite >
@@ -501,7 +497,7 @@ const Performance = (props: any) => {
     return (
         name === 'group' ?
             <div key={id}>
-                <TestGroupItem id={`perf_item-${id}`}>
+                <TestGroupItem id={`perf_item-${id}`} className="tree_mark">
                     <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                     <TestItemText>
                         <SettingTextArea
@@ -531,7 +527,7 @@ const Performance = (props: any) => {
             </div>
             :
             <div key={id}>
-                <TestItem id={`perf_item-${id}`}>
+                <TestItem id={`perf_item-${id}`} className="tree_mark">
                     <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                     <TestItemText>
                         <SettingTextArea

@@ -5,6 +5,7 @@ import { queryTestServerAppGroup, queryTestServerNewList, addServerGroup, checkT
 import Owner from '@/components/Owner/index';
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils';
+import { AgentSelect } from '@/components/utils';
 
 const CreateClusterDrawer = (props: any, ref: any) => {
     const { onFinish, ws_id } = props
@@ -207,10 +208,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                             <Row>
                                 <Col span={24}>
                                     <Form.Item name="channel_type" label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]}>
-                                        <Select onChange={handleIpsCheck}>
-                                            <Select.Option value="staragent">StarAgent</Select.Option>
-                                            <Select.Option value="toneagent">ToneAgent</Select.Option>
-                                        </Select>
+                                        <AgentSelect onChange={handleIpsCheck}/>
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>

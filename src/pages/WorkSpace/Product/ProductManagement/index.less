@@ -1,7 +1,7 @@
 .product_left {
   width: 300px;
   border: 1px solid #eee;
-  height: 580px;
+  height: 515px;
 
   .create_button_wrapper {
     padding-top: 20px;
@@ -11,10 +11,11 @@
 
   .all_product {
     width: 100%;
-    max-height: calc(100% - 32px - 72px);
+    // max-height: calc(100% - 32px - 72px);
+    // height: 409px;
     overflow: auto;
     padding-top: 8px;
-    padding-left: 20px;
+    // padding-left: 20px;
 
     .text_ellip {
       width: 200px;
@@ -33,16 +34,30 @@
     font-weight: 700;
     color: rgba(0, 0, 0, .85);
   }
+  .product_row{
+    cursor: move;
+    height: 32px;
+    line-height: 32px;
+    .move_active{
+      visibility: visible;
+      background: rgba(0,0,0,.04);
+      margin-right: 6px;
+    }
+    .move{
+      width: 20px;
+      visibility: hidden;
+    }
+  }
+  .product_row:hover {
+    background: rgba(0,0,0,.02);
+  }
   .product_item_default{
-    cursor: pointer;
-    margin-bottom: 8px;
-    padding: 0 20px;
+    padding-left: 20px;
     background: url('~@/assets/img/icon_shell_default.svg') no-repeat left center / 16px 16px;
   }
+  
   .product_item_old{
-    cursor: pointer;
-    margin-bottom: 8px;
-    padding: 0 20px;
+    padding-left: 20px;
     background: url('~@/assets/img/icon_shell.svg') no-repeat left center / 16px 16px;
   }
   .product_item,
@@ -69,7 +84,7 @@
   .remove_active {
     color: red;
     cursor: pointer;
-    margin-top: 4px;
+    margin-top: 8px;
   }
 
   .remove {
@@ -82,8 +97,8 @@
 }
 
 .product_right {
-  width: calc(100% - 300px - 20px);
-  height: 580px;
+  width: calc(100% - 320px);
+  height: 515px;
 }
 
 .product_right_detail {
@@ -143,6 +158,7 @@
 .right_project {
   height: calc(100% - 57px);
   background-color: #F7F7F7;
+  // padding-bottom: 15px;
 
   :global(.ant-spin-nested-loading) {
     width: 100%;
@@ -151,87 +167,41 @@
     overflow-y: auto;
   }
 
-  .right_project_father {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    align-content: flex-start;
-  }
-
-  .right_project_child {
+  .project_warpper {
     width: 21%;
     margin: 0 0 20px 20px;
     height: 118px;
     background-color: #fff;
     border-radius: 4px;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-
-    .right_project_default {
+    cursor: move;
+    .project_default_icon {
       height: 35px;
       width: 35px;
       float: right;
       background: #fff url('~@/assets/img/project_default_icon.svg') no-repeat right top / 35px 35px;
       cursor: pointer;
     }
-    .right_project_child_warp{
+    .project_child{
       height: 118px;
       padding: 20px;
-      .right_project_child_firstLine {
+      .project_name {
         font-size: 16px;
         color: #000;
         margin-bottom: 6px;
         font-weight: bold;
-        // .public_ellip()
       }
-      .right_project_child_secondLine {
+      .project_version {
         color: rgba(0, 0, 0, .4);
         font-size: 12px;
         margin-bottom: 6px;
-        //.public_ellip()
       }
-      .right_project_child_secondLine:empty:after {
+      .project_version:empty:after {
         content: '-'
       }
-      .right_project_child_threeLine {
-        color: #000;
-        font-size: 12px;
-        margin-bottom: 6px;
-        opacity: 0.4;
-        // .public_ellip()
-      }
     }
-    // .right_project_child_firstLine {
-    //   font-size: 16px;
-    //   color: #000;
-    //   margin-bottom: 6px;
-    //   font-weight: bold;
-    //   .public_ellip()
-    // }
-
-    // .right_project_child_secondLine {
-    //   color: #000;
-    //   font-size: 12px;
-    //   margin-bottom: 6px;
-    //   opacity: 0.4;
-    //   .public_ellip()
-    // }
-
-    // .right_project_child_secondLine:empty:after {
-    //   content: '-'
-    // }
-
-    // .right_project_child_threeLine {
-    //   color: #000;
-    //   font-size: 12px;
-    //   margin-bottom: 6px;
-    //   opacity: 0.4;
-    //   .public_ellip()
-    // }
   }
-  .right_project_child:hover{
-    .right_project_icon{
+  .project_warpper:hover{
+    .project_icon{
       height: 35px;
       width: 35px;
       float: right;
@@ -241,15 +211,13 @@
   }
 }
 
-.right_project_create{
+.project_create{
     width: 21%;
     margin: 0 0 20px 20px;
     height: 118px;
     background-color: #fff;
     border-radius: 4px;
     padding: 20px;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
   &_empty {
     text-align: center;

@@ -7,7 +7,8 @@ interface Props {
 
 export const CreateContainer = styled.div<Props>`
     width : 100%;
-    height : ${ props => props.height - 50 }px;
+    /* height : ${ props => props.height - 50 }px; */
+    background-color: #f5f5f5;
 `
 
 export const ContainerBody = styled( Row )<Props>`

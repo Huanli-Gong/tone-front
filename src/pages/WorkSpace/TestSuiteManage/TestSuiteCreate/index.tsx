@@ -10,6 +10,7 @@ import { queryDomains, queryBusinessSuite, queryWorkspaceBusinessSuite } from '@
 import styles from './index.less'
 import { unionBy } from 'lodash'
 import CodeViewer from '@/components/CodeViewer'
+import { useClientSize } from '@/utils/hooks'
 export default (props: any) => {
     const { ws_id, test_type }: any = useParams()
 
@@ -28,8 +29,7 @@ export default (props: any) => {
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [leftTableLoading, setLeftTableLoading] = useState(true)
 
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-
+    const { height: layoutHeight } = useClientSize()
     const getDomains = async () => {
         const { data: domains } = await queryDomains()
         setDomainList(domains)
@@ -122,13 +122,8 @@ export default (props: any) => {
         setExpandRows([+ record.id])
     }
 
-    const resizeWindow = () => setLayoutHeight(innerHeight)
-
     useEffect(() => {
-        setLayoutHeight(innerHeight)
-        window.addEventListener('resize', resizeWindow);
         return () => {
-            window.removeEventListener('resize', resizeWindow);
             clearTimeout(timer)
         }
     }, []);
@@ -402,7 +397,9 @@ export default (props: any) => {
     const leftTableDataSource = leftWsHasSuiteArr
 
     const toolTipSetting = {
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => {
             if (_ && _ !== '[]')
                 return (

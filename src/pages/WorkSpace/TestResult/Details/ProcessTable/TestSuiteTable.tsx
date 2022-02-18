@@ -7,10 +7,11 @@ import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
 
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
-import { useRequest,useAccess,Access } from 'umi';
+import { useRequest,useAccess,Access, useModel } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 
-export default ({ job_id, refresh = false, testType }: any) => {
+export default ({ job_id, refresh = false, testType, provider_name }: any) => {
+    const { initialState } = useModel('@@initialState');
     const access = useAccess()
     const { data, loading, run } = useRequest(
         () => queryProcessSuiteList({ job_id }),
@@ -81,7 +82,6 @@ export default ({ job_id, refresh = false, testType }: any) => {
                                 fallback={<span style={style}>停止Suite</span>}
                             >
                                 <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
-                                
                             </Access>
                             <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
                         </>
@@ -100,7 +100,12 @@ export default ({ job_id, refresh = false, testType }: any) => {
     ]);
 
     const handleStopSuite = async (_: any) => {
+        // 添加用户id
+        const { user_id } = initialState?.authList
+        const q = user_id ? { user_id } : {}
+
         const { code, msg } = await updateSuiteCaseOption({
+            ...q,
             editor_obj: 'test_job_suite',
             test_job_suite_id: _.id,
             state: 'stop'
@@ -115,13 +120,12 @@ export default ({ job_id, refresh = false, testType }: any) => {
 
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
-    /* useEffect(() => {
-        setExpandedKeys(data.map((item: any) => item.id))
-    }, [data]) */
-
-    // pending/running状态的suite加个“跳过suite”按钮
     const handleSkipSuite  = async (_: any)=> {
+        // 添加用户id
+        const { user_id } = initialState?.authList
+        const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({
+            ...q,
             editor_obj: 'test_job_suite',
             state: 'skip',
             test_job_suite_id: _.id,
@@ -162,7 +166,7 @@ export default ({ job_id, refresh = false, testType }: any) => {
                     },
                     expandedRowRender: (record) => {
                         return (
-                            <TestConfTable {...record} job_id={job_id} testType={testType} />
+                            <TestConfTable {...record} job_id={job_id} testType={testType} provider_name={provider_name}/>
                         )
                     },
                     expandIcon: ({ expanded, onExpand, record }: any) => (
@@ -175,19 +179,3 @@ export default ({ job_id, refresh = false, testType }: any) => {
         </Card>
     )
 }
-
-// const { test_case_detail } = record;
-// console.log( test_case_detail )
-// let detail : any = []
-// if ( JSON.stringify( test_case_detail) !== '{}' ) {
-//     detail = Object.keys( test_case_detail ).map(
-//         ( i : any ) => ({
-//             name : i,
-//             ...test_case_detail[ i ]
-//         })
-//     )
-// }
-// const expandTableSrouce = {
-//     ...record ,
-//     test_case_detail : detail
-// }

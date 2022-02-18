@@ -83,7 +83,7 @@ const TouchSetting = ( props : any , ref : any ) => {
                                         placement="rightBottom"
                                         desc={
                                             <>
-                                                <Row><Typography.Text strong>CronTab表达式格式：</Typography.Text></Row>
+                                                <Row><Typography.Text strong>触发规则格式：</Typography.Text></Row>
                                                 <br />
                                                 <Row><Typography.Text strong>如：* * * * *</Typography.Text></Row>
                                                 <EmRow>1. minute:分</EmRow>

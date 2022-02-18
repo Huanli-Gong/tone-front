@@ -15,7 +15,7 @@ import { cloudList, delCloud } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import ResizeTable from '@/components/ResizeTable';
 import { useParams } from 'umi';
 import _ from 'lodash'
@@ -48,7 +48,7 @@ export default (props: any) => {
     const [tableColumns, setTableColumns] = useState<any>([])
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
-    const { windowHeight } = resizeClientSize()
+    const { height: windowHeight } = useClientSize()
     const viewDetailRef: any = useRef(null)
     useEffect(() => {
         let columns: any = [
@@ -101,26 +101,36 @@ export default (props: any) => {
                 title: '云厂商/Ak',
                 dataIndex: 'manufacturer',
                 width: 160,
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
             },
             {
                 title: 'Region/Zone',
                 width: 160,
                 dataIndex: 'region',
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
             },
             {
                 title: '规格',
                 width: 110,
                 dataIndex: 'instance_type',
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={row.instance_type} />
             },
             {
                 title: '镜像',
                 dataIndex: 'image',
                 width: 160,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={row.image} />
             },
             {
@@ -146,6 +156,9 @@ export default (props: any) => {
                 title: 'Console配置',
                 width: 100,
                 dataIndex: 'console_conf',
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={_} />
             },
             {
@@ -208,6 +221,9 @@ export default (props: any) => {
                     if (visible) {
                         setFocus(!autoFocus)
                     }
+                },
+                ellipsis: {
+                    showTitle: false
                 },
                 render: (_: any, row: any) => (
                     <EllipsisPulic title={row.description} >

@@ -117,7 +117,9 @@ export default (props: any) => {
         {
             title: '类型名称',
             dataIndex: 'name',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             fixed: 'left',
             render: (_: any) => <EllipsisPulic title={_}/>,
         },
@@ -155,7 +157,9 @@ export default (props: any) => {
         {
             title: '描述',
             dataIndex: 'description',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any) => <EllipsisPulic title={_}/>
         },
         {

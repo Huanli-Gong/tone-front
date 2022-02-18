@@ -1,19 +1,12 @@
-import React,{ useEffect, useState } from 'react';
+import { useClientSize } from '@/utils/hooks';
+import React from 'react';
 
-export default function ContentContainer(props : any) {
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-    const windowHeight = () => setLayoutHeight(innerHeight)
+export default function ContentContainer(props: any) {
+  const { height: layoutHeight } = useClientSize()
 
-    useEffect(() => {
-      window.addEventListener('resize', windowHeight)
-      return () => {
-        window.removeEventListener('resize', windowHeight)
-      }
-    }, [])
-
-    return (
-      <div style={{ height: layoutHeight - 50, overflow: 'auto' }}>
-        {props.children}
-      </div>
-    )
+  return (
+    <div style={{ minHeight: layoutHeight - 50, background: '#fff' }}>
+      {props.children}
+    </div>
+  )
 }

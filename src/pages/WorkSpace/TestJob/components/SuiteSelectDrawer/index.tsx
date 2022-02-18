@@ -1,4 +1,4 @@
-import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
+import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber, Row, Col } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
@@ -30,6 +30,38 @@ const NameContent = styled.div`
     font-size: 12px;
     color: rgba(0,0,0,.65);
     margin-top: 4px;
+    margin-right: 14px;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+`
+
+const FieldsInput = styled.div`
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-variant: tabular-nums;
+    list-style: none;
+    font-feature-settings: 'tnum', "tnum";
+    position: relative;
+    display: inline-block;
+    min-width: 0;
+    padding: 4px 11px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    line-height: 1.5715;
+    background-image: none;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    transition: all 0.3s;
+    color: rgba(0, 0, 0, 0.25);
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 1;
+    width: 159px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `
 
 const SuiteDrawer = (props: any, ref: any) => {
@@ -492,7 +524,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                     <div>{`${batch ? '批量' : ''}配置Test ${settingType === 'suite' ? 'Suite' : 'Conf'}`}</div>
                     {
                         !batch &&
-                        <NameContent >
+                        <NameContent>
                             {dataSource?.title}
                         </NameContent>
                     }
@@ -574,17 +606,33 @@ const SuiteDrawer = (props: any, ref: any) => {
                                         (fields, { add, remove }) => (
                                             fields.map((field, index) => {
                                                 const evn = form.getFieldValue('env_info')
+                                                const RowItem = ({ label, value, width }: any)=> (
+                                                   <div style={{ display: 'flex'}}>
+                                                       <div style={{ flexWrap: 'nowrap', flexShrink: 0 }}>{label}</div>
+                                                       <div style={{ flexWrap: 'wrap', width }}>{value}</div>
+                                                   </div>
+                                                )
                                                 return (
                                                     <Space key={field.key} style={{ marginBottom: 8 }} align="start">
-                                                        <Tooltip title={evn[index].des}>
-                                                            <Form.Item
+                                                        <Tooltip placement="topLeft" overlayStyle={{ width: 250 }}
+                                                          title={
+                                                            (evn[index]?.name || evn[index]?.des) ?
+                                                            <Space direction="vertical">
+                                                                {!!evn[index]?.name && <RowItem label="变量名：" value={evn[index]?.name} width={180}/>}
+                                                                {!!evn[index]?.des && <RowItem label="变量说明：" value={evn[index]?.des} width={165}/>}
+                                                            </Space>
+                                                            :
+                                                            null
+                                                        }>
+                                                            {/* <Form.Item
                                                                 name={[field.name, 'name']}
                                                                 fieldKey={[field.fieldKey, 'name']}
                                                             >
                                                                 <Input disabled={true} autoComplete="off" placeholder={'key'} />
-                                                            </Form.Item>
+                                                            </Form.Item> */}
+                                                            <FieldsInput>{evn[index]?.name || 'key'}</FieldsInput>
                                                         </Tooltip>
-                                                        <span>=</span>
+                                                        <span style={{marginTop:5,display:'block'}}>=</span>
                                                         <Form.Item
                                                             name={[field.name, 'val']}
                                                             fieldKey={[field.fieldKey, 'val']}

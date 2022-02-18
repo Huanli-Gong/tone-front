@@ -1,7 +1,6 @@
 // src/access.ts
 
-const superAdmins = ['super_admin', 'sys_admin']
-const wsAdmin = ['ws_owner', 'ws_admin', 'ws_tester_admin', BUILD_APP_ENV && 'ws_tester'].filter(Boolean)
+const wsAdmin = ['ws_owner', 'ws_admin', 'ws_tester_admin']
 const anolisSys = ['sys_admin', 'user'] // 社区登录
 const sysAdminIncludeTest = ['super_admin', 'sys_admin', 'sys_test_admin']
 const wsAdminIncludeTest = ['ws_owner', 'ws_admin', 'ws_test_admin'] //sys_test_admin
@@ -14,7 +13,7 @@ export default function (initialState: any) {
     const user_id: number | string | never = authList?.user_id || null
     const sys_role_id: any = authList?.sys_role_id || null
 
-    const canSuperAdmin = () => superAdmins.includes(sys_role_title)
+    const canSuperAdmin = () => sysAdminIncludeTest.includes(sys_role_title)
     const isWsAdmin = () => wsAdmin.includes(ws_role_title)
 
     const canSysTestAdmin = () => sysAdminIncludeTest.includes(sys_role_title)
@@ -30,20 +29,26 @@ export default function (initialState: any) {
         hiddenRoute: () => false, // 隐藏申请审批
         wsOwnerFilter: () => ['ws_owner'].includes(ws_role_title),
         wsTouristFilter: () => !['ws_tourist', ''].includes(ws_role_title),
+        // ws配置页面权限
+        wsBasicContrl: () => {
+            if(BUILD_APP_ENV){
+               return sys_role_title === 'sys_admin'
+            }else{
+                return sys_role_title === 'super_admin' || ws_role_title === 'ws_owner'
+            }
+        },
         wsRoleContrl: (user?: any) => {
+            if (canSuperAdmin() || canWsTestAdmin()) return true
             if (BUILD_APP_ENV) {
-                if (user && ws_role_title === 'ws_tester')
-                    return user === user_id
+                if(ws_role_title === 'ws_tester'){
+                    if (user) return user == user_id
+                    return true
+                }
                 return canWsAdmin()
             }
-            if (canSuperAdmin() || canWsTestAdmin()) return true
             return 'ws_member' === ws_role_title && user === user_id
         },
         hasAdminRole: () => canSuperAdmin() || wsAdmin.includes(ws_role_title),
         memberSysManageRole: (member_id: number) => sys_role_title === 'super_admin' ? sys_role_id > member_id : sys_role_id >= member_id,
     };
 }
-
-
-
-

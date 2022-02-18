@@ -172,8 +172,8 @@ const ReportTestFunc: React.FC<any> = () => {
 
     return (
         <>
-            <TestDataTitle id="func_item">功能测试</TestDataTitle>
-            <TestWrapper>
+            <TestDataTitle>功能测试</TestDataTitle>
+            <TestWrapper id="func_item" className="position_mark">
                 {/* 有组有项 */}
                 {
                     (Array.isArray(dataSource) && !!dataSource.length) ?
@@ -183,7 +183,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                     {
                                         item.is_group ?
                                             <>
-                                                <TestGroup id={`func_item-${item.rowKey}`}>
+                                                <TestGroup id={`func_item-${item.rowKey}`} className="tree_mark">
                                                     <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                     <TestItemText>
                                                         <SettingTextArea
@@ -214,16 +214,18 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 {
                                                     item.list.map((child: any, id: number) => {
                                                         return (
-                                                            <FuncIndex
-                                                                child={child}
-                                                                name="group"
-                                                                id={child.rowKey}
-                                                                subObj={subObj}
-                                                                dataSource={dataSource}
-                                                                setDataSource={setDataSource}
-                                                                onDelete={handleDelete}
-                                                                onChange={handleFieldChange}
-                                                            />
+                                                            <div key={id}>
+                                                                <FuncIndex
+                                                                    child={child}
+                                                                    name="group"
+                                                                    id={child.rowKey}
+                                                                    subObj={subObj}
+                                                                    dataSource={dataSource}
+                                                                    setDataSource={setDataSource}
+                                                                    onDelete={handleDelete}
+                                                                    onChange={handleFieldChange}
+                                                                />
+                                                            </div>
                                                         )
                                                     })
                                                 }
@@ -250,7 +252,4 @@ const ReportTestFunc: React.FC<any> = () => {
     )
 }
 export default memo(ReportTestFunc);
-// export default ReportTestFunc;
-
-
 

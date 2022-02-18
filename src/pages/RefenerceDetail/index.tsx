@@ -1,7 +1,7 @@
 import React,{ useEffect, useMemo, useState } from 'react';
 import { Breadcrumb, Collapse,message,Table } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import CommonPagination from '@/components/CommonPagination'
 import { history } from 'umi';
 import styled from 'styled-components';
@@ -54,7 +54,7 @@ const Refenerce = ( props:any ) => {
     //const [ TempObj,setTempObj ] = useState<any>({ flag:'template', page_num:1, page_size:10 })
     const [ params, setParams ] = useState<any>({ page_num:1, page_size:10 })
     const [ tempParams, setTempParams ] = useState<any>({ page_num:1, page_size:10 })
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     let param =  new URLSearchParams(location.search);
     let [ id, name ] = [param.get('id'),param.get('name')]
 

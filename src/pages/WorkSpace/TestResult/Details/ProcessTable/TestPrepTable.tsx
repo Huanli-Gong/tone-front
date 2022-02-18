@@ -1,4 +1,4 @@
-import React , { useEffect } from 'react'
+import React , { useEffect, useState } from 'react'
 
 import { CaretDownFilled , CaretRightFilled } from '@ant-design/icons'
 
@@ -14,7 +14,10 @@ import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
 
 //测试准备 ==== Table
-export default ({ job_id , refresh = false,  } : any ) => {
+export default ({ job_id , refresh = false, provider_name } : any ) => {
+    // 表格展开的行
+    const [expandedKeys, setExpandedKeys] = useState<any>([])
+
     const { data , loading , run } = useRequest(
         () => queryProcessPrepareList({ job_id }),
         {
@@ -52,12 +55,11 @@ export default ({ job_id , refresh = false,  } : any ) => {
                         for ( let i = 0 ; i < items.length ; i ++ ) {
                             const item = items[ i ]
                             if ( column[ item.server ] ) {
-                                column[ item.server ].items.push({ ...item, rowKey : i, })
-                            }
-                            else {
+                                column[ item.server ].items.push({ ...item, rowKey: `${index}${i}`, })
+                            } else {
                                 column[ item.server ] = {
-                                    ...item, mode, key, rowKey: i,
-                                    items: [{ ...item, rowKey : i, }]
+                                    ...item, mode, key, rowKey: `${index}${i}`,
+                                    items: [{ ...item, rowKey: `${index}${i}`, }]
                                 }
                             }
                         }
@@ -116,6 +118,17 @@ export default ({ job_id , refresh = false,  } : any ) => {
         }
     },[])
 
+    const ipShow = (ip:any) => {
+        const content = (
+            <span>{ ip }</span> 
+        )
+        if(ip) {
+            return content
+        } else {
+            return '-'
+        }
+    }
+
     const columns = [
         {
             dataIndex : 'mode',
@@ -125,11 +138,7 @@ export default ({ job_id , refresh = false,  } : any ) => {
         {
             dataIndex : 'server',
             title : '测试机器',
-            render : ( _ : any , row : any ) => (
-                _ ?
-                    <span>{ _ }</span> 
-                    : '-'
-            )
+            render : ( _ : any , row : any ) => ipShow(_)
         },
         {
             dataIndex : 'stage',
@@ -177,6 +186,8 @@ export default ({ job_id , refresh = false,  } : any ) => {
         {}, {} , {} , {} , {}
     ]
 
+    console.log('expanded', expandedKeys, data)
+
     return (
         <Card 
             title="测试准备" 
@@ -194,10 +205,15 @@ export default ({ job_id , refresh = false,  } : any ) => {
                 pagination={ false }
                 expandable={{
                     expandedRowClassName: () => 'expanded-row-padding-no',
+                    expandedRowKeys: expandedKeys,
+                    onExpand: (expanded: any, record) => {
+                        return expanded ? setExpandedKeys(expandedKeys.concat(record.rowKey)):
+                            setExpandedKeys(expandedKeys.filter((i: any) => i !== record.rowKey))
+                    },
                     expandedRowRender : ( record : any ) => {
                         if ( record.mode === '集群' ) 
                         {
-                            return record.items.map(( item ) => (
+                            return record.items.map(( item:any ) => (
                                 <Table
                                     dataSource={ [ item ] }
                                     columns={ clusterColumns }

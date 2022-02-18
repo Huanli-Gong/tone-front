@@ -5,6 +5,7 @@ import SearchPageList from './SearchPageTable';
 import { querySearchListQuantity } from '../../service';
 import styles from './index.less';
 import { useParams } from 'umi'
+import { useClientSize } from '@/utils/hooks';
 
 const { Search } = Input;
 const { TabPane } = Tabs;
@@ -17,7 +18,6 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const searchKey = typeof(keyword) === 'string' ? keyword : ''
 
   // 滚动区域可视高度
-  const [height, setHeight] = useState(400);
   // 搜索栏
   const [loading, setLoading] = useState(false)
   const [refresh, setRefresh] = useState(false)
@@ -47,23 +47,9 @@ const TestSuiteSearch: React.FC<any> = (props) => {
     }
   } , [])
 
+
   // 获取页面伸缩变化后尺寸
-  function handleResize() {
-    const innerHeight = window.innerHeight;
-    setHeight(innerHeight);
-  }
-  useEffect(() => {
-    // case1. 添加页面尺寸伸缩变化监听
-    handleResize();
-  }, []);
-  useEffect(() => {
-    // case1. 添加页面尺寸伸缩变化监听
-    window.addEventListener('resize', handleResize);
-    return () => {
-      // case2. 删除监听
-      window.removeEventListener('resize', handleResize);
-    }
-  }, []);
+  const { height } = useClientSize()
 
   useEffect(() => {
     getSearchListQuantity({ search_key: searchKey })
@@ -103,7 +89,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3}
 
 	return (
-      <div className={styles.TestSuiteSearch_wrapper} style={{ height: (height - 50), overflow: 'auto' }}
+      <div className={styles.TestSuiteSearch_wrapper} style={{ minHeight: (height - 50), }}
         onScroll={handleScroll} ref={testSuiteSearch_wrapper}
       >
         <div className={styles.header} style={{ display: 'block'}} />

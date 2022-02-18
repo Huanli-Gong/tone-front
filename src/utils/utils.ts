@@ -7,6 +7,8 @@ import _ from 'lodash';
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
+export const agent_list = BUILD_APP_ENV ? [{ "value": "toneagent" , "label": "ToneAgent" }] : JSON.parse(agents)
+
 export const isUrl = (path: string): boolean => reg.test(path);
 
 export const isAntDesignPro = (): boolean => {
@@ -312,6 +314,7 @@ export const targetJump = (href: string) => {
 }
 
 export const requestCodeMessage = (code: number, msg: string) => {
+    if (!msg) return
     if (code === 200) return message.success(msg)
     if (code === 201) return message.warning(msg)
     return message.error(msg)

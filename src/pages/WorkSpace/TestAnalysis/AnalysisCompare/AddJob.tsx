@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
 import { queryJobList, queryProductList, queryProduct } from './services'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
@@ -42,7 +42,7 @@ const getSelJobFn = (allGroup:any,allNoGroupData:any) => {
 }
 export default ( props : any ) => {
     
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const scollMaxHeight = maxHeight - 400 > 430 ? 430 : maxHeight - 400
     resizeDocumentHeight(scollMaxHeight)
@@ -193,7 +193,9 @@ export default ( props : any ) => {
             title: 'Job名称',
             dataIndex: 'name',
             width: 300,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             filterDropdown: ({ confirm }: any) => <SearchInput
 				confirm={confirm}
 				autoFocus={autoFocus}
@@ -361,7 +363,7 @@ export default ( props : any ) => {
                         <span>产品：</span>
                         <Select
                             showSearch
-                            style={{ width: 'calc(100% - 70px)' }}
+                            style={{ width: 'calc(100% - 75px)' }}
                             placeholder="请选择产品"
                             defaultValue={product_id ? pruductName : pruductId}
                             value={product_id ? pruductName : pruductId}
@@ -381,7 +383,7 @@ export default ( props : any ) => {
                         <span>产品版本：</span>
                         <Select
                             showSearch
-                            style={{ width: 'calc(100% - 70px)' }}
+                            style={{ width: 'calc(100% - 75px)' }}
                             placeholder="请选择产品版本"
                             defaultValue={pruductVersion}
                             value={pruductVersion}

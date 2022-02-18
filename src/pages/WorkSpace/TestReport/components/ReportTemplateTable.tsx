@@ -92,7 +92,9 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         {
             dataIndex: 'name',
             title: '模版名称',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             width: 200,
             // className: 'no_tourist',
             filterDropdown: ({ confirm }: any) => (
@@ -125,7 +127,9 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         },
         {
             dataIndex: 'creator_name',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             width: 180,
             title: '创建者',
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator')} page_size={9999} />,
@@ -140,7 +144,9 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         {
             dataIndex: 'update_user_name',
             width: 180,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             title: '修改者',
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'update_user')} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -154,19 +160,25 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         }, {
             dataIndex: 'description',
             width: 200,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             title: '描述',
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }, {
             dataIndex: 'gmt_created',
             width: 200,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             title: '创建时间',
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }, {
             dataIndex: 'gmt_modified',
             width: 200,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             title: '修改时间',
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }, {

@@ -5,7 +5,7 @@ import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import DefaultPageList from './component/DefaultPageTable';
 import { queryTotalNum } from '../../service';
 import styles from './index.less';
-import { writeDocumentTitle } from '@/utils/hooks';
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks';
 
 const { Search } = Input;
 /**
@@ -18,7 +18,6 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const path = pathname && pathname.substring(0, pathname.lastIndexOf('/'))
 	const { ws_id } = props.match.params
   // 滚动区域可视高度
-  const [height, setHeight] = useState(400);
   // 总数
   const [itemSelected, setItemSelected] = useState('performance');
   const [totalNum, setTotalNum] = useState<any>({performance_num: 0, functional_num: 0 })
@@ -40,22 +39,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   }, [ ws_id ])
 
   // 获取页面伸缩变化后尺寸
-  function handleResize() {
-    const innerHeight = window.innerHeight;
-    setHeight(innerHeight);
-  }
-  useEffect(() => {
-    // case1. 添加页面尺寸伸缩变化监听
-    handleResize();
-  }, []);
-  useEffect(() => {
-    // case1. 添加页面尺寸伸缩变化监听
-    window.addEventListener('resize', handleResize);
-    return () => {
-      // case2. 删除监听
-      window.removeEventListener('resize', handleResize);
-    }
-  }, []);
+  const { height } = useClientSize()
 
   // 搜索
   const onSearch = (value: string) => {
@@ -83,7 +67,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   }
 
 	return (
-      <div className={styles.TestSuiteDefault_wrapper} style={{ height: (height - 50) }}
+      <div className={styles.TestSuiteDefault_wrapper} style={{ minHeight: (height - 50) }}
         onScroll={handleScroll} ref={testSuiteSearch_wrapper}
       >
         <div className={styles.content} style={{minHeight: (height - 270) }}>

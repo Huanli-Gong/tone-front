@@ -36,8 +36,20 @@ declare let ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION: 'site' | undefine
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 
-declare const BUILD_APP_ENV : 'opensource' | 'openanolis' | false | undefined 
+declare const BUILD_APP_ENV: 'opensource' | 'openanolis' | false | undefined
+
+declare const self_agent: string
+
+declare const self_agent_name: string
+
+declare const open_agent: string
+
+declare const agents: any
+
+declare const source_agents: any
+
+declare const logoutUrl: string | undefined
 interface FunctionComponent {
-    onClick? : any
+    onClick?: any
 }
 declare module 'react-beautiful-dnd';

@@ -1,4 +1,4 @@
-import { Drawer, Space, Typography, Form, Button, message, Input, Tooltip } from 'antd'
+import { Drawer, Space, Typography, Form, Button, message, Input, Tooltip, Radio } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import styles from './index.less'
@@ -28,7 +28,7 @@ export default forwardRef(
             setVisible(false)
             setMsg(undefined)
         }
-
+        
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
                 props.onOk()
@@ -92,6 +92,7 @@ export default forwardRef(
                         form={form}
                         layout="vertical"
                         /*hideRequiredMark*/
+                        initialValues={{ is_show:1 }}
                         className={styles.product_form}
                     >
                         <Form.Item label="项目名称" name="name" help={msg} rules={[{
@@ -105,6 +106,12 @@ export default forwardRef(
                         </Form.Item>
                         <Form.Item label="项目描述（选填）" name="description">
                             <Input.TextArea placeholder="请输入描述信息" rows={4} />
+                        </Form.Item>
+                        <Form.Item label="Dashboard统计" name="is_show">
+                            <Radio.Group>
+                                <Radio value={1}>是</Radio>
+                                <Radio value={0}>否</Radio>
+                            </Radio.Group>
                         </Form.Item>
                     </Form>
                 </div>

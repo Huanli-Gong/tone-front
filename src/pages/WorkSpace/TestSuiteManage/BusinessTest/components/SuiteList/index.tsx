@@ -114,7 +114,9 @@ const List = ({ business_id, dataSource }:any) => {
 			dataIndex: 'description',
 			className: 'no_padding_head',
 			width: 100,
-			ellipsis: true,
+			ellipsis: {
+                shwoTitle: false,
+            },
 			render: (_: any, record: any) => {
 				return (
 					<PopoverEllipsis title={record.description} width={100} />

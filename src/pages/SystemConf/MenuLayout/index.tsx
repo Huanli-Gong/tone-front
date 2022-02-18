@@ -3,7 +3,7 @@ import { Layout, Menu, Space } from 'antd';
 import { FormattedMessage, history } from 'umi';
 import { layoutProps } from './data.d';
 import styles from './style.less';
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import { SystemMenuIcon } from '@/utils/menuIcon'
 import { useMemo } from 'react';
 const { Sider, Content } = Layout;
@@ -19,30 +19,31 @@ const systemLayout = (props: layoutProps) => {
 		history.push(path)
 	}
 
-	const timeStampKey = useMemo(() => new Date().getTime() , [ location ])
+	const timeStampKey = useMemo(() => new Date().getTime(), [location])
 
 	useEffect(() => {
 		pathname == '/system' && history.push(path);
 	});
 
-	const { windowHeight } = resizeClientSize()
+	const { height: windowHeight } = useClientSize()
 
 	return (
-		<Layout key={ timeStampKey } className={styles.layout} >
+		<Layout key={timeStampKey} className={styles.layout} >
 			<Sider
 				theme="light"
 				className={styles.side}
 			>
-				<Menu 
-					mode="inline" 
-					selectedKeys={[ pathname ]}
+				<Menu
+					mode="inline"
+					selectedKeys={[pathname]}
+					className="sysConfMenu"
 				>
 					{
 						routeRight.map(
 							(item, index) => (
 								!item.hideInMenu &&
 								<Menu.Item
-									key={ item.path }
+									key={item.path}
 									onClick={() => onClick(item.path)}
 								>
 									<Space>
@@ -55,8 +56,8 @@ const systemLayout = (props: layoutProps) => {
 					}
 				</Menu>
 			</Sider>
-			<Content style={{ marginLeft: 200, padding: 20, height: windowHeight - 50, overflow: 'auto' }} >
-				<div style={{ width: '100%', background: '#fff' , minHeight : windowHeight - 90 }}>
+			<Content style={{ padding: 20, minHeight: windowHeight - 50 }} >
+				<div style={{ width: '100%', background: '#fff', minHeight: windowHeight - 90 }}>
 					{
 						props.children
 					}

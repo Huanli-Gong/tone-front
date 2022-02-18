@@ -3,7 +3,7 @@
     // width: 300px;
     width: 395px;
     border: 1px solid #eee;
-    height: 650px;
+    height: 100%;
     overflow: hidden;
     .all_baseline_title{
         opacity: 0.85;
@@ -18,7 +18,7 @@
 
     .all_script {
         width: 100%;
-        max-height: calc(100% - 32px - 72px);
+        height: calc(100% - 32px - 72px - 36px - 8px );
         overflow: auto;
         padding-top: 8px;
         padding-left: 20px;
@@ -121,8 +121,8 @@
 
 .script_right {
     width : calc( 100% - 395px - 20px );
-    height: 580px;
-    overflow: inherit
+    height: 100%;
+    overflow: hidden;
 }
 .baseline_detail{
     width : calc( 100% );
@@ -153,7 +153,8 @@
 }
 
 .right_code_context {
-    height: calc( 100% - 74px - 40px - 32px );
+    height: calc( 100% - 74px - 20px );
+    overflow: hidden;
 }
 
 .right_bottom_options {

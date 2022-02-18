@@ -1,30 +1,35 @@
-import { Form, Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown, Menu, message, Input, Tooltip, Popover, Badge } from 'antd'
-import React, { useState, useEffect, useRef } from 'react'
-import styles from './index.less'
-import { MinusCircleOutlined, MoreOutlined, PlusOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { useLocation, useParams, useRequest } from 'umi'
-import { queryProductList, deleteProduct, queryProjectList, updateProject } from '../services'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Form, Button, Layout, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message, Input } from 'antd'
+import { MinusCircleOutlined, MoreOutlined, ExclamationCircleOutlined, HolderOutlined } from '@ant-design/icons'
+import { useLocation, useParams, useRequest, useAccess, Access } from 'umi'
+import { deleteProduct, updateProject, dropProduct, dropProject, queryDropProduct, queryDropProject } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddProductDrawer from './AddProduct'
 import ShowProjectDrawer from './ViewProjectDetails'
 import CreateProjectDrawer from './NewProject'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import Example from './Container';
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { requestCodeMessage } from '@/utils/utils';
-// import { resizeClientSize } from '@/utils/hooks'
-export default (props: any) => {
-    const { ws_id } = useParams<any>()
-    const { query } : any = useLocation()
+import styles from './index.less'
 
+export default (props: any) => {
+    const access = useAccess()
+
+    const { ws_id } = useParams<any>()
+    const { query }: any = useLocation()
     const [current, setCurrent] = useState<any>({})
     const [clickType, setClickType] = useState<string>('menu') // 区分点击位置。
+    const [projectUp, setProjectUp] = useState(false)
     const [hover, setHover] = useState(null)
     const addProduct: any = useRef(null)
     const showProject: any = useRef(null)
     const createProject: any = useRef(null)
     const [form] = Form.useForm()
-    // const { windowHeight } = resizeClientSize()
-    // console.log('windowHeight',windowHeight)
+    
     const { data: { data = [] }, refresh, loading, run } = useRequest(
-        (params: any) => queryProductList(params),
+        (params: any) => queryDropProduct(params),
         {
             defaultParams: [{ ws_id }],
             initialData: {
@@ -35,9 +40,8 @@ export default (props: any) => {
     )
 
     const { data: projectData, refresh: projectRefresh, loading: projectLoading, run: projectRun } = useRequest(
-        (params: any) => queryProjectList(params),
+        (params: any) => queryDropProject(params),
         {
-            //defaultParams: [{ ws_id, product_id: current.id }],
             initialData: {
                 data: [],
             },
@@ -46,18 +50,18 @@ export default (props: any) => {
         }
     )
 
-    const getCurrentIdx = ( currentId : any ) => data.findIndex(({ id }: any) => id === currentId - 0 )
+    const getCurrentIdx = (currentId: any) => data.findIndex(({ id }: any) => id === currentId - 0)
 
     useEffect(() => {
         if (data.length > 0) {
-            if ('id' in current) 
-                setCurrent(data[getCurrentIdx( current.id )])
-            else 
-                setCurrent(data[ query.current ? getCurrentIdx( query.current ) : 0 ])
+            if ('id' in current)
+                setCurrent(data[getCurrentIdx(current.id)])
+            else
+                setCurrent(data[query.current ? getCurrentIdx(query.current) : 0])
         }
-        else 
+        else
             setCurrent({})
-    }, [data , query ])
+    }, [data, query])
 
 
     //改变当前数据
@@ -67,8 +71,6 @@ export default (props: any) => {
         form.setFieldsValue({ server_type: undefined })
         //projectRun({ product_id: item.id, ws_id })
     }
-
-
 
     const handleAddProduct = () => {
         addProduct.current?.show('新增产品信息')
@@ -80,9 +82,8 @@ export default (props: any) => {
             message.success('操作成功!')
             refresh()
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
-
     const handleDelete = async (item: any) => {
         const { code, msg } = await deleteProduct({ ws_id, prd_id: item.id })
         fetchFinally(code, msg)
@@ -91,19 +92,28 @@ export default (props: any) => {
     const hanldeEdit = () => {
         addProduct.current?.show('编辑产品信息', current)
     }
-    const hanldeProject = (item: any) => {
+    const hanldeProjectDetail = (item: any) => {
         showProject.current?.show('项目详情', item)
     }
-    const handleIcon = async (item: any) => {
-        const data = await updateProject({ project_id: item.id, is_default: 1 })
-        if (data.code === 200) {
+
+    const handleIcon = async (id: any) => {
+        const res = await updateProject({ project_id: id, is_default: 1 })
+        if (res.code === 200) {
+            setProjectUp(true)
+
             message.success('修改默认项目成功')
-            projectRefresh()
-            refresh()
         } else {
-            requestCodeMessage( data.code , data.msg )
+            requestCodeMessage(data.code, data.msg)
         }
+        setProjectUp(false)
     }
+    useEffect(() => {
+        projectRefresh()
+        refresh()
+    }, [projectUp])
+    // const handleIcon = useCallback((id: any) => {
+    //     updateDefaultProject(id)
+    // },[])
     const hanldCreateProject = () => {
         createProject.current?.show('创建项目', {})
     }
@@ -135,9 +145,55 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-        if (current.id !== undefined)
+        if (current.id)
             projectRun({ product_id: current.id, ws_id })
     }, [current.id])
+
+
+    const onDragEnd = async (result: any) => {
+        if (!result.destination) {
+            return;
+        }
+        const { code, msg } = await dropProduct({
+            ws_id,
+            start_id: data[result.source.index].id,
+            end_id: data[result.destination.index].id,
+            from: result.source.index + 1,
+            to: result.destination.index + 1  //后端要从1开始。。
+        })
+        if (code === 200) {
+            // const data = await queryDropProduct({ ws_id })
+            // console.log('data',data)
+            run({ ws_id }).then(res => {
+                if (res.code === 200) {
+                    projectRun({ product_id: current.id, ws_id })
+                }
+            })
+        } else {
+            requestCodeMessage(code, msg)
+        }
+    }
+
+    const onDragProjectEnd = async (from: any, to: number, data: any) => {
+        try {
+            const { code, msg } = await dropProject({
+                product_id: current.id,
+                ws_id,
+                start_id: data[from].id,
+                end_id: data[to].id,
+                from: from + 1,
+                to: to + 1  //后端要从1开始。。
+            })
+            if (code === 200) {
+                projectRun({ product_id: current.id, ws_id })
+            } else {
+                requestCodeMessage(code, msg)
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
 
 
     return (
@@ -146,65 +202,92 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            <Button type="primary" onClick={handleAddProduct}>新增产品</Button>
+                            <Access accessible={access.canWsAdmin()} >
+                                <Button onClick={handleAddProduct} type="primary" >新增产品</Button>
+                            </Access>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text>所有产品 ({data?.length && `${data?.length}`})</Typography.Text>
                         </Row>
-                        <Row className={styles.all_product}>
-                            {
-                                data?.map(
-                                    (item: any) => (
-                                        <Col
-                                            span={24}
-                                            className={item.is_default ? styles.product_item_default : styles.product_item_old}
-                                            key={item.id}
-                                            onClick={() => handleCurrentChange(item)}
-                                            onMouseEnter={() => setHover(item.id)}
-                                            onMouseLeave={() => setHover(null)}
-                                        >
-                                            <Row justify="space-between" className={+ current.id === + item.id ? styles.product_item_active : styles.product_item}>
-                                                {/* <Tooltip title={item.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
-                                                    <Typography.Text className={styles.text_ellip}>{item.name}</Typography.Text>
-                                                </Tooltip> */}
-                                                <EllipsisPulic title={item.name} width={210}>
-                                                    <Typography.Text >{item.name}</Typography.Text>
-                                                </EllipsisPulic>
-                                                {
-                                                    item.is_default
-                                                    ? <Popconfirm
-                                                        title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
-                                                        onConfirm={() => handleDelete(item)}
-                                                        cancelText="取消"
-                                                        okText="确定删除"
-                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                        okButtonProps={{
-                                                            type: 'default',
-                                                            disabled: true
-                                                        }}
+                        <DragDropContext onDragEnd={onDragEnd}>
+                            <Droppable droppableId="droppable">
+                                {(provided: any, snapshot: any) => (
+                                    //这里是拖拽容器 在这里设置容器的宽高等等...
+                                    <Row
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        className={styles.all_product}
+                                    >
+                                        {
+                                            data?.map((item: any, index: number) => {
+                                                return (
+                                                    <Draggable
+                                                        index={index}
+                                                        key={item.key}
+                                                        draggableId={String(index + 1)}
+                                                        product={item.id}
                                                     >
-                                                        <MinusCircleOutlined
-                                                            className={hover === item.id ? styles.remove_active : styles.remove}
-                                                        />
-                                                    </Popconfirm>
-                                                    : <Popconfirm
-                                                        title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
-                                                        onCancel={() => handleDelete(item)}
-                                                        cancelText="确定删除"
-                                                        okText="取消"
-                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                    >
-                                                        <MinusCircleOutlined
-                                                            className={hover === item.id ? styles.remove_active : styles.remove}
-                                                        />
-                                                    </Popconfirm>
-                                                }
-                                            </Row>
-                                        </Col>
-                                    )
-                                )
-                            }
-                        </Row>
+                                                        {(provided: any, snapshot: any) => (
+                                                            //在这里写你的拖拽组件的样式 dom 等等...
+                                                            <Col
+                                                                span={24}
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                key={item.id}
+                                                                onClick={() => handleCurrentChange(item)}
+                                                                onMouseEnter={() => setHover(item.id)}
+                                                                onMouseLeave={() => setHover(null)}
+                                                            >
+                                                                <Row className={styles.product_row}>
+                                                                    <div className={hover === item.id ? styles.move_active : styles.move}><HolderOutlined /></div>
+                                                                    <div className={item.is_default ? styles.product_item_default : styles.product_item_old}></div>
+                                                                    <Row justify="space-between" className={+ current.id === + item.id ? styles.product_item_active : styles.product_item}>
+                                                                        <EllipsisPulic title={item.name} width={210}>
+                                                                            <Typography.Text >{item.name}</Typography.Text>
+                                                                        </EllipsisPulic>
+                                                                        {
+                                                                            item.is_default
+                                                                                ? <Popconfirm
+                                                                                    title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
+                                                                                    onConfirm={() => handleDelete(item)}
+                                                                                    cancelText="取消"
+                                                                                    okText="确定删除"
+                                                                                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                                                    okButtonProps={{
+                                                                                        type: 'default',
+                                                                                        disabled: true
+                                                                                    }}
+                                                                                >
+                                                                                    <MinusCircleOutlined
+                                                                                        className={hover === item.id ? styles.remove_active : styles.remove}
+                                                                                    />
+                                                                                </Popconfirm>
+                                                                                : <Popconfirm
+                                                                                    title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
+                                                                                    onCancel={() => handleDelete(item)}
+                                                                                    cancelText="确定删除"
+                                                                                    okText="取消"
+                                                                                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                                                >
+                                                                                    <MinusCircleOutlined
+                                                                                        className={hover === item.id ? styles.remove_active : styles.remove}
+                                                                                    />
+                                                                                </Popconfirm>
+                                                                        }
+                                                                        </Row>
+                                                                </Row>
+                                                            </Col>
+                                                        )}
+                                                    </Draggable>
+                                                )
+                                            })
+                                        }
+                                        {provided.placeholder}
+                                    </Row>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
                     </div>
                     <div className={styles.product_right}>
                         <Row className={styles.product_right_detail} align="middle">
@@ -212,34 +295,36 @@ export default (props: any) => {
                                 <Row>
                                     <Col span={8}>
                                         <Row>
-                                            <Typography.Text strong style={{ width : 75 }} >产品名称：</Typography.Text>
-                                            <EllipsisPulic title={current.name} style={{ width : 'calc(100% - 85px)'}}/>
+                                            <Typography.Text strong style={{ width: 75 }} >产品名称：</Typography.Text>
+                                            <EllipsisPulic title={current.name} style={{ width: 'calc(100% - 85px)' }} />
                                         </Row>
                                     </Col>
                                     <Col span={8}>
                                         <Row>
-                                            <Typography.Text strong style={{ width : 75 }}>产品描述：</Typography.Text>
-                                            <EllipsisPulic title={current.description} style={{ width : 'calc(100% - 85px)'}} />
+                                            <Typography.Text strong style={{ width: 75 }}>产品描述：</Typography.Text>
+                                            <EllipsisPulic title={current.description} style={{ width: 'calc(100% - 85px)' }} />
                                         </Row>
                                     </Col>
                                     <Col span={8}>
                                         <Row>
-                                            <Typography.Text strong style={{ width : 75 }}>版本命令：</Typography.Text>
-                                            <EllipsisPulic title={current.command} style={{ width : 'calc(100% - 85px)'}} />
+                                            <Typography.Text strong style={{ width: 75 }}>版本命令：</Typography.Text>
+                                            <EllipsisPulic title={current.command} style={{ width: 'calc(100% - 85px)' }} />
                                         </Row>
                                     </Col>
                                 </Row>
                             </Col>
-                            <Dropdown
-                                overlayStyle={{ cursor: 'pointer' }}
-                                overlay={
-                                    <Menu>
-                                        <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
-                                    </Menu>
-                                }
-                            >
-                                <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
-                            </Dropdown>
+                            <Access accessible={access.canWsAdmin()} >
+                                <Dropdown
+                                    overlayStyle={{ cursor: 'pointer' }}
+                                    overlay={
+                                        <Menu>
+                                            <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                                        </Menu>
+                                    }
+                                >
+                                    <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
+                                </Dropdown>
+                            </Access>
                         </Row>
                         <Row className={styles.right_project}>
                             <Row style={{ width: '100%', height: 62 }}>
@@ -253,44 +338,16 @@ export default (props: any) => {
                                 </Form>
                             </Row>
                             <Spin spinning={projectLoading}>
-                                <Row >
-                                    <div className={styles.right_project_father}>
-                                        {
-                                            projectData.data?.map(
-                                                (item: any) => {
-                                                    return (
-                                                        <div className={styles.right_project_child} key={item.id}>
-                                                            <div onClick={() => handleIcon(item)} className={item.is_default ? styles.right_project_default : styles.right_project_icon}></div>
-                                                            <div className={styles.right_project_child_warp} onClick={() => hanldeProject(item)}>
-                                                                <EllipsisPulic title={item.name}>
-                                                                    <Typography.Text className={styles.right_project_child_firstLine}>{item.name}</Typography.Text>
-                                                                    <div style={{ height : 6 }}></div>
-                                                                </EllipsisPulic>
-                                                                <EllipsisPulic title={item.product_version}>
-                                                                    <Typography.Text className={styles.right_project_child_secondLine}>{item.product_version}</Typography.Text>
-                                                                    <div style={{ height : 2 }}></div>
-                                                                </EllipsisPulic>
-                                                                <EllipsisPulic title={item.description}>
-                                                                    <Typography.Text className={styles.right_project_child_secondLine}>{item.description}</Typography.Text>
-                                                                    <div style={{ height : 2 }}></div>
-                                                                </EllipsisPulic>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                }
-
-                                            )
-                                        }
-                                        {clickType === 'menu' && (
-                                            <div className={styles.right_project_create} >
-                                                <div className={styles.right_project_create_empty}>
-                                                    <span onClick={hanldCreateProject}><PlusOutlined /><i>创建项目</i></span>
-                                                </div>
-                                            </div>
-                                        )
-                                        }
-                                    </div>
-                                </Row>
+                                <DndProvider backend={HTML5Backend}>
+                                    <Example
+                                        dataSource={projectData.data}
+                                        clickType={clickType}
+                                        callBackFormTo={onDragProjectEnd}
+                                        handleProjecIcon={handleIcon}
+                                        hanldCreateProject={hanldCreateProject}
+                                        hanldeProjectDetail={hanldeProjectDetail}
+                                    />
+                                </DndProvider>
                             </Spin>
                         </Row>
                     </div>

@@ -3,37 +3,38 @@ import { history } from 'umi'
 import classes from 'classnames'
 import { useModel } from 'umi';
 import styles from './index.less'
-import { Layout, Row, Col, Form, Input, Radio, Button, Upload, Space, Typography, message , notification } from 'antd'
+import { Layout, Row, Col, Form, Input, Radio, Button, Upload, Space, Typography, message, notification } from 'antd'
 import { QuestionCircleOutlined, CloseOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { CheckCircleFilled } from '@ant-design/icons'
-import { createWorkspace,checkWorkspace } from '@/services/Workspace'
+import { createWorkspace, checkWorkspace } from '@/services/Workspace'
 import CropperImage from '@/components/CropperImage'
 import _ from 'lodash'
 import { requestCodeMessage } from '@/utils/utils';
-const QuestionTip = ( props : {
-    tip : String,
-    path : String,
-    name : String
-}) : React.ReactElement => {
-    const [ visible , setVisible ] = useState( false )
+
+const QuestionTip = (props: {
+    tip: String,
+    path: String,
+    name: String
+}): React.ReactElement => {
+    const [visible, setVisible] = useState(false)
     // onClick={ () => history.push() }
     return (
         <Row>
-            <Col span={ 24 }>
-                <Typography.Text>{ props.name }</Typography.Text>
-                <span 
-                    className={ styles.question_tip_layout }
-                    onMouseEnter={ () => setVisible( true ) }
-                    onMouseLeave={ () => setVisible( false ) }
+            <Col span={24}>
+                <Typography.Text>{props.name}</Typography.Text>
+                <span
+                    className={styles.question_tip_layout}
+                    onMouseEnter={() => setVisible(true)}
+                    onMouseLeave={() => setVisible(false)}
                 >
-                    <QuestionCircleOutlined 
-                        className={ styles.question_icon } 
+                    <QuestionCircleOutlined
+                        className={styles.question_icon}
                     />
                     <div
-                        style={{ display : visible ? 'block' : 'none' }}
-                        className={ classes( styles.question_tip_wrapper , styles.w_384 ) }
+                        style={{ display: visible ? 'block' : 'none' }}
+                        className={classes(styles.question_tip_wrapper, styles.w_384)}
                     >
-                        <p>{ props.tip }</p>
+                        <p>{props.tip}</p>
                         {/* <Button type="link" style={{ padding : 0 }}>查看更多</Button> */}
                     </div>
                 </span>
@@ -41,8 +42,8 @@ const QuestionTip = ( props : {
         </Row>
     )
 }
-let timerCheckWs:any = null;
-function debounce(fn:any,type:string, param:string) {
+
+function debounce(fn: any, type: string, param: string) {
     fn(type, param)
     /*
     if (timerCheckWs) clearTimeout(timerCheckWs);
@@ -52,91 +53,75 @@ function debounce(fn:any,type:string, param:string) {
     }, 200);
     */
 }
-export default ( props: any ): React.ReactElement => {
-    const [imgUrl, setImgUrl] = useState({ path : '' , link : '' })
-    const [isWsInit,setIsWsInit] = useState(false)
-    const [ form ] = Form.useForm()
-    const [ cropperUrl , setCropperUrl ] = useState( '' )
-    const [ cropperModalVisible , setCropperModalVisible ] = useState( false )
-    const [ padding , setPadding ] = useState( false )
+
+export default (props: any): React.ReactElement => {
+    const [imgUrl, setImgUrl] = useState({ path: '', link: '' })
+    const [isWsInit, setIsWsInit] = useState(false)
+    const [form] = Form.useForm()
+    const [padding, setPadding] = useState(false)
     const [heightBox, setHeightBox] = useState(innerHeight)
-    const [errorRepeat, setErrorRepeat] = useState({isRepeat:false,text:''})
-    const [errorReg,setErrorReg] = useState(false)
-    const [errorRepeatName, setErrorRepeatName] = useState({isRepeat:false,text:''})
-    const [errorRegName,setErrorRegName] = useState(false)
-    const timer:any = useRef(null)
+    const [errorRepeat, setErrorRepeat] = useState({ isRepeat: false, text: '' })
+    const [errorReg, setErrorReg] = useState(false)
+    const [errorRepeatName, setErrorRepeatName] = useState({ isRepeat: false, text: '' })
+    const [errorRegName, setErrorRegName] = useState(false)
+    const timer: any = useRef(null)
     const { initialState } = useModel('@@initialState');
     const sysAuth = initialState?.authList
     const { sys_role_title } = sysAuth
+
+    const cropperRef = React.useRef<any>()
+
     // user_id :ws创建者
     // const [ extra , setExtra ] = useState('只允许英文小写、下划线和数字，最多20个字符')
-    useEffect(()=>{
-        let createWsInfo:any = window.sessionStorage.getItem('create_ws_info')
-        if(createWsInfo) {
+    useEffect(() => {
+        let createWsInfo: any = window.sessionStorage.getItem('create_ws_info')
+        if (createWsInfo) {
             window.sessionStorage.removeItem('create_ws_info');
             createWsInfo = JSON.parse(createWsInfo)
             form.setFieldsValue({
                 show_name: _.get(createWsInfo, 'ws_info.show_name') && _.get(createWsInfo, 'ws_info.show_name').split('[')[0],
                 name: _.get(createWsInfo, 'ws_info.name') && _.get(createWsInfo, 'ws_info.name').split('[')[0],
-                description:_.get(createWsInfo, 'ws_info.description'),
+                description: _.get(createWsInfo, 'ws_info.description'),
                 reason: _.get(createWsInfo, 'reason'),
                 is_public: _.get(createWsInfo, 'ws_info.is_public'),
                 logo: _.get(createWsInfo, 'ws_info.logo'),
             })
-            setImgUrl({...imgUrl,link: _.get(createWsInfo, 'ws_info.logo')})
+            setImgUrl({ ...imgUrl, link: _.get(createWsInfo, 'ws_info.logo') })
         }
-    },[])
-    const uploadProps = {
-        name : "file",
-        action : "/api/sys/upload/",
-        beforeUpload : ( file : any ) => {
-            const fileReader = new FileReader()
-            fileReader.onload = ( e : any ) => {
-                setCropperUrl( e.target.result )
-                setCropperModalVisible( true )
-            }
-            fileReader.readAsDataURL( file )
-            return false
-        },
-        onChange : ( info : any ) => {
-            if ( info.file.status === 'done' ) {
-                setImgUrl( info ) 
-            }
-        }
-    }
+    }, [])
 
-    const handleBeforeUpload = ( file : any ) => {
+    const handleBeforeUpload = (file: any) => {
         const fileReader = new FileReader()
-        fileReader.onload = ( e : any ) => {
-            setCropperUrl( e.target.result )
-            setCropperModalVisible( true )
+        fileReader.onload = (e: any) => {
+            cropperRef.current?.show(e.target.result)
         }
-        fileReader.readAsDataURL( file )
+        fileReader.readAsDataURL(file)
 
         return false
     }
 
-    const queryCreateWs = async(wsInto:any) => {
+    const queryCreateWs = async (wsInto: any) => {
         let { data, code, msg } = await createWorkspace(wsInto)
         if (code === 200) {
             clearInterval(timer.current)
             history.push(`/ws/${data.id}/workspace/initSuccess`)
         }
         else {
-            message.error(msg || '系统初始化失败',2,() => {
+            message.error(msg || '系统初始化失败', 2, () => {
                 clearInterval(timer.current)
                 setIsWsInit(false)
             })
         }
     }
-    
+
     useEffect(() => {
         const box: any = document.querySelector('#createWs #rigthContent')
         if (box) setHeightBox(box.offsetHeight + 26)
     }, [])
+
     const getCommon = () => {
         const aSpan = document.querySelectorAll('#createWs .dot')
-        if(aSpan) {
+        if (aSpan) {
             Array.from(aSpan).forEach((item: any) => {
                 item.style.opacity = 0
             })
@@ -144,6 +129,7 @@ export default ( props: any ): React.ReactElement => {
         }
         return
     }
+
     useEffect(() => {
         if (isWsInit) {
             const arr = getCommon()
@@ -151,15 +137,16 @@ export default ( props: any ): React.ReactElement => {
                 arr[0].style.opacity = 1
                 let index = 0
                 timer.current = setInterval(() => {
-                    
+
                     index = index + 1 < 3 ? index + 1 : 0
-                    if(index === 0) getCommon()
+                    if (index === 0) getCommon()
                     arr[index].style.opacity = 1
                 }, 500)
             }
 
         }
     }, [isWsInit])
+
     const queryCheckWs = async (type: string, parmas: string) => {
         const { code, msg } = await checkWorkspace({ [type]: parmas })
         const setFn = type === 'name' ? setErrorRepeatName : setErrorRepeat
@@ -176,7 +163,8 @@ export default ( props: any ): React.ReactElement => {
             })
         }
     }
-    const handleShowWs = (e: any,type:string) => {
+
+    const handleShowWs = (e: any, type: string) => {
         const value = e.target.value
         const isName = type === 'name'
         const reg = isName ? /^[a-z0-9_-]{1,20}$/ : /^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/g
@@ -221,7 +209,7 @@ export default ( props: any ): React.ReactElement => {
 
                                         }
                                         else {
-                                            requestCodeMessage( data.code , data.msg )
+                                            requestCodeMessage(data.code, data.msg)
                                             setPadding(false)
                                         }
                                     }
@@ -236,7 +224,7 @@ export default ( props: any ): React.ReactElement => {
                             </Form.Item>
                             <Form.Item
                                 validateStatus={(errorReg || errorRepeat.isRepeat) && 'error'}
-                                help={(errorReg && '长度最多20位,仅允许包含汉字、字母、数字、下划线、中划线、点') || (errorRepeat.isRepeat && errorRepeat.text) }
+                                help={(errorReg && '长度最多20位,仅允许包含汉字、字母、数字、下划线、中划线、点') || (errorRepeat.isRepeat && errorRepeat.text)}
                                 rules={[{
                                     required: true,
                                     max: 20,
@@ -276,7 +264,7 @@ export default ( props: any ): React.ReactElement => {
                                 }
                                 name="name"
                             >
-                                <Input autoComplete="off" placeholder="只允许英文小写、下划线和数字，最多20个字符" allowClear onChange={_.partial(handleShowWs,_,'name')}/>
+                                <Input autoComplete="off" placeholder="只允许英文小写、下划线和数字，最多20个字符" allowClear onChange={_.partial(handleShowWs, _, 'name')} />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
@@ -398,32 +386,26 @@ export default ( props: any ): React.ReactElement => {
                     </Row>
                 </Col>
                 <Button className={styles.close_btn} onClick={() => history.go(-1)}><CloseOutlined />关闭</Button>
-                {
-                    cropperModalVisible &&
-                    <CropperImage
-                        visible={cropperModalVisible}
-                        url={cropperUrl}
-                        onCancel={() => setCropperModalVisible(false)}
-                        onOk={
-                            (info: any) => {
-                                info && setImgUrl(info)
-                                setCropperModalVisible(false)
-                            }
+                <CropperImage
+                    ref={cropperRef}
+                    onOk={
+                        (info: any) => {
+                            info && setImgUrl(info)
                         }
-                    />
-                }
+                    }
+                />
             </Row>
             {
                 isWsInit && <div style={{ height: heightBox }} className={styles.systerm_init}>
                     <div className={styles.init_box}>
                         <div className={styles.init_container}>
-                            <div className={styles.icon_gif}/>
+                            <div className={styles.icon_gif} />
                             <div className={styles.init_text}>
                                 系统初始化中
-                                
-                                <span className="dot"/>
-                                <span className="dot"/>
-                                <span className="dot"/>
+
+                                <span className="dot" />
+                                <span className="dot" />
+                                <span className="dot" />
                             </div>
                         </div>
                     </div>
@@ -432,3 +414,23 @@ export default ( props: any ): React.ReactElement => {
         </Layout.Content>
     )
 }
+
+
+
+// const uploadProps = {
+//     name: "file",
+//     action: "/api/sys/upload/",
+//     beforeUpload: (file: any) => {
+//         const fileReader = new FileReader()
+//         fileReader.onload = (e: any) => {
+//             cropperRef.current?.show(e.target.result)
+//         }
+//         fileReader.readAsDataURL(file)
+//         return false
+//     },
+//     onChange: (info: any) => {
+//         if (info.file.status === 'done') {
+//             setImgUrl(info)
+//         }
+//     }
+// }

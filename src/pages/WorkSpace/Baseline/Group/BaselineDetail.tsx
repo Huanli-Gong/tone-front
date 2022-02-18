@@ -14,6 +14,7 @@ import { partial } from 'lodash'
 // 一级详情
 let timeout: any = null;
 export default (props: any) => {
+    const { layoutHeight } = props
     const { query }: any = useLocation()
     const { ws_id }: any = useParams()
     const { server_provider, test_type, id } = props.currentBaseline
@@ -80,7 +81,7 @@ export default (props: any) => {
                 onConfirm={(val: any) => { setName(val) }}
                 currentData={{ server_provider, test_type, id }}
                 placeholder="支持搜索Test Suite名称"
-                styleObj={styleObj} 
+                styleObj={styleObj}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -112,6 +113,7 @@ export default (props: any) => {
                         rowKey={(record: any) => record.test_suite_id + ''}
                         pagination={false}
                         size="small"
+                        scroll={{ y: layoutHeight - 74 - 60 }}
                         expandable={{
                             expandedRowRender: record => {
                                 if (test_type === 'functional')

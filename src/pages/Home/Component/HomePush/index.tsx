@@ -4,6 +4,7 @@ import { Button, Modal, Carousel } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { First, Second, Third, Fourth } from './components';
 import styles from './index.less';
+import { useClientSize } from '@/utils/hooks';
 
 /**
  * tone首页
@@ -47,6 +48,14 @@ export default forwardRef((props: any, ref: any) => {
     }
   }
 
+  const client = useClientSize()
+  const windowSize = { width: client.width - 60 , height : client.height - 60 }
+
+  const calcSize = (()=> {
+    const maxSize = { width: 1340, height: 704 }
+    return windowSize?.width > maxSize.width ? maxSize: windowSize
+  })()
+
   return (
     <div className={styles.HomePush_Modal_root}>
       <Modal className={styles.HomePush_root}
@@ -57,33 +66,34 @@ export default forwardRef((props: any, ref: any) => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
-        width={1340}
+        width={calcSize?.width}
         destroyOnClose={true}
-        bodyStyle={{ height: 704, padding: '50px 75px 0 75px', position: 'relative' }}
-        style={{ background: '#fff' }}
+        bodyStyle={{ padding: 0, height: calcSize?.height, width: calcSize?.width, overflow: (calcSize?.width === 1340 ? 'hidden': 'auto') }}
       >
-        <Carousel ref={carouselRef}
-          autoplay={visible && current !== 3}
-          afterChange={(curr) => { setCurrent(curr) }}
-          dots={{
-            className: 'dotsClass',
-          }}
-        >
-          <div className={styles.banner_item}>
-            <First />
-          </div>
-          <div className={styles.banner_item}>
-            <Second />
-          </div>
-          <div className={styles.banner_item}>
-            <Third />
-          </div>
-          <div className={styles.banner_item}>
-            <Fourth />
-          </div>
-        </Carousel>
-        <LeftOutlined className={styles.prev} style={current == 0 ? { opacity: 0.05 } : {}} onClick={prevClick} />
-        <RightOutlined className={styles.next} style={current == 3 ? { opacity: 0.05 } : {}} onClick={nextClick} />
+        <div className={styles.scroll_wrap}>
+          <Carousel ref={carouselRef}
+            autoplay={visible && current !== 3}
+            afterChange={(curr) => { setCurrent(curr) }}
+            dots={{
+              className: 'dotsClass',
+            }}
+          >
+            <div className={styles.banner_item}>
+              <First />
+            </div>
+            <div className={styles.banner_item}>
+              <Second />
+            </div>
+            <div className={styles.banner_item}>
+              <Third />
+            </div>
+            <div className={styles.banner_item}>
+              <Fourth />
+            </div>
+          </Carousel>
+          <LeftOutlined className={styles.prev} style={current == 0 ? { opacity: 0.05 } : {}} onClick={prevClick} />
+          <RightOutlined className={styles.next} style={current == 3 ? { opacity: 0.05 } : {}} onClick={nextClick} />
+        </div>
       </Modal>
     </div>
   )

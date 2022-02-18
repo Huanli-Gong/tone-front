@@ -1,57 +1,92 @@
-import React , { useRef } from 'react'
+import React, { forwardRef, useRef } from 'react'
 
-import { Modal , Row } from 'antd'
+import { Modal, Row } from 'antd'
 import 'cropperjs/dist/cropper.css';
 import Cropper from 'react-cropper';
 import { request } from 'umi';
+import styled from 'styled-components'
 
-export default ( props : any ) => {
-    const { visible , url } = props
+const PreviewCls = styled.div`
+    width: calc(100% - 200px - 20px);
+    height: 100px;
+    overflow: hidden;
+    margin-left: 20px;
+`
+
+const WrapperCls = styled(Cropper)`
+    & {
+        height: 200px;
+        width: 200px;  
+    }
+`
+
+type IProps = {
+    onCancel?: () => void
+    onOk: (data: any) => void
+}
+
+const CropperModal: React.ForwardRefRenderFunction<{}, IProps> = (props, ref) => {
+    const { onCancel, onOk } = props
+
+    const [avatar, setAvatar] = React.useState('')
+
+    React.useImperativeHandle(ref, () => ({
+        show(url: string) {
+            setVisible(true)
+            setAvatar(url)
+        }
+    }))
+
+    const [visible, setVisible] = React.useState(false)
 
     const cropper = useRef<any>(null)
 
     const handleCancel = () => {
-        props.onCancel()
+        setVisible(false)
+        setAvatar('')
+        onCancel && onCancel()
     }
+
     const handleOk = () => {
         cropper.current.getCroppedCanvas().toBlob(
-            async ( blob : Blob ) => {
+            async (blob: Blob) => {
                 const formData = new FormData()
                 // 添加要上传的文件
-                formData.append('file', blob )
+                formData.append('file', blob)
                 // 上传图片
                 const data = await request(
                     `/api/sys/upload/`,
                     {
-                        method : 'post',
-                        data : formData
+                        method: 'post',
+                        data: formData
                     }
                 )
-                console.log( data )
-                props.onOk( data )
+                onOk(data)
+                handleCancel()
             }
         )
     }
 
     return (
         <Modal
-            visible={ visible }
-            onCancel={ handleCancel }
-            onOk={ handleOk }
+            visible={visible}
+            onCancel={handleCancel}
+            onOk={handleOk}
             title="图片裁切"
-            maskClosable={ false }
+            maskClosable={false}
         >
             <Row>
-                <Cropper
+                <WrapperCls
                     ref={cropper}
-                    src={ url }
-                    style={{ height: 200, width: 200 }}
-                    aspectRatio={ 1 }
+                    src={avatar}
+                    aspectRatio={1}
                     guides={true}
                     preview=".preview"
                 />
-                <div className="preview" style={{ width : 'calc(100% - 200px - 20px)' , height : 100 , overflow : 'hidden' , marginLeft : 20 }}></div>
+                <PreviewCls className="preview" />
             </Row>
         </Modal>
     )
 }
+
+export default forwardRef(CropperModal)

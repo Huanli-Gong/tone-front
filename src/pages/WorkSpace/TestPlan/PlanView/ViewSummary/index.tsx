@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { FormattedMessage, useRequest , history } from 'umi'
 import { RenderDataRow } from '../components'
 import ViewTable from '../components/ViewTable'
-import { resizeDocumentHeightHook, resizeDocumentWidthHooks , writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
 
 import { queryPlanViewList } from '@/pages/WorkSpace/TestPlan/PlanView/services'
 
@@ -50,8 +50,7 @@ const ViewDetail = (props: any) => {
 
     writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
 
-    const layoutHeight = resizeDocumentHeightHook()
-    const layoutWidth = resizeDocumentWidthHooks()
+    const { height: layoutHeight, width: layoutWidth } = useClientSize()
 
     const { data } = useRequest(
         () => queryPlanViewList({ ws_id, plan_id }),

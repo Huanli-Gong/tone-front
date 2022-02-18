@@ -9,6 +9,7 @@ import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMeth
 import ChartsIndex from '@/pages/WorkSpace/TestReport/NewReport/components/PerfCharts';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import _ from 'lodash';
+import ChartTypeChild from '../../../TestReport/NewReport/components/TestDataChild/ChartTypeChild'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { useScroll } from 'ahooks'
 import styled from 'styled-components'
@@ -107,7 +108,6 @@ const ReportTestPref: React.FC<any> = (props) => {
     const [dataSource, setDataSource] = useState<any>([])
     const [btn, setBtn] = useState<boolean>(true)
     const [btnName, setBtnName] = useState<string>('')
-    const [chartType, setChartType] = useState('1')
     const [filterName, setFilterName] = useState('all')
     const groupRowRef = useRef<any>(null)
     const { perf_data_result } = compareResult
@@ -120,16 +120,20 @@ const ReportTestPref: React.FC<any> = (props) => {
     useEffect(() => {
         let dataArr = _.cloneDeep(perf_data_result)
         setDataSource(
-            btn ? handleDataArr(dataArr,baseIndex) : perf_data_result
+            btn ? handleDataArr(dataArr,baseIndex) : perf_data_result.map((item: any) => {
+                return {
+                    ...item,
+                    chartType: '1'
+                }
+            })
         )
     }, [perf_data_result,btn])
+
     // 图表、列表模式切换
     const switchMode = () => {
         setBtn(!btn)
         // setChartType('1')
     }
-    // 图表模式的type切换
-    const hanldeChangeChartType = (val: string) => setChartType(val)
 
     useEffect(() => {
         setBtnName(btn ? '图表模式' : '列表模式')
@@ -141,17 +145,18 @@ const ReportTestPref: React.FC<any> = (props) => {
             <TestItemFunc>
                 <Space>
                     <Button onClick={switchMode}>{btnName}</Button>
-                    <Space>
-                        <Typography.Text>筛选: </Typography.Text>
-                        <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="all">全部</Option>
-                            <Option value="invalid">无效</Option>
-                            <Option value="volatility">波动大（包括上升、下降）</Option>
-                            <Option value="increase">上升</Option>
-                            <Option value="decline">下降</Option>
-                            <Option value="normal">正常</Option>
-                        </Select>
-                    </Space>
+                    { btn && <Space>
+                                <Typography.Text>筛选: </Typography.Text>
+                                <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
+                                    <Option value="all">全部</Option>
+                                    <Option value="invalid">无效</Option>
+                                    <Option value="volatility">波动大（包括上升、下降）</Option>
+                                    <Option value="increase">上升</Option>
+                                    <Option value="decline">下降</Option>
+                                    <Option value="normal">正常</Option>
+                                </Select>
+                            </Space>
+                    }
                 </Space>
             </TestItemFunc>
         )
@@ -275,16 +280,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                 <TestSuite key={idx}>
                                     <SuiteName>
                                         {item.suite_name}
-                                        {
-                                            !btn && <Space style={{ position: 'absolute', right: 12 }}>
-                                                <Typography.Text>视图：</Typography.Text>
-                                                <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
-                                                    <Select.Option value="1">所有指标拆分展示(type1)</Select.Option>
-                                                    <Select.Option value="2">多Conf同指标合并(type2)</Select.Option>
-                                                    <Select.Option value="3">单Conf多指标合并(type3)</Select.Option>
-                                                </Select>
-                                            </Space>
-                                        }
+                                        <ChartTypeChild btn={btn} isReport={false} obj={dataSource} suiteId={item.suite_id} setPerData={setDataSource} />
                                     </SuiteName>
                                     <TestConfWarpper>
                                         {
@@ -398,7 +394,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         </div>
                                                     </div>
                                                 )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                                : <ChartsIndex {...item} chartType={chartType} envData={environmentResult} />
+                                                : <ChartsIndex {...item} envData={environmentResult} />
                                         }
                                     </TestConfWarpper>
                                 </TestSuite>

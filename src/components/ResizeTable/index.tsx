@@ -1,12 +1,27 @@
 import { Table } from 'antd';
-import { TableProps } from 'antd/lib/table';
-import React, { useState, memo, useEffect, useMemo } from 'react';
+import type { TableProps } from 'antd/lib/table';
+import React from 'react';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css'
-
 import styled from 'styled-components'
 
 const StyledResizeable = styled(Resizable)`
+    &::before {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        width: 1px;
+        height: 1.6em;
+        background-color: rgba(0,0,0,.06);
+        transform: translateY(-50%);
+        transition: background-color .3s;
+        content: "";
+    }
+    
+    &:last-child::before {
+        display: none;
+    }
+
     .react-resizable {
         position: relative;
         background-clip: padding-box;
@@ -40,49 +55,44 @@ const ResizeableTitle = (props: any) => {
     );
 }
 
-const ResizeColumnTable : React.FC<TableProps<any>>= (props) => {
+const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
+    const { columns = [], ...rest } = props
+    const [tableColumns, setTableColumns] = React.useState<any[]>([])
 
-    const { columns = [], dataSource = [], ...rest } = props
-    const [tableColumns, setTableColumns] = useState<any>([])
-
-    useEffect(() => {
+    React.useEffect(() => {
         setTableColumns(columns)
     }, [columns])
 
     const handleResize = (index: number) => (e: any, { size }: any) => {
         const nextColumns = [...tableColumns];
-        if(nextColumns[index].ellipsis){
+        if (nextColumns[index].ellipsis) {
             nextColumns[index] = {
                 ...nextColumns[index],
                 width: size.width,
             }
+            setTableColumns(nextColumns)
         }
-        setTableColumns(nextColumns)
     }
-
-    const resultColumns = useMemo(
-        () => tableColumns.map((col: any, index: any) => ({
-            ...col,
-            onHeaderCell: (column: any) => ({
-                width: column.width,
-                onResize: handleResize(index),
-            }),
-        })), [tableColumns]
-    )
 
     return (
         <Table
             {...rest}
-            bordered
             components={{
                 header: {
                     cell: ResizeableTitle,
                 },
             }}
-            columns={resultColumns}
-            dataSource={dataSource}
+            columns={
+                tableColumns.map((col: any, index: any) => ({
+                    ...col,
+                    onHeaderCell: (column: any) => ({
+                        width: column.width,
+                        onResize: handleResize(index),
+                    }),
+                }))
+            }
         />
     )
 }
 
-export default memo(ResizeColumnTable)
+export default ResizeColumnTable

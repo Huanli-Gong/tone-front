@@ -24,7 +24,7 @@ const ReportBasicInfo = (props: any) => {
         <>
             {domainResult?.is_default ?
                 <>
-                    <ModuleWrapper id="need_test_background">
+                    <ModuleWrapper id="need_test_background" className="position_mark">
                         <SubTitle><span className="line"></span>测试背景</SubTitle>
                         <SettingTextArea
                             name={saveReportData?.test_background}
@@ -40,7 +40,7 @@ const ReportBasicInfo = (props: any) => {
                             onOk={(val: any) => handleChangeVal(val, 'test_background')}
                         />
                     </ModuleWrapper>
-                    <ModuleWrapper id="need_test_method">
+                    <ModuleWrapper id="need_test_method" className="position_mark">
                         <SubTitle><span className="line"></span>测试方法</SubTitle>
                         <SettingTextArea
                             name={saveReportData?.test_method}
@@ -56,7 +56,7 @@ const ReportBasicInfo = (props: any) => {
                             onOk={(val: any) => handleChangeVal(val, 'test_method')}
                         />
                     </ModuleWrapper>
-                    <ModuleWrapper id="need_test_conclusion">
+                    <ModuleWrapper id="need_test_conclusion" className="position_mark">
                         <SubTitle><span className="line"></span>测试结论</SubTitle>
                         <SettingTextArea
                             name={saveReportData?.test_conclusion?.custom}
@@ -76,7 +76,7 @@ const ReportBasicInfo = (props: any) => {
                 :
                 <>
                     {domainResult?.need_test_background && 
-                    <ModuleWrapper id="need_test_background">
+                    <ModuleWrapper id="need_test_background" className="position_mark">
                         <SubTitle><span className="line"></span>测试背景</SubTitle>
                         <SettingTextArea
                             name={saveReportData?.test_background}
@@ -93,7 +93,7 @@ const ReportBasicInfo = (props: any) => {
                     </ModuleWrapper>
                     }
                     {!domainResult?.is_default && domainResult?.need_test_method &&
-                        <ModuleWrapper id="need_test_method">
+                        <ModuleWrapper id="need_test_method" className="position_mark">
                             <SubTitle><span className="line"></span>测试方法</SubTitle>
                             <SettingTextArea
                                 name={saveReportData?.test_method}
@@ -109,7 +109,7 @@ const ReportBasicInfo = (props: any) => {
                             />
                         </ModuleWrapper>}
                     {!domainResult?.is_default && domainResult?.need_test_conclusion && 
-                        <ModuleWrapper id="need_test_conclusion">
+                        <ModuleWrapper id="need_test_conclusion" className="position_mark">
                             <SubTitle><span className="line"></span>测试结论</SubTitle>
                             <SettingTextArea
                                 name={saveReportData?.test_conclusion?.custom}

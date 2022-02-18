@@ -9,10 +9,10 @@ import AddConfig from './AddConfig'
 import { request } from 'express'
 import { requestCodeMessage } from '@/utils/utils'
 
-const SystemParameter = (props: any , ref : any ) => {
+const SystemParameter = (props: any, ref: any) => {
 
-    useImperativeHandle(ref , () => ({
-        openSetting : () => addConfigDrawer.current.show()
+    useImperativeHandle(ref, () => ({
+        openSetting: () => addConfigDrawer.current.show()
     }))
 
     const addConfigDrawer: any = useRef()
@@ -35,20 +35,24 @@ const SystemParameter = (props: any , ref : any ) => {
     const columns = [{
         dataIndex: 'config_key',
         title: '配置名称',
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
-                { _}
+                {_}
             </Tooltip>
         ),
         ...getSearchFilter(params, setParams, 'config_key'),
     }, {
         dataIndex: 'config_value',
         title: '配置内容',
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
-                { _}
+                {_}
             </Tooltip>
         ),
         ...getSearchFilter(params, setParams, 'config_value'),
@@ -81,10 +85,12 @@ const SystemParameter = (props: any , ref : any ) => {
     }, {
         dataIndex: 'description',
         title: '描述',
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
-                { _}
+                {_}
             </Tooltip>
         ),
     }, {
@@ -92,12 +98,16 @@ const SystemParameter = (props: any , ref : any ) => {
         width: 100,
         render: (_: any) => (
             <Space>
-                <Typography.Text
-                    style={{ color: '#1890FF', cursor: 'pointer' }}
+                <span
                     onClick={() => handleEdit(_)}
+                    style={{ color: '#1890FF', cursor: 'pointer' }}
                 >
-                    编辑
-                </Typography.Text>
+                    <Typography.Text
+                    >
+                        编辑
+                    </Typography.Text>
+                </span>
+                
                 <Popconfirm
                     title={<div style={{ color: 'red' }}>删除系统参数将可能导致系统部分<br />功能无法正常使用，请谨慎删除！！</div>}
                     onCancel={() => handleDelete(_)}
@@ -126,12 +136,12 @@ const SystemParameter = (props: any , ref : any ) => {
             message.success('操作成功!')
         }
         else {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
         }
     }
 
     const hanldeOk = () => refresh()
-    
+
     return (
         <Layout.Content>
             <Spin spinning={loading}>
@@ -158,4 +168,4 @@ const SystemParameter = (props: any , ref : any ) => {
         </Layout.Content>
     )
 }
-export default forwardRef( SystemParameter )
+export default forwardRef(SystemParameter)

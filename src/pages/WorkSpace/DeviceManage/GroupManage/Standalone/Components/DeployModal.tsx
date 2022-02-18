@@ -219,7 +219,7 @@ export default forwardRef((props: any, ref: any) => {
                                     <Radio value="common">通过用户名/密码部署</Radio>
                                     {
                                         (!useBuildEnv && radioType !== 'cloudManage') &&
-                                        <Radio value="staragent">通过StarAgent部署</Radio>
+                                        <Radio value={ self_agent }>通过{ self_agent_name }部署</Radio>
                                     }
                                 </Radio.Group>
                             </Form.Item>

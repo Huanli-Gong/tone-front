@@ -10,6 +10,7 @@ import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons'
 import styles from './style.less';
 import { useParams } from 'umi';
 import _ from 'lodash';
+import { AgentSelect } from '@/components/utils'
 
 /**
  * 
@@ -982,10 +983,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 name="channel_type"
                                 initialValue={'toneagent'}
                                 rules={[{ required: true, message: '请选择控制通道' }]}>
-                                <Select>
-                                    {/* <Select.Option value="staragent">StarAgent</Select.Option> */}
-                                    <Select.Option value="toneagent" key="toneagent">ToneAgent</Select.Option>
-                                </Select>
+                                <AgentSelect />
                             </Form.Item>
                         </Col>
                         {!is_instance ? null : (

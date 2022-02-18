@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useImperativeHandle } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Empty, message, Cascader, InputNumber } from 'antd';
-import { requestCodeMessage, resetImage, resetECI, enumerChinese, enumerEnglish } from '@/utils/utils';
+import { requestCodeMessage, resetImage, resetECI, enumerChinese, enumerEnglish, agent_list } from '@/utils/utils';
 import { QusetionIconTootip } from '@/components/Product/index'
 import {
     queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryMember, queryInstance,
@@ -9,6 +9,7 @@ import {
 import Owner from '@/components/Owner/index';
 import styles from './style.less';
 import { useParams } from 'umi';
+import { AgentSelect } from '@/components/utils'
 
 /**
  * 
@@ -956,28 +957,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         <Col span={12}>
                             <Owner />
-                            {/* <Form.Item
-                                name="owner"
-                                label="Owner"
-                                rules={[{ required: true, message: '请选择' }]}
-                            >
-                                <Select
-                                    allowClear
-                                    notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                                    filterOption={false}
-                                    onSearch={handleSearch}
-                                    onFocus={() => { handleSearch() }}
-                                    style={{ width: '100%' }}
-                                    showArrow={false}
-                                    showSearch
-                                >
-                                    {
-                                        user.map((item: any) => {
-                                            return <Option value={item.id} key={item.id}>{item.last_name}</Option>
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item> */}
                         </Col>
                         {/* <Col span={12}>
                             <Form.Item
@@ -1049,14 +1028,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             null
                         }
                         <Col span={12}>
-                            <Form.Item label="控制通道"
+                            <Form.Item
+                                label="控制通道"
                                 name="channel_type"
                                 initialValue={'toneagent'}
-                                rules={[{ required: true, message: '请选择控制通道' }]}>
-                                <Select>
-                                    {/* <Select.Option value="staragent">StarAgent</Select.Option> */}
-                                    <Select.Option value="toneagent" key="toneagent">ToneAgent</Select.Option>
-                                </Select>
+                                rules={[{ required: true, message: '请选择控制通道' }]}
+                            >
+                                <AgentSelect />
                             </Form.Item>
                         </Col>
 

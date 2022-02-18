@@ -1,4 +1,6 @@
 import React from 'react'
+
+import styled from 'styled-components'
 import { CloudUploadOutlined } from '@ant-design/icons';
 
 import { ReactComponent as Home } from '@/assets/svg/Nav/icon_home.svg'
@@ -13,21 +15,32 @@ import { ReactComponent as WorkspaceSetting } from '@/assets/svg/Nav/icon_ws_set
 import { ReactComponent as TestSuiteSearch } from '@/assets/svg/Nav/icon_test.svg'
 import { ReactComponent as WorkspaceDashboard } from '@/assets/svg/Nav/ws_dashboard.svg'
 
-export default ( local : any ) => {
-    switch ( local ) {
-        case 'menu.home' : return <Home />;
-        case 'menu.Dashboard' : return <Dashboard />;
-        case 'menu.systemConf' : return <SystemConf />;
-
-        case 'menu.WorkspaceSetting' : return <WorkspaceSetting />;
-        case 'menu.Workspace.TestJob' : return <TestJob />;
-        case 'menu.Workspace.TestPlan' : return <TestPlan />;
-        case 'menu.Workspace.TestAnalysis' : return <TestAnalysis />;
-        case 'menu.Workspace.TestReport' : return <TestReport />;
-        case 'menu.Workspace.TestSuiteSearch' : return <TestSuiteSearch />;
-        case 'menu.Workspace.TestResult' : return <TestResult />;
-        case 'menu.Workspace.Upload' : return <div style={{paddingTop: 1}}><CloudUploadOutlined /></div>;
-        case 'menu.Workspace.Dashboard' : return <WorkspaceDashboard />
-        default : return <></>
+const MenuIconWrapper = styled.span`
+    
+    display: inline-block;
+    & span {
+        margin-right: 0px !important;
     }
+
+`
+
+const navIconsMap = new Map([
+    ['menu.home', <Home />],
+    ['menu.Dashboard', <Dashboard />],
+    ['menu.systemConf', <SystemConf />],
+    ['menu.WorkspaceSetting', <WorkspaceSetting />],
+    ['menu.Workspace.TestJob', <TestJob />],
+    ['menu.Workspace.TestPlan', <TestPlan />],
+    ['menu.Workspace.TestAnalysis', <TestAnalysis />],
+    ['menu.Workspace.TestReport', <TestReport />],
+    ['menu.Workspace.TestSuiteSearch', <TestSuiteSearch />],
+    ['menu.Workspace.TestResult', <TestResult />],
+    ['menu.Workspace.Upload', <CloudUploadOutlined />],
+    ['menu.Workspace.Dashboard', <WorkspaceDashboard />],
+])
+
+const switchIcon = (local: any) => {
+    return <MenuIconWrapper>{navIconsMap.get(local)}</MenuIconWrapper>
 }
+
+export default switchIcon

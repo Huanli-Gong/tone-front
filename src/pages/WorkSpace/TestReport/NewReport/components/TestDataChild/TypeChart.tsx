@@ -140,7 +140,7 @@ const TypeChart = (props: any) => {
             grid: {
                 left: 40,
                 right: 8,
-                bottom: '20%'
+                bottom: '30%'
             },
             animation: false,
             xAxis: {
@@ -150,7 +150,6 @@ const TypeChart = (props: any) => {
                 axisTick: { show: false },
                 axisLabel: {
                     interval: 0,
-                    // width: 110,
                     formatter: function (val: any) {
                         var strs = val.split(''); //字符串数组
                         var str = ''
@@ -161,7 +160,7 @@ const TypeChart = (props: any) => {
                         return str
                         // return str + '\n' + 'more is better' 
                     }
-                }
+                },
             },
             legend: {
                 data: legData,
@@ -267,6 +266,9 @@ const TypeChart = (props: any) => {
                     realtime: true,
                     start: 0,
                     end: dataZoom_end,
+                    zoomOnMouseWheel: false,
+                    moveOnMouseMove:true,
+                    moveOnMouseWheel:true,
                     preventDefaultMouseMove: false,
                 }],
 

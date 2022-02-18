@@ -60,7 +60,9 @@ export default (props: any) => {
     const columns = [{
         title: '内核版本',
         dataIndex: 'version',
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
                 { _}
@@ -105,7 +107,9 @@ export default (props: any) => {
     }, {
         title: '描述',
         dataIndex: 'description',
-        ellipsis: true,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
                 { _}

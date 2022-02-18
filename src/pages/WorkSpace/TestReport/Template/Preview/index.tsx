@@ -1,4 +1,4 @@
-import { resizeClientSize } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import React, { memo, useEffect, useState, useRef, useLayoutEffect } from 'react'
 import { ReportBodyContainer, ReportBody } from '../styled'
 import Catalog from '@/pages/WorkSpace/TestReport/Template/components/TemplateCatalog'
@@ -78,7 +78,7 @@ const { document }: any = window
 
 const TemplatePreview = (props: any) => {
     const { ws_id, temp_id } = useParams<any>()
-    const { windowHeight } = resizeClientSize()
+    const { height: windowHeight } = useClientSize()
     const [collapsed, setCollapsed] = useState(false)
     const [loading, setLoading] = useState(true)
     const [dataSource, setDataSource] = useState<any>({})

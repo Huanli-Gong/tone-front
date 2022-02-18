@@ -1,11 +1,11 @@
 import React from 'react'
 import { Layout } from 'antd'
 import Icon from '@/assets/img/loss.png';
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { BreadcrumbItem } from './index'
 
-export default () => {
-    const layoutHeight = resizeDocumentHeightHook()
+const NOTFOUND: React.FC = () => {
+    const { height: layoutHeight } = useClientSize()
 
     return (
         <Layout style={{ padding: 20, height: layoutHeight - 50, minHeight: 0, overflowX: 'scroll', background: '#f5f5f5' }}>
@@ -28,3 +28,5 @@ export default () => {
         </Layout>
     )
 }
+
+export default NOTFOUND

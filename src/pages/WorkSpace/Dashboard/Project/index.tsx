@@ -1,4 +1,4 @@
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import styled from 'styled-components'
 import React, { useEffect, useState, useRef } from 'react'
 import { Col, Layout, message, Row, Space, Spin, Statistic, Typography, DatePicker } from 'antd'
@@ -86,7 +86,7 @@ const RangeTime = styled.div`
 
 const ProjectDashboard = (props: any) => {
     const { ws_id, project_id } = props.match.params
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const statusChart: any = useRef()
     const suiteChart: any = useRef()

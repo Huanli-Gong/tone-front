@@ -47,59 +47,71 @@ const LoginForm: React.FC = () => {
             .catch(console.log)
     }
 
+    const customFocus = (field: string) => {
+        form.setFields([{ name: field, errors: undefined }])
+    }
+
     return (
         <LoginWrapper
             form={form}
             layout="vertical"
         >
-            <Form.Item label="" name="username"
-                rules={[{
-                    required: true,
-                    validator(rule, val) {
-                        // 账号必须字母开头，6-18位字母数字或字符
-                        if (!val)
-                            return Promise.reject('账号不能为空')
-                        if (!/^[a-zA-Z][0-9a-zA-Z]{5,17}$/.test(val))
-                            return Promise.reject('账号必须字母开头，6-18位字母数字，不允许特殊字符')
-                        return Promise.resolve()
-                    }
-                }]}
-            >
-                <Input placeholder="用户名" />
-            </Form.Item>
-            <Form.Item label="" name="password"
+            <Form.Item
+                label=""
+                name="username"
+                validateTrigger={'onBlur'}
                 rules={[
-                    {
-                        required: true,
-                        message: '请输入密码',
-                    },
-                    {
-                        pattern: /^[\dA-Za-z!@#$%^&*?.]{6,18}$/,
-                        message: '6-18位数字、字母或特殊字符'
-                    }
+                    ({ isFieldsTouched }) => ({
+                        validator(rule, val) {
+                            // 账号必须字母开头，6-18位字母数字或字符
+                            if (!val && isFieldsTouched(['username']))
+                                return Promise.reject('账号不能为空')
+                            if (!/^[a-zA-Z][0-9a-zA-Z]{5,17}$/.test(val))
+                                return Promise.reject('账号必须字母开头，6-18位字母数字，不允许特殊字符')
+                            return Promise.resolve()
+                        }
+                    })
                 ]}
-                hasFeedback
             >
-                <Input.Password placeholder="密码" />
+                <Input placeholder="用户名" onFocus={() => customFocus('username')} />
             </Form.Item>
-            <Form.Item label="" name="password_repeat"
-                dependencies={['password']}
-                hasFeedback
+            <Form.Item
+                label=""
+                name="password"
+                validateTrigger={'onBlur'}
                 rules={[
-                    {
-                        required: true,
-                        message: '请输入确认密码!',
-                    },
-                    ({ getFieldValue }) => ({
+                    ({ isFieldsTouched }) => ({
+                        validator(rule, value) {
+                            if (!isFieldsTouched(['password'])) return Promise.resolve()
+                            if (!value) return Promise.reject('请输入密码')
+                            if (!/^[\dA-Za-z!@#$%^&*?.]{6,18}$/.test(value)) return Promise.reject('6-18位数字、字母或特殊字符')
+                            return Promise.resolve()
+                        }
+                    })
+                ]}
+            >
+                <Input.Password placeholder="密码" onFocus={() => customFocus('password')} />
+            </Form.Item>
+            <Form.Item
+                label=""
+                name="password_repeat"
+                validateTrigger={'onBlur'}
+                dependencies={['password']}
+                rules={[
+                    ({ getFieldValue, isFieldsTouched }) => ({
                         validator(_, value) {
-                            if (!value || getFieldValue('password') === value)
+                            if (!isFieldsTouched(['password_repeat'])) return Promise.resolve()
+                            if (getFieldValue('password') !== value)
+                                return Promise.reject(new Error('确认密码不一致!'));
+                            if (!value && getFieldValue('password') === value)
                                 return Promise.resolve();
-                            return Promise.reject(new Error('确认密码不一致!'));
+
+                            return Promise.resolve()
                         },
                     }),
                 ]}
             >
-                <Input.Password placeholder="确认密码" />
+                <Input.Password placeholder="确认密码" onFocus={() => customFocus('password_repeat')} />
             </Form.Item>
             <Form.Item >
                 <LoginButton type="primary" onClick={onClick}>注册</LoginButton>

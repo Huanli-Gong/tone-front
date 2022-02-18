@@ -52,8 +52,8 @@ const EllipsisRect = ({ record, text, helpId, reactNode, handleClick, index }: a
     }
     const handleDelClick = (e: any, index: number) => {
         e.stopPropagation();
-        const flag = access.canSysTestAdmin()
-        if (!flag) message.error('没有权限操作')
+        // const flag = access.canSysTestAdmin()
+        // if (!flag) message.error('没有权限操作')
         const arrTr = document.querySelectorAll('tr')
         if (arrTr) {
             Array.from(arrTr).forEach((item: any, num: number) => {

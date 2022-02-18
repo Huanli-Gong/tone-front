@@ -44,7 +44,9 @@ export default ({ job_id , refresh = false } : any ) => {
         {
             dataIndex: 'monitor_link',
             title: '链接',
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any) => _ ?
                  <PopoverEllipsis title={_}>
 

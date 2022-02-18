@@ -110,14 +110,18 @@ export default forwardRef(
                         </span>
                     </Tooltip>
                 ),
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 textWrap: 'word-break',
             },
             {
                 dataIndex: 'bug',
                 title: '缺陷记录',
                 key: 'bug',
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 textWrap: 'word-break',
                 render: (text: any) => {
                     return (
@@ -133,7 +137,9 @@ export default forwardRef(
                 dataIndex: 'source_job_id',
                 title: '来源Job',
                 key: 'source_job_id',
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 textWrap: 'word-break',
                 render: (text: any) => {
                     const urlHref = `/ws/${ws_id}/test_result/${text}`
@@ -155,7 +161,9 @@ export default forwardRef(
                 dataIndex: 'description',
                 title: '问题描述',
                 key: 'description',
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 textWrap: 'word-break',
                 render: (text: any) => {
                     return (

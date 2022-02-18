@@ -7,13 +7,12 @@ import { enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './index.less'
 import { history,useModel,useRequest } from 'umi'
 import _ from 'lodash'
+import { useClientSize } from '@/utils/hooks';
 
 
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { initialState } = useModel('@@initialState')
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
-    const windowHeight = () => setLayoutHeight(innerHeight)
     useRequest(
         (p) => enterWorkspaceHistroy(p),
         {
@@ -21,12 +20,9 @@ export default (props: any) => {
             defaultParams: [{ ws_id }],
         }
     )
-    useEffect(() => {
-        window.addEventListener('resize', windowHeight)
-        return () => {
-            window.removeEventListener('resize', windowHeight)
-        }
-    }, [])
+    
+    const { height: layoutHeight } = useClientSize()
+
     const data = [
         {
             icon: <WsInitJob />,

@@ -122,13 +122,14 @@ const Index: React.FC<any> = (props: any) => {
   }
 
   useEffect(() => {
-    if (conf_name) {
-      window.document.title = `${conf_name}`
-    }
+    window.document.title = conf_name
+    const timer = setTimeout(()=> {
+      window.document.title = conf_name || 'T-One'
+    }, 1000)
     return () => {
-      window.document.title = 'T-One'
+      timer && clearTimeout(timer)
     }
-  } , [conf_name])
+  } , [conf_name, window.document.title])
 
 	useEffect(() => {
     if (case_id) {

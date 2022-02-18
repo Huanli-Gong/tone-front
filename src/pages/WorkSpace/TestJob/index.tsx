@@ -3,7 +3,7 @@ import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, 
 
 import { history, useRequest, useModel, useAccess, Access } from 'umi'
 import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType } from '@/utils/utils'
-import { resizeDocumentHeightHook, writeDocumentTitle, resizeDocumentWidthHooks } from '@/utils/hooks'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import styles from './index.less'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
@@ -39,8 +39,7 @@ interface PropsTypes {
 
 const TestJob: React.FC<any> = (props) => {
     const { name } = props.route
-    const layoutHeight = resizeDocumentHeightHook()
-    const layoutWidth = resizeDocumentWidthHooks()
+    const { height: layoutHeight, width: layoutWidth } = useClientSize()
     const hasNav = name === 'JobTypePreview' || name === 'TemplatePreview' || name === 'TemplateEdit'
 
     const { initialState, setInitialState } = useModel('@@initialState')
@@ -483,7 +482,6 @@ const TestJob: React.FC<any> = (props) => {
             ...data,
             job_type: detail.id
         }
-        console.log(data.test_conf)
         const test_config = handleServerChannel(data.test_config)
         const { code, msg } = await saveTestTemplate({ ...data, test_config, ...vals })
 
@@ -516,6 +514,7 @@ const TestJob: React.FC<any> = (props) => {
         if (fetching) return
         setFetching(true)
         let data = await transformDate()
+        console.log('data', data)
         if (isMonitorEmpty(data)) {
             setFetching(false)
             return message.warning('监控机器不能为空')
@@ -525,7 +524,12 @@ const TestJob: React.FC<any> = (props) => {
             message.warning('用例不能为空')
             return
         }
-
+        if (!data.baseline) {
+            data.baseline = null
+        }
+        if (!data.cleanup_info) {
+            data.cleanup_info = ""
+        }
         const test_config = handleServerChannel(data.test_config)
         const { code, msg } = await updateTestTemplate({
             template_id: templateDatas.id,
@@ -613,7 +617,7 @@ const TestJob: React.FC<any> = (props) => {
     )
 
     const layoutCss = useMemo(() => {
-        const defaultCss = { height: layoutHeight, overflow: 'auto' }
+        const defaultCss = { minHeight: layoutHeight, overflow: 'auto' }
         return hasNav ? { ...defaultCss, paddingTop: 50 } : defaultCss
     }, [layoutHeight, hasNav])
 
@@ -974,11 +978,11 @@ const TestJob: React.FC<any> = (props) => {
                             </Col>
                         </Row>
                     </Row>
-                    <div className={styles.page_body_content} style={ isYamlFormat ? { paddingLeft: 0, paddingRight: 0, paddingTop:0 } : { paddingLeft: bodyPaddding, paddingRight: bodyPaddding, paddingTop:24 }}>
+                    <div className={styles.page_body_content} style={isYamlFormat ? { paddingLeft: 0, paddingRight: 0, paddingTop: 0 } : { paddingLeft: bodyPaddding, paddingRight: bodyPaddding, paddingTop: 24 }}>
                         <Spin spinning={isloading} style={{ width: '100%' }}>
                             <Row className={styles.page_body} justify="center" >
                                 <div ref={bodyRef} style={{ width: 1000 }} />
-                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon}  style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style ={{marginRight: 5}} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
+                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
                                 <div style={isYamlFormat ? { opacity: 0, width: 1240, height: 0 } : { opacity: 1, width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>
                                         {name === 'TestJob' && <Row className={styles.page_body_title}>新建Job</Row>}

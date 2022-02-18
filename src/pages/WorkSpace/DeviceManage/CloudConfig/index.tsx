@@ -144,7 +144,9 @@ const CloudConfig: React.FC<any> = (props) => {
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 150,
-			ellipsis: true,
+			ellipsis: {
+				showTitle: false
+			},
 			filterDropdown: ({ confirm }: any) => <SearchInput
 				confirm={confirm}
 				autoFocus={autoFocus}
@@ -177,7 +179,9 @@ const CloudConfig: React.FC<any> = (props) => {
 			// width : 175,
 			dataIndex: 'access_id',
 			width: 120,
-			ellipsis: true,
+			ellipsis: {
+				showTitle: false
+			},
 			filterDropdown: ({ confirm }: any) => <SearchInput
 				confirm={confirm}
 				autoFocus={autoFocus}
@@ -209,7 +213,9 @@ const CloudConfig: React.FC<any> = (props) => {
 			title: 'AccessKEY',
 			width: 120,
 			dataIndex: 'access_key',
-			ellipsis: true,
+			ellipsis: {
+				showTitle: false
+			},
 			filterDropdown: ({ confirm }: any) => <SearchInput
 				confirm={confirm}
 				autoFocus={autoFocus}
@@ -241,7 +247,9 @@ const CloudConfig: React.FC<any> = (props) => {
             title: '资源组ID',
             width: 120,
             dataIndex: 'resource_group_id',
-            ellipsis: true,
+            ellipsis: {
+				showTitle: false
+			},
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}

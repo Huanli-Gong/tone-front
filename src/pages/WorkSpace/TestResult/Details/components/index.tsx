@@ -4,7 +4,7 @@ import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Clipboard from 'clipboard'
 import { history, useParams } from 'umi'
-
+import styled from 'styled-components'
 
 export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
     const { ws_id }: any = useParams()
@@ -39,10 +39,16 @@ export const columnRenderDefault = (defaultText: string = '-') => ({
 })
 
 export const tooltipTd = (defaultText: string = '-') => ({
-    ellipsis: true,
+    ellipsis: {
+        showTitle: false,
+    },
     render: (_: any) => (
         _ ?
-            <Tooltip placement="topLeft" title={_} overlayClassName={styles.tootip_overflow}>
+            <Tooltip
+                placement="topLeft"
+                title={_}
+                overlayClassName={styles.tootip_overflow}
+            >
                 {_}
             </Tooltip> :
             defaultText
@@ -116,11 +122,11 @@ export const ellipsisEditColumn = (_: any, row: any, width: any = '100%', onEdit
                         <Tooltip placement="topLeft" title={_}>
                             <span style={{ width: width - 16 - 28 }} className={styles.ellips_copy_column}>{_}</span>
                         </Tooltip>
-                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit}/>
+                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
                     </Row> :
                     <Row className={styles.ellips_copy_column} justify="start" align="middle" >
                         {_ || '-'}
-                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit}/>
+                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
                     </Row>
             }
             <div
@@ -129,14 +135,16 @@ export const ellipsisEditColumn = (_: any, row: any, width: any = '100%', onEdit
                 style={{ width: width - 16 }}
             >
                 {_ || '-'}
-                <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit}/>
+                <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
             </div >
         </>
     )
 }
 
 export const copyTooltipColumn = (defaultText: string = '-') => ({
-    ellipsis: true,
+    ellipsis: {
+        showTitle: false,
+    },
     render: (_: any) => (
         _ ?
             <Tooltip
@@ -179,27 +187,31 @@ export const compareResultSpan = (track_result: string, result: string) => {
     return result || '-'
 }
 
-const RenderStateTag: React.FC<any> = ({ color = '', style = {}, children }) => {
+const StateTagCls = styled(Tag) <{ noMargin?: boolean }>`
+    font-weight: 500;
+    width: 72px;
+    text-align: center;
+    ${({ noMargin }) => noMargin ? 'margin-right: 0;' : ''}
+    text-transform: capitalize;
+`
+
+const RenderStateTag: React.FC<any> = (props) => {
     return (
-        <Tag
-            color={color}
-            style={{ fontWeight: 500, width: 72, textAlign: 'center', marginRight: 0, ...style }}
-        >
-            { children}
-        </Tag>
+        <StateTagCls
+            {...props}
+        />
     )
 }
 
-const RenderStateTagNoMargin: React.FC<any> = ({ color, style, children }) => (
-    <Tooltip title="Job状态" placement="bottom">
-        <Tag
-            color={color}
-            style={{ fontWeight: 500, width: 72, textAlign: 'center', ...style }}
-        >
-            { children}
-        </Tag>
-    </Tooltip>
-)
+const TooltipStateTag: React.FC<any> = (props) => {
+    return (
+        <Tooltip title="Job状态" placement="bottom">
+            <StateTagCls
+                {...props}
+            />
+        </Tooltip>
+    )
+}
 
 const QuestionPopover = ({ title }: any) => (
     <Popover
@@ -212,18 +224,47 @@ const QuestionPopover = ({ title }: any) => (
     </Popover>
 )
 
-export const JobListStateTag: React.FC<any> = ({ state, run_state = '', state_desc }: any) => {
+
+const CustomStateTag: React.FC = (props: any) => {
+    const { state } = props
+    return (
+        <RenderStateTag
+            {...props}
+            color={getStateColor(state)}
+            style={!stateColorMap.get(state) && { color: "#1d1d1d" }}
+        >
+            {state === 'success' ? 'complete' : state}
+        </RenderStateTag>
+    )
+}
+
+const CustomTooltipStateTag: React.FC<any> = (props) => {
+    const { state } = props
+    return (
+        <TooltipStateTag
+            {...props}
+            color={getStateColor(state)}
+            style={!stateColorMap.get(state) && { color: "#1d1d1d" }}
+        >
+            {state === 'success' ? 'complete' : state}
+        </TooltipStateTag>
+    )
+}
+
+
+export const JobListStateTag: React.FC<any> = (props) => {
+    const { state, run_state = '', state_desc } = props
     if (state === 'running') {
         if (run_state)
             return (
                 <Space>
-                    <RenderStateTag color='#649FF6' >Running</RenderStateTag>
+                    <CustomStateTag {...props}>{state}</CustomStateTag>
                     <QuestionPopover title={'未分配到测试机器'} />
                 </Space>
             )
         return (
             <Space>
-                <RenderStateTag color='#649FF6' >Running</RenderStateTag>
+                <CustomStateTag {...props}>{state}</CustomStateTag>
                 <QuestionPopover title={'正在运行中，请耐心等待'} />
             </Space>
         )
@@ -232,40 +273,32 @@ export const JobListStateTag: React.FC<any> = ({ state, run_state = '', state_de
     if (state === 'pending' && state_desc) {
         return (
             <Space>
-                <RenderStateTag color='#D9D9D9' style={{ color: '#1d1d1d' }}>Pending</RenderStateTag>
+                <CustomStateTag {...props}>{state}</CustomStateTag>
                 <QuestionPopover title={state_desc} />
             </Space>
         )
     }
 
-    switch (state) {
-        case 'success': return <RenderStateTag color='#81BF84' >Complete</RenderStateTag>
-        case 'running': return <RenderStateTag color='#649FF6' >Running</RenderStateTag>
-        case 'fail': return <RenderStateTag color='#C84C5A' >Fail</RenderStateTag>
-        case 'pending': return <RenderStateTag color='#D9D9D9' style={{ color: '#1d1d1d' }} >Pending</RenderStateTag>
-        case 'stop': return <RenderStateTag color='#D9D9D9' style={{ color: '#1d1d1d' }} >Stop</RenderStateTag>
-        case 'skip': return <RenderStateTag color='#D9D9D9' style={{ color: '#1d1d1d' }} >Skip</RenderStateTag>
-        default: return <></>
-    }
+    return <CustomStateTag {...props} />
 }
 
-export const StateTag: React.FC<any> = ({ state }: any) => {
-    switch (state) {
-        case 'success': return <RenderStateTagNoMargin color='#81BF84' >Complete</RenderStateTagNoMargin>
-        case 'running': return <RenderStateTagNoMargin color='#649FF6' >Running</RenderStateTagNoMargin>
-        case 'fail': return <RenderStateTagNoMargin color='#C84C5A' >Fail</RenderStateTagNoMargin>
+const stateColorMap = new Map([
+    ['success', '#81BF84'],
+    ['pass', '#81BF84'],
+    ['running', '#649FF6'],
+    ['fail', '#C84C5A'],
+])
 
-        case 'pending': return <RenderStateTagNoMargin color='#D9D9D9' style={{ color: '#1d1d1d' }} >Pending</RenderStateTagNoMargin>
-        case 'stop': return <RenderStateTagNoMargin color='#D9D9D9' style={{ color: '#1d1d1d' }} >Stop</RenderStateTagNoMargin>
-        case 'skip': return <RenderStateTagNoMargin color='#D9D9D9' style={{ color: '#1d1d1d' }} >Skip</RenderStateTagNoMargin>
-        default: return <></>
-    }
+const getStateColor = (state: string) => stateColorMap.get(state) || '#D9D9D9'
+
+export const StateTag: React.FC<any> = (props) => {
+    return <CustomTooltipStateTag {...props} noMargin />
 }
 
 interface QuestionTootipProp {
-    title: string | React.ReactNode
-    desc: string
-    placement?: any
+    title: string | React.ReactNode;
+    desc: string | React.ReactNode;
+    placement?: any;
 }
 
 export const QusetionIconTootip: React.FC<QuestionTootipProp> = ({ title, desc, placement = 'bottom' }) => (
@@ -354,7 +387,7 @@ CV:  ${cv}`
                     <Row><b>CV：</b><span>{cv}</span></Row>
                     <Row><b>Max：</b><span>{max}</span></Row>
                     <Row><b>Min：</b><span>{min}</span></Row>
-                    { list.length > 0 && <Row style={{ marginTop: 16 }}><b>Test Record</b></Row>}
+                    {list.length > 0 && <Row style={{ marginTop: 16 }}><b>Test Record</b></Row>}
                     {
                         list.map(
                             (i: any, index: number) => (
@@ -365,7 +398,7 @@ CV:  ${cv}`
                 </>
             }
         >
-            { resultSpan()}
+            {resultSpan()}
         </Popover>
     )
 }

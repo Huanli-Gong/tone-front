@@ -78,11 +78,11 @@ const RenderChart = (props: any) => {
             }
             {
                 (testType === 'functional' && showType === 'result_trend') &&
-                <Title>功能通过率趋势图</Title>
+                <Title>功能结果趋势图</Title>
             }
             {
                 (testType === 'functional' && showType === 'pass_rate') &&
-                <Title>功能结果趋势图</Title>
+                <Title>功能通过率趋势图</Title>
             }
             <div ref={chart} style={{ width: '100%', height: 360 - 48 }} />
         </CardWrapper>

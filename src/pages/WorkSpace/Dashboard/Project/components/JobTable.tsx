@@ -91,7 +91,9 @@ const JobTable = (props: any) => {
             title: 'Job名称',
             dataIndex: 'name',
             width: 200,
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any, row: any) => (
                 <Tooltip title={_}>
                     <span onClick={() => window.open(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>{_}</span>
@@ -134,7 +136,9 @@ const JobTable = (props: any) => {
             title: '所属项目',
             width: 120,
             dataIndex: 'project_name',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => _ && <Tooltip title={_}>{_}</Tooltip>
         }, {
             title: '创建人',
@@ -173,9 +177,14 @@ const JobTable = (props: any) => {
                             }
                         >
                             <Space>
-                                <span onClick={() => handleTestReRun(_)}>
-                                    <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
-                                </span>
+                                {/** case.离线任务上传后，不能重跑。 */}
+                                {_.created_from === 'offline' ?
+                                    <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
+                                    :
+                                    <span onClick={() => handleTestReRun(_)}>
+                                        <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                    </span>
+                                }
                                 <Popconfirm
                                     title="确定要删除吗？"
                                     onConfirm={() => handleDelete(_)}

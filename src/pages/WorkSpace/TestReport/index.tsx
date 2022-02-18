@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { writeDocumentTitle, resizeDocumentHeightHook, resizeDocumentWidthHooks } from '@/utils/hooks';
+import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Button, Layout, Tabs } from 'antd';
 import { history, Access, useAccess } from 'umi';
 
@@ -17,8 +17,8 @@ export default (props: any) => {
     //const limitAuthority =['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
     const access = useAccess()
     writeDocumentTitle(intalMessage)
-    const layoutWidth = resizeDocumentWidthHooks(),
-        layoutHeight = resizeDocumentHeightHook()
+
+    const { height: layoutHeight, width: layoutWidth } = useClientSize()
 
     const [tab, setTab] = useState(location.query.t || 'list')
     const handleTabClick = useCallback((t) => {
@@ -36,7 +36,7 @@ export default (props: any) => {
     const hanldeCreateTemplate = useCallback(() => {
         history.push(`/ws/${ws_id}/test_report/template`)
     }, [])
-    
+
     return (
         <Layout.Content>
             <ReportBody width={layoutWidth - 40} height={layoutHeight - 50}>
@@ -49,7 +49,7 @@ export default (props: any) => {
                     }}
                     tabBarExtraContent={
                         tab === 'list' ? (
-                            access.wsRoleContrl() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button> 
+                            access.wsRoleContrl() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button>
                         ) : (
                             access.wsRoleContrl() && <Button type="primary" onClick={hanldeCreateTemplate}>新建模版</Button>
                         )

@@ -80,7 +80,7 @@ export default (props: any) => {
         else if (props.size === 'large')
             setTree({ first: 54.6, next: 57 })
     }, [props.size])
-    
+
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
         const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
@@ -89,7 +89,7 @@ export default (props: any) => {
             message.success('操作成功');
             setRefrush(!refrush)
         } else {
-            requestCodeMessage( res.code , res.msg )
+            requestCodeMessage(res.code, res.msg)
         }
     }
     const columns: any = [
@@ -104,28 +104,32 @@ export default (props: any) => {
         {
             title: 'SN',
             width: 150,
-            ellipsis: true,
-            render: (record: any) => <EllipsisPulic title={record.test_server.sn} color={'#1890ff'}/>
+            ellipsis: {
+                showTitle: false
+            },
+            render: (record: any) => <EllipsisPulic title={record.test_server.sn} color={'#1890ff'} />
         },
         {
             title: '机器名称',
             width: 150,
-            ellipsis: true,
-            render: (record: any) => <EllipsisPulic title={record.test_server.name} color={'#1890ff'}/>
+            ellipsis: {
+                showTitle: false
+            },
+            render: (record: any) => <EllipsisPulic title={record.test_server.name} color={'#1890ff'} />
         },
         {
             title: '私网地址',
-            width  :100,
+            width: 100,
             render: (record: any) => record.test_server.private_ip || '-'
         },
         {
-            width  :100,
+            width: 100,
             title: 'Console配置',
             render: (record: any) => record.test_server.console_conf || '-'
         },
         {
             title: '控制通道',
-            width  :100,
+            width: 100,
             //dataIndex: 'channel_type',
             render: (record: any) => (record.test_server.channel_type || '-')
         },
@@ -161,23 +165,23 @@ export default (props: any) => {
         {
             title: '是否安装内核',
             dataIndex: 'kernel_install',
-            width : 130,
+            width: 130,
             render: (record: any) => (record ? '是' : '否')
         },
         {
             title: '运行变量名',
             dataIndex: 'var_name',
-            width  :120,
+            width: 120,
             render: (record: any) => (record || '-')
         },
         {
             title: '机器状态',
-            width:120,
+            width: 120,
             render: (record: any) => StateBadge(record.test_server.state, record.test_server)
         },
         {
             title: '实际状态',
-            width  :120,
+            width: 120,
             render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
         },
         {
@@ -238,9 +242,9 @@ export default (props: any) => {
 
     return (
         <>
-            <div style={{ width: '100%' , display : 'flex'}}>
+            <div style={{ width: '100%', display: 'flex' }}>
                 <div style={{ width: 47, background: '#fff' }}>
-                    <div style={{ height: tree.first, background : firstBackground }}></div>
+                    <div style={{ height: tree.first, background: firstBackground }}></div>
                     {
                         dataSource.length > 0 &&
                         dataSource.map(

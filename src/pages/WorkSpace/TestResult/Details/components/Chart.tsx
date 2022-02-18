@@ -96,12 +96,10 @@ export default ({ data = {}, test_type = '', plan = false } : any ) => {
     }, [data, chart])
 
     return (
-        <div
-            style={{ width: 'calc(100% - 110px)', height : 170 }}
+        <div style={{ width: 'calc(100% - 0px)' }}
         >
-            <div
-                ref={chart}
-                style={{ width: '100%', height : 170, transform: `translateY(${plan ? '7%' : '0'})` }}
+            <div ref={chart} style={{ height : 170 }}
+                // style={{ width: '100%', height : 170, transform: `translateY(${plan ? '7%' : '0'})` }}
             />
         </div>
     )

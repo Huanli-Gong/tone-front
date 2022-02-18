@@ -136,7 +136,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 				/>
 			),
 			width: 90,
-			ellipsis: true,
+			ellipsis: {
+                shwoTitle: false,
+            },
 			render: (_: any) => _ ? <Tooltip placement={'bottomLeft'} title={_}><Typography.Text style={{ width: 85 }} ellipsis>{_ || '-'}</Typography.Text></Tooltip> : '-',
 			className: 'no_padding_head',
 			dataIndex: 'domain_name_list',
@@ -171,7 +173,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 			dataIndex: 'description',
 			className: 'no_padding_head',
 			width: 100,
-			ellipsis: true,
+			ellipsis: {
+                shwoTitle: false,
+            },
 			render: (_, row) => {
 				return (
 					<PopoverEllipsis title={row.description} width={100} />

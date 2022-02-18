@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { message, Breadcrumb, Row, Spin, Space, Layout } from 'antd'
+import { Breadcrumb, Row, Spin, Space, Layout } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access } from 'umi'
 import styles from './index.less'
@@ -11,6 +11,7 @@ import Editor from './Editor'
 import dropDown from '@/assets/svg/dropDown.svg'
 import { ReactComponent as AddDoc } from '@/assets/svg/addDoc.svg'
 import { requestCodeMessage } from '@/utils/utils'
+import { useClientSize } from '@/utils/hooks'
 
 let editor2: any = null
 const close = `url("${dropDown}") center center / 16px 16px`
@@ -26,7 +27,6 @@ export default (props: any) => {
     const [currentDoc, setCurrentDoc] = useState<any>({})
     const [rightLoading, setRightLoading] = useState(false)
     const [paddingBottomVal, setPaddingBottomVal] = useState(166)
-    const [layoutHeight, setLayoutHeight] = useState(innerHeight)
     const typePath = /^\/help_doc/.test(props.match.path) ? 'help_doc' : 'notice'
     const { initialState } = useModel('@@initialState');
     const access = useAccess();
@@ -64,14 +64,13 @@ export default (props: any) => {
     useEffect(() => {
         odivContenteditable = document.querySelector('div[contenteditable = "false"]')
         odivContenteditable && odivContenteditable.addEventListener('click', handleClickImage, true)
-        window.addEventListener('resize', resizeFn, false)
         return () => {
             odivContenteditable && odivContenteditable.removeEventListener('click', handleClickImage, true)
-            window.addEventListener('resize', resizeFn, false)
         }
     }, [currentDoc])
 
-    const onResizeWindowHeight = () => setLayoutHeight(innerHeight)
+    const { height: layoutHeight } = useClientSize()
+
     const wsHelpDoc = async (title: any, index: any) => {
         const { data = [], code, msg } = await queryHelpDocList({ page_size: 1000, doc_type: typePath })
         if (code === 200) {
@@ -163,21 +162,7 @@ export default (props: any) => {
             a.innerText = arr[number + 1].text;
             odiv.style.paddingLeft = (Number(nextTagNum) - 1) * 0.6 + 'rem'
             span.setAttribute('index', number + 1)
-            /*
-            span.onclick = function (e) {
-                let number = e.target.getAttribute('index')
-                const levelTag = arr[number].tag,
-                    currentTagNum = +levelTag.replace("H", "")
-                    if (String(this.style.background) === String(close)) {
-                    this.style.background = open
-                    closeFn(box, arr, currentTagNum, number, this)
-                } else {
-                    this.style.background = close
-                    openNextElementSibling = this.parentNode.parentNode.nextElementSibling
-                    openFn(box, arr, currentTagNum, number, this, arr[number+1])
-                }
-            }
-            */
+            
             a.onclick = function () {
                 editor2.scrollToHead(arr[number + 1].id);
             };
@@ -187,7 +172,6 @@ export default (props: any) => {
             li.appendChild(odiv);
 
 
-            // const nextElementSibling = that.parentNode.parentNode.nextElementSibling
             let nextElementSibling = openNextElementSibling
             let previousElementSibling = null
 
@@ -199,8 +183,6 @@ export default (props: any) => {
                 previousElementSibling = box.lastChild
                 openNextElementSibling = previousElementSibling
             }
-            // if(nextElementSibling) previousElementSibling = nextElementSibling.previousElementSibling
-            // if(!nextElementSibling) previousElementSibling = box.lastChild
 
 
             let preLevelTag = ''
@@ -220,7 +202,6 @@ export default (props: any) => {
             if (Number(preTagNum) < Number(currentNumber)) {
                 const num = arr[number].id
                 const ospan = document.querySelector(`#${num} span`)
-                // const ospan = document.querySelector(`#${previousElementSibling.id} span`)
 
                 ospan.style.background = close
                 nextElementSibling = null
@@ -293,8 +274,6 @@ export default (props: any) => {
             const box: any = document.getElementById("catalogBox2");
             if (!box) return
             box.innerHTML = "";
-            // const aa = `<div style='font-size: 20px;padding-bottom: 10px; border-bottom:2px solid #d6cece;margin-bottom: 15px' >${currentDocTitle}</div>`
-            // box.innerHTML = aa
             let level = 1,
                 levelObj = {
                     1: "",
@@ -351,24 +330,7 @@ export default (props: any) => {
                     num = tag.replace("H", "")
                 odiv.style.paddingLeft = (Number(num) - 1) * 0.6 + 'rem'
                 span.setAttribute('index', index)
-                /*
-                span.onclick = function (e) {
-                    // let number = index
-                    let number = e.target.getAttribute('index')
-                    const levelTag = arr[number].tag,
-                        currentTagNum = +levelTag.replace("H", "")
-
-                    if (String(this.style.background) === String(close)) {
-                        this.style.background = open
-                        closeFn(box, arr, currentTagNum, number, this)
-                    } else {
-                        this.style.background = close
-                        openNextElementSibling = this.parentNode.parentNode.nextElementSibling
-                        openFn(box, arr, currentTagNum, number, this, arr[number + 1])
-                        // openFn(box, arr, currentTagNum, number, this,item)
-                    }
-                }
-                */
+                
                 a.onclick = function (e: any) {
                     const ali: any = document.querySelectorAll('#catalogBox2 li')
                     const oa = document.querySelectorAll('#catalogBox2 li a')
@@ -416,12 +378,10 @@ export default (props: any) => {
         editor2.disable()
         /**一定要创建 */
         odiv2 = document.querySelector('#showContentBox')
-        window.addEventListener('resize', onResizeWindowHeight)
 
         return () => {
             // 组件销毁时销毁编辑器  注：class写法需要在componentWillUnmount中调用
             editor2.destroy()
-            window.removeEventListener('resize', onResizeWindowHeight)
             clearTimeout(timeout)
         }
     }, [])
@@ -454,7 +414,6 @@ export default (props: any) => {
                         <Row >
                             {/*左侧 */}
                             <div
-                                // style={{height: layoutHeight - 159}}
                                 style={{ height: layoutHeight - 112 }}
                                 className={styles.script_left}>
                                 <div className={styles.use_help}>

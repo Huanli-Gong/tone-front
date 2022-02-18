@@ -182,14 +182,18 @@ const SuiteManagement: React.FC<any> = props => {
             title: '创建时间',
             dataIndex: 'gmt_created',
             width: 120,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any, row: any) => row.source_tag !== '系统标签' && <PopoverEllipsis title={row.gmt_created} />
         },
         {
             title: '修改时间',
             dataIndex: 'gmt_modified',
             width: 120,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any, row: any) => row.source_tag !== '系统标签' && <PopoverEllipsis title={row.gmt_modified} />
         },
         {

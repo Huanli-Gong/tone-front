@@ -14,7 +14,7 @@ import OperationLog from '@/components/Public/Log'
 import SearchInput from '@/pages/WorkSpace/TestSuiteManage/components/SearchInput'
 import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
-import { resizeDocumentHeightHook } from '@/utils/hooks'
+import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage } from '@/utils/utils';
 import PermissionTootip from '@/components/Public/Permission/index';
 /**
@@ -39,7 +39,7 @@ const Cluster = (props: any, ref: any) => {
         open: createClusterRef.current.show
     }))
 
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)

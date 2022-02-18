@@ -80,7 +80,9 @@ const SetDomain: React.FC<any> = (props, ref) => {
             width: 300,
             fixed: 'left',
             dataIndex: 'name',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput
                     confirm={confirm}

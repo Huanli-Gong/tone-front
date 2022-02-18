@@ -40,7 +40,7 @@ export default defineConfig({
     },
     // chainWebpack,
     favicon: '/favicon.ico',
-    // esbuild: {},
+    esbuild: {},
     // webpack5: {},
     fastRefresh: {},
     runtimePublicPath: true,

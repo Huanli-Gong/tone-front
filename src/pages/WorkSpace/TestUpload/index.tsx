@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FormattedMessage, useIntl, useAccess } from 'umi';
 import { Layout, message, Tabs, Badge, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Spin } from 'antd';
-import { resizeDocumentHeightHook, writeDocumentTitle } from '@/utils/hooks'
 import UploadTable from './components/OfflineUploadTable';
 import { querySummary } from './services';
 import styles from './index.less'
@@ -57,8 +56,7 @@ export default (props: any) => {
   const tabList = [
     { name: formatMessage({ id: 'TestUpload.tab.record' }), key: 'record' },
   ]
-  const layoutHeight = resizeDocumentHeightHook()
-  
+
   const itemTotalStyle = (key: any) => {
     const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3 }
     const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3 }
@@ -66,11 +64,11 @@ export default (props: any) => {
   }
 
   const operations = (
-      <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
+    <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
   )
 
   return (
-    <div className={styles.TestUpload_root} style={{ height: layoutHeight - 50 }}>
+    <div className={styles.TestUpload_root} >
       {/* 
         <Tabs className={styles.content_tabs} defaultActiveKey={tab} onChange={onTabsChange} tabBarExtraContent={operations}>
           {tabList.map((item: any) =>

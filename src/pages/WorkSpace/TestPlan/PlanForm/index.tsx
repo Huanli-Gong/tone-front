@@ -6,7 +6,7 @@ import TestSetting from './components/TestSetting'
 import ReportSetting from './components/ReportSetting'
 import TouchSetting from './components/TouchSetting'
 
-import { resizeDocumentHeightHook , writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
 import { ArrowLeftOutlined, ArrowRightOutlined , CheckOutlined} from '@ant-design/icons'
 import {
     CreateContainer, ContainerBody, ContainerBreadcrumb, LeftWrapper,
@@ -21,7 +21,7 @@ import { requestCodeMessage } from '@/utils/utils'
  * 计划管理/新建计划（新）
  * */
 const TestPlan = (props: any) => {
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
 
     const { route } = props
     // console.log('route.name:', route.name)

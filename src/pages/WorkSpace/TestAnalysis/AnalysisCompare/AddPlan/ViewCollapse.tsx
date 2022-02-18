@@ -8,7 +8,7 @@ import ViewTable from './ViewTable'
 import { queryPlanViewList, queryPlanConstraint } from '../services'
 import styles from '../index.less'
 import _ from 'lodash'
-import { resizeDocumentHeightHook } from '@/utils/hooks';
+import { useClientSize } from '@/utils/hooks';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { requestCodeMessage } from '@/utils/utils';
 const CollapseContainer = styled(Collapse)`
@@ -24,7 +24,7 @@ const defaultResult = {
 }
 
 const ViewCollapse = ( props : any ) => {
-    const layoutHeight = resizeDocumentHeightHook()
+    const {height: layoutHeight} = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const { ws_id, onCancel, onOk,currentGroup} = props
     const defaultVersion = currentGroup && _.get(currentGroup,'members[0].product_version')
