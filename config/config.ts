@@ -17,9 +17,7 @@ export default defineConfig({
         name: 'T-One',
         locale: true,
     },
-    define: {
-        BUILD_APP_ENV
-    },
+    define: process.env,
     locale: {
         // default zh-CN
         default: 'zh-CN',

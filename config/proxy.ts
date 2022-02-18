@@ -6,14 +6,12 @@
  * https://pro.ant.design/docs/deploy
  */
 
-import { getTarget } from '../../wsConfig'
-
 const { BUILD_APP_ENV } = process.env
 
 export default {
     dev: {
         '/api/': {
-            target: getTarget(BUILD_APP_ENV),
+            target: process.env[BUILD_APP_ENV] || "http://localhost:20002",
             changeOrigin: true,
             secure: false,
             // withCredentials: true,
