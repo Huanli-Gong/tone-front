@@ -15,6 +15,8 @@ import { ReactComponent as TeamQuantity } from '@/assets/svg/dashboard/team_quan
 import { ReactComponent as WorkspaceQuantity } from '@/assets/svg/dashboard/ws_quantity.svg'
 import { requestCodeMessage } from '@/utils/utils';
 
+import { useRequest } from 'umi'
+
 interface CommentProps {
     height?: number;
     no_padding?: string
@@ -117,25 +119,17 @@ const ItemIcon = styled.div<ItemIconProps>`
 `
 
 export default () => {
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
 
-    const [realtime, setRealtime] = useState<any>(null)
     const [workspace, setWorkspace] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
-    const getRealtimeData = async () => {
-        const { data, code, msg } = await queryLiveData()
-        if (code !== 200) return requestCodeMessage(code, msg)
-        setRealtime(data)
-    }
-
-    useEffect(() => {
-        let timer: any
-        timer = setTimeout(getRealtimeData, 5000)
-        return () => {
-            clearTimeout(timer)
-        }
-    }, [realtime])
+    const { data: realtime } = useRequest(queryLiveData, {
+        onSuccess: () => {
+            setLoading(false)
+        },
+        pollingInterval: 5000,
+    })
 
     const getWorkspaceData = async () => {
         const { data, code, msg } = await querySysData()
@@ -143,15 +137,8 @@ export default () => {
         setWorkspace(data)
     }
 
-    const initPage = async () => {
-        setLoading(true)
-        await getRealtimeData()
-        await getWorkspaceData()
-        setLoading(false)
-    }
-
     useEffect(() => {
-        initPage()
+        getWorkspaceData()
     }, [])
 
     return (
@@ -191,10 +178,10 @@ export default () => {
                     </RealtimeDataItem>
                     <RealtimeDataItem>
                         <Row>
-                            <Col span={10}>
+                            <Col span={12}>
                                 <UnMarginStatistic groupSeparator="" title={'总数据量(万)'} value={realtime?.result_total_num} formatter={(val: any) => (val / 10000).toFixed(2)} />
                             </Col>
-                            <Col span={14}>
+                            <Col span={12}>
                                 <Space>
                                     <SmailStatistic title={'功能'} value={realtime?.func_result_num} formatter={(val: any) => (val / 10000).toFixed(2)} valueStyle={{ color: '#0FB966' }} />
                                     <SmailStatistic title={'性能'} value={realtime?.perf_result_num} formatter={(val: any) => (val / 10000).toFixed(2)} valueStyle={{ color: '#0FB966' }} />

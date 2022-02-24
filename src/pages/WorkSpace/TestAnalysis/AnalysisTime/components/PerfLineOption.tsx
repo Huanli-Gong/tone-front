@@ -1,15 +1,28 @@
 import { renderProviderText, textTip, serverLinkTip } from '.'
 
-function isRepeat ( arr : any , num : any ) {
+function isRepeat(arr: any, num: any) {
     // return arr.toString().match(new RegExp( num , 'g')).length > 1
     let sum = 0
-    for ( let x = 0 , len = arr.length ; x < len ; x ++ ) {
-        if ( arr[x] === num ) {
-            sum ++
-            if ( sum > 1 ) return true
+    for (let x = 0, len = arr.length; x < len; x++) {
+        if (arr[x] === num) {
+            sum++
+            if (sum > 1) return true
         }
     }
     return false
+}
+
+function toFixed(number: any, precision: number) {
+    var str: any = number + ''
+    var len = str.length
+    var last = str.substring(len - 1, len)
+    if (last == '5') {
+        last = '6'
+        str = str.substring(0, len - 1) + last
+        return (str - 0).toFixed(precision)
+    } else {
+        return number.toFixed(precision)
+    }
 }
 
 const PerfLineOption: any = (dataSource: any, provider: string) => {
@@ -23,52 +36,65 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
         let downSeries: any = []
 
         let pointers = {}
-        
-        Object.keys( result_data ).forEach(( key ) => {
-            const metric = result_data[ key ]
-            Object.keys( metric ).forEach(( d ) => {
+
+        Object.keys(result_data).forEach((key) => {
+            const metric = result_data[key]
+            Object.keys(metric).forEach((d) => {
                 const o = metric[d]
-                if ( o ) {
-                    const val = Number(Number(o.value).toFixed(2)) //parseInt(o.value) //
-                    pointers[ d ] = pointers[d] ? [ ...pointers[d] , val ] : [ val ]
+                if (o) {
+                    const val = toFixed(+ o.value, 2) //parseInt(o.value) //
+                    pointers[d] = pointers[d] ? [...pointers[d], val] : [val]
                 }
             })
         })
 
         Object.keys(result_data).forEach((i: any) => {
-            legend.push(i)
-            const defaultOpt = { type : 'line' , name : i , smooth : true }
-            const AreaOpt = { lineStyle: { opacity: 0 }, tooltip: { show: false }, symbol: 'none', }
+            legend.push({
+                name: i,
+            })
+            const defaultOpt = { type: 'line', smooth: true }
+            const AreaOpt = {
+                lineStyle: { opacity: 0 },
+                tooltip: { show: false },
+                symbol: "none",
+            }
 
-            let data: any = { ...defaultOpt, symbolSize: 8, connectNulls: false }
-            let upArea: any = { ...defaultOpt, ...AreaOpt, areaStyle: { color: '#ccc' }, }
-            let downArea: any = { ...defaultOpt, ...AreaOpt, areaStyle: { color: '#fff', opacity: 1 }, }
+            let data: any = { ...defaultOpt, symbolSize: 8, connectNulls: false, z: 9999, name: i, }
 
-            let lineData : any = []
-            let upAreaData : any = []
-            let downAreaData : any = []
+            let upArea: any = { ...defaultOpt, ...AreaOpt, name: "U", areaStyle: { color: '#ccc' }, }
+            let downArea: any = { ...defaultOpt, ...AreaOpt, name: "D", areaStyle: { color: '#fff', opacity: 1 }, z: 1000 }
+
+            let lineData: any = []
+            let upAreaData: any = []
+            let downAreaData: any = []
 
             Object.keys(result_data[i]).forEach((d: any) => {
                 let item = result_data[i][d]
                 xAxis.push(d)
                 if (item) {
-                    const val = Number(Number(item.value).toFixed(2))
+                    const val: any = toFixed(+ item.value, 2)
                     let column = { ...item, date: d, value: val }
-                    if (item.note) 
+                    if (item.note)
                         column.symbol = 'path://M873,435C877.4182739257812,435,881,438.58172607421875,881,443C881,447.41827392578125,877.4182739257812,451,873,451C868.5817260742188,451,865,447.41827392578125,865,443C865,438.58172607421875,868.5817260742188,435,873,435ZM873,436C869.134033203125,436,866,439.1340026855469,866,443C866,446.8659973144531,869.134033203125,450,873,450C876.865966796875,450,880,446.8659973144531,880,443C880,439.1340026855469,876.865966796875,436,873,436ZM873,439C875.2091674804688,439,877,440.7908630371094,877,443C877,445.2091369628906,875.2091674804688,447,873,447C870.7908325195312,447,869,445.2091369628906,869,443C869,440.7908630371094,870.7908325195312,439,873,439Z'
 
-                    if ( JSON.stringify(pointers) !== '{}' && isRepeat( pointers[d] , val ) ) {
+                    if (JSON.stringify(pointers) !== '{}' && isRepeat(pointers[d], val)) {
                         column.symbol = 'circle'
-                        column.itemStyle = { color : '#000' }
+                        column.itemStyle = { color: '#000' }
                     }
-                    lineData.push( column )
+                    lineData.push(column)
 
-                    const cv = Number(item.cv_value.replace('±', '').replace('%', '')) / 100
-                    let up = Number(Number(item.value * (1 + cv)).toFixed(2))
-                    let down = Number(Number(item.value * (1 - cv)).toFixed(2))
+                    const cv = item.cv_value.replace('±', '').replace('%', '') * 100 / 100 / 100
+                    let up = ((1 + cv) * val).toFixed(2)
+                    let down = ((1 - cv) * val).toFixed(2)
 
-                    upAreaData.push({ date: d, value: up })
-                    downAreaData.push({ date: d, value: down })
+                    console.log(val, cv, up, down)
+
+                    upAreaData.push({
+                        date: d, value: up,
+                    })
+                    downAreaData.push({
+                        date: d, value: down,
+                    })
                 }
                 else {
                     lineData.push({ date: d, value: null })
@@ -76,27 +102,28 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
                     downAreaData.push({ date: d, value: null })
                 }
             })
-            upSeries.push({ ...upArea , data : upAreaData })
-            downSeries.push({ ...downArea , data : downAreaData })
-            chartData.push({ ...data , data : lineData })
+            upSeries.push({ ...upArea, data: upAreaData })
+            downSeries.push({ ...downArea, data: downAreaData })
+            chartData.push({ ...data, data: lineData })
         })
 
-        console.log( chartData )
+        console.log(chartData)
         xAxis = Array.from(new Set(xAxis))
 
-        let baselineSerie: any = { type: 'line', name: '基线AVG值' , itemStyle : { color : '#2FC25B' }}
+        let baselineSerie: any = { type: 'line', name: '基线AVG值', itemStyle: { color: '#2FC25B' } }
         if (baseline_data.value) {
             legend.push({ name: '基线AVG值', icon: 'path://M802,720C802.5523071289062,720,803,720.4476928710938,803,721C803,721.5523071289062,802.5523071289062,722,802,722L798,722C797.4476928710938,722,797,721.5523071289062,797,721C797,720.4476928710938,797.4476928710938,720,798,720L802,720ZM810,720C810.5523071289062,720,811,720.4476928710938,811,721C811,721.5523071289062,810.5523071289062,722,810,722L806,722C805.4476928710938,722,805,721.5523071289062,805,721C805,720.4476928710938,805.4476928710938,720,806,720L810,720ZM818,720C818.5523071289062,720,819,720.4476928710938,819,721C819,721.5523071289062,818.5523071289062,722,818,722L814,722C813.4476928710938,722,813,721.5523071289062,813,721C813,720.4476928710938,813.4476928710938,720,814,720L818,720Z' })
             baselineSerie = {
-                type: 'line', name: '基线AVG值', symbol: 'none', tooltip: { show: false }, 
-                lineStyle: { width: 1, color: '#2FC25B', type: 'dashed' },itemStyle : { color : '#2FC25B' },
+                type: 'line', name: '基线AVG值', symbol: 'none', tooltip: { show: false },
+                lineStyle: { width: 1, color: '#2FC25B', type: 'dashed' }, itemStyle: { color: '#2FC25B' },
                 data: xAxis.map((i: any, index: number) => ({ date: i, value: baseline_data.value })),
+                z: 9999
             }
         }
-        // console.log( upSeries , downSeries )
+        // console.log(upSeries, downSeries, legend)
         option = {
             legend: {
-                icon: "line",
+                icon: "rect",
                 itemHeight: 2,
                 itemWidth: 10,
                 data: legend,
@@ -132,7 +159,7 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
                             ${renderProviderText(params, provider)}
                             ${textTip('标注', item.note)}
                         </div>`
-                        .trim()
+                            .trim()
                     )
                     return `<div style="display:flex;">${element}</div>`
                 },
@@ -143,19 +170,28 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
                 data: xAxis,
                 axisLabel: {
                     showMaxLabel: true,
-                }
+                },
             },
             yAxis: {
                 type: 'value',
                 axisLine: { show: false },
                 axisTick: { show: false },
                 splitLine: { show: false, lineStyle: { type: 'dashed' }, },
+                axisPointer: {
+                    z: 9999
+                },
+                min: "dataMin",
+                max: "dataMax",
+                splitArea: {
+                    areaStyle: ['#fff', '#fff']
+                },
+                zlevel: 9999
             },
             series: [
-                ...chartData,
-                baselineSerie,
                 ...upSeries,
                 ...downSeries,
+                ...chartData,
+                baselineSerie,
             ],
         }
     }

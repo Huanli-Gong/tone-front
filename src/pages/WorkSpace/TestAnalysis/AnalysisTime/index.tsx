@@ -59,7 +59,7 @@ export default (props: any) => {
     }, [instance, testType, showType])
 
     return (
-        <Layout.Content style={{ height: layoutHeight - 40, overflow: 'auto', marginBottom: 20, background: '#fff' }}>
+        <Layout.Content style={{ minHeight: layoutHeight - 40, overflow: 'auto', marginBottom: 20, background: '#fff' }}>
             <div
                 style={{ height: 0, width: 0, position: "absolute", left: -111111, zIndex: -999 }}
                 className="copy_link_target"
