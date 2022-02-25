@@ -23,6 +23,7 @@ import { CreatePageData, EditPageData } from './hooks';
 const Report = (props: any) => {
     const { ws_id } = props.match.params
     // const { report_id, creator_id } = useParams();
+    const { report_id } = useParams() as any;
     const [btnState, setBtnState] = useState<Boolean>(false)
     const [btnConfirm, setBtnConfirm ] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
@@ -125,7 +126,6 @@ const Report = (props: any) => {
 
     // 复制功能
     useEffect(() => {
-        let report_id = String(window.location.pathname.match(/\d+/g))
         const clipboard = new Clipboard('.test_report_copy_link', { text: () => location.origin + `/share/report/${report_id}`})
         clipboard.on('success', function (e) {
             message.success('报告链接复制成功')

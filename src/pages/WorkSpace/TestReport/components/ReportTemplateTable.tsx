@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState, useRef, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
-import { useRequest } from 'umi'
+import { useRequest, useAccess, Access } from 'umi'
 import { queryReportTemplateList, delReportTemplateList } from '../services'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
@@ -15,6 +15,7 @@ import { requestCodeMessage, targetJump } from '@/utils/utils'
 
 const ReportTemplateTable: React.FC<any> = (props) => {
     const { ws_id, tab } = props
+    const access = useAccess()
     const [autoFocus, setFocus] = useState(true)
     const defaultParmas = {
         name: '',
@@ -189,12 +190,20 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 const isDefault = _.get(row, 'is_default')
                 return (
                     <Space>
-                        {
-                            !isDefault &&
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)}>
-                                编辑
-                            </span>
-                        }
+                        <Access
+                            accessible={access.wsRoleContrl(row.creator)}
+                            fallback={<span style={{ color: '#ccc', cursor: 'not-allowed' }}>编辑</span>}
+                        >
+                             {
+                                !isDefault &&
+                                <span 
+                                    style={{ color: '#1890FF', cursor: 'pointer' }} 
+                                    onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)}
+                                >
+                                    编辑
+                                </span>
+                            }
+                        </Access>
                         <OptBtn onClick={_.partial(handleAddScript, row)}>复制</OptBtn>
                         <span
                             style={{ color: '#1890FF', cursor: 'pointer' }}
@@ -202,17 +211,22 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                         >
                             预览
                         </span>
-                        {
-                            !isDefault &&
-                            <Popconfirm
-                                title="确认删除该模板吗？"
-                                okText="确认"
-                                cancelText="取消"
-                                onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
-                            >
-                                <OptBtn>删除</OptBtn>
-                            </Popconfirm>
-                        }
+                        <Access
+                            accessible={access.wsRoleContrl(row.creator)}
+                            fallback={<span style={{ color: '#ccc', cursor: 'not-allowed' }}>删除</span>}
+                        >
+                            {
+                                !isDefault &&
+                                <Popconfirm
+                                    title="确认删除该模板吗？"
+                                    okText="确认"
+                                    cancelText="取消"
+                                    onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
+                                >
+                                    <OptBtn>删除</OptBtn>
+                                </Popconfirm>
+                            }
+                        </Access>
                     </Space>
                     )
                 }
@@ -228,7 +242,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 dataSource={dataSource}
                 pagination={false}
                 scroll={{
-                    x: 'max-content'
+                    x: '100%'
                 }}
             />
             <CommonPagination

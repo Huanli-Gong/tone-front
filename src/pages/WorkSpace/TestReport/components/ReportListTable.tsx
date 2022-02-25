@@ -254,7 +254,7 @@ const ReportListTable = (props: any) => {
                 pagination={false}
                 dataSource={dataSource}
                 scroll={{
-                    x: 'max-content'
+                    x: '100%'
                 }}
             />
 

@@ -109,7 +109,7 @@ export default (props: any) => {
             },
             render: (record: any) => <EllipsisPulic title={record.test_server.sn} color={'#1890ff'} />
         },
-        {
+        !BUILD_APP_ENV && {
             title: '机器名称',
             width: 150,
             ellipsis: {
@@ -122,7 +122,7 @@ export default (props: any) => {
             width: 100,
             render: (record: any) => record.test_server.private_ip || '-'
         },
-        {
+        !BUILD_APP_ENV && {
             width: 100,
             title: 'Console配置',
             render: (record: any) => record.test_server.console_conf || '-'
@@ -218,7 +218,7 @@ export default (props: any) => {
                 </Space>
             )
         }
-    ]
+    ].filter(Boolean)
 
     // 请求页面数据
     const getClusterServer = async () => {
