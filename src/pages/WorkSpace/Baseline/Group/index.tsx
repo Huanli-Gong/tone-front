@@ -23,7 +23,9 @@ export default (props: any) => {
     const PAGE_DEFAULT_PARAMS: any = {
         server_provider: serverProvider,
         test_type: baselineType,
-        page_size: 20, page_num: 1, ws_id
+        page_size: 20, 
+        page_num: 1, 
+        ws_id
     }
 
     const [current, setCurrent] = useState<any>({})  // 当前基线
@@ -33,9 +35,7 @@ export default (props: any) => {
     const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
     const [visible, setVisible] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
-
     const [isOpen, setIsOpen] = useState(false)
-
     const addScript: any = useRef(null)
     const input: any = useRef(null);
 
@@ -53,7 +53,10 @@ export default (props: any) => {
     const handleCurrentChange = (item: any) => {
         setCurrent(item)
     }
-
+    useEffect(()=>{
+        setParams({ ...params, test_type: baselineType })
+    },[ baselineType ])
+    
     const baselineData = useMemo(() => {
         return data.data && Array.isArray(data.data) ? data.data : []
     }, [data])

@@ -1,7 +1,7 @@
 import { Col, Layout, Row, Spin, Statistic } from 'antd'
 import moment from 'moment'
 import type { Moment } from 'moment'
-import React from 'react'
+import React,{ useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useRequest } from 'umi'
 import { queryWorkspaceProductData } from './services'
@@ -49,8 +49,9 @@ const getField = (name: string) => new Map([
 const WorkpsaceDashboard = (props: any) => {
     const { ws_id } = props.match.params
     const [time, setTime] = React.useState<Moment | string | undefined>('24h')
+    const [ loading, setLoading ] = useState<boolean>(true)
 
-    const { data, loading, run } = useRequest(() => queryWorkspaceProductData(
+    const { data, run } = useRequest(() => queryWorkspaceProductData(
         produce({ ws_id }, (draft: any) => {
             if (moment.isMoment(time)) {
                 draft.date = moment(time).format('YYYY-MM-DD')
@@ -63,10 +64,14 @@ const WorkpsaceDashboard = (props: any) => {
             }
         })
     ), {
-        manual: true
+        pollingInterval:5000,
+        manual:true,
+        onSuccess:()=>{
+            setLoading(false)
+        }
     })
 
-    React.useEffect(() => {
+    useEffect(() => {
         run()
     }, [time])
 
@@ -74,7 +79,7 @@ const WorkpsaceDashboard = (props: any) => {
 
     return (
         <Container height={height - 50}>
-            <Spin spinning={loading}>
+            <Spin spinning={ loading }>
                 <Row gutter={16}>
                     <Col span={6}>
                         <WhiteBlock height={96} justify="center" align="middle">

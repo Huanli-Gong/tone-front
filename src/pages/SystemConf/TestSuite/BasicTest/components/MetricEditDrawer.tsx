@@ -11,7 +11,7 @@ export default forwardRef(
         const [ visible , setVisible ] = useState( false )
         const [ form ] = Form.useForm()
         const [ search ,setSearch ] = useState( '' )
-
+        const [ choose , setChoose ] = useState<boolean>(false)
         const { data : metricNameList , run } = useRequest(
             queryTestMetric,
             {
@@ -51,13 +51,21 @@ export default forwardRef(
             if ( val ) setSearch( val )
         }
 
+        const handleSelect = () => {
+            setChoose(true)
+        }
+
         const handleBlur = () => {
-            if ( search ) {
-                const n = form.getFieldValue('name') || []
-                const name = Array.from(new Set(n.concat( search.split(',') )))
-                form.setFieldsValue({
-                    name
-                })
+            if ( search  ) {
+                if( choose ){
+                    const n = form.getFieldValue('name') || []
+                    form.setFieldsValue({ n })
+                } else {
+                    const n = form.getFieldValue('name') || []
+                    const name = Array.from(new Set(n.concat( search.split(',') )))
+                    form.setFieldsValue({ name })
+                }
+                setChoose(false)
             }
         }
 
@@ -110,6 +118,7 @@ export default forwardRef(
                                 mode="multiple"
                                 allowClear
                                 onSearch={ handleSearchMetric }
+                                onSelect={ handleSelect }
                                 onBlur={ handleBlur }
                                 onClear={ hanldeClear }
                             >
