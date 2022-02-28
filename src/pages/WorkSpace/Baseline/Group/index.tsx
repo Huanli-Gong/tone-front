@@ -53,9 +53,7 @@ export default (props: any) => {
     const handleCurrentChange = (item: any) => {
         setCurrent(item)
     }
-    useEffect(()=>{
-        setParams({ ...params, test_type: baselineType })
-    },[ baselineType ])
+    
     
     const baselineData = useMemo(() => {
         return data.data && Array.isArray(data.data) ? data.data : []
@@ -92,18 +90,17 @@ export default (props: any) => {
 
     useEffect(() => {
         window.addEventListener('click', fn, false)
-        // window.addEventListener('click',fn,true)
         return () => {
-            // 组件销毁时销毁编辑器  注：class写法需要在componentWillUnmount中调用
             window.removeEventListener('click', fn, false)
         }
     }, []);
-
+    
     useEffect(() => {
-        run(PAGE_DEFAULT_PARAMS)
+        run({ ...params,test_type: baselineType })
         setSearch('')
         setCurrent({})
         setFilterVisible(false)
+        setParams({ ...params,test_type: baselineType })
     }, [baselineType])
 
     const handleChange = (page_num: number) => {
@@ -114,17 +111,6 @@ export default (props: any) => {
 
     const handleAddScript = () => {
         addScript.current?.show('新增基线')
-    }
-
-    const fetchFinally = (code: number, msg: string) => {
-        setVisible(false)
-        if (code === 200) {
-            if (deleteObj.id === current.id) setCurrent({})
-            message.success('操作成功!')
-            refresh()
-            destroyAll()
-        }
-        else requestCodeMessage(code, msg)
     }
 
     const handleDelete = async (item: any) => {
@@ -330,7 +316,7 @@ export default (props: any) => {
             <AddScripotDrawer
                 ref={addScript}
                 onOk={refresh}
-                baselineType={props.baselineType}
+                baselineType={params.test_type}
                 setCurrent={setCurrent}
             />
             <Modal
