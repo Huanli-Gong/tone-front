@@ -1018,34 +1018,3 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
 
 export default Index
 
-
-
-
-    // const getRegion = async (param: any) => {
-    //     //setLoading(true)
-    //     setDisabled(true)
-    //     const { data } = await querysRegion({
-    //         ak_id: param.value
-    //     })
-    //     form.setFieldsValue({
-    //         region: undefined,
-    //         image: undefined,
-    //         instance_id: undefined,
-    //         instance_type: undefined,
-    //         storage_type: undefined,
-    //     })
-    //     setSever([])
-    //     setImage([])
-    //     setInstance([])
-    //     setCategories([])
-    //     let list = data.map((item: any) => {
-    //         return {
-    //             value: item.id,
-    //             label: item.name,
-    //             ak_id: param.value,
-    //             isLeaf: false,
-    //         }
-    //     })
-    //     setRegion(list)
-    //     //setLoading(false)
-    // }

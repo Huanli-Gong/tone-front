@@ -155,17 +155,26 @@ export default (): React.ReactNode => {
         wsTableData(wsParmas)
     }, [wsParmas])
 
+    const getEnterWorkspaceState = async (record: any) => {
+        const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: record.id })
+        if (code === 200) {
+            const path = first_entry && record.creator === user_id ?
+                `/ws/${record.id}/workspace/initSuccess` :
+                `/ws/${record.id}/dashboard`
+            return path
+        }
+        else requestCodeMessage(code, msg)
+        history.push('/500')
+        return ''
+    }
+
     const enterWorkspace = async (record: any) => {
+        if (!user_id && !record.is_public)
+            return history.push(`/login?redirect_url=/ws/${record.id}/dashboard`)
+
         if (access.canSuperAdmin() || record.is_public || record.is_member) {
-            const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: record.id })
-            if (code === 200) {
-                const path = first_entry && record.creator === user_id ?
-                    `/ws/${record.id}/workspace/initSuccess` :
-                    `/ws/${record.id}/dashboard`
-                history.push(path)
-            }
-            else requestCodeMessage(code, msg)
-            return
+            const path: string = await getEnterWorkspaceState(record)
+            return history.push(path)
         }
 
         history.push({ pathname: '/401', state: record.id })

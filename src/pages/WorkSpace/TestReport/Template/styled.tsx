@@ -64,31 +64,6 @@ export const MarginPeddingRow = styled(PeddingRow)`
 margin-bottom:10px;
 `
 
-// export const TestGroupTitle = styled(MarginPeddingRow)`
-//     height:40px;
-//     margin-top:10px;
-//     background: rgba(24,144,255,0.10);
-//     box-shadow: inset 4px 0 0 0 #1890FF;
-//     width:100%;
-//     .add_test_project {
-//         visibility: hidden;
-//     }
-//     .ant-typography {
-//         margin-bottom:0;
-//     }
-//     :hover {
-//         .add_test_project {
-//             visibility: visible;
-//         }
-//     }
-//     .ant-anchor-link{
-//         padding:0;
-//         display:inline-block;
-//         a:hover{
-//             color:rgba(0, 0, 0, 0.85);
-//         }
-//     }
-// `
 
 export const TestItemRow = styled(Row)`
     height:48px;

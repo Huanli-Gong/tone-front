@@ -372,19 +372,3 @@ export default (props: any) => {
         </div>
     )
 }
-
-// console.log( selectedRowKeys )
-// if ( selectedRowKeys.length ) {
-//     selectedRowKeys.filter(( i : any ) : any => {
-//         const idx = suiteCaseSelectKeys.findIndex(( s : any ) => s === i.suite_id )
-//         if ( idx > -1 ) {
-//             return {
-
-//             }
-//         }
-//     })
-// }
-
-// const handleEditRemark = ( _ : any ) => {
-//     editRemarkDrawer.current.show({ ..._ , suite_name : _.suite_name , editor_obj : 'test_job_suite' })
-// }

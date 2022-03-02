@@ -269,29 +269,3 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
     )
 }
 
-
-                    // let children : any = []
-                    // console.log( list )
-
-                    // list.forEach(( i : any ) => {
-                    //     let currentKey : any = null
-                    //     Object.keys( i ).forEach(( key ) => {
-                    //         if ( !currentKey )
-                    //             currentKey = key[i].key
-                            
-                    //     })
-                    // })
-                    // list.forEach(( i : any ) => {
-                    //     Object.keys( i ).forEach(( key , index ) => {
-                    //         const itemServerLength : any = Array.from(new Set( i[ key ].items.map(( x : any ) => x.server ) )).length
-                    //         if ( itemServerLength <= 1 ) {
-                    //             data.push( i[key] )
-                    //         }
-                    //         else
-                    //             children.push({
-                    //                 ...i[ key ],
-                    //                 rowKey : index
-                    //             })
-                    //     })
-                    // })
-                    // data.push({ ...params , list : children })
