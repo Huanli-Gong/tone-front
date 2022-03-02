@@ -356,7 +356,9 @@ export default (props: any) => {
                 //tab={type}
                 onTabClick={RadioChange}
                 tabBarExtraContent={
-                    <Button type="primary" onClick={addMachine}> 添加机器 </Button>
+                    <Button type="primary" onClick={addMachine}>
+                        { type == '0' ? '添加机器配置' : '添加机器实例' }
+                    </Button>
                 }
             >
                 <Tabs.TabPane tab="机器配置" key={'0'} />

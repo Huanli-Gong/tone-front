@@ -164,55 +164,78 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     </Form.Item>
                     {
                         single === '1' ?
-                            <Form.Item label="机器">
-                                <Form.Item noStyle>
-                                    <Row gutter={10}>
-                                        <Col span={12}>
-                                            <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
-                                                <Select
-                                                    placeholder="请选择分组"
-                                                    onChange={getTestServerList}
-                                                    value={appGroup}
-                                                    getPopupContainer={node => node.parentNode}
-                                                >
-                                                    {
-                                                        Array.isArray(groupList) && groupList.map(
-                                                            (item: any) => (
-                                                                <Select.Option key={item} value={item}>{item}</Select.Option>
+                            BUILD_APP_ENV ?
+                                <Row>
+                                    <Col span={24}>
+                                        <Form.Item
+                                            name="ip"
+                                            label="机器"
+                                            validateStatus={ips.errors.length > 0 ? 'error' : ''}
+                                            help={ips.errors.length > 0 && validateMsg}
+                                        >
+                                            <Input 
+                                                allowClear
+                                                onBlur={(e: any) => handleBlurIp(e)}
+                                                autoComplete="off"
+                                                placeholder="请输入输入IP/SN" 
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                :
+                                <Form.Item label="机器">
+                                    <Form.Item noStyle>
+                                        <Row gutter={10}>
+                                            <Col span={12}>
+                                                <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
+                                                    <Select
+                                                        placeholder="请选择分组"
+                                                        onChange={getTestServerList}
+                                                        value={appGroup}
+                                                        getPopupContainer={node => node.parentNode}
+                                                    >
+                                                        {
+                                                            Array.isArray(groupList) && groupList.map(
+                                                                (item: any) => (
+                                                                    <Select.Option key={item} value={item}>{item}</Select.Option>
+                                                                )
                                                             )
-                                                        )
-                                                    }
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
-                                                <Select
-                                                    placeholder="请选择机器"
-                                                    loading={testServerLoading}
-                                                    getPopupContainer={node => node.parentNode}
-                                                >
-                                                    {
-                                                        testServerList.map(
-                                                            (item: any) => (
-                                                                <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
+                                                        }
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
+                                                    <Select
+                                                        placeholder="请选择机器"
+                                                        loading={testServerLoading}
+                                                        getPopupContainer={node => node.parentNode}
+                                                    >
+                                                        {
+                                                            testServerList.map(
+                                                                (item: any) => (
+                                                                    <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
+                                                                )
                                                             )
-                                                        )
-                                                    }
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                </Form.Item>
-                            </Form.Item> :
+                                                        }
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+                                    </Form.Item>
+                                </Form.Item> :
                             <Row>
                                 <Col span={24}>
-                                    <Form.Item name="channel_type" label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]}>
-                                        <AgentSelect onChange={handleIpsCheck}/>
+                                    <Form.Item 
+                                        name="channel_type" 
+                                        initialValue={'ToneAgent'}
+                                        label="控制通道" 
+                                        rules={[{ required: true, message: '请选择控制通道' }]}
+                                    >
+                                        <AgentSelect disabled={BUILD_APP_ENV}/>
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>
-
                                     <Form.Item label="机器"
                                         name="ip"
                                         validateStatus={ips.errors.length > 0 ? 'error' : ''}
@@ -265,7 +288,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         name="var_name"
                         label="运行变量名"
                         rules={[{
-                            required: true, 
+                            required: true,
                             // pattern: /^[A-Za-z0-9]+$/g,
                             // message: '仅允许包含字母、数字'
                         }]}
@@ -279,79 +302,3 @@ const CreateClusterDrawer = (props: any, ref: any) => {
 }
 
 export default forwardRef(CreateClusterDrawer)
-
-
-    // 搜索
-    // const handleChangeIps = ( value : any ) => {
-    //     setSelectIpsValue( value )
-    // }
-    // 失焦校验
-    // const handleBlurIps = () => {
-    //     const matchResult : any = selectIpsValue.match(/[a-z0-9A-Z.-_]+(\s|,|)/g) || []
-    //     const resultIp : any = Array.from(
-    //         new Set( matchResult.map(( i : any ) => i.replace(/(\s|,|)/g,'')).concat( vals ) )
-    //     )
-    //     setVals( resultIp )
-    //     form.setFieldsValue({ ips : resultIp })
-    //     if (form.getFieldValue('channel_type')) {
-    //         handleIpsCheck()
-    //     }
-    // }
-    // const handleFocusIps = () => {
-    //     setIps({ success : [] , errors : [] })
-    //     setValidateMsg('')
-    // }
-    // const handleMultipIpChange = ( values : any ) => {
-    //     setVals( values )
-    //     setSelectIpsValue( values.toString() )
-    // }
-
-
-                                    // {/* <Form.Item label="机器"
-                                    //     name="ips"
-                                    //     validateStatus={ ips.errors.length > 0 ? 'error' : '' }
-                                    //     help={ ips.errors.length > 0 && validateMsg }
-                                    // >
-                                    //     <Select 
-                                    //     mode="multiple"
-                                    //     placeholder='输入IP/SN,多个以空格或英文逗号分隔'
-                                    //     onBlur={ handleBlurIps }
-                                    //     onFocus = { handleFocusIps }
-                                    //     onSearch={ handleChangeIps }
-                                    //     onChange={ handleMultipIpChange }
-                                    //     notFoundContent={ null }
-                                    //     className={ styles.select_ips }
-                                    //     >
-                                    //     {ips.success.map(( item : any, index:number ) => (
-                                    //         <Select.Option key={ index } value={ item }>
-                                    //             { item }
-                                    //         </Select.Option>
-                                    //         ))
-                                    //     }
-                                    //     </Select>
-                                    // </Form.Item> */}
-
-
-                    // {/* <Form.Item
-                    //     name="owner"
-                    //     label="Owner"
-                    //     rules={[{ required: true, message: '请选择' }]}
-                    // >
-                    //     <Select
-                    //         allowClear
-                    //         notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                    //         filterOption={false}
-                    //         onSearch={handleSearch}
-                    //         onFocus={() => { handleSearch() }}
-                    //         style={{ width: '100%' }}
-                    //         showArrow={false}
-                    //         showSearch
-                    //         getPopupContainer={ node => node.parentNode }
-                    //     >
-                    //         {
-                    //             user.map((item: any) => {
-                    //                 return <Option value={item.id} key={item.id}>{item.last_name}</Option>
-                    //             })
-                    //         }
-                    //     </Select>
-                    // </Form.Item> */}
