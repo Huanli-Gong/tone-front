@@ -49,6 +49,7 @@ const RealtimeDataItem = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    padding: 0 8px;
 
     .ant-row { width : 100%; }
     
@@ -65,14 +66,6 @@ const RealtimeDataItem = styled.div`
 
     &:last-child::after {
         content:unset;
-    }
-
-    &:nth-child(2n+1) {
-        padding-left:24px;
-    }
-
-    &:nth-child(2n+4) {
-        padding-left:24px;
     }
 `
 
