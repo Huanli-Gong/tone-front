@@ -180,7 +180,15 @@ export default (props: any) => {
                         className={styles.formInlineStyles}
                     >
                         <Form.Item label="项目" name="project_id" >
-                            <Select style={{ width: 300 }} placeholder="请选择项目" onChange={handleProductChange}>
+                            <Select
+                                style={{ width: 300 }}
+                                placeholder="请选择项目"
+                                onChange={handleProductChange}
+                                showSearch
+                                filterOption={(input, option: any) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }
+                            >
                                 {
                                     projectList.map((i: any) => (
                                         <Select.Option key={i.id} value={i.id}>{i.name}</Select.Option>
@@ -191,7 +199,15 @@ export default (props: any) => {
                         <Form.Item label="标签" >
                             <TootipTipRow>
                                 <Form.Item name="tag" initialValue="">
-                                    <Select style={{ width: 300 }} allowClear placeholder="不按标签区分">
+                                    <Select
+                                        style={{ width: 300 }}
+                                        allowClear
+                                        placeholder="不按标签区分"
+                                        showSearch
+                                        filterOption={(input, option: any) =>
+                                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                    >
                                         <Select.Option value="">不区分</Select.Option>
                                         {
                                             tagList.map((i: any) => (
@@ -320,20 +336,3 @@ export default (props: any) => {
         </>
     )
 }
-
-
-{/* <ChartRender
-                testType={testType}
-                provider={provider}
-                showType={ showType }
-                dataSource={ chartData }
-            /> */}
-{/* {
-                ( testType === 'performance' && provider === 'aliyun' && tableData?.length > 0 ) &&
-                <ChartRender
-                    testType={testType}
-                    provider={provider}
-                    showType={ showType }
-                    dataSource={ chartData }
-                />
-            } */}

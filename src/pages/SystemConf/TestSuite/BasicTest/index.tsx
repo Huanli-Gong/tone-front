@@ -213,7 +213,7 @@ const SuiteManagement = (props: any, ref: any) => {
         }
         message.success('同步成功')
         getList()
-        setAsyncTime( new Date().getTime() )
+        setAsyncTime(new Date().getTime())
     }
 
     const columns: any = [
@@ -356,7 +356,10 @@ const SuiteManagement = (props: any, ref: any) => {
         {
             title: 'Owner',
             dataIndex: 'owner_name',
-            width: 80,
+            width: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             filterIcon: () => <FilterFilled style={{ color: pageParams.owner ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDrop
@@ -495,7 +498,7 @@ const SuiteManagement = (props: any, ref: any) => {
                     rowKey={record => record.id + ''}
                     pagination={false}
                     expandable={{
-                        expandedRowRender: (record) => <CaseTable key={ asyncTime } id={record.id} type={testType} />,
+                        expandedRowRender: (record) => <CaseTable key={asyncTime} id={record.id} type={testType} />,
                         onExpand: (_, record) => _ ? onExpand(record) : setExpandKey([]),
                         expandedRowClassName: () => 'case_expand_row',
                         expandedRowKeys: expandKey,

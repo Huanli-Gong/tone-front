@@ -21,7 +21,7 @@ export default forwardRef(
         const [fetch, setFetch] = useState(false)
 
         const { data: suiteList, loading, run: requestSuiteList } = useRequest(
-            () => queryTestSuiteCases({ test_type, ws_id, page_num:1, page_size:100 }),
+            () => queryTestSuiteCases({ test_type, ws_id, page_num: 1, page_size: 100 }),
             { initialData: [], manual: true }
         )
 
@@ -94,7 +94,7 @@ export default forwardRef(
                     return []
                 }
             return []
-        }, [activeSuite, suiteList, test_type ])
+        }, [activeSuite, suiteList, test_type])
 
         const selectSuiteName = useMemo(() => {
             for (let len = suiteList.length, i = 0; i < len; i++)
@@ -181,6 +181,10 @@ export default forwardRef(
                                                 setSelectSubcase([])
                                             }}
                                             value={activeSuite}
+                                            filterOption={(input, option: any) =>
+                                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            }
+                                            showSearch
                                         >
                                             {
                                                 suiteList.map((i: any) => (
@@ -188,7 +192,7 @@ export default forwardRef(
                                                         key={i.id}
                                                         value={i.id}
                                                     >
-                                                        { i.name}
+                                                        {i.name}
                                                     </Select.Option>
                                                 ))
                                             }
@@ -207,6 +211,10 @@ export default forwardRef(
                                                     requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
                                                 setSelectSubcase([])
                                             }}
+                                            filterOption={(input, option: any) =>
+                                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            }
+                                            showSearch
                                             value={activeConf}
                                         >
                                             {
@@ -215,7 +223,7 @@ export default forwardRef(
                                                         key={i.id}
                                                         value={i.id}
                                                     >
-                                                        { i.name}
+                                                        {i.name}
                                                     </Select.Option>
                                                 ))
                                             }
@@ -234,6 +242,10 @@ export default forwardRef(
                                             setActiveConf(null)
                                             console.log('suitesssss')
                                         }}
+                                        filterOption={(input, option: any) =>
+                                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        showSearch
                                         value={activeSuite}
                                     >
                                         {
@@ -242,7 +254,7 @@ export default forwardRef(
                                                     key={i.id}
                                                     value={i.id}
                                                 >
-                                                    { i.name}
+                                                    {i.name}
                                                 </Select.Option>
                                             ))
                                         }
