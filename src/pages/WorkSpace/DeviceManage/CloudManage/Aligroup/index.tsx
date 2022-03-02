@@ -21,6 +21,15 @@ import { useClientSize } from '@/utils/hooks';
  * 云上集群
  * 
  */
+interface AligroupParams {
+    refresh:boolean,
+    page:number,
+    pageSize:number,
+    name:string,
+    owner:any,
+    tags:any,
+    description:string,
+}
 const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
@@ -30,9 +39,18 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const outTable = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>({ data: [] });
-    const [refresh, setRefresh] = useState<boolean>(true)
-    const [page, setPage] = useState<number>(1)
-    const [pageSize, setPageSize] = useState<number>(10)
+    const [params,setParams] = useState<AligroupParams>({
+        refresh:true, 
+        page:1, 
+        pageSize:10, 
+        name:'', 
+        owner:'', 
+        tags:'', 
+        description:''
+    })
+    // const [refresh, setRefresh] = useState<boolean>(true)
+    // const [page, setPage] = useState<number>(1)
+    // const [pageSize, setPageSize] = useState<number>(10)
     const [visible, setVisible] = useState<boolean>(false)
     const [tagList, setTagList] = useState<any>([])
     const [keyword, setKeyword] = useState<string>()
@@ -42,11 +60,10 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const [fetching, setFetching] = useState<boolean>(true)
 
     const [expandKey, setExpandKey] = useState<string[]>([])
-    // const [key, setKey] = useState<number>() 
-    const [name, setName] = useState<string>()
-    const [owner, setOwner] = useState<any>();
-    const [tags, setTags] = useState<any>();
-    const [description, setDescription] = useState<string>();
+    // const [name, setName] = useState<string>()
+    // const [owner, setOwner] = useState<any>();
+    // const [tags, setTags] = useState<any>();
+    // const [description, setDescription] = useState<string>();
     const top = 39, size = 41;
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -69,8 +86,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     )
 
     const handlePage = (page_num: number, page_size: any) => {
-        setPage(page_num)
-        setPageSize(page_size)
+        setParams({ ...params, page: page_num, pageSize: page_size })
     }
     const getServerTagList = async (word?: string) => {
         const param = word && word.replace(/\s*/g, "")
@@ -115,32 +131,37 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     useEffect(() => {
-        const params = {
+        const { page, pageSize, name, owner, tags, description } = params;
+        const obj = {
             cluster_type: 'aliyun',
             page_num: page,
             page_size: pageSize,
-            name: name, owner: owner, tags: tags, description: description, ws_id
+            name, 
+            owner, 
+            tags, 
+            description,
+            ws_id
         }
-        getList(params)
-    }, [refresh, page, pageSize, name, owner, tags, description]);
+        getList(obj)
+    }, [ params ]);
 
     const { width: windowWidth } = useClientSize()
-
-    const submit = async (params: any) => {
+    
+    const submit = async (param: any) => {
         if (outId) {
-            let param: any = {
-                description: params.description || '',
-                tags: params.tags,
-                emp_id: params.emp_id,
-                name: params.name,
+            let obj: any = {
+                description: param.description || '',
+                tags: param.tags,
+                emp_id: param.emp_id,
+                name: param.name,
                 ws_id
             }
-            const res = await editGroup(outId, param) || {}
+            const res = await editGroup(outId, obj) || {}
             if (res.code === 200) {
                 // 成功
                 setVisible(false)
                 message.success('操作成功');
-                setRefresh(!refresh)
+                setParams({ ...params, refresh: !params.refresh})
                 return
             }
             // 失败
@@ -148,18 +169,17 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             return
         }
 
-        let param = { ...params, ws_id }
-        param.description = params.description || ''
-        param.ws_id = ws_id
-        param.cluster_type = 'aliyun'
+        let obj = { ...param, ws_id }
+        obj.description = param.description || ''
+        obj.ws_id = ws_id
+        obj.cluster_type = 'aliyun'
 
-        const res = await addGroup({ ...param })
+        const res = await addGroup({ ...obj })
         if (res.code === 200) {
             // 成功
             setVisible(false)
             message.success('操作成功');
-            setPage(1)
-            setRefresh(!refresh)
+            setParams({ ...params, page:1, refresh:!params.refresh })
             return
         }
         // 失败
@@ -197,7 +217,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         message.success('操作成功');
         setDeleteVisible(false)
         setDeleteDefault(false)
-        setRefresh(!refresh)
+        setParams({ ...params, refresh:!params.refresh })
     }
     const onExpand = async (_: boolean, record: any) => {
         const currentId = record.id + ''
@@ -232,17 +252,17 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             title: '集群名',
             dataIndex: 'name',
             width: 150,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
+            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page:1, name:val })}} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
                 }
             },
-            filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => <PopoverEllipsis title={row.name} width={120}>
                 <Highlighter
                     highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                    searchWords={[name || '']}
+                    searchWords={[params.name || '']}
                     autoEscape
                     textToHighlight={row.name.toString()}
                 />
@@ -252,8 +272,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             title: 'Owner',
             dataIndex: 'owner_name',
             width: 150,
-            filterIcon: () => <FilterFilled style={{ color: owner ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setPage(1), setOwner(val) }} />,
+            filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setParams({ ...params, page:1, owner:val })}} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -265,8 +285,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             title: '标签',
             dataIndex: 'tag_list',
             width: 250,
-            filterIcon: () => <FilterFilled style={{ color: tags && tags.length > 0 ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectTags run_mode={'cluster'} autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setPage(1), setTags(val) }} />,
+            filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => <SelectTags run_mode={'cluster'} autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setParams({ ...params, page:1, tags:val })}} />,
             render: (_: any, row: any) => <div>
                 {
                     row.tag_list.map((item: any, index: number) => {
@@ -282,8 +302,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             title: '备注',
             dataIndex: 'description',
             width: 300,
-            filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setDescription(val) }} />,
+            filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page:1, description:val })}} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -292,7 +312,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             render: (_: any, row: any) => <PopoverEllipsis title={row.description} width={200} >
                 <Highlighter
                     highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                    searchWords={[description || '']}
+                    searchWords={[params.description || '']}
                     autoEscape
                     textToHighlight={row.description ? row.description.toString() : '-'}
                 />
@@ -366,7 +386,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     showQuickJumper
                     showSizeChanger
                     size="small"
-                    current={page}
+                    current={params.page}
                     defaultCurrent={1}
                     onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
                     onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}

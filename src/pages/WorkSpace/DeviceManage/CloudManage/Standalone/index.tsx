@@ -26,24 +26,38 @@ import SelectDropSync from '@/components/Public/SelectDropSync';
  * 云上单机
  *
  */
+
+interface MachineParams {
+    type:any,
+    page:number,
+    pageSize:number,
+    description:string,
+    name:string,
+    owner:any,
+    tags:any,
+    useStateVal:string | undefined,
+    realState: string | undefined
+}
 export default (props: any) => {
     const { ws_id }: any = useParams()
     const aloneMachine = useRef<any>(null)
-    const [name, setName] = useState<string>()
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
-    const [description, setDescription] = useState<string>();
     const [data, setData] = useState<any>({ data: [] });
-    const [type, setType] = useState<any>('0')
-    const [owner, setOwner] = useState<any>();
-    const [page, setPage] = useState<number>(1)
-    const [tags, setTags] = useState<any>();
-    const [useStateVal, setUseStateVal] = useState<string | undefined>('');
-    const [realState, setRealState] = useState<string | undefined>('');
+    const [params, setParams] = useState<MachineParams>({
+        type:'0', 
+        page:1, 
+        pageSize: 10, 
+        description:'', 
+        name:'', 
+        owner:'', 
+        tags:'', 
+        useStateVal:'', 
+        realState:''
+    })
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
-    const [pageSize, setPageSize] = useState<number>(10)
     const [autoFocus, setFocus] = useState<boolean>(true)
     const [tableColumns, setTableColumns] = useState<any>([])
     const logDrawer: any = useRef()
@@ -53,22 +67,27 @@ export default (props: any) => {
     useEffect(() => {
         let columns: any = [
             {
-                title: type - 0 === 0 ? '配置名称' : '实例名称',
+                title: params.type - 0 === 0 ? '配置名称' : '实例名称',
                 fixed: 'left',
                 width: 140,
                 dataIndex: 'name',
-                filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
+                filterDropdown: ({ confirm }: any) => 
+                    <SearchInput 
+                        confirm={confirm} 
+                        autoFocus={autoFocus} 
+                        onConfirm={(val: string) => { setParams({ ...params, page: 1, name: val }) }} 
+                    />,
                 onFilterDropdownVisibleChange: (visible: any) => {
                     if (visible) {
                         setFocus(!autoFocus)
                     }
                 },
-                filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
                 render: (_: any, row: any) => (
                     <EllipsisPulic title={row.name}>
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[name || '']}
+                            searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={row.name.toString()}
                         />
@@ -78,22 +97,19 @@ export default (props: any) => {
             {
                 title: 'IP',
                 dataIndex: 'private_ip', // private_ip
-                width: type == '0' ? 0 : 140,
-                // hideInTable: !(type - 0),
+                width: params.type == '0' ? 0 : 140,
                 render: (text: any, row: any) => <EllipsisPulic title={text} />
             },
             {
                 title: 'SN',
                 dataIndex: 'sn',
-                width: type == '0' ? 0 : 140,
-                // hideInTable: !(type - 0),
+                width: params.type == '0' ? 0 : 140,
                 render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
             },
             {
                 title: 'InstanceId',
                 dataIndex: 'instance_id',
-                width: type == '0' ? 0 : 140,
-                // hideInTable: !(type - 0),
+                width: params.type == '0' ? 0 : 140,
                 render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
             },
 
@@ -149,7 +165,6 @@ export default (props: any) => {
                 align: 'center',
                 dataIndex: 'release_rule',
                 width: 90,
-                //hideInTable: !!(type - 0),
                 render: (_: any, row: any) => <div>{row.release_rule ? '是' : '否'}</div>
             },
             {
@@ -169,21 +184,35 @@ export default (props: any) => {
             {
                 title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
                 dataIndex: 'state',
-                width: type == '0' ? 0 : 120,
+                width: params.type == '0' ? 0 : 120,
                 render: StateBadge,
-                filterIcon: () => <FilterFilled style={{ color: useStateVal ? '#1890ff' : undefined }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.useStateVal ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
-                    <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUseStateVal(val)} stateVal={useStateVal} tabType={type} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
+                    <SelectDropSync 
+                        confirm={confirm} 
+                        onConfirm={(val: string) => 
+                            setParams({ ...params, useStateVal:val })} 
+                            stateVal={params.useStateVal}
+                            tabType={params.type} 
+                            dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} 
+                    />
                 )
             },
             {
                 title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
-                width: type == '0' ? 0 : 120,
+                width: params.type == '0' ? 0 : 120,
                 dataIndex: 'real_state',
                 render: StateBadge,
-                filterIcon: () => <FilterFilled style={{ color: realState ? '#1890ff' : undefined }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.realState ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
-                    <SelectDropSync confirm={confirm} onConfirm={(val: string) => setRealState(val)} stateVal={realState} tabType={type} dataArr={['Available', 'Broken']} />
+                    <SelectDropSync 
+                        confirm={confirm} 
+                        onConfirm={(val: string) => 
+                            setParams({ ...params, realState:val })} 
+                            stateVal={params.realState} 
+                            tabType={params.type} 
+                            dataArr={['Available', 'Broken']}
+                    />
                 )
             },
             {
@@ -191,15 +220,25 @@ export default (props: any) => {
                 width: 120,
                 dataIndex: 'owner_name',
                 ellipsis: true,
-                filterIcon: () => <FilterFilled style={{ color: owner ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setPage(1), setOwner(val) }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
+                filterDropdown: ({ confirm }: any) => 
+                    <SelectUser 
+                        confirm={confirm} 
+                        onConfirm={(val: number) => { setParams({ ...params, page:1, owner:val })}} 
+                    />,
             },
             {
                 title: '标签',
                 dataIndex: 'tags',
                 width: 140,
-                filterIcon: () => <FilterFilled style={{ color: tags && tags.length > 0 ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => <SelectTags run_mode={'standalone'} autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setPage(1), setTags(val) }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
+                filterDropdown: ({ confirm }: any) => 
+                    <SelectTags 
+                        run_mode={'standalone'} 
+                        autoFocus={autoFocus} 
+                        confirm={confirm} 
+                        onConfirm={(val: number) => { setParams({ ...params, page:1, tags:val })}} 
+                    />,
                 render: (_: any, row: any) => <div>
                     {
                         row.tag_list.map((item: any, index: number) => {
@@ -215,8 +254,13 @@ export default (props: any) => {
                 title: '备注',
                 width: 140,
                 dataIndex: 'description',
-                filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setDescription(val) }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
+                filterDropdown: ({ confirm }: any) => 
+                    <SearchInput 
+                        confirm={confirm} 
+                        autoFocus={autoFocus} 
+                        onConfirm={(val: string) => { setParams({ ...params, page:1, description:val })}} 
+                    />,
                 onFilterDropdownVisibleChange: (visible: any) => {
                     if (visible) {
                         setFocus(!autoFocus)
@@ -229,7 +273,7 @@ export default (props: any) => {
                     <EllipsisPulic title={row.description} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[description || '']}
+                            searchWords={[params.description || '']}
                             autoEscape
                             textToHighlight={row.description ? row.description.toString() : '-'}
                         />
@@ -241,24 +285,24 @@ export default (props: any) => {
                 fixed: 'right',
                 valueType: 'option',
                 dataIndex: 'id',
-                width: type == '0' ? 160 : 240,
+                width: params.type == '0' ? 160 : 240,
                 render: (_: any, row: any) =>
                     <Space>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, type)}>详情</Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}>详情</Button>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
                         {
-                            String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>
+                            String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>
                         }
                         {
-                            String(type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>
+                            String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>
                         }
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(type) !== '0')}>{type == '0' ? '删除' : '释放'}</Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(params.type) !== '0')}>{params.type == '0' ? '删除' : '释放'}</Button>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },
         ]
         setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
-    }, [type])
+    }, [params.type])
 
     // 部署Agent
     const deployClick = (row: any) => {
@@ -275,14 +319,24 @@ export default (props: any) => {
         }, []
     )
     const handlePage = (page_num: number, page_size: any) => {
-        setPage(page_num)
-        setPageSize(page_size)
+        setParams({ ...params, page:page_num, pageSize:page_size })
     }
     const getList = async () => {
-        const params = { is_instance: !!(type - 0), page_num: page, page_size: pageSize, description, server_conf: name, owner, tags, state: useStateVal, real_state: realState }
+        const { type, page, pageSize, description, name, owner, tags, useStateVal, realState } = params
+        const obj = { 
+            is_instance: !!(type - 0), 
+            page_num: page, 
+            page_size: pageSize, 
+            description, 
+            server_conf: name, 
+            owner, 
+            tags, 
+            state: useStateVal, 
+            real_state: realState 
+        }
         setLoading(true)
         setData({ data: [] })
-        const data: any = await cloudList({ ...params, ws_id })
+        const data: any = await cloudList({ ...obj, ws_id })
         data && setData(data)
         setLoading(false)
     };
@@ -322,18 +376,21 @@ export default (props: any) => {
     }
     useEffect(() => {
         getList()
-    }, [type, page, pageSize, description, name, owner, tags, useStateVal, realState]);
+    }, [ params ]);
 
     const RadioChange = (val: any) => {
-        setType(val)
-        setPage(1)
-        setPageSize(10)
-        setDescription('')
-        setName('')
-        setOwner(undefined)
-        setTags(undefined)
-        setUseStateVal('')
-        setRealState('')
+        setParams({ 
+            ...params,
+            type:val,
+            page:1,
+            pageSize:10,
+            description:'',
+            name:'',
+            owner:undefined,
+            tags:undefined,
+            useStateVal:'',
+            realState:''
+        })
     }
     const addMachine = () => {
         aloneMachine.current?.newMachine()
@@ -343,10 +400,10 @@ export default (props: any) => {
         aloneMachine.current?.editMachine(row)
     }
     const onSuccess = (is_instance: any, id: number) => {
-        if (type == is_instance) {
+        if (params.type == is_instance) {
             getList()
         } else {
-            setType(is_instance ? '1' : '0')
+            setParams({ ...params, type: is_instance ? '1' : '0' })
         }
     }
     return (
@@ -357,7 +414,7 @@ export default (props: any) => {
                 onTabClick={RadioChange}
                 tabBarExtraContent={
                     <Button type="primary" onClick={addMachine}>
-                        { type == '0' ? '添加机器配置' : '添加机器实例' }
+                        { params.type == '0' ? '添加机器配置' : '添加机器实例' }
                     </Button>
                 }
             >
@@ -386,7 +443,7 @@ export default (props: any) => {
                     className={data.total == 0 ? styles.hidden : ''}
                     showQuickJumper
                     showSizeChanger
-                    current={page}
+                    current={params.page}
                     defaultCurrent={1}
                     onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
                     onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
@@ -397,19 +454,19 @@ export default (props: any) => {
             <AloneMachine
                 onRef={aloneMachine}
                 run_mode={'standalone'}
-                type={type}
+                type={params.type}
                 onSuccess={onSuccess}
             />
             <DeployModal ref={deployModal} callback={deployCallback} />
             <CloudDetail ref={viewDetailRef} />
             <Modal
-                title={<div>{`${type ? '提示' : '删除提示'}`}</div>}
+                title={<div>{`${params.type ? '提示' : '删除提示'}`}</div>}
                 centered={true}
                 visible={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
-                        {type && deleteObj.is_release ? '释放' : '确定删除'}
+                        {params.type && deleteObj.is_release ? '释放' : '确定删除'}
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
                         取消
@@ -425,13 +482,13 @@ export default (props: any) => {
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
             </Modal>
             <Modal
-                title={<div>{`${type == '0' ? '删除提示' : '提示'}`}</div>}
+                title={<div>{`${params.type == '0' ? '删除提示' : '提示'}`}</div>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
-                        {type == '0' || !deleteObj.is_release ? '确定删除' : '释放'}
+                        {params.type == '0' || !deleteObj.is_release ? '确定删除' : '释放'}
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
                         取消
@@ -441,7 +498,7 @@ export default (props: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要{type == '0' || !deleteObj.is_release ? '删除' : '释放'}吗？
+                    确定要{params.type == '0' || !deleteObj.is_release ? '删除' : '释放'}吗？
                 </div>
             </Modal>
         </div>

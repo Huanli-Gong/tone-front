@@ -720,7 +720,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        {!id && is_instance ?
+                        {!showZone ? null : !id && is_instance ?
                             <Col span={12}>
                                 <Form.Item label="已有机器"
                                     name="instance_id"
