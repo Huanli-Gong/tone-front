@@ -102,12 +102,9 @@ const SystemParameter = (props: any, ref: any) => {
                     onClick={() => handleEdit(_)}
                     style={{ color: '#1890FF', cursor: 'pointer' }}
                 >
-                    <Typography.Text
-                    >
-                        编辑
-                    </Typography.Text>
+                    编辑
                 </span>
-                
+
                 <Popconfirm
                     title={<div style={{ color: 'red' }}>删除系统参数将可能导致系统部分<br />功能无法正常使用，请谨慎删除！！</div>}
                     onCancel={() => handleDelete(_)}

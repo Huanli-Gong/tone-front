@@ -123,19 +123,22 @@ const ElseTag: React.FC<any> = (props) => {
     const { tag_list } = props
     return (
         <Wrapper direction="vertical" size={20}>
-            <SpaceVertical>
-                <Typography.Text strong>调度标签</Typography.Text>
-                <Row>
-                    {
-                        (tag_list && !!tag_list.length) &&
-                        tag_list.map(
-                            (item: any) => (
-                                <Tag color={item.tag_color} key={item.id} >{item.name}</Tag>
+            {
+                (tag_list && !!tag_list.length) &&
+                <SpaceVertical>
+                    <Typography.Text strong>调度标签</Typography.Text>
+                    <Row>
+                        {
+
+                            tag_list.map(
+                                (item: any) => (
+                                    <Tag color={item.tag_color} key={item.id} >{item.name}</Tag>
+                                )
                             )
-                        )
-                    }
-                </Row>
-            </SpaceVertical>
+                        }
+                    </Row>
+                </SpaceVertical>
+            }
 
             <SpaceVertical>
                 <Typography.Text strong>其它信息</Typography.Text>
