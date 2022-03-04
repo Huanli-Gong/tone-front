@@ -14,7 +14,7 @@ export default forwardRef(
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('新建image') // 弹框顶部title
+        const [title, setTitle] = useState('新建Image') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
         const [akData, setAkData] = useState<any>([]) // 编辑的数据
         const [regionList, setRegionList] = useState<any>([])
@@ -33,7 +33,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "新建image", data: any = {}) => {
+                show: (title: string = "新建Image", data: any = {}) => {
 
                     let type = ''
                     if(data && data.provider) {
@@ -134,7 +134,7 @@ export default forwardRef(
                     const arr = akData.filter(item => item.name === values.ak_name)
                     if (arr.length) akId = arr[0].id
                     values.ak_id = akId
-                    if (title === '新建image') {
+                    if (title === '新建Image') {
                         const { code, msg } = await createCloudImage({ ...values, ws_id: props.ws_id })
                         defaultOption(code, msg, 'new')
                     }
@@ -210,10 +210,10 @@ export default forwardRef(
                         </Select>
                     </Form.Item>
                     <Form.Item
-                        label="AkName"
+                        label="Ak Name"
                         name="ak_name"
                         validateStatus={(!providerType || !nameAkStatus ) && 'error'}
-                        help={(!providerType && `请先选择云服务商`) || (!nameAkStatus && `akName不能为空`)}
+                        help={(!providerType && `请先选择云服务商`) || (!nameAkStatus && `AK Name不能为空`)}
                         rules={[{ required: true }]}>
                         <Select
                             onChange={(value) => {
@@ -223,7 +223,7 @@ export default forwardRef(
                                   getRegionList({ ak_id: oneItem[0].id }) }}
                                 }
                             onSelect={()=>{setNameAkStatus(true)}}
-                            placeholder="请选择akName"
+                            placeholder="请选择AK Name"
                             disabled={!providerType ? true : false}
                             showSearch={true}
                             filterOption={(input, option: any) => {
@@ -284,9 +284,9 @@ export default forwardRef(
                         label="ImageName"
                         name="image_name"
                         validateStatus={(!nameStatus || !queryNameStatus) && 'error'}
-                        help={(!nameStatus && `imageName不能为空`) || (!queryNameStatus && `imageName不能重复`)}
+                        help={(!nameStatus && `ImageName不能为空`) || (!queryNameStatus && `ImageName不能重复`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入imageName" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入ImageName" onChange={(e) => {
                             if (!e.target.value) {
                                 setNameStatus(false)
                                 return
@@ -299,9 +299,9 @@ export default forwardRef(
                         label="ImageID"
                         name="image_id"
                         validateStatus={(!idStatus) && 'error'}
-                        help={(!idStatus && `imageID不能为空`)}
+                        help={(!idStatus && `ImageID不能为空`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入imageID" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入ImageID" onChange={(e) => {
                             if (!e.target.value) {
                                 setIDStatus(false)
                                 return
@@ -313,9 +313,9 @@ export default forwardRef(
                         label="ImageVersion"
                         name="image_version"
                         validateStatus={(!versionStatus) && 'error'}
-                        help={(!versionStatus && `imageVersion不能为空`)}
+                        help={(!versionStatus && `ImageVersion不能为空`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入imageVersion" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入ImageVersion" onChange={(e) => {
                             if (!e.target.value) {
                                 setVersiontatus(false)
                                 return

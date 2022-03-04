@@ -74,7 +74,7 @@ export default (props: any) => {
         {
             title: '角色',
             render: (_: any) => (
-                <EditableCell ws_id={ws_id} user_info={_.user_info} select={roleData} handleOk={init} onOk={onOk} is_owner={_.user_info.is_admin} />
+                <EditableCell {..._} select={roleData} handleOk={init} onOk={onOk} is_owner={_.user_info.is_admin} />
             ),
         },
         {
@@ -82,7 +82,7 @@ export default (props: any) => {
             dataIndex: 'join_date'
             // render : ( _ : any ) => <Typography.Text>{ _.user_info.gmt_created }</Typography.Text>
         },
-        access.canWsAdmin() && 
+        access.canWsAdmin() &&
         {
             title: '操作',
             align: 'center',
@@ -90,17 +90,17 @@ export default (props: any) => {
                 <>
                     <Access accessible={access.canSuperAdmin()} fallback={<Button type="link" disabled={true}>移除</Button>}>
                         {
-                            _.user_info.is_admin ? 
-                            <Button type="link" disabled={true}>移除</Button>
-                        : 
-                            <Popconfirm
-                                title="确定要移除该用户吗？"
-                                okText="确定"
-                                cancelText="取消"
-                                onConfirm={() => handleDeleteUser(_.user_info.id)}
-                            >
-                                <Button type="link">移除</Button>
-                            </Popconfirm> 
+                            _.user_info.is_admin ?
+                                <Button type="link" disabled={true}>移除</Button>
+                                :
+                                <Popconfirm
+                                    title="确定要移除该用户吗？"
+                                    okText="确定"
+                                    cancelText="取消"
+                                    onConfirm={() => handleDeleteUser(_.user_info.id)}
+                                >
+                                    <Button type="link">移除</Button>
+                                </Popconfirm>
                         }
                     </Access>
                 </>
@@ -116,7 +116,7 @@ export default (props: any) => {
                 message.success('操作成功')
                 onOk();
             } else {
-                requestCodeMessage( data.code , data.msg )
+                requestCodeMessage(data.code, data.msg)
             }
             init()
         }

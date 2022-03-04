@@ -140,7 +140,7 @@ const CloudConfig: React.FC<any> = (props) => {
 
 	const columnsAk: any = [
 		{
-			title: 'AkName',
+			title: 'AK Name',
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 150,
@@ -153,7 +153,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'name' }}
-				placeholder="支持搜索akName"
+				placeholder="支持搜索AK Name"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -188,7 +188,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_id' }}
-				placeholder="支持搜索accessID"
+				placeholder="支持搜索AccessID"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -210,7 +210,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: 'AccessKEY',
+			title: 'AccessKey',
 			width: 120,
 			dataIndex: 'access_key',
 			ellipsis: {
@@ -222,7 +222,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_key: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_key' }}
-				placeholder="支持搜索accessKEY"
+				placeholder="支持搜索AccessKey"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -407,7 +407,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_name' }}
-				placeholder="支持搜索imageName"
+				placeholder="支持搜索ImageName"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -439,7 +439,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_id' }}
-				placeholder="支持搜索imageID"
+				placeholder="支持搜索ImageID"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -471,7 +471,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_version: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_version' }}
-				placeholder="支持搜索imageVersion"
+				placeholder="支持搜索ImageVersion"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -535,7 +535,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, region: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'region' }}
-				placeholder="支持搜索region"
+				placeholder="支持搜索Region"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -559,7 +559,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title="AkName"
+					title="Ak Name"
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'ak_name'}
@@ -664,19 +664,19 @@ const CloudConfig: React.FC<any> = (props) => {
 	]
 
 	const handleAddAk = () => {
-		addScript.current?.show('新建ak')
+		addScript.current?.show('新建AK')
 	}
 	const hanldeEdit = (record: any) => {
 		const enableCopy = _.cloneDeep(record);
 		enableCopy.enable = enableCopy.enable === '是' || enableCopy.enable === true
-		addScript.current?.show('编辑ak', enableCopy)
+		addScript.current?.show('编辑AK', enableCopy)
 	}
 
 	const handleAddImage = () => {
-		addImage.current?.show('新建image')
+		addImage.current?.show('新建Image')
 	}
 	const hanldeEditImage = (record: any) => {
-		addImage.current?.show('编辑image', record)
+		addImage.current?.show('编辑Image', record)
 	}
 
 	let dataTable = _.isArray(data.data) ? _.cloneDeep(data.data) : []
@@ -696,7 +696,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			title={
 				<Tabs activeKey={key} onChange={handleTab}  >
 					<TabPane
-						tab="ak配置"
+						tab="AK配置"
 						key="ak"
 					/>
 					<TabPane
@@ -706,7 +706,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				</Tabs>
 			}
 			extra={
-				<Button key="3" type="primary" onClick={key === 'ak' ? handleAddAk : handleAddImage}> {key === 'ak' ? '新建ak' : '新建image'}</Button>
+				<Button key="3" type="primary" onClick={key === 'ak' ? handleAddAk : handleAddImage}> {key === 'ak' ? '新建AK' : '新建Image'}</Button>
 			}
 		>
 			<Table

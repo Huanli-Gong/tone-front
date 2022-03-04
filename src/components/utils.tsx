@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { Select } from 'antd'
-import { agent_list } from '@/utils/utils'
 
 export const AgentSelect: React.FC<any> = (props) => {
     return (

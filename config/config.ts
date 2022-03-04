@@ -1,10 +1,9 @@
-// https://umijs.org/config/
 import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV, BUILD_APP_ENV } = process.env;
+const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list } = process.env;
 
 export default defineConfig({
     // outputPath : 'build',
@@ -17,7 +16,14 @@ export default defineConfig({
         name: 'T-One',
         locale: true,
     },
-    define: process.env,
+    define: {
+        ...process.env,
+        logoutUrl: BUILD_APP_ENV ? "/" : logoutUrl,
+        agent_list: BUILD_APP_ENV ? [{ "value": "toneagent", "label": "ToneAgent" }] : JSON.parse(agent_list as any),
+        open_agent: "toneagent",
+        self_agent: BUILD_APP_ENV ? null : self_agent,
+        self_agent_name: BUILD_APP_ENV ? null : self_agent_name
+    },
     locale: {
         // default zh-CN
         default: 'zh-CN',

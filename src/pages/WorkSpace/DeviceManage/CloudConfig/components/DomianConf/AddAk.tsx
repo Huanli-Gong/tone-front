@@ -9,13 +9,13 @@ export default forwardRef(
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('新建ak') // 弹框顶部title
+        const [title, setTitle] = useState('新建AK') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
 
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "新建ak", data: any = {}) => {
+                show: (title: string = "新建AK", data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     setEditer(data)
@@ -39,7 +39,7 @@ export default forwardRef(
             }
             else {
                 if (code === 201) {
-                    form.setFields([{ name: 'name', errors: ["akName不能重复"] }])
+                    form.setFields([{ name: 'name', errors: ["AK Name不能重复"] }])
                 } else {
                     message.error(msg)
                 }
@@ -54,7 +54,7 @@ export default forwardRef(
                 .then(async (values) => {
                     const valuesCopy = _.cloneDeep(values)
                     valuesCopy.enable = valuesCopy.enable ? 'True' : 'False'
-                    if (title === '新建ak') {
+                    if (title === '新建AK') {
                         const { code, msg } = await createCloudAk({ ...valuesCopy, ws_id: props.ws_id })
                         defaultOption(code, msg, 'new')
                     }
@@ -129,25 +129,25 @@ export default forwardRef(
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item
-                        label="akName"
+                        label="AK Name"
                         name="name"
-                        rules={[{ required: true, message: 'akName不能为空' }]}
+                        rules={[{ required: true, message: 'AK Name不能为空' }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入akName" />
+                        <Input autoComplete="auto" placeholder="请输入" />
                     </Form.Item>
                     <Form.Item
-                        label="accessID"
+                        label="AccessID"
                         name="access_id"
-                        rules={[{ required: true, message: 'accessID不能为空' }]}
+                        rules={[{ required: true, message: 'AccessID不能为空' }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入akaccessID" />
+                        <Input autoComplete="auto" placeholder="请输入" />
                     </Form.Item>
                     <Form.Item
-                        label="accessKEY"
+                        label="AccessKey"
                         name="access_key"
-                        rules={[{ required: true, message: 'accessKEY不能为空' }]}
+                        rules={[{ required: true, message: 'AccessKey不能为空' }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入accessKEY" />
+                        <Input autoComplete="auto" placeholder="请输入" />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
                     {
@@ -158,7 +158,7 @@ export default forwardRef(
                         >
                             <Input
                                 autoComplete="auto"
-                                placeholder="请输入资源组ID"
+                                placeholder="请输入"
                             />
                         </Form.Item>
                     }

@@ -71,7 +71,7 @@ const CustomServer = (props: any) => {
             }
         } else {
             setValidate('error')
-            setValidateMsg(<ValidateIps data={{ msg: ['请输入IP/SN'] }} channelType={undefined} />)
+            setValidateMsg(<ValidateIps data={{ msg: [`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`] }} channelType={undefined} />)
         }
         setLoading(false)
     }
@@ -104,12 +104,11 @@ const CustomServer = (props: any) => {
                 name="custom_ip" //11.159.157.229
                 style={{ width: '100%' }}
                 validateStatus={validate}
-                // rules={[{ required : true , message : '请输入IP/SN' }]}
                 help={validate === 'error' && validateMsg}
             >
                 <Input
                     allowClear
-                    placeholder={multipInfo.selfServer ? '多个数值' : '请输入IP/SN'}
+                    placeholder={multipInfo.selfServer ? '多个数值' : `请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`}
                     autoComplete="off"
                     onBlur={handleCustomBlur}
                 />

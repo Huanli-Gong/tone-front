@@ -33,7 +33,7 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
             <Col span={18} style={{ position: 'relative' }}>
                 {machineType === 'custom_machine' &&
                     <Form.Item name={[field.name, "server"]} rules={[{ required: true,pattern: /^[A-Za-z0-9\._-]+$/, message: '请输入英文大小写、数字、特殊字符下划线、中划线和点' }]}>
-                        <Input placeholder="请输入监控机器的IP/SN地址" allowClear disabled={disabled} />
+                        <Input placeholder={`请输入监控机器的IP${!BUILD_APP_ENV ? "/SN" : ""}地址`} allowClear disabled={disabled} />
                     </Form.Item>
                 }
                 {
@@ -43,7 +43,7 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
                         content={
                             <Descriptions title="监控说明" bordered column={1} size="small" className={styles.monitorDes}>
                                 <Descriptions.Item label="本机" labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>仅对当前Job的所有用例分配到的机器进行数据监控。</Descriptions.Item>
-                                <Descriptions.Item label="自定义" labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>用户可通过手动输入IP/SN的方式，添加机器进行监控。</Descriptions.Item>
+                                <Descriptions.Item label="自定义" labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>用户可通过手动输入IP{`${!BUILD_APP_ENV ? "/SN" : ""}`}的方式，添加机器进行监控。</Descriptions.Item>
                             </Descriptions>
                         }
                     >

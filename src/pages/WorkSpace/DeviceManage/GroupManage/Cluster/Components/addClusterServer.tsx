@@ -164,78 +164,55 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     </Form.Item>
                     {
                         single === '1' ?
-                            BUILD_APP_ENV ?
-                                <Row>
-                                    <Col span={24}>
-                                        <Form.Item
-                                            name="ip"
-                                            label="机器"
-                                            validateStatus={ips.errors.length > 0 ? 'error' : ''}
-                                            help={ips.errors.length > 0 && validateMsg}
-                                        >
-                                            <Input 
-                                                allowClear
-                                                onBlur={(e: any) => handleBlurIp(e)}
-                                                autoComplete="off"
-                                                placeholder="请输入输入IP/SN" 
-                                            />
-                                        </Form.Item>
-                                    </Col>
-                                </Row>
-                                :
-                                <Form.Item label="机器">
-                                    <Form.Item noStyle>
-                                        <Row gutter={10}>
-                                            <Col span={12}>
-                                                <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
-                                                    <Select
-                                                        placeholder="请选择分组"
-                                                        onChange={getTestServerList}
-                                                        value={appGroup}
-                                                        getPopupContainer={node => node.parentNode}
-                                                    >
-                                                        {
-                                                            Array.isArray(groupList) && groupList.map(
-                                                                (item: any) => (
-                                                                    <Select.Option key={item} value={item}>{item}</Select.Option>
-                                                                )
+                            <Form.Item label="机器">
+                                <Form.Item noStyle>
+                                    <Row gutter={10}>
+                                        <Col span={12}>
+                                            <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
+                                                <Select
+                                                    placeholder="请选择分组"
+                                                    onChange={getTestServerList}
+                                                    value={appGroup}
+                                                    getPopupContainer={node => node.parentNode}
+                                                >
+                                                    {
+                                                        Array.isArray(groupList) && groupList.map(
+                                                            (item: any) => (
+                                                                <Select.Option key={item} value={item}>{item}</Select.Option>
                                                             )
-                                                        }
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={12}>
-                                                <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
-                                                    <Select
-                                                        placeholder="请选择机器"
-                                                        loading={testServerLoading}
-                                                        getPopupContainer={node => node.parentNode}
-                                                    >
-                                                        {
-                                                            testServerList.map(
-                                                                (item: any) => (
-                                                                    <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
-                                                                )
+                                                        )
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
+                                                <Select
+                                                    placeholder="请选择机器"
+                                                    loading={testServerLoading}
+                                                    getPopupContainer={node => node.parentNode}
+                                                >
+                                                    {
+                                                        testServerList.map(
+                                                            (item: any) => (
+                                                                <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
                                                             )
-                                                        }
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                    </Form.Item>
-                                </Form.Item> :
+                                                        )
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form.Item>
+                            </Form.Item> :
                             <Row>
                                 <Col span={24}>
-                                    <Form.Item 
-                                        name="channel_type" 
-                                        initialValue={'ToneAgent'}
-                                        label="控制通道" 
-                                        rules={[{ required: true, message: '请选择控制通道' }]}
-                                    >
-                                        <AgentSelect disabled={BUILD_APP_ENV}/>
+                                    <Form.Item name="channel_type" label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]}>
+                                        <AgentSelect onChange={handleIpsCheck} />
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>
+
                                     <Form.Item label="机器"
                                         name="ip"
                                         validateStatus={ips.errors.length > 0 ? 'error' : ''}
@@ -244,7 +221,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                         <Input allowClear
                                             onBlur={(e: any) => handleBlurIp(e)}
                                             autoComplete="off"
-                                            placeholder="请输入输入IP/SN" />
+                                            placeholder={`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>
@@ -278,7 +255,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                             <Radio value={false}>否</Radio>
                         </Radio.Group>
                     </Form.Item>
-                    <Form.Item name="kernel_install" label="安装内核" initialValue={false}>
+                    <Form.Item name="kernel_install" label="是否安装内核" initialValue={false}>
                         <Radio.Group>
                             <Radio value={true}>是</Radio>
                             <Radio value={false}>否</Radio>

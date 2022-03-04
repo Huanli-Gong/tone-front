@@ -39,7 +39,7 @@ const TestEnvironment = (props: any) => {
                                 array.map((item: any, idx: number) => {
                                     return (
                                         <div key={idx}>
-                                            <div className="ip">IP/SN</div>
+                                            <div className="ip">IP{`${!BUILD_APP_ENV ? "/SN" : ""}`}</div>
                                             <div className="machine">机型</div>
                                             <div className="machine">RPM</div>
                                             <div className="machine">GCC</div>

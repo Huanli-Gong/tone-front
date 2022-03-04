@@ -1,11 +1,14 @@
 import React from 'react';
-import { Space, Tag, Select, message } from 'antd';
+import { Select, message } from 'antd';
 import { updateWorkspaceMember } from '@/services/Workspace'
 import styles from './index.less';
 import { requestCodeMessage, switchUserRole } from '@/utils/utils';
+import { useParams } from 'umi';
 
 export const EditableCell: React.FC<any> = (props) => {
-    const { ws_id, user_info, select, is_owner } = props
+    const { ws_id } = useParams() as any
+    const { user_info, select, is_owner } = props
+
     const { role_list, id } = user_info
     const defaultName = role_list.map((item: any) => item.name)
 
@@ -23,14 +26,7 @@ export const EditableCell: React.FC<any> = (props) => {
             requestCodeMessage(data.code, data.msg)
         }
     }
-    
-    // if(is_owner){
-    //     return (
-    //         <div className={styles.roleStyle}>
-    //             <span style={{ fontSize:14, color:'rgba(0, 0, 0, 0.85)' }}>测试管理员</span>
-    //         </div>
-    //     )
-    // }
+
     return (
         <div className={styles.roleStyle}>
             {/** */}
@@ -50,38 +46,4 @@ export const EditableCell: React.FC<any> = (props) => {
             </Select>
         </div>
     )
-    // return (
-    //     <Space>
-    //         {role_list.map((item: any, index: number) => {
-    //             // let name = role_type_enum.map((n: any)=> { if (item.name == n.key) { return n.name } })
-    //                 let name = ''
-                    
-    //                 switch (item.name) {
-    //                     case 'ws_member':
-    //                         name = 'workspace成员'
-    //                         break;
-    //                     case 'ws_test_admin':
-    //                         name = '测试管理员'
-    //                         break;
-    //                     case 'ws_admin':
-    //                         name = '管理员'
-    //                         break;
-    //                     case 'ws_owner':
-    //                         name = '所有者'
-    //                         break;
-    //                     default:
-    //                         break;
-    //                 }
-    //                 return (
-    //                     <Tag key={index}
-    //                         color="rgba(140,140,140,0.1)"
-    //                         style={{ color: 'rgba(0,0,0,0.65)' }}
-    //                     >
-    //                         {name}
-    //                     </Tag>
-    //                 )
-    //             })
-    //         }
-    //     </Space>
-    // )
 }

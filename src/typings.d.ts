@@ -44,9 +44,12 @@ declare const self_agent_name: string
 
 declare const open_agent: string
 
-declare const agents: any
+declare const agentItem : { 
+    value: string;
+    label: string;
+}
 
-declare const source_agents: any
+declare const agent_list: agentItem[]
 
 declare const logoutUrl: string | undefined
 interface FunctionComponent {

@@ -70,7 +70,7 @@ const TestEnv = (props: any) => {
                     <>
                         <EnvTitle><Typography.Text strong>机器环境</Typography.Text></EnvTitle>
                         <GroupTableRow />
-                        <EnvTableHeaderRow title={'IP/SN'} />
+                        <EnvTableHeaderRow title={`IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
                         <EnvTableRow title={'机型'} />
                         <EnvTableRow title={'RPM'} />
                         <EnvTableRow title={'GCC'} />

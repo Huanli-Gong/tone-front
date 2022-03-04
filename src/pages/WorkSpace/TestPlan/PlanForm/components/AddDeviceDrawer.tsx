@@ -104,7 +104,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
                         }),
                     ]}
                 >
-                    <Input placeholder="请输入机器IP/SN" autoComplete="off" />
+                    <Input placeholder={`请输入机器IP${!BUILD_APP_ENV ? "/SN" : ""}`} autoComplete="off" />
                 </Form.Item>
                 <Form.Item
                     name="script"

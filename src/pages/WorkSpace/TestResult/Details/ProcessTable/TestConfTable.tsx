@@ -102,21 +102,14 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             title: '操作',
             width: 70,
             render: (_: any) => (
-                <>
+                <Access accessible={access.wsRoleContrl(_.creator)} >
                     {
-
-                        <Access
-                            accessible={access.wsRoleContrl(_.creator)}
-                        >
-                            {
-                                _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} >中止</Button>
-                            }
-                            {
-                                _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} >跳过</Button>
-                            }
-                        </Access>
+                        _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} >中止</Button>
                     }
-                </>
+                    {
+                        _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} >跳过</Button>
+                    }
+                </Access>
             )
         },
     ]

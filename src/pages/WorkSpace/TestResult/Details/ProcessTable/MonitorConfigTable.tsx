@@ -27,7 +27,7 @@ export default ({ job_id , refresh = false } : any ) => {
 
         {
             dataIndex: 'server',
-            title: 'ip/sn',
+            title: `IP${!BUILD_APP_ENV ? "/SN" : ""}`,
             render: (_: number | string | undefined) => (
                 _ ?
                     <PopoverEllipsis title={_}>

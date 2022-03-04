@@ -67,7 +67,7 @@ const ReportTestEnv = () => {
             {
                 len.map((item: any, i: number) => (
                     <MachineGroup key={i}>
-                        <MachineGroupL style={{ background: '#fafafa' }}>IP/SN</MachineGroupL>
+                        <MachineGroupL style={{ background: '#fafafa' }}>IP{`${!BUILD_APP_ENV ? "/SN" : ""}`}</MachineGroupL>
                         {
                             Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))

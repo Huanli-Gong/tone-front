@@ -16,7 +16,7 @@ import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
 import { useClientSize } from '@/utils/hooks'
 import ResizeTable from '@/components/ResizeTable';
-import { agent_list, requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage } from '@/utils/utils';
 
 import SelectVmServer from './Components/SelectVmServer';
 
