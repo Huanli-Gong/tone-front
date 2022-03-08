@@ -265,12 +265,12 @@ export default forwardRef(
                         </Select>
                     </Form.Item>
                     <Form.Item
-                        label="ImageGroup"
+                        label="Image Group"
                         name="platform"
                         validateStatus={(!platformStatus) && 'error'}
-                        help={(!platformStatus && `ImageGroup不能为空`)}
+                        help={(!platformStatus && `Image Group不能为空`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入ImageGroup" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入Image Group" onChange={(e) => {
                             if (!e.target.value) {
                                 setPlatformStatus(false)
                                 return
@@ -281,12 +281,12 @@ export default forwardRef(
                     
 
                     <Form.Item
-                        label="ImageName"
+                        label="Image Name"
                         name="image_name"
                         validateStatus={(!nameStatus || !queryNameStatus) && 'error'}
-                        help={(!nameStatus && `ImageName不能为空`) || (!queryNameStatus && `ImageName不能重复`)}
+                        help={(!nameStatus && `Image Name不能为空`) || (!queryNameStatus && `Image Name不能重复`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入ImageName" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入Image Name" onChange={(e) => {
                             if (!e.target.value) {
                                 setNameStatus(false)
                                 return
@@ -296,12 +296,12 @@ export default forwardRef(
                         }} />
                     </Form.Item>
                     <Form.Item
-                        label="ImageID"
+                        label="Image ID"
                         name="image_id"
                         validateStatus={(!idStatus) && 'error'}
-                        help={(!idStatus && `ImageID不能为空`)}
+                        help={(!idStatus && `Image ID不能为空`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入ImageID" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入Image ID" onChange={(e) => {
                             if (!e.target.value) {
                                 setIDStatus(false)
                                 return
@@ -310,12 +310,12 @@ export default forwardRef(
                         }} />
                     </Form.Item>
                     <Form.Item
-                        label="ImageVersion"
+                        label="Image Version"
                         name="image_version"
                         validateStatus={(!versionStatus) && 'error'}
-                        help={(!versionStatus && `ImageVersion不能为空`)}
+                        help={(!versionStatus && `Image Version不能为空`)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入ImageVersion" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder="请输入Image Version" onChange={(e) => {
                             if (!e.target.value) {
                                 setVersiontatus(false)
                                 return

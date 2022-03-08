@@ -175,7 +175,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: 'AccessID',
+			title: 'Access ID',
 			// width : 175,
 			dataIndex: 'access_id',
 			width: 120,
@@ -188,7 +188,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_id' }}
-				placeholder="支持搜索AccessID"
+				placeholder="支持搜索Access ID"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -210,7 +210,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: 'AccessKey',
+			title: 'Access Key',
 			width: 120,
 			dataIndex: 'access_key',
 			ellipsis: {
@@ -222,7 +222,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_key: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_key' }}
-				placeholder="支持搜索AccessKey"
+				placeholder="支持搜索Access Key"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -396,7 +396,7 @@ const CloudConfig: React.FC<any> = (props) => {
 	
 	const columnsImage: any = [
 		{
-			title: 'ImageName',
+			title: 'Image Name',
 			width: 150,
 			fixed: 'left',
 			dataIndex: 'image_name',
@@ -407,7 +407,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_name' }}
-				placeholder="支持搜索ImageName"
+				placeholder="支持搜索Image Name"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -429,7 +429,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: 'ImageID',
+			title: 'Image ID',
 			width: 120,
 			dataIndex: 'image_id',
 			ellipsis: true,
@@ -439,7 +439,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_id' }}
-				placeholder="支持搜索ImageID"
+				placeholder="支持搜索Image ID"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -461,7 +461,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: 'ImageVersion',
+			title: 'Image Version',
 			width: 120,
 			dataIndex: 'image_version',
 			ellipsis: true,
@@ -471,7 +471,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_version: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_version' }}
-				placeholder="支持搜索ImageVersion"
+				placeholder="支持搜索Image Version"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -493,7 +493,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: 'ImageGroup',
+			title: 'Image Group',
 			width: 100,
 			dataIndex: 'platform',
 			ellipsis: true,
@@ -503,7 +503,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, platform: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'platform' }}
-				placeholder="支持搜索ImageGroup"
+				placeholder="支持搜索Image Group"
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {

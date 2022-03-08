@@ -136,14 +136,14 @@ export default forwardRef(
                         <Input autoComplete="auto" placeholder="请输入" />
                     </Form.Item>
                     <Form.Item
-                        label="AccessID"
+                        label="Access ID"
                         name="access_id"
                         rules={[{ required: true, message: 'AccessID不能为空' }]}
                     >
                         <Input autoComplete="auto" placeholder="请输入" />
                     </Form.Item>
                     <Form.Item
-                        label="AccessKey"
+                        label="Access Key"
                         name="access_key"
                         rules={[{ required: true, message: 'AccessKey不能为空' }]}
                     >
