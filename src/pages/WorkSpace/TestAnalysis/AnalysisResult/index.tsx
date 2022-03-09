@@ -230,7 +230,7 @@ const Report = (props: any) => {
                     width: '100%',
                     minHeight: layoutHeight - 50,
                     position: 'relative',
-                    // overflow: 'auto',
+                    overflow: 'auto',
                     background: "#f5f5f5"
                 }}
             >

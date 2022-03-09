@@ -44,6 +44,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [sever, setSever] = useState<any>([])
     const [ak, setAK] = useState<any>([])
     const [id, setId] = useState<number>()
+    const [showZone, setShowZone] = useState<number>(0)
     const [region, setRegion] = useState<any>([])
     const [tagWord, setTagword] = useState<string>()
     const [categories, setCategories] = useState<any>([])
@@ -53,7 +54,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [validateAK, setValidateAK] = useState<any>({ validate: true, meg: '' }) // 校验AK
     const [validateRegion, setValidateRegion] = React.useState(true); // 校验Region
     const [validateImage, setValidateImage] = React.useState(false); // 校验镜像
-    const [manufacturerType, setChangeManufacturer] = React.useState('aliyun_eci'); // 切换规格
+    const [manufacturerType, setChangeManufacturer] = React.useState(''); // 切换规格
 
 
     const getServerTagList = async (word?: string) => {
@@ -121,7 +122,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     }
 
     const DEFAULT_FORM_VALUE = {
-        instance_type: undefined, instance_type1: undefined, instance_type2: undefined,
+        instance_type: undefined, instance_type_one: undefined, instance_type_two: undefined,
         storage_type: undefined, storage_size: 40, storage_number: 0,
         system_disk_category: undefined, system_disk_size: 40,
     }
@@ -253,6 +254,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 storage_type: undefined,
                 system_disk_category: undefined,
             })
+            setShowZone(1)
             // Promise.all([getInstancegList(param), getSeverList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
             // let method = [getInstancegList(param), getSeverList(param), getImageList(param), getCategoriesList(param)]
             // id ? method : method.splice(0,1)
@@ -268,6 +270,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setId(undefined)
         setVisible(true)
         setIs_instance(type - 0)
+        setShowZone(0)
         setSever([])
         setImage([])
         setInstance([])
@@ -291,6 +294,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     }));
     const editMachine = (row: any) => {
         setEditData(row)
+        setShowZone(1)
         setLoading(true)
         setVisible(true)
         let param = { ...row }
@@ -302,7 +306,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         //     label: param.manufacturer,
         //     value: param.ak_id
         // }
-       
         param.manufacturer = [param.manufacturer, param.ak_id]
         param.region = [param.region, param.zone]
 
@@ -371,6 +374,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const submit = async (params: any) => {
         //setVisible(true)
         let param = { ...params, ws_id }
+        param.is_instance = Number(type) 
         if (params.hasOwnProperty('manufacturer')) {
             param.manufacturer = params?.manufacturer[0]
             param.ak_id = params.manufacturer[1]
@@ -439,7 +443,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         // 初始化状态
         setValidateRegion(true)
         setValidateImage(false)
-        setChangeManufacturer('aliyun_eci')
+        setChangeManufacturer('')
         setEditData({})
         setVisible(false)
     }
@@ -482,7 +486,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         return editData && editData.state === 'Occupied'
     }, [editData])
 
-
     return (
         <Drawer
             maskClosable={false}
@@ -521,7 +524,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                     }}
                 >
                     <Row gutter={16}>
-                        {!id ?
+                        {/* {!id ?
                             <Col span={12}>
                                 <Form.Item
                                     name="is_instance"
@@ -535,26 +538,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 </Form.Item>
                             </Col> :
                             null
-                        }
-
-                        {/** 机器配置 */}
-                        {!is_instance && !id ?
-                            <Col span={12}>
-                                <Form.Item
-                                    name="release_rule"
-                                    label="用完释放"
-                                    rules={[{ required: true, message: '请选择' }]}
-                                    initialValue={0}
-                                >
-                                    <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
-                                    </Radio.Group>
-                                </Form.Item>
-                            </Col> :
-                            null
-                        }
-
+                        } */}
                         {!is_instance ?
                             <Col span={12}>
                                 <Form.Item
@@ -573,6 +557,23 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     ]}
                                 >
                                     <Input autoComplete="off" placeholder="请输入" />
+                                </Form.Item>
+                            </Col> :
+                            null
+                        }
+                        {/** 机器配置 */}
+                        {!is_instance && !id ?
+                            <Col span={12}>
+                                <Form.Item
+                                    name="release_rule"
+                                    label="用完释放"
+                                    rules={[{ required: true, message: '请选择' }]}
+                                    initialValue={0}
+                                >
+                                    <Radio.Group>
+                                        <Radio value={1}>是</Radio>
+                                        <Radio value={0}>否</Radio>
+                                    </Radio.Group>
                                 </Form.Item>
                             </Col> :
                             null
@@ -611,7 +612,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        {!id || !is_instance ?
+                        { manufacturerType === '' ? 
+                            null 
+                            : !id || !is_instance ?
                             <Col span={12}>
                                 <Form.Item label="Region/Zone"
                                     name="region"
@@ -629,7 +632,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        {!id && is_instance ?
+                        {!showZone ? null : !id && is_instance ?
                             <Col span={12}>
                                 <Form.Item label="已有机器"
                                     name="instance_id"
@@ -652,9 +655,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        {!is_instance ? (
+                        { !showZone ? null : !is_instance ? (
                             <>
-                                {manufacturerType === 'aliyun_eci' ?
+                                { manufacturerType === 'aliyun_eci' ?
                                     <Col span={12}>
                                         {/** case1: aliyun_eci  */}
                                         <Row>
@@ -710,13 +713,12 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                         </Form.Item>
                                     </Col>
                                 }
-                            </>)
+                            </>
+                            )
                             :
                             null
                         }
-
-
-                        {!is_instance ?
+                        { !showZone ? null : !is_instance ?
                          manufacturerType === 'aliyun_eci' ?
                             <Col span={12}>
                                 <Form.Item label="镜像"
@@ -749,7 +751,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={8}>
                                 <Form.Item label="系统盘"
                                     name="system_disk_category"
@@ -772,7 +774,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType !== 'aliyun_eci' &&!is_instance ?
+                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="system_disk_size"
@@ -793,7 +795,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4}>
                                 <Form.Item label="数据盘"
                                     name="storage_type"
@@ -815,7 +817,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="storage_size"
@@ -836,7 +838,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="storage_number"
@@ -983,7 +985,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 name="channel_type"
                                 initialValue={'toneagent'}
                                 rules={[{ required: true, message: '请选择控制通道' }]}>
-                                <AgentSelect />
+                                <AgentSelect disabled={BUILD_APP_ENV}/>
                             </Form.Item>
                         </Col>
                         {!is_instance ? null : (

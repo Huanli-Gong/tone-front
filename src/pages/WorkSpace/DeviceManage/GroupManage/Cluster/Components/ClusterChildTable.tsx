@@ -175,7 +175,7 @@ export default (props: any) => {
             render: (record: any) => (record || '-')
         },
         {
-            title: '机器状态',
+            title: '使用状态',
             width: 120,
             render: (record: any) => StateBadge(record.test_server.state, record.test_server)
         },
