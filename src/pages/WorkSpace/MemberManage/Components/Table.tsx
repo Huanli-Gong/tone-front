@@ -80,7 +80,6 @@ export default (props: any) => {
         {
             title: '加入时间',
             dataIndex: 'join_date'
-            // render : ( _ : any ) => <Typography.Text>{ _.user_info.gmt_created }</Typography.Text>
         },
         access.canWsAdmin() &&
         {
