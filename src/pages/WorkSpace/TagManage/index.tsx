@@ -345,16 +345,3 @@ const SuiteManagement: React.FC<any> = props => {
 };
 
 export default SuiteManagement;
-
-
-
-            // render: (_ : any , row : any ) => <PopoverEllipsis title={row.name} width={120}>
-            //     <Tag color={row.tag_color}>
-            //         <Highlighter
-            //             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-            //             searchWords={[name || '']}
-            //             autoEscape
-            //             textToHighlight={row.name.toString()}
-            //         />
-            //     </Tag>
-            // </PopoverEllipsis>

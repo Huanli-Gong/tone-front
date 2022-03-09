@@ -77,28 +77,6 @@ const Refenerce = ( props:any ) => {
         JobObj.case_id_list = id
         TempObj.case_id_list = id
     }
-    // useEffect(()=>{
-    //     if(type == 1){
-    //         setJobObj({
-    //             ...JobObj,
-    //             suite_id:id
-    //         })
-    //         setTempObj({
-    //             ...TempObj,
-    //             suite_id:id
-    //         })
-    //     }else{
-    //         setJobObj({
-    //             ...JobObj,
-    //             case_id_list:id
-    //         })
-    //         setTempObj({
-    //             ...TempObj,
-    //             case_id_list:id
-    //         })
-    //     }
-    // },[ id ])
-    
 
     const QueryJobData = async() =>{
         setLoading(true)

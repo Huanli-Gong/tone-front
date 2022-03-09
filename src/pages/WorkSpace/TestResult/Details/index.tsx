@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb } from 'antd'
+import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space } from 'antd'
 import styles from './index.less'
 import { useRequest, history, useModel, Access, useAccess } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
@@ -165,14 +165,17 @@ export default (props: any) => {
                                 <Row >
                                     <Col span={17} >
                                         <Row style={{ marginBottom: 26 }}>
-                                            {<StateTag state={data.state} />}
-                                            {data.provider_name && <Tooltip title="机器类型" placement="bottom">
-                                                <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{data.provider_name}</Tag></Tooltip>}
-                                            {data.test_type && <Tooltip title="测试类型" placement="bottom">
-                                                <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{data.test_type}</Tag></Tooltip>}
-                                            {data.job_type && <Tooltip title="Job类型" placement="bottom">
-                                                <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{data.job_type}</Tag></Tooltip>}
+                                            <Space>
+                                                <StateTag state={data.state} />
+                                                {data.provider_name && <Tooltip title="机器类型" placement="bottom">
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.provider_name}</Tag></Tooltip>}
+                                                {data.test_type && <Tooltip title="测试类型" placement="bottom">
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.test_type}</Tag></Tooltip>}
+                                                {data.job_type && <Tooltip title="Job类型" placement="bottom">
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.job_type}</Tag></Tooltip>}
+                                            </Space>
                                         </Row>
+
                                         <Row className={styles.test_summary_row} >
                                             <RenderDesItem name="创建人" dataIndex={data.creator_name} />
                                             <RenderDesItem name="创建时间" dataIndex={data.gmt_created} />
@@ -223,7 +226,7 @@ export default (props: any) => {
                                     </Col>
                                     <Col span={7} style={{ position: 'relative' }}>
                                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'fix-end', width: '100%' }}>
-                                            <Chart test_type={data.test_type} data={data.case_result} plan={(data.plan_instance_name && data.plan_instance_id)}/>
+                                            <Chart test_type={data.test_type} data={data.case_result} plan={(data.plan_instance_name && data.plan_instance_id)} />
                                         </div>
                                     </Col>
                                 </Row>

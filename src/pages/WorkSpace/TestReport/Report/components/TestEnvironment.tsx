@@ -157,31 +157,6 @@ const TestEnvironment = (props: any) => {
                         </div>
                     )
                 })
-                // :
-                //     <div>
-                //         {
-                //             <div style={{ height: 154 }}>
-                //                 {
-                //                     <>
-                //                         <div className="enviroment_ip">
-                //                             <a>
-                //                                 <span className="enviroment_child"></span>
-                //                             </a>
-                //                         </div>
-                //                         <div className="enviroment_machine">
-                //                             <span className="enviroment_child"></span>
-                //                         </div>
-                //                         <div className="enviroment_rpm">
-                //                             <span className="enviroment_child"></span>
-                //                         </div>
-                //                         <div className="enviroment_machine">
-                //                             <span className="enviroment_child"></span>
-                //                         </div>
-                //                     </>
-                //                 }
-                //             </div>
-                //         }
-                //     </div>
             )
         })
     }

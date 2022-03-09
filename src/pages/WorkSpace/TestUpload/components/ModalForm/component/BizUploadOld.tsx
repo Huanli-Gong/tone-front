@@ -14,41 +14,6 @@ const BizUpload = forwardRef((props, ref) => {
   const [fileList, setFileList] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
-  // const getUploadTar = async (query: any)=> {
-  //   const { file } = query
-  //   try {
-  //     setLoading(true)
-  //     const res = await uploadTar(query) || {}
-  //     if (res.code === 200 && res.path && res.link) {
-  //       // ...
-  //       setFileList([
-  //         {
-  //           uid: file.lastModified,
-  //           name: file.name,
-  //           status: 'done',
-  //           url: res.link,
-  //           ...res,
-  //         }
-  //       ]);
-  //       props.onChange([res.data]);
-  //     } else {
-  //       setFileList([
-  //         {
-  //           uid: file.lastModified,
-  //           name: file.name,
-  //           status: 'error',
-  //           url: '',
-  //         }
-  //       ]);
-  //       message.error(res.msg || '上传数据失败')
-  //     }
-  //     setLoading(false)
-  //   } catch(e) {
-  //     setLoading(false)
-  //     console.log(e)
-  //   }
-  // }
-
   // 文件上传限制
   
   const beforeUpload =(file: any) => {
