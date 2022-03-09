@@ -414,23 +414,3 @@ export default (props: any): React.ReactElement => {
         </Layout.Content>
     )
 }
-
-
-
-// const uploadProps = {
-//     name: "file",
-//     action: "/api/sys/upload/",
-//     beforeUpload: (file: any) => {
-//         const fileReader = new FileReader()
-//         fileReader.onload = (e: any) => {
-//             cropperRef.current?.show(e.target.result)
-//         }
-//         fileReader.readAsDataURL(file)
-//         return false
-//     },
-//     onChange: (info: any) => {
-//         if (info.file.status === 'done') {
-//             setImgUrl(info)
-//         }
-//     }
-// }

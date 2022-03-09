@@ -5,14 +5,19 @@ import styles from '../SelectSuite/style.less'
 import { checkIpAndSn } from './services';
 import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal'
 import { AgentSelect } from '@/components/utils';
+import { FormInstance } from 'antd/lib/form';
 
-const CustomServer = (props: any) => {
-    const { mask, multipInfo, form, loading } = props
+type IProps = {
+    mask: boolean;
+    multipInfo: any;
+    form: FormInstance;
+    loading?: boolean
+}
+
+const CustomServer: React.FC<IProps> = (props: any) => {
+    const { mask, multipInfo, form } = props
     const { setMask, setLoading } = useContext<any>(DrawerProvider)
 
-    // 校验成功/失败的标识
-    const [validate, setValidate] = useState<any>(undefined)
-    const [validateMsg, setValidateMsg] = useState<any>(undefined);
     /**
      * @author jpt 部署Agent对话框
      * @description 机器类型为：自持有机器、且channelType为'toneagent'选项，校验失败时，则可以进行部署Agent。
@@ -31,9 +36,6 @@ const CustomServer = (props: any) => {
         // step2.数据回填
         if (successIps?.length) {
             form.setFieldsValue({ custom_ip: successIps[0] })
-            // 重置错误信息提示
-            setValidate('success')
-            setValidateMsg('')
         }
     }
 
@@ -53,35 +55,6 @@ const CustomServer = (props: any) => {
         </span>
     )
 
-    // 校验函数
-    const handleCustomChannel = async (value: any) => {
-        if (loading) return
-        setLoading(true)
-        const custom_ip = form.getFieldValue('custom_ip')
-        const channel_type = value
-        if (channel_type && custom_ip) {
-            // 接口校验
-            const { code, msg } = await checkIpAndSn({ ip: custom_ip, channel_type }) || {}
-            if (code === 200) {
-                setValidate('success')
-                setValidateMsg('')
-            } else {
-                setValidate('error')
-                setValidateMsg(<ValidateIps data={{ msg, errors: [custom_ip] }} channelType={channel_type} />)
-            }
-        } else {
-            setValidate('error')
-            setValidateMsg(<ValidateIps data={{ msg: ['请输入IP/SN'] }} channelType={undefined} />)
-        }
-        setLoading(false)
-    }
-
-    // 失焦触发
-    const handleCustomBlur = () => {
-        const channel_type = form.getFieldValue('custom_channel')
-        handleCustomChannel(channel_type)
-    }
-
     return (
         <>
             {/* { multipInfo.selfServer ? '多个数值' : '请选择机器类型(agent)' } */}
@@ -95,23 +68,43 @@ const CustomServer = (props: any) => {
                     placeholder={multipInfo.selfServer ? '多个数值' : '请选择机器类型(agent)'}
                     onChange={(value: any) => {
                         setMask(false)
-                        value && handleCustomChannel(value)
+                        value && form.validate
                     }}
                 />
             </Form.Item>
 
             <Form.Item
-                name="custom_ip" //11.159.157.229
+                name="custom_ip"
                 style={{ width: '100%' }}
-                validateStatus={validate}
-                // rules={[{ required : true , message : '请输入IP/SN' }]}
-                help={validate === 'error' && validateMsg}
+                validateTrigger={["onBlur"]}
+                rules={[
+                    {
+                        required: true,
+                        message: "请输入IP/SN"
+                    },
+                    {
+                        async validator(rule, value) {
+                            if (!value) return Promise.resolve("请输入IP/SN")
+                            const channel_type = form.getFieldValue('custom_channel')
+                            if (!channel_type) return Promise.reject("请选择机器类型")
+                            setLoading(true)
+                            // 接口校验
+                            const { code, msg } = await checkIpAndSn({ ip: value, channel_type }) || {}
+                            if (code !== 200) {
+                                setLoading(false)
+                                return Promise.reject(<ValidateIps data={{ msg, errors: [value] }} channelType={channel_type} />)
+                            }
+                            Promise.resolve()
+                            setLoading(false)
+                            return
+                        },
+                    }
+                ]}
             >
                 <Input
                     allowClear
                     placeholder={multipInfo.selfServer ? '多个数值' : '请输入IP/SN'}
                     autoComplete="off"
-                    onBlur={handleCustomBlur}
                 />
             </Form.Item>
 

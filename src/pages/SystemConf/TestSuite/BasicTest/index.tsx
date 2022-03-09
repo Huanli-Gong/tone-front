@@ -600,31 +600,3 @@ const SuiteManagement = (props: any, ref: any) => {
 };
 
 export default forwardRef(SuiteManagement);
-
-
-
-                            // let orderArray = pageParams.order ? pageParams.order.split(',') : []
-                            // let orderStr = ''
-                            // if (order) {
-                            //     const mark = (order === 'descend' ? '-' : '') + (order ? field : '')
-                            //     if (JSON.stringify(orderArray) === '[]')
-                            //         orderArray = orderArray.concat(mark)
-                            //     else {
-                            //         const hasField = ~pageParams.order.indexOf(field)
-                            //         if (hasField)
-                            //             orderArray = orderArray.reduce(
-                            //                 (p: any, c: any) => p.concat(~c.indexOf(field) ? mark : c),
-                            //                 []
-                            //             )
-                            //         else
-                            //             orderArray = orderArray.concat(mark)
-                            //     }
-                            // }
-                            // else {
-                            //     orderArray = orderArray.reduce(
-                            //         (p: any, c: any) => ~c.indexOf(field) ? p : p.concat(c),
-                            //         []
-                            //     )
-                            // }
-                            // orderStr = orderArray.join(',')
-                            // setPageParams({ ...pageParams, order: orderStr })
