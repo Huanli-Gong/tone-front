@@ -72,7 +72,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const saveTemplateDrawer: any = useRef()
     const templateEditForm: any = useRef()
-    const [pjId, setPjId] = useState()
+    const [projectId, setProjectId] = useState()
     const [templateEnabel, setTemplateEnable] = useState(false)
     const [fetching, setFetching] = useState(false)
     const [isReset, setIsReset] = useState(false)
@@ -840,7 +840,7 @@ const TestJob: React.FC<any> = (props) => {
     )
 
     const queryProjectId = (id:any) => {
-        setPjId(id)
+        setProjectId(id)
     }
     return (
         <Layout style={layoutCss} >
@@ -1039,7 +1039,7 @@ const TestJob: React.FC<any> = (props) => {
                                                 <EnvForm
                                                     onRef={envForm}
                                                     contrl={items.env}
-                                                    pjId={pjId}
+                                                    project_id={projectId}
                                                     {...modalProps}
                                                 />
                                             </Row>

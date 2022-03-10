@@ -7,10 +7,10 @@ import { useRequest } from 'umi'
 import { queryRepositoryProject } from '@/pages/WorkSpace/Product/services'
 
 export default memo (
-    ({ disabled = false , ws_id , needScriptList = true , form, pjId } : any ) => {
+    ({ disabled = false , ws_id , needScriptList = true , form, project_id } : any ) => {
         const [ codeBranch , setCodeBranch ] = useState<any>( form?.getFieldValue('code_repo') )
         const { data = [], run } = useRequest(() => 
-        queryRepositoryProject({ project_id: pjId }) , { initialData : [], manual:true })
+        queryRepositoryProject({ project_id }) , { initialData : [], manual:true })
         const disabledStyles = disabled ? { backgroundColor: '#f5f5f5'} : {}
 
         const branches = useMemo(() => {
@@ -24,7 +24,7 @@ export default memo (
         useEffect(()=>{
             run()
             form?.resetFields()
-        },[ pjId ])
+        },[ project_id ])
 
         const hanldeChangeCodeRepo = ( val : any ) => {
             setCodeBranch( val )

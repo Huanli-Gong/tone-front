@@ -20,14 +20,14 @@ import _ from 'lodash'
 /**
  * 环境配置
  */
-export default ({ contrl, disabled = false, pjId, onRef = null, template = {} }: FormProps) => {
+export default ({ contrl, disabled = false, project_id, onRef = null, template = {} }: FormProps) => {
     const { ws_id } : any = useParams()
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
     const [monitor, setMonitor] = useState(false) // 监控
 
-    const [kernel, setKernal] = useState( pjId ? 'install_build_kernel' : 'no' )
+    const [kernel, setKernal] = useState( project_id ? 'install_build_kernel' : 'no' )
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
@@ -39,7 +39,7 @@ export default ({ contrl, disabled = false, pjId, onRef = null, template = {} }:
         () => ({
             form,
             reset: () => {
-                setKernal(pjId ? 'install_build_kernel' : 'no')
+                setKernal(project_id ? 'install_build_kernel' : 'no')
                 setReset(false)
                 setReboot(false)
                 setMonitor(false)
@@ -169,7 +169,7 @@ export default ({ contrl, disabled = false, pjId, onRef = null, template = {} }:
                 need_reboot: false,
                 hotfix_install: true,
                 scripts: [{ pos: 'before', script: '' }],
-                kernel_install: pjId ? 'install_build_kernel' : 'no',
+                kernel_install: project_id ? 'install_build_kernel' : 'no',
             }}
         >
             {
@@ -243,7 +243,7 @@ export default ({ contrl, disabled = false, pjId, onRef = null, template = {} }:
             }
             {
                 kernel === 'install_build_kernel' &&
-                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} pjId={pjId}/>
+                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} project_id={project_id}/>
             }
             {
                 'reboot' in contrl &&
