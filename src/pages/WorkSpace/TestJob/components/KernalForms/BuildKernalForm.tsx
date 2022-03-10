@@ -4,22 +4,27 @@ import ScriptsListForm from './ScriptsFormList'
 import styles from './index.less'
 import { itemLayout } from './untils'
 import { useRequest } from 'umi'
-import { queryRepositoryList } from '@/pages/WorkSpace/Product/services'
+import { queryRepositoryProject } from '@/pages/WorkSpace/Product/services'
 
 export default memo (
-    ({ disabled = false , ws_id , needScriptList = true , form } : any ) => {
+    ({ disabled = false , ws_id , needScriptList = true , form, pjId } : any ) => {
         const [ codeBranch , setCodeBranch ] = useState<any>( form?.getFieldValue('code_repo') )
-        const { data } = useRequest(() => queryRepositoryList({ ws_id }) , { initialData : [] })
-
+        const { data = [], run } = useRequest(() => 
+        queryRepositoryProject({ project_id: pjId }) , { initialData : [], manual:true })
         const disabledStyles = disabled ? { backgroundColor: '#f5f5f5'} : {}
 
         const branches = useMemo(() => {
             for( let branch of data ) {
-                if ( branch.git_url === codeBranch ) 
-                    return branch.branches
+                if ( branch.repo_id === codeBranch ) 
+                    return branch.branch_dict
             }
             return []
         } , [ codeBranch , data ])
+
+        useEffect(()=>{
+            run()
+            form?.resetFields()
+        },[ pjId ])
 
         const hanldeChangeCodeRepo = ( val : any ) => {
             setCodeBranch( val )
@@ -33,7 +38,7 @@ export default memo (
                         <Select disabled={ disabled } placeholder="请选择" onChange={ hanldeChangeCodeRepo } >
                             {
                                 data.map(( item : any ) => (
-                                    <Select.Option key={ item.id } value={ item.git_url }>{ item.git_url }</Select.Option>
+                                    <Select.Option key={ item.repo_id } value={ item.repo_id }>{ item.repo_git_url }</Select.Option>
                                 ))
                             }
                         </Select>
@@ -41,8 +46,8 @@ export default memo (
                     <Form.Item { ...itemLayout } label="代码分支" name="code_branch" rules={[{ required : true , message : '请选择代码分支' }]}>
                         <Select style={ disabledStyles } disabled={ disabled } placeholder="请选择代码分支">
                             {
-                                branches.map(( item : any ) => (
-                                    <Select.Option key={ item.id } value={ item.name }>{ item.name }</Select.Option>
+                                branches?.map(( item : any ) => (
+                                    <Select.Option key={ item.id } value={ item.id }>{ item.name }</Select.Option>
                                 ))
                             }
                         </Select>

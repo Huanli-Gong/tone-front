@@ -49,7 +49,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             form.resetFields(['ip'])
             setTestServerLoading(true)
             setAppGroup(app_group)
-            const { data } = await queryTestServerNewList({ ws_id, app_group })
+            let params = BUILD_APP_ENV ? undefined : app_group
+            const { data } = await queryTestServerNewList({ ws_id, app_group : params })
             setTestServerList(data)
             setTestServerLoading(false)
         },
@@ -164,55 +165,79 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     </Form.Item>
                     {
                         single === '1' ?
-                            <Form.Item label="机器">
-                                <Form.Item noStyle>
-                                    <Row gutter={10}>
-                                        <Col span={12}>
-                                            <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
-                                                <Select
-                                                    placeholder="请选择分组"
-                                                    onChange={getTestServerList}
-                                                    value={appGroup}
-                                                    getPopupContainer={node => node.parentNode}
-                                                >
-                                                    {
-                                                        Array.isArray(groupList) && groupList.map(
-                                                            (item: any) => (
-                                                                <Select.Option key={item} value={item}>{item}</Select.Option>
-                                                            )
-                                                        )
-                                                    }
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
-                                                <Select
-                                                    placeholder="请选择机器"
-                                                    loading={testServerLoading}
-                                                    getPopupContainer={node => node.parentNode}
-                                                >
-                                                    {
-                                                        testServerList.map(
-                                                            (item: any) => (
-                                                                <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
-                                                            )
-                                                        )
-                                                    }
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
+                            BUILD_APP_ENV ?
+                                <Form.Item 
+                                    name="ip"
+                                    label="机器"
+                                    rules={[{ required: true, message: '请选择机器' }]}>
+                                        <Select
+                                            placeholder="请选择机器"
+                                            loading={testServerLoading}
+                                            getPopupContainer={node => node.parentNode}
+                                        >
+                                            {
+                                                testServerList.map(
+                                                    (item: any) => (
+                                                        <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
+                                                    )
+                                                )
+                                            }
+                                        </Select>
                                 </Form.Item>
-                            </Form.Item> :
+                                :
+                                <Form.Item label="机器">
+                                    <Form.Item noStyle>
+                                        <Row gutter={10}>
+                                            <Col span={12}>
+                                                <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
+                                                    <Select
+                                                        placeholder="请选择分组"
+                                                        onChange={getTestServerList}
+                                                        value={appGroup}
+                                                        getPopupContainer={node => node.parentNode}
+                                                    >
+                                                        {
+                                                            Array.isArray(groupList) && groupList.map(
+                                                                (item: any) => (
+                                                                    <Select.Option key={item} value={item}>{item}</Select.Option>
+                                                                )
+                                                            )
+                                                        }
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
+                                                    <Select
+                                                        placeholder="请选择机器"
+                                                        loading={testServerLoading}
+                                                        getPopupContainer={node => node.parentNode}
+                                                    >
+                                                        {
+                                                            testServerList.map(
+                                                                (item: any) => (
+                                                                    <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
+                                                                )
+                                                            )
+                                                        }
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+                                    </Form.Item>
+                                </Form.Item> :
                             <Row>
                                 <Col span={24}>
-                                    <Form.Item name="channel_type" label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]}>
-                                        <AgentSelect onChange={handleIpsCheck} />
+                                    <Form.Item 
+                                        name="channel_type" 
+                                        initialValue={'ToneAgent'}
+                                        label="控制通道" 
+                                        rules={[{ required: true, message: '请选择控制通道' }]}
+                                    >
+                                        <AgentSelect disabled={BUILD_APP_ENV}/>
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>
-
                                     <Form.Item label="机器"
                                         name="ip"
                                         validateStatus={ips.errors.length > 0 ? 'error' : ''}

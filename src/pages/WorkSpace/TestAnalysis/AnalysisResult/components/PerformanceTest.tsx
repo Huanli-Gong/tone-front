@@ -102,7 +102,7 @@ const handleDataArr = (dataArr:any,baseIndex:number) => {
 }
 const ReportTestPref: React.FC<any> = (props) => {
     const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, ws_id, group } = useContext(ReportContext)
-    const { parentDom } = props
+    const { parentDom, scrollLeft } = props
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
     const [dataSource, setDataSource] = useState<any>([])
@@ -264,7 +264,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                 envData={envData}
                 groupLen={group}
             />
-            <Row>
+            <Row style={{ maxWidth : document.body.clientWidth - 40 + scrollLeft }}>
                 <Col span={12}>
                     <TestDataTitle id="perf_item">性能测试</TestDataTitle>
                 </Col>

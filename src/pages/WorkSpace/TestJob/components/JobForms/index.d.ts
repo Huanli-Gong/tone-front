@@ -1,6 +1,8 @@
 export interface FormProps {
     contrl : any ,
     disabled? : boolean,
+    callBackProjectId?:any,
+    pjId?:number,
     ws_id ? : string
     onRef? : any ,
     template? : any,

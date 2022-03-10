@@ -20,14 +20,14 @@ import _ from 'lodash'
 /**
  * 环境配置
  */
-export default ({ contrl, disabled = false, onRef = null, template = {} }: FormProps) => {
+export default ({ contrl, disabled = false, pjId, onRef = null, template = {} }: FormProps) => {
     const { ws_id } : any = useParams()
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
     const [monitor, setMonitor] = useState(false) // 监控
 
-    const [kernel, setKernal] = useState('no')
+    const [kernel, setKernal] = useState( pjId ? 'install_build_kernel' : 'no' )
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
@@ -39,14 +39,14 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: FormP
         () => ({
             form,
             reset: () => {
-                setKernal('no')
+                setKernal(pjId ? 'install_build_kernel' : 'no')
                 setReset(false)
                 setReboot(false)
                 setMonitor(false)
                 form.resetFields()
             },
             setVal: (data:Object) =>{
-                let {rpm_info,script_info,kernel_version,kernel_info,build_pkg_info} = data
+                let {rpm_info,script_info,kernel_version,kernel_info,build_pkg_info}:any = data
                  rpm_info = rpm_info || [{pos: 'before',rpm: ''}]
                  script_info = script_info || [{pos: 'before',script: ''}]
                  form.resetFields()
@@ -169,7 +169,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: FormP
                 need_reboot: false,
                 hotfix_install: true,
                 scripts: [{ pos: 'before', script: '' }],
-                kernel_install: 'no',
+                kernel_install: pjId ? 'install_build_kernel' : 'no',
             }}
         >
             {
@@ -220,7 +220,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: FormP
                     label={contrl.kernel_install.alias || contrl.kernel_install.show_name}
                     name="kernel_install"
                 >
-                    <Radio.Group value={kernel} disabled={disabled} onChange={handleKernalInstallChange} defaultValue={kernel}>
+                    <Radio.Group value={kernel} disabled={disabled} onChange={handleKernalInstallChange} >
                         <Radio value="no">不安装</Radio>
                         <Radio value="install_push">安装已发布</Radio>
                         <Radio value="install_un_push">安装未发布</Radio>
@@ -243,7 +243,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: FormP
             }
             {
                 kernel === 'install_build_kernel' &&
-                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} />
+                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} pjId={pjId}/>
             }
             {
                 'reboot' in contrl &&

@@ -52,6 +52,10 @@ export const deleteProject = async ( data : any ) => {
 export const queryRepositoryList = async ( params : any ) => {
     return request(`/api/sys/repository/` , { params })
 }
+export const queryRepositoryProject = async ( params : any ) => {
+    return request(`/api/sys/repository/project/` , { params })
+}
+
 // 新增仓库
 export const createRepository = async ( data : any ) => {
     return request(`/api/sys/repository/` , { method : 'post' , data })

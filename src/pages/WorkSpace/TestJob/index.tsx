@@ -72,7 +72,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const saveTemplateDrawer: any = useRef()
     const templateEditForm: any = useRef()
-
+    const [pjId, setPjId] = useState()
     const [templateEnabel, setTemplateEnable] = useState(false)
     const [fetching, setFetching] = useState(false)
     const [isReset, setIsReset] = useState(false)
@@ -838,6 +838,10 @@ const TestJob: React.FC<any> = (props) => {
             <a href="/help_doc/2" target="_blank">帮助文档</a>
         </Space>
     )
+
+    const queryProjectId = (id:any) => {
+        setPjId(id)
+    }
     return (
         <Layout style={layoutCss} >
             {
@@ -1018,6 +1022,7 @@ const TestJob: React.FC<any> = (props) => {
                                                 <BasciForm
                                                     onRef={basicForm}
                                                     contrl={items.basic}
+                                                    callBackProjectId={queryProjectId}
                                                     projectListDataRef={projectListData}
                                                     baselineListDataRef={baselineListData}
                                                     isYamlFormat={isYamlFormat}
@@ -1034,6 +1039,7 @@ const TestJob: React.FC<any> = (props) => {
                                                 <EnvForm
                                                     onRef={envForm}
                                                     contrl={items.env}
+                                                    pjId={pjId}
                                                     {...modalProps}
                                                 />
                                             </Row>

@@ -9,7 +9,7 @@ import { queryProjectList, queryBaselineList } from '../../services'
 /**
  * 基础配置
  */
-export default ({ contrl, disabled = false, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
+ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
 
@@ -70,8 +70,13 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, test_ty
                 if (projectObj)
                     form.setFieldsValue({ project: projectObj.id })
             }
+            callBackProjectId(projectList[0].id)
         }
     }, [projectList])
+
+    const handleSelect = (val:any) => {
+        callBackProjectId(val)
+    }
 
     return (
         <Form
@@ -109,7 +114,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, test_ty
                     name="project"
                     label={contrl.project.alias || contrl.project.show_name}
                 >
-                    <Select allowClear getPopupContainer={node => node.parentNode} disabled={disabled} placeholder="请选择Project">
+                    <Select allowClear getPopupContainer={node => node.parentNode} disabled={disabled} placeholder="请选择Project" onSelect={handleSelect}>
                         {
                             projectList.map(
                                 (item: any) => (
