@@ -230,7 +230,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                 <Col span={24}>
                                     <Form.Item 
                                         name="channel_type" 
-                                        initialValue={'ToneAgent'}
+                                        initialValue={'toneagent'}
                                         label="控制通道" 
                                         rules={[{ required: true, message: '请选择控制通道' }]}
                                     >

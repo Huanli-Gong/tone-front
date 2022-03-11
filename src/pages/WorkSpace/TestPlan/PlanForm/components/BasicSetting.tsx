@@ -117,7 +117,7 @@ const BasicSetting = (props: any, ref: any) => {
                 </Form.Item>
                 {/* rules={[{ required: true, message: "请选择Project" }]} */}
                 <Form.Item name="project_id" label={'Project'} >
-                    <Select allowClear getPopupContainer={node => node.parentNode} placeholder="请选择Project">
+                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择Project">
                         {
                             projectList.map(
                                 (item: any, idx: any) => (
@@ -132,7 +132,7 @@ const BasicSetting = (props: any, ref: any) => {
                 <Form.Item label="测试基线">
                     <BaselineWrapper>
                         <Form.Item name="func_baseline" >
-                            <Select allowClear getPopupContainer={node => node.parentNode} placeholder="请选择内网功能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择内网功能基线">
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aligroup').map(
                                         (item: any) => (
@@ -149,7 +149,7 @@ const BasicSetting = (props: any, ref: any) => {
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline">
-                            <Select allowClear getPopupContainer={node => node.parentNode} placeholder="请选择内网性能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择内网性能基线">
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aligroup').map(
                                         (item: any) => (
@@ -165,7 +165,7 @@ const BasicSetting = (props: any, ref: any) => {
                     {/** 新添加--云上 */}
                     <BaselineWrapper>
                         <Form.Item name="func_baseline_aliyun">
-                            <Select allowClear getPopupContainer={node => node.parentNode} placeholder="请选择云上功能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择云上功能基线">
                                 {baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aliyun').map(
                                     (item: any) => (
                                         <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
@@ -178,7 +178,7 @@ const BasicSetting = (props: any, ref: any) => {
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline_aliyun">
-                            <Select allowClear getPopupContainer={node => node.parentNode} placeholder="请选择云上性能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择云上性能基线">
                                 {baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aliyun').map(
                                     (item: any) => (
                                         <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
@@ -191,7 +191,7 @@ const BasicSetting = (props: any, ref: any) => {
                     </BaselineWrapper>
                 </Form.Item>
                 <Form.Item name="test_obj" label={"被测对象"}>
-                    <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} placeholder="请选择被测对象">
+                    <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
                         <Select.Option value={'kernel'} >{'内核包'}</Select.Option>
                         <Select.Option value={'rpm'} >{'其他软件'}</Select.Option>
                     </Select>
