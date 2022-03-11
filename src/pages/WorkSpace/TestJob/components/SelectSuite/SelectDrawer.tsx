@@ -5,6 +5,7 @@ import { useRequest, useParams, useAccess, Access } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from './service'
 import styles from './style.less';
+import { targetJump } from '@/utils/utils'
 
 const SelectDrawer: React.FC<any> = ({
     testType,
@@ -13,10 +14,7 @@ const SelectDrawer: React.FC<any> = ({
     config,
     control,
     treeData = [],
-    onNameChange,
-    suiteAllKeys,
     loading,
-    onDomainChange
 }) => {
     const { ws_id } = useParams<any>()
     const { Search } = Input;
@@ -26,26 +24,35 @@ const SelectDrawer: React.FC<any> = ({
     const [checkAll, setCheckAll] = useState<boolean>(false)
     const [expand, setExpand] = useState<boolean>(false)
     const [domain, setDomain] = useState<any>('')
-    const [name, setName] = React.useState<string | undefined>("")
+    const [name, setName] = React.useState<string>("")
 
     const allKeys = React.useMemo(() => {
         return treeData.reduce((pre: any, cur: any, index: number) => {
-            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => i.id))
+            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
         }, [])
     }, [treeData])
 
-    console.log(allKeys)
+    const hasTree = React.useMemo(() => {
+        return treeData.filter((item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.indexOf(name))
+    }, [treeData, domain, name])
 
     const checkAllChange = (keys: any) => {
-        if (keys.slice().sort().join(',') && keys.slice().sort().join(',') == suiteAllKeys.slice().sort().join(','))
+        if (keys.slice().sort().join(',') && keys.slice().sort().join(',') == allKeys.slice().sort().join(','))
             setCheckAll(true)
         else
             setCheckAll(false)
     }
 
+    React.useMemo(() => {
+        const ids = hasTree.reduce((pre: any, cur: any, index: number) => {
+            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
+        }, [])
+        const hasList = ids.map((i: string) => selectData.includes(i))
+        setCheckAll([...new Set(hasList)].length === 1 && hasList[0])
+    }, [name, domain, hasTree, selectData])
+
     const handleDomainChange = (e: any) => {
         setDomain(e)
-        onDomainChange(e)
     }
 
     const { data: domainList } = useRequest(
@@ -64,7 +71,7 @@ const SelectDrawer: React.FC<any> = ({
                             (conf: any) => {
                                 const confIdx = config[suiteIdx].test_case_list.findIndex(({ id }: any) => id === conf.id)
                                 if (confIdx > -1)
-                                    keys.push(conf.key)
+                                    keys.push(`${conf.id}`)
                             }
                         )
                     }
@@ -78,14 +85,27 @@ const SelectDrawer: React.FC<any> = ({
     }))
 
     const onCheck = (checkedKeys: any) => {
-        console.log(checkedKeys)
         setSelectData(checkedKeys)
         checkAllChange(checkedKeys)
     };
 
-    const selectAll = (e: any) => {
-        setCheckAll(e.target.checked)
-        e.target.checked ? setSelectData(suiteAllKeys) : setSelectData([])
+    const selectAll = ({ target }: any) => {
+        setCheckAll(target.checked)
+        if (hasTree.length > 0 && (name || domain)) {
+            const currentHasIds = treeData.reduce((pre: any, cur: any, index: number) => {
+                const filter = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name)
+                if (filter) return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
+                return pre
+            }, [])
+            target.checked ?
+                setSelectData(selectData.concat(currentHasIds)) :
+                setSelectData(selectData.reduce((pre: any, cur: any) => {
+                    if (currentHasIds.includes(cur)) return pre
+                    return pre.concat(cur)
+                }, []))
+        }
+        else
+            target.checked ? setSelectData(allKeys) : setSelectData([])
     }
 
     const onConfirm = () => {
@@ -93,7 +113,7 @@ const SelectDrawer: React.FC<any> = ({
         const treeDataCopy = cloneDeep(treeData)
         const data = treeDataCopy.filter((item: any) => {
             item.test_case_list = item.children.filter((el: any) => {
-                if (selectData.indexOf(el.key) > -1) {
+                if (selectData.indexOf(`${el.id}`) > -1) {
                     el.setup_info = ''
                     el.cleanup_info = ''
                     el.need_reboot = false
@@ -133,11 +153,19 @@ const SelectDrawer: React.FC<any> = ({
     }
 
     const resultTreeData = React.useMemo(() => {
-        if (domain || name)
-            return treeData.reduce((pre: any, cur: any) => {
-
-            }, [])
-    }, [treeData, domain, name, domainList])
+        return treeData.reduce((pre: any, cur: any, index: number) => {
+            const hidden = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name) ? {} : { display: "none" }
+            return pre.concat(
+                <Tree.TreeNode key={`${cur.id}-${index}`} title={cur.name} style={hidden}>
+                    {
+                        cur.test_case_list.map((conf: any) => (
+                            <Tree.TreeNode key={conf.id} title={conf.name} />
+                        ))
+                    }
+                </Tree.TreeNode>
+            )
+        }, [])
+    }, [treeData, domain, name])
 
     return (
         <Drawer
@@ -153,14 +181,17 @@ const SelectDrawer: React.FC<any> = ({
             bodyStyle={{ paddingBottom: 80 }}
             footer={
                 <div style={{ textAlign: 'right', padding: '0 8px' }} >
-                    <Checkbox
-                        onChange={selectAll}
-                        checked={checkAll}
-                        disabled={loading}
-                        style={{ float: 'left' }}
-                    >
-                        全选
-                    </Checkbox>
+                    {
+                        !!hasTree.length &&
+                        <Checkbox
+                            onChange={selectAll}
+                            checked={checkAll}
+                            disabled={loading}
+                            style={{ float: 'left' }}
+                        >
+                            全选
+                        </Checkbox>
+                    }
                     <Button onClick={handleCancel} style={{ marginRight: 8 }}>
                         取消
                     </Button>
@@ -175,7 +206,7 @@ const SelectDrawer: React.FC<any> = ({
                     placeholder="请输入"
                     onSearch={(value: any) => setName(value.replace(/\s+/g, ""))}
                     style={{ width: 420 }}
-                    value={name}
+                    allowClear
                 />
                 {
                     control.indexOf('domain') > -1 ?
@@ -198,7 +229,7 @@ const SelectDrawer: React.FC<any> = ({
                                                 key={item.id}
                                                 type={item.name == domain ? "primary" : "ghost"}
                                                 size="small"
-                                                style={{ marginRight: 8, marginBottom: 8 }}
+                                                style={{ marginRight: 8, marginBottom: 8, border: item.name == domain ? undefined : "none" }}
                                                 onClick={() => handleDomainChange(item.name)}
                                             >
                                                 {item.name}
@@ -207,55 +238,50 @@ const SelectDrawer: React.FC<any> = ({
                                     })
                                 }
                             </div>
-                            <Button
-                                type="link"
-                                size="small"
-                                style={{ position: 'absolute', right: 0 }}
-                                onClick={() => setExpand(!expand)}
-                                icon={expand ? <UpOutlined /> : <DownOutlined />}
-                            >
-                                {expand ? '收起' : '展开'}
-                            </Button>
+                            {
+                                domainList.length > 6 &&
+                                <Button
+                                    type="link"
+                                    size="small"
+                                    style={{ position: 'absolute', right: 0 }}
+                                    onClick={() => setExpand(!expand)}
+                                    icon={expand ? <UpOutlined /> : <DownOutlined />}
+                                >
+                                    {expand ? '收起' : '展开'}
+                                </Button>
+                            }
                         </div> :
                         <div style={{ height: '16px' }}></div>
                 }
                 {
-                    treeData?.length ? (
-                        <Tree
-                            checkedKeys={selectData}
-                            checkable
-                            onCheck={onCheck}
-                        >
-                            {
-                                treeData.map((item: any, index: any) => (
-                                    <Tree.TreeNode key={`${item.id}-${index}`} title={item.name} >
-                                        {
-                                            item.test_case_list.map((conf: any) => (
-                                                <Tree.TreeNode key={conf.id} title={conf.name} />
-                                            ))
-                                        }
-                                    </Tree.TreeNode>
-                                ))
-                            }
-                        </Tree>
-                    ) : (
-                        <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
-                            <Access accessible={access.canWsAdmin()}>
-                                <Button type="primary"
-                                    onClick={() => {
-                                        // 跳转至 ws级TestSuite管理
-                                        const a = document.createElement('a');
-                                        a.target = "_blank";
-                                        a.rel = "noopener noreferrer"
-                                        a.href = testType ? `/ws/${ws_id}/test_suite?test_type=${testType}` : `/ws/${ws_id}/test_suite`;
-                                        a.click();
-                                    }}>
-                                    添加用例
-                                </Button>
-                            </Access>
-                        </div>
-                    )
+                    (treeData?.length) &&
+                    <Tree
+                        checkedKeys={selectData}
+                        checkable
+                        onCheck={onCheck}
+                    >
+                        {resultTreeData}
+                    </Tree>
+                }
+                {
+                    (treeData?.length === 0 || hasTree.length === 0) &&
+                    <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
+                        <Access accessible={access.canWsAdmin()}>
+                            <Button
+                                type="primary"
+                                onClick={
+                                    () => targetJump(
+                                        testType ?
+                                            `/ws/${ws_id}/test_suite?test_type=${testType}` :
+                                            `/ws/${ws_id}/test_suite`
+                                    )
+                                }
+                            >
+                                添加用例
+                            </Button>
+                        </Access>
+                    </div>
                 }
             </Spin>
         </Drawer>
