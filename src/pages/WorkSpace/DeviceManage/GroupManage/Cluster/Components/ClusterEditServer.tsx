@@ -99,7 +99,8 @@ const EditServerDrawer = (props: any, ref: any) => {
                 >
                     <Select placeholder="请选择机器状态" >
                         <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                        <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
+                        <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
+                        <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
                     </Select>
                 </Form.Item>
                 {/* <Form.Item name="role" label="角色" rules={[{ required: true }]}>
