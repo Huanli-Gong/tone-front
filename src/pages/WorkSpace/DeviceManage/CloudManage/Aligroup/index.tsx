@@ -48,9 +48,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         tags:'', 
         description:''
     })
-    // const [refresh, setRefresh] = useState<boolean>(true)
-    // const [page, setPage] = useState<number>(1)
-    // const [pageSize, setPageSize] = useState<number>(10)
     const [visible, setVisible] = useState<boolean>(false)
     const [tagList, setTagList] = useState<any>([])
     const [keyword, setKeyword] = useState<string>()
@@ -60,10 +57,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const [fetching, setFetching] = useState<boolean>(true)
 
     const [expandKey, setExpandKey] = useState<string[]>([])
-    // const [name, setName] = useState<string>()
-    // const [owner, setOwner] = useState<any>();
-    // const [tags, setTags] = useState<any>();
-    // const [description, setDescription] = useState<string>();
     const top = 39, size = 41;
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -72,11 +65,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { Option } = Select;
     const [operation, setOperation] = useState<string>('machine_cluster_aliyun')
     const logDrawer: any = useRef()
-    //
     const [validateResult, setValidateResult] = useState<any>({});
     const [refreshColumn, setRefreshColumn] = useState<any>(null) // 当前操作的行。
 
-    // 
     const handleOpenLogDrawer = useCallback(
         (id, type) => {
             setOperation(type)

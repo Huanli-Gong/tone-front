@@ -29,7 +29,7 @@ export const StateBadge = ( state : string , row : any ) => {
                 <Badge status="processing" text="Occupied"/>
             </Popover>
         )
-        case 'Reserved' : return <Badge status="default" text="Reserved"/>
+        case 'Reserved' : return <Badge status="success" text="Reserved"/>
         case 'Broken' : return (
             <Popover 
                 placement="right" 
@@ -40,6 +40,7 @@ export const StateBadge = ( state : string , row : any ) => {
                 <Badge status="error" text="Broken"/>
             </Popover>
         )
+        case 'Unusable' : return <Badge status="default" text="Unusable"/>
         default : return <div>-</div>
     }
 }

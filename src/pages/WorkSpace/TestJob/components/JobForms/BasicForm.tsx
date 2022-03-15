@@ -114,7 +114,7 @@ import { queryProjectList, queryBaselineList } from '../../services'
                     name="project"
                     label={contrl.project.alias || contrl.project.show_name}
                 >
-                    <Select allowClear getPopupContainer={node => node.parentNode} disabled={disabled} placeholder="请选择Project" onSelect={handleSelect}>
+                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} placeholder="请选择Project" onSelect={handleSelect}>
                         {
                             projectList.map(
                                 (item: any) => (
@@ -136,7 +136,7 @@ import { queryProjectList, queryBaselineList } from '../../services'
                         name="baseline"
                         label={contrl.baseline.alias || contrl.baseline.show_name}
                     >
-                        <Select allowClear getPopupContainer={node => node.parentNode} disabled={disabled} placeholder="请选择需要对比的测试基线">
+                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} placeholder="请选择需要对比的测试基线">
                             {
                                 baselineList.map(
                                     (item: any) => (

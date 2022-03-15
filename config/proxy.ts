@@ -6,7 +6,7 @@
  * https://pro.ant.design/docs/deploy
  */
 
-const { BUILD_APP_ENV } = process.env
+const { BUILD_APP_ENV } = process.env as any
 
 export default {
     dev: {

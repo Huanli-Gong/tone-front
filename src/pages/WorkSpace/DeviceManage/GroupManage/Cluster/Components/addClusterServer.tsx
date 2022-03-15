@@ -230,7 +230,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                 <Col span={24}>
                                     <Form.Item 
                                         name="channel_type" 
-                                        initialValue={'ToneAgent'}
+                                        initialValue={'toneagent'}
                                         label="控制通道" 
                                         rules={[{ required: true, message: '请选择控制通道' }]}
                                     >
@@ -258,7 +258,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                     >
                                         <Select placeholder="请选择机器状态" >
                                             <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                                            <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
+                                            <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
+                                            <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
                                         </Select>
                                     </Form.Item>
                                 </Col>

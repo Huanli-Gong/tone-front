@@ -87,7 +87,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                 <Form.Item name="private_ip" label="私有IP">
                     <Input autoComplete="off" placeholder="请输入私有IP" />
                 </Form.Item>
-                <Form.Item name="channel_type" initialValue={'ToneAgent'} label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]} >
+                <Form.Item name="channel_type" initialValue={'toneagent'} label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]} >
                     <AgentSelect disabled={BUILD_APP_ENV}/>
                 </Form.Item>
                 <Form.Item
@@ -99,7 +99,8 @@ const EditServerDrawer = (props: any, ref: any) => {
                 >
                     <Select placeholder="请选择机器状态" >
                         <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                        <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
+                        <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
+                        <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
                     </Select>
                 </Form.Item>
                 {/* <Form.Item name="role" label="角色" rules={[{ required: true }]}>

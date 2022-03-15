@@ -235,6 +235,7 @@ export default forwardRef(
                                 <Select
                                     mode="multiple"
                                     className={styles.pers_select}
+                                    listHeight={160}
                                     getPopupContainer={node => node.parentNode}
                                     onSearch={handleFuncsBaselineSelectSearch}
                                     // onBlur={handlePerfBaselineSelectBlur}
@@ -284,6 +285,7 @@ export default forwardRef(
                                     allowClear
                                     optionLabelProp="label"
                                     ref={funcsBaselineSelect}
+                                    listHeight={160}
                                     getPopupContainer={node => node.parentNode}
                                     onSearch={handleFuncsBaselineSelectSearch}
                                     // onBlur={handleFuncsBaselineSelectBlur}

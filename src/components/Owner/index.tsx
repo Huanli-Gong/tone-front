@@ -33,6 +33,7 @@ export default () => {
                 style={{ width: '100%' }}
                 showArrow={false}
                 showSearch
+                listHeight={160}
                 getPopupContainer={node => node.parentNode}
             >
                 {
