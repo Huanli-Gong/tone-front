@@ -158,7 +158,7 @@ const BageLine = styled.div<BageLineProps>`
 
 const JobData: React.FC<JobDataProps> = (props) => {
     const { time, ...rest } = props
-    const { fail_num, complate_num, project_total_job, today_job_all, today_job_fail, today_job_success } = rest
+    const { fail_num, complete_num, project_total_job, today_job_all, today_job_fail, today_job_success } = rest
 
     return (
         <div style={{ display: 'flex' }}>
@@ -173,7 +173,7 @@ const JobData: React.FC<JobDataProps> = (props) => {
             <JobDataItem
                 time="所有Job"
                 all={project_total_job}
-                success={complate_num}
+                success={complete_num}
                 fail={fail_num}
             />
         </div>
@@ -344,7 +344,7 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
             <CardExpandedContainer style={{ display: tab ? 'block' : 'none' }}>
                 <CardExpandedRow>
                     <ListRow
-                        title={"当日job名称"}
+                        title={`${getCurrentTimeStr(time)} Job名称`}
                         state={"状态"}
                         result={"结果(成功/失败)"}
                     />
@@ -362,8 +362,8 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                                 state={<JobListStateTag state={y.today_query_state} />}
                                 result={
                                     <Space size={24}>
-                                        <Typography.Text style={{ color: '#81BF84' }}>{y.today_query_pass || '-'}</Typography.Text>
-                                        <Typography.Text style={{ color: '#C84C5A' }}>{y.today_query_fail || '-'}</Typography.Text>
+                                        <Typography.Text style={{ color: '#81BF84' }}>{y.today_query_pass ?? '-'}</Typography.Text>
+                                        <Typography.Text style={{ color: '#C84C5A' }}>{y.today_query_fail ?? '-'}</Typography.Text>
                                     </Space>
                                 }
                             />
