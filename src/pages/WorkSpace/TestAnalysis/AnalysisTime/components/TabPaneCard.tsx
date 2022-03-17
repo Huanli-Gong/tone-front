@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Row, Col, Form, Select, DatePicker, Card, Button, Empty, Tooltip } from 'antd'
+import { Row, Col, Form, Select, DatePicker, Card, Button, Empty, Tooltip, message, Descriptions } from 'antd'
 import moment from 'moment'
 import { useRequest, useLocation } from 'umi'
 import styled from 'styled-components'
@@ -22,6 +22,23 @@ const TootipTipRow = styled(Row)`
         top:4px;
     }
 `
+const SuiteConfMetric = ( props:any ) => {
+    let str = props.title.split('/')
+    return(
+        <div style={{ color: '#000' }}>
+            <Descriptions column={1}>
+                <Descriptions.Item label="Suite" labelStyle={{ paddingLeft:10,fontWeight:'bold' }}>{str[0]}</Descriptions.Item>
+                <Descriptions.Item label="Conf" labelStyle={{ paddingLeft:12,fontWeight:'bold' }}>{str[1]}</Descriptions.Item>
+                <Descriptions.Item label="Metric" contentStyle={{ display:'inline-block' }} labelStyle={{ fontWeight:'bold' }}>
+                    { props.metric.map(
+                        (item:any,i:number) => 
+                            <div key={i}>{item}</div>)
+                    }
+                </Descriptions.Item>
+            </Descriptions>
+        </div>
+    ) 
+}
 export default (props: any) => {
     const { query }: any = useLocation()
     const { ws_id, provider, testType, showType, onChange, setLoading, loading } = props
@@ -65,7 +82,11 @@ export default (props: any) => {
     }
 
     const handleSelectMertric = () => {
-        selectMetricRef.current.show()
+        if(form.getFieldValue('project_id')){
+            selectMetricRef.current.show()
+        } else {
+            message.error('请先选择项目!!!')
+        }
     }
 
     const handleMerticSelectOk = (data: any) => {
@@ -264,12 +285,12 @@ export default (props: any) => {
                             <Tooltip
                                 title={
                                     showType === 'result_trend' ?
-                                        metricData.sub_case_name :
-                                        metricData.metric?.map(
-                                            (i: any, idx: number) => (<div key={idx}>{i}</div>)
-                                        )
+                                        metricData.sub_case_name : <SuiteConfMetric {...metricData}/>
                                 }
-                                placement="bottom"
+                                autoAdjustOverflow={true}
+                                placement="bottomLeft"
+                                color='rgb(252,252,252)'
+                                overlayStyle={{ minWidth: 260 , maxHeight: 300, overflowY:'auto' }}
                             >
                                 <span className={styles.select_inner_span}>
                                     {metricData.title}

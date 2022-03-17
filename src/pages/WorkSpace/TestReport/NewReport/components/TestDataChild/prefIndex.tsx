@@ -410,7 +410,7 @@ const Performance = (props: any) => {
                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                             <PrefData>
                                                 <DelBtn conf={conf} cid={cid} />
-                                                <PrefDataTitle gLen={groupLen}>{conf.conf_name} </PrefDataTitle>
+                                                <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name}/></PrefDataTitle>
                                                 {renderShare(conf)}
                                             </PrefData>
                                             {

@@ -371,7 +371,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
 
 
     const [form] = Form.useForm();
-    const submit = async (params: any) => {
+    const submit = _.debounce(
+        async (params: any) => {
         //setVisible(true)
         let param = { ...params, ws_id }
         param.is_instance = Number(type) 
@@ -426,7 +427,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         } else {
             requestCodeMessage(res.code, res.msg)
         }
-    }
+    },300)
 
     const handleInputChange = async (val: any, name: string, idx: number) => {
         const fieldsValue = _.cloneDeep(form.getFieldsValue())

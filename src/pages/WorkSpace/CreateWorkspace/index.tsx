@@ -167,7 +167,7 @@ export default (props: any): React.ReactElement => {
     const handleShowWs = (e: any, type: string) => {
         const value = e.target.value
         const isName = type === 'name'
-        const reg = isName ? /^[a-z0-9_-]{1,20}$/ : /^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/g
+        const reg = isName ? /^[a-z0-9_-]{1,30}$/ : /^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/g
         const setFn = isName ? setErrorRegName : setErrorReg
         const flag = reg.test(value)
         setFn(!flag)
@@ -247,12 +247,12 @@ export default (props: any): React.ReactElement => {
                             </Form.Item>
                             <Form.Item
                                 validateStatus={(errorRegName || errorRepeatName.isRepeat) && 'error'}
-                                help={(errorRegName && '只允许英文小写、下划线和数字，最多20个字符') || (errorRepeatName.isRepeat && errorRepeatName.text)}
+                                help={(errorRegName && '只允许英文小写、下划线和数字，最多30个字符') || (errorRepeatName.isRepeat && errorRepeatName.text)}
                                 rules={[{
                                     required: true,
-                                    max: 20,
-                                    pattern: /^[a-z0-9_-]{0,20}$/,
-                                    message: '只允许英文小写、下划线和数字，最多20个字符',
+                                    max: 30,
+                                    pattern: /^[a-z0-9_-]{0,30}$/,
+                                    message: '只允许英文小写、下划线和数字，最多30个字符',
                                 }]}
                                 // extra='只允许英文小写、下划线和数字，最多20个字符'
                                 label={
@@ -264,7 +264,7 @@ export default (props: any): React.ReactElement => {
                                 }
                                 name="name"
                             >
-                                <Input autoComplete="off" placeholder="只允许英文小写、下划线和数字，最多20个字符" allowClear onChange={_.partial(handleShowWs, _, 'name')} />
+                                <Input autoComplete="off" placeholder="只允许英文小写、下划线和数字，最多30个字符" allowClear onChange={_.partial(handleShowWs, _, 'name')} />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}

@@ -213,28 +213,28 @@ const TemplateCatalog = (props: any) => {
         for (let i = 0; i < leftArr.length; i++) {
             let title = document.querySelector(`#${leftArr[i].id}`) as any
             let leftTitle = document.querySelector(`#left_${leftArr[i].id}`) as any
-            if( title.offsetParent.offsetTop + title?.offsetTop <= bst){
-                i > 0 && arr[i -1].classList.remove('toc-selected');
-                leftTitle.classList.add('toc-selected');
+            if( title.offsetParent?.offsetTop + title?.offsetTop <= bst){
+                i > 0 && arr[i -1]?.classList.remove('toc-selected');
+                leftTitle?.classList.add('toc-selected');
                 setRoundHeight(leftTitle?.offsetTop) 
             }else{
-                arr[i].classList.remove('toc-selected')
+                arr[i]?.classList.remove('toc-selected')
             }
         }
         
         for (let b = 0; b < treeArr.length; b++) {
             let treeTitle = document.querySelector(`#${treeArr[b].id}`) as any
             let leftTreeTitle = document.querySelector(`#left_${treeArr[b].id}`) as any
-            if( treeTitle.offsetParent.offsetTop + treeTitle?.offsetTop <= bst){
-                b > 0 && leftTreeTitle.classList.remove('toc-selected');
-                leftTreeTitle.classList.add('toc-selected');
+            if( treeTitle?.offsetParent.offsetTop + treeTitle?.offsetTop <= bst){
+                b > 0 && leftTreeTitle?.classList.remove('toc-selected');
+                leftTreeTitle?.classList.add('toc-selected');
                 let treeName = treeTitle?.id.substring(0,9)
-                setRoundHeight((document.querySelector(`#left_tree_${treeName}`) as any).offsetTop + leftTreeTitle.offsetParent.offsetTop)
+                setRoundHeight((document.querySelector(`#left_tree_${treeName}`) as any)?.offsetTop + leftTreeTitle?.offsetParent.offsetTop)
                 for (let i = 0; i < leftArr.length; i++) {
-                    arr[i].classList.remove('toc-selected')
+                    arr[i]?.classList.remove('toc-selected')
                 }
             }else{
-                leftTreeTitle.classList.remove('toc-selected');
+                leftTreeTitle?.classList.remove('toc-selected');
                 
             }
         }

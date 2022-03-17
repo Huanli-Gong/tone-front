@@ -133,7 +133,7 @@ export default forwardRef(
                     params.title = `${selectSuiteName}/${selectConfName}` ///${ selectSubcase.toString() }
                 }
             }
-            console.log(params)
+            
             onOk(params)
             handleClose()
         }

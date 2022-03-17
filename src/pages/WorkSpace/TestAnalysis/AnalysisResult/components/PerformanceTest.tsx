@@ -321,7 +321,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         </TestConf>
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
-                                                                <PrefDataTitle gLen={group}>{conf.conf_name} </PrefDataTitle>
+                                                                <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name}/></PrefDataTitle>
                                                                 {renderShare(conf)}
                                                             </PrefData>
                                                             {
