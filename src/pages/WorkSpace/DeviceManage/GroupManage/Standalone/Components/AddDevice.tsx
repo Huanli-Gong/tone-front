@@ -232,9 +232,9 @@ const AddDeviceDrawer = (props: any, ref: any) => {
 
     // 失焦校验
     const handleBlurIps = () => {
-        const matchResult: any = selectIpsValue.match(/[a-z0-9A-Z.-_]+(\s|,|)/g) || []
+        const matchResult: any = selectIpsValue.split(/,|\s/) || []
         const resultIp: any = Array.from(
-            new Set(matchResult.map((i: any) => i.replace(/(\s|,|)/g, '')).concat(vals))
+            new Set(matchResult.concat(vals))
         )
         setVals(resultIp)
         form.setFieldsValue({ ips: resultIp })

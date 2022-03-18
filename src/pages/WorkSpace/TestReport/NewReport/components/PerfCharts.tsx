@@ -1,20 +1,18 @@
-import React, { memo, useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { Row, Space, Typography, Spin, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/GaryBaseIcon.svg';
 import TypeChart from '../components/TestDataChild/TypeChart';
-import NoTypeChart from '../components/TestDataChild/noTypeChart';
+import NoTypeChart from './TestDataChild/NoTypeChart';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { compareChart } from '../../services';
 const FullRow = styled(Row)`
     width:100%;
 `
-
 const Wrapper = styled(FullRow)`
     margin-top:20px;
     border: 1px solid rgba(0,0,0,0.1);
 `
-
 const ModalHeader = styled(FullRow)`
     background:rgba(0,0,0,.02);
     min-height:40px;
@@ -33,12 +31,10 @@ const Dot = styled.div<DotProp>`
     display:inline-block;
     background:${({ color }) => color};
 `
-
 const ModalBody = styled(FullRow)`
     padding:20px 16px;
     background:#fff;
 `
-
 const ModalSlider = styled.div`
     height:100%;
     overflow-y:auto;
@@ -46,7 +42,6 @@ const ModalSlider = styled.div`
     width:340px;
     min-height:367px;
 `
-
 const SliderTitle = styled(Typography.Text)`
     font-family: PingFangSC-Regular;
     font-size: 14px;
@@ -55,6 +50,10 @@ const SliderTitle = styled(Typography.Text)`
 interface ConfNameProp {
     is_active?: number
 }
+interface ConfRowProp {
+    is_active: boolean
+}
+
 const ConfName = styled(Typography.Text) <ConfNameProp>`
     cursor:pointer;
     font-family: PingFangSC-Regular;
@@ -62,17 +61,10 @@ const ConfName = styled(Typography.Text) <ConfNameProp>`
     color:rgba(0,0,0,.85);
     ${({ is_active }) => is_active && 'color:#1890FF;'}
 `
-
 const ModalContent = styled.div`
     width:calc( 100% - 340px );
     .ant-typography { margin-bottom:0;}
 `
-
-
-
-interface ConfRowProp {
-    is_active: boolean
-}
 const ConfMetricRow = styled.div<ConfRowProp>`
     height:376px;
     width:100%;
@@ -83,18 +75,6 @@ const ConfMetricRow = styled.div<ConfRowProp>`
     flex-shrink: 0;
     background: ${({ is_active }) => is_active ? 'rgba(59,160,255,0.05)' : ''};
 `
-
-interface ConfChartProp {
-    setLegend?: Function,
-    legend?: string,
-    envData?: any,
-    loading: boolean,
-    chartData: any,
-    is_active: boolean
-    chartType: string | number
-    conf_name?: string,
-}
-
 const ConfChart = (props: any) => {
     const { callBackColor, legend, envData, loading, chartData, is_active, chartType } = props
     if (chartType === '1') {

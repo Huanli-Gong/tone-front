@@ -47,7 +47,7 @@ export default (props: any) => {
     const [chartData, setChartData] = useState<any>({})
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
-
+    const [projectId,setProjectId] = useState('')
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
 
@@ -186,6 +186,7 @@ export default (props: any) => {
 
     const handleProductChange = (val: any) => {
         run({ project_id: val })
+        setProjectId(val)
     }
 
     return (
@@ -348,6 +349,7 @@ export default (props: any) => {
             }
             <SelectMertric
                 ref={selectMetricRef}
+                projectId={projectId}
                 ws_id={ws_id}
                 showType={showType}
                 test_type={testType}

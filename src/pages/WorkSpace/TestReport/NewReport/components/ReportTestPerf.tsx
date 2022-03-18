@@ -1,14 +1,13 @@
 import React, { useContext, useState, useEffect, useRef, memo, useMemo } from 'react';
-import { Space, Popconfirm, Empty } from 'antd';
+import { Popconfirm, Empty } from 'antd';
 import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
-import { SettingTextArea } from './EditPublic';
-import Performance from './TestDataChild/prefIndex'
+import { GroupItemText } from './EditPerfText';
+import Performance from './TestDataChild/PrefIndex'
 import _ from 'lodash';
 import { useScroll } from 'ahooks';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
-import produce from 'immer'
 import styled from 'styled-components';
 import {
     ModuleWrapper,
@@ -68,8 +67,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
-    const { btnState, obj, setObj, allGroupData, envData, domainResult, btnConfirm, groupLen } = useContext(ReportContext)
-    // let group = allGroupData?.length
+    const { btnState, obj, setObj, envData, domainResult, groupLen } = useContext(ReportContext)
     const testDataRef = useRef(null)
     const data = useMemo(() => {
         if (Array.isArray(domainResult.perf_item)) {
@@ -78,50 +76,11 @@ const ReportTestPref = () => {
     }, [domainResult])
 
     const [dataSource, setDataSource] = useState<any>([])
+
     useEffect(() => {
         setDataSource(data)
     }, [data])
 
-    /* 
-        ** 编辑测试项 测试组
-    */
-    const filterFieldData = (data: any, name: string, field: any, rowKey: string) => {
-        return produce(
-            data,
-            (draftState: any) => {
-                draftState.list = data.list.map((i: any) => {
-                    if (!i.is_group && i.rowKey == rowKey) {
-                        return produce(i, (draft: any) => {
-                            draft.name = field
-                        })
-                    }
-                    return i
-                })
-            }
-        )
-    }
-
-    const filterData = (item: any, name: string, field: any, rowKey: string) => {
-        if (item.rowKey == rowKey)
-            return produce(item, (draft: any) => {
-                draft.name = field
-            })
-        if (item.is_group)
-            return filterFieldData(item, name, field, rowKey)
-        return item
-    }
-    const handleFieldChange = (field: any, name: string, rowKey: string) => {
-        setDataSource(dataSource.map((item: any) => filterData(item, name, field, rowKey)))
-    }
-    const filterGroup = (item: any, name: string, field: any, rowKey: string) => {
-        if (item.rowKey == rowKey) {
-            return item.name = field
-        }
-        return item
-    }
-    const handleGroupChange = (field: any, name: string, rowKey: string) => {
-        setDataSource(dataSource.map((item: any) => filterGroup(item, name, field, rowKey)))
-    }
     /* 
         ** 删除测试项 测试组
     */
@@ -255,17 +214,12 @@ const ReportTestPref = () => {
                                                         <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
                                                             <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                             <TestItemText>
-                                                                <SettingTextArea
+                                                                <GroupItemText
                                                                     name={item.name}
-                                                                    btnConfirm={btnConfirm}
-                                                                    isInput={true}
-                                                                    fontStyle={{
-                                                                        fontSize: 14,
-                                                                        fontFamily: 'PingFangSC-Medium',
-                                                                        color: 'rgba(0,0,0,0.85)'
-                                                                    }}
+                                                                    rowKey={item.rowKey}
                                                                     btn={btnState}
-                                                                    onOk={(val: any) => handleGroupChange(val, item.name, item.rowKey)}
+                                                                    dataSource={dataSource}
+                                                                    setDataSource={setDataSource}
                                                                 />
                                                             </TestItemText>
                                                             <Popconfirm
@@ -288,21 +242,21 @@ const ReportTestPref = () => {
                                                                         dataSource={dataSource}
                                                                         setDataSource={setDataSource}
                                                                         onDelete={handleDelete}
-                                                                        onChange={handleFieldChange}
                                                                     />
                                                                     </div>
                                                                     
                                                                 )
                                                             })
                                                         }
-                                                    </> : <Performance
+                                                    </> 
+                                                    : 
+                                                    <Performance
                                                         child={item}
                                                         name="item"
                                                         id={item.rowKey}
                                                         dataSource={dataSource}
                                                         setDataSource={setDataSource}
                                                         onDelete={handleDelete}
-                                                        onChange={handleFieldChange}
                                                     />
                                             }
                                         </div>

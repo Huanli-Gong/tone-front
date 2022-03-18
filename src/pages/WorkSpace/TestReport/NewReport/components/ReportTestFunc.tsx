@@ -2,9 +2,8 @@ import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { Empty, Popconfirm } from 'antd';
 import { ReportContext } from '../Provider';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
-import FuncIndex from './TestDataChild/funcIndex';
-import { SettingTextArea } from './EditPublic';
-import produce from 'immer';
+import FuncIndex from './TestDataChild/FuncIndex';
+import { GroupItemText } from './EditPerfText';
 import {
     TestDataTitle,
     TestWrapper,
@@ -15,21 +14,21 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { obj, setObj, domainResult, btnConfirm, btnState, routeName } = useContext(ReportContext)
+    const { obj, setObj, domainResult, btnState, routeName } = useContext(ReportContext)
+
     const data = useMemo(() => {
         if (Array.isArray(domainResult.func_item)) {
             let data = _.cloneDeep(domainResult.func_item)
             return data
         }
     }, [domainResult])
+
     const [dataSource, setDataSource] = useState<any>([])
+    const [subObj, setSubObj] = useState<Array<{}>>([])
 
     useEffect(() => {
         setDataSource(data)
     }, [data])
-
-    const [subObj, setSubObj] = useState<Array<{}>>([])
-
 
     useEffect(() => {
         dataSource?.map((item: any) => {
@@ -43,46 +42,6 @@ const ReportTestFunc: React.FC<any> = () => {
         })
     }, [dataSource])
 
-    const filterGroup = (item: any, name: string, field: any, rowKey: string) => {
-        if (item.rowKey == rowKey) {
-            return item.name = field
-        }
-        return item
-    }
-    const handleGroupChange = (field: any, name: string, rowKey: string) => {
-        setDataSource(dataSource.map((item: any) => filterGroup(item, name, field, rowKey)))
-    }
-    /* 
-       ** 编辑测试项 测试组
-   */
-    const filterFieldData = (data: any, name: string, field: any, rowKey: string) => {
-        return produce(
-            data,
-            (draftState: any) => {
-                draftState.list = data.list.map((i: any) => {
-                    if (!i.is_group && i.rowKey == rowKey) {
-                        return produce(i, (draft: any) => {
-                            draft.name = field
-                        })
-                    }
-                    return i
-                })
-            }
-        )
-    }
-
-    const filterData = (item: any, name: string, field: any, rowKey: string) => {
-        if (item.rowKey == rowKey)
-            return produce(item, (draft: any) => {
-                draft.name = field
-            })
-        if (item.is_group)
-            return filterFieldData(item, name, field, rowKey)
-        return item
-    }
-    const handleFieldChange = (field: any, name: string, rowKey: string) => {
-        setDataSource(dataSource.map((item: any) => filterData(item, name, field, rowKey)))
-    }
     /* 
         ** 删除测试项 测试组
     */
@@ -186,17 +145,12 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 <TestGroup id={`func_item-${item.rowKey}`} className="tree_mark">
                                                     <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                                                     <TestItemText>
-                                                        <SettingTextArea
+                                                        <GroupItemText
                                                             name={item.name}
-                                                            btnConfirm={btnConfirm}
-                                                            isInput={true}
-                                                            fontStyle={{
-                                                                fontSize: 14,
-                                                                fontFamily: 'PingFangSC-Medium',
-                                                                color: 'rgba(0,0,0,0.85)'
-                                                            }}
+                                                            rowKey={item.rowKey}
                                                             btn={btnState}
-                                                            onOk={(val: any) => handleGroupChange(val, item.name, item.rowKey)}
+                                                            dataSource={dataSource}
+                                                            setDataSource={setDataSource}
                                                         />
                                                     </TestItemText>
                                                     {
@@ -223,13 +177,13 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                     dataSource={dataSource}
                                                                     setDataSource={setDataSource}
                                                                     onDelete={handleDelete}
-                                                                    onChange={handleFieldChange}
                                                                 />
                                                             </div>
                                                         )
                                                     })
                                                 }
-                                            </> :
+                                            </> 
+                                            :
                                             <FuncIndex
                                                 child={item}
                                                 name="item"
@@ -238,7 +192,6 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 dataSource={dataSource}
                                                 setDataSource={setDataSource}
                                                 onDelete={handleDelete}
-                                                onChange={handleFieldChange}
                                             />
                                     }
                                 </div>

@@ -10,7 +10,7 @@ import Owner from '@/components/Owner/index';
 import styles from './style.less';
 import { useParams } from 'umi';
 import { AgentSelect } from '@/components/utils'
-
+import _ from 'lodash';
 /**
  * 
  * 云上集群 - 添加机器
@@ -439,7 +439,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     }, [image])
 
     const [form] = Form.useForm();
-    const submit = async (params: any) => {
+    const submit = _.debounce(
+        async (params: any) => {
         // setVisible(false)
         let param = { ...params, ws_id }
         if (params.hasOwnProperty('manufacturer')) {
@@ -495,7 +496,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         } else {
             requestCodeMessage(res.code, res.msg)
         }
-    }
+    },300)
     useEffect(() => {
         AkResetStatus()
     }, [is_instance])

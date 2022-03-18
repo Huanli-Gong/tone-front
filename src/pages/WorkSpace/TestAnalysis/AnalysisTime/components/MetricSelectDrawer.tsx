@@ -9,7 +9,7 @@ import styles from './index.less'
 export default forwardRef(
     (props: any, ref: any) => {
         const { query }: any = useLocation()
-        const { test_type, ws_id, onOk, showType } = props
+        const { test_type, projectId, ws_id, onOk, showType } = props
 
         const [visible, setVisible] = useState(false)
         const [activeSuite, setActiveSuite] = useState<any>(undefined)
@@ -32,6 +32,7 @@ export default forwardRef(
         const requestMetricList = _.debounce(
             async (params: any) => {
                 setFetch(true)
+                params.project_id = projectId
                 let { data: list } = await queryPerfomanceMetrics(params)
                 setMetricList(list || [])
                 setFetch(false)

@@ -6,12 +6,12 @@ import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
-import { SettingTextArea } from '../EditPublic';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
+import { GroupItemText } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
-import { deleteSuite, deleteConf } from './methodPulic.js';
+import { deleteSuite, deleteConf } from './MethodPulic.js';
 import {
     TestItemText,
     TestSuite,
@@ -24,7 +24,6 @@ import {
     TestConfWarpper,
     TestCase,
     CaseTitle,
-    TestItem,
     TestSubCase,
     SubCaseTitle,
     CaseText,
@@ -33,14 +32,13 @@ import {
     CloseBtn,
     PrefDataDel,
 } from '../../ReportUI';
-// import produce from 'immer';
 import _ from 'lodash';
 const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
-    const { child, name, id, subObj, onChange, onDelete, dataSource, setDataSource } = props
+    const { child, name, id, subObj, onDelete, dataSource, setDataSource } = props
     const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-    const { btnState, btnConfirm, allGroupData, baselineGroupIndex, groupLen } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, groupLen } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -383,72 +381,33 @@ const FuncDataIndex: React.FC<any> = (props) => {
     // suite遍历
 
     return (
-        name === 'group' ?
-            <>
-                <TestGroupItem id={`func_item-${id}`} className="tree_mark">
-                    <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
-                    <TestItemText>
-                        <SettingTextArea
-                            name={funcData.name}
-                            isInput={true}
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Medium',
-                                color: 'rgba(0,0,0,0.85)'
-                            }}
-                            btn={btnState}
-                            btnConfirm={btnConfirm}
-                            onOk={(val: any) => onChange(val, funcData.name, id)}
-                        />
-                    </TestItemText>
-                    {
-                        btnState &&
-                        <Popconfirm
-                            title='确认要删除吗！'
-                            onConfirm={() => onDelete(name, funcData.name, funcData.rowKey)}
-                            cancelText="取消"
-                            okText="删除"
-                        >
-                            <CloseBtn />
-                        </Popconfirm>
-                    }
-                    {!btnState && <ItemFunc />}
-                </TestGroupItem>
-                {functionTable}
-            </>
-            :
-            <>
-                <TestItem id={`func_item-${id}`} className="tree_mark">
-                    <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
-                    <TestItemText>
-                        <SettingTextArea
-                            name={funcData.name}
-                            isInput={true}
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Medium',
-                                color: 'rgba(0,0,0,0.85)'
-                            }}
-                            btn={btnState}
-                            btnConfirm={btnConfirm}
-                            onOk={(val: any) => onChange(val, funcData.name, id)}
-                        />
-                    </TestItemText>
-                    {
-                        btnState &&
-                        <Popconfirm
-                            title='确认要删除吗！'
-                            onConfirm={() => onDelete(name, funcData.name, funcData.rowKey)}
-                            cancelText="取消"
-                            okText="删除"
-                        >
-                            <CloseBtn />
-                        </Popconfirm>
-                    }
-                    {!btnState && <ItemFunc />}
-                </TestItem>
-                {functionTable}
-            </>
+        <>
+            <TestGroupItem id={`func_item-${id}`} className="tree_mark" isGroup={name === 'group'}>
+                <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
+                <TestItemText>
+                    <GroupItemText
+                        name={funcData.name}
+                        rowKey={funcData.rowKey}
+                        btn={btnState}
+                        dataSource={dataSource}
+                        setDataSource={setDataSource}
+                    />
+                </TestItemText>
+                {
+                    btnState &&
+                    <Popconfirm
+                        title='确认要删除吗！'
+                        onConfirm={() => onDelete(name, funcData.name, funcData.rowKey)}
+                        cancelText="取消"
+                        okText="删除"
+                    >
+                        <CloseBtn />
+                    </Popconfirm>
+                }
+                {!btnState && <ItemFunc />}
+            </TestGroupItem>
+            {functionTable}
+        </>
     )
 }
 export default memo(FuncDataIndex);

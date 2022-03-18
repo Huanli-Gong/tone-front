@@ -461,11 +461,15 @@ export const TestGroup = styled.div`
     background: rgba(0,0,0,0.02);
     position:relative;
 `
-export const TestGroupItem = styled.div`
-    height:57px;
-    line-height:57px;
+interface IsGroup {
+    isGroup: boolean   
+}
+export const TestGroupItem = styled.div<IsGroup>`
+    height: ${({ isGroup }) => isGroup ? '57px' : '47px'};
+    line-height:${({ isGroup }) => isGroup ? '57px' : '47px'};
     padding-left:5px;
-    background: #fff;
+    background: ${({ isGroup }) => isGroup ? '#fff' : 'rgba(0,0,0,0.02)'};
+    margin-bottom:${({ isGroup }) => isGroup ? '0px' : '17px'};
     position:relative;
 `
 /* 

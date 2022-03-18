@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
-import { SettingTextArea } from '../EditPublic';
+import { GroupItemText } from '../EditPerfText';
 import { PerfTextArea } from '../EditPerfText';
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
@@ -11,7 +11,7 @@ import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import CodeViewer from '@/components/CodeViewer';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import { deleteSuite, deleteConf } from './methodPulic.js';
+import { deleteSuite, deleteConf } from './MethodPulic.js';
 // import ChartsIndex from '../../../../AnalysisResult/components/ChartIndex';
 import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
@@ -20,7 +20,6 @@ import _ from 'lodash';
 import {
     TestGroupItem,
     TestItemText,
-    TestItem,
     TestSuite,
     SuiteName,
     Configuration,
@@ -46,8 +45,8 @@ import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMeth
 const { Option } = Select;
 
 const Performance = (props: any) => {
-    const { child, name, id, onChange, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, btnConfirm, ws_id, domainResult, environmentResult, groupLen } = useContext(ReportContext)
+    const { child, name, id, onDelete, dataSource, setDataSource } = props
+    const { btnState, allGroupData, baselineGroupIndex, ws_id, domainResult, environmentResult, groupLen } = useContext(ReportContext)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
@@ -495,66 +494,30 @@ const Performance = (props: any) => {
     }
 
     return (
-        name === 'group' ?
-            <div key={id}>
-                <TestGroupItem id={`perf_item-${id}`} className="tree_mark">
-                    <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
-                    <TestItemText>
-                        <SettingTextArea
-                            name={perData.name}
-                            isInput={true}
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Medium',
-                                color: 'rgba(0,0,0,0.85)'
-                            }}
-                            btn={btnState}
-                            btnConfirm={btnConfirm}
-                            onOk={(val: any) => onChange(val, perData.name, id)}
-                        />
-                    </TestItemText>
-                    <Popconfirm
-                        title='确认要删除吗！'
-                        onConfirm={() => onDelete(name, perData.name, perData.rowKey)}
-                        cancelText="取消"
-                        okText="删除"
-                    >
-                        {btnState && <CloseBtn />}
-                    </Popconfirm>
-                    {!btnState && <ItemFunc />}
-                </TestGroupItem>
-                {JSON.stringify(perData) !== '{}' && RenderSuite()}
-            </div>
-            :
-            <div key={id}>
-                <TestItem id={`perf_item-${id}`} className="tree_mark">
-                    <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
-                    <TestItemText>
-                        <SettingTextArea
-                            name={perData.name}
-                            isInput={true}
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Medium',
-                                color: 'rgba(0,0,0,0.85)'
-                            }}
-                            btn={btnState}
-                            btnConfirm={btnConfirm}
-                            onOk={(val: any) => onChange(val, perData.name, id)}
-                        />
-                    </TestItemText>
-                    <Popconfirm
-                        title='确认要删除吗！'
-                        onConfirm={() => onDelete(name, perData.name, perData.rowKey)}
-                        cancelText="取消"
-                        okText="删除"
-                    >
-                        {btnState && <CloseBtn />}
-                    </Popconfirm>
-                    {!btnState && <ItemFunc />}
-                </TestItem>
-                {JSON.stringify(perData) !== '{}' && RenderSuite()}
-            </div>
+        <div key={id}>
+            <TestGroupItem id={`perf_item-${id}`} className="tree_mark"  isGroup={name === 'group'} > 
+                <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
+                <TestItemText>
+                    <GroupItemText
+                        name={perData.name}
+                        rowKey={perData.rowKey}
+                        btn={btnState}
+                        dataSource={dataSource}
+                        setDataSource={setDataSource}
+                    />
+                </TestItemText>
+                <Popconfirm
+                    title='确认要删除吗！'
+                    onConfirm={() => onDelete(name, perData.name, perData.rowKey)}
+                    cancelText="取消"
+                    okText="删除"
+                >
+                    {btnState && <CloseBtn />}
+                </Popconfirm>
+                {!btnState && <ItemFunc />}
+            </TestGroupItem> 
+            {JSON.stringify(perData) !== '{}' && RenderSuite()}
+        </div>
     )
 }
 export default memo(Performance);

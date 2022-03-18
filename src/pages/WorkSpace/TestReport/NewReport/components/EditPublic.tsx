@@ -63,14 +63,14 @@ export const SettingTextArea = ({
                        :
                        <div style={{ marginBottom: space }}>
                             <TextAreaWarrper
-                                    autoComplete="off"
-                                    size="small"
-                                    placeholder={defaultHolder}
-                                    style={{ padding:'10px', ...fontStyle }}
-                                    value={title}
-                                    onChange={evt => setTitle(evt.target.value)}
-                                />
-                            </div>
+                                autoComplete="off"
+                                size="small"
+                                placeholder={defaultHolder}
+                                style={{ padding:'10px', ...fontStyle }}
+                                value={title}
+                                onChange={evt => setTitle(evt.target.value)}
+                            />
+                        </div>
                    }
                     
                 </>
