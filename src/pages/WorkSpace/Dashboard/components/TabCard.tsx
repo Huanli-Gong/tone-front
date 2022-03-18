@@ -113,12 +113,15 @@ const ListRowWrapper = styled.div`
     }
 `
 
-const ListRow: React.FC<ListRowProps> = ({ title, state, result, colHover, rowHover }) => {
+const ListRow: React.FC<ListRowProps> = ({ title, state, result, colHover, rowHover, start_time }) => {
     return (
         <ListRowWrapper className={cls(rowHover && 'row-hover')}>
             <Row align="middle">
-                <Col span={20} className={cls(colHover && 'col-hover')}>
+                <Col span={14} className={cls(colHover && 'col-hover')}>
                     {title || '-'}
+                </Col>
+                <Col span={6}>
+                    {start_time || "-"}
                 </Col>
                 <Col span={2}>
                     {state || '-'}
@@ -347,6 +350,7 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                         title={`${getCurrentTimeStr(time)} Job名称`}
                         state={"状态"}
                         result={"结果(成功/失败)"}
+                        start_time="开始时间"
                     />
                     {
                         expandedRow.map((y: any) => (
@@ -366,6 +370,7 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                                         <Typography.Text style={{ color: '#C84C5A' }}>{y.today_query_fail ?? '-'}</Typography.Text>
                                     </Space>
                                 }
+                                start_time={y.today_query_job_start_time}
                             />
                         ))
                     }
