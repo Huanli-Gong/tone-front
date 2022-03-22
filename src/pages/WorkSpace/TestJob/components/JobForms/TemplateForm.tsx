@@ -38,13 +38,9 @@ export default forwardRef(({ disabled , template , onEnabelChange } : any , ref 
                 label="模板名称" 
                 name="template_name"
                 rules={[{
-                    required : true,
-                    pattern: /^[A-Za-z0-9\._-]+$/g,
-                    message : '允许字母、数字、下划线、中划线，“.”，不允许中文'
-                },{
                     required : true ,
-                    max : 64,  
-                    message : "模板名称最长不超出64字符" 
+                    pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
+                    message : "仅允许包含字母、数字、下划线、中划线、点，最长64个字符" 
                 }]}
             >
                 <Input autoComplete="off" disabled={ disabled } placeholder="仅允许包含字母、数字、下划线、中划线、点，最长64个字符"/>

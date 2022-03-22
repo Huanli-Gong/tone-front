@@ -105,7 +105,7 @@ export default (props: any) => {
         copyModal.current.show('模板复制', _)
     }
 
-    const columns = [{
+    const columns : any = [{
         title: '名称',
         dataIndex: 'name',
         ellipsis: true,

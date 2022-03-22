@@ -69,10 +69,10 @@ export default forwardRef(
                         label="模板名称"
                         rules={[{
                             required : true,
-                            message: '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
+                            message: '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
                             whitespace : true,
                             type : 'string',
-                            pattern: /^[A-Za-z0-9\._-]{1,32}$/g
+                            pattern: /^[A-Za-z0-9\._-]{1,64}$/g
                         },
                         {
                             type : 'string',
@@ -81,7 +81,7 @@ export default forwardRef(
                             whitespace : true,
                         }]}
                     >
-                        <Input autoComplete="off" placeholder="仅允许包含字母、数字、下划线、中划线、点，最长32个字符" />
+                        <Input autoComplete="off" placeholder="仅允许包含字母、数字、下划线、中划线、点，最长64个字符" />
                     </Form.Item>
                     {/* <Row style={{ fontSize : 12 , color : 'rgba(0,0,0,0.45)' }}>命名规则：</Row> */}
                     <Form.Item

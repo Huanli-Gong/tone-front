@@ -22,6 +22,27 @@ const TypeChart = (props: any) => {
         }
         return dict[name]
     }
+    const switchExpectation = (str:string) => {
+        let text = '';
+        switch (str) {
+            case 'increase':
+                text = 'more is better'
+                break;
+            case '上升':
+                text = 'more is better'
+                break;
+            case 'decline':
+                text = 'less is better'
+                break;
+            case '下降':
+                text = 'less is better'
+                break;
+            default:
+                text = '-'
+                break;
+        }
+        return text;
+    }
     useEffect(() => {
         chartDom.current = echarts.init(chart.current, {});
         let series: any = [] // 结果List
@@ -135,7 +156,7 @@ const TypeChart = (props: any) => {
         chartDom.current.clear()
         chartDom.current.setOption({
             title: {
-                subtext: chartType == '3' ? '' : subText.toString() === ('increase' || '上升') ? 'more is better' : 'less is better'
+                subtext: chartType == '3' ? '' : switchExpectation(subText.toString()) 
             },
             grid: {
                 left: 40,

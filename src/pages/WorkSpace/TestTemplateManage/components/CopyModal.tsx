@@ -11,7 +11,6 @@ export default forwardRef(
         const [ visible , setVisible ] = useState( false )
         const [ padding , setPadding ] = useState( false )
         const [ name , setName ] = useState('')
-        const [ msg , setMsg ] = useState<string>()
         const [ title , setTitle ] = useState('')
 
         const [ data , setData ] = useState<any>({})
@@ -35,7 +34,6 @@ export default forwardRef(
                         form.setFieldsValue({ name : _.name , description : _.description , enable : _.enable })
                     setVisible( true )
                     setData( _ )
-                    setMsg('仅允许包含字母、数字、下划线、中划线、点')
                 }
             }),
         )
@@ -58,7 +56,6 @@ export default forwardRef(
 
         const handleOk = () => {
             setPadding( true )
-            setMsg(undefined)
             form
                 .validateFields()
                 .then( async ( values : any ) => {
@@ -114,15 +111,14 @@ export default forwardRef(
                     <Form.Item 
                         label={ title === '模板编辑' ? '模板名称' : '新模板名称'} 
                         name="name"
-                        help={msg}
+                        // help={msg}
                         rules={[{
                             required: true,
-                            max: 64,
                             message: '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
-                            pattern: /^[A-Za-z0-9\._-]*$/g
+                            pattern: /^[A-Za-z0-9\._-]{1,64}$/g
                         }]}
                     >
-                        <Input autoComplete="off" placeholder="请输入模板名称"/>
+                        <Input autoComplete="off" placeholder="仅允许包含字母、数字、下划线、中划线、点，最长64个字符"/>
                     </Form.Item>
                     <Form.Item label="模板描述" name="description">
                         <Input.TextArea rows={ 3 } placeholder="请输入模板描述" />

@@ -114,10 +114,14 @@ export default forwardRef(
                     /*hideRequiredMark*/>
                     <Form.Item
                         label="新建模板名称"
-                        name="name"
-                        validateStatus={(!nameStatus || !queryStatus) && 'error'}
+                        name="name" 
+                        validateStatus={(!nameStatus || !queryStatus) as any && 'error'}
                         help={(!nameStatus && `模板名称不能为空`) || (!queryStatus && `模板名称已存在`)}
-                        rules={[{ required: true }]}>
+                        rules={[{ 
+                            required: true, 
+                            pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
+                            message : "仅允许包含字母、数字、下划线、中划线、点，最长64个字符"  
+                        }]}>
                         <Input autoComplete="auto" placeholder="请输入模板名称" onChange={(e) => {
                             setQueryStatus(true)
                             if (!e.target.value) {
