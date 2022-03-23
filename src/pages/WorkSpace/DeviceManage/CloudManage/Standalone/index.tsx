@@ -98,18 +98,27 @@ export default (props: any) => {
                 title: 'IP',
                 dataIndex: 'private_ip', // private_ip
                 width: params.type == '0' ? 0 : 140,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (text: any, row: any) => <EllipsisPulic title={text} />
             },
             {
                 title: 'SN',
                 dataIndex: 'sn',
                 width: params.type == '0' ? 0 : 140,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
             },
             {
                 title: 'InstanceId',
                 dataIndex: 'instance_id',
                 width: params.type == '0' ? 0 : 140,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
             },
 
@@ -153,11 +162,17 @@ export default (props: any) => {
                 title: '带宽',
                 width: 70,
                 dataIndex: 'bandwidth',
+                ellipsis: {
+                    showTitle: false
+                },
             },
             {
                 title: '数据盘',
                 dataIndex: 'storage_type',
                 width: 90,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <DataSetPulic name={row.storage_type} />
             },
             {
@@ -165,6 +180,9 @@ export default (props: any) => {
                 align: 'center',
                 dataIndex: 'release_rule',
                 width: 90,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) => <div>{row.release_rule ? '是' : '否'}</div>
             },
             {
@@ -179,12 +197,18 @@ export default (props: any) => {
             {
                 title: '控制通道',
                 width: 100,
+                ellipsis: {
+                    showTitle: false
+                },
                 dataIndex: 'channel_type',
             },
             {
                 title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
                 dataIndex: 'state',
                 width: params.type == '0' ? 0 : 120,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: StateBadge,
                 filterIcon: () => <FilterFilled style={{ color: params.useStateVal ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
@@ -201,6 +225,9 @@ export default (props: any) => {
             {
                 title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
                 width: params.type == '0' ? 0 : 120,
+                ellipsis: {
+                    showTitle: false
+                },
                 dataIndex: 'real_state',
                 render: StateBadge,
                 filterIcon: () => <FilterFilled style={{ color: params.realState ? '#1890ff' : undefined }} />,
@@ -219,7 +246,9 @@ export default (props: any) => {
                 title: 'Owner',
                 width: 120,
                 dataIndex: 'owner_name',
-                ellipsis: true,
+                ellipsis: {
+                    showTitle: false
+                },
                 filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => 
                     <SelectUser 
@@ -231,6 +260,9 @@ export default (props: any) => {
                 title: '标签',
                 dataIndex: 'tags',
                 width: 140,
+                ellipsis: {
+                    showTitle: false
+                },
                 filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => 
                     <SelectTags 
@@ -286,6 +318,9 @@ export default (props: any) => {
                 valueType: 'option',
                 dataIndex: 'id',
                 width: params.type == '0' ? 160 : 240,
+                ellipsis: {
+                    showTitle: false
+                },
                 render: (_: any, row: any) =>
                     <Space>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}>详情</Button>

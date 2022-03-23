@@ -199,6 +199,9 @@ const Standalone = (props: any, ref: any) => {
             fixed: 'left',
             dataIndex: 'ip',
             className: styles.ip_td,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
@@ -245,8 +248,11 @@ const Standalone = (props: any, ref: any) => {
         },
         !BUILD_APP_ENV && {
             title: '机器类型',
-            dataIndex: 'device_type', width: 100,
-            ellipsis: true,
+            dataIndex: 'device_type', 
+            width: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.device_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
@@ -258,8 +264,11 @@ const Standalone = (props: any, ref: any) => {
         },
         !BUILD_APP_ENV && {
             title: '机型',
-            dataIndex: 'sm_name', width: 100,
-            ellipsis: true,
+            dataIndex: 'sm_name', 
+            width: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sm_name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: totalParam })} />
@@ -267,12 +276,17 @@ const Standalone = (props: any, ref: any) => {
         },
         !BUILD_APP_ENV && {
             title: 'IDC',
-            width: 100, ellipsis: true,
+            width: 100, 
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'idc',
         },
         !BUILD_APP_ENV && {
             title: 'Console配置',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false,
+            },
             width: 100,
             dataIndex: 'console_conf',
             render: (text: string) => <>{text || '-'}</>
@@ -281,7 +295,9 @@ const Standalone = (props: any, ref: any) => {
             title: '控制通道',
             dataIndex: 'channel_type',
             width: 100,
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false,
+            },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.channel_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
@@ -294,7 +310,9 @@ const Standalone = (props: any, ref: any) => {
         !BUILD_APP_ENV && {
             title: '分组',
             dataIndex: 'app_group',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false,
+            },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.app_group ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(app_group: string) => setUrlParams({ ...urlParmas, app_group, page_num: totalParam })} />
@@ -304,6 +322,9 @@ const Standalone = (props: any, ref: any) => {
             title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
             dataIndex: 'state',
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             render: StateBadge,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -315,6 +336,9 @@ const Standalone = (props: any, ref: any) => {
             title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
             width: 120,
             dataIndex: 'real_state',
+            ellipsis: {
+                showTitle: false,
+            },
             render: StateBadge,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -325,6 +349,9 @@ const Standalone = (props: any, ref: any) => {
             title: 'Owner',
             width: 100,
             dataIndex: 'owner_name',
+            ellipsis: {
+                showTitle: false,
+            },
         },
         {
             title: '备注',
@@ -334,13 +361,18 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(description: string) => setUrlParams({ ...urlParmas, description, page_num: totalParam })} />
             ),
             width: 160,
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false,
+            },
         },
         {
             title: '标签',
             // align: 'center',
             dataIndex: 'tag_list',
             width: 160,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (record: any) => {
                 if (record.length > 0) {
                     const firstTag = record[0]
@@ -373,6 +405,9 @@ const Standalone = (props: any, ref: any) => {
             fixed: 'right',
             width: !BUILD_APP_ENV ? 240 : 190,
             // align: 'center',
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: any, row: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}>详情</Button>

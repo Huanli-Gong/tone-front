@@ -496,7 +496,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         } else {
             requestCodeMessage(res.code, res.msg)
         }
-    },300)
+    },1500)
     useEffect(() => {
         AkResetStatus()
     }, [is_instance])

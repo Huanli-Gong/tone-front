@@ -427,7 +427,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         } else {
             requestCodeMessage(res.code, res.msg)
         }
-    },300)
+    },1500)
 
     const handleInputChange = async (val: any, name: string, idx: number) => {
         const fieldsValue = _.cloneDeep(form.getFieldsValue())
