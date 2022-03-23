@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { Empty, Popconfirm } from 'antd';
 import { ReportContext } from '../Provider';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
-import FuncIndex from './TestDataChild/FuncIndex';
+import FuncIndex from './TestDataChild/FuncReview';
 import { GroupItemText } from './EditPerfText';
 import {
     TestDataTitle,

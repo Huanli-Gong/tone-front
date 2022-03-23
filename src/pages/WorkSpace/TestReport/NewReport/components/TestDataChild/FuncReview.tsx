@@ -11,7 +11,7 @@ import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
 import { GroupItemText } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
-import { deleteSuite, deleteConf } from './MethodPulic.js';
+import { deleteSuite, deleteConf } from './DelMethod.js';
 import {
     TestItemText,
     TestSuite,

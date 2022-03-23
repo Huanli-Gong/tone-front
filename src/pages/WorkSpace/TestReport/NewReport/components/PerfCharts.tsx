@@ -3,7 +3,7 @@ import { Row, Space, Typography, Spin, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/GaryBaseIcon.svg';
 import TypeChart from '../components/TestDataChild/TypeChart';
-import NoTypeChart from './TestDataChild/NoTypeChart';
+import NoTypeChart from './TestDataChild/NoChartReview';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { compareChart } from '../../services';
 const FullRow = styled(Row)`
