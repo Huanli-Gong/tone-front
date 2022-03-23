@@ -84,8 +84,8 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
                     lineData.push(column)
 
                     const cv = item.cv_value.replace('±', '').replace('%', '') * 100 / 100 / 100
-                    let up = ((1 + cv) * val).toFixed(2)
-                    let down = ((1 - cv) * val).toFixed(2)
+                    let up = toFixed((1 + cv) * val, 2)
+                    let down = toFixed((1 - cv) * val, 2)
 
                     console.log(val, cv, up, down)
 
@@ -116,7 +116,7 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
             baselineSerie = {
                 type: 'line', name: '基线AVG值', symbol: 'none', tooltip: { show: false },
                 lineStyle: { width: 1, color: '#2FC25B', type: 'dashed' }, itemStyle: { color: '#2FC25B' },
-                data: xAxis.map((i: any, index: number) => ({ date: i, value: baseline_data.value })),
+                data: xAxis.map((i: any, index: number) => ({ date: i, value: toFixed(baseline_data.value, 2) })),
                 z: 9999
             }
         }
