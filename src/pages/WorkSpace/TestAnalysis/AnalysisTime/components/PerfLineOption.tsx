@@ -1,5 +1,4 @@
-import { renderProviderText, textTip, serverLinkTip } from '.'
-
+import { renderProviderText, textTip, serverLinkTip, commitLinkTip } from '.'
 function isRepeat(arr: any, num: any) {
     // return arr.toString().match(new RegExp( num , 'g')).length > 1
     let sum = 0
@@ -21,11 +20,11 @@ function toFixed(number: any, precision: number) {
         str = str.substring(0, len - 1) + last
         return (str - 0).toFixed(precision)
     } else {
-        return number.toFixed(precision)
+        return (+ number).toFixed(precision)
     }
 }
 
-const PerfLineOption: any = (dataSource: any, provider: string) => {
+const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
     const { result_data, baseline_data } = dataSource
     let option = {}
     if (JSON.stringify(result_data) !== '{}') {
@@ -130,10 +129,10 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
                 top: '5%',
             },
             tooltip: {
-                trigger: 'item',
+                trigger: 'axis',
                 axisPointer: {
                     snap: true,
-                    type: 'cross',
+                    type: 'cross'
                 },
                 enterable: true,
                 backgroundColor: '#fff',
@@ -144,11 +143,11 @@ const PerfLineOption: any = (dataSource: any, provider: string) => {
                 },
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;',
                 formatter: function (params: any) {
-                    const item = params.data
+                    const item = params[0].data || {}
                     const element = (
                         `<div style="margin-right:10px">
-                            ${params.marker} ${params.name} <br />
-                            ${textTip('JobID', item.job_id)}
+                            ${params[0].marker} ${params[0].name} <br />
+                            ${commitLinkTip('JobID', item.job_id, ws_id)}
                             ${textTip('commit', item.commit)}
                             ${textTip('Avg', item.value)}
                             ${textTip('CV', item.cv_value)}

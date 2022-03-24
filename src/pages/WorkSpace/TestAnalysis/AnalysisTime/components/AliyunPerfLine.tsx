@@ -1,6 +1,5 @@
-import { textTip, serverLinkTip } from '.'
-
-const PerfLineOption: any = (dataSource: any) => {
+import { textTip, serverLinkTip, commitLinkTip } from '.'
+const PerfLineOption: any = (dataSource: any, ws_id: any ) => {
     const { result_data, baseline_data } = dataSource
     let option = {}
     if (result_data && JSON.stringify(result_data) !== '{}') {
@@ -49,7 +48,7 @@ const PerfLineOption: any = (dataSource: any) => {
                 top: '5%',
             },
             tooltip: {
-                trigger: 'item',
+                trigger: 'axis',
                 axisPointer: {
                     snap: true,
                     type: 'cross',
@@ -63,11 +62,11 @@ const PerfLineOption: any = (dataSource: any) => {
                 },
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;',
                 formatter: function (params: any) {
-                    const item = params.data
+                    const item = params[0].data || {}
                     const element = (
                         `<div style="margin-right:10px">
-                            ${params.marker} ${params.name} <br />
-                            ${textTip('JobID', item.job_id)}
+                            ${params[0].marker} ${params[0].name} <br />
+                            ${commitLinkTip('JobID', item.job_id, ws_id)}
                             ${textTip('commit', item.commit)}
                             ${textTip('Avg', item.value)}
                             ${textTip('CV', item.cv_value)}

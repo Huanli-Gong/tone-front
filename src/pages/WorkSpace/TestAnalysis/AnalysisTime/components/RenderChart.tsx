@@ -44,7 +44,7 @@ const RenderChart = (props: any) => {
         myChart.showLoading()
         if (dataSource && JSON.stringify(dataSource) !== '{}') {
             if (testType === 'performance')
-                provider === 'aliyun' ? myChart.setOption(AliyunPerfLine( dataSource )) : myChart.setOption(PerfLineOption(dataSource))
+                provider === 'aliyun' ? myChart.setOption(AliyunPerfLine( dataSource, ws_id )) : myChart.setOption(PerfLineOption( dataSource, ws_id ))
             if (testType === 'functional') {
                 if (showType === 'result_trend')
                     myChart.setOption(
