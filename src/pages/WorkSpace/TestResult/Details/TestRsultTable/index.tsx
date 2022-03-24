@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
-import { useRequest, useModel, Access, useAccess } from 'umi'
+import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
 import { queryTestResult } from '../service'
-import { Space, Table, Row, Button, message, Popover, Menu, Dropdown } from 'antd'
+import { Space, Table, Row, Button, message, Popover, Menu, Dropdown, Tooltip } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { matchTestType } from '@/utils/utils'
@@ -20,21 +20,11 @@ import { requestCodeMessage } from '@/utils/utils';
 
 // 结果详情 - 测试列表
 export default (props: any) => {
-    const { job_id, caseResult = {}, test_type = '功能', provider_name = '', ws_id, creator } = props
+    const { id: job_id, ws_id } = useParams() as any
+    const { caseResult = {}, test_type = '功能', provider_name = '', creator } = props
     const defaultParams = { state: '', job_id }
-    const initialData = { test_suite: [] }
+    const initialData: any[] = []
     const { initialState } = useModel('@@initialState');
-    // const testType = ~test_type.indexOf('功能') ? 1 : 2
-    // const testType = ((params: string)=> {
-    //   switch(params) {
-    //     case '功能测试': return "functional"
-    //     case '性能测试': return "performance"
-    //     case '业务功能测试': return "business_functional"
-    //     case '业务性能测试': return "business_performance"
-    //     case '业务接入测试': return "business_business"
-    //     default: return ''
-    //   }
-    // })(test_type)
     const testType = matchTestType(test_type)
 
     const serverProvider = ~provider_name.indexOf('云上') ? 'aliyun' : 'aligroup'
@@ -52,13 +42,13 @@ export default (props: any) => {
     // 展开指标级的标志
     const [indexExpandFlag, setIndexExpandFlag] = useState(false)
 
-    const { data, run, params, loading, refresh } = useRequest(
+    const { data: dataSource, run, params, loading, refresh } = useRequest(
         (p) => queryTestResult(p),
         {
             formatResult: response => {
                 if (response.code === 200)
-                    if (response.data[0])
-                        return response.data[0]
+                    if (response.data)
+                        return response.data
                     else return initialData
                 else {
                     requestCodeMessage(response.code, response.msg)
@@ -126,13 +116,13 @@ export default (props: any) => {
             width: 50,
             render: (_: any) => {
                 if (_ === 'NA')
-                    return <StopCircle style={{ width: 16, height: 16, verticalAlign:'text-bottom' }} />
+                    return <StopCircle style={{ width: 16, height: 16, verticalAlign: 'text-bottom' }} />
                 if (_ === '-')
                     return _
                 if (_ === 'fail')
-                    return <ErrorCircle style={{ width: 16, height: 16, verticalAlign:'text-bottom' }} />
+                    return <ErrorCircle style={{ width: 16, height: 16, verticalAlign: 'text-bottom' }} />
                 if (_ === 'success')
-                    return <SuccessCircle style={{ width: 16, height: 16, verticalAlign:'text-bottom' }} />
+                    return <SuccessCircle style={{ width: 16, height: 16, verticalAlign: 'text-bottom' }} />
                 return <></>
             }
         }])
@@ -176,11 +166,13 @@ export default (props: any) => {
     columns = columns.concat([{
         title: '开始时间',
         dataIndex: 'start_time',
-        width: 175
+        width: 175,
+        ...tooltipTd(),
     }, {
         title: '结束时间',
         dataIndex: 'end_time',
-        width: 175
+        width: 175,
+        ...tooltipTd(),
     },])
     if (access.wsRoleContrl(creator)) {
         columns = columns.concat([
@@ -205,7 +197,7 @@ export default (props: any) => {
                 title: '操作',
                 width: 145,
                 render: (_: any) => (
-                    <Access accessible={access.wsRoleContrl(_.creator)}
+                    <Access accessible={access.wsRoleContrl(creator)}
                         fallback={
                             initialState?.authList?.ws_role_title === 'ws_tester' ?
                                 <Space>
@@ -263,7 +255,7 @@ export default (props: any) => {
     }
 
     const handleOpenAll = () => {
-        setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id))
+        setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
         setOpenAllRows(true)
     }
 
@@ -271,7 +263,7 @@ export default (props: any) => {
     const handleOpenExpandBtn = () => {
         if (!openAllRows) {
             // case1.展开
-            setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id))
+            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
             // case2. 展开状态标志
             setOpenAllRows(true)
         } else {
@@ -288,15 +280,15 @@ export default (props: any) => {
         // step1.修改标志状态
         setIndexExpandFlag(!indexExpandFlag)
         if (!indexExpandFlag) {
-          // case1.展开，收集所有行号
-          setOpenAllRows(true)
-          setExpandedRowKeys(data.test_suite.map(({ suite_id }: any) => suite_id))
-          // case2.控制子级表格
-          // 子级表格会通过监听传入的状态做出动作
+            // case1.展开，收集所有行号
+            setOpenAllRows(true)
+            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
+            // case2.控制子级表格
+            // 子级表格会通过监听传入的状态做出动作
         } else {
-          // case1. 收起
-          // case2.控制子级表格
-          // 子级表格会通过监听传入的状态做出动作
+            // case1. 收起
+            // case2.控制子级表格
+            // 子级表格会通过监听传入的状态做出动作
         }
     }
 
@@ -335,12 +327,12 @@ export default (props: any) => {
         setSuiteCaseSelectKeys(uniqBy(suiteData, 'suite_id'))
     }
 
-    const expandBtnText = openAllRows? '收起所有Conf': '展开所有Conf'
-    const expandIndexBtnText = indexExpandFlag? '收起所有指标': '展开所有指标'
+    const expandBtnText = openAllRows ? '收起所有Conf' : '展开所有Conf'
+    const expandIndexBtnText = indexExpandFlag ? '收起所有指标' : '展开所有指标'
     const menu = (
         <Menu>
-          <Menu.Item key="1" className={styles.expandConf} onClick={handleOpenExpandBtn}>{expandBtnText}</Menu.Item>
-          <Menu.Item key="2" className={styles.expandIndex} onClick={indexExpandClick}>{expandIndexBtnText}</Menu.Item>
+            <Menu.Item key="1" className={styles.expandConf} onClick={handleOpenExpandBtn}>{expandBtnText}</Menu.Item>
+            <Menu.Item key="2" className={styles.expandIndex} onClick={indexExpandClick}>{expandIndexBtnText}</Menu.Item>
         </Menu>
     )
 
@@ -354,9 +346,9 @@ export default (props: any) => {
                     :
                     <Space>
                         <Dropdown.Button onClick={handleOpenExpandBtn} placement="bottomLeft" icon={<DownOutlined />} overlay={menu}>
-                             {openAllRows ? '收起所有' : '展开所有'}
+                            {openAllRows ? '收起所有' : '展开所有'}
                         </Dropdown.Button>
-                        <Access accessible={access.wsRoleContrl(data.creator)}
+                        <Access accessible={access.wsRoleContrl(creator)}
                             fallback={
                                 initialState?.authList?.ws_role_title === 'ws_tester' ?
                                     <Space>
@@ -396,7 +388,7 @@ export default (props: any) => {
             <Table
                 columns={columns}
                 rowKey="suite_id"
-                dataSource={data.test_suite}
+                dataSource={dataSource}
                 pagination={false}
                 size="small"
                 loading={loading}
@@ -409,7 +401,7 @@ export default (props: any) => {
                         if (expanded) {
                             const tempList = expandedRowKeys.concat([record.suite_id])
                             setExpandedRowKeys(tempList)
-                            if (tempList?.length === data?.test_suite.length) {
+                            if (tempList?.length === dataSource.length) {
                                 // 展开的状态标志
                                 setOpenAllRows(true)
                             }

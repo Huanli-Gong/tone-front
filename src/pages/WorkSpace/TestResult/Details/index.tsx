@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space } from 'antd'
 import styles from './index.less'
-import { useRequest, history, useModel, Access, useAccess } from 'umi'
+import { useRequest, history, useModel, Access, useAccess, useParams } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection } from '@/pages/WorkSpace/TestResult/services'
@@ -21,8 +21,8 @@ import { useClientSize } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
-    const { ws_id, id } = props.match.params
-    const job_id = + id
+    const { ws_id, id: job_id } = useParams() as any
+
     const access = useAccess()
     const [tab, setTab] = useState('')
     const [key, setKey] = useState(1)
@@ -34,14 +34,14 @@ export default (props: any) => {
     const veiwReportHeight: any = useRef(null)
     const timer: any = useRef(null)
     const { initialState } = useModel('@@initialState');
+
     const { data, loading, refresh } = useRequest(
-        () => querySummaryDetail({ job_id }),
+        () => querySummaryDetail({ job_id, ws_id }),
         {
             formatResult: (response: any) => {
                 if (response.code === 200) {
                     return response?.data[0] || {}
                 }
-                requestCodeMessage(response.data, response.msg)
                 return {}
             },
             initialData: {},
@@ -91,19 +91,24 @@ export default (props: any) => {
         if (code !== 200) return requestCodeMessage(code, msg)
         setCollection(!collection)
     }
+    const [fetching, setFetching] = React.useState(false)
 
     const handleStopJob = async () => {
+        if (fetching) return
+        setFetching(true)
         // 添加用户id
         const { user_id } = initialState?.authList
         const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({ ...q, editor_obj: 'job', job_id, state: 'stop' })
         if (code !== 200) {
             requestCodeMessage(code, msg)
+            setFetching(false)
             return
         }
         message.success('操作成功')
         refresh()
         processTableRef.current.refresh()
+        setFetching(false)
     }
 
     const EditNoteBtn: React.FC<any> = (props: any) => {

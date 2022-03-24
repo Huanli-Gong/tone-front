@@ -8,7 +8,7 @@ import VersionInfo  from './ResultVersionInfo'
 import MonitorData  from './MonitorData'
 import MetricResultTable from './MetricResultTable'
 
-export default ( props  : any ) => {
+const ResultInfo: React.FC<any> = ( props ) => {
     const { testType = 'functional' } = props
     const { result_data = {} } = props
     const { ci_detail, result } = result_data
@@ -70,3 +70,5 @@ export default ( props  : any ) => {
         </div>
     )
 }
+
+export default ResultInfo
