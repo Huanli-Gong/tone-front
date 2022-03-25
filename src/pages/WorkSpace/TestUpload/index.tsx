@@ -68,17 +68,7 @@ export default (props: any) => {
   )
 
   return (
-    <div className={styles.TestUpload_root} >
-      {/* 
-        <Tabs className={styles.content_tabs} defaultActiveKey={tab} onChange={onTabsChange} tabBarExtraContent={operations}>
-          {tabList.map((item: any) =>
-            <Tabs.TabPane key={item.key} tab={
-              <span>{item.name} <Badge count={itemTotal} overflowCount={999} showZero style={itemTotalStyle(item.key)} /> 
-              </span>
-            } disabled={spinning} />
-          )}
-        </Tabs>
-      */}
+    <div className={styles.TestUpload_root}>
       <div className={styles.content_header}>
         <div className={styles.item1}>{tabList[0].name}</div>
         {operations}
@@ -88,8 +78,6 @@ export default (props: any) => {
           <UploadTable ref={uploadTable} ws_id={ws_id} loadingCallback={loadingCallback} refreshCallback={refreshTotalCallback} />
         </div>
       </Spin>
-
     </div>
   )
 }
-
