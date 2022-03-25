@@ -239,11 +239,6 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
     }
   }
 
-  // 做数据收集同步。
-  // const onChangedValues = (changedValues, allValues) => {
-  //   console.log(changedValues, allValues);
-  // }
-
   const { formatMessage } = useIntl();
   const placeholder = formatMessage({ id: "upload.list.Drawer.select.placeholder" });
   const requiredMessage = formatMessage({ id: 'upload.list.Drawer.select.message'});
