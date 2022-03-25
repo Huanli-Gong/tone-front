@@ -67,14 +67,3 @@ export default ( { title = '' , need_reboot , setup_info , cleanup_info , step }
         )
     return <>-</>
 }
-
-
-    {/* {
-        data.map( 
-            ( i : any , index : number ) => (
-                <Typography.Text key={ i.tid } style={{ cursor : 'pointer' }} >
-                    { `${ i.stage }${ index === data.length - 1 ? '' : '、' }` }
-                </Typography.Text>
-            )
-        )
-    } */}

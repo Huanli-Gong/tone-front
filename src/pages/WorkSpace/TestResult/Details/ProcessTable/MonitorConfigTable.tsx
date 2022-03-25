@@ -79,10 +79,6 @@ export default ({ job_id , refresh = false } : any ) => {
     */
     let dataCopy = data && Array.isArray(data.result_list) ? data.result_list : []
 
-    // dataCopy = dataCopy.map((item:any) => {
-    //     if(item && item.monitor_type === 'case_machine') item.server_input = item.server
-    //     return item
-    // })
     return (
         <Card
             title="监控"
