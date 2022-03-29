@@ -1,15 +1,16 @@
 import React, { forwardRef, useImperativeHandle, useState, useCallback, useMemo, useEffect } from 'react'
 import { Modal, Row, Space, Button, Col, Spin, Select, Table } from 'antd'
 
-import { useRequest, useLocation } from 'umi'
+import { useRequest, useLocation, useParams } from 'umi'
 import { queryTestSuiteCases, queryPerfomanceMetrics, queryFunctionalSubcases } from '../services'
 import _ from 'lodash'
 import styles from './index.less'
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { ws_id } = useParams() as any
         const { query }: any = useLocation()
-        const { test_type, projectId, ws_id, onOk, showType } = props
+        const { test_type, projectId, onOk, showType } = props
 
         const [visible, setVisible] = useState(false)
         const [activeSuite, setActiveSuite] = useState<any>(undefined)
@@ -32,7 +33,7 @@ export default forwardRef(
         const requestMetricList = _.debounce(
             async (params: any) => {
                 setFetch(true)
-                params.project_id = projectId
+                params.project_id = projectId || query.project_id
                 let { data: list } = await queryPerfomanceMetrics(params)
                 setMetricList(list || [])
                 setFetch(false)
@@ -134,7 +135,7 @@ export default forwardRef(
                     params.title = `${selectSuiteName}/${selectConfName}` ///${ selectSubcase.toString() }
                 }
             }
-            
+
             onOk(params)
             handleClose()
         }

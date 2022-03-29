@@ -58,10 +58,10 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                 symbol: "none",
             }
 
-            let data: any = { ...defaultOpt, symbolSize: 8, connectNulls: false, z: 9999, name: i, }
+            let data: any = { ...defaultOpt, symbolSize: 8, connectNulls: false, name: i, z: 9999, opacity: 1 }
 
             let upArea: any = { ...defaultOpt, ...AreaOpt, name: "U", areaStyle: { color: '#ccc' }, }
-            let downArea: any = { ...defaultOpt, ...AreaOpt, name: "D", areaStyle: { color: '#fff', opacity: 1 }, z: 1000 }
+            let downArea: any = { ...defaultOpt, ...AreaOpt, name: "D", areaStyle: { color: '#fff', opacity: 1 }, z: 100 }//
 
             let lineData: any = []
             let upAreaData: any = []
@@ -86,8 +86,6 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                     let up = toFixed((1 + cv) * val, 2)
                     let down = toFixed((1 - cv) * val, 2)
 
-                    console.log(val, cv, up, down)
-
                     upAreaData.push({
                         date: d, value: up,
                     })
@@ -106,7 +104,6 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
             chartData.push({ ...data, data: lineData })
         })
 
-        console.log(chartData)
         xAxis = Array.from(new Set(xAxis))
 
         let baselineSerie: any = { type: 'line', name: '基线AVG值', itemStyle: { color: '#2FC25B' } }
@@ -116,10 +113,10 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                 type: 'line', name: '基线AVG值', symbol: 'none', tooltip: { show: false },
                 lineStyle: { width: 1, color: '#2FC25B', type: 'dashed' }, itemStyle: { color: '#2FC25B' },
                 data: xAxis.map((i: any, index: number) => ({ date: i, value: toFixed(baseline_data.value, 2) })),
-                z: 9999
+                z: 100
             }
         }
-        // console.log(upSeries, downSeries, legend)
+
         option = {
             legend: {
                 icon: "rect",
@@ -143,24 +140,27 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                 },
                 extraCssText: 'box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);border-radius: 2px;padding:12px;',
                 formatter: function (params: any) {
-                    const item = params[0].data || {}
-                    const element = (
-                        `<div style="margin-right:10px">
-                            ${params[0].marker} ${params[0].name} <br />
-                            ${commitLinkTip('JobID', item.job_id, ws_id)}
-                            ${textTip('commit', item.commit)}
-                            ${textTip('Avg', item.value)}
-                            ${textTip('CV', item.cv_value)}
-                            ${textTip('基线值', baseline_data.value && Number(baseline_data.value).toFixed(2))}
-                            ${textTip('基线CV', baseline_data.cv_value)}
-                            ${textTip('commit', item.commit)}
-                            ${serverLinkTip(params.seriesName)}
-                            ${renderProviderText(params, provider)}
-                            ${textTip('标注', item.note)}
-                        </div>`
-                            .trim()
-                    )
-                    return `<div style="display:flex;">${element}</div>`
+                    const tips = params.reduce((pre: any, cur: any) => {
+                        const item = cur.data || {}
+                        const element = (
+                            `<div style="margin-right:10px">
+                                ${cur.marker} ${cur.name} <br />
+                                ${commitLinkTip('JobID', item.job_id, ws_id)}
+                                ${textTip('commit', item.commit)}
+                                ${textTip('Avg', item.value)}
+                                ${textTip('CV', item.cv_value)}
+                                ${textTip('基线值', baseline_data.value && Number(baseline_data.value).toFixed(2))}
+                                ${textTip('基线CV', baseline_data.cv_value)}
+                                ${textTip('commit', item.commit)}
+                                ${serverLinkTip(params.seriesName)}
+                                ${renderProviderText(params, provider)}
+                                ${textTip('标注', item.note)}
+                            </div>`
+                                .trim()
+                        )
+                        return pre += `<div style="display:flex;">${element}</div>`
+                    }, "")
+                    return `<div style="display:flex;flex-direction:row;gap:8px;">${tips}<div>`
                 },
             },
             grid: { left: '5%', right: 60, bottom: '10%', }, //left: 50, 
@@ -177,20 +177,25 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                 axisTick: { show: false },
                 splitLine: { show: false, lineStyle: { type: 'dashed' }, },
                 axisPointer: {
-                    z: 9999
+                    z: 100
                 },
                 min: "dataMin",
                 max: "dataMax",
                 splitArea: {
                     areaStyle: ['#fff', '#fff']
                 },
-                zlevel: 9999
+                axisLabel: {
+                    formatter(value: any) {
+                        return value.toString().length > 8 ? `${toFixed(value / 10000, 2)}w` : value
+                    }
+                },
+                zlevel: 100
             },
             series: [
                 ...upSeries,
                 ...downSeries,
-                ...chartData,
                 baselineSerie,
+                ...chartData,
             ],
         }
     }

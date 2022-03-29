@@ -2,19 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Layout, Tabs, Row, Radio, message, Spin } from 'antd';
 import styles from './index.less'
+import { useParams, useLocation } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from 'clipboard'
 import { stringify } from 'querystring';
 
 export default (props: any) => {
-    const { route, match } = props
-    const { query } = props.location
-    const { ws_id } = match.params
+    const { ws_id } = useParams() as any
+    const { query } = useLocation() as any
+    const { route } = props
 
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
     writeDocumentTitle(routeIntlName)
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
     const [testType, setTestType] = useState(query.test_type || 'performance')
     // const [ testType, setTestType ] = useState( query.test_type || 'functional' )
     const [provider, setProvider] = useState(query.provider_env || 'aliyun')
