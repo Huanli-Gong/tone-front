@@ -142,6 +142,8 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                 formatter: function (params: any) {
                     const tips = params.reduce((pre: any, cur: any) => {
                         const item = cur.data || {}
+
+                        if (!item.value) return pre
                         const element = (
                             `<div style="margin-right:10px">
                                 ${cur.marker} ${cur.name} <br />
@@ -160,7 +162,9 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                         )
                         return pre += `<div style="display:flex;">${element}</div>`
                     }, "")
-                    return `<div style="display:flex;flex-direction:row;gap:8px;">${tips}<div>`
+
+                    if (tips.length === 0) return ""
+                    return `<div style="display:flex;flex-direction:row;gap:8px;max-width:545px;flex-wrap:wrap;">${tips}<div>`
                 },
             },
             grid: { left: '5%', right: 60, bottom: '10%', }, //left: 50, 
@@ -186,7 +190,18 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                 },
                 axisLabel: {
                     formatter(value: any) {
-                        return value.toString().length > 8 ? `${toFixed(value / 10000, 2)}w` : value
+                        const len = (parseInt(value) + "").length
+                        if (len > 6) {
+                            const q = new Map([
+                                [1, "万"],
+                                [2, "亿"],
+                                [3, "兆"]
+                            ])
+
+                            const s = parseInt((len / 4) as any)
+                            return toFixed(value / Math.pow(10000, s), 2) + q.get(s)
+                        }
+                        return value
                     }
                 },
                 zlevel: 100

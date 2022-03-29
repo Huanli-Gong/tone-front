@@ -49,7 +49,7 @@ const RenderChart = (props: any) => {
                 }
                 else {
                     myChart.setOption(PerfLineOption(dataSource, ws_id))
-                    myChart.on("click", (params: any) => {
+                    myChart.on("click", 'series.line', (params: any) => {
                         console.log(params)
                         const { data } = params
                         if (data) {
