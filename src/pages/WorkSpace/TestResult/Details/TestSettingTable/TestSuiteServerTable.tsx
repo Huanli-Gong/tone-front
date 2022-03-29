@@ -4,7 +4,7 @@ import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SuiteCaseExpandTable from './SuiteCaseExpandTable'
 
-export default ({ data = [], loading = true, testType }: any) => {
+export default ({ data = [], testType, provider_name }: any) => {
     let columns: any = [
         {
             title: 'Test Suite',
@@ -82,7 +82,7 @@ export default ({ data = [], loading = true, testType }: any) => {
                 pagination={false}
                 expandable={{
                     expandedRowRender: (record: any) => (
-                        <SuiteCaseExpandTable data={record.cases} testType={testType} />
+                        <SuiteCaseExpandTable data={record.cases} testType={testType} provider_name={provider_name} />
                     ),
                     expandIcon: ({ expanded, onExpand, record }: any) => (
                         expanded ?

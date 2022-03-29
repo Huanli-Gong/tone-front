@@ -289,7 +289,7 @@ export default (props: any) => {
                                     <ProcessTable job_id={job_id} onRef={processTableRef} test_type={data.test_type} provider_name={data.provider_name} />
                                 </Tabs.TabPane>
                                 <Tabs.TabPane tab="测试配置" key="testConfig">
-                                    <TestSettingTable job_id={job_id} jt_id={data.job_type_id} ws_id={ws_id} test_type={data.test_type} />
+                                    <TestSettingTable jt_id={data.job_type_id} provider_name={data.provider_name} test_type={data.test_type} />
                                 </Tabs.TabPane>
                             </Tabs>
                         </div>

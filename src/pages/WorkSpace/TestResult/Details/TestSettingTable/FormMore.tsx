@@ -6,17 +6,19 @@ import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import _ from 'lodash'
+import { useParams } from "umi"
 
 const { Option } = Select;
 
-export default ({ contrl, disabled = false, ws_id, onRef = null, template = {} }: any) => {
-    if  (JSON.stringify(contrl) === '{}' ) return <></>
-    
+export default ({ contrl, disabled = false, onRef = null, template = {} }: any) => {
+    const { ws_id } = useParams() as any
+    if (JSON.stringify(contrl) === '{}') return <></>
+
     const [form] = Form.useForm()
     const [tags, setTags] = useState<Array<any>>([])
     const [checkedList, setCheckedList] = React.useState<any>();
-    const [reportTemplate,setReportTemplate] = useState<any>([])
-    const [defaultTemplate,setDefaultTemplate] = useState({})
+    const [reportTemplate, setReportTemplate] = useState<any>([])
+    const [defaultTemplate, setDefaultTemplate] = useState({})
 
     useImperativeHandle(
         onRef,
@@ -35,11 +37,11 @@ export default ({ contrl, disabled = false, ws_id, onRef = null, template = {} }
 
     const getReportTemplate = async () => {
         try {
-            const { code, data } = await queryReportTemplateList({ws_id,page_size:99999})
+            const { code, data } = await queryReportTemplateList({ ws_id, page_size: 99999 })
             if (code === 200) {
                 let dataSource = _.isArray(data) ? data : []
 
-                const defaultTem = _.find(dataSource,{is_default: true})
+                const defaultTem = _.find(dataSource, { is_default: true })
                 setReportTemplate(dataSource)
                 setDefaultTemplate(defaultTem)
             }
@@ -55,13 +57,13 @@ export default ({ contrl, disabled = false, ws_id, onRef = null, template = {} }
 
     useEffect(() => {
         const values = _.cloneDeep(form.getFieldsValue())
-        if (JSON.stringify( template ) === '{}' && JSON.stringify( defaultTemplate ) !== '{}') {
-            
+        if (JSON.stringify(template) === '{}' && JSON.stringify(defaultTemplate) !== '{}') {
+
             form.setFieldsValue({
                 ...values,
-                report_template_id: _.get(defaultTemplate,'id')
+                report_template_id: _.get(defaultTemplate, 'id')
             })
-        } 
+        }
         if (JSON.stringify(template) !== '{}') {
             let notice_subject, email, ding_token
             const { cleanup_info, tags, notice_info, report_name, callback_api } = template
@@ -91,15 +93,15 @@ export default ({ contrl, disabled = false, ws_id, onRef = null, template = {} }
             })
             setCheckedList(report_name)
         }
-    }, [defaultTemplate,reportTemplate, template])
+    }, [defaultTemplate, reportTemplate, template])
 
     const onReportChange = (e: any) => {
         const reportSelectVal = e.target.value
         const values = _.cloneDeep(form.getFieldsValue())
-        form.setFieldsValue({...values, report_name: reportSelectVal })
+        form.setFieldsValue({ ...values, report_name: reportSelectVal })
         setCheckedList(reportSelectVal)
     }
-    console.log(contrl,'contrl')
+    console.log(contrl, 'contrl')
     return (
         <Card
             title="更多配置"
@@ -178,12 +180,12 @@ export default ({ contrl, disabled = false, ws_id, onRef = null, template = {} }
                         {
                             'report' in contrl &&
                             <Form.Item label="测试报告" name="report_name">
-                                <Input 
-                                value={checkedList || undefined}
-                                onChange={onReportChange}
-                                autoComplete="off" 
-                                disabled={disabled} 
-                                placeholder="请输入报告名称，例如：{job_name}_report-{report_seq_id}" />
+                                <Input
+                                    value={checkedList || undefined}
+                                    onChange={onReportChange}
+                                    autoComplete="off"
+                                    disabled={disabled}
+                                    placeholder="请输入报告名称，例如：{job_name}_report-{report_seq_id}" />
                                 <Popover
                                     content={
                                         <div>

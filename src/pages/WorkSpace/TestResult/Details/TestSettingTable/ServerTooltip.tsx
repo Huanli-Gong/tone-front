@@ -218,10 +218,12 @@ const ClusterServer: React.FC<any> = (props) => {
     )
 }
 
-const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode }) => {
+const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provider_name }) => {
     const { ws_id } = useParams() as any
     const [source, setSource] = React.useState([])
     const [visible, setVisible] = React.useState(false)
+
+    console.log(provider_name)
 
     const $isNumber = Object.prototype.toString.call(is_instance) === "[object Number]"
 
@@ -257,7 +259,7 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode }) => {
 
     const basicText = server_ip || '-'
 
-    if (!["", null, "随机"].includes(server_ip) && $isNumber)
+    if (~provider_name.indexOf("云上") && !["", null, "随机"].includes(server_ip) && $isNumber)
         return (
             <Tooltip
                 visible={visible}

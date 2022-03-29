@@ -4,7 +4,7 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ServerTooltip } from './ServerTooltip'
 
 //测试用例及机器配置 expand table
-export default ({ data = [], testType }: any) => {
+export default ({ data = [], testType, provider_name }: any) => {
     const columns: any = [
         {
             title: 'Test Conf',
@@ -20,7 +20,7 @@ export default ({ data = [], testType }: any) => {
             dataIndex: 'server_ip',
             ellipsis: true,
             width: 150,
-            render: (text: string, row: any) => <ServerTooltip {...row} />
+            render: (text: string, row: any) => <ServerTooltip provider_name={provider_name} {...row} />
         }, {
             title: 'Repeat',
             dataIndex: 'repeat',
