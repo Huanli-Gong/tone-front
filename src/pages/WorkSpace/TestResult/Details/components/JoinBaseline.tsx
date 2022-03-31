@@ -9,7 +9,6 @@ import _ from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { createBaseline } from '@/pages/WorkSpace/Baseline/services'
 import { requestCodeMessage } from '@/utils/utils'
-import {  } from '@umijs/runtime/node_modules/@types/react-router'
 
 export default forwardRef(
     (props: any, ref: any) => {
