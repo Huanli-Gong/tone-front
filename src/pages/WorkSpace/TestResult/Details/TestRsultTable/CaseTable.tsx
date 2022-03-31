@@ -1,4 +1,4 @@
-import { Table, Space, Row, Popover } from 'antd'
+import { Table, Space, Row, Popover, Tooltip, Typography } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
 import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
 
@@ -59,11 +59,14 @@ const CaseTable: React.FC<any> = ({
         title: '机器',
         dataIndex: 'server_ip',
         width: 130,
+        ellipsis: {
+            showHeader: false,   
+        },
         render: (_: string, row: any) => (
             _ ?
-                <span>
-                    {_}
-                </span>
+                <Tooltip title={_}>
+                    <Typography.Text ellipsis>{_}</Typography.Text>
+                </Tooltip>
                 : '-'
         )
     }];
