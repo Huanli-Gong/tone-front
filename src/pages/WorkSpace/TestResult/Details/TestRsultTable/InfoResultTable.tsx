@@ -17,10 +17,10 @@ import styles from './index.less'
 import { targetJump } from '@/utils/utils'
 
 export default (props: any) => {
-    const { ws_id } = useParams<{ ws_id: string }>()
+    const { ws_id , id: job_id} = useParams() as any
     const access = useAccess()
     const {
-        job_id, test_case_id, suite_id, testType,creator,
+        test_case_id, suite_id, testType,creator,
         server_provider, state = '', suite_name, conf_name,
         refreshId, setRefreshId
     } = props

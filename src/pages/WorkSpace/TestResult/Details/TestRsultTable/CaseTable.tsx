@@ -276,14 +276,12 @@ const CaseTable: React.FC<any> = ({
                 test_type={testType}
                 server_provider={server_provider}
                 onOk={refresh}
-                ws_id={ws_id}
             />
             <ContrastBaseline
                 ref={contrastBaselineDrawer}
                 test_type={testType}
                 server_provider={server_provider}
                 onOk={refresh}
-                ws_id={ws_id}
             />
             <EditRemarks ref={editRemarkDrawer} onOk={refresh} />
         </div>

@@ -1,8 +1,9 @@
 import { Row, Spin , Empty } from 'antd'
 import React from 'react'
-import { useRequest } from 'umi'
+import { useParams, useRequest } from 'umi'
 import { queryCaseResultVersionInfo } from '../service'
-export default ({ job_id , test_case_id , suite_id } : any ) => {
+export default ({ test_case_id , suite_id } : any ) => {
+    const { id: job_id } = useParams() as any
     const initialData : any = {
         kernel_version : '',
         rpm_info : [],

@@ -2,12 +2,14 @@ import React, { useEffect } from 'react'
 import { Table } from 'antd'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
-import { useRequest, useAccess, Access } from 'umi'
+import { useRequest, useAccess, Access, useParams } from 'umi'
 import qs from 'querystring'
 import styles from './index.less'
 import { targetJump } from '@/utils/utils'
 
-export default ({ job_id, test_case_id, suite_id, state: compare_result, ws_id, refreshId, setRefreshId }: any) => {
+export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId }: any) => {
+    const { id: job_id, ws_id } = useParams() as any
+
     const { data = [], run, loading } = useRequest(
         () => queryCaseResultPerformance({ ws_id, job_id, case_id: test_case_id, suite_id, compare_result }),
         { manual: true }

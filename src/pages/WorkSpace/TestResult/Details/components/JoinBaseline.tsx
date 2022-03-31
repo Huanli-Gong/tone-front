@@ -1,6 +1,6 @@
 import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Checkbox, Divider, Popover } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef, useEffect } from 'react'
-import { useRequest } from 'umi'
+import { useRequest , useParams } from 'umi'
 import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncsDetail } from '../service'
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
@@ -9,10 +9,12 @@ import _ from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { createBaseline } from '@/pages/WorkSpace/Baseline/services'
 import { requestCodeMessage } from '@/utils/utils'
+import {  } from '@umijs/runtime/node_modules/@types/react-router'
 
 export default forwardRef(
     (props: any, ref: any) => {
-        const { ws_id, test_type, server_provider, onOk, accessible } = props
+        const { ws_id } = useParams() as any
+        const { test_type, server_provider, onOk, accessible } = props
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [data, setData] = useState<any>({ suite_list: [], suite_data: [] })

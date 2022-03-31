@@ -2,13 +2,14 @@ import { queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { requestCodeMessage } from '@/utils/utils'
 import { Drawer , Form, Select , Space , Button , Row } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
-import { useRequest } from 'umi'
+import { useRequest , useParams } from 'umi'
 import { contrastBaseline } from '../service'
 
 
 export default forwardRef(
     ( props : any , ref : any ) => {
-        const { ws_id , server_provider , onOk } = props
+        const { ws_id } = useParams() as any
+        const { server_provider , onOk } = props
         const [ visible , setVisible ] = useState( false )
         const [ pedding , setPedding ] = useState( false )
         const [ form ] = Form.useForm()
