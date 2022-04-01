@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import PerfLineOption from './PerfLineOption'
 import passRateLineOption from './passRateLineOption'
 import AliyunPerfLine from './AliyunPerfLine'
+import { targetJump } from '@/utils/utils'
 
 const Title = styled.div`
     width:100%;
@@ -23,7 +24,7 @@ const Title = styled.div`
 
 const CardWrapper = styled(Card)`
     height: 360px;
-    marginTop: 10px;
+    /* margin-top: 10px; */
     width: 100%;
     .ant-card-body {
         padding: 0 20px;
@@ -38,13 +39,26 @@ const RenderChart = (props: any) => {
     const [dataSource, setDataSource] = useState<any>(undefined)
 
     useEffect(() => {
-        console.log(dataSource)
         const myChart = echarts.init(chart.current)
         myChart.clear()
         myChart.showLoading()
         if (dataSource && JSON.stringify(dataSource) !== '{}') {
-            if (testType === 'performance')
-                provider === 'aliyun' ? myChart.setOption(AliyunPerfLine( dataSource )) : myChart.setOption(PerfLineOption(dataSource))
+            if (testType === 'performance') {
+                if (provider === "aliyun") {
+                    myChart.setOption(AliyunPerfLine(dataSource, ws_id))
+                }
+                else {
+                    myChart.setOption(PerfLineOption(dataSource, ws_id))
+                    myChart.on("click", 'series.line', (params: any) => {
+                        console.log(params)
+                        const { data } = params
+                        if (data) {
+                            const { job_id } = data
+                            if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
+                        }
+                    })
+                }
+            }
             if (testType === 'functional') {
                 if (showType === 'result_trend')
                     myChart.setOption(

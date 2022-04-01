@@ -4,7 +4,7 @@ import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import { GroupItemText } from './EditPerfText';
-import Performance from './TestDataChild/PrefIndex'
+import Performance from './TestDataChild/PrefReview'
 import _ from 'lodash';
 import { useScroll } from 'ahooks';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
