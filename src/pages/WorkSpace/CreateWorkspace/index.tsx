@@ -43,27 +43,13 @@ const QuestionTip = (props: {
     )
 }
 
-function debounce(fn: any, type: string, param: string) {
-    fn(type, param)
-    /*
-    if (timerCheckWs) clearTimeout(timerCheckWs);
-    timerCheckWs = setTimeout(() => {
-        fn(type, param)
-        timerCheckWs = null;
-    }, 200);
-    */
-}
-
 export default (props: any): React.ReactElement => {
     const [imgUrl, setImgUrl] = useState({ path: '', link: '' })
     const [isWsInit, setIsWsInit] = useState(false)
     const [form] = Form.useForm()
-    const [padding, setPadding] = useState(false)
+    const [pedding, setPedding] = useState(false)
     const [heightBox, setHeightBox] = useState(innerHeight)
-    const [errorRepeat, setErrorRepeat] = useState({ isRepeat: false, text: '' })
-    const [errorReg, setErrorReg] = useState(false)
-    const [errorRepeatName, setErrorRepeatName] = useState({ isRepeat: false, text: '' })
-    const [errorRegName, setErrorRegName] = useState(false)
+
     const timer: any = useRef(null)
     const { initialState } = useModel('@@initialState');
     const sysAuth = initialState?.authList
@@ -132,49 +118,21 @@ export default (props: any): React.ReactElement => {
 
     useEffect(() => {
         if (isWsInit) {
-            const arr = getCommon()
+            const arr: any = getCommon()
             if (arr && arr.length) {
                 arr[0].style.opacity = 1
                 let index = 0
                 timer.current = setInterval(() => {
-
                     index = index + 1 < 3 ? index + 1 : 0
                     if (index === 0) getCommon()
                     arr[index].style.opacity = 1
                 }, 500)
             }
-
+        }
+        return () => {
+            clearInterval(timer.current)
         }
     }, [isWsInit])
-
-    const queryCheckWs = async (type: string, parmas: string) => {
-        const { code, msg } = await checkWorkspace({ [type]: parmas })
-        const setFn = type === 'name' ? setErrorRepeatName : setErrorRepeat
-        if (code !== 200) {
-            setFn({
-                isRepeat: true,
-                text: msg
-            })
-        }
-        if (code === 200) {
-            setFn({
-                isRepeat: false,
-                text: ''
-            })
-        }
-    }
-
-    const handleShowWs = (e: any, type: string) => {
-        const value = e.target.value
-        const isName = type === 'name'
-        const reg = isName ? /^[a-z0-9_-]{1,30}$/ : /^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/g
-        const setFn = isName ? setErrorRegName : setErrorReg
-        const flag = reg.test(value)
-        setFn(!flag)
-        if (flag) {
-            debounce(queryCheckWs, type, value)
-        }
-    }
 
     return (
         <Layout.Content className={styles.create_layout} id="createWs">
@@ -185,13 +143,17 @@ export default (props: any): React.ReactElement => {
                             form={form}
                             layout="vertical"
                             className={styles.full_width}
+                            initialValues={{
+                                is_public: false
+                            }}
                             onFinish={
                                 async (values) => {
                                     if (sys_role_title === 'super_admin' || sys_role_title === 'sys_admin') {
                                         setIsWsInit(true)
                                         queryCreateWs({ ...values, logo: imgUrl.path })
-                                    } else {
-                                        setPadding(true)
+                                    }
+                                    else {
+                                        setPedding(true)
                                         let data = await createWorkspace({
                                             ...values,
                                             logo: imgUrl.path
@@ -204,16 +166,14 @@ export default (props: any): React.ReactElement => {
                                                 icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
                                                 duration: 3,
                                             })
-                                            setPadding(false)
+                                            setPedding(false)
                                             history.go(-1)
-
                                         }
                                         else {
                                             requestCodeMessage(data.code, data.msg)
-                                            setPadding(false)
+                                            setPedding(false)
                                         }
                                     }
-
                                 }
                             }
                         >
@@ -223,17 +183,23 @@ export default (props: any): React.ReactElement => {
                                 </Space>
                             </Form.Item>
                             <Form.Item
-                                validateStatus={(errorReg || errorRepeat.isRepeat) && 'error'}
-                                help={(errorReg && '长度最多20位,仅允许包含汉字、字母、数字、下划线、中划线、点') || (errorRepeat.isRepeat && errorRepeat.text)}
-                                rules={[{
-                                    required: true,
-                                    max: 20,
-                                    message: '长度最多20位',
-                                }, {
-                                    required: true,
-                                    pattern: /^[A-Za-z0-9\u4e00-\u9fa5\._-]+$/g,
-                                    message: '仅允许包含汉字、字母、数字、下划线、中划线、点'
-                                }]}
+                                rules={[
+                                    {
+                                        required: true,
+                                        validator: _.debounce(async (rule, value) => {
+                                            console.log(value)
+                                            if (!value)
+                                                return Promise.reject("Workspace显示名不能为空")
+
+                                            if (!/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/.test(value))
+                                                return Promise.reject("仅允许包含汉字、字母、数字、下划线、中划线、点，最多20个字符")
+
+                                            const { code, msg } = await checkWorkspace({ show_name: value })
+                                            if (code !== 200) return Promise.resolve(msg)
+                                            return Promise.resolve()
+                                        }, 200)
+                                    }
+                                ]}
                                 label={
                                     <QuestionTip
                                         name="Workspace显示名"
@@ -243,18 +209,29 @@ export default (props: any): React.ReactElement => {
                                 }
                                 name="show_name"
                             >
-                                <Input autoComplete="off" placeholder="workspace对外的展示名称，允许中文" allowClear onChange={_.partial(handleShowWs, _, 'show_name')} />
+                                <Input
+                                    autoComplete="off"
+                                    placeholder="workspace对外的展示名称，允许中文"
+                                    allowClear
+                                />
                             </Form.Item>
                             <Form.Item
-                                validateStatus={(errorRegName || errorRepeatName.isRepeat) && 'error'}
-                                help={(errorRegName && '只允许英文小写、下划线和数字，最多30个字符') || (errorRepeatName.isRepeat && errorRepeatName.text)}
-                                rules={[{
-                                    required: true,
-                                    max: 30,
-                                    pattern: /^[a-z0-9_-]{0,30}$/,
-                                    message: '只允许英文小写、下划线和数字，最多30个字符',
-                                }]}
-                                // extra='只允许英文小写、下划线和数字，最多20个字符'
+                                rules={[
+                                    {
+                                        required: true,
+                                        validator: _.debounce(async (rule, value) => {
+                                            if (!value)
+                                                return Promise.reject("Workspace名称不能为空")
+
+                                            if (!/^[a-z0-9_-]{0,30}$/.test(value))
+                                                return Promise.reject("只允许英文小写、下划线和数字，最多30个字符")
+
+                                            const { code, msg } = await checkWorkspace({ name: value })
+                                            if (code !== 200) return Promise.resolve(msg)
+                                            return Promise.resolve()
+                                        }, 200)
+                                    },
+                                ]}
                                 label={
                                     <QuestionTip
                                         name="Workspace名称"
@@ -264,7 +241,11 @@ export default (props: any): React.ReactElement => {
                                 }
                                 name="name"
                             >
-                                <Input autoComplete="off" placeholder="只允许英文小写、下划线和数字，最多30个字符" allowClear onChange={_.partial(handleShowWs, _, 'name')} />
+                                <Input
+                                    autoComplete="off"
+                                    placeholder="只允许英文小写、下划线和数字，最多30个字符"
+                                    allowClear
+                                />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
@@ -298,7 +279,6 @@ export default (props: any): React.ReactElement => {
                                         path=""
                                     />
                                 }
-                                initialValue={false}
                             >
                                 <Radio.Group>
                                     <Radio value={false} className={styles.mb_16}>
@@ -343,11 +323,6 @@ export default (props: any): React.ReactElement => {
                                             </Upload>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            {/* <Row style={{ marginTop : 8 }}>
-                                                <Upload { ...uploadProps }>
-                                                    <Button><UploadOutlined /> 上传文件</Button>
-                                                </Upload>
-                                            </Row> */}
                                             <Row>
                                                 <Col span={24}>
                                                     可拖拽照片到左侧区域上传
@@ -361,7 +336,7 @@ export default (props: any): React.ReactElement => {
                                 </Form.Item>
                             </Form.Item>
                             <Form.Item style={{ marginTop: 30 }}>
-                                <Button type="primary" disabled={padding} htmlType="submit">提交审核</Button>
+                                <Button type="primary" disabled={pedding} htmlType="submit">提交审核</Button>
                             </Form.Item>
                         </Form>
                     </Col>
@@ -396,13 +371,13 @@ export default (props: any): React.ReactElement => {
                 />
             </Row>
             {
-                isWsInit && <div style={{ height: heightBox }} className={styles.systerm_init}>
+                isWsInit &&
+                <div style={{ height: heightBox }} className={styles.systerm_init}>
                     <div className={styles.init_box}>
                         <div className={styles.init_container}>
                             <div className={styles.icon_gif} />
                             <div className={styles.init_text}>
                                 系统初始化中
-
                                 <span className="dot" />
                                 <span className="dot" />
                                 <span className="dot" />
