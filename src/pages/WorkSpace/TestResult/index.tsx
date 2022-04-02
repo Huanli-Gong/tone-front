@@ -144,7 +144,6 @@ export default (props: any) => {
     const PAGE_DEFAULT_PARAMS: any = { page_num: 1, page_size: 20, ws_id, state: '', search: null, tab: 'all' }
 
     const INITIAL_STATE_TIME = [
-        // moment(moment().add(-1, 'months').hours(0).minutes(0).seconds(0), 'YYYY-MM-DD HH:mm:ss'),
         '',
         moment(moment().hours(23).minutes(59).seconds(59), 'YYYY-MM-DD HH:mm:ss')
     ]
@@ -160,7 +159,6 @@ export default (props: any) => {
     const [leftSelectProjectList, setLeftSelectProjectList] = useState([])
     const [filterData, setFilterData] = useState({})
     const [filterparmas, setFilterparmas] = useState({})
-    // const [resultState, setResultState] = useState('')
     const [key, setKey] = useState(1)
     const [formFieldsValue, setFormFieldsValue] = useState<any>({ project: [], time: [] })
     const [form] = Form.useForm()
@@ -226,7 +224,6 @@ export default (props: any) => {
             return
         }
         setDataSource(data)
-        //setPageCountSource(data)
         setLoading(false)
     }
 
@@ -302,7 +299,6 @@ export default (props: any) => {
 
         setKey(+new Date())
         setIsloading(false)
-        // setLoading(true)
     }
 
     /* page init fetch data */
@@ -400,8 +396,8 @@ export default (props: any) => {
             let optionArr: any = []
             allResultArr.forEach((obj: any, index) => {
                 const result = obj && obj.value
-                let physicalMachine = {}
-                let virtualMachine = {}
+                // let physicalMachine = {}
+                // let virtualMachine = {}
                 if (result.code === 200) {
                     let option = result.data && lodash.isArray(result.data) ? result.data : []
                     let virtualOption: any = []
@@ -983,20 +979,7 @@ export default (props: any) => {
         return /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/.test(ip)
     }
     const handleFuncsBaselineSelectBlur = () => {
-        // let index = serverVal?.indexOf('.');
-        // let num = 0; // 这个字符出现的次数
-        // while(index !== -1) {
-        //     num++; // 每出现一次 次数加一
-        //     index = serverVal?.indexOf('.',index + 1); // 从字符串出现的位置的下一位置开始继续查找
-        // }
-        // if(num > 3){
-        //     testServerSetFormDataFn('')
-        //     // message.warning('请输入正确的ip')
-        // }else{
-        //     testServerSetFormDataFn(serverVal)
-        // }
         if (!isValidIp(serverVal)) {
-            // message.warning('请输入正确的ip')
             testServerSetFormDataFn('')
         } else {
             testServerSetFormDataFn(serverVal)
@@ -1283,7 +1266,7 @@ export default (props: any) => {
                                                             <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
                                                             <Radio.Group onChange={handleRadioChange} value={radioValue}>
                                                                 <Radio value={1}>报告和分析</Radio>
-                                                                <Radio value={2}>批量删除</Radio>
+                                                                { access.canWsAdmin() && <Radio value={2}>批量删除</Radio> }
                                                             </Radio.Group>
                                                         </div>
                                                     }
@@ -1647,8 +1630,6 @@ export default (props: any) => {
                     onCancel={handleModalCancel}
                     className={styles.run_modal}
                     maskClosable={false}
-                // transitionName=""
-                // maskTransitionName=""
                 >
                     <Row style={{ backgroundColor: '#fff', height: 66, marginBottom: 10, paddingLeft: 20 }} align="middle" >
                         <Col span={4} style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 600 }}>Job名称</Col>
