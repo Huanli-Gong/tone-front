@@ -134,6 +134,15 @@ export default (props: any): React.ReactElement => {
         }
     }, [isWsInit])
 
+    const checkField = async (name: string, value: string) => {
+        const { code, msg } = await checkWorkspace({ [name]: value })
+        if (code !== 200) {
+            form.setFields([{ name, errors: [msg] }])
+            return
+        }
+        return true
+    }
+
     return (
         <Layout.Content className={styles.create_layout} id="createWs">
             <Row className={styles.create_main} gutter={8} justify="space-between">
@@ -148,12 +157,21 @@ export default (props: any): React.ReactElement => {
                             }}
                             onFinish={
                                 async (values) => {
+                                    setPedding(true)
+
+                                    const { show_name, name } = values
+
+                                    const showNameValidate = await checkField("show_name", show_name)
+                                    if (!showNameValidate) return setPedding(false)
+                                    const nameValidate = await checkField("name", name)
+                                    if (!nameValidate) return setPedding(false)
+
                                     if (sys_role_title === 'super_admin' || sys_role_title === 'sys_admin') {
                                         setIsWsInit(true)
                                         queryCreateWs({ ...values, logo: imgUrl.path })
+                                        setPedding(false)
                                     }
                                     else {
-                                        setPedding(true)
                                         let data = await createWorkspace({
                                             ...values,
                                             logo: imgUrl.path
@@ -186,18 +204,15 @@ export default (props: any): React.ReactElement => {
                                 rules={[
                                     {
                                         required: true,
-                                        validator: _.debounce(async (rule, value) => {
-                                            console.log(value)
+                                        validator: async (rule, value) => {
                                             if (!value)
                                                 return Promise.reject("Workspace显示名不能为空")
 
                                             if (!/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/.test(value))
                                                 return Promise.reject("仅允许包含汉字、字母、数字、下划线、中划线、点，最多20个字符")
 
-                                            const { code, msg } = await checkWorkspace({ show_name: value })
-                                            if (code !== 200) return Promise.resolve(msg)
                                             return Promise.resolve()
-                                        }, 200)
+                                        }
                                     }
                                 ]}
                                 label={
@@ -219,17 +234,15 @@ export default (props: any): React.ReactElement => {
                                 rules={[
                                     {
                                         required: true,
-                                        validator: _.debounce(async (rule, value) => {
+                                        validator: async (rule, value) => {
                                             if (!value)
                                                 return Promise.reject("Workspace名称不能为空")
 
                                             if (!/^[a-z0-9_-]{0,30}$/.test(value))
                                                 return Promise.reject("只允许英文小写、下划线和数字，最多30个字符")
 
-                                            const { code, msg } = await checkWorkspace({ name: value })
-                                            if (code !== 200) return Promise.resolve(msg)
                                             return Promise.resolve()
-                                        }, 200)
+                                        }
                                     },
                                 ]}
                                 label={
