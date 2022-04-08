@@ -23,8 +23,8 @@ const SuiteManagement: React.FC<any> = ({ id , innerKey , ws_id }) => {
 
 	const columns = [
         { title: '指标', dataIndex: 'name',width:200,fixed:'left'},
-        { title: 'Avg阈值(%)', dataIndex: 'cmp_threshold',width:160},
-        { title: 'CV阈值(%)', dataIndex: 'cv_threshold',width:140},
+        { title: 'Avg阈值(%)', dataIndex: 'cmp_threshold',width:160, render(_: any) { return _ ? Number(_).toFixed(2) : _ }},
+        { title: 'CV阈值(%)', dataIndex: 'cv_threshold',width:140, render(_: any) { return _ ? Number(_).toFixed(2) : _ }},
         { title: '期望方向', dataIndex: 'direction',width:140},
 	];
 	
