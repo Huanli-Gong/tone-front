@@ -90,7 +90,6 @@ const ServerObjectSelect = (props: any) => {
             })
             setServerListCopy(data)
         }
-        
     }
     const handleSelectChange = () => {
         if (isFlag) setServerListCopy(serverList)
@@ -140,7 +139,7 @@ const ServerObjectSelect = (props: any) => {
                                                         item.state === "Reserved" && <Badge status="warning" /> 
                                                     }
                                                     <Tooltip placement="top" title={item.state}>
-                                                        <Typography.Text ellipsis>{item.ip}</Typography.Text>
+                                                        <Typography.Text ellipsis>{item.ip || item.sn}</Typography.Text>
                                                     </Tooltip>
                                                 </Space>
                                             </Select.Option>
