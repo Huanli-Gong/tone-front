@@ -71,7 +71,7 @@ const SelectSuite: React.FC<any> = (
 		setTreeData([])
 		const baseQuery = { test_type, ws_id }
 		const query = test_type === 'business' ? { business_type } : {}
-		const { data = [] } = await suiteList({ ...baseQuery, ...query, page_size: 100 }) || {}
+		const { data = [] } = await suiteList({ ...baseQuery, ...query, page_size: 200 }) || {}
 		data.map((item: any, index: number) => {
 			item.key = index + ''
 			item.title = item.name
