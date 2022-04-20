@@ -215,13 +215,7 @@ export default (props: any): React.ReactElement => {
                                         }
                                     }
                                 ]}
-                                label={
-                                    <QuestionTip
-                                        name="Workspace显示名"
-                                        tip="【Workspace名称】会用在测试结果文件的目录树中"
-                                        path=""
-                                    />
-                                }
+                                label={"Workspace显示名"}
                                 name="show_name"
                             >
                                 <Input
