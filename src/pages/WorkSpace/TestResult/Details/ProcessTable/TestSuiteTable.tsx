@@ -5,7 +5,7 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import TestConfTable from './TestConfTable'
 import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
-
+import _ from 'lodash';
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
 import { useRequest,useAccess,Access, useModel } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
@@ -120,23 +120,25 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
-    const handleSkipSuite  = async (_: any)=> {
-        // 添加用户id
-        const { user_id } = initialState?.authList
-        const q = user_id ? { user_id } : {}
-        const { code, msg } = await updateSuiteCaseOption({
-            ...q,
-            editor_obj: 'test_job_suite',
-            state: 'skip',
-            test_job_suite_id: _.id,
-        })
-        if (code !== 200) {
-            requestCodeMessage(code, msg)
-            return
-        }
-        message.success('操作成功')
-        run()
-    }
+    const handleSkipSuite  = _.debounce(
+        async (_: any)=> {
+            // 添加用户id
+            const { user_id } = initialState?.authList
+            const q = user_id ? { user_id } : {}
+            const { code, msg } = await updateSuiteCaseOption({
+                ...q,
+                editor_obj: 'test_job_suite',
+                state: 'skip',
+                test_job_suite_id: _.id,
+            })
+            if (code !== 200) {
+                requestCodeMessage(code, msg)
+                return
+            }
+            message.success('操作成功')
+            run()
+        },1500
+    )
 
     return (
         <Card
