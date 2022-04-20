@@ -13,6 +13,7 @@ import { requestCodeMessage } from '@/utils/utils';
 export default ({ job_id, refresh = false, testType, provider_name }: any) => {
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
+    const [ skipBtn, setSkipBtn ] = useState<Boolean>(false)
     const { data, loading, run } = useRequest(
         () => queryProcessSuiteList({ job_id }),
         {
@@ -73,6 +74,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                     cursor: state !== 'running' ? 'not-allowed' : 'pointer',
                 }
                 const pointerStyle = {color:'#1890FF',cursor:'pointer',marginLeft: 12};
+                const disablePointer = {color:'rgba(0,0,0,.25)',marginLeft: 12};
 
                 if (state === 'running')
                     return (
@@ -83,14 +85,22 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                             >
                                 <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
                             </Access>
-                            <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
+                            {
+                                skipBtn 
+                                ? <span style={disablePointer} >跳过suite</span>
+                                : <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
+                            }
                         </>
                     )
                 else if (state === 'pending')
                     return (
                         <div>
                             <span style={style}>停止Suite</span>
-                            <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
+                            {
+                                skipBtn 
+                                ? <span style={disablePointer} >跳过suite</span>
+                                : <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
+                            }
                         </div>
                     )
                 else
@@ -120,25 +130,25 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
-    const handleSkipSuite  = _.debounce(
-        async (_: any)=> {
-            // 添加用户id
-            const { user_id } = initialState?.authList
-            const q = user_id ? { user_id } : {}
-            const { code, msg } = await updateSuiteCaseOption({
-                ...q,
-                editor_obj: 'test_job_suite',
-                state: 'skip',
-                test_job_suite_id: _.id,
-            })
-            if (code !== 200) {
-                requestCodeMessage(code, msg)
-                return
-            }
+    const handleSkipSuite = async (_: any)=> {
+        // 添加用户id
+        const { user_id } = initialState?.authList
+        const q = user_id ? { user_id } : {}
+        const { code, msg } = await updateSuiteCaseOption({
+            ...q,
+            editor_obj: 'test_job_suite',
+            state: 'skip',
+            test_job_suite_id: _.id,
+        })
+        if (code === 200){
+            setSkipBtn(true)
             message.success('操作成功')
             run()
-        },1500
-    )
+        } else {
+            requestCodeMessage(code, msg)
+            return
+        }
+    }
 
     return (
         <Card
