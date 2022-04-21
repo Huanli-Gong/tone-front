@@ -37,10 +37,7 @@ const SelectDrawer: React.FC<any> = ({
     }, [treeData, domain, name])
 
     const checkAllChange = (keys: any) => {
-        if (keys.slice().sort().join(',') && keys.slice().sort().join(',') == allKeys.slice().sort().join(','))
-            setCheckAll(true)
-        else
-            setCheckAll(false)
+        setCheckAll(keys.slice().sort().join(',') && keys.slice().sort().join(',') == allKeys.slice().sort().join(','))
     }
 
     React.useMemo(() => {
@@ -50,10 +47,6 @@ const SelectDrawer: React.FC<any> = ({
         const hasList = ids.map((i: string) => selectData.includes(i))
         setCheckAll([...new Set(hasList)].length === 1 && hasList[0])
     }, [name, domain, hasTree, selectData])
-
-    const handleDomainChange = (e: any) => {
-        setDomain(e)
-    }
 
     const { data: domainList } = useRequest(
         getDomain,
@@ -109,7 +102,6 @@ const SelectDrawer: React.FC<any> = ({
     }
 
     const onConfirm = () => {
-        setShow(false)
         const treeDataCopy = cloneDeep(treeData)
         const data = treeDataCopy.filter((item: any) => {
             item.test_case_list = item.children.filter((el: any) => {
@@ -144,12 +136,14 @@ const SelectDrawer: React.FC<any> = ({
             }
         })
         handleSelect(data)
-        setSelectData([])
+        handleCancel()
     }
 
     const handleCancel = () => {
         setShow(false)
         setSelectData([])
+        setDomain("")
+        setName("")
     }
 
     const resultTreeData = React.useMemo(() => {
@@ -217,7 +211,7 @@ const SelectDrawer: React.FC<any> = ({
                                     type={domain === '' ? 'primary' : 'ghost'}
                                     size="small"
                                     style={{ marginRight: 8, marginBottom: 8, border: 'none' }}
-                                    onClick={() => handleDomainChange('')}
+                                    onClick={() => setDomain('')}
                                 >
                                     全部
                                 </Button>
@@ -230,7 +224,7 @@ const SelectDrawer: React.FC<any> = ({
                                                 type={item.name == domain ? "primary" : "ghost"}
                                                 size="small"
                                                 style={{ marginRight: 8, marginBottom: 8, border: item.name == domain ? undefined : "none" }}
-                                                onClick={() => handleDomainChange(item.name)}
+                                                onClick={() => setDomain(item.name)}
                                             >
                                                 {item.name}
                                             </Button>

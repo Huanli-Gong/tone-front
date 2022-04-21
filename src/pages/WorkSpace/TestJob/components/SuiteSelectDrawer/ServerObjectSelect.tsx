@@ -85,12 +85,11 @@ const ServerObjectSelect = (props: any) => {
     const handleSearch = (value: string) => {
         if (isFlag && Array.isArray(serverListCopy)) {
             const data = serverList.filter((item: any) => {
-                const ip = item?.ip || ''
+                const ip = item?.ip || item?.sn || ''
                 return ip.toLowerCase().includes(value)
             })
             setServerListCopy(data)
         }
-        
     }
     const handleSelectChange = () => {
         if (isFlag) setServerListCopy(serverList)
@@ -140,7 +139,7 @@ const ServerObjectSelect = (props: any) => {
                                                         item.state === "Reserved" && <Badge status="warning" /> 
                                                     }
                                                     <Tooltip placement="top" title={item.state}>
-                                                        <Typography.Text ellipsis>{item.ip}</Typography.Text>
+                                                        <Typography.Text ellipsis>{item.ip || item.sn}</Typography.Text>
                                                     </Tooltip>
                                                 </Space>
                                             </Select.Option>

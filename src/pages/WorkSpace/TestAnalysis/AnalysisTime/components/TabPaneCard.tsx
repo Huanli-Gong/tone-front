@@ -22,33 +22,48 @@ const TootipTipRow = styled(Row)`
         top:4px;
     }
 `
-const SuiteConfMetric = (props: any) => {
+const fontStyle = {
+    fontWeight:'bold'
+}
+const SuiteConfMetric = ( props:any ) => {
     let str = props.title.split('/')
-    return (
+    return(
         <div style={{ color: '#000' }}>
             <Descriptions column={1}>
-                <Descriptions.Item label="Suite" labelStyle={{ paddingLeft: 10, fontWeight: 'bold' }}>{str[0]}</Descriptions.Item>
-                <Descriptions.Item label="Conf" labelStyle={{ paddingLeft: 12, fontWeight: 'bold' }}>{str[1]}</Descriptions.Item>
-                <Descriptions.Item label="Metric" contentStyle={{ display: 'inline-block' }} labelStyle={{ fontWeight: 'bold' }}>
-                    {props.metric.map(
-                        (item: any, i: number) =>
+                <Descriptions.Item 
+                    label="Suite" 
+                    labelStyle={{ ...fontStyle, paddingLeft:10 }}
+                >
+                    {str[0]}
+                </Descriptions.Item>
+                <Descriptions.Item 
+                    label="Conf" 
+                    labelStyle={{ ...fontStyle, paddingLeft:12 }}
+                >
+                    {str[1]}
+                </Descriptions.Item>
+                <Descriptions.Item 
+                    label="Metric" 
+                    contentStyle={{ display:'inline-block' }} 
+                    labelStyle={{ ...fontStyle }}
+                >
+                    { props.metric.map(
+                        (item:any,i:number) => 
                             <div key={i}>{item}</div>)
                     }
                 </Descriptions.Item>
             </Descriptions>
         </div>
-    )
+    ) 
 }
 export default (props: any) => {
     const { ws_id } = useParams() as any
     const { query }: any = useLocation()
     const { provider, testType, showType, onChange, setLoading, loading } = props
-    // console.log( location )
-    // const [ chartData , setChartData ] = useState<any>( sourceData.data.case_map )
     const [chartData, setChartData] = useState<any>({})
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
-    const [projectId, setProjectId] = useState('')
+    const [projectId,setProjectId] = useState('')
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
 
@@ -83,7 +98,7 @@ export default (props: any) => {
     }
 
     const handleSelectMertric = () => {
-        if (form.getFieldValue('project_id')) {
+        if(form.getFieldValue('project_id')){
             selectMetricRef.current.show()
         } else {
             message.error('请先选择项目!!!')
@@ -197,7 +212,6 @@ export default (props: any) => {
                     <Form
                         layout="inline"
                         form={form}
-                        /*hideRequiredMark*/
                         colon
                         onFieldsChange={handleFormChange}
                         className={styles.formInlineStyles}
@@ -287,12 +301,12 @@ export default (props: any) => {
                             <Tooltip
                                 title={
                                     showType === 'result_trend' ?
-                                        metricData.sub_case_name : <SuiteConfMetric {...metricData} />
+                                        metricData.sub_case_name : <SuiteConfMetric {...metricData}/>
                                 }
                                 autoAdjustOverflow={true}
                                 placement="bottomLeft"
-                                color='rgb(252,252,252)'
-                                overlayStyle={{ minWidth: 260, maxHeight: 300, overflowY: 'auto' }}
+                                color='#fff'
+                                overlayInnerStyle={{ minWidth: 300 , maxHeight: 300, overflowY:'auto' }}
                             >
                                 <span className={styles.select_inner_span}>
                                     {metricData.title}

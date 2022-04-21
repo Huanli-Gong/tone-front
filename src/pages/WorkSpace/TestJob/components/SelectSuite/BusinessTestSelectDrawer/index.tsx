@@ -140,7 +140,6 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     }
 
     const onOk = () => {
-        setShow(false)
         const treeDataCopy = cloneDeep(treeData)
         const data = treeDataCopy.filter((item: any) => {
             item.test_case_list = item.children.filter((el: any) => {
@@ -175,11 +174,14 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
             }
         })
         handleSelect(data)
-        setSelectData([])
+        onCancel()
     }
+    
     const onCancel = () => {
         setShow(false)
         setSelectData([])
+        setDomain("")
+        setName("")
     }
 
     const resultTreeData = React.useMemo(() => {
