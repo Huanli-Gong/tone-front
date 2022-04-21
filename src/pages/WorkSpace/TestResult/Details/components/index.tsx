@@ -254,6 +254,7 @@ const CustomTooltipStateTag: React.FC<any> = (props) => {
 
 export const JobListStateTag: React.FC<any> = (props) => {
     const { state, run_state = '', state_desc } = props
+    const { ws_id }: any = useParams()
     if (state === 'running') {
         if (run_state)
             return (
@@ -269,12 +270,16 @@ export const JobListStateTag: React.FC<any> = (props) => {
             </Space>
         )
     }
-
+    
     if (state === 'pending' && state_desc) {
+        let jobId = Number(state_desc.replace(/[^\d.]/g,""))
+        let str = <a href={`/ws/${ws_id}/test_result/${jobId}`} target="_blank">
+            当前指定机器被Job(#{jobId})占用。
+        </a>
         return (
             <Space>
                 <CustomStateTag {...props}>{state}</CustomStateTag>
-                <QuestionPopover title={state_desc} />
+                <QuestionPopover title={str} />
             </Space>
         )
     }
