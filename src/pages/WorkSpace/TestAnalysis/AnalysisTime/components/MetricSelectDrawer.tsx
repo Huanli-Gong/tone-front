@@ -30,6 +30,15 @@ export default forwardRef(
             requestSuiteList()
         }, [ws_id, test_type])
 
+        /**
+         * 项目切换后，需要重新发起请求
+         */
+        useEffect(() => {
+            if (projectId && activeSuite && activeConf) {
+              requestMetricList({ test_suite_id: activeSuite, test_case_id: activeConf })
+            }
+        }, [projectId])
+
         const requestMetricList = _.debounce(
             async (params: any) => {
                 setFetch(true)
