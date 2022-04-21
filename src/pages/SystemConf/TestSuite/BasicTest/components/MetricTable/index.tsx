@@ -101,6 +101,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 
 	const newMetric = (id: number) => {
 		setObjectId(id)
+		setMetricId(undefined)
 		metricEditer.current.show('新增Metric')
 	}
 
