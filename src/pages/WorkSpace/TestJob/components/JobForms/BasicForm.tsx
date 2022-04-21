@@ -9,7 +9,7 @@ import { queryProjectList, queryBaselineList } from '../../services'
 /**
  * 基础配置
  */
- export default ({ contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
+export default ({ contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
 
@@ -74,7 +74,7 @@ import { queryProjectList, queryBaselineList } from '../../services'
         }
     }, [projectList])
 
-    const handleSelect = (val:any) => {
+    const handleSelect = (val: any) => {
         callBackProjectId(val)
     }
 
@@ -98,11 +98,10 @@ import { queryProjectList, queryBaselineList } from '../../services'
                     label={contrl.job_name.alias || contrl.job_name.show_name}
                     rules={[{
                         pattern: /^[A-Za-z0-9\._-]+$/g,
-                        // pattern : /[^\u4e00-\u9fa5]+/,
                         message: '允许字母、数字、下划线、中划线，“.”，不允许中文'
                     }, {
-                        max: 64,
-                        message: "Job名称最长不超出64字符"
+                        max: 128,
+                        message: "Job名称最长不超出128字符"
                     }]}
                 >
                     <Input autoComplete="off" placeholder="允许字母、数字、下划线、中划线，“.”，不允许中文" disabled={disabled} />
