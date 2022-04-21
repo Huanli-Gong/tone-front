@@ -26,7 +26,8 @@ export default forwardRef(
                 run(params)
                 setTitle(t)
                 setVisible(true)
-                form.setFieldsValue({ ..._, direction: _ === "上升" ? "increase" : "decline" })
+                if (JSON.stringify(_) !== "{}")
+                    form.setFieldsValue({ ..._, direction: _.direction === "上升" ? "increase" : "decline" })
             },
             hide: handleCancle
         }))
@@ -98,6 +99,9 @@ export default forwardRef(
                 <Form
                     layout="vertical"
                     form={form}
+                    initialValues={{
+                        direction: "increase"
+                    }}
                 /*hideRequiredMark*/
                 >
                     {
