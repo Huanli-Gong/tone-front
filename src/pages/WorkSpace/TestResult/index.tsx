@@ -471,7 +471,7 @@ export default (props: any) => {
             const { page_num, page_size } = pageParams
             const { total } = dataSource
             const num = (total - selectedRowKeys.length) / page_size
-            const new_page_num = page_num >= num ? page_num - 1 : page_num
+            const new_page_num = page_num > Math.ceil(num) ? page_num - 1 : page_num
             getPageData({ ...pageParams, page_num: new_page_num >= 1 ? new_page_num : 1 })
         } else requestCodeMessage(code, msg)
     }
@@ -485,7 +485,7 @@ export default (props: any) => {
             case 'descend':
                 setDataSource({
                     ...newData,
-                    data: newData?.data.sort(function (a, b) {
+                    data: newData?.data.sort(function (a:any, b:any) {
                         return a.start_time < b.start_time ? 1 : -1
                     })
                 })
@@ -493,7 +493,7 @@ export default (props: any) => {
             case 'ascend':
                 setDataSource({
                     ...newData,
-                    data: newData?.data.sort(function (a, b) {
+                    data: newData?.data.sort(function (a:any, b:any) {
                         return a.start_time > b.start_time ? 1 : -1
                     })
                 })
@@ -1255,7 +1255,7 @@ export default (props: any) => {
                                                             <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
                                                             <Radio.Group onChange={handleRadioChange} value={radioValue}>
                                                                 <Radio value={1}>报告和分析</Radio>
-                                                                {BUILD_APP_ENV && access.canWsAdmin() && <Radio value={2}>批量删除</Radio>}
+                                                                {access.canWsAdmin() && <Radio value={2}>批量删除</Radio>}
                                                             </Radio.Group>
                                                         </div>
                                                     }
