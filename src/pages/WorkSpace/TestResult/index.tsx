@@ -194,7 +194,6 @@ export default (props: any) => {
         const arr = leftOptions.filter((item: any) => !crr.includes(item.id))
         return arr
     }
-
     const [pageParams, setPageParams] = useState<any>(JSON.stringify(query) !== '{}' ? query : PAGE_DEFAULT_PARAMS)
 
     const DEFAULT_COUNT_PARAMS = { query_count: 1, ws_id, tab: 'all' }
@@ -228,7 +227,6 @@ export default (props: any) => {
     }
 
     const getPageData = async (params: any = pageParams) => {
-        await queryTestListCount({ ...DEFAULT_COUNT_PARAMS, ...params })
         await queryTestListTableData(params)
     }
 
@@ -470,20 +468,11 @@ export default (props: any) => {
             setSelectRowData([]);
             // setDataSourceFlag(true)
             message.success('操作成功！')
-
             const { page_num, page_size } = pageParams
-            const { total_page } = dataSource
-            const { total } = pageCountSource
-            const num = total % page_size
-            let flag = false
-            if (num === 0) flag = selectedRowKeys.length >= page_size
-            if (num > 0) flag = selectedRowKeys.length >= num
-            if (page_num >= total_page && flag) {
-                const new_page_num = page_num - 1
-                getPageData({ ...pageParams, page_num: new_page_num >= 1 ? new_page_num : 1 })
-                return
-            }
-            getPageData()
+            const { total } = dataSource
+            const num = (total - selectedRowKeys.length) / page_size
+            const new_page_num = page_num >= num ? page_num - 1 : page_num
+            getPageData({ ...pageParams, page_num: new_page_num >= 1 ? new_page_num : 1 })
         } else requestCodeMessage(code, msg)
     }
 
@@ -666,8 +655,8 @@ export default (props: any) => {
                             }
                         >
                             <Space>
-                                <span onClick={_.created_from === 'offline'? undefined: ()=> handleTestReRun(_)}>
-                                    <Typography.Text style={_.created_from === 'offline'? disableStyle: commonStyle}>重跑</Typography.Text>
+                                <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
+                                    <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
                                 </span>
                                 <Popconfirm
                                     title="确定要删除吗？"
@@ -1121,7 +1110,7 @@ export default (props: any) => {
         setFormFieldsValue(fieldsValue)
     }
 
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
@@ -1266,7 +1255,7 @@ export default (props: any) => {
                                                             <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
                                                             <Radio.Group onChange={handleRadioChange} value={radioValue}>
                                                                 <Radio value={1}>报告和分析</Radio>
-                                                                { access.canWsAdmin() && <Radio value={2}>批量删除</Radio> }
+                                                                {BUILD_APP_ENV && access.canWsAdmin() && <Radio value={2}>批量删除</Radio>}
                                                             </Radio.Group>
                                                         </div>
                                                     }
