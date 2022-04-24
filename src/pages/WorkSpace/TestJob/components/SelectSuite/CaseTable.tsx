@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Table } from 'antd';
 import styles from './style.less';
+import ResizeTable from '@/components/ResizeTable'
 import _ from 'lodash'
 
 export default (props: any) => {
@@ -20,9 +20,10 @@ export default (props: any) => {
 		if(selectedCaseObj[record.id] !== selectedKeys) setSelectedKeys(selectedCaseObj[record.id] || [])
 	},[selectedCaseObj])
 	return (
-		<Table
+		<ResizeTable
 			style={styleObj}
-			scroll={scroll}
+			// scroll={scroll}
+			scroll={{ x: '100%' }}
 			rowKey={record => record.id + ''}
 			className={styles.conf_table}
 			rowSelection={!disabled ? rowSelectionCase : undefined}
