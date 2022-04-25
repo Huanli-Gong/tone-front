@@ -5,13 +5,14 @@ import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table, To
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
 
-import { MembersFilter, ServerTagsFilter } from './Components/FilterDropdowns'
+import { MembersFilter } from './Components/FilterDropdowns'
 
 import CreateGroupServer from './Components/CreateGroupServer'
 import AddClusterServer from './Components/addClusterServer'
 import ClusterChildTable from './Components/ClusterChildTable'
 import OperationLog from '@/components/Public/Log'
 import SearchInput from '@/pages/WorkSpace/TestSuiteManage/components/SearchInput'
+import SelectTags from '@/components/Public/SelectTags';
 import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
 import { useClientSize } from '@/utils/hooks'
@@ -145,7 +146,11 @@ const Cluster = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: params.tags ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <ServerTagsFilter ws_id={ws_id} confirm={confirm} onOk={(tags: any) => setParams({ ...params, tags })} />
+                <SelectTags
+                    ws_id={ws_id}
+                    confirm={confirm} 
+                    onConfirm={(tags: any) => { setParams({ ...params, page:1, tags  })}}
+                />
             )
         },
         {

@@ -6,6 +6,7 @@ import DeviceDetail from '../Components/DeviceDetail'
 import AddDevice from './Components/AddDevice'
 import { StateBadge } from '../Components'
 import SearchInput from '@/pages/WorkSpace/TestSuiteManage/components/SearchInput'
+import SelectTags from '@/components/Public/SelectTags';
 import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectCheck'
 import CommonPagination from '@/components/CommonPagination'
 import OperationLog from '@/components/Public/Log'
@@ -373,6 +374,14 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            filterIcon: () => <FilterFilled style={{ color: urlParmas.tags && urlParmas.tags.length > 0 ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => 
+                <SelectTags
+                    ws_id={ws_id}
+                    run_mode={'standalone'}
+                    confirm={confirm} 
+                    onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page:1, tags:val  })}} 
+                />,
             render: (record: any) => {
                 if (record.length > 0) {
                     const firstTag = record[0]

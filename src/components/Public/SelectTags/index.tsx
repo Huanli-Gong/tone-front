@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Space, Button, Select, Divider, Spin, Tag } from 'antd';
+import { Space, Button, Select, Divider, Spin, Tag, message } from 'antd';
+import { isNaN } from 'lodash'
 import { member } from './service';
 import styles from './style.less';
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,run_mode}) => {
+const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_mode}) => {
+	const [tagsPagination, setTagsPagination] =  useState({ total: 0, page_num: 1, page_size: 10 });
+	const [isEnd,setIsEnd] = useState(false)
 	const [tags, setTags] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>([])
@@ -13,15 +16,46 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,run_mode}) =
 	useEffect(() => {
 		handleSearch()
 	}, []);
+	
 	const handleSearch = async (word?: string) => {
 		const param = word && word.replace(/\s*/g, "")
 		if (keyword && keyword == param) return
 		setKeyword(param)
-		setFetching(true)
-		let { data } = await member({ name: param, page_size: 10, page_num: 1 }) //, run_environment: 'aliyun', run_mode:run_mode
-		setTags(data || [])
-		setFetching(false)
+		requestData({ name: param, page_num: 1, page_size: 10, ws_id }, 'reset')
 	}
+  const handlePopupScroll = (e: any) => {
+    const { page_num, page_size, total, } = tagsPagination
+    const { clientHeight, scrollHeight, scrollTop} = e.target
+    if ( clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total/page_size) > page_num && !isEnd) {
+      requestData({ name: keyword, page_num: page_num + 1, page_size, ws_id }, 'concat')
+    }
+  }
+	const requestData = async (query: any, option="concat") => {
+		setFetching(true)
+		try {
+			let res = await member(query)
+			if (res.code === 200) {
+				// 分页数据合并。
+				if (option === 'concat') {
+					const data = tags.concat(res.data || [])
+					setTags(data || [])
+					setTagsPagination(res);
+					if(data.length === res.total) setIsEnd(true)
+				} else if (option === 'reset') {
+					// 新的数据。
+					setTags(res.data || [])
+					setTagsPagination(res);
+				}
+			} else {
+				message.error(res.msg || '请求数据失败');
+			}
+			setFetching(false)
+		} catch (err) {
+			setFetching(false)
+		}
+	}
+
+
 	const tagRender = (props: any) => {
 		const { label, closable, onClose } = props;
 		return (
@@ -47,6 +81,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,run_mode}) =
 				filterOption={false}
 				showSearch
 				onSearch={handleSearch}
+				onPopupScroll={fetching? ()=> {}: handlePopupScroll} // 防抖
 				style={{ width: '100%' }}
 				onChange={(value: any) => setVal(value)}
 				showArrow={false}
@@ -86,6 +121,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,run_mode}) =
 					onClick={() => {
 						confirm()
 						setVal(undefined)
+						setIsEnd(false)
 						onConfirm(undefined)
 						handleSearch()
 					}}
@@ -100,5 +136,3 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,run_mode}) =
 };
 
 export default filterRadio;
-
-
