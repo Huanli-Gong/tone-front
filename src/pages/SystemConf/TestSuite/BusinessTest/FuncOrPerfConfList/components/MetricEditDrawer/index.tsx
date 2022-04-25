@@ -26,7 +26,7 @@ export default forwardRef(
                 run( params )
                 setTitle( t )
                 setVisible( true )
-                form.setFieldsValue( _ )
+                form.setFieldsValue({ ..._, direction: _ === "上升" ? "increase" : "decline" })
             },
             hide : handleCancle
         }))
@@ -128,14 +128,14 @@ export default forwardRef(
                         label="​Avg阈值(%)"
                         rules={[{ required: true, message: '请输入' }]}
                     >
-                        <InputNumber style={{width:'100%'}} min={0} step={1}  placeholder="请输入" />
+                        <InputNumber precision={2} style={{width:'100%'}} min={0} step={1}  placeholder="请输入" />
                     </Form.Item>
                     <Form.Item
                         name="cv_threshold"
                         label="CV阈值(%)"
                         rules={[{ required: true, message: '请输入' }]}
                     >
-                        <InputNumber style={{width:'100%'}} min={0} step={1} placeholder="请输入" />
+                        <InputNumber precision={2} style={{width:'100%'}} min={0} step={1} placeholder="请输入" />
                     </Form.Item>		
                     <Form.Item
                         name="direction"

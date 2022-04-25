@@ -87,6 +87,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 
 	const remMetricRow = async (params: any, is_sync?: any) => {
 		const { object_type, object_id, name } = params
+
 		const { code, msg } = innerKey == 1 ?
 			await delMetric(params.id) :
 			await delMetric(params.id, { is_sync, object_id, object_type, name })
@@ -99,16 +100,16 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	}
 
 	const newMetric = (id: number) => {
-		setMetricId(undefined)
 		setObjectId(id)
+		setMetricId(undefined)
 		metricEditer.current.show('新增Metric')
 	}
 
 	const columns = [
 		// { title: 'Metric', dataIndex: 'name'},
 		{ title: '指标', dataIndex: 'name', width: 300, fixed: 'left' },
-		{ title: '​Avg阈值(%)', dataIndex: 'cmp_threshold', width: 130 },
-		{ title: 'CV阈值(%)', dataIndex: 'cv_threshold', width: 130 },
+		{ title: '​Avg阈值(%)', dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
+		{ title: 'CV阈值(%)', dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
 		{ title: '期望方向', dataIndex: 'direction', width: 130 },
 		{
 			title: <div className={styles.center}><span>操作</span><Button type='primary' onClick={() => newMetric(id)} >新增</Button></div>,
