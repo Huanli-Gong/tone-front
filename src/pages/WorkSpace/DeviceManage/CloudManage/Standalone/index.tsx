@@ -338,7 +338,7 @@ export default (props: any) => {
             },
         ]
         setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
-    }, [params.type])
+    }, [params.type, params.tags])
 
     // 部署Agent
     const deployClick = (row: any) => {
