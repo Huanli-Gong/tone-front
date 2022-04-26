@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react'
-import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb } from 'antd'
+import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb, Typography } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Clipboard from 'clipboard'
@@ -270,16 +270,19 @@ export const JobListStateTag: React.FC<any> = (props) => {
             </Space>
         )
     }
-    
+
     if (state === 'pending' && state_desc) {
-        let jobId = Number(state_desc.replace(/[^\d.]/g,""))
-        let str = <a href={`/ws/${ws_id}/test_result/${jobId}`} target="_blank">
-            当前指定机器被Job(#{jobId})占用。
-        </a>
         return (
             <Space>
                 <CustomStateTag {...props}>{state}</CustomStateTag>
-                <QuestionPopover title={str} />
+                <QuestionPopover 
+                    title={
+                        <span dangerouslySetInnerHTML={{
+                            __html: state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`) 
+                        }} 
+                        />
+                    }
+                />
             </Space>
         )
     }
