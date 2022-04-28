@@ -22,7 +22,7 @@ export default forwardRef(
         const [fetch, setFetch] = useState(false)
 
         const { data: suiteList, loading, run: requestSuiteList } = useRequest(
-            () => queryTestSuiteCases({ test_type, ws_id, page_num: 1, page_size: 100 }),
+            () => queryTestSuiteCases({ test_type, ws_id, page_num: 1, page_size: 200 }),
             { initialData: [], manual: true }
         )
 
