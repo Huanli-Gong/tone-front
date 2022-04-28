@@ -150,6 +150,7 @@ export default ( props : ColumnsProp ) => {
         title: '操作',
         dataIndex: 'title',
         width: 65,
+        fixed: 'right',
         render: (_: any, row: any, index: number) => (
             !disabled &&
             <>
