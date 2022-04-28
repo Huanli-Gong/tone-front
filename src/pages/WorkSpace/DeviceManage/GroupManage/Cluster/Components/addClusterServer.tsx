@@ -174,6 +174,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                             placeholder="请选择机器"
                                             loading={testServerLoading}
                                             getPopupContainer={node => node.parentNode}
+                                            showSearch
                                         >
                                             {
                                                 testServerList.map(
@@ -212,6 +213,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                                         placeholder="请选择机器"
                                                         loading={testServerLoading}
                                                         getPopupContainer={node => node.parentNode}
+                                                        showSearch
                                                     >
                                                         {
                                                             testServerList.map(
