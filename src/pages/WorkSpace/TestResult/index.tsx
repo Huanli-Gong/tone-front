@@ -136,6 +136,7 @@ let flag = false
 /**
  * 测试结果列表页
  */
+ export const reRunCheckedText = '是否使用原Job使用的机器'
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { location: { query } } = props
@@ -185,7 +186,8 @@ export default (props: any) => {
     const [loading, setLoading] = useState(true)
 
     const [pageCountSource, setPageCountSource] = useState<any>()
-
+    // 重跑选项之一
+    const [reRunChecked, setReRunChecked] = useState(false)
     const findDefaultVal = (projectName: []) => {
         const crr: Array<any> = []
         projectName.forEach((value: any) => {
@@ -1627,10 +1629,17 @@ export default (props: any) => {
                     <Row style={{ backgroundColor: '#fff', height: 93, paddingLeft: 20 }} align="middle">
                         <Form form={exportModalForm}>
                             <Form.Item valuePropName="checked" name="suite">
-                                <Checkbox >同时导入测试用例</Checkbox>
+                                <Checkbox onChange={(e: any)=> {
+                                    const { checked } = e.target
+                                    setReRunChecked(checked)
+                                    if (!checked) exportModalForm.setFieldsValue({ inheriting_machine: false })
+                                }}>同时导入测试用例</Checkbox>
                             </Form.Item>
                             <Form.Item valuePropName="checked" name="notice">
                                 <Checkbox>同时导入通知配置</Checkbox>
+                            </Form.Item>
+                            <Form.Item valuePropName="checked" name="inheriting_machine">
+                                <Checkbox disabled={!reRunChecked}>{reRunCheckedText}</Checkbox>
                             </Form.Item>
                         </Form>
                     </Row>

@@ -4,6 +4,7 @@ import { Modal, Row, Col, Form, Checkbox } from 'antd'
 import styled from 'styled-components'
 import { useParams } from 'umi'
 import { stringify } from 'querystring'
+import { reRunCheckedText } from '../../index'
 
 const Content = styled(Modal)`
     .ant-modal-body {
@@ -20,12 +21,13 @@ const Content = styled(Modal)`
 const ReRunModal = (props: any, ref: any) => {
     const { ws_id } = useParams<any>()
 
-    const [ visible , setVisible ] = useState( false )
-    const [ source ,setSource ] = useState<any>(null)
-
+    const [visible, setVisible] = useState(false)
+    const [source, setSource] = useState<any>(null)
+    // 重跑选项之一
+    const [reRunChecked, setReRunChecked] = useState(false)
     const hanldeCancle = () => {
-        setVisible( false )
-        setSource( null )
+        setVisible(false)
+        setSource(null)
         form.resetFields()
     }
 
@@ -45,13 +47,13 @@ const ReRunModal = (props: any, ref: any) => {
             })
     }
 
-    const [ form ] = Form.useForm()
+    const [form] = Form.useForm()
 
-    useImperativeHandle( ref , () => ({
-        show ( _ : any ) {
-            console.log( _ )
-            _ && setSource( _ )
-            setVisible( true )
+    useImperativeHandle(ref, () => ({
+        show(_: any) {
+            console.log(_)
+            _ && setSource(_)
+            setVisible(true)
         }
     }))
 
@@ -73,10 +75,20 @@ const ReRunModal = (props: any, ref: any) => {
             <Row style={{ backgroundColor: '#fff', height: 93, paddingLeft: 20 }} align="middle">
                 <Form form={form}>
                     <Form.Item valuePropName="checked" name="suite">
-                        <Checkbox >同时导入测试用例</Checkbox>
+                        <Checkbox
+                            onChange={(e: any) => {
+                                const { checked } = e.target
+                                setReRunChecked(checked)
+                                if (!checked) form.setFieldsValue({ inheriting_machine: false })
+                            }}>
+                            同时导入测试用例
+                        </Checkbox>
                     </Form.Item>
                     <Form.Item valuePropName="checked" name="notice">
                         <Checkbox>同时导入通知配置</Checkbox>
+                    </Form.Item>
+                    <Form.Item valuePropName="checked" name="inheriting_machine">
+                        <Checkbox disabled={!reRunChecked}>{reRunCheckedText}</Checkbox>
                     </Form.Item>
                 </Form>
             </Row>
@@ -84,4 +96,4 @@ const ReRunModal = (props: any, ref: any) => {
     )
 }
 
-export default forwardRef( ReRunModal )
+export default forwardRef(ReRunModal)

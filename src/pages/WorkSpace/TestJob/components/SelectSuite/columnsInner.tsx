@@ -71,7 +71,7 @@ export default ( props : ColumnsProp ) => {
         render: (_: any, row: any) => {
             const { server_tag_id } = row
             if (server_tag_id && server_tag_id.length > 0) {
-                const tagList = row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>)
+                const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : '随机'
                 return (
                     <Tooltip placement="topLeft" title={ tagList } >
                         { tagList }
