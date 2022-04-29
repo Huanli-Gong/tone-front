@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space } from 'antd'
+import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert } from 'antd'
 import styles from './index.less'
 import { useRequest, history, useModel, Access, useAccess, useParams } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
@@ -169,7 +169,7 @@ export default (props: any) => {
                                 </Row>
                                 <Row >
                                     <Col span={17} >
-                                        <Row style={{ marginBottom: 26 }}>
+                                        <Row style={{ marginBottom: data.state !== 'pending' ? 26 : 0 }}>
                                             <Space>
                                                 <StateTag state={data.state} />
                                                 {data.provider_name && <Tooltip title="机器类型" placement="bottom">
@@ -180,7 +180,22 @@ export default (props: any) => {
                                                     <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.job_type}</Tag></Tooltip>}
                                             </Space>
                                         </Row>
-
+                                        {
+                                            data.state === 'pending' && 
+                                            <Row style={{ marginBottom: 26, marginTop: 6 }}>
+                                                <Alert 
+                                                    message={
+                                                        <span dangerouslySetInnerHTML={{
+                                                            __html: data.pending_state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`) 
+                                                        }} />
+                                                    } 
+                                                    type="warning" 
+                                                    showIcon 
+                                                    closable
+                                                    style={{ height: 30, color:'rgba(0,0,0,0.65)', fontSize:12 }}
+                                                />
+                                            </Row>
+                                        }
                                         <Row className={styles.test_summary_row} >
                                             <RenderDesItem name="创建人" dataIndex={data.creator_name} />
                                             <RenderDesItem name="创建时间" dataIndex={data.gmt_created} />
