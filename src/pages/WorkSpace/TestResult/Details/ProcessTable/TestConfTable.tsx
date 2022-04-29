@@ -1,19 +1,42 @@
-import React from 'react'
+import React,{ useEffect, useState } from 'react'
 import { Button, Table, message, Tooltip } from 'antd'
-
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 import PermissionTootip from '@/components/Public/Permission/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
-import { useRequest, useAccess, Access, useModel } from 'umi'
+import { useAccess, Access, useModel } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
+import CommonPagination from '@/components/CommonPagination';
 
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
+    const PAGE_DEFAULT_PARAMS: any = { 
+        page_num: 1, 
+        page_size: 10, 
+        job_id, 
+        test_suite_id,
+    }
+    const [pageParams, setPageParams] = useState<any>(PAGE_DEFAULT_PARAMS)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [total, setTotal] = useState<number>(0)
+    const [dataSource, setDataSource] = useState<any>([])
     const { initialState } = useModel('@@initialState');
-    const { data, loading, refresh } = useRequest(
-        () => queryProcessCaseList({ job_id, test_suite_id })
-    )
     const access = useAccess();
+
+    const queryTestListTableData = async() => {
+        setLoading(true)
+       const { data, code, msg, total } = await queryProcessCaseList(pageParams)
+        if(code === 200){
+            setDataSource(data)
+            setTotal(total)
+            setLoading(false)
+        } else {
+            requestCodeMessage(code,msg)
+        }
+    }
+
+    useEffect(() => {
+        queryTestListTableData()
+    }, [ pageParams ])
 
     const ipShow = (ip: any) => {
         const content = (
@@ -32,6 +55,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         }
         return '-'
     }
+
     const columns = [
         {
             dataIndex: 'test_case_name',
@@ -129,17 +153,29 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             return
         }
         message.success('操作成功')
-        refresh()
+        queryTestListTableData()
     }
 
     return (
-        <Table
-            columns={columns}
-            dataSource={data}
-            loading={loading}
-            rowKey='id'
-            size="small"
-        // pagination={ false }
-        />
+        <>
+            <Table
+                columns={columns}
+                dataSource={dataSource}
+                loading={loading}
+                rowKey='id'
+                size="small"
+                pagination={ false }
+            />
+            <CommonPagination
+                total={total}
+                currentPage={pageParams.page_num}
+                pageSize={pageParams.page_size}
+                onPageChange={
+                    (page_num, page_size) => {
+                        setPageParams({ ...pageParams, page_num, page_size })
+                    }
+                }
+            />
+        </>
     )
 }
