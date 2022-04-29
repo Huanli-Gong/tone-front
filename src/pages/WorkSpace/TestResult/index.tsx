@@ -904,6 +904,7 @@ export default (props: any) => {
         () => {
             setModalData({})
             setVisible(false)
+            setReRunChecked(false)
             exportModalForm.resetFields()
         }, []
     )

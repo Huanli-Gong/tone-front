@@ -27,6 +27,7 @@ const ReRunModal = (props: any, ref: any) => {
     const [reRunChecked, setReRunChecked] = useState(false)
     const hanldeCancle = () => {
         setVisible(false)
+        setReRunChecked(false)
         setSource(null)
         form.resetFields()
     }
