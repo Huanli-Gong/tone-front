@@ -277,7 +277,13 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             dataIndex: 'tag_list',
             width: 250,
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectTags run_mode={'cluster'} autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setParams({ ...params, page:1, tags:val })}} />,
+            filterDropdown: ({ confirm }: any) =>
+              <SelectTags
+                ws_id={ws_id}
+                run_mode={'cluster'}
+                autoFocus={autoFocus} 
+                confirm={confirm} 
+                onConfirm={(val: number) => { setParams({ ...params, page:1, tags:val })}} />,
             render: (_: any, row: any) => <div>
                 {
                     row.tag_list.map((item: any, index: number) => {

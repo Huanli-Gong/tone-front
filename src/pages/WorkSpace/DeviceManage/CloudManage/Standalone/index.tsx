@@ -263,9 +263,10 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => 
-                    <SelectTags 
+                    <SelectTags
+                        ws_id={ws_id}
                         run_mode={'standalone'} 
                         autoFocus={autoFocus} 
                         confirm={confirm} 
@@ -337,7 +338,7 @@ export default (props: any) => {
             },
         ]
         setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
-    }, [params.type])
+    }, [params.type, params.tags])
 
     // 部署Agent
     const deployClick = (row: any) => {
