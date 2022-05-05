@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useImperativeHandle } from 'react';
-import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Empty, message, Cascader, InputNumber } from 'antd';
+import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Badge, message, Cascader, InputNumber } from 'antd';
 import { requestCodeMessage, resetImage, resetECI, enumerChinese, enumerEnglish } from '@/utils/utils';
 import { QusetionIconTootip } from '@/components/Product/index'
 import {
@@ -20,12 +20,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     const { ws_id } = useParams<any>()
     const [loading, setLoading] = useState<boolean>(true)
     const [visible, setVisible] = useState<boolean>(false)
+    const [btnLoading,setBtnLoading] = useState<boolean>(false)
     const [keyword, setKeyword] = useState<string>()
     const [user, setUser] = useState<any>([])
     const [fetching, setFetching] = useState<boolean>(true)
     const { Option } = Select;
     const [is_instance, setIs_instance] = useState<number | undefined>(0)
-    // 
     const [instance, setInstance] = useState<any>([])
     const [image, setImage] = useState<any>([])
     const [sever, setSever] = useState<any>([])
@@ -393,11 +393,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             zone: param.region[1],
             id: param.manufacturer[0]
         }
-        if(param.ak_name == 'aliyun_eci'){
+        if (param.ak_name == 'aliyun_eci') {
             let t = param.instance_type
             let type1 = t.indexOf('C')
             let type2 = t.indexOf('G')
-            param.instance_type_one = Number(t.substring(0,type1))
+            param.instance_type_one = Number(t.substring(0, type1))
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
         if (param.is_instance) {
@@ -412,9 +412,9 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }, 1)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         setShowZone(!firstAddDataFlag)
-    },[ firstAddDataFlag ])
+    }, [firstAddDataFlag])
 
     useImperativeHandle(onRef, () => ({
         newMachine: (id: number) => { newMachine(id) },
@@ -439,9 +439,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     }, [image])
 
     const [form] = Form.useForm();
-    const submit = _.debounce(
-        async (params: any) => {
-        // setVisible(false)
+    const submit = async (params: any) => {
+        setBtnLoading(true)
         let param = { ...params, ws_id }
         if (params.hasOwnProperty('manufacturer')) {
             param.manufacturer = params?.manufacturer[0]
@@ -488,15 +487,17 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
         const res = id ? await editGroupMachine(id, { ...param }) : await addGroupMachine({ ...param })
         if (res.code === 200) {
+            setBtnLoading(false)
             message.success('操作成功');
             // case1.初始化状态&&重置表单
             initialState()
             // case2.回调函数
             onSuccess({ parentId: cluster_id })
         } else {
+            setBtnLoading(false)
             requestCodeMessage(res.code, res.msg)
         }
-    },1500)
+    }
     useEffect(() => {
         AkResetStatus()
     }, [is_instance])
@@ -593,7 +594,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     <Button onClick={onClose} style={{ marginRight: 8 }}>
                         取消
                     </Button>
-                    <Button onClick={() => onSubmit()} type="primary">
+                    <Button onClick={() => onSubmit()} loading={btnLoading} type="primary">
                         确定
                     </Button>
                 </div>
@@ -604,11 +605,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     layout="vertical"
                     form={form}
                     initialValues={{
-                        instance_type_one:1,
-                        instance_type_two:1,
-                        system_disk_size:40,
-                        storage_size:40,
-                        storage_number:1
+                        instance_type_one: 1,
+                        instance_type_two: 1,
+                        system_disk_size: 40,
+                        storage_size: 40,
+                        storage_number: 1
                     }}
                 >
                     <Row gutter={16}>
@@ -703,25 +704,25 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType === '' ? 
-                            null 
-                            : !id || !is_instance ?
-                            <Col span={12}>
-                                <Form.Item label="Region/Zone"
-                                    name="region"
-                                    validateStatus={validateRegion ? '' : 'error'}
-                                    help={validateRegion ? undefined : `没有符合的Region/Zone`}
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Cascader
-                                        disabled={region?.length === 0 || !!id || !firstAddDataFlag} // 无数据||编辑||已添加过数据时，不可编辑
-                                        options={region}
-                                        loadData={loadRegionData}
-                                        onChange={onRegionChange}
-                                    />
-                                </Form.Item>
-                            </Col> :
+                        {manufacturerType === '' ?
                             null
+                            : !id || !is_instance ?
+                                <Col span={12}>
+                                    <Form.Item label="Region/Zone"
+                                        name="region"
+                                        validateStatus={validateRegion ? '' : 'error'}
+                                        help={validateRegion ? undefined : `没有符合的Region/Zone`}
+                                        rules={[{ required: true, message: '请选择' }]}
+                                    >
+                                        <Cascader
+                                            disabled={region?.length === 0 || !!id || !firstAddDataFlag} // 无数据||编辑||已添加过数据时，不可编辑
+                                            options={region}
+                                            loadData={loadRegionData}
+                                            onChange={onRegionChange}
+                                        />
+                                    </Form.Item>
+                                </Col> :
+                                null
                         }
                         {!showZone ? null : !id && is_instance ?
                             <Col span={12}>
@@ -746,7 +747,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { !showZone ? null : !is_instance ? (
+                        {!showZone ? null : !is_instance ? (
                             <>
                                 {manufacturerType === 'aliyun_eci' ?
                                     <Col span={12}>
@@ -806,36 +807,36 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             :
                             null
                         }
-                        { !showZone ? null : !is_instance ?
-                         manufacturerType === 'aliyun_eci' ?
-                            <Col span={12}>
-                                <Form.Item label="镜像"
-                                    name="image"
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0  || !!id}
-                                        options={resetECI(image, 'platform')}
-                                        expandTrigger="hover"
-                                        displayRender={displayRender}
-                                    />
-                                </Form.Item>
-                            </Col> 
-                            :
-                            <Col span={12}>
-                                <Form.Item label="镜像"
-                                    name="image"
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0 || !!id}
-                                        options={resetImage(image, 'owner_alias', 'platform')}
-                                        expandTrigger="hover"
-                                        displayRender={displayRender}
-                                    />
-                                </Form.Item>
-                            </Col> :
+                        {!showZone ? null : !is_instance ?
+                            manufacturerType === 'aliyun_eci' ?
+                                <Col span={12}>
+                                    <Form.Item label="镜像"
+                                        name="image"
+                                        rules={[{ required: true, message: '请选择' }]}
+                                    >
+                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0 || !!id}
+                                            options={resetECI(image, 'platform')}
+                                            expandTrigger="hover"
+                                            displayRender={displayRender}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                :
+                                <Col span={12}>
+                                    <Form.Item label="镜像"
+                                        name="image"
+                                        rules={[{ required: true, message: '请选择' }]}
+                                    >
+                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0 || !!id}
+                                            options={resetImage(image, 'owner_alias', 'platform')}
+                                            expandTrigger="hover"
+                                            displayRender={displayRender}
+                                        />
+                                    </Form.Item>
+                                </Col> :
                             null
                         }
-                        { !showZone ? null : !is_instance ?
+                        {!showZone ? null : !is_instance ?
                             <Col span={8}>
                                 <Form.Item label="系统盘"
                                     name="system_disk_category"
@@ -937,7 +938,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             </Col> :
                             null
                         }
-
                         {!is_instance ?
                             <Col span={12} className={styles.warp} >
                                 <Form.Item
@@ -954,6 +954,22 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 </Form.Item>
                             </Col> :
                             null
+                        }
+                        {is_instance ?
+                            <Col span={12}>
+                                <Form.Item label="使用状态"
+                                    name="state"
+                                    hasFeedback
+                                    rules={[{ required: true, message: '请选择机器状态!' }]}
+                                    initialValue={'Available'}
+                                >
+                                    <Select placeholder="请选择机器状态" >
+                                        <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
+                                        <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
+                                        <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </Col> : null
                         }
                         <Col span={12}>
                             <Owner />
@@ -1001,7 +1017,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 initialValue={'toneagent'}
                                 rules={[{ required: true, message: '请选择控制通道' }]}
                             >
-                                <AgentSelect disabled={BUILD_APP_ENV}/>
+                                <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
                         </Col>
 
