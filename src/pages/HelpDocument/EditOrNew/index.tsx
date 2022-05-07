@@ -530,17 +530,15 @@ export default (props: any) => {
 
     const handlePublish = async () => {
         form.validateFields().then(async (values) => {
+                // 正则过滤 Emoji 字符
+                const regStr = /[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF][\u200D|\uFE0F]|[\uD83C|\uD83D|\uD83E][\uDC00-\uDFFF]|[0-9|*|#]\uFE0F\u20E3|[0-9|#]\u20E3|[\u203C-\u3299]\uFE0F\u200D|[\u203C-\u3299]\uFE0F|[\u2122-\u2B55]|\u303D|[\A9|\AE]\u3030|\uA9|\uAE|\u3030/ig;
+                const txt = editor.txt.html()?.replace(regStr,"")
                 const param: any = {
                     ...values,
                     title,
-                    content: editor.txt.html(),
+                    content: txt,
                     doc_type: typePath
                 }
-                // let fetchFn = createHelpDoc
-                // if (operationType === 'edit') {
-                //     fetchFn = updateHelpDoc
-                //     param.id = Number(help_id)
-                // }
                 // const { code, msg, data } = await fetchFn(param)
                 const { code, msg, data } = operationType === 'edit' ?
                     await updateHelpDoc({ ...param, id: Number(help_id) }) : await createHelpDoc(param)
