@@ -6,6 +6,7 @@ import { querySearchListQuantity } from '../../service';
 import styles from './index.less';
 import { useParams } from 'umi'
 import { useClientSize } from '@/utils/hooks';
+import { getQuery } from '@/utils/utils';
 
 const { Search } = Input;
 const { TabPane } = Tabs;
@@ -14,9 +15,9 @@ const { TabPane } = Tabs;
  * @param props
  */
 const TestSuiteSearch: React.FC<any> = (props) => {
-  const { ws_id , keyword } : any = useParams()
-  const searchKey = typeof(keyword) === 'string' ? keyword : ''
-
+  const { ws_id ,  } : any = useParams() // keyword
+  const { keyword }: any = getQuery('')
+  const searchKey = keyword
   // 滚动区域可视高度
   // 搜索栏
   const [loading, setLoading] = useState(false)
@@ -52,13 +53,18 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const { height } = useClientSize()
 
   useEffect(() => {
+    if (searchKey) {
     getSearchListQuantity({ search_key: searchKey })
     setSearchKeyword(searchKey)
+    }
   }, [searchKey]);
 
   // 搜索
   const onSearch = (value: string) => {
     if (value) {
+      // case1.仅修改url地址，但不刷新页面
+      searchKey && window.history.pushState({}, 0,  window.location.origin + window.location.pathname);
+      // case2.搜索
       getSearchListQuantity({ search_key: value })
       setSearchKeyword(value)
       setRefresh(!refresh)

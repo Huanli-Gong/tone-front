@@ -45,7 +45,10 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const onSearch = (value: string) => {
     if (value) {
       history.push({
-        pathname: `${path}/suite_search/key/${ value }`,
+        pathname: `${path}/suite_search/key`,
+        query: {
+          keyword: value,
+        }
       });
     }
   }
