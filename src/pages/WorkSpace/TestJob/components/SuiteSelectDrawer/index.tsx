@@ -163,11 +163,16 @@ const SuiteDrawer = (props: any, ref: any) => {
             }
             return
         }
-        
         if( flag && ip ){
-            setServerObjectType('server_object_id')
+            if (server_type === 'aliyun' && run_mode === 'standalone'){
+                if (is_instance === 0) setServerObjectType('setting')
+                if (is_instance === 1) setServerObjectType('instance')
+            } else {
+                setServerObjectType('server_object_id')
+            } 
             return
         }
+
 
         if ((Array.isArray(server_tag_id) && server_tag_id.length) || server_object_id) {
             setServerType('pool')

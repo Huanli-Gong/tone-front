@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button , Tooltip } from 'antd'
 import { MinusCircleOutlined } from '@ant-design/icons'
-import { noop } from 'lodash'
+import { noop, isNull } from 'lodash'
 import styles from './style.less'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Tag from 'antd/es/tag'
@@ -76,6 +76,14 @@ export default ( props : ColumnsProp ) => {
                     <Tooltip placement="topLeft" title={ tagList } >
                         { tagList }
                     </Tooltip >
+                )
+            }
+
+            if(isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}'){
+                return (
+                    <Tooltip placement="topLeft" title={row.customer_server.custom_ip}>
+                        { row.customer_server.custom_ip}
+                    </Tooltip>
                 )
             }
 
