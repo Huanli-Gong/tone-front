@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useImperativeHandle, useMemo } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Tag, Spin, Empty, message, Cascader, InputNumber, Badge, Space, Typography } from 'antd';
 import {
-    addCloud, editCloud, queryTag, queryMember, queryInstance, querysImage, queryCategories, querysServer, querysAK,
+    addCloud, editCloud, queryTag, queryInstance, querysImage, queryCategories, querysServer, querysAK,
     querysRegion, queryZone, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
@@ -33,9 +33,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [options, setOptions] = React.useState(optionLists);
     const [loading, setLoading] = useState<boolean>(false)
     const [visible, setVisible] = useState<boolean>(false)
+    const [tagsPagination, setTagsPagination] =  useState({ total: 0, page_num: 1, page_size: 10 });
     const [tagList, setTagList] = useState<any>([])
-    const [keyword, setKeyword] = useState<string>()
-    const [user, setUser] = useState<any>([])
     const [fetching, setFetching] = useState<boolean>(true)
     const { Option } = Select;
     const [is_instance, setIs_instance] = useState<number>(0) // 默认"机器配置"
@@ -46,7 +45,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [id, setId] = useState<number>()
     const [showZone, setShowZone] = useState<number>(0)
     const [region, setRegion] = useState<any>([])
-    const [tagWord, setTagword] = useState<string>()
+    const [tagWord, setTagWord] = useState<string>()
     const [categories, setCategories] = useState<any>([])
     const [disabled, setDisabled] = useState<boolean>(true)
     // 编辑的数据
@@ -56,16 +55,43 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [validateImage, setValidateImage] = React.useState(false); // 校验镜像
     const [manufacturerType, setChangeManufacturer] = React.useState(''); // 切换规格
 
-
     const getServerTagList = async (word?: string) => {
         const param = word && word.replace(/\s*/g, "")
         if (tagWord && tagWord == param) return
-        setTagword(param)
-        setFetching(true)
-        const { data } = await queryTag({ ws_id, name: param })//run_mode: 'standalone', run_environment: 'aliyun', 
-        setTagList(data || [])
-        setFetching(false)
+        setTagWord(param)
+        requestData({ ws_id, page_num: 1, page_size: 10, name: param }, 'reset')
     }
+    const handlePopupScroll = (e: any) => {
+        const { page_num, page_size, total, } = tagsPagination
+        const { clientHeight, scrollHeight, scrollTop} = e.target
+        if ( clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total/page_size) > page_num ) {
+          requestData({ ws_id, page_num: page_num + 1, page_size, name: tagWord }, 'concat')
+        }
+    }
+    const requestData = async (query: any, option="concat") => {
+        setFetching(true)
+        try {
+            let res = await queryTag(query)
+            if (res.code === 200) {
+                // 分页数据合并。
+                if (option === 'concat') {
+                    const data = tagList.concat(res.data || [])
+                    setTagList(data || [])
+                    setTagsPagination(res);
+                } else if (option === 'reset') {
+                    // 新的数据。
+                    setTagList(res.data || [])
+                    setTagsPagination(res);
+                }
+            } else {
+                message.error(res.msg || '请求数据失败');
+            }
+            setFetching(false)
+        } catch (err) {
+            setFetching(false)
+        }
+    }
+
     const getInstancegList = async (param: any) => {
         const { data } = await queryInstance(param)
         setInstance(data || [])
@@ -86,15 +112,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         const { data } = await querysServer(param)
         setSever(data || [])
     }
-    const handleSearch = async (word?: string) => {
-        const param = word && word.replace(/\s*/g, "")
-        if (keyword && keyword == param) return
-        setKeyword(param)
-        setFetching(true)
-        let { data } = await queryMember({ keyword: param,/* scope:'aligroup' */ })
-        setUser(data || [])
-        setFetching(false)
-    }
+
     const loadData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         targetOption.loading = true;
@@ -278,7 +296,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setValidateImage(false)
         setCategories([])
         form.resetFields()
-        Promise.all([getServerTagList(), handleSearch()])
+        getServerTagList()
         setTimeout(function () {
             form.setFieldsValue({
                 is_instance: type - 0,
@@ -312,8 +330,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setChangeManufacturer(row.manufacturer)
         setId(row.id)
         setIs_instance(Number(type))
-        setUser([{ id: row.owner, last_name: row.owner_name }])
-        setTagList(row.tag_list)
+        setTagList(row.tag_list) // 因为标签字段数据源是分页的，某些已选标签匹配不上数据源，所以要拿已选标签做数据源。
         let params = {
             ak_id: param.ak_id,
             region: param.region[0],
@@ -345,14 +362,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         }
         // form.resetFields()
         form.setFieldsValue(param)
-
-        // setTimeout(function () {
-        //     // 数据回填
-        // }, 1)
     }
-   
+
     // 编辑时，镜像字段数据回填
-    // console.log('editData',editData,image)
     useEffect(() => {
         if (Object.keys(editData).length && editData.image && image.length) {
             const selectItem = image.filter((item: any) => item.id === editData.image)
@@ -368,7 +380,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             }
         }
     }, [image])
-
 
     const [form] = Form.useForm();
     const submit = _.debounce(
@@ -451,8 +462,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const tagRender = (props: any) => {
         const { label, closable, onClose } = props;
         return (
-            <Tag color={label.props.color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-                {label.props.children}
+            <Tag color={label?.props?.color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+                {label?.props?.children}
             </Tag>
         )
     }
@@ -962,12 +973,14 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     allowClear
                                     notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                                     filterOption={false}
+                                    showSearch
                                     placeholder="请选择"
                                     onSearch={getServerTagList}
-                                    onFocus={() => { getServerTagList() }}
+                                    onPopupScroll={fetching? ()=> {}: handlePopupScroll} // 防抖
                                     style={{ width: '100%' }}
                                     showArrow={false}
-                                    showSearch
+                                    onFocus={() => { getServerTagList() }}
+                                    getPopupContainer={node => node.parentNode}
                                     tagRender={tagRender}
                                 >
                                     {tagList.map(

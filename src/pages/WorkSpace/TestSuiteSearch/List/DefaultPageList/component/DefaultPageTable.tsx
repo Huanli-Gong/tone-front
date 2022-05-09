@@ -110,6 +110,7 @@ const DefaultPageTable: React.FC<any> = (props: any) => {
                     <ChildTable
                       ws_id={ws_id}
                       key={i}
+                      test_type={type}
                       {...record}
                     />
                   ),

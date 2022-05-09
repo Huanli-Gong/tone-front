@@ -11,7 +11,7 @@ import styles from './index.less'
 // 子列表
 export default (props: any) => {
    const { pathname } = new URL(window.location.href)
-    const { ws_id, id, name } = props
+    const { ws_id, id, name, test_type } = props
     const [loading, setLoading] = useState(false)
     const [dataSource, setDataSource] = useState<any>([])
 
@@ -33,7 +33,7 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-      getListData({ ws_id, suite_id: id })
+      getListData({ test_type, ws_id, suite_id: id  })
     }, [ id ])
 
     const columns: any = [{
