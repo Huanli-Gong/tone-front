@@ -19,6 +19,7 @@ import RenderMachineItem from './components/MachineTable'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
+import { isNull } from 'lodash'
 
 export default (props: any) => {
     const { ws_id, id: job_id } = useParams() as any
@@ -169,7 +170,7 @@ export default (props: any) => {
                                 </Row>
                                 <Row >
                                     <Col span={17} >
-                                        <Row style={{ marginBottom: data.state !== 'pending' ? 26 : 0 }}>
+                                        <Row style={{ marginBottom: data.state !== 'pending' || isNull(data.pending_state_desc) ? 26 : 0 }}>
                                             <Space>
                                                 <StateTag state={data.state} />
                                                 {data.provider_name && <Tooltip title="机器类型" placement="bottom">
@@ -181,7 +182,7 @@ export default (props: any) => {
                                             </Space>
                                         </Row>
                                         {
-                                            data.state === 'pending' && 
+                                            data.state === 'pending' && data.pending_state_desc &&
                                             <Row style={{ marginBottom: 26, marginTop: 6 }}>
                                                 <Alert 
                                                     message={
