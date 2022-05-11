@@ -151,9 +151,9 @@ const SuiteDrawer = (props: any, ref: any) => {
 
         return { suiteMultip }
     }
-
     const changeServerSelect = (params: any) => {
         const { server_object_id, server_tag_id, ip, is_instance , customer_server } = params
+        let flag = location.search.indexOf('inheriting_machine') !== -1
         
         if ( customer_server && JSON.stringify( customer_server ) !== '{}') {
             const { custom_ip , custom_channel } = customer_server 
@@ -163,7 +163,17 @@ const SuiteDrawer = (props: any, ref: any) => {
             }
             return
         }
- 
+        if( flag && ip ){
+            if (server_type === 'aliyun' && run_mode === 'standalone'){
+                if (is_instance === 0) setServerObjectType('setting')
+                if (is_instance === 1) setServerObjectType('instance')
+            } else {
+                setServerObjectType('server_object_id')
+            } 
+            return
+        }
+
+
         if ((Array.isArray(server_tag_id) && server_tag_id.length) || server_object_id) {
             setServerType('pool')
             if (server_object_id) {
@@ -467,12 +477,11 @@ const SuiteDrawer = (props: any, ref: any) => {
 
             const random = Array.isArray(ip) ? ip.filter((i: any) => i === '随机') : []
             // const hasRandom = random.length > 0
-
             let multipPool = (objectLen + tagLen + random.length) > 1
             let multipServer = customLen > 1
 
             if (multipServer || multipPool) setMask(true)
-
+            
             if (!multipPool && !multipServer) {
                 setServerType('pool')
                 if (objectLen === 1) {

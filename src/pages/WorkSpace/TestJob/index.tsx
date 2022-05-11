@@ -423,10 +423,11 @@ const TestJob: React.FC<any> = (props) => {
         setFetching(false)
     }
     const handleServerChannel = (testConfig: any[]) => {
+        let flag = location.search.indexOf('inheriting_machine') !== -1
         return testConfig.map((item: any) => {
             const cases = _.get(item, 'cases') || []
             item.cases = cases.map((ctx: any) => {
-                const { customer_server } = ctx || {}
+                const { customer_server, server_object_id } = ctx || {}
                 const channel_type = _.get(customer_server, 'custom_channel')
                 const ip = _.get(customer_server, 'custom_ip')
                 if (channel_type && ip) {
@@ -435,6 +436,9 @@ const TestJob: React.FC<any> = (props) => {
                         channel_type
                     }
                     delete ctx.customer_server
+                }
+                if( flag && server_object_id ){
+                    delete ctx.server_tag_id
                 }
                 return ctx
             })

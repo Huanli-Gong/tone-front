@@ -58,7 +58,7 @@ const ServerObjectSelect = (props: any) => {
         else { //aliyun
             run_mode === 'cluster' ?
                 await clusterGroupRequest() :
-                await clusterStandaloneRequest(page_num)
+                await clusterStandaloneRequest()
         }
         setFetching(false)
     }

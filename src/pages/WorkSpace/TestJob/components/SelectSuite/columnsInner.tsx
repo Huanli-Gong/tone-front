@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button , Tooltip } from 'antd'
 import { MinusCircleOutlined } from '@ant-design/icons'
-import { noop } from 'lodash'
+import { noop, isNull } from 'lodash'
 import styles from './style.less'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Tag from 'antd/es/tag'
@@ -71,11 +71,19 @@ export default ( props : ColumnsProp ) => {
         render: (_: any, row: any) => {
             const { server_tag_id } = row
             if (server_tag_id && server_tag_id.length > 0) {
-                const tagList = row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>)
+                const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : '随机'
                 return (
                     <Tooltip placement="topLeft" title={ tagList } >
                         { tagList }
                     </Tooltip >
+                )
+            }
+
+            if(isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}'){
+                return (
+                    <Tooltip placement="topLeft" title={row.customer_server.custom_ip}>
+                        { row.customer_server.custom_ip}
+                    </Tooltip>
                 )
             }
 

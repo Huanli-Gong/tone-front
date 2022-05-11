@@ -77,8 +77,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 }
             }
 
-            const hasBuildKernel = JSON.stringify(build_pkg_info) !== '{}'
-
+            const hasBuildKernel = !!build_pkg_info && JSON.stringify(build_pkg_info) !== '{}'
+            
             if (kernel_version) setKernal('install_push')
             if (!kernel_version&& !hasBuildKernel) setKernal('no')
             if (hasBuildKernel) setKernal('install_build_kernel')
