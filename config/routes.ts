@@ -415,7 +415,7 @@ const routes = [
 						component: '@/pages/WorkSpace/TestSuiteSearch/Details/SuiteDetails',
 					},
 					{
-						path: '/ws/:ws_id/suite_search/key/:keyword',
+						path: '/ws/:ws_id/suite_search/key',
 						name: 'TestSuiteSearchResult',
 						hideInMenu: true,
 						inNav: true,
