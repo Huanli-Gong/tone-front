@@ -5,7 +5,7 @@ import { useRequest, history, useModel, Access, useAccess, useParams } from 'umi
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection } from '@/pages/WorkSpace/TestResult/services'
-import { StarOutlined, StarFilled } from '@ant-design/icons'
+import { StarOutlined, StarFilled, EditOutlined } from '@ant-design/icons'
 import Chart from './components/Chart'
 import TestResultTable from './TestRsultTable'
 import ProcessTable from './ProcessTable'
@@ -19,7 +19,7 @@ import RenderMachineItem from './components/MachineTable'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
-import { isNull } from 'lodash'
+import _, { isNull } from 'lodash'
 
 export default (props: any) => {
     const { ws_id, id: job_id } = useParams() as any
@@ -31,6 +31,7 @@ export default (props: any) => {
     const editRemarkDrawer: any = useRef()
     const processTableRef: any = useRef()
     const [collection, setCollection] = useState(false)
+    const [fetching, setFetching] = React.useState(false)
     const allReport: any = useRef(null)
     const veiwReportHeight: any = useRef(null)
     const timer: any = useRef(null)
@@ -48,7 +49,7 @@ export default (props: any) => {
             initialData: {},
         }
     )
-
+    
     const handleTabClick = (t: string) => {
         setTab(t)
     }
@@ -92,7 +93,6 @@ export default (props: any) => {
         if (code !== 200) return requestCodeMessage(code, msg)
         setCollection(!collection)
     }
-    const [fetching, setFetching] = React.useState(false)
 
     const handleStopJob = async () => {
         if (fetching) return
@@ -111,13 +111,7 @@ export default (props: any) => {
         processTableRef.current.refresh()
         setFetching(false)
     }
-
-    const EditNoteBtn: React.FC<any> = (props: any) => {
-        return (
-            <Button type="link" size="small" onClick={handleOpenEditRemark} style={{ padding: 0, marginLeft: props.note && 10 }} >写备注</Button>
-        )
-    }
-
+    
     const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => (
         <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
             <Typography.Text className={styles.test_summary_item}>{name}</Typography.Text>
@@ -133,7 +127,26 @@ export default (props: any) => {
             }
         </Col>
     )
-
+    
+    const EditNoteBtn: React.FC<any> = (props: any) => {
+        const { note } = props;
+        let len = note.split('\n')
+        let noteStyle:any = {
+            padding: 0,
+            marginLeft: 10
+        }
+        if(len.length > 2){
+            noteStyle.position = 'absolute'
+            noteStyle.top = 26
+            noteStyle.left = len[1].length * 14
+        }
+        return (
+            <EditOutlined
+                onClick={handleOpenEditRemark}
+                style={{...noteStyle}} />
+        )
+    }
+    
     const BreadcrumbItem: React.FC<any> = (d: any) => (
         <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
             <Breadcrumb.Item >
@@ -184,16 +197,16 @@ export default (props: any) => {
                                         {
                                             data.state === 'pending' && data.pending_state_desc &&
                                             <Row style={{ marginBottom: 26, marginTop: 6 }}>
-                                                <Alert 
+                                                <Alert
                                                     message={
                                                         <span dangerouslySetInnerHTML={{
-                                                            __html: data.pending_state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`) 
+                                                            __html: data.pending_state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
                                                         }} />
-                                                    } 
-                                                    type="warning" 
-                                                    showIcon 
+                                                    }
+                                                    type="warning"
+                                                    showIcon
                                                     closable
-                                                    style={{ height: 30, color:'rgba(0,0,0,0.65)', fontSize:12 }}
+                                                    style={{ height: 30, color: 'rgba(0,0,0,0.65)', fontSize: 12 }}
                                                 />
                                             </Row>
                                         }
@@ -239,9 +252,23 @@ export default (props: any) => {
                                             <Typography.Text className={styles.test_summary_item}>
                                                 备注
                                             </Typography.Text>
-                                            <div style={{ width: 'calc(100% - 74px)', wordBreak: 'break-all' }}>
-                                                {access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
-                                                {access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
+                                            <div style={{
+                                                width: 'calc(100% - 74px)',
+                                                wordBreak: 'break-all',
+                                                whiteSpace: 'pre-wrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                display: '-webkit-box',
+                                                WebkitBoxOrient: 'vertical',
+                                                WebkitLineClamp: 2,
+                                                position: 'relative'
+                                            }}>
+                                                <Tooltip 
+                                                    title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>} 
+                                                >
+                                                    { access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
+                                                </Tooltip>
+                                                { access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></> }
                                             </div>
                                         </Row>
                                     </Col>

@@ -38,7 +38,6 @@ export default forwardRef(
                 .then(
                     async ( values : any ) => {
                         setPadding( true )
-                        console.log( values , data )
                         let params : any = { ...values }
                         params.editor_obj = data.editor_obj
                         params.ws_id = ws_id
