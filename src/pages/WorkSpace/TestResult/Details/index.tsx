@@ -49,7 +49,7 @@ export default (props: any) => {
             initialData: {},
         }
     )
-    
+
     const handleTabClick = (t: string) => {
         setTab(t)
     }
@@ -111,7 +111,7 @@ export default (props: any) => {
         processTableRef.current.refresh()
         setFetching(false)
     }
-    
+
     const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => (
         <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
             <Typography.Text className={styles.test_summary_item}>{name}</Typography.Text>
@@ -127,26 +127,30 @@ export default (props: any) => {
             }
         </Col>
     )
-    
+
     const EditNoteBtn: React.FC<any> = (props: any) => {
         const { note } = props;
-        let len = note.split('\n')
-        let noteStyle:any = {
+        let noteStyle: any = {
             padding: 0,
             marginLeft: 10
         }
-        if(len.length > 2){
-            noteStyle.position = 'absolute'
-            noteStyle.top = 26
-            noteStyle.left = len[1].length * 14
+        if (isNull(note)) {
+            noteStyle.marginLeft = 0
+        } else {
+            let len = note.split('\n')
+            if (len.length > 2) {
+                noteStyle.position = 'absolute'
+                noteStyle.top = 26
+                noteStyle.left = len[1].length * 14
+            }
         }
         return (
             <EditOutlined
                 onClick={handleOpenEditRemark}
-                style={{...noteStyle}} />
+                style={{ ...noteStyle }} />
         )
     }
-    
+
     const BreadcrumbItem: React.FC<any> = (d: any) => (
         <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
             <Breadcrumb.Item >
@@ -263,12 +267,12 @@ export default (props: any) => {
                                                 WebkitLineClamp: 2,
                                                 position: 'relative'
                                             }}>
-                                                <Tooltip 
-                                                    title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>} 
+                                                <Tooltip
+                                                    title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>}
                                                 >
-                                                    { access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
+                                                    {access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
                                                 </Tooltip>
-                                                { access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></> }
+                                                {access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
                                             </div>
                                         </Row>
                                     </Col>
