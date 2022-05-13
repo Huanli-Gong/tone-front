@@ -14,6 +14,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
     const [ skipBtn, setSkipBtn ] = useState<Boolean>(false)
+    const [ suiteId, setSuiteId ] = useState<number>(0)
     const { data, loading, run } = useRequest(
         () => queryProcessSuiteList({ job_id }),
         {
@@ -86,7 +87,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                                 <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
                             </Access>
                             {
-                                skipBtn 
+                                skipBtn && suiteId === _.id
                                 ? <span style={disablePointer} >跳过suite</span>
                                 : <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
                             }
@@ -97,7 +98,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                         <div>
                             <span style={style}>停止Suite</span>
                             {
-                                skipBtn 
+                                skipBtn && suiteId === _.id
                                 ? <span style={disablePointer} >跳过suite</span>
                                 : <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
                             }
@@ -141,10 +142,12 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
             test_job_suite_id: _.id,
         })
         if (code === 200){
+            setSuiteId(_.id)
             setSkipBtn(true)
             message.success('操作成功')
             run()
         } else {
+            setSkipBtn(false)
             requestCodeMessage(code, msg)
             return
         }
