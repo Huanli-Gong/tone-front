@@ -991,7 +991,7 @@ const TestJob: React.FC<any> = (props) => {
                             <Row className={styles.page_body} justify="center" >
                                 <div ref={bodyRef} style={{ width: 1000 }} />
                                 {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
-                                <div style={isYamlFormat ? { opacity: 0, width: 1240, height: 0 } : { opacity: 1, width: 1000 }}>
+                                <div style={isYamlFormat ? { width: 1240, display:'none' } : { width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>
                                         {name === 'TestJob' && <Row className={styles.page_body_title}>新建Job</Row>}
                                         {name === 'TestExport' && <Row className={styles.page_body_title}>导入配置</Row>}

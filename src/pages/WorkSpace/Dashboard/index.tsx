@@ -50,7 +50,7 @@ const WorkpsaceDashboard = (props: any) => {
     const { ws_id } = props.match.params
     const [time, setTime] = React.useState<Moment | string | undefined>('24h')
     const [ loading, setLoading ] = useState<boolean>(true)
-
+    
     const { data, run } = useRequest(() => queryWorkspaceProductData(
         produce({ ws_id }, (draft: any) => {
             if (moment.isMoment(time)) {
@@ -75,6 +75,11 @@ const WorkpsaceDashboard = (props: any) => {
         run()
     }, [time])
 
+    useEffect(()=>{
+        let obj:any = document.querySelector('html') 
+        obj.scrollTop = 0
+    },[])
+    
     const { height } = useClientSize()
 
     return (
