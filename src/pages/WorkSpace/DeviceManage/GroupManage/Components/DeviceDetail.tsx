@@ -167,8 +167,9 @@ const ViewDetailDrawer = forwardRef(
                             <Col span={6}>Channel:</Col>
                             <Col span={18}>
                                 <span>{details?.channel_type}</span>
+                                
                                 {
-                                    details?.channel_type === 'toneagent' &&
+                                    !BUILD_APP_ENV && details?.channel_type === 'toneagent' &&
                                     <span className={styles.btn_style} onClick={() => deployClick()}>重新部署</span>
                                 }
                             </Col>

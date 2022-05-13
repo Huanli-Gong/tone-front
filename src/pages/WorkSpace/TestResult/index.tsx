@@ -136,7 +136,7 @@ let flag = false
 /**
  * 测试结果列表页
  */
- export const reRunCheckedText = '是否使用原Job使用的机器'
+ export const reRunCheckedText = '使用原Job使用的机器'
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { location: { query } } = props

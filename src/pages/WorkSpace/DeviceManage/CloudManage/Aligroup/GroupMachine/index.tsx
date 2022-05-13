@@ -761,7 +761,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                                         min={1}
                                                         style={{ width: 70 }}
                                                         placeholder="大小"
-                                                        disabled={disabled || image.length === 0}
+                                                        disabled={image.length === 0}
                                                     />
                                                 </Form.Item>
                                                 <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>C</span>
@@ -775,7 +775,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                                         min={1}
                                                         style={{ width: 70, marginTop: 30 }}
                                                         placeholder="大小"
-                                                        disabled={disabled || image.length === 0}
+                                                        disabled={image.length === 0}
                                                     />
                                                 </Form.Item>
                                                 <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>G</span>
@@ -789,7 +789,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             rules={[{ required: true, message: '请选择' }]}
                                         >
                                             <Select placeholder="请选择"
-                                                disabled={disabled || image.length === 0}
+                                                disabled={image.length === 0}
                                                 showSearch
                                                 optionFilterProp="children"
                                                 filterOption={(input, option: any) =>
@@ -814,7 +814,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         name="image"
                                         rules={[{ required: true, message: '请选择' }]}
                                     >
-                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0 || !!id}
+                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetECI(image, 'platform')}
                                             expandTrigger="hover"
                                             displayRender={displayRender}
@@ -827,7 +827,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         name="image"
                                         rules={[{ required: true, message: '请选择' }]}
                                     >
-                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0 || !!id}
+                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform')}
                                             expandTrigger="hover"
                                             displayRender={displayRender}
@@ -844,7 +844,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     {categories.length == 0 ?
                                         <Select placeholder="资源紧缺" disabled={true} ></Select>
                                         :
-                                        <Select placeholder="请选择" disabled={disabled} >
+                                        <Select placeholder="请选择">
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -870,7 +870,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         max={500}
                                         defaultValue={40}
                                         //onChange={(value)=>setSizeNum(value)}
-                                        disabled={disabled || image.length === 0}
+                                        disabled={image.length === 0}
                                     />
                                 </Form.Item>
                                 <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>G</span>
@@ -886,7 +886,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     {categories.length == 0 ?
                                         <Select placeholder="资源紧缺" disabled={true} ></Select>
                                         :
-                                        <Select placeholder="请选择" disabled={disabled || image.length === 0}>
+                                        <Select placeholder="请选择" disabled={image.length === 0}>
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -910,7 +910,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         max={500}
                                         style={{ width: 70 }}
                                         defaultValue={40}
-                                        disabled={disabled || image.length === 0}
+                                        disabled={image.length === 0}
                                     />
                                 </Form.Item>
                                 <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>G</span>
@@ -931,7 +931,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         defaultValue={0}
                                         min={0}
                                         max={16}
-                                        disabled={disabled || image.length === 0}
+                                        disabled={image.length === 0}
                                     />
                                 </Form.Item>
                                 <span style={{ marginTop: '30px', background: '#fafafa', padding: '4px 10px', border: '1px solid #d9d9d9', borderLeft: 'none' }}>个</span>
@@ -1003,7 +1003,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="private_ip"
                                     label={<QusetionIconTootip title="私网IP" desc="指定主网卡私网IP，则IP必须在虚拟交换机地址段内且可用" />}
-                                    rules={[{ required: true, message: '请选择' }]}
                                 >
                                     <Input autoComplete="off" placeholder="请输入" />
                                 </Form.Item>
