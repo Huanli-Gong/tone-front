@@ -170,7 +170,7 @@ export default (): React.ReactNode => {
     const enterWorkspace = async (record: any) => {
         if (!user_id && !record.is_public){
             if(BUILD_APP_ENV === 'openanolis'){
-                return history.push(login_url)
+                return location.replace(login_url)
             }
             return history.push(`/login?redirect_url=/ws/${record.id}/dashboard`)
         }
