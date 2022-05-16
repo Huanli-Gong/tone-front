@@ -138,10 +138,10 @@ export default (props: any) => {
             noteStyle.marginLeft = 0
         } else {
             let len = note.split('\n')
-            if (len.length > 2) {
+            if (len.length >= 2) {
                 noteStyle.position = 'absolute'
                 noteStyle.top = 26
-                noteStyle.left = len[1].length * 14
+                noteStyle.left = len[0].length > 64 ? 'calc(100% - 22px)' : len[1].length * 14
             }
         }
         return (
@@ -151,6 +151,22 @@ export default (props: any) => {
         )
     }
 
+    let TextStyle:any = {
+        width: 'calc(100% - 74px)',
+        wordBreak: 'break-all',
+    }
+    let BtnStyle:any = {
+        whiteSpace: 'pre-wrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        WebkitLineClamp: 2,
+        position: 'relative'
+    }
+    if(!isNull(data.note) && data.note?.indexOf('\n') !== -1){
+        TextStyle = { ...TextStyle, ...BtnStyle }
+    }
     const BreadcrumbItem: React.FC<any> = (d: any) => (
         <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
             <Breadcrumb.Item >
@@ -256,19 +272,11 @@ export default (props: any) => {
                                             <Typography.Text className={styles.test_summary_item}>
                                                 备注
                                             </Typography.Text>
-                                            <div style={{
-                                                width: 'calc(100% - 74px)',
-                                                wordBreak: 'break-all',
-                                                whiteSpace: 'pre-wrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                display: '-webkit-box',
-                                                WebkitBoxOrient: 'vertical',
-                                                WebkitLineClamp: 2,
-                                                position: 'relative'
-                                            }}>
+                                            <div style={TextStyle}>
                                                 <Tooltip
                                                     title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>}
+                                                    placement="topLeft"
+                                                    overlayStyle={{ minWidth: 800}}
                                                 >
                                                     {access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
                                                 </Tooltip>
