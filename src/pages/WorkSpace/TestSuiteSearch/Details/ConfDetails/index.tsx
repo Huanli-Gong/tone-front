@@ -151,15 +151,16 @@ const Index: React.FC<any> = (props: any) => {
     }
   };
 
-  const handleClick = (id:number) => {
+  const handleClick = (obj:any) => {
+    const { ws_id, job_id } = obj
       // 跳最近运行的Job
       // const a = document.createElement('a');
       // a.target = "_blank";
       // a.rel = "noopener noreferrer"
       // a.href = `/ws/${ws_id}/test_result/${id}`;
       // a.click();
-      const win: any = window.open("");
-      setTimeout(function () { win.location.href = `/ws/${ws_id}/test_result/${id}` })
+    const win: any = window.open("");
+    setTimeout(function () { win.location.href = `/ws/${ws_id}/test_result/${job_id}` })
   }
 
   const paginationRe: any = {
@@ -263,9 +264,9 @@ const Index: React.FC<any> = (props: any) => {
                     <div className={styles.card_head}>最近运行的Job</div>
                     <div className={styles.card_content}>
                       {
-                        dataSet?.recently_job_list.map((item: any, idx: number) => {
+                        !!dataSet?.recently_job_list.length && dataSet?.recently_job_list.map((item: any, idx: number) => {
                           return (
-                            <span className={styles['columns-Job-name']} key={idx} onClick={()=>handleClick(item)}>#{item}</span>
+                            <span className={styles['columns-Job-name']} key={idx} onClick={()=>handleClick(item)}>#{item.job_id}</span>
                           )
                         })
                       }
