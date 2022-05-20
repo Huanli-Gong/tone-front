@@ -266,7 +266,9 @@ const Index: React.FC<any> = (props: any) => {
                       {
                         !!dataSet?.recently_job_list.length && dataSet?.recently_job_list.map((item: any, idx: number) => {
                           return (
-                            <span className={styles['columns-Job-name']} key={idx} onClick={()=>handleClick(item)}>#{item.job_id}</span>
+                            <div key={idx}>
+                              <span className={styles['columns-Job-name']} onClick={()=>handleClick(item)}>#{item.job_id}</span>
+                            </div>
                           )
                         })
                       }
