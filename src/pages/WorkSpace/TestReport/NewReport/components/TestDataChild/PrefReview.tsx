@@ -12,6 +12,7 @@ import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.sv
 import CodeViewer from '@/components/CodeViewer';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { deleteSuite, deleteConf } from './DelMethod.js';
+import { filterResult } from '@/components/Report/index'
 // import ChartsIndex from '../../../../AnalysisResult/components/ChartIndex';
 import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
@@ -103,18 +104,14 @@ const Performance = (props: any) => {
     const handleConditions = (value: any) => {
         setFilterName(value)
         let dataSource = handleDataArr(_.cloneDeep(child), baseIndex)
-        let num = baseIndex ? 0 : 1
         if (value === 'all') {
             setPerData(dataSource)
         } else {
             let list = dataSource.list.map((item: any) => {
                 let conf_list = item.conf_list.map((conf: any) => {
-                    let metric_list = conf.metric_list.filter((metric: any) => value === 'volatility'
-                        ? (metric.compare_data[num]?.compare_result === 'increase' || metric.compare_data[num]?.compare_result === 'decline')
-                        : metric.compare_data[num]?.compare_result === value)
                     return {
                         ...conf,
-                        metric_list,
+                        metric_list: conf.metric_list.filter((metric: any) => filterResult(metric.compare_data, value))
                     }
                 })
                 return {

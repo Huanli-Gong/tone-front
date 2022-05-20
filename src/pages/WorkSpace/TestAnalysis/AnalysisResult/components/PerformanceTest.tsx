@@ -8,6 +8,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 import ChartsIndex from '@/pages/WorkSpace/TestReport/NewReport/components/PerfCharts';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
+import { filterResult } from '@/components/Report/index'
 import _ from 'lodash';
 import ChartTypeChild from '../../../TestReport/NewReport/components/TestDataChild/ChartTypeChild'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -208,18 +209,14 @@ const ReportTestPref: React.FC<any> = (props) => {
     const handleConditions = (value: any) => {
         setFilterName(value)
         let dataSource = handleDataArr(_.cloneDeep(perf_data_result),baseIndex)
-        let num = baseIndex === 0 ? 1 : 0
         if (value === 'all') {
             setDataSource(dataSource)
         } else {
             setDataSource(dataSource.map((item: any) => {
                 let conf_list =  item.conf_list.map((conf:any) => {
-                    let metric_list = conf.metric_list.filter((metric:any) => value === 'volatility' 
-                    ? (metric.compare_data[num]?.compare_result === 'increase' || metric.compare_data[num]?.compare_result === 'decline')
-                    : metric.compare_data[num]?.compare_result === value )
                     return {
                         ...conf,
-                        metric_list,
+                        metric_list: conf.metric_list.filter((metric: any) => filterResult(metric.compare_data, value))
                     }
                 })
                 return {
