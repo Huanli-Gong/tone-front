@@ -78,13 +78,24 @@ const ReportTestEnv = () => {
                                 ))
                             })
                         }
-                        <MachineGroupL>机型</MachineGroupL>
+                        <MachineGroupL>{!!envData.length && envData[0].server_info[0].server_provider === 'aliyun' ? '规格' : '机型名称'}</MachineGroupL>
                         {
                             Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx && <MachineGroupR gLen={groupLen} key={idx}>
                                         <span>{item.distro || '-'}</span>
+                                    </MachineGroupR>
+                                ))
+                            })
+                        }
+                        <MachineGroupL>OS</MachineGroupL>
+                        {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
+                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
+                                return server.server_info.concat(len).map((item: any, idx: number) => (
+                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
+                                        <span>{item.os || '-'}</span>
                                     </MachineGroupR>
                                 ))
                             })
