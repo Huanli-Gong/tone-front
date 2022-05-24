@@ -97,14 +97,14 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                     name="name"
                     label={contrl.job_name.alias || contrl.job_name.show_name}
                     rules={[{
-                        pattern: /^[A-Za-z0-9\._-]+$/g,
-                        message: '允许字母、数字、下划线、中划线，“.”，不允许中文'
+                        pattern: /^[A-Za-z0-9\{}\._-]+$/g,
+                        message: '允许字母、数字、下划线、中划线、{date}占位符，“.”，不允许中文'
                     }, {
                         max: 128,
                         message: "Job名称最长不超出128字符"
                     }]}
                 >
-                    <Input autoComplete="off" placeholder="允许字母、数字、下划线、中划线，“.”，不允许中文" disabled={disabled} />
+                    <Input autoComplete="off" placeholder="允许字母、数字、下划线、中划线、{date}占位符，“.”，不允许中文" disabled={disabled} />
                 </Form.Item>
             }
             {
