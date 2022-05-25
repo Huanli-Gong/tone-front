@@ -1156,14 +1156,14 @@ export default (props: any) => {
     const rowSelection = access.wsRoleContrl() ? {
         selectedRowKeys,
         onSelect: selectedChange,
-        getCheckboxProps: (record: any) => {
-            let flag = false
-            if (radioValue === 1) flag = record.state !== 'success' && record.state !== 'fail'
-            return ({
-                disabled: flag, // Column configuration not to be checked
-                name: record.name,
-            })
-        },
+        // getCheckboxProps: (record: any) => {
+        //     let flag = false
+        //     if (radioValue === 1) flag = record.state !== 'success' && record.state !== 'fail'
+        //     return ({
+        //         disabled: flag, // Column configuration not to be checked
+        //         name: record.name,
+        //     })
+        // },
         preserveSelectedRowKeys: false,
         hideSelectAll: radioValue === 1 ? true : false,
         onSelectAll: (selected: boolean, selectedRows: [], changeRows: []) => {
