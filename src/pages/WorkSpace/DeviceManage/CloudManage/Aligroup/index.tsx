@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { Button, Pagination, Popconfirm, Space, Tag, Drawer, Row, Col, Form, Input, Select, Spin, Empty, message, Table, Modal } from 'antd';
+import { Button, Pagination, Space, Tag, Drawer, Row, Col, Form, Input, Select, Spin, Empty, message, Table, Modal } from 'antd';
 import styles from './style.less';
 import { CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { querysCluster, queryTag, queryMember, addGroup, editGroup, delGroup } from '../service';
@@ -50,12 +50,11 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     })
     const [visible, setVisible] = useState<boolean>(false)
     const [tagList, setTagList] = useState<any>([])
-    const [keyword, setKeyword] = useState<string>()
+    // const [keyword, setKeyword] = useState<string>()
     const [tagWord, setTagword] = useState<string>()
-    const [user, setUser] = useState<any>([])
+    // const [user, setUser] = useState<any>([])
     const [outId, setOutId] = useState<number>()
     const [fetching, setFetching] = useState<boolean>(true)
-
     const [expandKey, setExpandKey] = useState<string[]>([])
     const top = 39, size = 41;
     const [deleteVisible, setDeleteVisible] = useState(false);
@@ -66,7 +65,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const [operation, setOperation] = useState<string>('machine_cluster_aliyun')
     const logDrawer: any = useRef()
     const [validateResult, setValidateResult] = useState<any>({});
-    const [refreshColumn, setRefreshColumn] = useState<any>(null) // 当前操作的行。
 
     const handleOpenLogDrawer = useCallback(
         (id, type) => {
@@ -95,15 +93,15 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         data && setData(data)
         setLoading(false)
     };
-    const handleSearch = async (word?: string) => {
-        const param = word && word.replace(/\s*/g, "")
-        if (keyword && keyword == param) return
-        setKeyword(param)
-        setFetching(true)
-        let { data } = await queryMember({ keyword: param,/* scope:'aligroup'  */ })
-        setUser(data || [])
-        setFetching(false)
-    }
+    // const handleSearch = async (word?: string) => {
+    //     const param = word && word.replace(/\s*/g, "")
+    //     if (keyword && keyword == param) return
+    //     setKeyword(param)
+    //     setFetching(true)
+    //     let { data } = await queryMember({ keyword: param,/* scope:'aligroup'  */ })
+    //     setUser(data || [])
+    //     setFetching(false)
+    // }
     const tagRender = (props: any) => {
         const { label, closable, onClose } = props;
         const { color, children } = label.props || {}
@@ -183,7 +181,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const modifyGroup = (row: any) => {
-        setUser([{ id: row.owner, last_name: row.owner_name }])
+        // setUser([{ id: row.owner, last_name: row.owner_name }])
         getServerTagList()
         row.tags = row.tag_list.map((item: any) => { return item.id })
         setOutId(row.id)
@@ -226,7 +224,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     // 添加成功回调
     const successCallback = (info: any) => {
         const { parentId } = info
-        setRefreshColumn(parentId)
+        // setRefreshColumn(parentId)
         if (parentId && expandKey.indexOf(parentId + '') < 0) {
             const temp = expandKey.concat([parentId + ''])
             setExpandKey(temp)
@@ -359,8 +357,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             top={top}
                             width={windowWidth - 200 - 68}
                             cluster_id={record.id}
-                            refreshId={refreshColumn}
-                            resetRefreshId={setRefreshColumn}
                         />
                     ),
                     onExpand: (_, record) => {
@@ -413,7 +409,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 <Form
                     layout="vertical"
                     form={form}
-                /*hideRequiredMark*/
                 >
                     <Row gutter={16}>
                         <Col span={24}>
@@ -469,7 +464,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     </Row>
                 </Form>
             </Drawer>
-
             {/** 云上集群 - 操作日志 */}
             <Log ref={logDrawer} operation_object={operation} />
             {/** 云上集群 - 添加 */}

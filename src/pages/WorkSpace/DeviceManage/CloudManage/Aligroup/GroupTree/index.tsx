@@ -10,12 +10,10 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
-import { useParams } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 
 const GroupTree: React.FC<any> = (props) => {
-    const { ws_id }: any = useParams()
-    const { cluster_id, width, onRef, size, top, handleOpenLogDrawer, refreshId, resetRefreshId } = props
+    const { cluster_id, width, onRef, size, top, handleOpenLogDrawer } = props
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>({ data: [] });
     const [refresh, setRefresh] = useState<boolean>(true)
@@ -37,23 +35,6 @@ const GroupTree: React.FC<any> = (props) => {
         setLoading(false)
     };
 
-    useEffect(() => {
-        if (refreshId === cluster_id) {
-            // setLoading( true )
-            getList()
-            setTimeout(() => {
-                // setLoading( false )
-                resetRefreshId(null) // 重置掉refreshId为null，因为refreshId不改变，useEffect就触发不了。
-            }, 1)
-        }
-    }, [refreshId])
-
-    
-    // 根据is_instance字段: true 机器实例; false 配置名称;
-    const flag_s_instance = (Array.isArray(data.data) && data.data.length) ? data.data[0].test_server.is_instance : '';
-    // const tempFieldName = (typeof flag_s_instance === 'boolean') ? (flag_s_instance ? '机器实例' : '配置名称') : '';
-    const tempFieldName = JSON.stringify(flag_s_instance) !== '{}' && flag_s_instance ? '机器实例' : '配置名称';
-
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
         if (!row.machineId) return
@@ -72,7 +53,7 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: '',
             dataIndex: 'name',
-            width:120,
+            width:160,
             fixed: 'left',
             render: (_: number, row: any) => <EllipsisPulic title={row.name} />
         },
@@ -111,12 +92,12 @@ const GroupTree: React.FC<any> = (props) => {
             width: 100,
             render: (_: number, row: any) => <DataSetPulic name={row.storage_type} />
         },
-        {
-            title: '用完释放',
-            dataIndex: 'release_rule',
-            width: 100,
-            render: (_: number, row: any) => <div style={{ width: 100 }}>{row.release_rule ? '是' : '否'}</div>
-        },
+        // {
+        //     title: '用完释放',
+        //     dataIndex: 'release_rule',
+        //     width: 100,
+        //     render: (_: number, row: any) => <div style={{ width: 100 }}>{row.release_rule ? '是' : '否'}</div>
+        // },
         {
             title: 'Console配置',
             width: 100,
@@ -221,6 +202,11 @@ const GroupTree: React.FC<any> = (props) => {
         setColumns([...catagory])
     }
     useEffect(()=>{
+        const pubIp = {
+            title: '公网IP',
+            width:130,
+            dataIndex:'pub_ip',
+        }
         const serverState = {
             title: '机器状态',
             width:120,
@@ -234,6 +220,7 @@ const GroupTree: React.FC<any> = (props) => {
         if(Array.isArray(data.data) && data.data.length){
             if (data.data[0].test_server.is_instance) {
                 catagory[0].title = '机器实例'
+                catagory.splice(1, 0, pubIp)
                 catagory.splice(16, 0, serverState)
                 catagory.splice(17, 0, serverRealState)
             } else {
@@ -254,7 +241,6 @@ const GroupTree: React.FC<any> = (props) => {
         }else{
              message.success(msg);
         }
-        //setRefresh(!refresh)
     }
     
     useEffect(() => {
@@ -269,7 +255,6 @@ const GroupTree: React.FC<any> = (props) => {
 
     useImperativeHandle(onRef, () => ({
         reload: (title: string, data: any = {}) => {
-            // console.log(title, data, cluster_id)
             setRefresh(!refresh)
         }
     }));
