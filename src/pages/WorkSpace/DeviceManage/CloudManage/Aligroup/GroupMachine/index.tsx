@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useImperativeHandle } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Badge, message, Cascader, InputNumber } from 'antd';
-import { requestCodeMessage, resetImage, resetECI, enumerChinese, enumerEnglish } from '@/utils/utils';
+import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
 import { QusetionIconTootip } from '@/components/Product/index'
 import {
     queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryMember, queryInstance,
@@ -461,6 +461,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         } else {
             param.instance_type = params.instance_type
         }
+        console.log('params',params)
         // 镜像
         if (params.hasOwnProperty('image') && params.image.length) {
             if (manufacturerType === 'aliyun_eci') {
@@ -474,7 +475,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 param.image = params.image[2]
                 // 获取镜像名
                 const imageSource = resetImage(image, 'owner_alias', 'platform') || []
-                const LevelOne = imageSource?.find((item: any) => enumerChinese(item.value) == params.image[0]) || {}
+                const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
                 const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
                 const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
                 param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。

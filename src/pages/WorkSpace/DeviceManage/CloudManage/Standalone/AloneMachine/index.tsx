@@ -5,7 +5,7 @@ import {
     querysRegion, queryZone, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
-import { requestCodeMessage, resetImage, resetECI, enumerChinese, enumerEnglish } from '@/utils/utils';
+import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
 import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons'
 import styles from './style.less';
 import { useParams } from 'umi';
@@ -420,7 +420,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 param.image = params.image[2]
                 // 获取镜像名
                 const imageSource = resetImage(image, 'owner_alias', 'platform') || []
-                const LevelOne = imageSource?.find((item: any) => enumerChinese(item.value) == params.image[0]) || {}
+                const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
                 const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
                 const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
                 param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
