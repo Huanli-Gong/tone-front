@@ -6,7 +6,7 @@ import { DownOutlined, UpOutlined, PlusCircleTwoTone, MinusCircleTwoTone, StarOu
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { ReactComponent as Refresh } from '@/assets/svg/refresh.svg'
 import { requestCodeMessage, targetJump } from '@/utils/utils'
-
+import { QusetionIconTootip } from '@/components/Product';
 import {
     queryTestResultList,
     deleteJobTest,
@@ -565,9 +565,21 @@ export default (props: any) => {
             dataIndex: 'test_type',
             ellipsis: true,
         }, {
-            title: '总计/成功/失败',
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={'总计/成功/失败'}
+                    desc={
+                        <ul style={{  paddingInlineStart: 'inherit', paddingTop: 15 }}>
+                            <li>功能测试：测试结果中TestConf结果状态统计。</li>
+                            <li>性能测试：执行结果中TestConf执行状态统计。</li>
+                        </ul>
+                    }
+                />
+            ),
             dataIndex: 'test_result',
-            width: 120,
+            width: 140,
+
             render: (_: any) => {
                 const result = JSON.parse(_)
                 if (lodash.isNull(result)) {
