@@ -96,9 +96,9 @@ export default {
   "menu.Workspace.DeviceResources.GroupManage": "内网机器",
   "menu.Workspace.DeviceResources.DispatchTag": "调度标签",
 
-  "menu.Workspace.TestSuiteManage": "Test suite管理",
+  "menu.Workspace.TestSuiteManage": "Test Suite管理",
   "menu.Workspace.WorkspaceCreate": '创建工作台',
-  "menu.Workspace.TestSuiteCreate": '创建Test suite',
+  "menu.Workspace.TestSuiteCreate": '创建Test Suite',
 
   "menu.Workspace.DeviceManage": '机器管理',
   "menu.Workspace.DeviceManage.CludeManage": "云上机器",

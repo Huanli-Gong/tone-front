@@ -16,6 +16,7 @@ import { StateTag } from './components'
 import ViewReport from '../CompareBar/ViewReport'
 import NotFound from './components/404'
 import RenderMachineItem from './components/MachineTable'
+import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
@@ -293,6 +294,7 @@ export default (props: any) => {
                             </div>
                         </div>
                         <RenderMachineItem job_id={job_id} />
+                        <RenderMachinePrompt { ...data }/>
                         <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
