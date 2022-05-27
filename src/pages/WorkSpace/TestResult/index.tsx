@@ -843,7 +843,7 @@ export default (props: any) => {
                 setFilterData(filterData)
                 setFilterparmas(fetchParams)
                 setFormFieldsValue(valuesCopy)
-                setFilter(!filter)
+                // setFilter(!filter)
                 setUrlQuery({ formValues: valuesCopy, selFilterParms: parmas })
                 setServerVal(null)
             })
@@ -1466,13 +1466,17 @@ export default (props: any) => {
                                                                 <Space>
                                                                     <Button type="primary" onClick={lodash.partial(handleFilter, null)}>过滤</Button>
                                                                     <Button onClick={handleRestFilter}>重置</Button>
+                                                                    <span className="test_analysis_copy_link" onClick={hanldeClickShare} style={{ cursor: 'pointer' }}>
+                                                                        <CopyLink style={{ marginRight:3 }}/>
+                                                                        <span>分享</span>
+                                                                    </span>
                                                                 </Space>
                                                             </Form.Item>
                                                         </Col>
                                                     </Row>
                                                 </Form>
                                             }
-                                            {
+                                            {/* {
                                                 !filter && <Row style={{ paddingLeft: 20, paddingRight: 20 }}>
                                                     <Col span={24}>
                                                         <ul className={styles.select_program} style={{ display: Object.keys(filterData).length ? 'flex' : 'none' }}>
@@ -1506,7 +1510,6 @@ export default (props: any) => {
                                                                         )
                                                                     }
                                                                     if (item === 'state') {
-                                                                        // const selectStateArr = projectData[item].filter((obj: any) => obj.name && lodash.includes(filterData[item], obj.name))
                                                                         const selectStateArr = projectData[item].filter((obj: any) => obj.name && filterData[item] === obj.name)
                                                                         if (!selectStateArr.length) return
                                                                         return (
@@ -1542,12 +1545,11 @@ export default (props: any) => {
                                                                     <CopyLink className={styles.share_icon} />
                                                                     <span>分享</span>
                                                                 </span>
-                                                                {/* <span className={styles.copy_link_target} id='copy_link_target'>{shareParmas}</span> */}
                                                             </li>
                                                         </ul>
                                                     </Col>
                                                 </Row>
-                                            }
+                                            } */}
                                             <Spin spinning={loading}>
                                                 <div style={{ padding: '0 20px', marginTop: 8, background: '#fff', width: '100%' }}>
                                                     <ResizeTable
