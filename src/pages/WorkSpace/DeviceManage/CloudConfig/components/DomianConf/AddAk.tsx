@@ -1,5 +1,5 @@
 import { Drawer, Space, Button, Form, Input, Radio, message, Select } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import React, { forwardRef, useState, useImperativeHandle, useRef } from 'react'
 import { createCloudAk, updateCloudAk } from '../../service'
 import styles from './index.less'
 import _ from 'lodash'
@@ -11,7 +11,8 @@ export default forwardRef(
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
         const [title, setTitle] = useState('新建AK') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
-
+        const IdRef = useRef<any>(null);
+        const KeyRef = useRef<any>(null);
         useImperativeHandle(
             ref,
             () => ({
@@ -47,6 +48,22 @@ export default forwardRef(
             setPadding(false)
         }
 
+        const handAccessIdChange = (e: any) => {
+            if (e.target.value?.indexOf('*') !== -1) {
+                form.setFieldsValue({ access_id: '' })
+            }
+            IdRef.current!.focus({
+                cursor: 'end',
+            });
+        }
+        const handAccessKeyChange = (e: any) => {
+            if (e.target.value?.indexOf('*') !== -1) {
+                form.setFieldsValue({ access_key: '' })
+            }
+            KeyRef.current!.focus({
+                cursor: 'end',
+            });
+        }
         const handleOk = () => {
             if (padding) return
             setPadding(true)
@@ -140,14 +157,14 @@ export default forwardRef(
                         name="access_id"
                         rules={[{ required: true, message: 'AccessID不能为空' }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入" />
+                        <Input autoComplete="auto" placeholder="请输入" onChange={handAccessIdChange} ref={IdRef} />
                     </Form.Item>
                     <Form.Item
                         label="Access Key"
                         name="access_key"
                         rules={[{ required: true, message: 'AccessKey不能为空' }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入" />
+                        <Input autoComplete="auto" placeholder="请输入" onChange={handAccessKeyChange} ref={KeyRef} />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
                     {

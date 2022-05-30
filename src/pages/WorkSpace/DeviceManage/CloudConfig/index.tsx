@@ -98,7 +98,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		setFetchParams({ ...fetchParams, page_num: 1 })
 	}
 
-	const handleDelete = function* (record: any = {}) {
+	const handleDelete = function* (record: any = {}):any {
 		key === 'ak' ?
 			yield deleteCloudAk({ id_list: [record.id], ws_id }) :
 			yield deleteCloudImage({ id_list: [record.id], ws_id })
@@ -161,7 +161,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.name ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.name} >
 						<Highlighter
@@ -196,14 +196,14 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_id ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
-					<PopoverEllipsis title={plusMessage(row.access_id,4,4)} >
+					<PopoverEllipsis title={row.access_id} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_id || '']}
 							autoEscape
-							textToHighlight={plusMessage(row.access_id,4,4)}
+							textToHighlight={row.access_id}
 						/>
 					</PopoverEllipsis>
 				)
@@ -230,14 +230,14 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_key ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
-					<PopoverEllipsis title={plusMessage(row.access_key,4,4)} >
+					<PopoverEllipsis title={row.access_key} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_key || '']}
 							autoEscape
-							textToHighlight={plusMessage(row.access_key,4,4)}
+							textToHighlight={row.access_key}
 						/>
 					</PopoverEllipsis>
 				)
@@ -264,14 +264,14 @@ const CloudConfig: React.FC<any> = (props) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
-            render: (_, row: any) => {
+            render: (_:any, row: any) => {
                 return (
-                    <PopoverEllipsis title={plusMessage(row.resource_group_id,4,4)} >
+                    <PopoverEllipsis title={row.resource_group_id} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[fetchParams.resource_group_id || '']}
                             autoEscape
-                            textToHighlight={plusMessage(row.resource_group_id,4,4)}
+                            textToHighlight={row.resource_group_id}
                         />
                     </PopoverEllipsis>
                 )
@@ -297,7 +297,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			width: 100,
 			dataIndex: 'enable',
 			ellipsis: true,
-			render: (_, row) => row.enable,
+			render: (_:any, row:any) => row.enable,
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.enable ? '#1890ff' : undefined }} />,
 			filterDropdown: ({ confirm }: any) => <SelectRadio
 				list={defaultList}
@@ -362,7 +362,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			key: 'ak_conf',
 			fixed: 'right',
 			width: 90,
-			render: (text, record) => {
+			render: (text:any, record:any) => {
 				return (
 					<Space size='small'>
 						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
@@ -415,7 +415,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_name ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.image_name} >
 						<Highlighter
@@ -447,7 +447,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_id ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.image_id} >
 						<Highlighter
@@ -479,7 +479,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_version ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.image_version} >
 						<Highlighter
@@ -511,7 +511,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.platform ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.platform} >
 						<Highlighter
@@ -543,7 +543,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.region ? '#1890ff' : undefined }} />,
-			render: (_, row: any) => {
+			render: (_:any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.region} >
 						<Highlighter
@@ -631,7 +631,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			key: 'image_conf',
 			fixed: 'right',
 			width: 100,
-			render: (text, record) => {
+			render: (text:string, record:any) => {
 				return (
 					<Space size='small'>
 						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
