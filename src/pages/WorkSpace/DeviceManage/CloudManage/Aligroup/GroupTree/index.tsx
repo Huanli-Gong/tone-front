@@ -220,7 +220,7 @@ const GroupTree: React.FC<any> = (props) => {
         if(Array.isArray(data.data) && data.data.length){
             if (data.data[0].test_server.is_instance) {
                 catagory[0].title = '机器实例'
-                catagory.splice(1, 0, pubIp)
+                !BUILD_APP_ENV && catagory.splice(1, 0, pubIp)
                 catagory.splice(16, 0, serverState)
                 catagory.splice(17, 0, serverRealState)
             } else {
