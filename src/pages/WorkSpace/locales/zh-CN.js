@@ -13,7 +13,7 @@ export default {
     "menu.Baseline.GroupBaseline": '内网基线',
     "menu.Baseline.ClusterBaseline": '云上基线',
 
-    "menu.TestSuiteManage": "Test suite管理",
+    "menu.TestSuiteManage": "Test Suite管理",
     "menu.WorkspaceCreate": '创建工作台',
     "menu.TestSuiteCreate": '创建Test suite',
     "menu.PersonCenter": '个人中心',
@@ -51,7 +51,7 @@ export default {
 
     "Workspace.DevOps": 'ws系统配置',
 
-    "Workspace.TestSuiteManage": "Test suite管理",
+    "Workspace.TestSuiteManage": "Test Suite管理",
     "Workspace.WorkspaceCreate": '创建工作台',
     "Workspace.TestSuiteCreate": '创建Test suite',
     "Workspace.PersonCenter": '个人中心',

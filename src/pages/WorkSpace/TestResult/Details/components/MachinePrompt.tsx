@@ -1,10 +1,11 @@
 import React from 'react';
 import { Col, Row, Typography } from 'antd';
+import { useParams } from 'umi';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const RenderMachinePrompt = (props: any) => {
-    const { aliyun_is_instance_release, cluster_msg, server_occupied } = props;
-    
+    const { aliyun_is_instance_release, cluster_msg, server_occupied, provider_name } = props;
+    const { ws_id } = useParams<any>();
     const isEmptyStr = (str: string) => {
         if (typeof str == 'string' && str.length > 0) {
             return true;
@@ -35,7 +36,9 @@ const RenderMachinePrompt = (props: any) => {
                         <ExclamationCircleOutlined style={{ color: '#FAAD14', padding: '16px 18px 0 26px' }} />
                         <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>集群机器配置错误</Typography.Text>
                         <Row style={{ padding: '4px 0 0 60px' }}>
-                            <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>{cluster_msg}</Typography.Text>
+                            <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>
+                                <a href={provider_name.indexOf('云上') !== -1 ? `/ws/${ws_id}/device/cloud` : `/ws/${ws_id}/device/group`} target='_blank'>{cluster_msg}</a>
+                            </Typography.Text>
                         </Row>
                     </Col>
                 </Row>
@@ -53,7 +56,7 @@ const RenderMachinePrompt = (props: any) => {
                             <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>占用Job</Typography.Text>
                             {
                                 server_occupied.map((item: any) => (
-                                    <span style={{ marginRight: 20 }}>
+                                    <span style={{ marginRight: 20 }} onClick={()=> setTimeout(function () { window.location.href = `/ws/${ws_id}/test_result/${item.job_id}`})}>
                                         {item.job_name}/{item.job_id}
                                     </span>
                                 ))
