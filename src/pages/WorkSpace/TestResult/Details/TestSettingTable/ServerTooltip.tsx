@@ -204,7 +204,7 @@ const ClusterServer: React.FC<any> = (props) => {
             </CLusterTitle>
             <Wrapper direction="vertical" style={{ padding: 20 }}>
                 {/* <ElseTag {...props} /> */}
-                <SpaceVertical>
+                <SpaceVertical style={{ padding: "0 20px", width: "100%" }}>
                     <TRow label="配置名称:">{props?.name}</TRow>
                     <TRow label="Owner:">{props?.owner_name}</TRow>
                     <TRow label="创建时间:">{props?.gmt_created}</TRow>
