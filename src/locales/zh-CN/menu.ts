@@ -21,6 +21,8 @@ export default {
   "menu.TestParmSetting": 'Testfarm配置',
   'menu.DirectRoute': 'directRoute',
 
+  "menu.ShareReport": "测试报告",
+
   "menu.JobTypePreview": '模板预览',
   "menu.TemplateEdit": '模板编辑',
   "menu.Workspace.Workspace": '工作台',
