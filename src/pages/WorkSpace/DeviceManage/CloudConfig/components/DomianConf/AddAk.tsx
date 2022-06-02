@@ -1,4 +1,4 @@
-import { Drawer, Space, Button, Form, Input, Radio, message, Select } from 'antd'
+import { Drawer, Space, Button, Form, Input, Radio, message, Select, InputNumber } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle, useRef } from 'react'
 import { createCloudAk, updateCloudAk } from '../../service'
 import styles from './index.less'
@@ -111,6 +111,7 @@ export default forwardRef(
                     layout="vertical" // 表单布局 ，垂直
                     initialValues={{
                         enable: editer.enable || true,
+                        vm_quota: "*"
                     }}
                 >
                     <Form.Item
@@ -165,6 +166,13 @@ export default forwardRef(
                         rules={[{ required: true, message: 'AccessKey不能为空' }]}
                     >
                         <Input autoComplete="auto" placeholder="请输入" onChange={handAccessKeyChange} ref={KeyRef} />
+                    </Form.Item>
+                    <Form.Item
+                        label="机器限额"
+                        name="vm_quota"
+                        rules={[{ required: true, message: '机器限额不能为空' }]}
+                    >
+                        <Input placeholder="请输入数字限额，*为不限制" />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
                     {

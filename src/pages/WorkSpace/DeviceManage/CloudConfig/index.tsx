@@ -98,7 +98,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		setFetchParams({ ...fetchParams, page_num: 1 })
 	}
 
-	const handleDelete = function* (record: any = {}):any {
+	const handleDelete = function* (record: any = {}): any {
 		key === 'ak' ?
 			yield deleteCloudAk({ id_list: [record.id], ws_id }) :
 			yield deleteCloudImage({ id_list: [record.id], ws_id })
@@ -125,15 +125,15 @@ const CloudConfig: React.FC<any> = (props) => {
 		container: 180,
 		button_width: 90
 	}
-	
-	const plusMessage = (str:string,frontLen:number,endLen:number) => {
-		if(str){
+
+	const plusMessage = (str: string, frontLen: number, endLen: number) => {
+		if (str) {
 			let len = str.length - frontLen - endLen;
 			let xing = '';
-			for (var i=0;i<len;i++) {
-				xing+='*';
+			for (var i = 0; i < len; i++) {
+				xing += '*';
 			}
-			return str.substring(0,frontLen) + xing + str.substring(str.length - endLen);
+			return str.substring(0, frontLen) + xing + str.substring(str.length - endLen);
 		}
 		return '';
 	}
@@ -161,7 +161,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.name ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.name} >
 						<Highlighter
@@ -196,7 +196,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_id ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.access_id} >
 						<Highlighter
@@ -230,7 +230,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_key ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.access_key} >
 						<Highlighter
@@ -243,40 +243,45 @@ const CloudConfig: React.FC<any> = (props) => {
 				)
 			}
 		},
+		{
+			title: "机器限额",
+			dataIndex: "vm_quota",
+			width: 120,
+		},
 		BUILD_APP_ENV && {
-            title: '资源组ID',
-            width: 120,
-            dataIndex: 'resource_group_id',
-            ellipsis: {
+			title: '资源组ID',
+			width: 120,
+			dataIndex: 'resource_group_id',
+			ellipsis: {
 				showTitle: false
 			},
-            filterDropdown: ({ confirm }: any) => <SearchInput
-                confirm={confirm}
-                autoFocus={autoFocus}
-                styleObj={styleObj}
-                onConfirm={(val: any) => { setFetchParams({ ...fetchParams, resource_group_id: val }) }}
-                currentBaseline={{ server_provider: ws_id, test_type: key, id: 'resource_group_id' }}
-                placeholder="支持搜索资源组ID"
-            />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                    setFocus(!autoFocus)
-                }
-            },
-            filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
-            render: (_:any, row: any) => {
-                return (
-                    <PopoverEllipsis title={row.resource_group_id} >
-                        <Highlighter
-                            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[fetchParams.resource_group_id || '']}
-                            autoEscape
-                            textToHighlight={row.resource_group_id}
-                        />
-                    </PopoverEllipsis>
-                )
-            }
-        },
+			filterDropdown: ({ confirm }: any) => <SearchInput
+				confirm={confirm}
+				autoFocus={autoFocus}
+				styleObj={styleObj}
+				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, resource_group_id: val }) }}
+				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'resource_group_id' }}
+				placeholder="支持搜索资源组ID"
+			/>,
+			onFilterDropdownVisibleChange: (visible: any) => {
+				if (visible) {
+					setFocus(!autoFocus)
+				}
+			},
+			filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
+			render: (_: any, row: any) => {
+				return (
+					<PopoverEllipsis title={row.resource_group_id} >
+						<Highlighter
+							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+							searchWords={[fetchParams.resource_group_id || '']}
+							autoEscape
+							textToHighlight={row.resource_group_id || "-"}
+						/>
+					</PopoverEllipsis>
+				)
+			}
+		},
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
@@ -297,7 +302,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			width: 100,
 			dataIndex: 'enable',
 			ellipsis: true,
-			render: (_:any, row:any) => row.enable,
+			render: (_: any, row: any) => row.enable,
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.enable ? '#1890ff' : undefined }} />,
 			filterDropdown: ({ confirm }: any) => <SelectRadio
 				list={defaultList}
@@ -349,6 +354,9 @@ const CloudConfig: React.FC<any> = (props) => {
 			width: 120,
 			dataIndex: 'update_user',
 			ellipsis: true,
+			render(_) {
+				return _ || "-"
+			}
 		},
 		{
 			title: '描述',
@@ -356,13 +364,16 @@ const CloudConfig: React.FC<any> = (props) => {
 			ellipsis: true,
 			// fixed: 'right',
 			width: 100,
+			render(_) {
+				return _ || "-"
+			}
 		},
 		{
 			title: '操作',
 			key: 'ak_conf',
 			fixed: 'right',
 			width: 90,
-			render: (text:any, record:any) => {
+			render: (text: any, record: any) => {
 				return (
 					<Space size='small'>
 						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
@@ -393,7 +404,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		}
 	].filter(Boolean);
-	
+
 	const columnsImage: any = [
 		{
 			title: 'Image Name',
@@ -415,7 +426,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_name ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.image_name} >
 						<Highlighter
@@ -447,7 +458,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_id ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.image_id} >
 						<Highlighter
@@ -479,7 +490,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_version ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.image_version} >
 						<Highlighter
@@ -511,7 +522,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.platform ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.platform} >
 						<Highlighter
@@ -543,7 +554,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			},
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.region ? '#1890ff' : undefined }} />,
-			render: (_:any, row: any) => {
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.region} >
 						<Highlighter
@@ -625,13 +636,16 @@ const CloudConfig: React.FC<any> = (props) => {
 			width: 120,
 			dataIndex: 'update_user',
 			ellipsis: true,
+			render(_) {
+				return _ || "-"
+			}
 		},
 		{
 			title: '操作',
 			key: 'image_conf',
 			fixed: 'right',
 			width: 100,
-			render: (text:string, record:any) => {
+			render: (text: string, record: any) => {
 				return (
 					<Space size='small'>
 						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
