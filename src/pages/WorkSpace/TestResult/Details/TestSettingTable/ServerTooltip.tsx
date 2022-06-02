@@ -36,11 +36,24 @@ export const dataSetMethod = (dict: any) => {
     return obj[dict]
 }
 
-const TRow: React.FC<{ label: string }> = ({ label, children }) => {
+type TRowProps = {
+    label: string;
+}
+
+const TRow: React.FC<TRowProps> = ({ label, children }) => {
     return (
         <Row gutter={8}>
             <Col span={6}>{label}</Col>
             <Col span={18}>{children || '-'}</Col>
+        </Row>
+    )
+}
+
+const LTRow: React.FC<TRowProps> = ({ label, children }) => {
+    return (
+        <Row gutter={8}>
+            <Col span={4}>{label}</Col>
+            <Col span={20}>{children || '-'}</Col>
         </Row>
     )
 }
@@ -205,12 +218,12 @@ const ClusterServer: React.FC<any> = (props) => {
             <Wrapper direction="vertical" style={{ padding: 20 }}>
                 {/* <ElseTag {...props} /> */}
                 <SpaceVertical style={{ padding: "0 20px", width: "100%" }}>
-                    <TRow label="配置名称:">{props?.name}</TRow>
-                    <TRow label="Owner:">{props?.owner_name}</TRow>
-                    <TRow label="创建时间:">{props?.gmt_created}</TRow>
-                    <TRow label="修改时间:">{props?.gmt_modified}</TRow>
-                    <TRow label="备注:">{props?.description}</TRow>
-                    <TRow label="调度标签:">
+                    <LTRow label="配置名称:">{props?.name}</LTRow>
+                    <LTRow label="Owner:">{props?.owner_name}</LTRow>
+                    <LTRow label="创建时间:">{props?.gmt_created}</LTRow>
+                    <LTRow label="修改时间:">{props?.gmt_modified}</LTRow>
+                    <LTRow label="备注:">{props?.description}</LTRow>
+                    <LTRow label="调度标签:">
                         {
                             (props.tag_list && !!props.tag_list.length) ?
                                 props?.tag_list.map(
@@ -219,7 +232,7 @@ const ClusterServer: React.FC<any> = (props) => {
                                     )
                                 ) : "-"
                         }
-                    </TRow>
+                    </LTRow>
                 </SpaceVertical>
                 {
                     source.map((item: any) => {
