@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Pagination, Space, Popconfirm, Tag, message, Tooltip, Tabs, Modal } from 'antd';
+import { Button, Pagination, Space, Row, Tag, message, Tooltip, Tabs, Modal } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
@@ -535,8 +535,12 @@ export default (props: any) => {
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要{params.type == '0' || !deleteObj.is_release ? '删除配置' : '释放实例'}({deleteObj[params.type == '0' ? "name" : "private_ip"]})吗？
+                    <Row align="middle">
+                        <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                        <div>
+                            确定要{params.type == '0' || !deleteObj.is_release ? '删除' : '释放'}{params.type === "0" ? "配置" : "实例"}({deleteObj[params.type == '0' ? "name" : "private_ip"]})吗？
+                        </div>
+                    </Row>
                 </div>
             </Modal>
         </div>
