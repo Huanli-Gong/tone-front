@@ -7,7 +7,7 @@ const RenderMachinePrompt = (props: any) => {
     const { aliyun_is_instance_release, cluster_msg, server_occupied, provider_name } = props;
     const { ws_id } = useParams<any>();
     const isEmptyStr = (str: string) => {
-        if (typeof str == 'string' && str.length > 0) {
+        if (str && typeof str == 'string' && str.length > 0) {
             return true;
         }
         return false;
@@ -45,7 +45,7 @@ const RenderMachinePrompt = (props: any) => {
             </div>
         )
     }
-    if (!!server_occupied.length) {
+    if (server_occupied && !!server_occupied.length) {
         return (
             <div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>
                 <Row style={{ marginBottom: 16 }}>
