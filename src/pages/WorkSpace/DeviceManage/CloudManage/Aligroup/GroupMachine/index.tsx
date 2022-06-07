@@ -294,13 +294,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             }
             return item
         })
-        // let lists =  [{
-        //     value: param.id,
-        //     label: param.id,
-        //     isLeaf: false,
-        //     children: akData.map((item: any) => { return { label: item.name, value: item.id } })
-        // }]
-        // console.log(":", lists)
         setOptions(lists)
         setRegion(list)
         setValidateImage(false)
@@ -341,6 +334,17 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             regionResetStatus()
         }
     };
+    const handleTypeChange = (val:any) => {
+        let region = form.getFieldValue('region')
+        let manufacturer = form.getFieldValue('manufacturer')
+        let param = {
+            ak_id: manufacturer[1],
+            region: region[0],
+            zone: region[1],
+            instance_type:val
+        }
+        getImageList(param)
+    }
     const newMachine = (id: number) => {
         getCloudType(id)
         setCluster_id(id)
@@ -796,6 +800,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                                 filterOption={(input, option: any) =>
                                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                                 }
+                                                onSelect={handleTypeChange}
                                             >
                                                 {instance.map((item: any, index: number) =>
                                                     <Option value={item.Value} key={index}>{item.Value}</Option>
