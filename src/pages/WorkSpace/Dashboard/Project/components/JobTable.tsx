@@ -163,44 +163,42 @@ const JobTable = (props: any) => {
             fixed: 'right',
             render: (_: any) => {
                 return (
-                    <Space>
-                        <Access accessible={access.wsRoleContrl(_.creator)}
-                            fallback={
-                                <Space>
-                                    <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }} >重跑</Typography.Text>
-                                    <Typography.Text
-                                        style={{ color: '#ccc', cursor: 'no-drop' }}
-                                    >
-                                        删除
-                                    </Typography.Text>
-                                </Space>
-                            }
-                        >
+                    <Access accessible={access.wsRoleContrl(_.creator)}
+                        fallback={
                             <Space>
-                                {/** case.离线任务上传后，不能重跑。 */}
-                                {_.created_from === 'offline' ?
-                                    <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
-                                    :
-                                    <span onClick={() => handleTestReRun(_)}>
-                                        <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
-                                    </span>
-                                }
-                                <Popconfirm
-                                    title="确定要删除吗？"
-                                    onConfirm={() => handleDelete(_)}
-                                    okText="确认"
-                                    cancelText="取消"
+                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }} >重跑</Typography.Text>
+                                <Typography.Text
+                                    style={{ color: '#ccc', cursor: 'no-drop' }}
                                 >
-                                    <Typography.Text
-                                        style={{ color: '#1890FF', cursor: 'pointer' }}
-                                    >
-                                        删除
-                                    </Typography.Text>
-                                </Popconfirm>
+                                    删除
+                                </Typography.Text>
                             </Space>
-                        </Access>
-                        <ViewReports {..._} />
-                    </Space>
+                        }
+                    >
+                        <Space>
+                            {/** case.离线任务上传后，不能重跑。 */}
+                            {_.created_from === 'offline' ?
+                                <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
+                                :
+                                <span onClick={() => handleTestReRun(_)}>
+                                    <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                </span>
+                            }
+                            <Popconfirm
+                                title="确定要删除吗？"
+                                onConfirm={() => handleDelete(_)}
+                                okText="确认"
+                                cancelText="取消"
+                            >
+                                <Typography.Text
+                                    style={{ color: '#1890FF', cursor: 'pointer' }}
+                                >
+                                    删除
+                                </Typography.Text>
+                            </Popconfirm>
+                            <ViewReports {..._} />
+                        </Space>
+                    </Access>
                 )
             }
         }
