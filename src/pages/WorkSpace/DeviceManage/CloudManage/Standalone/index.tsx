@@ -532,7 +532,7 @@ export default (props: any) => {
                         取消
                     </Button>
                 ]}
-                width={300}
+                width={"30%"}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <Row align="middle">
