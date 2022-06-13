@@ -283,11 +283,19 @@ const SelectSuite: React.FC<any> = (
 							<Space>
 								<>
 									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>已选Test Suite</Typography.Text>
-									<Badge style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }} count={test_config.length} />
+									<Badge
+										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
+										count={test_config.length}
+										overflowCount={999999}
+									/>
 								</>
 								<>
 									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>Test Conf</Typography.Text>
-									<Badge style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }} count={memoizedValue} />
+									<Badge
+										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
+										count={memoizedValue}
+										overflowCount={999999}
+									/>
 								</>
 							</Space>
 						</span>

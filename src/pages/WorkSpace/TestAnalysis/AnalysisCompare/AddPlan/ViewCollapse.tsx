@@ -1,5 +1,5 @@
-import React,{useState,useEffect,useRef } from 'react'
-import { Collapse, Spin , Row, Divider, Space, Button, message } from 'antd'
+import React, { useState, useEffect, useRef } from 'react'
+import { Collapse, Spin, Row, Divider, Space, Button, message } from 'antd'
 import styled from 'styled-components'
 import CommonPagination from '@/components/CommonPagination';
 import { RenderDataRow } from './'
@@ -15,6 +15,11 @@ const CollapseContainer = styled(Collapse)`
     .ant-collapse-content-box {
         padding : 0!important;
     }
+
+    .ant-collapse-item > .ant-collapse-header .ant-collapse-header-text {
+        width: 100%;
+        display: inline-block;
+    }
 `
 
 const defaultResult = {
@@ -23,20 +28,20 @@ const defaultResult = {
 
 }
 
-const ViewCollapse = ( props : any ) => {
-    const {height: layoutHeight} = useClientSize()
+const ViewCollapse = (props: any) => {
+    const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
-    const { ws_id, onCancel, onOk,currentGroup} = props
-    const defaultVersion = currentGroup && _.get(currentGroup,'members[0].product_version')
+    const { ws_id, onCancel, onOk, currentGroup } = props
+    const defaultVersion = currentGroup && _.get(currentGroup, 'members[0].product_version')
     const page_default_params: any = { page_num: 1, page_size: 10, ws_id, product_version: defaultVersion || '' }
     const [dataSource, setDataSource] = useState(defaultResult)
-    const [loading,setLoading] = useState(false)
-    const [params,setParams] = useState(page_default_params)
-    const [activeKey,setActiveKey] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [params, setParams] = useState(page_default_params)
+    const [activeKey, setActiveKey] = useState([])
     const [selectedRow, setSelectedRow] = useState({})
-    const allSelectedData:any = useRef(null);
+    const allSelectedData: any = useRef(null);
 
-    const getViewAllPlanList = async (params:any) => {
+    const getViewAllPlanList = async (params: any) => {
         let data = await queryPlanViewList(params)
         defaultOption(data)
     }
@@ -51,7 +56,7 @@ const ViewCollapse = ( props : any ) => {
     }
     useEffect(() => {
         setLoading(true)
-        getViewAllPlanList(params) 
+        getViewAllPlanList(params)
     }, [params])
     useEffect(() => {
         let paramsCopy = _.cloneDeep(params)
@@ -62,40 +67,40 @@ const ViewCollapse = ( props : any ) => {
     const handleChange = (key: any) => {
         setActiveKey(key)
     }
-    const handleSelectCancle = () =>{
+    const handleSelectCancle = () => {
         setSelectedRow({});
     }
-    const handleCancle = () =>{
+    const handleCancle = () => {
         onCancel()
     }
-    const handleOk = async () =>{
+    const handleOk = async () => {
         setLoading(true)
-        const params = { plan_instance_list: allSelectedData.current.join(','), ws_id, page_num:1,page_size:9999,product_version: defaultVersion }
+        const params = { plan_instance_list: allSelectedData.current.join(','), ws_id, page_num: 1, page_size: 9999, product_version: defaultVersion }
         let { data, msg, code } = await queryPlanConstraint(params)
         if (code === 200) {
             const groupData = _.cloneDeep(currentGroup)
-            const arr = data.filter((obj:any) => obj.product_version === defaultVersion)
+            const arr = data.filter((obj: any) => obj.product_version === defaultVersion)
             groupData.members = _.isArray(groupData.members) ? [...groupData.members, ...arr] : arr
             groupData.members = _.unionBy(groupData.members, 'id');
             onOk(groupData)
             // window.sessionStorage.setItem('selectedPlanId',JSON.stringify(allSelectedData.current.join(',')))
         } else {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
         }
         setLoading(false)
     }
-    const setSelectedRowFn = (planId:string,selectedKeys:[]) => {
-        const selectedData= _.cloneDeep(selectedRow)
+    const setSelectedRowFn = (planId: string, selectedKeys: []) => {
+        const selectedData = _.cloneDeep(selectedRow)
         selectedData[planId] = selectedKeys
         setSelectedRow(selectedData)
     }
-// 滚动条参数
-const scroll = {
-     // 最大高度，内容超出该高度会出现滚动条
-     height: maxHeight - 180 > 475 ? 475 : maxHeight - 180, // 475根据页面计算得出
- }
+    // 滚动条参数
+    const scroll = {
+        // 最大高度，内容超出该高度会出现滚动条
+        height: maxHeight - 180 > 475 ? 475 : maxHeight - 180, // 475根据页面计算得出
+    }
 
-   allSelectedData.current = _.reduce((Object.values(selectedRow)), (result:any, trr:any) => {
+    allSelectedData.current = _.reduce((Object.values(selectedRow)), (result: any, trr: any) => {
         if (_.isArray(trr)) return [...result, ...trr]
         return result
     }, [])
@@ -126,7 +131,7 @@ const scroll = {
                                         header={
                                             <Row justify="space-between" >
                                                 <b >{item.name}</b>
-                                                <RenderDataRow itemData ={item}/>
+                                                <RenderDataRow itemData={item} />
                                             </Row>
                                         }
                                     >
@@ -135,7 +140,7 @@ const scroll = {
                                 )
                             })
                         }
-                    
+
                     </CollapseContainer>
                 </Scrollbars>
                 <CommonPagination

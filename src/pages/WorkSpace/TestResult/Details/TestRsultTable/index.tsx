@@ -13,13 +13,33 @@ import { ReactComponent as StopCircle } from '@/assets/svg/TestResult/suite/skip
 import { ReactComponent as SuccessCircle } from '@/assets/svg/TestResult/suite/success.svg'
 import { ReactComponent as ErrorCircle } from '@/assets/svg/TestResult/suite/fail.svg'
 // import { test_type_enum } from '@/utils/utils'
-import { ellipsisEditColumn, tooltipTd } from '../components'
+import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
 import { requestCodeMessage } from '@/utils/utils';
 
+const funcStates = [
+    { key: 'count', name: '全部', value: '', color: '#649FF6' },
+    { key: 'success', name: '通过', value: 'success', color: '#81BF84' },
+    { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
+    { key: 'skip', name: '跳过', value: 'skip', color: '#DDDDDD' },
+]
+const perfStates = [
+    { key: 'count', name: '全部', value: '', color: '#649FF6' },
+    { key: 'increase', name: '上升', value: 'increase', color: '#81BF84' },
+    { key: 'decline', name: '下降', value: 'decline', color: '#C84C5A' },
+    { key: 'normal', name: '正常', value: 'normal', color: '#DDDDDD' },
+    { key: 'invalid', name: '无效', value: 'invalid', color: '#DDDDDD' },
+    { key: 'na', name: 'NA', value: 'na', color: '#DDDDDD' },
+]
+const businessBusinessStates = [
+    { key: 'count', name: '总计', value: '', color: '#649FF6' },
+    { key: 'success', name: '成功', value: 'success', color: '#81BF84' },
+    { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
+]
 // 结果详情 - 测试列表
-export default (props: any) => {
+
+const TestResultTable: React.FC<any> = (props) => {
     const { id: job_id, ws_id } = useParams() as any
     const { caseResult = {}, test_type = '功能', provider_name = '', creator } = props
     const defaultParams = { state: '', job_id }
@@ -60,57 +80,36 @@ export default (props: any) => {
         }
     )
 
-
-    const funcStates = [
-        { key: 'count', name: '全部', value: '', color: '#649FF6' },
-        { key: 'success', name: '通过', value: 'success', color: '#81BF84' },
-        { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
-        { key: 'skip', name: '跳过', value: 'skip', color: '#DDDDDD' },
-    ]
-    const perfStates = [
-        { key: 'count', name: '全部', value: '', color: '#649FF6' },
-        { key: 'increase', name: '上升', value: 'increase', color: '#81BF84' },
-        { key: 'decline', name: '下降', value: 'decline', color: '#C84C5A' },
-        { key: 'normal', name: '正常', value: 'normal', color: '#DDDDDD' },
-        { key: 'invalid', name: '无效', value: 'invalid', color: '#DDDDDD' },
-        { key: 'na', name: 'NA', value: 'na', color: '#DDDDDD' },
-    ]
-    const businessBusinessStates = [
-        { key: 'count', name: '总计', value: '', color: '#649FF6' },
-        { key: 'success', name: '成功', value: 'success', color: '#81BF84' },
-        { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
-    ]
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
-    let columns: any = [
+    const columns = [
         {
             title: 'Test Suite',
             dataIndex: 'suite_name',
             ...tooltipTd(),
-        }];
-    if (['functional', 'performance'].includes(testType))
-        columns = columns.concat([{
+        },
+        ['functional', 'performance'].includes(testType) &&
+        {
             title: '测试类型',
             dataIndex: 'test_type',
             width: 100,
             render: (text: any) => <span>{text || '-'}</span>,
-        }])
-    if (['business_functional', 'business_performance', 'business_business'].includes(testType))
-        columns = columns.concat([{
+        },
+        ['business_functional', 'business_performance', 'business_business'].includes(testType) &&
+        {
             title: '业务名称',
             dataIndex: 'business_name',
             width: 160,
             render: (text: any) => <PopoverEllipsis title={text} />,
-        }])
-    columns = columns.concat([{
-        title: '机器',
-        width: 130,
-        render: () => ('-')
-    }])
-
-    if (['functional', 'business_functional', 'business_business'].includes(testType))
-        columns = columns.concat([{
+        },
+        {
+            title: '机器',
+            width: 130,
+            render: () => ('-')
+        },
+        ['functional', 'business_functional', 'business_business'].includes(testType) &&
+        {
             title: '结果',
             dataIndex: 'result',
             width: 50,
@@ -125,97 +124,94 @@ export default (props: any) => {
                     return <SuccessCircle style={{ width: 16, height: 16, verticalAlign: 'text-bottom' }} />
                 return <></>
             }
-        }])
-    columns = columns.concat([{
-        title: ['functional', 'business_functional'].includes(testType) ? '总计/通过/失败/跳过' : (testType === 'business_business' ? '总计/成功/失败' : 'Metric总计/上升/下降/正常/无效/NA'),
-        width: ['performance', 'business_performance'].includes(testType) ? 255 : 200,
-        render: (_: any) => {
-            return (
-                ['functional', 'business_functional', 'business_business'].includes(testType) ?
-                    (
-                        <Space>
-                            <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.conf_count}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('success')} >{_.conf_success}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('fail')} >{_.conf_fail}</div>
-                            {testType !== 'business_business' && (
-                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('skip')} >{_.conf_skip}</div>
-                            )}
-                        </Space>
-                    ) : (
-                        <Space>
-                            <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.count}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('increase')} >{_.increase}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('decline')} >{_.decline}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('normal')} >{_.normal}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('invalid')} >{_.invalid}</div>
-                            <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('na')} >{_.na}</div>
-                        </Space>
-                    )
-            )
-        }
-    }])
-
-    if (['performance', 'business_performance'].includes(testType))
-        columns = columns.concat([{
+        },
+        {
+            title: ['functional', 'business_functional'].includes(testType) ? '总计/通过/失败/跳过' : (testType === 'business_business' ? '总计/成功/失败' : 'Metric总计/上升/下降/正常/无效/NA'),
+            width: ['performance', 'business_performance'].includes(testType) ? 255 : 200,
+            render: (_: any) => {
+                return (
+                    ['functional', 'business_functional', 'business_business'].includes(testType) ?
+                        (
+                            <Space>
+                                <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.conf_count}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('success')} >{_.conf_success}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('fail')} >{_.conf_fail}</div>
+                                {testType !== 'business_business' && (
+                                    <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('skip')} >{_.conf_skip}</div>
+                                )}
+                            </Space>
+                        ) : (
+                            <Space>
+                                <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.count}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('increase')} >{_.increase}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('decline')} >{_.decline}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('normal')} >{_.normal}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('invalid')} >{_.invalid}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('na')} >{_.na}</div>
+                            </Space>
+                        )
+                )
+            }
+        },
+        ['performance', 'business_performance'].includes(testType) &&
+        {
             title: '对比基线',
             dataIndex: 'baseline',
             width: 80,
             ...tooltipTd(),
-        }])
-
-    columns = columns.concat([{
-        title: '开始时间',
-        dataIndex: 'start_time',
-        width: 175,
-        ...tooltipTd(),
-    }, {
-        title: '结束时间',
-        dataIndex: 'end_time',
-        width: 175,
-        ...tooltipTd(),
-    },])
-    if (access.wsRoleContrl(creator)) {
-        columns = columns.concat([
-            {
-                title: '备注',
-                dataIndex: 'note',
-                width: 80,
-                render: (_: any, row: any) => (
-                    ellipsisEditColumn(
-                        _,
-                        row,
-                        80,
+        },
+        {
+            title: '开始时间',
+            dataIndex: 'start_time',
+            width: 175,
+            ...tooltipTd(),
+        },
+        {
+            title: '结束时间',
+            dataIndex: 'end_time',
+            width: 175,
+            ...tooltipTd(),
+        },
+        access.wsRoleContrl(creator) &&
+        {
+            title: '备注',
+            dataIndex: 'note',
+            width: 80,
+            render: (_: any, row: any) => (
+                <EllipsisEditColumn
+                    title={_}
+                    width={80}
+                    onEdit={
                         () => editRemarkDrawer.current.show({ ...row, suite_name: row.suite_name, editor_obj: 'test_job_suite' })
-                    )
-                )
-            }
-        ])
-    }
-    if (['performance', 'business_performance'].includes(testType))
-        columns = columns.concat([
-            {
-                title: '操作',
-                width: 145,
-                render: (_: any) => (
-                    <Access accessible={access.wsRoleContrl(creator)}
-                        fallback={
-                            initialState?.authList?.ws_role_title === 'ws_tester' ?
-                                <Space>
-                                    <span style={{ color: '#ccc', cursor: 'pointer' }}>对比基线</span>
-                                    <span style={{ color: '#ccc', cursor: 'pointer' }}>加入基线</span>
-                                </Space>
-                                : <></>
-                        }
-                    >
-                        <Space>
-                            {/* <span onClick={ () => handleEditRemark( _ ) } style={{ color : '#1890FF' , cursor : 'pointer' }}>编辑</span> */}
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
-                        </Space>
-                    </Access>
-                )
-            }
-        ])
+                    }
+                />
+            )
+        },
+        ['performance', 'business_performance'].includes(testType) &&
+        {
+            title: '操作',
+            width: 145,
+            render: (_: any) => (
+                <Access
+                    accessible={access.wsRoleContrl(creator)}
+                    fallback={
+                        initialState?.authList?.ws_role_title === 'ws_tester' ?
+                            <Space>
+                                <span style={{ color: '#ccc', cursor: 'pointer' }}>对比基线</span>
+                                <span style={{ color: '#ccc', cursor: 'pointer' }}>加入基线</span>
+                            </Space>
+                            : <></>
+                    }
+                >
+                    <Space>
+                        {/* <span onClick={ () => handleEditRemark( _ ) } style={{ color : '#1890FF' , cursor : 'pointer' }}>编辑</span> */}
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
+                    </Space>
+                </Access>
+            )
+        }
+    ].filter(Boolean)
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, job_id })
@@ -329,122 +325,142 @@ export default (props: any) => {
 
     const expandBtnText = openAllRows ? '收起所有Conf' : '展开所有Conf'
     const expandIndexBtnText = indexExpandFlag ? '收起所有指标' : '展开所有指标'
-    const menu = (
-        <Menu>
-            <Menu.Item key="1" className={styles.expandConf} onClick={handleOpenExpandBtn}>{expandBtnText}</Menu.Item>
-            <Menu.Item key="2" className={styles.expandIndex} onClick={indexExpandClick}>{expandIndexBtnText}</Menu.Item>
-        </Menu>
-    )
 
     return (
-        <div style={{ paddingLeft: 20, paddingRight: 20, paddingBottom: 20, marginTop: 20 }}>
-            <Row justify="space-between" style={{ marginBottom: 20 }}>
-                {['functional', 'business_functional', 'business_business'].includes(testType) ?
-                    <Button onClick={handleOpenExpandBtn}>
-                        {openAllRows ? '收起所有Conf' : '展开所有Conf'}
-                    </Button>
-                    :
-                    <Space>
-                        <Dropdown.Button onClick={handleOpenExpandBtn} placement="bottomLeft" icon={<DownOutlined />} overlay={menu}>
-                            {openAllRows ? '收起所有' : '展开所有'}
-                        </Dropdown.Button>
-                        <Access accessible={access.wsRoleContrl(creator)}
-                            fallback={
-                                initialState?.authList?.ws_role_title === 'ws_tester' ?
-                                    <Space>
-                                        <Button disabled={true}>批量对比基线</Button>
-                                        <Button disabled={true}>批量加入基线</Button>
-                                    </Space>
-                                    : <></>
-                            }
-                        >
-                            <Space>
-                                <Button onClick={() => handleBatchContrastBaseline()}>批量对比基线</Button>
-                                <Button onClick={() => handleBatchJoinBaseline()}>批量加入基线</Button>
-                            </Space>
-                        </Access>
+        <>
+            <div style={{ padding: "20px 20px" }}>
+                <Row justify="space-between" >
+                    {['functional', 'business_functional', 'business_business'].includes(testType) ?
+                        <Button onClick={handleOpenExpandBtn}>
+                            {openAllRows ? '收起所有Conf' : '展开所有Conf'}
+                        </Button>
+                        :
+                        <Space>
+                            <Dropdown.Button
+                                onClick={handleOpenExpandBtn}
+                                placement="bottomLeft"
+                                icon={<DownOutlined />}
+                                overlay={
+                                    <Menu>
+                                        <Menu.Item
+                                            key="1"
+                                            className={styles.expandConf}
+                                            onClick={handleOpenExpandBtn}
+                                        >
+                                            {expandBtnText}
+                                        </Menu.Item>
+                                        <Menu.Item
+                                            key="2"
+                                            className={styles.expandIndex}
+                                            onClick={indexExpandClick}
+                                        >
+                                            {expandIndexBtnText}
+                                        </Menu.Item>
+                                    </Menu>
+                                }
+                            >
+                                {openAllRows ? '收起所有' : '展开所有'}
+                            </Dropdown.Button>
+                            <Access
+                                accessible={access.wsRoleContrl(creator)}
+                                fallback={
+                                    initialState?.authList?.ws_role_title === 'ws_tester' ?
+                                        <Space>
+                                            <Button disabled={true}>批量对比基线</Button>
+                                            <Button disabled={true}>批量加入基线</Button>
+                                        </Space>
+                                        : <></>
+                                }
+                            >
+                                <Space>
+                                    <Button onClick={() => handleBatchContrastBaseline()}>批量对比基线</Button>
+                                    <Button onClick={() => handleBatchJoinBaseline()}>批量加入基线</Button>
+                                </Space>
+                            </Access>
 
-                    </Space>
-                }
-                <Space>
-                    {
-                        states.map(
-                            ({ key, name, value }: any) => (
-                                <span
-                                    key={key}
-                                    onClick={() => handleStateChange(value)}
-                                    style={{
-                                        cursor: 'pointer',
-                                        color: params[0] && params[0].state === value ? '#1890FF' : 'rgba(0, 0, 0, 0.65)'
-                                    }}
-                                >
-                                    {name}({caseResult[key]})
-                                </span>
-                            )
-                        )
+                        </Space>
                     }
-                </Space>
-            </Row>
-            <Table
-                columns={columns}
-                rowKey="suite_id"
-                dataSource={dataSource}
-                pagination={false}
-                size="small"
-                loading={loading}
-                className={styles.result_expand_table}
-                rowSelection={rowSelection}
-                expandable={{
-                    defaultExpandAllRows: openAllRows,
-                    expandedRowKeys: expandedRowKeys,
-                    onExpand: (expanded: boolean, record: any) => {
-                        if (expanded) {
-                            const tempList = expandedRowKeys.concat([record.suite_id])
-                            setExpandedRowKeys(tempList)
-                            if (tempList?.length === dataSource.length) {
-                                // 展开的状态标志
-                                setOpenAllRows(true)
-                            }
+                    <Space>
+                        {
+                            states.map(
+                                ({ key, name, value }: any) => (
+                                    <span
+                                        key={key}
+                                        onClick={() => handleStateChange(value)}
+                                        style={{
+                                            cursor: 'pointer',
+                                            color: params[0] && params[0].state === value ? '#1890FF' : 'rgba(0, 0, 0, 0.65)'
+                                        }}
+                                    >
+                                        {name}({caseResult[key]})
+                                    </span>
+                                )
+                            )
                         }
-                        else {
-                            const tempList = expandedRowKeys.filter((i: number) => i !== record.suite_id)
-                            setExpandedRowKeys(tempList)
-                            if (!tempList.length) {
-                                // 收起的状态标志
-                                setOpenAllRows(false)
-                                setIndexExpandFlag(false)
+                    </Space>
+                </Row>
+                <Table
+                    columns={columns as any}
+                    rowKey="suite_id"
+                    dataSource={dataSource}
+                    pagination={false}
+                    size="small"
+                    loading={loading}
+                    className={styles.result_expand_table}
+                    style={{ marginTop: 20 }}
+                    rowSelection={rowSelection}
+                    expandable={{
+                        defaultExpandAllRows: openAllRows,
+                        expandedRowKeys: expandedRowKeys,
+                        onExpand: (expanded: boolean, record: any) => {
+                            if (expanded) {
+                                const tempList = expandedRowKeys.concat([record.suite_id])
+                                setExpandedRowKeys(tempList)
+                                if (tempList?.length === dataSource.length) {
+                                    // 展开的状态标志
+                                    setOpenAllRows(true)
+                                }
                             }
-                        }
-                    },
-                    expandedRowRender: (record) => (
-                        <CaseTable
-                            key={refreshCaseTable}
-                            {...record}
-                            ws_id={ws_id}
-                            creator={creator}
-                            server_provider={serverProvider}
-                            testType={testType}
-                            job_id={job_id}
-                            openAllRows={indexExpandFlag}
-                            state={params[0].state}
-                            suiteSelect={selectedRowKeys}
-                            onCaseSelect={handleCaseSelect}
-                        />
-                    ),
-                    expandIcon: ({ expanded, onExpand, record }: any) => (
-                        // expanded ? null : null
-                        expanded ?
-                            (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
-                            (<CaretRightFilled onClick={e => onExpand(record, e)} />)
-                    )
-                }}
-            />
+                            else {
+                                const tempList = expandedRowKeys.filter((i: number) => i !== record.suite_id)
+                                setExpandedRowKeys(tempList)
+                                if (!tempList.length) {
+                                    // 收起的状态标志
+                                    setOpenAllRows(false)
+                                    setIndexExpandFlag(false)
+                                }
+                            }
+                        },
+                        expandedRowRender: (record) => (
+                            <CaseTable
+                                key={refreshCaseTable}
+                                {...record}
+                                ws_id={ws_id}
+                                creator={creator}
+                                server_provider={serverProvider}
+                                testType={testType}
+                                job_id={job_id}
+                                openAllRows={indexExpandFlag}
+                                state={params[0].state}
+                                suiteSelect={selectedRowKeys}
+                                onCaseSelect={handleCaseSelect}
+                            />
+                        ),
+
+                        expandIcon: ({ expanded, onExpand, record }: any) => (
+                            // expanded ? null : null
+                            expanded ?
+                                (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
+                                (<CaretRightFilled onClick={e => onExpand(record, e)} />)
+                        )
+                    }}
+                />
+            </div>
             <JoinBaseline
                 ref={joinBaselineDrawer}
                 test_type={testType}
                 server_provider={serverProvider}
                 onOk={handleJoinBaselineOk}
-                ws_id={ws_id}
             />
             <EditRemarks
                 ref={editRemarkDrawer}
@@ -455,8 +471,10 @@ export default (props: any) => {
                 test_type={testType}
                 server_provider={serverProvider}
                 onOk={handleContrastBaselineOk}
-                ws_id={ws_id}
             />
-        </div>
+        </>
     )
 }
+
+
+export default TestResultTable
