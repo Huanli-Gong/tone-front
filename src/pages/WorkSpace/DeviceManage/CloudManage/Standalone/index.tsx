@@ -67,10 +67,13 @@ export default (props: any) => {
     useEffect(() => {
         let columns: any = [
             {
-                title: params.type - 0 === 0 ? '配置名称' : '实例名称',
-                fixed: 'left',
-                width: 140,
+                title: params.type == '0' ? '配置名称' : '实例名称',
                 dataIndex: 'name',
+                width: 140,
+                fixed: 'left',
+                ellipsis: {
+                    showTitle: false
+                },
                 filterDropdown: ({ confirm }: any) => 
                     <SearchInput 
                         confirm={confirm} 
@@ -121,7 +124,6 @@ export default (props: any) => {
                 },
                 render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
             },
-
             {
                 title: '云厂商/Ak',
                 dataIndex: 'manufacturer',
