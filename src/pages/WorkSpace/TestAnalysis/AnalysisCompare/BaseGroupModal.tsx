@@ -13,7 +13,7 @@ import { Access, useAccess } from 'umi';
 const { Panel } = Collapse;
 const { Step } = Steps;
 export default (props: any) => {
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const access = useAccess()
     const { baselineGroup, handleCancle, onOk, baselineGroupIndex, creatReportOk } = props
@@ -37,8 +37,8 @@ export default (props: any) => {
     const [currentStep, setCurrentStep] = useState(0)
     const [expandRepeatTableKey, setExpandRepeatTableKey] = useState<string[]>([])
     const [selSuiteData, setSelSuiteData] = useState<any>()
-    const [groupRelConf,setGroupRelConf] = useState(_.fill(Array(allGroupData.length + 1), 0))
-    const [currentJobIndex,setCurrentJobIndex] = useState()
+    const [groupRelConf, setGroupRelConf] = useState(_.fill(Array(allGroupData.length + 1), 0))
+    const [currentJobIndex, setCurrentJobIndex] = useState()
 
     const allFunRowKeys: any = useRef(null)
     const allPersRowKeys: any = useRef(null)
@@ -58,16 +58,16 @@ export default (props: any) => {
             let selKeys = [...Object.keys(func_suite_dic), ...Object.keys(perf_suite_dic)]
             selKeys = selKeys.map(key => String(key))
             // 统计每个组下conf关联的job大于等于2的conf有多少条，空组除外
-            const arr:any = _.fill(Array(allGroupData.length + 1), 0);
-            selData.forEach((suite:any) => {
+            const arr: any = _.fill(Array(allGroupData.length + 1), 0);
+            selData.forEach((suite: any) => {
                 const confDic = suite.conf_dic
                 Object.values(confDic).forEach((conf: any) => {
                     const groupArr = conf['compare_groups']
                     const baseGroup = conf['base_obj_li']
-                    if(_.isArray(baseGroup) && baseGroup.length > 1) arr[0] = ++arr[0] 
-                    if(_.isArray(groupArr)) {
-                        groupArr.forEach((item:any,index:number) => {
-                            if(_.isArray(item) && item.length >1) arr[index + 1] = ++arr[index + 1]
+                    if (_.isArray(baseGroup) && baseGroup.length > 1) arr[0] = ++arr[0]
+                    if (_.isArray(groupArr)) {
+                        groupArr.forEach((item: any, index: number) => {
+                            if (_.isArray(item) && item.length > 1) arr[index + 1] = ++arr[index + 1]
                         })
                     }
                 })
@@ -97,7 +97,7 @@ export default (props: any) => {
     useEffect(() => {
         if (currentStep === 0) setTab('functional')
         if (currentStep === 1) {
-            const index = _.findIndex(groupRelConf, function(o) { return o });
+            const index = _.findIndex(groupRelConf, function (o) { return o });
             setTab(`group${index}`)
         }
     }, [currentStep])
@@ -137,7 +137,7 @@ export default (props: any) => {
 
             allFunRowKeys.current = [...secondFunKeys, ...arrKey1]
             allPersRowKeys.current = [...secondPersKeys, ...arrKey2]
-            if( !allFunRowKeys.current.length && allPersRowKeys.current.length) setTab('performance')
+            if (!allFunRowKeys.current.length && allPersRowKeys.current.length) setTab('performance')
             setSelectedFunRowKeys([...secondFunKeys, ...arrKey1])
             setSelectedPersRowKeys([...secondPersKeys, ...arrKey2])
 
@@ -150,7 +150,7 @@ export default (props: any) => {
             setCopySuitData(data)
             setLoading(false)
         } else {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
             setLoading(false)
         }
     }
@@ -184,7 +184,7 @@ export default (props: any) => {
                 }
             })
         }
-         allGroupData.forEach((item: any, index: number) => {
+        allGroupData.forEach((item: any, index: number) => {
             let membersArr = _.get(item, 'members')
             let brrFun: any = []
             let brrFers: any = []
@@ -223,12 +223,12 @@ export default (props: any) => {
     const getSelectedDataFn = (data: any, selectedKeys: any) => {
         const objKeys = tab === 'functional' ? allObjKeyFun : allObjKeyPerf
         // 二级
-        
+
         const suite = _.cloneDeep(data)
         Object.values(suite).forEach((obj: any) => {
-            const childKeys:any = objKeys[obj.suite_id + '']
+            const childKeys: any = objKeys[obj.suite_id + '']
             // 取交集
-            const arr = _.intersection(selectedKeys,childKeys)
+            const arr = _.intersection(selectedKeys, childKeys)
             if (selectedKeys.includes(String(obj.suite_id)) || arr.length) {
                 const conf_dic = Object.keys(obj.conf_dic)
                 conf_dic.forEach(keys => {
@@ -245,7 +245,7 @@ export default (props: any) => {
 
     }
 
-    const handleOk = (sureOkFn:any) => {
+    const handleOk = (sureOkFn: any) => {
         let func_suite = suitData.func_suite_dic || {}
         let perf_suite = suitData.perf_suite_dic || {}
 
@@ -321,6 +321,8 @@ export default (props: any) => {
     };
 
     const columns = [
+        Table.SELECTION_COLUMN,
+        Table.EXPAND_COLUMN,
         {
             dataIndex: 'suite_name',
             title: 'Test Suite',
@@ -341,16 +343,16 @@ export default (props: any) => {
     let oneLevelDetailData = tab === 'functional' ? oneLevelFunData : oneLevelPerslData
 
     oneLevelDetailData = oneLevelDetailData.map((item: any, index: number) => {
-        const aa = {
+        /* const aa = {
             key: 2234,
             suite_id: `test_conf_${index}`,
             suite_name: 'Test conf',
             title: 'Test conf',
             level: 2
-        }
+        } */
         const obj = item.conf_dic
-        item.children = Object.values(obj)
-        item.children = item.children.map((value: any, index: number) => {
+        item.confs = Object.values(obj)
+        item.confs = item.confs.map((value: any, index: number) => {
             return (
                 {
                     key: value.conf_id,
@@ -362,7 +364,7 @@ export default (props: any) => {
                 }
             )
         })
-        item.children.unshift(aa)
+        // item.children.unshift(aa)
         return item
     })
     // 滚动条参数
@@ -409,11 +411,11 @@ export default (props: any) => {
         let currentGroupIndex = Number(tab.replace('group', ''))
         const flag = isNaN(currentGroupIndex)
         const blag = groupRelConf.every(val => val === 0)
-        if(!selSuiteData.length || blag) {
-            return <Empty 
-            description="暂无重复数据"
-            image={Empty.PRESENTED_IMAGE_SIMPLE} 
-            style={{position: 'absolute',top: '50%',left: '50%',transform: 'translate(-50%, -50%)', margin: '0'}}/>
+        if (!selSuiteData.length || blag) {
+            return <Empty
+                description="暂无重复数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: '0' }} />
         }
         return (
             <Collapse
@@ -430,7 +432,7 @@ export default (props: any) => {
                             const groupArr = isFlag ? obj['compare_groups'][currentGroupIndex - 1] : obj['base_obj_li']
                             if (groupArr.length > 1) arr = [...arr, ...groupArr]
                         })
-                        if(!arr.length) return ''
+                        if (!arr.length) return ''
                         return (
                             <Panel header={_.get(item, 'suite_name')} key={_.get(item, 'suite_id')} className={styles.Panel}>
                                 <ExpandTable
@@ -458,25 +460,48 @@ export default (props: any) => {
                 pagination={false}
                 size="small"
                 expandable={{
+                    columnWidth: 0,
                     onExpand: (_, record: any) => {
                         onExpand(_, record)
                     },
+                    expandedRowRender(record) {
+                        if (!record.confs || record.confs.length === 0) return <></>
+                        return (
+                            <Table
+                                columns={columns}
+                                showHeader={false}
+                                pagination={false}
+                                dataSource={record.confs}
+                                size="small"
+                                rowKey={(record: any) => record.suite_id + ''}
+                                rowSelection={{
+                                    selectedRowKeys: tab === 'functional' ? selectedFunRowKeys : selectedPersRowKeys,
+                                    onSelect(record, selected, selectedRows) {
+                                        const allKeys = tab === "functional" ? selectedFunRowKeys : selectedPersRowKeys
+                                        const selectedRowKeys = selected ? allKeys.concat(record.suite_id + "") : allKeys.filter((item: any) => item !== record.suite_id + "")
 
-                    expandedRowKeys: tab === 'functional' ? expandKeyFun : expandKeyPerf,
+                                        if (tab === "functional")
+                                            setSelectedFunRowKeys(selectedRowKeys)
+                                        else
+                                            setSelectedFunRowKeys(selectedRowKeys)
+                                    }
+                                }}
+                            />
+                        )
+                    },
+                    defaultExpandedRowKeys: selectedPersRowKeys,
                     expandIcon: ({ expanded, onExpand, record }: any) => {
-                        if (!record.children) return
                         return (
                             expanded ?
                                 (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
                                 (<CaretRightFilled onClick={e => onExpand(record, e)} />)
                         )
                     },
-                    defaultExpandedRowKeys: tab === 'functional' ? expandKeyFun : expandKeyPerf,
-                    defaultExpandAllRows: true,
                 }}
             />
         )
     }
+
     const tabsReact = () => {
         return (
             <Tabs
@@ -490,6 +515,7 @@ export default (props: any) => {
             </Tabs>
         )
     }
+
     const allGroupReact = () => {
         let groupAll = _.cloneDeep(allGroupData)
         const baseGroup = _.cloneDeep(baselineGroup)
@@ -519,10 +545,11 @@ export default (props: any) => {
                         })
                     }
                 </Tabs>
-                {!blag && <Typography.Text style={{display: 'inline-block',height: '44px',lineHeight: '44px'}}>注：{groupRelConf[num]}个conf有重复job数据</Typography.Text>}
+                {!blag && <Typography.Text style={{ display: 'inline-block', height: '44px', lineHeight: '44px' }}>注：{groupRelConf[num]}个conf有重复job数据</Typography.Text>}
             </>
         )
     }
+    
     return (
         <div className={styles.compare_suite} id="list_container">
             <div className={styles.server_provider}>
@@ -541,7 +568,7 @@ export default (props: any) => {
 
             <Steps size="small" current={currentStep} onChange={handleStepChange} className={styles.steps}>
                 <Step title="选择对比数据" />
-                <Step title="选择重复数据" disabled={loading}/>
+                <Step title="选择重复数据" disabled={loading} />
             </Steps>
 
 
@@ -575,7 +602,7 @@ export default (props: any) => {
                 {
                     currentStep === 1 &&
                     <div>
-                        <Button onClick={_.partial(handleStepChange, 0)} style={{float:'left'}}>上一步</Button>
+                        <Button onClick={_.partial(handleStepChange, 0)} style={{ float: 'left' }}>上一步</Button>
                         <Space>
                             <Button onClick={handleClose}>取消</Button>
                             <Access accessible={access.wsRoleContrl()}>

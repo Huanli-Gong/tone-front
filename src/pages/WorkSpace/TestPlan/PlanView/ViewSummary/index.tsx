@@ -15,8 +15,9 @@ interface ContainerProps {
 
 const DetailContainer = styled.div<ContainerProps>`
     width:${props => props.width}px;
-    height:${props => props.height}px;
+    min-height:${props => props.height}px;
     overflow:auto;
+    background-color: #f5f5f5;
     min-height:100%;
 `
 
@@ -34,7 +35,7 @@ const DescriptionRow = styled(Row)`
 const DetailBody = styled.div`
     background:#fff;
     padding:20px;
-    margin-top:20px;
+    margin-top:10px;
 `
 
 const LinkSpan = styled.span`
