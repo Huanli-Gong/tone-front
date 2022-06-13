@@ -156,7 +156,7 @@ const WorkspaceLayout = (props: any) => {
                 </Menu>
             </Layout.Sider>
             <Layout.Content className={styles.content} style={{ minHeight: windowHeight - 50 }}>
-                <div style={{ width: '100%', minHeight: windowHeight - 90 , background: "#fff"}}>
+                <div style={{ background: "#fff", margin: 0, padding: 0, height: "100%" }}>
                     {props.children}
                 </div>
             </Layout.Content>

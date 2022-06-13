@@ -103,29 +103,27 @@ export const ellipsisCopyColumn = (_: any, width: any = '100%') => {
     )
 }
 
-export const ellipsisEditColumn = (_: any, row: any, width: any = '100%', onEdit: any) => {
+export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit }) => {
     const boxRef: any = useRef()
     const [show, setShow] = useState(false)
 
-    useLayoutEffect(
-        () => {
-            const scrollWidth = boxRef.current.scrollWidth
-            setShow(width - 18 < scrollWidth - 2)
-        }, [boxRef.current, _]
-    )
+    useEffect(() => {
+        const scrollWidth = boxRef.current.scrollWidth
+        setShow(width - 18 < scrollWidth - 2)
+    }, [title])
 
     return (
         <>
             {
                 show ?
                     <Row style={{ width: width - 16 }} justify="start" align="middle">
-                        <Tooltip placement="topLeft" title={_}>
-                            <span style={{ width: width - 16 - 28 }} className={styles.ellips_copy_column}>{_}</span>
+                        <Tooltip placement="topLeft" title={title}>
+                            <span style={{ width: width - 16 - 28 }} className={styles.ellips_copy_column}>{title}</span>
                         </Tooltip>
                         <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
                     </Row> :
                     <Row className={styles.ellips_copy_column} justify="start" align="middle" >
-                        {_ || '-'}
+                        {title || '-'}
                         <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
                     </Row>
             }
@@ -134,7 +132,7 @@ export const ellipsisEditColumn = (_: any, row: any, width: any = '100%', onEdit
                 className={styles.ellips_column_refclass}
                 style={{ width: width - 16 }}
             >
-                {_ || '-'}
+                {title || '-'}
                 <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
             </div >
         </>
@@ -187,11 +185,11 @@ export const compareResultSpan = (track_result: string, result: string) => {
     return result || '-'
 }
 
-const StateTagCls = styled(Tag) <{ noMargin?: boolean }>`
+const StateTagCls = styled(Tag) <{ no_margin?: boolean }>`
     font-weight: 500;
     width: 72px;
     text-align: center;
-    ${({ noMargin }) => noMargin ? 'margin-right: 0;' : ''}
+    ${({ no_margin }) => no_margin ? 'margin-right: 0;' : ''}
     text-transform: capitalize;
 `
 
@@ -275,11 +273,11 @@ export const JobListStateTag: React.FC<any> = (props) => {
         return (
             <Space>
                 <CustomStateTag {...props}>{state}</CustomStateTag>
-                <QuestionPopover 
+                <QuestionPopover
                     title={
                         <span dangerouslySetInnerHTML={{
-                            __html: state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`) 
-                        }} 
+                            __html: state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
+                        }}
                         />
                     }
                 />
@@ -300,7 +298,7 @@ const stateColorMap = new Map([
 const getStateColor = (state: string) => stateColorMap.get(state) || '#D9D9D9'
 
 export const StateTag: React.FC<any> = (props) => {
-    return <CustomTooltipStateTag {...props} noMargin />
+    return <CustomTooltipStateTag {...props} no_margin={1} />
 }
 
 interface QuestionTootipProp {

@@ -2,7 +2,7 @@ import React, { memo, useRef, } from 'react'
 import { Table, Card } from 'antd'
 import { useModel, useAccess, Access, useParams } from 'umi'
 import EditMarks from './EditMarks'
-import { ellipsisEditColumn } from '@/pages/WorkSpace/TestResult/Details/components'
+import { EllipsisEditColumn } from '@/pages/WorkSpace/TestResult/Details/components'
 import { matchRoleEnum } from '@/utils/utils';
 
 export default memo(
@@ -42,21 +42,21 @@ export default memo(
                 dataIndex: 'end_time'
             },
         ];
-        // if (limitAuthority) {
-        //     columns = columns.concat([
-        //         {
-        //             title : '标注',
-        //             dataIndex : 'note',
-        //             render : ( _ : any , row : any ) => ellipsisEditColumn( _ , row , 135 + 28 - 20 , () => handleEditMarks( row ) )
-        //         }
-        //     ]);
-        // }
+        
         if (access.wsRoleContrl()) {
             columns = columns.concat([
                 {
                     title: '标注',
                     dataIndex: 'note',
-                    render: (_: any, row: any) => ellipsisEditColumn(_, row, 135 + 28 - 20, () => handleEditMarks(row))
+                    render: (_: any, row: any) => (
+                        <EllipsisEditColumn
+                            title={_}
+                            width={135 + 28 - 20}
+                            onEdit={
+                                () => handleEditMarks(row)
+                            }
+                        />
+                    )
                 }
             ]);
         }
