@@ -1,10 +1,11 @@
-import React, { useImperativeHandle, useEffect } from 'react'
+import React, { useImperativeHandle, useEffect, useState } from 'react'
 import { Form, Input, Select } from 'antd'
 import styles from './index.less'
 
 import { FormProps } from './index'
 import { useRequest, useParams } from 'umi'
-import { queryProjectList, queryBaselineList } from '../../services'
+import { queryProjectList, queryBaselineList, queryWsJobTest } from '../../services'
+import { debounce } from 'lodash'
 
 /**
  * 基础配置
@@ -12,7 +13,14 @@ import { queryProjectList, queryBaselineList } from '../../services'
 export default ({ contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
-
+    const [jobList, setJobList] = useState<any>([])
+    const defaultParams = {
+        page_num: 1,
+        page_size: 20,
+        ws_id,
+        search: '',
+        tab: 'all',
+    }
     const { data: projectList, run: getProjectList } = useRequest(
         () => queryProjectList({ ws_id, page_size: 500 }),
         { manual: true, initialData: [] }
@@ -21,11 +29,23 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
         () => queryBaselineList({ ws_id, test_type, server_provider, page_size: 500 }),
         { manual: true, initialData: [] }
     )
+    const getJobList = async (params: any) => {
+        const { data } = await queryWsJobTest(params)
+        setJobList(data)
+    }
 
     useEffect(() => {
         if ('baseline' in contrl) getBaselineList()
         if ('project' in contrl) getProjectList()
-    }, [contrl, disabled])
+        if ('baseline_job' in contrl) {
+            let params = defaultParams
+            if (JSON.stringify(template) !== '{}') {
+                const { baseline_job_id } = template
+                params = {...params , search: baseline_job_id}
+            }
+            getJobList(params)
+        }
+    }, [contrl, disabled, template])
 
     useImperativeHandle(
         onRef,
@@ -39,14 +59,15 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
             }
         }),
     )
-
+    
     useEffect(() => {
         if (projectListDataRef) projectListDataRef.current = projectList
         if (baselineListDataRef) baselineListDataRef.current = baselineList
         if (JSON.stringify(template) !== '{}') {
-            const { name, project, baseline, project_id, baseline_id } = template
+            const { name, project, baseline, project_id, baseline_id, baseline_job, baseline_job_id } = template
             const projectId = project || project_id
             const baselineId = baseline || baseline_id
+            const baselineJobId = baseline_job || baseline_job_id
             let obj: any = {}
             if (name) obj.name = name
             if (projectId) {
@@ -59,9 +80,15 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                 if (idx > -1)
                     obj.baseline = baselineId
             }
+            if (baselineJobId) {
+                const idx = jobList.findIndex((i: any) => i.id === baselineJobId)
+                if (idx > -1)
+                    obj.baseline_job_id = baselineJobId
+            }
             form.setFieldsValue(obj)
         }
-    }, [template, baselineList, projectList])
+    }, [template, baselineList, projectList, jobList])
+
 
     useEffect(() => {
         if (projectList.length > 0) {
@@ -77,7 +104,9 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     const handleSelect = (val: any) => {
         callBackProjectId(val)
     }
-
+    const handleBaselineJobSelect = debounce((val: string) => {
+        getJobList({ ...defaultParams, search: val })
+    }, 500)
     return (
         <Form
             colon={false}
@@ -148,6 +177,29 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                 }
                 </>
             )}
+            {
+                'baseline_job' in contrl &&
+                <Form.Item
+                    name="baseline_job_id"
+                    label={contrl.baseline_job.alias || contrl.baseline_job.show_name}
+                >
+                    <Select
+                        allowClear
+                        showSearch
+                        getPopupContainer={node => node.parentNode}
+                        placeholder="请选择一个Job作为基线"
+                        onSearch={handleBaselineJobSelect}
+                    >
+                        {
+                            jobList.map(
+                                (item: any) => (
+                                    <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
+                                )
+                            )
+                        }
+                    </Select>
+                </Form.Item>
+            }
         </Form>
     )
 }

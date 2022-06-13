@@ -153,10 +153,17 @@ const TestResultTable: React.FC<any> = (props) => {
                 )
             }
         },
-        ['performance', 'business_performance'].includes(testType) &&
+        (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline)) &&
         {
             title: '对比基线',
             dataIndex: 'baseline',
+            width: 80,
+            ...tooltipTd(),
+        },
+        (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline_job_id) &&
+        {
+            title: '基线Job',
+            dataIndex: 'baseline_job_id',
             width: 80,
             ...tooltipTd(),
         },
