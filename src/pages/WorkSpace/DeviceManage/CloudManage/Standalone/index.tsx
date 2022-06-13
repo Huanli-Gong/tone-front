@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Pagination, Space, Popconfirm, Tag, message, Tooltip, Tabs, Modal } from 'antd';
+import { Button, Pagination, Space, Popconfirm, Tag, message, Tooltip, Tabs, Modal, Row } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
@@ -28,14 +28,14 @@ import SelectDropSync from '@/components/Public/SelectDropSync';
  */
 
 interface MachineParams {
-    type:any,
-    page:number,
-    pageSize:number,
-    description:string,
-    name:string,
-    owner:any,
-    tags:any,
-    useStateVal:string | undefined,
+    type: any,
+    page: number,
+    pageSize: number,
+    description: string,
+    name: string,
+    owner: any,
+    tags: any,
+    useStateVal: string | undefined,
     realState: string | undefined
 }
 export default (props: any) => {
@@ -45,15 +45,15 @@ export default (props: any) => {
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [data, setData] = useState<any>({ data: [] });
     const [params, setParams] = useState<MachineParams>({
-        type:'0', 
-        page:1, 
-        pageSize: 10, 
-        description:'', 
-        name:'', 
-        owner:'', 
-        tags:'', 
-        useStateVal:'', 
-        realState:''
+        type: '0',
+        page: 1,
+        pageSize: 10,
+        description: '',
+        name: '',
+        owner: '',
+        tags: '',
+        useStateVal: '',
+        realState: ''
     })
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -71,11 +71,14 @@ export default (props: any) => {
                 fixed: 'left',
                 width: 140,
                 dataIndex: 'name',
-                filterDropdown: ({ confirm }: any) => 
-                    <SearchInput 
-                        confirm={confirm} 
-                        autoFocus={autoFocus} 
-                        onConfirm={(val: string) => { setParams({ ...params, page: 1, name: val }) }} 
+                ellipsis: {
+                    showTitle: false
+                },
+                filterDropdown: ({ confirm }: any) =>
+                    <SearchInput
+                        confirm={confirm}
+                        autoFocus={autoFocus}
+                        onConfirm={(val: string) => { setParams({ ...params, page: 1, name: val }) }}
                     />,
                 onFilterDropdownVisibleChange: (visible: any) => {
                     if (visible) {
@@ -212,13 +215,13 @@ export default (props: any) => {
                 render: StateBadge,
                 filterIcon: () => <FilterFilled style={{ color: params.useStateVal ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
-                    <SelectDropSync 
-                        confirm={confirm} 
-                        onConfirm={(val: string) => 
-                            setParams({ ...params, useStateVal:val })} 
-                            stateVal={params.useStateVal}
-                            tabType={params.type} 
-                            dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} 
+                    <SelectDropSync
+                        confirm={confirm}
+                        onConfirm={(val: string) =>
+                            setParams({ ...params, useStateVal: val })}
+                        stateVal={params.useStateVal}
+                        tabType={params.type}
+                        dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
                     />
                 )
             },
@@ -232,13 +235,13 @@ export default (props: any) => {
                 render: StateBadge,
                 filterIcon: () => <FilterFilled style={{ color: params.realState ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
-                    <SelectDropSync 
-                        confirm={confirm} 
-                        onConfirm={(val: string) => 
-                            setParams({ ...params, realState:val })} 
-                            stateVal={params.realState} 
-                            tabType={params.type} 
-                            dataArr={['Available', 'Broken']}
+                    <SelectDropSync
+                        confirm={confirm}
+                        onConfirm={(val: string) =>
+                            setParams({ ...params, realState: val })}
+                        stateVal={params.realState}
+                        tabType={params.type}
+                        dataArr={['Available', 'Broken']}
                     />
                 )
             },
@@ -250,10 +253,10 @@ export default (props: any) => {
                     showTitle: false
                 },
                 filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => 
-                    <SelectUser 
-                        confirm={confirm} 
-                        onConfirm={(val: number) => { setParams({ ...params, page:1, owner:val })}} 
+                filterDropdown: ({ confirm }: any) =>
+                    <SelectUser
+                        confirm={confirm}
+                        onConfirm={(val: number) => { setParams({ ...params, page: 1, owner: val }) }}
                     />,
             },
             {
@@ -264,13 +267,13 @@ export default (props: any) => {
                     showTitle: false
                 },
                 filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => 
+                filterDropdown: ({ confirm }: any) =>
                     <SelectTags
                         ws_id={ws_id}
-                        run_mode={'standalone'} 
-                        autoFocus={autoFocus} 
-                        confirm={confirm} 
-                        onConfirm={(val: number) => { setParams({ ...params, page:1, tags:val })}} 
+                        run_mode={'standalone'}
+                        autoFocus={autoFocus}
+                        confirm={confirm}
+                        onConfirm={(val: number) => { setParams({ ...params, page: 1, tags: val }) }}
                     />,
                 render: (_: any, row: any) => <div>
                     {
@@ -288,11 +291,11 @@ export default (props: any) => {
                 width: 140,
                 dataIndex: 'description',
                 filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => 
-                    <SearchInput 
-                        confirm={confirm} 
-                        autoFocus={autoFocus} 
-                        onConfirm={(val: string) => { setParams({ ...params, page:1, description:val })}} 
+                filterDropdown: ({ confirm }: any) =>
+                    <SearchInput
+                        confirm={confirm}
+                        autoFocus={autoFocus}
+                        onConfirm={(val: string) => { setParams({ ...params, page: 1, description: val }) }}
                     />,
                 onFilterDropdownVisibleChange: (visible: any) => {
                     if (visible) {
@@ -355,20 +358,20 @@ export default (props: any) => {
         }, []
     )
     const handlePage = (page_num: number, page_size: any) => {
-        setParams({ ...params, page:page_num, pageSize:page_size })
+        setParams({ ...params, page: page_num, pageSize: page_size })
     }
     const getList = async () => {
         const { type, page, pageSize, description, name, owner, tags, useStateVal, realState } = params
-        const obj = { 
-            is_instance: !!(type - 0), 
-            page_num: page, 
-            page_size: pageSize, 
-            description, 
-            server_conf: name, 
-            owner, 
-            tags, 
-            state: useStateVal, 
-            real_state: realState 
+        const obj = {
+            is_instance: !!(type - 0),
+            page_num: page,
+            page_size: pageSize,
+            description,
+            server_conf: name,
+            owner,
+            tags,
+            state: useStateVal,
+            real_state: realState
         }
         setLoading(true)
         setData({ data: [] })
@@ -412,20 +415,20 @@ export default (props: any) => {
     }
     useEffect(() => {
         getList()
-    }, [ params ]);
+    }, [params]);
 
     const RadioChange = (val: any) => {
-        setParams({ 
+        setParams({
             ...params,
-            type:val,
-            page:1,
-            pageSize:10,
-            description:'',
-            name:'',
-            owner:undefined,
-            tags:undefined,
-            useStateVal:'',
-            realState:''
+            type: val,
+            page: 1,
+            pageSize: 10,
+            description: '',
+            name: '',
+            owner: undefined,
+            tags: undefined,
+            useStateVal: '',
+            realState: ''
         })
     }
     const addMachine = () => {
@@ -450,7 +453,7 @@ export default (props: any) => {
                 onTabClick={RadioChange}
                 tabBarExtraContent={
                     <Button type="primary" onClick={addMachine}>
-                        { params.type == '0' ? '添加机器配置' : '添加机器实例' }
+                        {params.type == '0' ? '添加机器配置' : '添加机器实例'}
                     </Button>
                 }
             >
@@ -523,18 +526,22 @@ export default (props: any) => {
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
-                    <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
+                    <Button key="submit" type="danger" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
                         {params.type == '0' || !deleteObj.is_release ? '确定删除' : '释放'}
                     </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
+                    <Button key="back" onClick={() => setDeleteDefault(false)}>
                         取消
                     </Button>
                 ]}
-                width={300}
+                width={"30%"}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要{params.type == '0' || !deleteObj.is_release ? '删除' : '释放'}吗？
+                    <Row align="middle">
+                        <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                        <div>
+                            确定要{params.type == '0' || !deleteObj.is_release ? '删除' : '释放'}{params.type === "0" ? "配置" : "实例"}({deleteObj[params.type == '0' ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]})吗？
+                        </div>
+                    </Row>
                 </div>
             </Modal>
         </div>

@@ -61,7 +61,7 @@ export default (props: any) => {
                         if (key === 'more') more.push(item.id)
                         if (key === 'server') server.push(item.id)
                         // ...
-                        if (item.name === 'baseline' && test_type === 'business' && business_type === 'business' ) {
+                        if (item.name === 'baseline' && test_type === 'business' && business_type === 'business') {
                             return { ...item, disable: true, select: false }
                         }
                         // ...
@@ -83,23 +83,20 @@ export default (props: any) => {
 
     const handleSelect = (name: string, id: any, select: boolean) => {
         let data: any = {}
-
         Object.keys(source).forEach(
             (key) => {
                 data[key] = key === name ?
                     source[key].map(
-                        (ctx: any) => ctx.id === id ? { ...ctx, select, isTouch: select } : ctx
+                        (ctx: any, idx: number) => ctx.id === id ? { ...ctx, select, isTouch: select } : ctx
                     ) :
                     source[key]
             }
         )
-
         setSource(data)
     }
 
     const hanldeEditName = (name: string, id: number, alias: string) => {
         let data: any = {}
-
         Object.keys(source).forEach(
             (key) => {
                 data[key] = key === name ?
@@ -109,7 +106,6 @@ export default (props: any) => {
                     source[key]
             }
         )
-
         setSource(data)
     }
 
@@ -131,17 +127,13 @@ export default (props: any) => {
                     source[key]
             }
         )
-
         setSource(data)
     }
 
     const handleFinish = async (saveType: string = '') => {
         let item_dict = {}
-
         setPadding(true)
-
         if (padding) return
-
         form.validateFields()
             .then(async (values: any) => {
                 Object.keys(source).forEach(key => {
@@ -217,24 +209,23 @@ export default (props: any) => {
         Object.keys(source).forEach(
             (key) => {
                 data[key] = source[key].map((ctx: any) => {
-                       // console.log('ctx:', ctx)
-                        if (ctx.name === 'baseline') {
-                            if (value === 'stability')
-                                return { ...ctx, disable: true, select: false }
-                            if (value === 'performance')
-                                return { ...ctx, disable: false, select: true }
-                            if (value === 'functional') {
-                                if (ctx.isTouch) return { ...ctx, disable: false }
-                                return { ...ctx, disable: false, select: false }
-                            }
-                            if (value === 'business') {
-                                const aa = form.getFieldValue('business_type')
-                                if (['business', undefined].includes(aa)) return { ...ctx, disable: true, select: false }
-                                return { ...ctx, disable: false, select: true }
-                            }
+                    if (ctx.name === 'baseline') {
+                        if (value === 'stability')
+                            return { ...ctx, disable: true, select: false }
+                        if (value === 'performance')
+                            return { ...ctx, disable: false, select: true }
+                        if (value === 'functional') {
+                            if (ctx.isTouch) return { ...ctx, disable: false }
+                            return { ...ctx, disable: false, select: false }
                         }
-                        return ctx
+                        if (value === 'business') {
+                            const aa = form.getFieldValue('business_type')
+                            if (['business', undefined].includes(aa)) return { ...ctx, disable: true, select: false }
+                            return { ...ctx, disable: false, select: true }
+                        }
                     }
+                    return ctx
+                }
                 )
             }
         )
@@ -244,28 +235,28 @@ export default (props: any) => {
 
     const handleBusinessTypeChange = ({ target }: any) => {
         const value = target.value
-       
+
         let data: any = {}
         Object.keys(source).forEach((key) => {
-                data[key] = source[key].map((ctx: any) => {
-                        if (ctx.name === 'baseline') {
-                            if (testType === 'stability')
-                                return { ...ctx, disable: true, select: false }
-                            if (testType === 'performance')
-                                return { ...ctx, disable: false, select: true }
-                            if (testType === 'functional') {
-                                if (ctx.isTouch) return { ...ctx, disable: false }
-                                return { ...ctx, disable: false, select: false }
-                            }
-                            if (testType === 'business') {
-                                if (value === 'business') return { ...ctx, disable: true, select: false }
-                                return { ...ctx, disable: false, select: true }
-                            }
-                        }
-                        return ctx
+            data[key] = source[key].map((ctx: any) => {
+                if (ctx.name === 'baseline') {
+                    if (testType === 'stability')
+                        return { ...ctx, disable: true, select: false }
+                    if (testType === 'performance')
+                        return { ...ctx, disable: false, select: true }
+                    if (testType === 'functional') {
+                        if (ctx.isTouch) return { ...ctx, disable: false }
+                        return { ...ctx, disable: false, select: false }
                     }
-                )
+                    if (testType === 'business') {
+                        if (value === 'business') return { ...ctx, disable: true, select: false }
+                        return { ...ctx, disable: false, select: true }
+                    }
+                }
+                return ctx
             }
+            )
+        }
         )
         setSource(data)
     }
@@ -317,8 +308,8 @@ export default (props: any) => {
                             { max: 20, message: 'Job类型名称最多不超过20字符' }
                         ]}
                     >
-                        <Input autoComplete="off" placeholder="请输入类型名称" style={{ width: 500}}/>
-                    </Form.Item>                    
+                        <Input autoComplete="off" placeholder="请输入类型名称" style={{ width: 500 }} />
+                    </Form.Item>
                     <Form.Item label="ServerProvider" initialValue={"aliyun"} name="server_type">
                         <Radio.Group onChange={handleServerChange}>
                             <Radio value="aligroup">内网环境</Radio>
@@ -352,7 +343,7 @@ export default (props: any) => {
                             </Col>
                         </Row>
                     )}
-                    
+
                     <Form.Item label="描述(选填)" name="description" rules={[{ max: 20, message: '描述文字最多不超过20字符' }]} >
                         <Input.TextArea placeholder="请输入该类型的描述情况" style={{ width: 500 }} />
                     </Form.Item>

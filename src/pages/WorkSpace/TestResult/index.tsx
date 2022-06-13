@@ -6,7 +6,7 @@ import { DownOutlined, UpOutlined, PlusCircleTwoTone, MinusCircleTwoTone, StarOu
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { ReactComponent as Refresh } from '@/assets/svg/refresh.svg'
 import { requestCodeMessage, targetJump } from '@/utils/utils'
-
+import { QusetionIconTootip } from '@/components/Product';
 import {
     queryTestResultList,
     deleteJobTest,
@@ -565,9 +565,21 @@ export default (props: any) => {
             dataIndex: 'test_type',
             ellipsis: true,
         }, {
-            title: '总计/成功/失败',
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={'总计/成功/失败'}
+                    desc={
+                        <ul style={{  paddingInlineStart: 'inherit', paddingTop: 15 }}>
+                            <li>功能测试：测试结果中TestConf结果状态统计。</li>
+                            <li>性能测试：执行结果中TestConf执行状态统计。</li>
+                        </ul>
+                    }
+                />
+            ),
             dataIndex: 'test_result',
-            width: 120,
+            width: 140,
+
             render: (_: any) => {
                 const result = JSON.parse(_)
                 if (lodash.isNull(result)) {
@@ -843,7 +855,7 @@ export default (props: any) => {
                 setFilterData(filterData)
                 setFilterparmas(fetchParams)
                 setFormFieldsValue(valuesCopy)
-                setFilter(!filter)
+                // setFilter(!filter)
                 setUrlQuery({ formValues: valuesCopy, selFilterParms: parmas })
                 setServerVal(null)
             })
@@ -1156,14 +1168,14 @@ export default (props: any) => {
     const rowSelection = access.wsRoleContrl() ? {
         selectedRowKeys,
         onSelect: selectedChange,
-        getCheckboxProps: (record: any) => {
-            let flag = false
-            if (radioValue === 1) flag = record.state !== 'success' && record.state !== 'fail'
-            return ({
-                disabled: flag, // Column configuration not to be checked
-                name: record.name,
-            })
-        },
+        // getCheckboxProps: (record: any) => {
+        //     let flag = false
+        //     if (radioValue === 1) flag = record.state !== 'success' && record.state !== 'fail'
+        //     return ({
+        //         disabled: flag, // Column configuration not to be checked
+        //         name: record.name,
+        //     })
+        // },
         preserveSelectedRowKeys: false,
         hideSelectAll: radioValue === 1 ? true : false,
         onSelectAll: (selected: boolean, selectedRows: [], changeRows: []) => {
@@ -1466,13 +1478,17 @@ export default (props: any) => {
                                                                 <Space>
                                                                     <Button type="primary" onClick={lodash.partial(handleFilter, null)}>过滤</Button>
                                                                     <Button onClick={handleRestFilter}>重置</Button>
+                                                                    <span className="test_analysis_copy_link" onClick={hanldeClickShare} style={{ cursor: 'pointer' }}>
+                                                                        <CopyLink style={{ marginRight:3 }}/>
+                                                                        <span>分享</span>
+                                                                    </span>
                                                                 </Space>
                                                             </Form.Item>
                                                         </Col>
                                                     </Row>
                                                 </Form>
                                             }
-                                            {
+                                            {/* {
                                                 !filter && <Row style={{ paddingLeft: 20, paddingRight: 20 }}>
                                                     <Col span={24}>
                                                         <ul className={styles.select_program} style={{ display: Object.keys(filterData).length ? 'flex' : 'none' }}>
@@ -1506,7 +1522,6 @@ export default (props: any) => {
                                                                         )
                                                                     }
                                                                     if (item === 'state') {
-                                                                        // const selectStateArr = projectData[item].filter((obj: any) => obj.name && lodash.includes(filterData[item], obj.name))
                                                                         const selectStateArr = projectData[item].filter((obj: any) => obj.name && filterData[item] === obj.name)
                                                                         if (!selectStateArr.length) return
                                                                         return (
@@ -1542,12 +1557,11 @@ export default (props: any) => {
                                                                     <CopyLink className={styles.share_icon} />
                                                                     <span>分享</span>
                                                                 </span>
-                                                                {/* <span className={styles.copy_link_target} id='copy_link_target'>{shareParmas}</span> */}
                                                             </li>
                                                         </ul>
                                                     </Col>
                                                 </Row>
-                                            }
+                                            } */}
                                             <Spin spinning={loading}>
                                                 <div style={{ padding: '0 20px', marginTop: 8, background: '#fff', width: '100%' }}>
                                                     <ResizeTable

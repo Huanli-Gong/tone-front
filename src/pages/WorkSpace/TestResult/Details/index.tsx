@@ -22,11 +22,11 @@ import { useClientSize } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
 import _, { isNull } from 'lodash'
 
-export default (props: any) => {
+const TestResultDetails: React.FC = (props: any) => {
     const { ws_id, id: job_id } = useParams() as any
 
     const access = useAccess()
-    const [tab, setTab] = useState('')
+    const [tab, setTab] = useState('testResult')
     const [key, setKey] = useState(1)
     const rerunModalRef: any = useRef()
     const editRemarkDrawer: any = useRef()
@@ -56,7 +56,7 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-        setCollection(data.collection)
+        data && setCollection(data.collection)
     }, [data])
 
     useEffect(() => {
@@ -87,6 +87,13 @@ export default (props: any) => {
     const handleEditTagsOk = () => {
         message.success('操作成功')
         refresh()
+    }
+
+    const conversion = (data:any) => {
+        if(!isNull(data.baseline_job_id)){
+            return <a href={`/ws/${ws_id}/test_result/${data.baseline_job_id}`}># {data.baseline_job_id}</a>
+        }
+        return data.baseline_name
     }
 
     const handleCollection = async () => {
@@ -152,11 +159,11 @@ export default (props: any) => {
         )
     }
 
-    let TextStyle:any = {
+    let TextStyle: any = {
         width: 'calc(100% - 74px)',
         wordBreak: 'break-all',
     }
-    let BtnStyle:any = {
+    let BtnStyle: any = {
         whiteSpace: 'pre-wrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -165,7 +172,7 @@ export default (props: any) => {
         WebkitLineClamp: 2,
         position: 'relative'
     }
-    if(!isNull(data.note) && data.note?.indexOf('\n') !== -1){
+    if (!isNull(data.note) && data.note?.indexOf('\n') !== -1) {
         TextStyle = { ...TextStyle, ...BtnStyle }
     }
     const BreadcrumbItem: React.FC<any> = (d: any) => (
@@ -180,19 +187,28 @@ export default (props: any) => {
     const handleReplay = () => {
         rerunModalRef.current.show(data)
     }
-    const { height: windowHeight } = useClientSize()
+    // const { height: windowHeight } = useClientSize()
+    // !["success", "fail", "skip", "stop"].includes(data.state)
     const isShowStopButton = data && data.state !== 'success' && data.state !== 'fail' && data.state !== 'skip' && data.state !== 'stop'
 
+    const buttonType = data?.report_li?.length ? "default" : "primary"
+    // 判断是"离线上传"的数据
+    const buttonDisable = data?.created_from === 'offline'
+    // 判断是"执行过程tab"
+    const testProgressTab = tab === 'testProgress' && isShowStopButton
+
     return (
-        <Spin spinning={loading} className={styles.spin_style}>
-            {
-                JSON.stringify(data) === '{}' &&
-                <NotFound />
-            }
-            {
-                JSON.stringify(data) !== '{}' &&
-                <div style={{ background: '#fff', minHeight: windowHeight - 50, overflowX: 'hidden' }}>
-                    <div style={{ background: '#F5F5F5', overflowX: 'hidden' }}>
+        <>
+            <Spin spinning={loading} className={styles.spin_style}>
+                {
+                    JSON.stringify(data) === '{}' &&
+                    <NotFound />
+                }
+                {
+                    JSON.stringify(data) !== '{}' &&
+                    <div
+                        style={{ background: '#F5F5F5', width: "100%", overflowX: "hidden", overflowY: "auto" }}
+                    >
                         <div style={{ minHeight: 270, marginBottom: 10, background: '#fff', padding: 20 }}>
                             <BreadcrumbItem bottomHeight={4} />
                             <div style={{ paddingLeft: 20, position: 'relative' }}>
@@ -208,11 +224,14 @@ export default (props: any) => {
                                             <Space>
                                                 <StateTag state={data.state} />
                                                 {data.provider_name && <Tooltip title="机器类型" placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.provider_name}</Tag></Tooltip>}
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.provider_name}</Tag>
+                                                </Tooltip>}
                                                 {data.test_type && <Tooltip title="测试类型" placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.test_type}</Tag></Tooltip>}
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.test_type}</Tag>
+                                                </Tooltip>}
                                                 {data.job_type && <Tooltip title="Job类型" placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.job_type}</Tag></Tooltip>}
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.job_type}</Tag>
+                                                </Tooltip>}
                                             </Space>
                                         </Row>
                                         {
@@ -238,7 +257,7 @@ export default (props: any) => {
                                         </Row>
                                         <Row className={styles.test_summary_row} >
                                             <RenderDesItem name="所属项目" dataIndex={data.project_name} />
-                                            <RenderDesItem name="测试基线" dataIndex={data.baseline_name} />
+                                            <RenderDesItem name={!isNull(data.baseline_job_id) ? '基线Job' : '测试基线'} dataIndex={conversion(data)} />
                                             {/* <RenderDesItem name="产品版本" dataIndex={data.product_version} /> */}
                                             <Col span={8} >
                                                 <Row>
@@ -277,10 +296,13 @@ export default (props: any) => {
                                                 <Tooltip
                                                     title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>}
                                                     placement="topLeft"
-                                                    overlayStyle={{ minWidth: 800}}
+                                                    overlayStyle={{ minWidth: 800 }}
                                                 >
-                                                    {access.wsRoleContrl(data.creator) ? data.note : (data.note == null || data.note == '') ? '-' : data.note}
+                                                    {
+                                                        data.note || '-'
+                                                    }
                                                 </Tooltip>
+
                                                 {access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
                                             </div>
                                         </Row>
@@ -302,36 +324,37 @@ export default (props: any) => {
                                 className={styles.result_tab_bar}
                                 key={key}
                                 tabBarExtraContent={
-                                    (() => {
-                                        // 判断数组中有无数据
-                                        const buttonType = data?.report_li?.length ? "default" : "primary"
-                                        // 判断是"离线上传"的数据
-                                        const buttonDisable = data?.created_from === 'offline'
-                                        // 判断是"执行过程tab"
-                                        const testProgressTab = tab === 'testProgress' && isShowStopButton
-                                        return (
-                                            <div style={{ display: 'flex', marginRight: 12 }}>
-                                                <ViewReport viewAllReport={allReport} dreType="bottomRight" ws_id={ws_id} jobInfo={data} origin={'jobDetail'} stylesButton={veiwReportHeight.current} />
+                                    <div style={{ display: 'flex', marginRight: 12 }}>
+                                        <ViewReport
+                                            viewAllReport={allReport}
+                                            dreType="bottomRight"
+                                            ws_id={ws_id}
+                                            jobInfo={data}
+                                            origin={'jobDetail'}
+                                            stylesButton={veiwReportHeight.current}
+                                        />
 
-                                                <Access accessible={access.wsRoleContrl(data.creator)}
-                                                    fallback={
-                                                        initialState?.authList?.ws_role_title === 'ws_tester' ?
-                                                            <>
-                                                                <Button type={buttonType} disabled={true} style={{ marginRight: 8 }}>重跑</Button>
-                                                                {testProgressTab && <Button disabled={true} style={{ marginRight: 8 }}>停止Job</Button>}
-                                                            </>
-                                                            : null
-                                                    }
-                                                >
-                                                    <Button type={buttonType} onClick={handleReplay} disabled={buttonDisable} style={{ marginRight: 8 }}>重跑</Button>
-                                                    {testProgressTab && <Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
-                                                </Access>
-                                            </div>
-                                        )
-                                    })()
+                                        <Access accessible={access.wsRoleContrl(data.creator)}
+                                            fallback={
+                                                initialState?.authList?.ws_role_title === 'ws_tester' ?
+                                                    <>
+                                                        <Button type={buttonType} disabled={true} style={{ marginRight: 8 }}>重跑</Button>
+                                                        {testProgressTab && <Button disabled={true} style={{ marginRight: 8 }}>停止Job</Button>}
+                                                    </>
+                                                    : null
+                                            }
+                                        >
+                                            <Button type={buttonType} onClick={handleReplay} disabled={buttonDisable} style={{ marginRight: 8 }}>重跑</Button>
+                                            {testProgressTab && <Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
+                                        </Access>
+                                    </div>
                                 }
                             >
-                                <Tabs.TabPane tab="测试结果" key="testResult">
+                                <Tabs.TabPane
+                                    tab="测试结果"
+                                    key="testResult"
+                                    style={{ overflow: "hidden" }}
+                                >
                                     <TestResultTable
                                         creator={data.creator}
                                         test_type={data.test_type}
@@ -342,19 +365,30 @@ export default (props: any) => {
                                         ws_id={ws_id}
                                     />
                                 </Tabs.TabPane>
-                                <Tabs.TabPane tab="执行过程" key="testProgress" disabled={data.created_from === 'offline'}>
-                                    <ProcessTable job_id={job_id} onRef={processTableRef} test_type={data.test_type} provider_name={data.provider_name} />
+                                <Tabs.TabPane tab="执行过程" key="testProgress" disabled={data.created_from === 'offline'} >
+                                    <ProcessTable
+                                        job_id={job_id}
+                                        onRef={processTableRef}
+                                        test_type={data.test_type}
+                                        provider_name={data.provider_name}
+                                    />
                                 </Tabs.TabPane>
-                                <Tabs.TabPane tab="测试配置" key="testConfig">
-                                    <TestSettingTable jt_id={data.job_type_id} provider_name={data.provider_name} test_type={data.test_type} />
+                                <Tabs.TabPane tab="测试配置" key="testConfig" >
+                                    <TestSettingTable
+                                        jt_id={data.job_type_id}
+                                        provider_name={data.provider_name}
+                                        test_type={data.test_type}
+                                    />
                                 </Tabs.TabPane>
                             </Tabs>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </Spin>
             <EditRemarks ref={editRemarkDrawer} onOk={refresh} />
             <ReRunModal ref={rerunModalRef} />
-        </Spin>
+        </>
     )
 }
+
+export default TestResultDetails

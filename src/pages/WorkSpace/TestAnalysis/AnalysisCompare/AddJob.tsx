@@ -60,7 +60,7 @@ export default ( props : any ) => {
         ws_id,
         creators: null,
         creation_time: null,
-        state: 'success,fail',
+        state: 'success,fail,skip,stop,running',
         filter_id: selectedId.join(','),
         product_version: defaultVersion,
         product_id: product_id,

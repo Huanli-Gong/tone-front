@@ -7,7 +7,7 @@ import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import JoinBaseline from '../components/JoinBaseline'
 import ResultInfo from './ResultInfo'
 import EditRemarks from '../components/EditRemarks'
-import { ellipsisEditColumn, tooltipTd } from '../components'
+import { EllipsisEditColumn, tooltipTd } from '../components'
 
 import { ReactComponent as SuccessSVG } from '@/assets/svg/TestResult/conf/success.svg'
 import { ReactComponent as ErrorSVG } from '@/assets/svg/TestResult/conf/fail.svg'
@@ -28,13 +28,15 @@ const CaseTable: React.FC<any> = ({
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
     const { initialState } = useModel('@@initialState');
+
+    const access = useAccess()
+    const [childState, setChildState] = useState(state)
+    const [refreshId, setRefreshId] = useState(null)
+
     const { data, loading, refresh, run } = useRequest(
         () => queryTestResultSuiteConfList({ job_id, suite_id, state }),
         { initialData: [], manual: true }
     )
-    const access = useAccess()
-    const [childState, setChildState] = useState(state)
-    const [refreshId, setRefreshId] = useState(null)
 
     useEffect(() => {
         run()
@@ -51,28 +53,29 @@ const CaseTable: React.FC<any> = ({
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
 
-    let columns: any = [{
-        title: 'Test Suite',
-        dataIndex: 'conf_name',
-        ...tooltipTd(),
-    }, {
-        title: '机器',
-        dataIndex: 'server_ip',
-        width: 130,
-        ellipsis: {
-            showHeader: false,   
-        },
-        render: (_: string, row: any) => (
-            _ ?
-                <Tooltip title={_}>
-                    <Typography.Text ellipsis>{_}</Typography.Text>
-                </Tooltip>
-                : '-'
-        )
-    }];
-
-    if (['functional', 'business_functional', 'business_business'].includes(testType))
-        columns = columns.concat([
+    const columns = React.useMemo(() => {
+        return [
+            {
+                title: 'Test Suite',
+                dataIndex: 'conf_name',
+                ...tooltipTd(),
+            },
+            {
+                title: '机器',
+                dataIndex: 'server_ip',
+                width: 130,
+                ellipsis: {
+                    showHeader: false,
+                },
+                render: (_: string, row: any) => (
+                    _ ?
+                        <Tooltip title={_}>
+                            <Typography.Text ellipsis>{_}</Typography.Text>
+                        </Tooltip>
+                        : '-'
+                )
+            },
+            ['functional', 'business_functional', 'business_business'].includes(testType) &&
             {
                 title: '结果',
                 width: 50,
@@ -84,80 +87,70 @@ const CaseTable: React.FC<any> = ({
                     if (r === '-') return r
                     return ''
                 }
-            }
-        ])
-
-    columns = columns.concat([
-        { // title : '总计/通过/失败/跳过',
-            width: ['performance', 'business_performance'].includes(testType) ? 255 : 200,
-            render: (_: any) => (
-                ['functional', 'business_functional', 'business_business'].includes(testType) ?
-                    (
-                        <Space>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }}>{_.result_data.case_count}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'success')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }}>{_.result_data.case_success}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'fail')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }}>{_.result_data.case_fail}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'skip')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }}>{_.result_data.case_skip}</span>
-                        </Space>
-                    ) :
-                    (
-                        <Space>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }} >{_.result_data.count}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'increase')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }} >{_.result_data.increase}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'decline')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }} >{_.result_data.decline}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'normal')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.normal}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'invalid')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.invalid}</span>
-                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'na')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.na}</span>
-                        </Space>
-                    )
-            )
-        }
-    ])
-
-    if (['performance', 'business_performance'].includes(testType))
-        columns = columns.concat([{
-            title: '对比基线',
-            width: 80,
-            dataIndex: 'baseline',
-            ...tooltipTd(),
-        }])
-
-    columns = columns.concat(
-        [
+            },
+            { // title : '总计/通过/失败/跳过',
+                width: ['performance', 'business_performance'].includes(testType) ? 255 : 200,
+                render: (_: any) => (
+                    ['functional', 'business_functional', 'business_business'].includes(testType) ?
+                        (
+                            <Space>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }}>{_.result_data.case_count}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'success')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }}>{_.result_data.case_success}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'fail')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }}>{_.result_data.case_fail}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'skip')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }}>{_.result_data.case_skip}</span>
+                            </Space>
+                        ) :
+                        (
+                            <Space>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }} >{_.result_data.count}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'increase')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }} >{_.result_data.increase}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'decline')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }} >{_.result_data.decline}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'normal')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.normal}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'invalid')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.invalid}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'na')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.na}</span>
+                            </Space>
+                        )
+                )
+            },
+            ['performance', 'business_performance'].includes(testType) &&
+            {
+                title: '对比基线',
+                width: 80,
+                dataIndex: 'baseline',
+                ...tooltipTd(),
+            },
             {
                 title: '开始时间',
                 dataIndex: 'start_time',
                 width: 175,
                 ...tooltipTd(),
-            }, {
+            },
+            {
                 title: '结束时间',
                 dataIndex: 'end_time',
                 width: 175,
                 ...tooltipTd(),
             },
-        ]
-    )
-    if (access.wsRoleContrl(creator)) {
-        columns = columns.concat([
+            access.wsRoleContrl(creator) &&
             {
                 title: '备注',
                 dataIndex: 'note',
                 width: 80,
-                render: (_: any, row: any) => ellipsisEditColumn(
-                    _,
-                    row,
-                    80,
-                    () => editRemarkDrawer.current.show({
-                        ...row,
-                        suite_name: row.suite_name,
-                        editor_obj: 'test_job_conf'
-                    })
+                render: (_: any, row: any) => (
+                    <EllipsisEditColumn 
+                        title={_}
+                        width={80}
+                        onEdit={
+                           () => editRemarkDrawer.current.show({
+                                ...row,
+                                suite_name: row.suite_name,
+                                editor_obj: 'test_job_conf'
+                            }) 
+                        }
+                    />
                 )
-            }
-        ])
-    }
-    if (['performance', 'business_performance'].includes(testType)) {
-        columns = columns.concat([
+            },
+            ['performance', 'business_performance'].includes(testType) &&
             {
                 title: '操作',
                 width: 145, //175,
@@ -179,8 +172,8 @@ const CaseTable: React.FC<any> = ({
                     </Access>
                 )
             }
-        ])
-    }
+        ].filter(Boolean)
+    }, [testType,access,creator])
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })

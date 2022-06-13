@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 import { Button, Space, Popconfirm, message } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
-import { queryClusterMachine, delGroupMachine, queryCloudType, editGroupMachine } from '../../service';
+import { queryClusterMachine, delGroupMachine, editGroupMachine } from '../../service';
 import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
@@ -10,15 +10,14 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
-import { useParams } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
 
 const GroupTree: React.FC<any> = (props) => {
-    const { ws_id }: any = useParams()
-    const { cluster_id, width, onRef, size, top, handleOpenLogDrawer, refreshId, resetRefreshId } = props
+    const { cluster_id, width, onRef, size, top, handleOpenLogDrawer } = props
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState<any>({ data: [] });
+    const [data, setData] = useState<any>([]);
     const [refresh, setRefresh] = useState<boolean>(true)
+    const [columns, setColumns] = useState<any>([]);
     const aloneMachine = useRef<any>(null)
 
     // step1.请求列表数据
@@ -30,29 +29,12 @@ const GroupTree: React.FC<any> = (props) => {
             return { ...item, ...item.test_server }
         })
         if (Array.isArray(data.data)) {
-            setData(data)
+            setData(data.data)
         } else {
-            setData({ data: [] })
+            setData([])
         }
         setLoading(false)
     };
-
-    useEffect(() => {
-        if (refreshId === cluster_id) {
-            // setLoading( true )
-            getList()
-            setTimeout(() => {
-                // setLoading( false )
-                resetRefreshId(null) // 重置掉refreshId为null，因为refreshId不改变，useEffect就触发不了。
-            }, 1)
-        }
-    }, [refreshId])
-
-    
-    // 根据is_instance字段: true 机器实例; false 配置名称;
-    const flag_s_instance = (Array.isArray(data.data) && data.data.length) ? data.data[0].test_server.is_instance : '';
-    // const tempFieldName = (typeof flag_s_instance === 'boolean') ? (flag_s_instance ? '机器实例' : '配置名称') : '';
-    const tempFieldName = JSON.stringify(flag_s_instance) !== '{}' && flag_s_instance ? '机器实例' : '配置名称';
 
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
@@ -63,30 +45,42 @@ const GroupTree: React.FC<any> = (props) => {
             message.success('操作成功');
             getList();
         } else {
-            requestCodeMessage( res.code , res.msg )
+            requestCodeMessage(res.code, res.msg)
         }
     }
-    
 
-    const catagory: any = [
-        {
-            title: '',
+    useEffect(() => {
+        const instance = !!data.length && data[0].is_instance
+        let dataSource: any = [{
+            title: instance ? '机器实例' : '机器配置',
             dataIndex: 'name',
-            width:120,
+            width: 160,
             fixed: 'left',
             render: (_: number, row: any) => <EllipsisPulic title={row.name} />
+        },
+        instance && {
+            title: 'SN',
+            dataIndex: 'sn',
+            width: 150,
+            render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
+        },
+        !BUILD_APP_ENV &&
+        {
+            title: '公网IP',
+            width: 130,
+            dataIndex: 'pub_ip',
         },
         {
             title: '云厂商/Ak',
             dataIndex: 'manufacturer',
             width: 120,
-            render: (_: number, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`}/>
+            render: (_: number, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
         },
         {
             title: 'Region/Zone',
             width: 120,
             dataIndex: 'region',
-            render: (_: number, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`}/>
+            render: (_: number, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
         },
         {
             title: '规格',
@@ -111,12 +105,12 @@ const GroupTree: React.FC<any> = (props) => {
             width: 100,
             render: (_: number, row: any) => <DataSetPulic name={row.storage_type} />
         },
-        {
-            title: '用完释放',
-            dataIndex: 'release_rule',
-            width: 100,
-            render: (_: number, row: any) => <div style={{ width: 100 }}>{row.release_rule ? '是' : '否'}</div>
-        },
+        // {
+        //     title: '用完释放',
+        //     dataIndex: 'release_rule',
+        //     width: 100,
+        //     render: (_: number, row: any) => <div style={{ width: 100 }}>{row.release_rule ? '是' : '否'}</div>
+        // },
         {
             title: 'Console配置',
             width: 100,
@@ -175,6 +169,18 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'var_name',
             width: 110,
         },
+        instance &&
+        {
+            title: '机器状态',
+            width: 120,
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+        },
+        instance &&
+        {
+            title: '实际状态',
+            width: 120,
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+        },
         {
             title: '备注',
             width: 120,
@@ -188,8 +194,8 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'id',
             width: 140,
             render: (_: number, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }}  onClick={() => { editMachine(row) }} >编辑</Button>
-                <Popconfirm 
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
+                <Popconfirm
                     title={<div style={{ color: 'red' }}>确认要删除吗？</div>}
                     placement="topRight"
                     okText="取消"
@@ -205,71 +211,31 @@ const GroupTree: React.FC<any> = (props) => {
                 </PermissionTootip> */}
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
             </Space>,
-        },
-    ];
-    const [columns, setColumns] = useState<any>([]);
-    // step2.查询云类型数据
-    const getCloudType = async (param: any) => {
-        const dataSource = await queryCloudType(param)
-        const columnsSN = {
-            title: 'SN',
-            dataIndex: 'sn',
-            width:150,
-            render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
         }
-        dataSource.data == 1 ? catagory.splice(1, 0, columnsSN) : null
-        setColumns([...catagory])
-    }
-    useEffect(()=>{
-        const serverState = {
-            title: '机器状态',
-            width:120,
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
-        }
-        const serverRealState = {
-            title: '实际状态',
-            width:120,
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
-        }
-        if(Array.isArray(data.data) && data.data.length){
-            if (data.data[0].test_server.is_instance) {
-                catagory[0].title = '机器实例'
-                catagory.splice(16, 0, serverState)
-                catagory.splice(17, 0, serverRealState)
-            } else {
-                catagory[0].title = '配置名称'
-            }
-            setColumns([...catagory])
-        }
-    },[ data ])
+        ].filter(Boolean)
+        setColumns(dataSource)
+    }, [data])
 
     const editMachine = (row: any) => {
         aloneMachine.current && aloneMachine.current.editMachine({ ...row, cluster_id })
     }
     const remMachine = async (row: any) => {
         const { code, msg } = await delGroupMachine(row.machineId)
-        if( code === 200){
+        if (code === 200) {
             getList()
             message.success('删除成功');
-        }else{
-             message.success(msg);
+        } else {
+            message.success(msg);
         }
-        //setRefresh(!refresh)
     }
-    
+
     useEffect(() => {
         // 1.请求列表;
         getList()
     }, [refresh]);
 
-    useEffect(() => {
-        // 2.要根据data来判断 columns里第一列的字段名中文;
-        getCloudType(cluster_id)
-    }, [cluster_id]);
-
     useImperativeHandle(onRef, () => ({
         reload: (title: string, data: any = {}) => {
-            // console.log(title, data, cluster_id)
             setRefresh(!refresh)
         }
     }));
@@ -282,13 +248,13 @@ const GroupTree: React.FC<any> = (props) => {
         <div className={styles.warp}>
             <div
                 className={styles.tree}
-                style={{ backgroundSize: `40px ${size}px`, height: top, backgroundPosition: 'left center' }} 
+                style={{ backgroundSize: `40px ${size}px`, height: top, backgroundPosition: 'left center' }}
             />
             {
-                data.data.length > 0 &&
+                data.length > 0 &&
                 <div
                     className={styles.tree}
-                    style={{ backgroundSize: `40px ${size}px`, height: size * data.data.length + 30, top: top }}
+                    style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
                 />
             }
             <ResizeTable
@@ -296,8 +262,8 @@ const GroupTree: React.FC<any> = (props) => {
                 loading={loading}
                 scroll={{ x: 2160 }}
                 columns={columns}
-                showHeader={data.data.length > 0 ? true : false}
-                dataSource={data.data}
+                showHeader={data.length > 0 ? true : false}
+                dataSource={data}
                 rowKey={'id'}
                 pagination={false}
             />
