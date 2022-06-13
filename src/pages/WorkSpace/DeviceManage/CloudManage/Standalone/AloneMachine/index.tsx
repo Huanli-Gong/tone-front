@@ -237,13 +237,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             }
             return item
         })
-        // let lists =  [{
-        //     value: param.id,
-        //     label: param.id,
-        //     isLeaf: false,
-        //     children: akData.map((item: any) => { return { label: item.name, value: item.id } })
-        // }]
-        // console.log(":", lists)
         setOptions(lists)
         setRegion(list)
         setLoading(false)
@@ -273,9 +266,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 system_disk_category: undefined,
             })
             setShowZone(1)
-            // Promise.all([getInstancegList(param), getSeverList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
-            // let method = [getInstancegList(param), getSeverList(param), getImageList(param), getCategoriesList(param)]
-            // id ? method : method.splice(0,1)
             type == 1 ? Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
                 : Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
         } else {
@@ -283,7 +273,17 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             regionResetStatus()
         }
     };
-
+    const handleTypeChange = (val:any) => {
+        let region = form.getFieldValue('region')
+        let manufacturer = form.getFieldValue('manufacturer')
+        let param = {
+            ak_id: manufacturer[1],
+            region: region[0],
+            zone: region[1],
+            instance_type:val
+        }
+        getImageList(param)
+    }
     const newMachine = () => {
         setId(undefined)
         setVisible(true)
@@ -320,10 +320,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
         param.is_instance = param.is_instance ? 1 : 0
         param.release_rule = param.release_rule ? 1 : 0
-        // param.manufacturer = {
-        //     label: param.manufacturer,
-        //     value: param.ak_id
-        // }
         param.manufacturer = [param.manufacturer, param.ak_id]
         param.region = [param.region, param.zone]
 
@@ -334,6 +330,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         let params = {
             ak_id: param.ak_id,
             region: param.region[0],
+            instance_type: param.instance_type,
             zone: param.region[1],
             id: param.manufacturer[0]
         }
@@ -448,14 +445,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 requestCodeMessage(res.code, res.msg)
             }
         }, 1500)
-
-    const handleInputChange = async (val: any, name: string, idx: number) => {
-        const fieldsValue = _.cloneDeep(form.getFieldsValue())
-        let extra_param = fieldsValue && _.isArray(fieldsValue.extra_param) ? fieldsValue.extra_param : [];
-        extra_param[idx][name] = val
-        fieldsValue.extra_param = extra_param;
-        form.setFieldsValue(fieldsValue)
-    }
 
     const onSubmit = () => {
         form.validateFields().then(val => submit(val))
@@ -726,6 +715,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                                 filterOption={(input, option: any) =>
                                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                                 }
+                                                onSelect={handleTypeChange}
                                             >
                                                 {instance?.map((item: any, index: number) =>
                                                     <Option value={item.Value} key={index}>{item.Value}</Option>

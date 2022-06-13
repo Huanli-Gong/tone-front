@@ -114,13 +114,20 @@ const CaseTable: React.FC<any> = ({
         }
     ])
 
-    if (['performance', 'business_performance'].includes(testType))
+    if (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline)
         columns = columns.concat([{
             title: '对比基线',
             width: 80,
             dataIndex: 'baseline',
             ...tooltipTd(),
         }])
+    if (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline_job_id)
+        columns = columns.concat([{
+            title: '基线Job',
+            width: 80,
+            dataIndex: 'baseline_job_id',
+            ...tooltipTd(),
+    }])
 
     columns = columns.concat(
         [

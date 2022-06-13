@@ -82,7 +82,7 @@ export default (props: any) => {
     ]
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
-
+    console.log('dataSource',dataSource)
     let columns: any = [
         {
             title: 'Test Suite',
@@ -155,14 +155,20 @@ export default (props: any) => {
         }
     }])
 
-    if (['performance', 'business_performance'].includes(testType))
+    if (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline)
         columns = columns.concat([{
             title: '对比基线',
             dataIndex: 'baseline',
             width: 80,
             ...tooltipTd(),
         }])
-
+    if (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline_job_id)
+        columns = columns.concat([{
+            title: '基线Job',
+            dataIndex: 'baseline_job_id',
+            width: 80,
+            ...tooltipTd(),
+        }])
     columns = columns.concat([{
         title: '开始时间',
         dataIndex: 'start_time',

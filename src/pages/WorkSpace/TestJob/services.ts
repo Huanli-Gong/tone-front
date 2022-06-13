@@ -1,8 +1,8 @@
 import { request } from 'umi'
 
 //获取WorkSpace下JobTest
-export const queryWsJobTest = async () => {
-    return request(`/api/job/test/`)
+export const queryWsJobTest = async ( params : any ) => {
+    return request(`/api/job/test/`, { params })
 }
 
 //创建job test
