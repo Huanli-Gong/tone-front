@@ -88,6 +88,13 @@ export default (props: any) => {
         refresh()
     }
 
+    const conversion = (data:any) => {
+        if(!isNull(data.baseline_job_id)){
+            return <a href={`/ws/${ws_id}/test_result/${data.baseline_job_id}`}># {data.baseline_job_id}</a>
+        }
+        return data.baseline_name
+    }
+
     const handleCollection = async () => {
         const { msg, code } = !data.collection ? await addMyCollection({ job_id }) : await deleteMyCollection({ job_id })
         if (code !== 200) return requestCodeMessage(code, msg)
@@ -237,7 +244,7 @@ export default (props: any) => {
                                         </Row>
                                         <Row className={styles.test_summary_row} >
                                             <RenderDesItem name="所属项目" dataIndex={data.project_name} />
-                                            <RenderDesItem name="测试基线" dataIndex={data.baseline_name} />
+                                            <RenderDesItem name={!isNull(data.baseline_job_id) ? '基线Job' : '测试基线'} dataIndex={conversion(data)} />
                                             {/* <RenderDesItem name="产品版本" dataIndex={data.product_version} /> */}
                                             <Col span={8} >
                                                 <Row>
