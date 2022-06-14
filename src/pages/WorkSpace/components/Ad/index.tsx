@@ -32,6 +32,23 @@ const AdWrapper = styled.div`
     .ant-carousel {
         width: 100%;
         height: 100%;
+
+        .slick-dots li.slick-active button { 
+            background: #1890FF;
+            opacity: 1;
+        }
+
+        .slick-dots li button {
+            height: 6px;
+            width: 6px;
+            border-radius: 50%;
+            background: #000;
+            opacity: 0.2;
+        }
+
+        .slick-dots li.slick-active {
+            width: 16px;
+        }
     }
 `
 
@@ -81,7 +98,12 @@ const AdCompoent: React.FC = () => {
 
     React.useEffect(() => {
         const isDisplay = localStorage[`ad_str_${ws_id}_display`]
-        if (!isDisplay && wsAdShow === ws_id) setVisible(true)
+        if (isDisplay === "1")
+            setInitialState(p => ({ ...p, wsAdShow: null }))
+    }, [])
+
+    React.useEffect(() => {
+        setVisible(wsAdShow === ws_id)
     }, [wsAdShow, ws_id])
 
     if (!visible) return <></>
