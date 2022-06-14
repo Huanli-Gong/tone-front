@@ -123,7 +123,7 @@ const AdCompoent: React.FC = () => {
                             >
                                 <Button
                                     type="primary"
-                                    onClick={() => history.push(`/ws/:ws_id/test_result`)}
+                                    onClick={() => history.push(`/ws/${ws_id}/test_result`)}
                                 >
                                     查看详情
                                 </Button>
