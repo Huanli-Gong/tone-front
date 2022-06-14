@@ -1,17 +1,29 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, useAccess } from 'umi'
+import { history, useModel, useRequest, useAccess, useParams } from 'umi'
 import { Typography, Row, Menu, Col, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
 import TestJobTabs from './components/JobTab'
 import { HearderDropdown } from './components/HeaderDropdown'
 import { CaretDownOutlined } from '@ant-design/icons'
-import { useClientSize } from '@/utils/hooks'
 import SwithRouteIcon from './components/SwithIcon'
-import { HeaderContainer, LogoWrapper, WorkspaceTitle } from './styled'
+import { HeaderContainer, LogoWrapper, WorkspaceTitle, HeaderCls } from './styled'
 import logoPng from '@/assets/img/logo.png'
+import { useSize } from 'ahooks'
+import pageAdShow from "@/assets/img/header_page_show_ad.png"
+import styled from 'styled-components'
+
+const AdShowBtn = styled.div`
+    background: url(${pageAdShow}) no-repeat right center/100% 100%;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+`
 
 export default (props: any) => {
     const { initialState, setInitialState } = useModel('@@initialState')
@@ -24,6 +36,13 @@ export default (props: any) => {
     const [selectedKeys, setSelectedKeys] = useState<any>([])
     const [routes, setRoutes] = useState([])
     const [visible, setVisible] = useState(false)
+
+    const leftRef = useRef(null) as any
+    const left = useSize(leftRef)
+
+    const openAd = () => {
+        setInitialState(p => ({ ...p, wsAdShow: wsId }))
+    }
 
     const { data: types, run } = useRequest(
         () => queryJobTypeList({ ws_id: wsId, enable: 'True' }),
@@ -83,16 +102,15 @@ export default (props: any) => {
         }
     }, [pathname])
 
-    // console.log( routes )
-
     const handleMenuOpenChange = (keys: any) => setOpenKeys(keys)
 
-    const { width: layoutWidth } = useClientSize()
+    const iconRf = useRef(null) as any
+    const iconWrapperSise = useSize(iconRf)
 
     return (
         <HeaderContainer align="middle" justify="space-between">
-            <div>
-                <Row align="middle" wrap={false}>
+            <Row align="middle" wrap={false} style={{ width: `calc(100% - ${left?.width ? 1 + left?.width : 0}px)` }}>
+                <Row ref={iconRf}>
                     {
                         !isWs &&
                         <LogoWrapper align="middle" onClick={() => history.push('/')}>
@@ -102,7 +120,7 @@ export default (props: any) => {
                     }
                     {
                         isWs &&
-                        <WorkspaceTitle align="middle">
+                        <WorkspaceTitle align="middle" wrap={false}>
                             <div
                                 style={{ height: 50, verticalAlign: 'middle', marginRight: 24, display: 'flex', alignItems: 'center' }}
                                 onMouseEnter={() => setBackLogo(true)}
@@ -125,15 +143,18 @@ export default (props: any) => {
                             </div>
                             <HearderDropdown ws_id={wsId} />
                         </WorkspaceTitle>
-
                     }
+                </Row>
+
+                <HeaderCls
+                    style={{ width: `calc(100% - ${iconWrapperSise?.width ? 1 + iconWrapperSise?.width : 0}px)` }}
+                >
                     <Menu
                         mode="horizontal"
                         selectedKeys={selectedKeys}
                         openKeys={openKeys}
                         onOpenChange={handleMenuOpenChange}
                         subMenuOpenDelay={.5}
-                        key={layoutWidth}
                         className={styles.menu}
                     >
                         {
@@ -265,11 +286,16 @@ export default (props: any) => {
                             )
                         }
                     </Menu>
-                </Row>
-            </div>
-            <div>
+                </HeaderCls>
+            </Row>
+            <div ref={leftRef}>
                 <RightContent wsId={wsId} isWs={isWs} />
             </div>
+
+            {
+                initialState.hasAdWs?.includes(wsId) &&
+                <AdShowBtn onClick={openAd} />
+            }
         </HeaderContainer >
     )
 }

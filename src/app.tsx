@@ -19,8 +19,11 @@ export async function getInitialState(): Promise<any> {
         refreshMenu: false,
         refreshWorkspaceList: undefined,
         jobTypeList: [],
-        authList: {}
+        authList: {},
+        hasAdWs: ["fgq5x4by"],
+        wsAdShow: "fgq5x4by"
     };
+
     const { pathname } = window.location
     if (!ignoreRoutePath.includes(history.location.pathname)) {
         const isWs = wsReg.test(pathname)

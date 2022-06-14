@@ -48,7 +48,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     }
 
     const handleAllRead = async () => {
-        const data =  tab == '1' ? await allTagRead() : await allTagApplyRead()
+        const data = tab == '1' ? await allTagRead() : await allTagApplyRead()
         if (data.code === 200) {
             setTab(tab)
             increment()
@@ -60,7 +60,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
         setDropVisible(flag);
     };
     return (
-        <Row style={{ width: '100%' }} align="middle" justify="end" className={styles.header_warp}>
+        <Row style={{ width: '100%', position: "relative" }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
             {
                 isWs &&
@@ -79,13 +79,13 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                     overlay={
                         <Menu>
                             <div className={styles.msg_warp}>
-                                <Tabs 
-                                    defaultActiveKey={tab} 
-                                    onTabClick={handleTabClick} 
-                                    style={{ width: 384, height: 'auto' }} 
+                                <Tabs
+                                    defaultActiveKey={tab}
+                                    onTabClick={handleTabClick}
+                                    style={{ width: 384, height: 'auto' }}
                                     tabBarExtraContent={
-                                        <Button type="link" 
-                                            onClick={handleAllRead} 
+                                        <Button type="link"
+                                            onClick={handleAllRead}
                                             disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
                                         >
                                             全部已读
