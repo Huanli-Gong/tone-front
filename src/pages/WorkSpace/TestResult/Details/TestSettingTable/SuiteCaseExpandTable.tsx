@@ -2,23 +2,30 @@ import React from 'react'
 import { Table, Tooltip } from 'antd'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ServerTooltip } from './ServerTooltip'
-
+import ResizeTable from '@/components/ResizeTable'
 //测试用例及机器配置 expand table
 export default ({ data = [], testType, provider_name }: any) => {
     const columns: any = [
         {
             title: 'Test Conf',
             dataIndex: 'test_case_name',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: 200,
             render: (_: any) => <Tooltip title={_}>{_}</Tooltip>
         }, {
             title: '运行模式',
+            ellipsis: {
+                showTitle: false
+            },
             dataIndex: 'run_mode',
         }, {
             title: '机器',
             dataIndex: 'server_ip',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: 150,
             render: (text: string, row: any) => <ServerTooltip provider_name={provider_name} {...row} />
         }, {
@@ -26,7 +33,9 @@ export default ({ data = [], testType, provider_name }: any) => {
             dataIndex: 'repeat',
         }, {
             title: '变量',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: 150,
             render: (_: any) => {
                 const envStr = _.env_info && JSON.stringify(_.env_info) !== '{}' ?
@@ -47,7 +56,9 @@ export default ({ data = [], testType, provider_name }: any) => {
         }, {
             title: '脚本',
             dataIndex: 'setup_info',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             width: 150,
             render: (_: any, row: any) => {
                 const node = <span>[重启前]: {_ || '-'},  [重启后]: {row.cleanup_info || '-'}</span>
@@ -61,6 +72,9 @@ export default ({ data = [], testType, provider_name }: any) => {
             title: 'Console',
             dataIndex: 'console',
             width: 100,
+            ellipsis: {
+                showTitle: false
+            },
             render: (text: any) => <PopoverEllipsis title={text} />,
         },
         {
@@ -73,7 +87,7 @@ export default ({ data = [], testType, provider_name }: any) => {
     ].filter(Boolean);
 
     return (
-        <Table
+        <ResizeTable
             dataSource={data}
             columns={columns}
             rowKey="test_case_id"

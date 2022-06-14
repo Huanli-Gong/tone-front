@@ -105,12 +105,18 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.product" />,
       dataIndex: 'product_name',
+      ellipsis: {
+        showTitle: false
+      },
       onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 150 },}),
       render: (text: any) => <PopoverEllipsis title={text} />,
     },
     {
       title: <FormattedMessage id="upload.list.table.project" />,
       dataIndex: 'project_name',
+      ellipsis: {
+        showTitle: false
+      },
       onCell: () => ({ style: { whiteSpace: 'nowrap', minWidth: 100 },}),
       render: (text: any) => <PopoverEllipsis title={text} />,
     },
@@ -129,6 +135,9 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.baseline" />,
       dataIndex: 'baseline_name',
+      ellipsis: {
+        showTitle: false
+      },
       onCell: () => ({ style: { minWidth: 100 } }),
       render: (text: any) => <PopoverEllipsis title={text} />,
     },
@@ -141,11 +150,17 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.date" />,
       dataIndex: 'gmt_created',
+      ellipsis: {
+        showTitle: false
+      },
       onCell: () => ({ style: { maxWidth: 170 } }),
       render: (text: any) => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '-'}</span>,
     },
     {
       title: <FormattedMessage id="Table.columns.operation" />,
+      ellipsis: {
+        showTitle: false
+      },
       onCell: () => ({ style: { minWidth: 118 } }),
       render: (text: any, record: any) => (
         <Space>

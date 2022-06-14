@@ -7,7 +7,7 @@ import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
 import { useAccess, Access, useModel } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
-
+import ResizeTable from '@/components/ResizeTable'
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
     const PAGE_DEFAULT_PARAMS: any = { 
         page_num: 1, 
@@ -65,11 +65,16 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         {
             dataIndex: 'server',
             title: ['business_business'].includes(testType) ? '机器' : '测试机器',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any, row: any) => ipShow(_)
         },
         {
             title: '环境准备',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => {
                 return (
                     <ConfPopoverTable
@@ -111,6 +116,9 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         }, {
             title: '查看日志',
             width: 80,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => {
                 // success,fail,stop 可看日志
                 if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
@@ -125,6 +133,9 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         }, {
             title: '操作',
             width: 70,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => (
                 <Access accessible={access.wsRoleContrl(_.creator)} >
                     {
@@ -158,7 +169,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
 
     return (
         <>
-            <Table
+            <ResizeTable
                 columns={columns}
                 dataSource={dataSource}
                 loading={loading}
