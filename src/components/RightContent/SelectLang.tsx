@@ -15,8 +15,8 @@ class SelectLang extends React.Component {
   render() {
     return (
       <Typography.Text
-        style={{ cursor: 'pointer', marginLeft: 25, marginRight: 18, color: '#FFF' }}
-        // onClick={this.changLang}
+        style={{ cursor: 'pointer', color: '#FFF' }}
+      // onClick={this.changLang}
       >
         <FormattedMessage id="navbar.lang" />
       </Typography.Text>
