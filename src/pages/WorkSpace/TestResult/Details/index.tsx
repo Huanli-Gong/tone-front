@@ -72,7 +72,7 @@ const TestResultDetails: React.FC = (props: any) => {
 
     useEffect(
         () => {
-            if (!tab && data && data.state === 'running') {
+            if (data && data.state === 'running') {
                 setTab('testProgress')
                 setKey(+ new Date())
             }

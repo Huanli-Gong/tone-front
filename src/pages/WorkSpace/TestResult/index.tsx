@@ -582,7 +582,6 @@ export default (props: any) => {
                     ),
                     dataIndex: 'test_result',
                     width: 140,
-
                     render: (_: any) => {
                         const result = JSON.parse(_)
                         if (lodash.isNull(result)) {
@@ -694,7 +693,7 @@ export default (props: any) => {
                 }
             ].filter(Boolean)
         )
-    }, [dataSource])
+    }, [ws_id])
 
 
     const handleTestReRun = (row: any) => {
