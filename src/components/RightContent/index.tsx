@@ -59,6 +59,8 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
+
+    console.log(access.canWsAdmin())
     return (
         <Row style={{ width: '100%' }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
@@ -124,8 +126,8 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
-                                    <Button type="primary" size="small" onClick={() => location.replace(register_url)}>注册</Button>
+                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
+                                    <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
                                 </Space> :
                                 <Space>
                                     <Button
