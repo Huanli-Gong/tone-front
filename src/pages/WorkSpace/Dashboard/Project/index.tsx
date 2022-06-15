@@ -7,6 +7,7 @@ import { renderChart, filterChartSource } from './utils'
 import { requestCodeMessage } from '@/utils/utils';
 import JobTable from './components/JobTable'
 import moment from 'moment';
+import { useParams } from 'umi'
 interface ContainerProps {
     height?: number;
 }
@@ -62,8 +63,6 @@ const TableTitle = styled.div`
     color:#000;
 `
 
-
-
 const ChartWrapper = styled(WhiteBlock)`
     height:385px;
     margin-bottom:0;
@@ -84,9 +83,12 @@ const RangeTime = styled.div`
     float:right;
 `
 
-const ProjectDashboard = (props: any) => {
-    const { ws_id, project_id } = props.match.params
-    const {height: layoutHeight} = useClientSize()
+type IProps = {
+    [k: string]: any
+}
+const ProjectDashboard: React.FC<IProps> = (props) => {
+    const { ws_id, project_id } = useParams() as any
+    const { height: layoutHeight } = useClientSize()
 
     const statusChart: any = useRef()
     const suiteChart: any = useRef()
@@ -97,7 +99,7 @@ const ProjectDashboard = (props: any) => {
 
     const getProjectInfo = async () => {
         const { data, code, msg } = await queryWorkspaceProductInfo({ ws_id, project_id })
-        if (code !== 200) return requestCodeMessage( code , msg )
+        if (code !== 200) return requestCodeMessage(code, msg)
         setInfo(data)
     }
 
@@ -112,17 +114,17 @@ const ProjectDashboard = (props: any) => {
         setJobChartLoading(true)
         try {
             const { data, code, msg } = await queryWorkspaceProjectChart({
-                ws_id, project_id, 
+                ws_id, project_id,
                 chart_type: 'job',
                 start_time: dateStrings[0] || '',
                 end_time: dateStrings[1] || ''
             })
             setJobChartLoading(false)
-            if (code !== 200) return requestCodeMessage( code , msg )
+            if (code !== 200) return requestCodeMessage(code, msg)
             if (statusChartApi.current)
-                statusChartApi.current.changeData(filterChartSource(data, 'Job' , true ))
+                statusChartApi.current.changeData(filterChartSource(data, 'Job', true))
             else
-                statusChartApi.current = renderChart(statusChart.current, filterChartSource(data, 'Job' , true ))
+                statusChartApi.current = renderChart(statusChart.current, filterChartSource(data, 'Job', true))
         } catch (e) {
             setJobChartLoading(false)
         }
@@ -131,17 +133,17 @@ const ProjectDashboard = (props: any) => {
         setCaseChartLoading(true)
         try {
             const { data, code, msg } = await queryWorkspaceProjectChart({
-                ws_id, project_id, 
+                ws_id, project_id,
                 chart_type: 'case',
                 start_time: dateStrings[0] || '',
                 end_time: dateStrings[1] || ''
             })
             setCaseChartLoading(false)
-            if (code !== 200) return requestCodeMessage( code , msg )
+            if (code !== 200) return requestCodeMessage(code, msg)
             if (suiteChartApi.current)
-                suiteChartApi.current.changeData(filterChartSource(data, 'Job' , false ))
+                suiteChartApi.current.changeData(filterChartSource(data, 'Job', false))
             else
-                suiteChartApi.current = renderChart(suiteChart.current, filterChartSource(data, 'Job' , false ))
+                suiteChartApi.current = renderChart(suiteChart.current, filterChartSource(data, 'Job', false))
         } catch (e) {
             setCaseChartLoading(false)
         }
@@ -151,8 +153,8 @@ const ProjectDashboard = (props: any) => {
         getProjectInfo()
         getChartData()
     }, [])
-    let startDate:any = moment().subtract(30, "days").format('YYYY-MM-DD')
-    let endDate:any =  moment().format('YYYY-MM-DD')
+    let startDate: any = moment().subtract(30, "days").format('YYYY-MM-DD')
+    let endDate: any = moment().format('YYYY-MM-DD')
     return (
         <Container height={layoutHeight - 50}>
             <InfoBanner >
@@ -179,13 +181,13 @@ const ProjectDashboard = (props: any) => {
                         <Typography.Text>趋势图</Typography.Text>
                         <RangeTime>
                             <RangePicker
-                                defaultValue = {[moment(startDate),moment(endDate)]}
+                                defaultValue={[moment(startDate), moment(endDate)]}
                                 ranges={{
                                     '今天': [moment(), moment()],
                                     '一个月': [moment().startOf('month'), moment().endOf('month')],
                                 }}
                                 format="YYYY-MM-DD"
-                                onChange={( d, t ) => getChartData(t)}
+                                onChange={(d, t) => getChartData(t)}
                             />
                         </RangeTime>
                     </Col>

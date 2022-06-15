@@ -153,7 +153,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 )
             }
         },
-        (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline)) &&
+        (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline) &&
         {
             title: '对比基线',
             dataIndex: 'baseline',

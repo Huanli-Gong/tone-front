@@ -10,7 +10,7 @@ import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
-import { requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
     const { approveData, loading, handleTabClick, userId } = props
@@ -123,7 +123,8 @@ export default (props: any) => {
             if(first_entry && creator === userId) {
                 history.push(`/ws/${id}/workspace/initSuccess`)
             }else {
-                history.push(`/ws/${id}/dashboard`)
+                // history.push(`/ws/${id}/dashboard`)
+                history.push(jumpWorkspace(id))
             }
         }
         else requestCodeMessage( code , msg )

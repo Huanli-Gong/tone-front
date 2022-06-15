@@ -18,6 +18,7 @@ export const QusetionIconTootip: React.FC<IProps> = ({ desc, title, ...rest }) =
             arrowPointAtCenter
             {...rest}
             title={desc}
+            color="#fff"
         >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)' }} />
         </Tooltip>

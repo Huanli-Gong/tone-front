@@ -15,7 +15,7 @@ import HomePush from './Component/HomePush'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
-import { requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -159,7 +159,8 @@ export default (): React.ReactNode => {
         if (code === 200) {
             const path = first_entry && record.creator === user_id ?
                 `/ws/${record.id}/workspace/initSuccess` :
-                `/ws/${record.id}/dashboard`
+                jumpWorkspace(record.id)
+            // `/ws/${record.id}/dashboard`
             return path
         }
         else requestCodeMessage(code, msg)
@@ -168,11 +169,12 @@ export default (): React.ReactNode => {
     }
 
     const enterWorkspace = async (record: any) => {
-        if (!user_id && !record.is_public){
-            if(BUILD_APP_ENV === 'openanolis'){
+        if (!user_id && !record.is_public) {
+            if (BUILD_APP_ENV === 'openanolis') {
                 return location.replace(login_url)
             }
-            return history.push(`/login?redirect_url=/ws/${record.id}/dashboard`)
+            // /ws/${record.id}/dashboard
+            return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }
 
         if (access.canSuperAdmin() || record.is_public || record.is_member) {

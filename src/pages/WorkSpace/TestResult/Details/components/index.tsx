@@ -203,7 +203,10 @@ const RenderStateTag: React.FC<any> = (props) => {
 
 const TooltipStateTag: React.FC<any> = (props) => {
     return (
-        <Tooltip title="Job状态" placement="bottom">
+        <Tooltip
+            title="Job状态"
+            placement="bottom"
+        >
             <StateTagCls
                 {...props}
             />
@@ -216,7 +219,7 @@ const QuestionPopover = ({ title }: any) => (
         title={title}
         placement="right"
         trigger="hover"
-        overlayClassName={styles.tag_popover_style}
+        overlayClassName={styles["tag_popover_style"]}
     >
         <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)', verticalAlign: 'middle' }} />
     </Popover>
@@ -315,6 +318,7 @@ export const QusetionIconTootip: React.FC<QuestionTootipProp> = ({ title, desc, 
             placement={placement}
             arrowPointAtCenter
             title={desc}
+            color="#fff"
         >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)' }} />
         </Tooltip>
