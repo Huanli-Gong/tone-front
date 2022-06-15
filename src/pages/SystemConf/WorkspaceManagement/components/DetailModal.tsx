@@ -9,6 +9,7 @@ import styles from './style.less';
 
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as UnPublicIcon } from '@/assets/svg/no_public.svg'
+import { jumpWorkspace } from '@/utils/utils';
 
 const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { refresh } = props
@@ -48,10 +49,10 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         ws_id && init()
     }, [ws_id])
 
-
     const toWS = async () => {
         await enterWorkspaceHistroy({ ws_id, system_entry: true })
-        history.push(`/ws/${ws_id}/dashboard`)
+        // history.push(`/ws/${ws_id}/dashboard`)
+        ws_id && history.push(jumpWorkspace(ws_id))
     }
 
     const confirm = async () => {

@@ -8,6 +8,7 @@ import { history, useModel, Redirect } from 'umi'
 import _ from 'lodash'
 
 import styled from 'styled-components'
+import { jumpWorkspace } from '@/utils/utils'
 
 const WorkspaceTitle = styled(Row)`
     width:210px;
@@ -95,7 +96,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
 
     useEffect(() => {
         const { refreshWorkspaceList } = initialState
-        if ( refreshWorkspaceList !== undefined ) {
+        if (refreshWorkspaceList !== undefined) {
             setPageParams(DEFAULT_PAGE_PARAMS)
             queryWorkspaceList(DEFAULT_PAGE_PARAMS)
             setIsOver(false)
@@ -147,7 +148,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                                             onClick={() => {
                                                 setWs(workspace)
                                                 enterWorkspaceHistroy({ ws_id: workspace.id })
-                                                history.push(`/ws/${workspace.id}/dashboard`)
+                                                history.push(jumpWorkspace(workspace.id))
                                             }}
                                             className={isActive ? 'current_ws' : ''}
                                         >
