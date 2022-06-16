@@ -1,18 +1,18 @@
-import React,{ useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Table, message, Tooltip } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 import PermissionTootip from '@/components/Public/Permission/index';
-import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
+import { updateSuiteCaseOption, queryProcessCaseList, querySeverLink } from '../service'
 import { useAccess, Access, useModel } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
-    const PAGE_DEFAULT_PARAMS: any = { 
-        page_num: 1, 
-        page_size: 10, 
-        job_id, 
+    const PAGE_DEFAULT_PARAMS: any = {
+        page_num: 1,
+        page_size: 10,
+        job_id,
         test_suite_id,
     }
     const [pageParams, setPageParams] = useState<any>(PAGE_DEFAULT_PARAMS)
@@ -22,38 +22,31 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
     const { initialState } = useModel('@@initialState');
     const access = useAccess();
 
-    const queryTestListTableData = async() => {
+    const queryTestListTableData = async () => {
         setLoading(true)
-       const { data, code, msg, total } = await queryProcessCaseList(pageParams)
-        if(code === 200){
+        const { data, code, msg, total } = await queryProcessCaseList(pageParams)
+        if (code === 200) {
             setDataSource(data)
             setTotal(total)
             setLoading(false)
         } else {
-            requestCodeMessage(code,msg)
+            requestCodeMessage(code, msg)
         }
     }
 
     useEffect(() => {
         queryTestListTableData()
-    }, [ pageParams ])
+    }, [pageParams])
 
-    const ipShow = (ip: any) => {
-        const content = (
-            <Tooltip placement="topLeft" title={ip}>
-                <span>{ip}</span>
-            </Tooltip>
-        )
-        if (ip) {
-            if (BUILD_APP_ENV) {
-                return content
-            } else {
-                if (provider_name === '云上机器') {
-                    return content
-                }
+    const handleIpHerf = async (ip: string) => {
+        const { data, code, msg } = await querySeverLink({ ip })
+        if (code === 200) {
+            if (provider_name === '云上机器') {
+                const win: any = window.open("");
+                setTimeout(function () { win.location.href = data.link })
             }
         }
-        return '-'
+        requestCodeMessage(code, msg)
     }
 
     const columns = [
@@ -66,7 +59,14 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             dataIndex: 'server',
             title: ['business_business'].includes(testType) ? '机器' : '测试机器',
             ellipsis: true,
-            render: (_: any, row: any) => ipShow(_)
+            render: (_: any, row: any) => {
+                if(_){
+                    return <Tooltip placement="topLeft" title={_}>
+                        <div onClick={()=> handleIpHerf(_)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
+                    </Tooltip>
+                }
+                return '-'
+            }
         },
         {
             title: '环境准备',
@@ -115,12 +115,13 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 // success,fail,stop 可看日志
                 if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
                     if (_.log_file)
-                        return <PermissionTootip>
-                            <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
-                        </PermissionTootip>
-
+                        // return <PermissionTootip>
+                        //     <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
+                        // </PermissionTootip>
+                        return  <Button type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
                 }
-                return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
+                // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
+                return <Button type="link" style={{ padding: 0 }}>日志</Button>
             }
         }, {
             title: '操作',
@@ -164,7 +165,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 loading={loading}
                 rowKey='id'
                 size="small"
-                pagination={ false }
+                pagination={false}
             />
             <CommonPagination
                 total={total}

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import { Table, Card, message } from 'antd'
+import { Table, Card, message, Tooltip } from 'antd'
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
-import { queryProcessPrepareList } from '../service'
+import { queryProcessPrepareList, querySeverLink } from '../service'
 import { useRequest } from 'umi'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
 
 //测试准备 ==== Table
-export default ({ job_id, refresh = false }: any) => {
+export default ({ job_id, refresh = false, provider_name }: any) => {
     // 表格展开的行
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
@@ -114,15 +114,15 @@ export default ({ job_id, refresh = false }: any) => {
         }
     }, [])
 
-    const ipShow = (ip: any) => {
-        const content = (
-            <span>{ip}</span>
-        )
-        if (ip) {
-            return content
-        } else {
-            return '-'
+    const handleIpHerf = async (ip: string) => {
+        const { data, code, msg } = await querySeverLink({ ip })
+        if (code === 200) {
+            if (provider_name === '云上机器') {
+                const win: any = window.open("");
+                setTimeout(function () { win.location.href = data.link })
+            }
         }
+        requestCodeMessage(code, msg)
     }
 
     const columns = [
@@ -134,7 +134,14 @@ export default ({ job_id, refresh = false }: any) => {
         {
             dataIndex: 'server',
             title: '测试机器',
-            render: (_: any, row: any) => ipShow(_)
+            render: (_: any, row: any) => {
+                if(_){
+                    return <Tooltip placement="topLeft" title={_}>
+                        <div onClick={()=> handleIpHerf(_)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
+                    </Tooltip>
+                }
+                return '-'
+            }
         },
         {
             dataIndex: 'stage',

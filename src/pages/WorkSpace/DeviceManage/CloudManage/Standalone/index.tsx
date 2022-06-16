@@ -13,6 +13,7 @@ import AloneMachine from './AloneMachine'
 import { StateBadge } from '../../GroupManage/Components'
 import { cloudList, delCloud } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
+import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
 import { useClientSize } from '@/utils/hooks'
@@ -64,6 +65,16 @@ export default (props: any) => {
     const deployModal: any = useRef(null);
     const { height: windowHeight } = useClientSize()
     const viewDetailRef: any = useRef(null)
+
+    const handleIpHerf = async (ip: string) => {
+        const { data, code, msg } = await querySeverLink({ ip })
+        if (code === 200) {
+            const win: any = window.open("");
+            setTimeout(function () { win.location.href = data.link })
+        }
+        requestCodeMessage(code, msg)
+    }
+
     useEffect(() => {
         let columns: any = [
             {
@@ -104,7 +115,14 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: (text: any, row: any) => <EllipsisPulic title={text} />
+                render: (text: any, row: any) => {
+                    if(text){
+                        return <Tooltip placement="topLeft" title={text}>
+                            <div onClick={()=> handleIpHerf(text)} style={{ color: '#1890ff', cursor: 'pointer' }}>{text}</div>
+                        </Tooltip>
+                    }
+                    return '-'
+                }
             },
             {
                 title: 'SN',

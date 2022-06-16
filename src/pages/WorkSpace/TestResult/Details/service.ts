@@ -110,3 +110,7 @@ export const queryMonitorList = async ( params : any ) => {
 export const queryMachineData = async( params:any ) => {
     return request(`/api/job/test_server/machine_fault/`,{ params })
 }
+// 机器跳转链接查询
+export const querySeverLink = async( params:any ) => {
+    return request(`/api/server/get_ssh_link/`,{ params })
+}
