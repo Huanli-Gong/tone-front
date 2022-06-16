@@ -9,7 +9,7 @@ import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
 import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { history } from 'umi'
-import { requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
 export default (props: any) => {
     const {workspaceList,loading, userId} = props
     const {height: layoutHeight} = useClientSize()
@@ -49,7 +49,8 @@ export default (props: any) => {
             if(first_entry && creator === userId) {
                 history.push(`/ws/${id}/workspace/initSuccess`)
             }else {
-                history.push(`/ws/${id}/dashboard`)
+                // history.push(`/ws/${id}/dashboard`)
+                history.push(jumpWorkspace(id))
             }
         }
         else requestCodeMessage( code , msg )

@@ -48,7 +48,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     }
 
     const handleAllRead = async () => {
-        const data =  tab == '1' ? await allTagRead() : await allTagApplyRead()
+        const data = tab == '1' ? await allTagRead() : await allTagApplyRead()
         if (data.code === 200) {
             setTab(tab)
             increment()
@@ -59,6 +59,8 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
+
+    console.log(access.canWsAdmin())
     return (
         <Row style={{ width: '100%' }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
@@ -79,13 +81,13 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                     overlay={
                         <Menu>
                             <div className={styles.msg_warp}>
-                                <Tabs 
-                                    defaultActiveKey={tab} 
-                                    onTabClick={handleTabClick} 
-                                    style={{ width: 384, height: 'auto' }} 
+                                <Tabs
+                                    defaultActiveKey={tab}
+                                    onTabClick={handleTabClick}
+                                    style={{ width: 384, height: 'auto' }}
                                     tabBarExtraContent={
-                                        <Button type="link" 
-                                            onClick={handleAllRead} 
+                                        <Button type="link"
+                                            onClick={handleAllRead}
                                             disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
                                         >
                                             全部已读
@@ -107,10 +109,10 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                     {
                         msgNum?.apply_msg_unread_num === 0 ?
                             <Badge dot={msgNum?.task_msg_state} style={{ cursor: 'pointer' }}>
-                                <MessageIcon style={{ marginLeft: 20 }} />
+                                <MessageIcon />
                             </Badge> :
                             <Badge className={styles.badge_item} count={msgNum?.apply_msg_unread_num} style={{ cursor: 'pointer' }} overflowCount={99}>
-                                <MessageIcon style={{ marginLeft: 20 }} />
+                                <MessageIcon />
                             </Badge>
                     }
                 </Dropdown>
@@ -124,13 +126,14 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
+                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
                                     <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
                                 </Space> :
                                 <Space>
                                     <Button
                                         type="text"
                                         style={{ color: '#fff', fontWeight: 500 }}
+                                        size="small"
                                         onClick={() => history.push(`/login?redirect_url=${window.location.href.replace(window.location.origin, '')}`)}
                                     >
                                         登录

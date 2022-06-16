@@ -36,11 +36,24 @@ export const dataSetMethod = (dict: any) => {
     return obj[dict]
 }
 
-const TRow: React.FC<{ label: string }> = ({ label, children }) => {
+type TRowProps = {
+    label: string;
+}
+
+const TRow: React.FC<TRowProps> = ({ label, children }) => {
     return (
         <Row gutter={8}>
             <Col span={6}>{label}</Col>
             <Col span={18}>{children || '-'}</Col>
+        </Row>
+    )
+}
+
+const LTRow: React.FC<TRowProps> = ({ label, children }) => {
+    return (
+        <Row gutter={8}>
+            <Col span={4}>{label}</Col>
+            <Col span={20}>{children || '-'}</Col>
         </Row>
     )
 }
@@ -186,6 +199,7 @@ const ClusterServer: React.FC<any> = (props) => {
     const { id, name, is_instance } = props
     const [source, setSource] = React.useState([])
 
+    const [ellipsis, setEllipsis] = React.useState(false)
     const init = async () => {
         const { data, code } = await queryClusterMachine({ cluster_id: id })
         if (code === 200)
@@ -202,16 +216,46 @@ const ClusterServer: React.FC<any> = (props) => {
                 集群名称：{name}
             </CLusterTitle>
             <Wrapper direction="vertical" style={{ padding: 20 }}>
-                <ElseTag {...props} />
+                {/* <ElseTag {...props} /> */}
+                <SpaceVertical style={{ padding: "0 20px", width: "100%" }}>
+                    <LTRow label="配置名称:">{props?.name}</LTRow>
+                    <LTRow label="Owner:">{props?.owner_name}</LTRow>
+                    <LTRow label="创建时间:">{props?.gmt_created}</LTRow>
+                    <LTRow label="修改时间:">{props?.gmt_modified}</LTRow>
+                    <LTRow label="备注:">{props?.description}</LTRow>
+                    <LTRow label="调度标签:">
+                        {
+                            (props.tag_list && !!props.tag_list.length) ?
+                                props?.tag_list.map(
+                                    (item: any) => (
+                                        <Tag color={item.tag_color} key={item.id} >{item.name}</Tag>
+                                    )
+                                ) : "-"
+                        }
+                    </LTRow>
+                </SpaceVertical>
                 {
-                    source.map((item: any) => (
-                        <CLusterTerm key={item.server_id}>
-                            <TermTitle>
-                                机器{item.is_instance ? "实例" : "配置"}名称：{item.name}
-                            </TermTitle>
-                            <ServerDetail $type={is_instance} {...item} />
-                        </CLusterTerm>
-                    ))
+                    source.map((item: any) => {
+                        const title = `机器${item.is_instance ? "实例" : "配置"}名称：${item.name}`
+                        return (
+                            <CLusterTerm key={item.server_id}>
+                                <TermTitle>
+                                    {
+                                        ellipsis ?
+                                            <Tooltip
+                                                title={item.name}
+                                            >
+                                                <Typography.Text ellipsis>{title}</Typography.Text>
+                                            </Tooltip> :
+                                            <Typography.Text ellipsis={{ onEllipsis: () => setEllipsis(true) }}>
+                                                {title}
+                                            </Typography.Text>
+                                    }
+                                </TermTitle>
+                                <ServerDetail $type={is_instance} {...item} />
+                            </CLusterTerm>
+                        )
+                    })
                 }
             </Wrapper>
         </ClusterContainer>
@@ -222,8 +266,6 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
     const { ws_id } = useParams() as any
     const [source, setSource] = React.useState([])
     const [visible, setVisible] = React.useState(false)
-
-    console.log(provider_name)
 
     const $isNumber = Object.prototype.toString.call(is_instance) === "[object Number]"
 

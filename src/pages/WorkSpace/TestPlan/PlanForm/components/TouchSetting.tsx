@@ -1,85 +1,86 @@
-import React, { useState , useImperativeHandle , forwardRef , useEffect } from 'react'
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
 import styles from './index.less'
-import { Form , Input , Radio, Switch , Row, Space, Typography } from 'antd'
+import { Form, Input, Radio, Switch, Row, Space, Typography } from 'antd'
 import { checkCronExpression } from '@/pages/WorkSpace/TestPlan/services'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
 import styled from 'styled-components'
 
 const EmRow = styled(Row)`
     text-indent:2em;
+    color: #333;
 `
 
-const TouchSetting = ( props : any , ref : any ) => {
-    const { show , template } = props
-    const [ form ] = Form.useForm()
+const TouchSetting = (props: any, ref: any) => {
+    const { show, template } = props
+    const [form] = Form.useForm()
 
-    const [ tigger , setTigger ] = useState( false )
-    const [ expression , setExpression ] = useState( [] )
+    const [tigger, setTigger] = useState(false)
+    const [expression, setExpression] = useState([])
 
-    useImperativeHandle( ref , () => ({
-        validate : async () => {
+    useImperativeHandle(ref, () => ({
+        validate: async () => {
             return form.validateFields()
         }
     }))
 
     useEffect(() => {
-        if ( template && JSON.stringify( template ) !== '{}') {
+        if (template && JSON.stringify(template) !== '{}') {
             const { cron_schedule } = template
-            setTigger( cron_schedule )
-            if ( cron_schedule ) {
-                form.setFieldsValue( template )
+            setTigger(cron_schedule)
+            if (cron_schedule) {
+                form.setFieldsValue(template)
             }
             else {
-                const { cron_schedule , blocking_strategy } = template
-                form.setFieldsValue({ cron_schedule , blocking_strategy })
+                const { cron_schedule, blocking_strategy } = template
+                form.setFieldsValue({ cron_schedule, blocking_strategy })
             }
         }
-    } , [ template ])
+    }, [template])
 
     return (
-        <div style={{ width : '100%' , height : '100%' , paddingTop : 50 , display : show }}>
-            <Form 
-                form={ form }
+        <div style={{ width: '100%', height: '100%', paddingTop: 50, display: show }}>
+            <Form
+                form={form}
                 layout="horizontal"
                 size="small"
                 /*hideRequiredMark*/
                 labelCol={{ span: 4 }}
                 wrapperCol={{ span: 12 }}
-                style={{ width : '100%' }}
-                colon={ false }
-                className={ styles.job_plan_form }
-                // onFieldsChange={ onChange }
+                style={{ width: '100%' }}
+                colon={false}
+                className={styles.job_plan_form}
+            // onFieldsChange={ onChange }
             >
                 <Form.Item name="cron_schedule" label="定时触发" valuePropName="checked">
-                    <Switch onChange={ setTigger } size="default" checked checkedChildren="开启" unCheckedChildren="关闭" />
+                    <Switch onChange={setTigger} size="default" checked checkedChildren="开启" unCheckedChildren="关闭" />
                 </Form.Item>
                 {
                     tigger &&
                     <>
                         <Form.Item label="触发规则"  >
-                            <div style={{ position : 'relative' }}>
-                                <Form.Item 
-                                    name="cron_info" 
-                                    validateTrigger={ 'onBlur' }
+                            <div style={{ position: 'relative' }}>
+                                <Form.Item
+                                    name="cron_info"
+                                    validateTrigger={'onBlur'}
                                     rules={[
                                         () => ({
-                                            async validator ( rule , value ) {
-                                                const { code, data = [] } = await checkCronExpression({ cron_express : value }) || {}
-                                                if ( code === 200 ) {
+                                            async validator(rule, value) {
+                                                const { code, data = [] } = await checkCronExpression({ cron_express: value }) || {}
+                                                if (code === 200) {
                                                     setExpression(data)
                                                     return Promise.resolve()
                                                 }
                                                 setExpression([])
                                                 return Promise.reject('规则错误，请核对触发规则是否正确')
-                                            }    
+                                            }
                                         }),
                                     ]}
                                 >
-                                    <Input autoComplete="off" placeholder="触发规则"/>
+                                    <Input autoComplete="off" placeholder="触发规则" />
                                 </Form.Item>
-                                <div style={{ position : 'absolute' , right : -22 , top : -4 }}>
-                                    <QusetionIconTootip 
-                                        title="" 
+                                <div style={{ position: 'absolute', right: -22, top: -4 }}>
+                                    <QusetionIconTootip
+                                        title=""
                                         placement="rightBottom"
                                         desc={
                                             <>
@@ -99,20 +100,22 @@ const TouchSetting = ( props : any , ref : any ) => {
                                                 <EmRow>4. /  每隔多久执行一次</EmRow>
                                                 <br />
                                                 <Row><Typography.Text strong>举例：</Typography.Text></Row>
-                                                <EmRow><Space><span>0 21 * * 1-5</span><span>每周1到5的21点执行任务</span></Space></EmRow>
+                                                <EmRow>
+                                                    0 21 * * 1-5 （每周1到5的21点执行任务）
+                                                </EmRow>
                                             </>
-                                        } 
+                                        }
                                     />
                                 </div>
                             </div>
                         </Form.Item>
                         {!!expression?.length && (
-                           <Form.Item label=" ">
-                               <span>下三次触发时间：</span>
-                               {expression.map((item, index)=>
-                                    <div key={ index } style={{ marginLeft: 20 }}>{index+1}. { item }</div>
+                            <Form.Item label=" ">
+                                <span>下三次触发时间：</span>
+                                {expression.map((item, index) =>
+                                    <div key={index} style={{ marginLeft: 20 }}>{index + 1}. {item}</div>
                                 )}
-                           </Form.Item>
+                            </Form.Item>
                         )}
                         {/* {
                             template?.next_time && 
@@ -120,11 +123,11 @@ const TouchSetting = ( props : any , ref : any ) => {
                                 <span>下次触发时间：{ template.next_time }</span>
                             </Form.Item>
                         } */}
-                        <Form.Item name="blocking_strategy" label="阻塞处理策略" initialValue={ 1 }>
+                        <Form.Item name="blocking_strategy" label="阻塞处理策略" initialValue={1}>
                             <Radio.Group>
-                                <Radio value={ 1 }>忽略前序计划，直接同时执行</Radio><br/>
-                                <Radio value={ 2 }>中止前序运行中计划，再执行</Radio><br/>
-                                <Radio value={ 3 }>有前序运行中计划，忽略本次执行</Radio><br/>
+                                <Radio value={1}>忽略前序计划，直接同时执行</Radio><br />
+                                <Radio value={2}>中止前序运行中计划，再执行</Radio><br />
+                                <Radio value={3}>有前序运行中计划，忽略本次执行</Radio><br />
                             </Radio.Group>
                         </Form.Item>
                     </>
@@ -134,4 +137,4 @@ const TouchSetting = ( props : any , ref : any ) => {
     )
 }
 
-export default forwardRef( TouchSetting )
+export default forwardRef(TouchSetting)

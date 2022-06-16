@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import { parse } from 'querystring';
 import { listRender, enumer } from './hooks';
-import { useModel } from 'umi';
+import { useModel, history } from 'umi';
 import _ from 'lodash';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
@@ -15,6 +15,8 @@ export const isAntDesignPro = (): boolean => {
     }
     return window.location.hostname === 'preview.pro.ant.design';
 };
+
+export const jumpWorkspace = (ws_id: string) => `/ws/${ws_id}/test_result`
 
 // 给官方演示站点用，用于关闭真实开发环境不需要使用的特性
 export const isAntDesignProOrDev = (): boolean => {
