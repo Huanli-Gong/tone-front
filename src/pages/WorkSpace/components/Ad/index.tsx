@@ -6,6 +6,12 @@ import { ReactComponent as Close } from "@/assets/svg/close.svg"
 import imgPic from "@/assets/img/image.png"
 import { useParams, history, useModel } from "umi";
 
+const wrapperWidth = `
+    // width: 85%;
+    width: 1200px;
+    height: 600px;
+`
+
 const AdContainer = styled.div`
     position: fixed;
     left: 0 ;
@@ -20,8 +26,9 @@ const AdWrapper = styled.div`
     margin: 0 auto;
     top: 50%;
     transform: translateY(-50%);
-    width: 1300px;
-    height: 700px;
+    /* width: 1300px; */
+    ${wrapperWidth}
+    /* height: 700px; */
     position: relative;
     overflow: hidden;
     background: #ffffff;
@@ -53,14 +60,19 @@ const AdWrapper = styled.div`
 `
 
 const AdCarouseItem = styled.div`
-    width: 1300px;
-    height: 700px;
+    /* width: 1300px; */
+    ${wrapperWidth}
+    /* height: 700px; */
     display: flex;
     overflow: hidden;
     position: relative;
     img {
         width: 100%;
         height: 100%;
+    }
+
+    h1 {
+        margin-bottom: 30px!important;
     }
 `
 const CloseOutlie = styled.div`
@@ -115,7 +127,7 @@ const AdCompoent: React.FC = () => {
                     autoplay
                 >
                     <AdCarouseItem>
-                        <div style={{ padding: 30 }}>
+                        <div style={{ padding: `30px 16px` }}>
                             <Third />
                             <Row
                                 justify="center"

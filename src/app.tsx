@@ -1,7 +1,7 @@
 import React from 'react';
 import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layout';
 
-import { notification } from 'antd';
+import { notification, ConfigProvider } from 'antd';
 import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
@@ -13,7 +13,10 @@ const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' 
 
 const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
 
+const AD_WS_ID = "fgq5x4by"
+
 export async function getInitialState(): Promise<any> {
+    const isShowAd = localStorage[`ad_str_${AD_WS_ID}_display`] ? undefined : AD_WS_ID
     const initialState = {
         settings: defaultSettings,
         refreshMenu: false,
@@ -21,7 +24,7 @@ export async function getInitialState(): Promise<any> {
         jobTypeList: [],
         authList: {},
         hasAdWs: ["fgq5x4by"],
-        wsAdShow: "fgq5x4by"
+        wsAdShow: isShowAd
     };
 
     const { pathname } = window.location
@@ -71,10 +74,12 @@ export const layout = ({
     return {
         disableContentMargin: false,
         footerRender: false,
+        locale: "zh-CN",
         menuHeaderRender: false,
         menuRender: false,
         headerRender: props => <Headers {...props} />,
         onMenuHeaderClick: () => false,
+        disableMobile: true,
         ...initialState?.settings,
     };
 };
