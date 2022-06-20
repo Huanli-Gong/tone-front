@@ -33,7 +33,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [options, setOptions] = React.useState(optionLists);
     const [loading, setLoading] = useState<boolean>(false)
     const [visible, setVisible] = useState<boolean>(false)
-    const [tagsPagination, setTagsPagination] =  useState({ total: 0, page_num: 1, page_size: 10 });
+    const [tagsPagination, setTagsPagination] = useState({ total: 0, page_num: 1, page_size: 10 });
     const [tagList, setTagList] = useState<any>([])
     const [fetching, setFetching] = useState<boolean>(true)
     const { Option } = Select;
@@ -63,12 +63,12 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     }
     const handlePopupScroll = (e: any) => {
         const { page_num, page_size, total, } = tagsPagination
-        const { clientHeight, scrollHeight, scrollTop} = e.target
-        if ( clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total/page_size) > page_num ) {
-          requestData({ ws_id, page_num: page_num + 1, page_size, name: tagWord }, 'concat')
+        const { clientHeight, scrollHeight, scrollTop } = e.target
+        if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
+            requestData({ ws_id, page_num: page_num + 1, page_size, name: tagWord }, 'concat')
         }
     }
-    const requestData = async (query: any, option="concat") => {
+    const requestData = async (query: any, option = "concat") => {
         setFetching(true)
         try {
             let res = await queryTag(query)
@@ -334,11 +334,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             zone: param.region[1],
             id: param.manufacturer[0]
         }
-        if(param.ak_name == 'aliyun_eci'){
+        if (param.ak_name == 'aliyun_eci') {
             let t = param.instance_type
             let type1 = t.indexOf('C')
             let type2 = t.indexOf('G')
-            param.instance_type_one = Number(t.substring(0,type1))
+            param.instance_type_one = Number(t.substring(0, type1))
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
         // 机器配置
@@ -381,60 +381,70 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [form] = Form.useForm();
     const submit = _.debounce(
         async (params: any) => {
-        //setVisible(true)
-        let param = { ...params, ws_id }
-        param.is_instance = Number(type) 
-        if (params.hasOwnProperty('manufacturer')) {
-            param.manufacturer = params?.manufacturer[0]
-            param.ak_id = params.manufacturer[1]
-            param.region = params.region[0]
-            param.zone = params.region[1]
-        }
-        if (params.hasOwnProperty('instance_id')) {
-            const selectName = params.instance_id.label // 分割字符串
-            param.instance_id = params.instance_id.value
-            param.name = selectName.indexOf(' / ') > -1 ? selectName.split(' / ')[1] : selectName
-        }
-        if (!id) {
-            param.ws_id = ws_id
-        }
-        // 规格
-        if (manufacturerType === 'aliyun_eci') {
-            param.instance_type = `${params.instance_type_one}C${params.instance_type_two}G`
-        } else {
-            param.instance_type = params.instance_type
-        }
-        // 镜像
-        if (params.hasOwnProperty('image') && params.image.length) {
-            if (manufacturerType === 'aliyun_eci') {
-                param.image = params.image[1]
-                // 获取镜像名
-                const imageSource = resetECI(image, 'platform') || []
-                const selectedItem = imageSource.find((item: any) => item.value == params.image[0]) || {}
-                const itemObj = selectedItem.children?.find((item: any) => item.value == params.image[1])
-                param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
-            } else {
-                param.image = params.image[2]
-                // 获取镜像名
-                const imageSource = resetImage(image, 'owner_alias', 'platform') || []
-                const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
-                const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
-                const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
-                param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+            //setVisible(true)
+            let param = { ...params, ws_id }
+            param.is_instance = Number(type)
+            if (params.hasOwnProperty('manufacturer')) {
+                param.manufacturer = params?.manufacturer[0]
+                param.ak_id = params.manufacturer[1]
+                param.region = params.region[0]
+                param.zone = params.region[1]
             }
-        } else {
-            param.image = undefined
-        }
-        param.description = params.description || ''
-        const res = id ? await editCloud(id, { ...param }) : await addCloud({ ...param })
-        if (res.code === 200) {
-            message.success('操作成功');
-            onSuccess(param.is_instance || type, id)
-            setVisible(false)
-        } else {
-            requestCodeMessage(res.code, res.msg)
-        }
-    },1500)
+            if (params.hasOwnProperty('instance_id')) {
+                const selectName = params.instance_id.label // 分割字符串
+                param.instance_id = params.instance_id.value
+                param.name = selectName.indexOf(' / ') > -1 ? selectName.split(' / ')[1] : selectName
+            }
+            if (!id) {
+                param.ws_id = ws_id
+            }
+            // 规格
+            if (manufacturerType === 'aliyun_eci') {
+                param.instance_type = `${params.instance_type_one}C${params.instance_type_two}G`
+            } else {
+                param.instance_type = params.instance_type
+            }
+            // 镜像
+            if (params.hasOwnProperty('image') && params.image.length) {
+                if (manufacturerType === 'aliyun_eci') {
+                    param.image = params.image[1]
+                    // 获取镜像名
+                    const imageSource = resetECI(image, 'platform') || []
+                    const selectedItem = imageSource.find((item: any) => item.value == params.image[0]) || {}
+                    const itemObj = selectedItem.children?.find((item: any) => item.value == params.image[1])
+                    param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+                } else {
+                    param.image = params.image[2]
+                    // 获取镜像名
+                    const imageSource = resetImage(image, 'owner_alias', 'platform') || []
+                    const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
+                    const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
+                    const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
+                    param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+                }
+            } else {
+                param.image = undefined
+            }
+            param.description = params.description || ''
+            // console.log('param:', param)
+            const res = id ? await editCloud(id, { ...param }) : await addCloud({ ...param })
+            if (res.code === 200) {
+                message.success('操作成功');
+                onSuccess(param.is_instance || type, id)
+                setVisible(false)
+            } else if (res.code === 201) {
+                let msg = res.msg
+                let link_msg = res.link_msg
+                let endMsg = <span dangerouslySetInnerHTML=
+                    {{
+                        __html: msg.replace(link_msg, `<a href="/system/user" target="_blank">$&</a>`)
+                    }}
+                />
+                message.warning(endMsg)
+            } else {
+                requestCodeMessage(res.code, res.msg)
+            }
+        }, 1500)
 
     const onSubmit = () => {
         form.validateFields().then(val => submit(val))
@@ -516,11 +526,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                     layout="vertical"
                     form={form}
                     initialValues={{
-                        instance_type_one:1,
-                        instance_type_two:1,
-                        system_disk_size:40,
-                        storage_size:40,
-                        storage_number:1
+                        instance_type_one: 1,
+                        instance_type_two: 1,
+                        system_disk_size: 40,
+                        storage_size: 40,
+                        storage_number: 1
                     }}
                 >
                     <Row gutter={16}>
@@ -612,25 +622,25 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { manufacturerType === '' ? 
-                            null 
-                            : !id || !is_instance ?
-                            <Col span={12}>
-                                <Form.Item label="Region/Zone"
-                                    name="region"
-                                    validateStatus={validateRegion ? '' : 'error'}
-                                    help={validateRegion ? undefined : `没有符合的Region/Zone`}
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Cascader
-                                        disabled={region?.length === 0}
-                                        options={region}
-                                        loadData={loadData}
-                                        onChange={onRegionChange}
-                                    />
-                                </Form.Item>
-                            </Col> :
+                        {manufacturerType === '' ?
                             null
+                            : !id || !is_instance ?
+                                <Col span={12}>
+                                    <Form.Item label="Region/Zone"
+                                        name="region"
+                                        validateStatus={validateRegion ? '' : 'error'}
+                                        help={validateRegion ? undefined : `没有符合的Region/Zone`}
+                                        rules={[{ required: true, message: '请选择' }]}
+                                    >
+                                        <Cascader
+                                            disabled={region?.length === 0}
+                                            options={region}
+                                            loadData={loadData}
+                                            onChange={onRegionChange}
+                                        />
+                                    </Form.Item>
+                                </Col> :
+                                null
                         }
                         {!showZone ? null : !id && is_instance ?
                             <Col span={12}>
@@ -655,9 +665,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { !showZone ? null : !is_instance ? (
+                        {!showZone ? null : !is_instance ? (
                             <>
-                                { manufacturerType === 'aliyun_eci' ?
+                                {manufacturerType === 'aliyun_eci' ?
                                     <Col span={12}>
                                         {/** case1: aliyun_eci  */}
                                         <Row>
@@ -715,44 +725,44 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     </Col>
                                 }
                             </>
-                            )
+                        )
                             :
                             null
                         }
-                        { !showZone ? null : !is_instance ?
-                         manufacturerType === 'aliyun_eci' ?
-                            <Col span={12}>
-                                <Form.Item label="镜像"
-                                    name="image"
-                                    // validateStatus={(validateImage && image.length === 0) ? 'error' : '' }
-                                    // help={(validateImage && image.length === 0) ? '没有符合的镜像' : '请选择'}
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
-                                        options={resetECI(image, 'platform')}
-                                        expandTrigger="hover"
-                                        displayRender={displayRender}
-                                    />
-                                </Form.Item>
-                            </Col> 
-                            :
-                            <Col span={12}>
-                                <Form.Item label="镜像"
-                                    name="image"
-                                    // validateStatus={(validateImage && image.length === 0) ? 'error' : '' }
-                                    // help={(validateImage && image.length === 0) ? '没有符合的镜像' : '请选择'}
-                                    rules={[{ required: true, message: '请选择' }]}
-                                >
-                                    <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
-                                        options={resetImage(image, 'owner_alias', 'platform')}
-                                        expandTrigger="hover"
-                                        displayRender={displayRender}
-                                    />
-                                </Form.Item>
-                            </Col> :
+                        {!showZone ? null : !is_instance ?
+                            manufacturerType === 'aliyun_eci' ?
+                                <Col span={12}>
+                                    <Form.Item label="镜像"
+                                        name="image"
+                                        // validateStatus={(validateImage && image.length === 0) ? 'error' : '' }
+                                        // help={(validateImage && image.length === 0) ? '没有符合的镜像' : '请选择'}
+                                        rules={[{ required: true, message: '请选择' }]}
+                                    >
+                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
+                                            options={resetECI(image, 'platform')}
+                                            expandTrigger="hover"
+                                            displayRender={displayRender}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                :
+                                <Col span={12}>
+                                    <Form.Item label="镜像"
+                                        name="image"
+                                        // validateStatus={(validateImage && image.length === 0) ? 'error' : '' }
+                                        // help={(validateImage && image.length === 0) ? '没有符合的镜像' : '请选择'}
+                                        rules={[{ required: true, message: '请选择' }]}
+                                    >
+                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
+                                            options={resetImage(image, 'owner_alias', 'platform')}
+                                            expandTrigger="hover"
+                                            displayRender={displayRender}
+                                        />
+                                    </Form.Item>
+                                </Col> :
                             null
                         }
-                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={8}>
                                 <Form.Item label="系统盘"
                                     name="system_disk_category"
@@ -775,7 +785,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="system_disk_size"
@@ -796,7 +806,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4}>
                                 <Form.Item label="数据盘"
                                     name="storage_type"
@@ -818,7 +828,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="storage_size"
@@ -839,7 +849,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        { !showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
+                        {!showZone ? null : manufacturerType !== 'aliyun_eci' && !is_instance ?
                             <Col span={4} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                 <Form.Item
                                     name="storage_number"
@@ -965,7 +975,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     showSearch
                                     placeholder="请选择"
                                     onSearch={getServerTagList}
-                                    onPopupScroll={fetching? ()=> {}: handlePopupScroll} // 防抖
+                                    onPopupScroll={fetching ? () => { } : handlePopupScroll} // 防抖
                                     style={{ width: '100%' }}
                                     showArrow={false}
                                     onFocus={() => { getServerTagList() }}
@@ -988,7 +998,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 name="channel_type"
                                 initialValue={'toneagent'}
                                 rules={[{ required: true, message: '请选择控制通道' }]}>
-                                <AgentSelect disabled={BUILD_APP_ENV}/>
+                                <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
                         </Col>
                         {!is_instance ? null : (

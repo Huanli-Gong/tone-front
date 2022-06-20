@@ -1602,7 +1602,8 @@ export default (props: any) => {
                     <div
                         className={styles.bottom_box}
                         style={{
-                            display: radioValue === 2 || selectedRowKeys.length ? 'block' : 'none'
+                            display: radioValue === 2 || selectedRowKeys.length ? 'block' : 'none',
+                            zIndex:99
                         }}
                     >
                         {

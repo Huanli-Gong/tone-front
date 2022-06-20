@@ -35,11 +35,9 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
 
     useEffect(() => {
         refresh()
-    }, []);
+    }, [page,size]);
 
     const onChange = (page_num: any, page_size: any) => {
-        let params = { role_id: role_id, page_num: page_num, page_size: page_size, keyword: keyword }
-        getManagementList(params)
         setPage(page_num)
         setSize(page_size)
     }
