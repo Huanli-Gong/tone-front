@@ -21,9 +21,8 @@ const EditServerDrawer = (props: any, ref: any) => {
             setVisible(true)
             if (_) {
                 setSource(_)
-                let params = _
-                params = Object.assign(_.test_server, params)
-                form.setFieldsValue(params)
+                const { ip, private_ip } = _.test_server
+                form.setFieldsValue({ ..._, ip, private_ip })
             }
         }
     }))
@@ -34,7 +33,7 @@ const EditServerDrawer = (props: any, ref: any) => {
         form.resetFields()
     }
 
-    const onSubmit = () => {
+    const onSubmit1 = () => {
         setPadding(true)
         form
             .validateFields()
@@ -71,14 +70,13 @@ const EditServerDrawer = (props: any, ref: any) => {
                 <div style={{ textAlign: 'right' }} >
                     <Space>
                         <Button onClick={hanldeClose}>取消</Button>
-                        <Button type="primary" disabled={padding} onClick={onSubmit}>更新</Button>
+                        <Button type="primary" disabled={padding} onClick={onSubmit1}>更新</Button>
                     </Space>
                 </div>
             }
         >
             <Form
                 layout="vertical"
-                /*hideRequiredMark*/
                 form={form}
             >
                 <Form.Item name="ip" label="机器">

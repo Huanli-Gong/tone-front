@@ -530,6 +530,9 @@ const TestJob: React.FC<any> = (props) => {
         if (!data.baseline) {
             data.baseline = null
         }
+        if (!data.baseline_job_id) {
+            data.baseline_job_id = null
+        }
         if (!data.cleanup_info) {
             data.cleanup_info = ""
         }
