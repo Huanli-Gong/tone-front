@@ -199,9 +199,9 @@ const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightL
             textWrap: 'word-break',
             render: (text: any, record: any, index: number) => {
                 return (
-                    <>
-                        {EllipsisRect({ record, text, helpId, reactNode, handleClick, index })}
-                    </>
+                    <EllipsisRect
+                        {...{ record, text, helpId, reactNode, handleClick, index }}
+                    />
                 )
             },
         },

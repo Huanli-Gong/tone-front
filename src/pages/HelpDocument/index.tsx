@@ -100,7 +100,7 @@ export default (props: any) => {
         }
         setRightLoading(true)
         const { data, code } = await queryHelpDocList({ id: Number(id) })
-        console.log(data, odiv2)
+        // console.log(data, odiv2)
         timeout = null
         if (code === 200) {
             setRightLoading(false)

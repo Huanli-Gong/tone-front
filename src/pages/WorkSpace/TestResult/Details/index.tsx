@@ -16,6 +16,7 @@ import { StateTag } from './components'
 import ViewReport from '../CompareBar/ViewReport'
 import NotFound from './components/404'
 import RenderMachineItem from './components/MachineTable'
+import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
@@ -72,7 +73,7 @@ const TestResultDetails: React.FC = (props: any) => {
 
     useEffect(
         () => {
-            if (!tab && data && data.state === 'running') {
+            if (data && data.state === 'running') {
                 setTab('testProgress')
                 setKey(+ new Date())
             }
@@ -315,7 +316,8 @@ const TestResultDetails: React.FC = (props: any) => {
                             </div>
                         </div>
                         <RenderMachineItem job_id={job_id} />
-                        <div style={{ background: '#fff' }} >
+                        <RenderMachinePrompt { ...data }/>
+                        <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
                                 onTabClick={handleTabClick}
