@@ -4,7 +4,8 @@ import { Table, Card, message, Tooltip } from 'antd'
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
-import { queryProcessPrepareList, querySeverLink } from '../service'
+import { handleIpHerf } from '@/components/MachineWebLink/index';
+import { queryProcessPrepareList } from '../service'
 import { useRequest } from 'umi'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
@@ -114,17 +115,6 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         }
     }, [])
 
-    const handleIpHerf = async (ip: string) => {
-        const { data, code, msg } = await querySeverLink({ ip })
-        if (code === 200) {
-            if (provider_name === '云上机器') {
-                const win: any = window.open("");
-                setTimeout(function () { win.location.href = data.link })
-            }
-        }
-        requestCodeMessage(code, msg)
-    }
-
     const columns = [
         {
             dataIndex: 'mode',
@@ -137,7 +127,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             render: (_: any, row: any) => {
                 if(_){
                     return <Tooltip placement="topLeft" title={_}>
-                        <div onClick={()=> handleIpHerf(_)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
+                        <div onClick={()=> handleIpHerf(_,provider_name)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
                     </Tooltip>
                 }
                 return '-'

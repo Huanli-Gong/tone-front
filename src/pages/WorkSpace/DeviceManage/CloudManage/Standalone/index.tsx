@@ -5,6 +5,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
 import Highlighter from 'react-highlight-words';
 import DeployModal from '../../GroupManage/Standalone/Components/DeployModal'
+import { handleIpHerf } from '@/components/MachineWebLink/index';
 import SearchInput from '@/components/Public/SearchInput';
 import SelectUser from '@/components/Public/SelectUser';
 import SelectTags from '@/components/Public/SelectTags';
@@ -13,10 +14,8 @@ import AloneMachine from './AloneMachine'
 import { StateBadge } from '../../GroupManage/Components'
 import { cloudList, delCloud } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
-import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
-import { useClientSize } from '@/utils/hooks'
 import ResizeTable from '@/components/ResizeTable';
 import { useParams } from 'umi';
 import _ from 'lodash'
@@ -30,14 +29,14 @@ import SelectDropSync from '@/components/Public/SelectDropSync';
 
 interface MachineParams {
     type: any,
-    page: number,
-    pageSize: number,
+    page_num: number,
+    page_size: number,
     description: string,
     name: string,
     owner: any,
     tags: any,
-    useStateVal: string | undefined,
-    realState: string | undefined
+    state: string | undefined,
+    real_state: string | undefined
 }
 export default (props: any) => {
     const { ws_id }: any = useParams()
@@ -47,14 +46,14 @@ export default (props: any) => {
     const [data, setData] = useState<any>({ data: [] });
     const [params, setParams] = useState<MachineParams>({
         type: '0',
-        page: 1,
-        pageSize: 10,
+        page_num: 1,
+        page_size: 10,
         description: '',
         name: '',
         owner: '',
         tags: '',
-        useStateVal: '',
-        realState: ''
+        state: '',
+        real_state: ''
     })
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -63,25 +62,15 @@ export default (props: any) => {
     const [tableColumns, setTableColumns] = useState<any>([])
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
-    const { height: windowHeight } = useClientSize()
     const viewDetailRef: any = useRef(null)
-
-    const handleIpHerf = async (ip: string) => {
-        const { data, code, msg } = await querySeverLink({ ip })
-        if (code === 200) {
-            const win: any = window.open("");
-            setTimeout(function () { win.location.href = data.link })
-        }
-        requestCodeMessage(code, msg)
-    }
 
     useEffect(() => {
         let columns: any = [
             {
-                title: params.type - 0 === 0 ? '配置名称' : '实例名称',
-                fixed: 'left',
-                width: 140,
+                title: params.type == '0' ? '配置名称' : '实例名称',
                 dataIndex: 'name',
+                width: 140,
+                fixed: 'left',
                 ellipsis: {
                     showTitle: false
                 },
@@ -89,7 +78,7 @@ export default (props: any) => {
                     <SearchInput
                         confirm={confirm}
                         autoFocus={autoFocus}
-                        onConfirm={(val: string) => { setParams({ ...params, page: 1, name: val }) }}
+                        onConfirm={(val: string) => { setParams({ ...params, page_num: 1, name: val }) }}
                     />,
                 onFilterDropdownVisibleChange: (visible: any) => {
                     if (visible) {
@@ -118,7 +107,12 @@ export default (props: any) => {
                 render: (text: any, row: any) => {
                     if(text){
                         return <Tooltip placement="topLeft" title={text}>
-                            <div onClick={()=> handleIpHerf(text)} style={{ color: '#1890ff', cursor: 'pointer' }}>{text}</div>
+                            <div 
+                                onClick={()=> handleIpHerf(text,'云上机器')} 
+                                style={{ color: '#1890ff', cursor: 'pointer' }}
+                            >
+                                {text}
+                            </div>
                         </Tooltip>
                     }
                     return '-'
@@ -142,7 +136,6 @@ export default (props: any) => {
                 },
                 render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
             },
-
             {
                 title: '云厂商/Ak',
                 dataIndex: 'manufacturer',
@@ -231,13 +224,13 @@ export default (props: any) => {
                     showTitle: false
                 },
                 render: StateBadge,
-                filterIcon: () => <FilterFilled style={{ color: params.useStateVal ? '#1890ff' : undefined }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
                     <SelectDropSync
                         confirm={confirm}
                         onConfirm={(val: string) =>
-                            setParams({ ...params, useStateVal: val })}
-                        stateVal={params.useStateVal}
+                            setParams({ ...params, state: val })}
+                        stateVal={params.state}
                         tabType={params.type}
                         dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
                     />
@@ -251,13 +244,13 @@ export default (props: any) => {
                 },
                 dataIndex: 'real_state',
                 render: StateBadge,
-                filterIcon: () => <FilterFilled style={{ color: params.realState ? '#1890ff' : undefined }} />,
+                filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
                     <SelectDropSync
                         confirm={confirm}
                         onConfirm={(val: string) =>
-                            setParams({ ...params, realState: val })}
-                        stateVal={params.realState}
+                            setParams({ ...params, real_state: val })}
+                        stateVal={params.real_state}
                         tabType={params.type}
                         dataArr={['Available', 'Broken']}
                     />
@@ -274,7 +267,7 @@ export default (props: any) => {
                 filterDropdown: ({ confirm }: any) =>
                     <SelectUser
                         confirm={confirm}
-                        onConfirm={(val: number) => { setParams({ ...params, page: 1, owner: val }) }}
+                        onConfirm={(val: number) => { setParams({ ...params, page_num: 1, owner: val }) }}
                     />,
             },
             {
@@ -291,7 +284,7 @@ export default (props: any) => {
                         run_mode={'standalone'}
                         autoFocus={autoFocus}
                         confirm={confirm}
-                        onConfirm={(val: number) => { setParams({ ...params, page: 1, tags: val }) }}
+                        onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }}
                     />,
                 render: (_: any, row: any) => <div>
                     {
@@ -313,7 +306,7 @@ export default (props: any) => {
                     <SearchInput
                         confirm={confirm}
                         autoFocus={autoFocus}
-                        onConfirm={(val: string) => { setParams({ ...params, page: 1, description: val }) }}
+                        onConfirm={(val: string) => { setParams({ ...params, page_num: 1, description: val }) }}
                     />,
                 onFilterDropdownVisibleChange: (visible: any) => {
                     if (visible) {
@@ -376,20 +369,20 @@ export default (props: any) => {
         }, []
     )
     const handlePage = (page_num: number, page_size: any) => {
-        setParams({ ...params, page: page_num, pageSize: page_size })
+        setParams({ ...params, page_num: page_num, page_size: page_size })
     }
     const getList = async () => {
-        const { type, page, pageSize, description, name, owner, tags, useStateVal, realState } = params
+        const { type, page_num, page_size, description, name, owner, tags, state, real_state } = params
         const obj = {
             is_instance: !!(type - 0),
-            page_num: page,
-            page_size: pageSize,
+            page_num,
+            page_size,
             description,
             server_conf: name,
             owner,
             tags,
-            state: useStateVal,
-            real_state: realState
+            state,
+            real_state
         }
         setLoading(true)
         setData({ data: [] })
@@ -439,14 +432,14 @@ export default (props: any) => {
         setParams({
             ...params,
             type: val,
-            page: 1,
-            pageSize: 10,
+            page_num: 1,
+            page_size: 10,
             description: '',
             name: '',
             owner: undefined,
             tags: undefined,
-            useStateVal: '',
-            realState: ''
+            state: '',
+            real_state: ''
         })
     }
     const addMachine = () => {
@@ -463,6 +456,7 @@ export default (props: any) => {
             setParams({ ...params, type: is_instance ? '1' : '0' })
         }
     }
+
     return (
         <div className={styles.warp}>
             <Tabs
@@ -483,8 +477,9 @@ export default (props: any) => {
                 loading={loading}
                 size={'small'}
                 scroll={{
-                    x: tableColumns.reduce((p: any, c: any) => p += c.width, 0),///type - 0 === 0 ? 1910 : 2190,
-                    y: windowHeight - 50 - 66 - 30 - 20
+                    // x: tableColumns.reduce((p: any, c: any) => p += c.width, 0),///type - 0 === 0 ? 1910 : 2190,
+                    // y: windowHeight - 50 - 66 - 30 - 20
+                    x: "100%",
                 }}
                 columns={tableColumns}
                 dataSource={data.data}
@@ -500,7 +495,7 @@ export default (props: any) => {
                     className={data.total == 0 ? styles.hidden : ''}
                     showQuickJumper
                     showSizeChanger
-                    current={params.page}
+                    current={params.page_num}
                     defaultCurrent={1}
                     onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
                     onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}

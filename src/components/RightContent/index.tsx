@@ -60,7 +60,6 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
         setDropVisible(flag);
     };
 
-    console.log(access.canWsAdmin())
     return (
         <Row style={{ width: '100%' }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}

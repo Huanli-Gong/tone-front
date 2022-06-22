@@ -1,7 +1,7 @@
 import { Table, Space, Row, Popover, Tooltip, Typography } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
 import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
-
+import { handleIpHerf } from '@/components/MachineWebLink/index';
 import { contrastBaseline, queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import JoinBaseline from '../components/JoinBaseline'
@@ -19,7 +19,7 @@ import treeSvg from '@/assets/svg/tree.svg'
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 const CaseTable: React.FC<any> = ({
-    suite_id, testType, suite_name, server_provider, creator,
+    suite_id, testType, suite_name, server_provider, provider_name, creator,
     suiteSelect = [], onCaseSelect, state = '', openAllRows = false
 }) => {
     const { id: job_id, ws_id } = useParams() as any
@@ -37,7 +37,6 @@ const CaseTable: React.FC<any> = ({
         () => queryTestResultSuiteConfList({ job_id, suite_id, state }),
         { initialData: [], manual: true }
     )
-
     useEffect(() => {
         run()
         setChildState(state)
@@ -61,6 +60,12 @@ const CaseTable: React.FC<any> = ({
                 ...tooltipTd(),
             },
             {
+                title: '测试类型',
+                dataIndex: 'test_type',
+                width: 100,
+                render: (text: any) => <span>{text || '-'}</span>,
+            },
+            {
                 title: '机器',
                 dataIndex: 'server_ip',
                 width: 130,
@@ -69,8 +74,13 @@ const CaseTable: React.FC<any> = ({
                 },
                 render: (_: string, row: any) => (
                     _ ?
-                        <Tooltip title={_}>
-                            <Typography.Text ellipsis>{_}</Typography.Text>
+                        <Tooltip placement="topLeft" title={_}>
+                            <div 
+                                onClick={()=> handleIpHerf(_,provider_name)} 
+                                style={{ color: '#1890ff', cursor: 'pointer' }}
+                            >
+                                {_}
+                            </div>
                         </Tooltip>
                         : '-'
                 )
@@ -112,11 +122,18 @@ const CaseTable: React.FC<any> = ({
                         )
                 )
             },
-            ['performance', 'business_performance'].includes(testType) &&
+            (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline) &&
             {
                 title: '对比基线',
-                width: 80,
                 dataIndex: 'baseline',
+                width: 80,
+                ...tooltipTd(),
+            },
+            (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline_job_id) &&
+            {
+                title: '基线Job',
+                dataIndex: 'baseline_job_id',
+                width: 80,
                 ...tooltipTd(),
             },
             {
@@ -137,15 +154,15 @@ const CaseTable: React.FC<any> = ({
                 dataIndex: 'note',
                 width: 80,
                 render: (_: any, row: any) => (
-                    <EllipsisEditColumn 
+                    <EllipsisEditColumn
                         title={_}
                         width={80}
                         onEdit={
-                           () => editRemarkDrawer.current.show({
+                            () => editRemarkDrawer.current.show({
                                 ...row,
                                 suite_name: row.suite_name,
                                 editor_obj: 'test_job_conf'
-                            }) 
+                            })
                         }
                     />
                 )
@@ -173,7 +190,7 @@ const CaseTable: React.FC<any> = ({
                 )
             }
         ].filter(Boolean)
-    }, [testType,access,creator])
+    }, [testType, access, creator])
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
@@ -233,7 +250,7 @@ const CaseTable: React.FC<any> = ({
                 }
                 <Table
                     rowKey={'test_case_id'}
-                    columns={columns}
+                    columns={columns as any}
                     loading={loading}
                     showHeader={false}
                     dataSource={data}

@@ -136,7 +136,7 @@ let flag = false
 /**
  * 测试结果列表页
  */
- export const reRunCheckedText = '使用原Job使用的机器'
+export const reRunCheckedText = '使用原Job使用的机器'
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { location: { query } } = props
@@ -487,7 +487,7 @@ export default (props: any) => {
             case 'descend':
                 setDataSource({
                     ...newData,
-                    data: newData?.data.sort(function (a:any, b:any) {
+                    data: newData?.data.sort(function (a: any, b: any) {
                         return a.start_time < b.start_time ? 1 : -1
                     })
                 })
@@ -495,7 +495,7 @@ export default (props: any) => {
             case 'ascend':
                 setDataSource({
                     ...newData,
-                    data: newData?.data.sort(function (a:any, b:any) {
+                    data: newData?.data.sort(function (a: any, b: any) {
                         return a.start_time > b.start_time ? 1 : -1
                     })
                 })
@@ -504,192 +504,197 @@ export default (props: any) => {
                 break;
         }
     }
-    let columns: any = [
-        access.wsRoleContrl() && {
-            title: '',
-            width: 30,
-            align: 'center',
-            fixed: 'left',
-            className: 'collection_star result_job_hover_span',
-            render: (_: any) => (
-                <div onClick={() => handleClickStar(_, !_.collection)}>
-                    {
-                        _.collection ?
-                            <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
-                            <StarOutlined className="no_collection_star" />
-                    }
-                </div>
-            )
-        },
-        {
-            title: 'JobID',
-            dataIndex: 'id',
-            fixed: 'left',
-            width: 80,
-            ellipsis: true,
-            className: 'result_job_hover_span',
-            render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
-        }, {
-            title: 'Job名称',
-            dataIndex: 'name',
-            width: 200,
-            ellipsis: {
-                shwoTitle: false,
-            },
-            className: 'result_job_hover_span',
-            render: (_: any, row: any) => (
-                row.created_from === 'offline' ?
-                    <>
-                        <span className={styles.offline_flag}>离</span>
-                        <Tooltip placement="topLeft" title={_}>
-                            <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
-                                {_}
-                            </span>
-                        </Tooltip>
-                    </>
-                    :
-                    <Tooltip title={_}>
-                        <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
-                            {_}
-                        </span>
-                    </Tooltip>
-            )
-        }, {
-            title: '状态',
-            width: 120,
-            dataIndex: 'state',
-            render: (_: any, row: any) => <JobListStateTag {...row} />
-        }, {
-            title: '测试类型',
-            width: 100,
-            dataIndex: 'test_type',
-            ellipsis: true,
-        }, {
-            title: (
-                <QusetionIconTootip
-                    placement="bottomLeft"
-                    title={'总计/成功/失败'}
-                    desc={
-                        <ul style={{  paddingInlineStart: 'inherit', paddingTop: 15 }}>
-                            <li>功能测试：测试结果中TestConf结果状态统计。</li>
-                            <li>性能测试：执行结果中TestConf执行状态统计。</li>
-                        </ul>
-                    }
-                />
-            ),
-            dataIndex: 'test_result',
-            width: 140,
 
-            render: (_: any) => {
-                const result = JSON.parse(_)
-                if (lodash.isNull(result)) {
-                    return (
-                        <Row>
-                            <Col span={8} style={{ color: "#1890FF" }} >-</Col>
-                            <Col span={8} style={{ color: "#52C41A" }} >-</Col>
-                            <Col span={8} style={{ color: "#FF4D4F" }} >-</Col>
-                        </Row>
-                    )
-                } else {
-                    return (
-                        <Row>
-                            <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
-                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
-                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
-                        </Row>
-                    )
-                }
-            }
-        }, {
-            title: '所属项目',
-            width: 120,
-            dataIndex: 'project_name',
-            ellipsis: {
-                shwoTitle: false,
-            },
-            render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
-                    {_ || '-'}
-                </Tooltip>
-            )
-        }, {
-            title: '创建人',
-            width: 80,
-            ellipsis: {
-                shwoTitle: false,
-            },
-            dataIndex: 'creator_name',
-            render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
-                    {_ || '-'}
-                </Tooltip>
-            )
-        }, {
-            title: '开始时间',
-            width: 180,
-            dataIndex: 'start_time',
-            ellipsis: {
-                shwoTitle: false,
-            },
-            sorter: true,
-            render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
-                    {_ || '-'}
-                </Tooltip>
-            )
-        }, {
-            title: '完成时间',
-            width: 180,
-            ellipsis: {
-                shwoTitle: false,
-            },
-            dataIndex: 'end_time',
-            render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
-                    {_ || '-'}
-                </Tooltip>
-            )
-        },
-        access.wsRoleContrl() &&
-        {
-            title: '操作',
-            width: 160,
-            fixed: 'right',
-            render: (_: any) => {
-                const disableStyle = { color: '#ccc', cursor: 'no-drop' }
-                const commonStyle = { color: '#1890FF', cursor: 'pointer' }
-                return (
-                    <Space>
-                        <Access accessible={access.wsRoleContrl(_.creator)}
-                            fallback={
-                                <Space>
-                                    <Typography.Text style={disableStyle}>重跑</Typography.Text>
-                                    <Typography.Text style={disableStyle}>删除</Typography.Text>
-                                </Space>
+    const columns: any = useMemo(() => {
+        return (
+            [
+                access.wsRoleContrl() && {
+                    title: '',
+                    width: 30,
+                    align: 'center',
+                    fixed: 'left',
+                    className: 'collection_star result_job_hover_span',
+                    render: (_: any) => (
+                        <div onClick={() => handleClickStar(_, !_.collection)}>
+                            {
+                                _.collection ?
+                                    <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
+                                    <StarOutlined className="no_collection_star" />
                             }
-                        >
-                            <Space>
-                                <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
-                                    <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
+                        </div>
+                    )
+                },
+                {
+                    title: 'JobID',
+                    dataIndex: 'id',
+                    fixed: 'left',
+                    width: 80,
+                    ellipsis: true,
+                    className: 'result_job_hover_span',
+                    render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
+                }, {
+                    title: 'Job名称',
+                    dataIndex: 'name',
+                    width: 200,
+                    ellipsis: {
+                        shwoTitle: false,
+                    },
+                    className: 'result_job_hover_span',
+                    render: (_: any, row: any) => (
+                        row.created_from === 'offline' ?
+                            <>
+                                <span className={styles.offline_flag}>离</span>
+                                <Tooltip placement="topLeft" title={_}>
+                                    <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                                        {_}
+                                    </span>
+                                </Tooltip>
+                            </>
+                            :
+                            <Tooltip title={_}>
+                                <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                                    {_}
                                 </span>
-                                <Popconfirm
-                                    title="确定要删除吗？"
-                                    onConfirm={() => handleDelete(_)}
-                                    okText="确认"
-                                    cancelText="取消"
+                            </Tooltip>
+                    )
+                }, {
+                    title: '状态',
+                    width: 120,
+                    dataIndex: 'state',
+                    render: (_: any, row: any) => <JobListStateTag {...row} />
+                }, {
+                    title: '测试类型',
+                    width: 100,
+                    dataIndex: 'test_type',
+                    ellipsis: true,
+                }, {
+                    title: (
+                        <QusetionIconTootip
+                            placement="bottomLeft"
+                            title={'总计/成功/失败'}
+                            desc={
+                                <ul style={{ paddingInlineStart: 'inherit', paddingTop: 15 }}>
+                                    <li>功能测试：测试结果中TestConf结果状态统计。</li>
+                                    <li>性能测试：执行结果中TestConf执行状态统计。</li>
+                                </ul>
+                            }
+                        />
+                    ),
+                    dataIndex: 'test_result',
+                    width: 140,
+                    render: (_: any) => {
+                        const result = JSON.parse(_)
+                        if (lodash.isNull(result)) {
+                            return (
+                                <Row>
+                                    <Col span={8} style={{ color: "#1890FF" }} >-</Col>
+                                    <Col span={8} style={{ color: "#52C41A" }} >-</Col>
+                                    <Col span={8} style={{ color: "#FF4D4F" }} >-</Col>
+                                </Row>
+                            )
+                        } else {
+                            return (
+                                <Row>
+                                    <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
+                                    <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
+                                    <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
+                                </Row>
+                            )
+                        }
+                    }
+                }, {
+                    title: '所属项目',
+                    width: 120,
+                    dataIndex: 'project_name',
+                    ellipsis: {
+                        shwoTitle: false,
+                    },
+                    render: (_: any) => (
+                        <Tooltip title={_ || '-'} placement="topLeft">
+                            {_ || '-'}
+                        </Tooltip>
+                    )
+                }, {
+                    title: '创建人',
+                    width: 80,
+                    ellipsis: {
+                        shwoTitle: false,
+                    },
+                    dataIndex: 'creator_name',
+                    render: (_: any) => (
+                        <Tooltip title={_ || '-'} placement="topLeft">
+                            {_ || '-'}
+                        </Tooltip>
+                    )
+                }, {
+                    title: '开始时间',
+                    width: 180,
+                    dataIndex: 'start_time',
+                    ellipsis: {
+                        shwoTitle: false,
+                    },
+                    sorter: true,
+                    render: (_: any) => (
+                        <Tooltip title={_ || '-'} placement="topLeft">
+                            {_ || '-'}
+                        </Tooltip>
+                    )
+                }, {
+                    title: '完成时间',
+                    width: 180,
+                    ellipsis: {
+                        shwoTitle: false,
+                    },
+                    dataIndex: 'end_time',
+                    render: (_: any) => (
+                        <Tooltip title={_ || '-'} placement="topLeft">
+                            {_ || '-'}
+                        </Tooltip>
+                    )
+                },
+                access.wsRoleContrl() &&
+                {
+                    title: '操作',
+                    width: 160,
+                    fixed: 'right',
+                    render: (_: any) => {
+                        const disableStyle = { color: '#ccc', cursor: 'no-drop' }
+                        const commonStyle = { color: '#1890FF', cursor: 'pointer' }
+                        return (
+                            <Space>
+                                <Access accessible={access.wsRoleContrl(_.creator)}
+                                    fallback={
+                                        <Space>
+                                            <Typography.Text style={disableStyle}>重跑</Typography.Text>
+                                            <Typography.Text style={disableStyle}>删除</Typography.Text>
+                                        </Space>
+                                    }
                                 >
-                                    <Typography.Text style={commonStyle}>
-                                        删除
-                                    </Typography.Text>
-                                </Popconfirm>
+                                    <Space>
+                                        <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
+                                            <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
+                                        </span>
+                                        <Popconfirm
+                                            title="确定要删除吗？"
+                                            onConfirm={() => handleDelete(_)}
+                                            okText="确认"
+                                            cancelText="取消"
+                                        >
+                                            <Typography.Text style={commonStyle}>
+                                                删除
+                                            </Typography.Text>
+                                        </Popconfirm>
+                                    </Space>
+                                </Access>
+                                <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
                             </Space>
-                        </Access>
-                        <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
-                    </Space>
-                )
-            }
-        }
-    ].filter(Boolean)
+                        )
+                    }
+                }
+            ].filter(Boolean)
+        )
+    }, [ws_id])
+
 
     const handleTestReRun = (row: any) => {
         setModalData(row)
@@ -1165,7 +1170,7 @@ export default (props: any) => {
         setSelectRowData(lodash.differenceBy(selectRowData, arr, 'id'))
     }
 
-    const rowSelection = access.wsRoleContrl() ? {
+    const rowSelection: any = access.wsRoleContrl() ? {
         selectedRowKeys,
         onSelect: selectedChange,
         // getCheckboxProps: (record: any) => {
@@ -1479,7 +1484,7 @@ export default (props: any) => {
                                                                     <Button type="primary" onClick={lodash.partial(handleFilter, null)}>过滤</Button>
                                                                     <Button onClick={handleRestFilter}>重置</Button>
                                                                     <span className="test_analysis_copy_link" onClick={hanldeClickShare} style={{ cursor: 'pointer' }}>
-                                                                        <CopyLink style={{ marginRight:3 }}/>
+                                                                        <CopyLink style={{ marginRight: 3 }} />
                                                                         <span>分享</span>
                                                                     </span>
                                                                 </Space>
@@ -1597,7 +1602,8 @@ export default (props: any) => {
                     <div
                         className={styles.bottom_box}
                         style={{
-                            display: radioValue === 2 || selectedRowKeys.length ? 'block' : 'none'
+                            display: radioValue === 2 || selectedRowKeys.length ? 'block' : 'none',
+                            zIndex:99
                         }}
                     >
                         {
@@ -1644,7 +1650,7 @@ export default (props: any) => {
                     <Row style={{ backgroundColor: '#fff', height: 93, paddingLeft: 20 }} align="middle">
                         <Form form={exportModalForm}>
                             <Form.Item valuePropName="checked" name="suite">
-                                <Checkbox onChange={(e: any)=> {
+                                <Checkbox onChange={(e: any) => {
                                     const { checked } = e.target
                                     setReRunChecked(checked)
                                     if (!checked) exportModalForm.setFieldsValue({ inheriting_machine: false })

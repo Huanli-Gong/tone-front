@@ -79,7 +79,7 @@ const TestResultTable: React.FC<any> = (props) => {
             defaultParams: [defaultParams]
         }
     )
-
+    
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
@@ -445,6 +445,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                 ws_id={ws_id}
                                 creator={creator}
                                 server_provider={serverProvider}
+                                provider_name={provider_name}
                                 testType={testType}
                                 job_id={job_id}
                                 openAllRows={indexExpandFlag}

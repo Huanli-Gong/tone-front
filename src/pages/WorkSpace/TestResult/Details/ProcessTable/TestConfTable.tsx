@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Button, Table, message, Tooltip } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
-import PermissionTootip from '@/components/Public/Permission/index';
-import { updateSuiteCaseOption, queryProcessCaseList, querySeverLink } from '../service'
+// import PermissionTootip from '@/components/Public/Permission/index';
+import { handleIpHerf } from '@/components/MachineWebLink/index';
+import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
 import { useAccess, Access, useModel } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
@@ -38,17 +39,6 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         queryTestListTableData()
     }, [pageParams])
 
-    const handleIpHerf = async (ip: string) => {
-        const { data, code, msg } = await querySeverLink({ ip })
-        if (code === 200) {
-            if (provider_name === '云上机器') {
-                const win: any = window.open("");
-                setTimeout(function () { win.location.href = data.link })
-            }
-        }
-        requestCodeMessage(code, msg)
-    }
-
     const columns = [
         {
             dataIndex: 'test_case_name',
@@ -62,7 +52,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             render: (_: any, row: any) => {
                 if(_){
                     return <Tooltip placement="topLeft" title={_}>
-                        <div onClick={()=> handleIpHerf(_)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
+                        <div onClick={()=> handleIpHerf(_,provider_name)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
                     </Tooltip>
                 }
                 return '-'
@@ -121,7 +111,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                         return  <Button type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
                 }
                 // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
-                return <Button type="link" style={{ padding: 0 }}>日志</Button>
+                return <Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button>
             }
         }, {
             title: '操作',

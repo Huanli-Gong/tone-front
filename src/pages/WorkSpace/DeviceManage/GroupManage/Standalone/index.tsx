@@ -18,7 +18,7 @@ import styles from './index.less'
 import { useClientSize } from '@/utils/hooks'
 import ResizeTable from '@/components/ResizeTable';
 import { requestCodeMessage } from '@/utils/utils';
-
+import { handleIpHerf } from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
 
 /**
@@ -206,13 +206,27 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
-                        <span>{_ || '-'}</span>
+                        <Tooltip placement="topLeft" title={_ || '-'}>
+                            <div 
+                                onClick={()=> handleIpHerf(_,'内网机器')} 
+                                style={{ color: '#1890ff', cursor: 'pointer' }}
+                            >
+                                {_ || '-'}
+                            </div>
+                        </Tooltip>
                     )
                 else
                     return (
                         <Row justify="start" align="middle">
                             <TreeSvg style={{ marginRight: 8, height: 40 }} />
-                            <span>{_ || '-'}</span>
+                            <Tooltip placement="topLeft" title={_ || '-'}>
+                                <div 
+                                    onClick={()=> handleIpHerf(_,'内网机器')} 
+                                    style={{ color: '#1890ff', cursor: 'pointer' }}
+                                >
+                                    {_ || '-'}
+                                </div>
+                            </Tooltip>
                         </Row>
                     )
             },
@@ -228,7 +242,18 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (record: any) => <EllipsisPulic title={record} />,
+            render: (_: any) => {
+                return (
+                    <Tooltip placement="topLeft" title={_ || '-'}>
+                        <div 
+                            onClick={()=> handleIpHerf(_,'内网机器')} 
+                            style={{ color: '#1890ff', cursor: 'pointer' }}
+                        >
+                            {_ || '-'}
+                        </div>
+                    </Tooltip>
+                )
+            },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
