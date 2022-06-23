@@ -27,32 +27,20 @@ const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => 
         setShow(clientWidth < scrollWidth)
     }
 
-    // 内网机器IP/SN跳转terminal处理方法 勿删除
-    const getTerminalLink = (link: string) => {
-        const src = "https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&"
-        const ipRgx = /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/
-
-        if (link) {
-            if (ipRgx.test(link)) return src + `ip=${link}`
-            return src + `sn=${link}`
-        }
-        return link
-    }
-
     const handleIpHerf = async () => {
         if (provider === '云上机器') {
-            const { data, code, msg } = await querySeverLink({ val })
+            const { data, code, msg } = await querySeverLink({ ip: val })
             if (code === 200) {
                 const win: any = window.open("");
                 setTimeout(function () { win.location.href = data.link })
             }
             requestCodeMessage(code, msg)
         } else {
-            // return
+            return
             // 内网机器IP/SN跳转terminal处理方法 勿删除
-            const href = getTerminalLink(val)
-            const win: any = window.open("");
-            setTimeout(function () { win.location.href = href })
+            // const href = getTerminalLink(val)
+            // const win: any = window.open("");
+            // setTimeout(function () { win.location.href = href })
         }
     }
     const flag = (BUILD_APP_ENV && provider === '内网机器') || !islink
