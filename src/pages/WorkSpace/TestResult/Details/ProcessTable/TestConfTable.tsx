@@ -3,7 +3,7 @@ import { Button, Table, message, Tooltip } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
-import { handleIpHerf } from '@/components/MachineWebLink/index';
+import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
 import { useAccess, Access, useModel } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
@@ -49,14 +49,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             dataIndex: 'server',
             title: ['business_business'].includes(testType) ? '机器' : '测试机器',
             ellipsis: true,
-            render: (_: any, row: any) => {
-                if(_){
-                    return <Tooltip placement="topLeft" title={_}>
-                        <div onClick={()=> handleIpHerf(_,provider_name)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
-                    </Tooltip>
-                }
-                return '-'
-            }
+            render: (_: any, row: any) => <ServerLink val={_} provider={provider_name} />
         },
         {
             title: '环境准备',

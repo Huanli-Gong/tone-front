@@ -4,7 +4,7 @@ import { Table, Card, message, Tooltip } from 'antd'
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
-import { handleIpHerf } from '@/components/MachineWebLink/index';
+import ServerLink from '@/components/MachineWebLink/index';
 import { queryProcessPrepareList } from '../service'
 import { useRequest } from 'umi'
 import styles from './index.less'
@@ -124,14 +124,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'server',
             title: '测试机器',
-            render: (_: any, row: any) => {
-                if(_){
-                    return <Tooltip placement="topLeft" title={_}>
-                        <div onClick={()=> handleIpHerf(_,provider_name)} style={{ color: '#1890ff', cursor: 'pointer' }}>{_}</div>
-                    </Tooltip>
-                }
-                return '-'
-            }
+            render: (_: any, row: any) => <ServerLink val={_} provider={provider_name} />
         },
         {
             dataIndex: 'stage',

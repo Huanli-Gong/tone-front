@@ -1,31 +1,65 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { requestCodeMessage } from '@/utils/utils'
 import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
+import { Tooltip } from 'antd';
+import styled from 'styled-components';
+interface ServerType {
+    val: string,
+    provider: string,
+    islink?: boolean;
+}
+const TextWarp = styled.div`
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+`
+const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => {
+    const ellipsis = useRef<any>(null)
+    const [show, setShow] = useState<boolean>(false)
 
+    useEffect(() => {
+        setEllipsis();
+    }, [val])
 
-export const handleIpHerf = async (ip: string, type: string) => {
-    if (type === '云上机器') {
-        const { data, code, msg } = await querySeverLink({ ip })
-        if (code === 200) {
-            const win: any = window.open("");
-            setTimeout(function () { win.location.href = data.link })
+    const setEllipsis = () => {
+        const clientWidth = ellipsis?.current?.clientWidth
+        const scrollWidth = ellipsis?.current?.scrollWidth
+        setShow(clientWidth < scrollWidth)
+    }
+
+    const handleIpHerf = async () => {
+        if (provider === '云上机器') {
+            const { data, code, msg } = await querySeverLink({ val })
+            if (code === 200) {
+                const win: any = window.open("");
+                setTimeout(function () { win.location.href = data.link })
+            }
+            requestCodeMessage(code, msg)
+        } else {
+            return
+            // 内网机器IP/SN跳转terminal处理方法 勿删除
+            // const href = getTerminalLink(val)
+            // const win: any = window.open("");
+            // setTimeout(function () { win.location.href = href })
         }
-        requestCodeMessage(code, msg)
-    } else {
-        // return
-        // 内网机器IP/SN跳转terminal处理方法 勿删除
-        const href = getTerminalLink(ip)
-        const win: any = window.open("");
-        setTimeout(function () { win.location.href = href })
     }
-}
-// 内网机器IP/SN跳转terminal处理方法 勿删除
-export const getTerminalLink = (link: string) => {
-    const src = "https://sa.alibaba-inc.com/ops/terminal.html?&source=tone&"
-    const ipRgx = /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/
+    const flag = (BUILD_APP_ENV && provider === '内网机器') || !islink
 
-    if (link) {
-        if (ipRgx.test(link)) return src + `ip=${link}`
-        return src + `sn=${link}`
+    const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
+        : (
+            <TextWarp ref={ellipsis} style={{ color: '#1890ff', cursor: 'pointer' }} onClick={handleIpHerf}>
+                {val || '-'}
+            </TextWarp>
+        )
+
+    if (val) {
+        return (
+            show ?
+                <Tooltip title={val} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                    {TypographyDiv}
+                </Tooltip> : TypographyDiv
+        )
     }
-    return link
+    return <span>-</span>
 }
+export default ServerLink;

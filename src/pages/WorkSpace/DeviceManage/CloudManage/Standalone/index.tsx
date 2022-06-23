@@ -5,7 +5,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
 import Highlighter from 'react-highlight-words';
 import DeployModal from '../../GroupManage/Standalone/Components/DeployModal'
-import { handleIpHerf } from '@/components/MachineWebLink/index';
+import ServerLink from '@/components/MachineWebLink/index';
 import SearchInput from '@/components/Public/SearchInput';
 import SelectUser from '@/components/Public/SelectUser';
 import SelectTags from '@/components/Public/SelectTags';
@@ -104,19 +104,7 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: (text: any, row: any) => {
-                    if(text){
-                        return <Tooltip placement="topLeft" title={text}>
-                            <div 
-                                onClick={()=> handleIpHerf(text,'云上机器')} 
-                                style={{ color: '#1890ff', cursor: 'pointer' }}
-                            >
-                                {text}
-                            </div>
-                        </Tooltip>
-                    }
-                    return '-'
-                }
+                render: (text: any, row: any) => <ServerLink val={text} provider={'云上机器'} />
             },
             {
                 title: 'SN',

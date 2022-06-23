@@ -1,7 +1,7 @@
 import { Table, Space, Row, Popover, Tooltip, Typography } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
 import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
-import { handleIpHerf } from '@/components/MachineWebLink/index';
+import ServerLink from '@/components/MachineWebLink/index';
 import { contrastBaseline, queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import JoinBaseline from '../components/JoinBaseline'
@@ -72,18 +72,7 @@ const CaseTable: React.FC<any> = ({
                 ellipsis: {
                     showHeader: false,
                 },
-                render: (_: string, row: any) => (
-                    _ ?
-                        <Tooltip placement="topLeft" title={_}>
-                            <div 
-                                onClick={()=> handleIpHerf(_,provider_name)} 
-                                style={{ color: '#1890ff', cursor: 'pointer' }}
-                            >
-                                {_}
-                            </div>
-                        </Tooltip>
-                        : '-'
-                )
+                render: (_: string, row: any) => <ServerLink val={_} provider={provider_name} />
             },
             ['functional', 'business_functional', 'business_business'].includes(testType) &&
             {

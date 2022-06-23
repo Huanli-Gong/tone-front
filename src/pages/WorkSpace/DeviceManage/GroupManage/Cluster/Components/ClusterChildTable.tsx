@@ -12,6 +12,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage } from '@/utils/utils';
+import ServerLink from '@/components/MachineWebLink/index';
 import treeSvg from '@/assets/svg/tree.svg'
 // const treeSvg = require('@/assets/svg/tree.svg')
 
@@ -97,9 +98,7 @@ export default (props: any) => {
             title: 'IP',
             width: 170,
             fixed: 'left',//TreeIcon
-            render: (record: any) => (
-                <span>{record.test_server.ip || '-'}</span>
-            )
+            render: (record: any) => <ServerLink val={record.test_server.ip} provider={'内网机器'} />
         },
         {
             title: 'SN',
@@ -107,7 +106,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (record: any) => <EllipsisPulic title={record.test_server.sn} color={'#1890ff'} />
+            render: (record: any) => <ServerLink val={record.test_server.sn} provider={'内网机器'} />
         },
         !BUILD_APP_ENV && {
             title: '机器名称',
