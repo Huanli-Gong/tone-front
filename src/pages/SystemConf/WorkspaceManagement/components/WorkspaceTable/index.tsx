@@ -149,8 +149,12 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                                 disabled={row.is_common}
                                 checked={row.is_common || row.is_show}
                                 onClick={() => {
-                                    if (showNum >= 9 && idx > 8) {
-                                        message.error('最多配置9个推荐Workspace')
+                                    if (showNum >= 9) {
+                                        if(page === 1 && idx <= 8){
+                                            onTopChange(row)
+                                        }else{
+                                            message.error('最多配置9个推荐Workspace')
+                                        }
                                     } else {
                                         onTopChange(row)
                                     }
@@ -167,7 +171,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     }
                 }].filter(Boolean)
         )
-    }, [showNum])
+    }, [data,showNum])
 
 
 
