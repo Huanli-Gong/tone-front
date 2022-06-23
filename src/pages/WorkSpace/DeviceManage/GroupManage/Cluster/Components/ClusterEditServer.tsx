@@ -33,7 +33,7 @@ const EditServerDrawer = (props: any, ref: any) => {
         form.resetFields()
     }
 
-    const onSubmit1 = () => {
+    const onSubmit = () => {
         setPadding(true)
         form
             .validateFields()
@@ -70,7 +70,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                 <div style={{ textAlign: 'right' }} >
                     <Space>
                         <Button onClick={hanldeClose}>取消</Button>
-                        <Button type="primary" disabled={padding} onClick={onSubmit1}>更新</Button>
+                        <Button type="primary" disabled={padding} onClick={onSubmit}>更新</Button>
                     </Space>
                 </div>
             }
