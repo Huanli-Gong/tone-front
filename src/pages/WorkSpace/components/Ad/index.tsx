@@ -70,10 +70,6 @@ const AdCarouseItem = styled.div`
         width: 100%;
         height: 100%;
     }
-
-    h1 {
-        margin-bottom: 30px!important;
-    }
 `
 const CloseOutlie = styled.div`
     position: absolute;
