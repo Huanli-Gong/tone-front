@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { UserTable } from './data.d';
 import { Table, Pagination, Spin } from 'antd';
 import styles from './style.less';
-
+import ResizeTable from '@/components/ResizeTable'
 const CommonTable: React.FC<UserTable> = ({
     list, columns,
     loading,
@@ -35,7 +35,7 @@ const CommonTable: React.FC<UserTable> = ({
     return (
         <Spin spinning={loading}>
             <div ref={table}></div>
-            <Table
+            <ResizeTable
                 size={"small"}
                 columns={columns}
                 className={`${styles.table_empty} ${className}`}

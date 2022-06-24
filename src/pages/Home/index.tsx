@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styles from './index.less'
 import { history, useModel, Access, useAccess } from 'umi'
-import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Carousel, Tabs, Input, Tooltip } from 'antd'
+import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Carousel, Tabs, Input, Tooltip, Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
-import JoinPopover from './Component/JoinPopover'
+// import JoinPopover from './Component/JoinPopover'
 import { enterWorkspaceHistroy, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
 import { ReactComponent as HomeBackground } from '@/assets/svg/home/home_background.svg';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
@@ -15,7 +15,7 @@ import HomePush from './Component/HomePush'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
-import { requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -44,7 +44,7 @@ const EllipsisRect = (props: any): JSX.Element => {
         <span className={styles.ws_description} id='wsdescription' ref={ellipsis}>
             {show ?
                 <Tooltip title={text} overlayStyle={{ wordBreak: 'break-all' }}>
-                    <Paragraph ellipsis={{ rows: 2 }}>{text}</Paragraph>
+                    <Paragraph ellipsis={{ rows: 1 }}>{text}</Paragraph>
                 </Tooltip > :
                 text
             }
@@ -55,9 +55,9 @@ const EllipsisRect = (props: any): JSX.Element => {
 const avatarStyle = {
     borderRadius: 6,
     fontSize: 40,
-    width: 80,
-    height: 80,
-    lineHeight: '80px',
+    width: 72,
+    height: 72,
+    lineHeight: '72px',
     display: 'inline-block',
     marginRight: 10
 }
@@ -159,7 +159,8 @@ export default (): React.ReactNode => {
         if (code === 200) {
             const path = first_entry && record.creator === user_id ?
                 `/ws/${record.id}/workspace/initSuccess` :
-                `/ws/${record.id}/dashboard`
+                jumpWorkspace(record.id)
+            // `/ws/${record.id}/dashboard`
             return path
         }
         else requestCodeMessage(code, msg)
@@ -168,11 +169,12 @@ export default (): React.ReactNode => {
     }
 
     const enterWorkspace = async (record: any) => {
-        if (!user_id && !record.is_public){
-            if(BUILD_APP_ENV === 'openanolis'){
+        if (!user_id && !record.is_public) {
+            if (BUILD_APP_ENV === 'openanolis') {
                 return location.replace(login_url)
             }
-            return history.push(`/login?redirect_url=/ws/${record.id}/dashboard`)
+            // /ws/${record.id}/dashboard
+            return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }
 
         if (access.canSuperAdmin() || record.is_public || record.is_member) {
@@ -258,19 +260,19 @@ export default (): React.ReactNode => {
         })
     }, [helps])
 
-    const myWsGroup = useMemo(() => {
-        let list: any = []
+    // const myWsGroup = useMemo(() => {
+    //     let list: any = []
 
-        topWs.forEach((obj, index) => {
-            const num = Math.floor(index / 6)
-            const remain = index % 6
-            if (index % 6 === 0) list[num] = []
-            list[num][remain] = obj
-        })
+    //     topWs.forEach((obj, index) => {
+    //         const num = Math.floor(index / 6)
+    //         const remain = index % 6
+    //         if (index % 6 === 0) list[num] = []
+    //         list[num][remain] = obj
+    //     })
 
-        return list
-    }, [topWs])
-
+    //     return list
+    // }, [topWs])
+    
     return (
         <Layout className={styles.content}>
             <HomePush ref={homePushRef} />
@@ -299,40 +301,37 @@ export default (): React.ReactNode => {
 
                         </Row>
                         {/* <Row style={{ padding: '5px 4px 5px 20px',position: 'relative' }}> */}
-                        <Row className={styles.ws_row} style={{ paddingBottom: myWsGroup.length > 1 ? 10 : 5 }}>
-                            <Carousel>
-                                {
-                                    myWsGroup.map((arr: any, number: any) => {
-                                        return (
-                                            <div className={styles.ws_group} key={number}>
-                                                {arr.map(
-                                                    (item: any, index: number) => (
-                                                        <div
-                                                            className={styles.workspace}
-                                                            key={index}
-                                                            style={{ marginRight: (index + 1) % 3 ? 16 : 0, }}
-                                                            onClick={() => enterWorkspace(item)}
-                                                        >
-                                                            <Row style={{ width: '100%', height: '100%' }}>
-                                                                <Col span={24} style={{ alignItems: 'flex-start', display: 'flex', height: 48, marginBottom: 8 }}>
-                                                                    <AvatarCover size={'middle'} style={avatarStyle} {...item} />
-                                                                    <div className={styles.right_part}>
-                                                                        <b className={styles.ws_name}>{item.show_name}</b>
-                                                                        <Space>
-                                                                            <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
-                                                                        </Space>
-                                                                        <EllipsisRect text={item.description} wsPublic={wsPublic} />
-                                                                    </div>
-                                                                </Col>
-                                                            </Row>
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </Carousel>
+                        <Row className={styles.ws_row} style={{ paddingBottom: topWs.length > 1 ? 10 : 5 }}>
+                            {
+                                 <div className={styles.ws_group} >
+                                     {
+                                         topWs.map((item: any, number: any) => {
+                                            return (
+                                                <div
+                                                    className={styles.workspace}
+                                                    key={number}
+                                                    style={{ marginRight: (number + 1) % 3 ? 16 : 0, }}
+                                                    onClick={() => enterWorkspace(item)}
+                                                >
+                                                    <Row style={{ width: '100%', height: '100%' }}>
+                                                        <Col span={24} style={{ alignItems: 'flex-start', display: 'flex', height: 48, marginBottom: 8 }}>
+                                                            <AvatarCover size={'middle'} style={avatarStyle} {...item} />
+                                                            <div className={styles.right_part}>
+                                                                <b className={styles.ws_name}>{item.show_name}</b>
+                                                                <Space size={3}>
+                                                                    <Avatar size={16} src={item.avatar}></Avatar>
+                                                                    <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
+                                                                </Space>
+                                                                <EllipsisRect text={item.description} wsPublic={wsPublic} />
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            )
+                                        })
+                                     }
+                                 </div>
+                            }
                         </Row>
                     </Layout.Content>
                     <Layout.Content className={styles.banner}>

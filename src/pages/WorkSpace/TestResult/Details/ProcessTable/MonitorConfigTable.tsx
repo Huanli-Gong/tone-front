@@ -5,7 +5,7 @@ import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
 import { useRequest } from 'umi';
-
+import ResizeTable from '@/components/ResizeTable'
 export default ({ job_id , refresh = false } : any ) => {
     const { data , loading , run } = useRequest(
         () => queryMonitorList({ job_id }),
@@ -28,6 +28,9 @@ export default ({ job_id , refresh = false } : any ) => {
         {
             dataIndex: 'server',
             title: `IP${!BUILD_APP_ENV ? "/SN" : ""}`,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: number | string | undefined) => (
                 _ ?
                     <PopoverEllipsis title={_}>
@@ -69,6 +72,9 @@ export default ({ job_id , refresh = false } : any ) => {
         {
             dataIndex: 'gmt_created',
             title : '开始时间',
+            ellipsis: {
+                showTitle: false
+            },
             render : ( _ : any ) => <PopoverEllipsis title={_ || '-'} />
         },
     ]
@@ -86,9 +92,9 @@ export default ({ job_id , refresh = false } : any ) => {
             headStyle={{ borderBottom : 'none' }}
             style={{ marginBottom : 10 , borderTop : 'none' }}
         >
-            <Table
+            <ResizeTable
                 dataSource={ dataCopy }
-                columns={ columns }
+                columns={ columns as any }
                 rowKey="id"
                 loading={ loading }
                 size="small"

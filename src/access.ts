@@ -28,7 +28,7 @@ export default function (initialState: any) {
         loginBtn: () => anolisSys.includes(sys_role_title),
         hiddenRoute: () => false, // 隐藏申请审批
         wsOwnerFilter: () => ['ws_owner'].includes(ws_role_title),
-        wsTouristFilter: () => !['ws_tourist', ''].includes(ws_role_title),
+        wsTouristFilter: () => !['ws_tourist', ''].includes(ws_role_title) || !['sys_tourist', ''].includes(sys_role_title),
         // ws配置页面权限
         wsBasicContrl: () => {
             if(BUILD_APP_ENV){

@@ -2,7 +2,7 @@ import React from 'react';
 import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layout';
 
 import { notification, ConfigProvider } from 'antd';
-import { history, RequestConfig } from 'umi';
+import { history, RequestConfig, useModel } from 'umi';
 import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
@@ -112,8 +112,14 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
     if (response) {
         const { status, statusText, url } = response
         if (status >= 500) {
-            // notification.error({ message: '系统异常，请联系系统管理员' });
             history.push(`/500`)
+        }
+        else if (status === 401) {
+            const { pathname } = location
+            const matchArr = pathname.match(wsReg)
+            const ws_id = matchArr ? matchArr[1] : undefined
+            history.push({ pathname: "/401", state: ws_id })
+            return
         }
         else {
             const errorText = codeMessage[status] || statusText;

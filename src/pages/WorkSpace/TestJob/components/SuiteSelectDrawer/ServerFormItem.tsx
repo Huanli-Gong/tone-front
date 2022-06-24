@@ -19,6 +19,7 @@ export default memo(
         const handleServerTypeChange = useCallback(
             ({ target }) => {
                 setServerType(target.value)
+                setServerList([])
             },
             [],
         )

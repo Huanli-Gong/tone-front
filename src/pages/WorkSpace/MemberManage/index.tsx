@@ -144,7 +144,7 @@ export default (props: any) => {
         // { name: `测试管理员 ${memberCounts.ws_test_admin}`, role: 'ws_test_admin' },
         { name: `测试管理员 ${memberCounts?.ws_tester_admin}`, role: 'ws_tester_admin' },
         { name: `测试人员 ${memberCounts.ws_tester || 0}`, role: 'ws_tester' },
-        { name: `workspace成员 ${memberCounts.ws_member}`, role: 'ws_member' }
+        { name: `Workspace成员 ${memberCounts.ws_member}`, role: 'ws_member' }
     ]
 
     const getMemberCounts = async () => {

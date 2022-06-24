@@ -8,7 +8,7 @@ import { queryProcessPrepareList } from '../service'
 import { useRequest } from 'umi'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
-
+import ResizeTable from '@/components/ResizeTable'
 //测试准备 ==== Table
 export default ({ job_id, refresh = false }: any) => {
     // 表格展开的行
@@ -129,21 +129,33 @@ export default ({ job_id, refresh = false }: any) => {
         {
             dataIndex: 'mode',
             title: '运行模式',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => _ || '-'
         },
         {
             dataIndex: 'server',
             title: '测试机器',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any, row: any) => ipShow(_)
         },
         {
             dataIndex: 'stage',
             title: '步骤',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => _ || '-'
         },
         {
             dataIndex: 'state',
             title: '状态',
+            ellipsis: {
+                showTitle: false
+            },
             render: evnPrepareState
         },
         {
@@ -189,7 +201,7 @@ export default ({ job_id, refresh = false }: any) => {
             headStyle={{ borderBottom: 'none', borderTop: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
-            <Table
+            <ResizeTable
                 dataSource={data}
                 columns={columns}
                 rowKey="rowKey"
@@ -228,7 +240,7 @@ export default ({ job_id, refresh = false }: any) => {
                         }
                         if (record.hasChildren) {
                             return (
-                                <Table
+                                <ResizeTable
                                     dataSource={record.items}
                                     columns={columns}
                                     rowKey="rowKey"

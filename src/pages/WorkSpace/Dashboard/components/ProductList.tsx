@@ -84,6 +84,14 @@ const ProductList: React.FC<IProps<DateType>> = ({ product_list = [], setTime, t
                     <DatePicker allowClear={false} value={moment.isMoment(time) ? time : undefined} onChange={onChange} />
                 </Space>
             </Row>
+            {
+                product_list.length === 0 &&
+                (
+                    <Row style={{ background: "#fff", height: innerHeight - (50 + 96 + 32 + 20 * 4.5), marginTop: 20 }} align="middle" justify="center">
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    </Row>
+                )
+            }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 8 }}>
                 {
                     product_list.map((l: any) => (

@@ -518,7 +518,6 @@ const TestJob: React.FC<any> = (props) => {
         if (fetching) return
         setFetching(true)
         let data = await transformDate()
-        console.log('data', data)
         if (isMonitorEmpty(data)) {
             setFetching(false)
             return message.warning('监控机器不能为空')
@@ -530,6 +529,9 @@ const TestJob: React.FC<any> = (props) => {
         }
         if (!data.baseline) {
             data.baseline = null
+        }
+        if (!data.baseline_job_id) {
+            data.baseline_job_id = null
         }
         if (!data.cleanup_info) {
             data.cleanup_info = ""
@@ -571,6 +573,9 @@ const TestJob: React.FC<any> = (props) => {
         if (!data.test_config) {
             setFetching(false)
             return message.warning('用例不能为空')
+        }
+        if (!data.baseline) {
+            data.baseline = null
         }
         const test_config = handleServerChannel(data.test_config)
         const { code, msg } = await updateTestTemplate({

@@ -15,6 +15,7 @@ const QuestionCircleComponent: React.FC<any> = ({ contextNode,placement='top' })
 			placement={placement}
 			overlayStyle={{zIndex: 10000}}
 			content={contextNode}
+			color="#fff"
 		>
 			<QuestionCircleOutlinedStyle />
 		</Popover>

@@ -59,6 +59,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
+
     return (
         <Row style={{ width: '100%', position: "relative" }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
@@ -107,10 +108,10 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                     {
                         msgNum?.apply_msg_unread_num === 0 ?
                             <Badge dot={msgNum?.task_msg_state} style={{ cursor: 'pointer' }}>
-                                <MessageIcon style={{ marginLeft: 20 }} />
+                                <MessageIcon />
                             </Badge> :
                             <Badge className={styles.badge_item} count={msgNum?.apply_msg_unread_num} style={{ cursor: 'pointer' }} overflowCount={99}>
-                                <MessageIcon style={{ marginLeft: 20 }} />
+                                <MessageIcon />
                             </Badge>
                     }
                 </Dropdown>
@@ -124,13 +125,14 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
+                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
                                     <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
                                 </Space> :
                                 <Space>
                                     <Button
                                         type="text"
                                         style={{ color: '#fff', fontWeight: 500 }}
+                                        size="small"
                                         onClick={() => history.push(`/login?redirect_url=${window.location.href.replace(window.location.origin, '')}`)}
                                     >
                                         登录

@@ -218,7 +218,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                                         {
                                                             testServerList.map(
                                                                 (item: any) => (
-                                                                    <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
+                                                                    <Select.Option key={item.id} value={item.ip || item.sn}>{item.ip || item.sn}</Select.Option>
                                                                 )
                                                             )
                                                         }

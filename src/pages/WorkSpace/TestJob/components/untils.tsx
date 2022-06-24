@@ -26,6 +26,7 @@ export const QusetionIconTootip: React.FC<any> = ({ title, desc, className }: an
             placement="bottom"
             arrowPointAtCenter
             title={desc}
+            color="#fff"
         >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)' }} />
         </Tooltip>
