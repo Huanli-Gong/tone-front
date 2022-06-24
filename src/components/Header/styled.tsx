@@ -8,6 +8,7 @@ export const HeaderContainer = styled(Row)`
     line-height:50px;
     padding:0 18px;
     flex-flow: row nowrap;
+    position: relative;
 `
 export const LogoWrapper = styled(Row)`
     cursor:pointer;
@@ -20,6 +21,7 @@ export const LogoWrapper = styled(Row)`
 
 export const WorkspaceTitle = styled(Row)`
     color : #fff;
+    position: relative;
 `
 
 export const LeftWrapper = styled(Row)`

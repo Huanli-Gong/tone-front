@@ -4,6 +4,7 @@ import styles from './index.less'
 import { FormattedMessage, history, useIntl, useModel, useParams } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
+import AdCompoent from './components/Ad'
 
 const { document }: any = window
 
@@ -107,6 +108,7 @@ const WorkspaceLayout = (props: any) => {
         return (
             <div key={timeStampKey} style={{ minHeight: windowHeight - 50, background: "#fff" }}>
                 {props.children}
+                <AdCompoent />
             </div>
         )
     return (
@@ -160,6 +162,7 @@ const WorkspaceLayout = (props: any) => {
                     {props.children}
                 </div>
             </Layout.Content>
+            <AdCompoent />
         </Layout>
     )
 }

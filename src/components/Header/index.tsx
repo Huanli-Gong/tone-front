@@ -12,10 +12,20 @@ import SwithRouteIcon from './components/SwithIcon'
 import { HeaderContainer, LogoWrapper, WorkspaceTitle, HeaderCls } from './styled'
 import logoPng from '@/assets/img/logo.png'
 import { useSize } from 'ahooks'
+import pageAdShow from "@/assets/img/header_page_show_ad.png"
+import styled from 'styled-components'
+
+const AdShowBtn = styled.div`
+    background: url(${pageAdShow}) no-repeat right center/100% 100%;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+`
 
 export default (props: any) => {
-    const pms = useParams() as any
-    
     const { initialState, setInitialState } = useModel('@@initialState')
     const { pathname } = location
     const access = useAccess()
@@ -29,6 +39,10 @@ export default (props: any) => {
 
     const leftRef = useRef(null) as any
     const left = useSize(leftRef)
+
+    const openAd = () => {
+        setInitialState(p => ({ ...p, wsAdShow: wsId }))
+    }
 
     const { data: types, run } = useRequest(
         () => queryJobTypeList({ ws_id: wsId, enable: 'True' }),
@@ -277,6 +291,11 @@ export default (props: any) => {
             <div ref={leftRef}>
                 <RightContent wsId={wsId} isWs={isWs} />
             </div>
+
+            {
+                initialState.hasAdWs?.includes(wsId) &&
+                <AdShowBtn onClick={openAd} />
+            }
         </HeaderContainer >
     )
 }

@@ -61,7 +61,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     };
 
     return (
-        <Row style={{ width: '100%' }} align="middle" justify="end" className={styles.header_warp}>
+        <Row style={{ width: '100%', position: "relative" }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
             {
                 isWs &&
