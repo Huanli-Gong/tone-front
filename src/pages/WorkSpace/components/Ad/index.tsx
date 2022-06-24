@@ -8,8 +8,8 @@ import { useParams, history, useModel } from "umi";
 
 const wrapperWidth = `
     // width: 85%;
-    width: 1200px;
-    height: 700px;
+    width: 850px;
+    height: 470px;
 `
 
 const AdContainer = styled.div`
