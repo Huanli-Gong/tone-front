@@ -21,9 +21,8 @@ const EditServerDrawer = (props: any, ref: any) => {
             setVisible(true)
             if (_) {
                 setSource(_)
-                let params = _
-                params = Object.assign(_.test_server, params)
-                form.setFieldsValue(params)
+                const { ip, private_ip } = _.test_server
+                form.setFieldsValue({ ..._, ip, private_ip })
             }
         }
     }))
@@ -78,7 +77,6 @@ const EditServerDrawer = (props: any, ref: any) => {
         >
             <Form
                 layout="vertical"
-                /*hideRequiredMark*/
                 form={form}
             >
                 <Form.Item name="ip" label="机器">

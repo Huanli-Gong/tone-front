@@ -11,6 +11,7 @@ import styles from './compareBar.less'
 import _ from 'lodash'
 import { requestCodeMessage, matchRoleEnum } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
+import ResizeTable from '@/components/ResizeTable'
 const OptionButton = styled.span`
     color:#1890FF;
     cursor:pointer;
@@ -78,6 +79,9 @@ const ViewTable = (props: ViewTableProps) => {
         {
             dataIndex: 'name',
             title: '计划名称',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: string, record: any) => (
                 <span
                     style={{ cursor: 'pointer' }}
@@ -140,6 +144,9 @@ const ViewTable = (props: ViewTableProps) => {
         {
             title: '操作',
             width: 150,
+            ellipsis: {
+                showTitle: false
+            },
             className: 'option',
             render(row: any) {
                 return (
@@ -218,7 +225,7 @@ const ViewTable = (props: ViewTableProps) => {
     return (
         <div ref={containerRef} className={styles.list_container}>
             <Spin spinning={loading}>
-                <Table
+                <ResizeTable
                     className={styles.ViewTableStyle}
                     columns={resultColumns}
                     dataSource={data.data}

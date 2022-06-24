@@ -9,7 +9,7 @@ import _ from 'lodash';
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
 import { useRequest,useAccess,Access, useModel } from 'umi';
 import { requestCodeMessage } from '@/utils/utils';
-
+import ResizeTable from '@/components/ResizeTable'
 export default ({ job_id, refresh = false, testType, provider_name }: any) => {
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
@@ -31,6 +31,9 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
         {
             dataIndex: 'test_suite_name',
             title: 'Test Suite',
+            ellipsis: {
+                showTitle: false
+            },
         }
     ];
     if (['business_business'].includes(testType)) {
@@ -38,6 +41,9 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
             title: '业务名称',
             dataIndex: 'business_name',
             width: 160,
+            ellipsis: {
+                showTitle: false
+            },
             render: (text: any) => <PopoverEllipsis title={text} />,
         }])
     }
@@ -45,6 +51,9 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
     columns = columns.concat([
         {
             title: '环境准备',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => {
                 return (
                     <ConfPopoverTable
@@ -62,12 +71,21 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
         {
             dataIndex: 'start_time',
             title: '开始时间',
+            ellipsis: {
+                showTitle: false
+            },
         },
         {
             dataIndex: 'end_time',
             title: '结束时间',
+            ellipsis: {
+                showTitle: false
+            },
         }, {
             title: '操作',
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => {
                 const state = _.state
                 const style = {
@@ -165,7 +183,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                     <Button onClick={() => setExpandedKeys(data.map((item: any) => item.id))}>全部展开</Button>
             }
         >
-            <Table
+            <ResizeTable
                 dataSource={data}
                 columns={columns}
                 rowKey="id"

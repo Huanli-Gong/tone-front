@@ -17,7 +17,7 @@ import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
 import { requestCodeMessage } from '@/utils/utils';
-
+import ResizeTable from '@/components/ResizeTable'
 const funcStates = [
     { key: 'count', name: '全部', value: '', color: '#649FF6' },
     { key: 'success', name: '通过', value: 'success', color: '#81BF84' },
@@ -94,6 +94,9 @@ const TestResultTable: React.FC<any> = (props) => {
             title: '测试类型',
             dataIndex: 'test_type',
             width: 100,
+            ellipsis: {
+                showTitle: false
+            },
             render: (text: any) => <span>{text || '-'}</span>,
         },
         ['business_functional', 'business_performance', 'business_business'].includes(testType) &&
@@ -101,6 +104,9 @@ const TestResultTable: React.FC<any> = (props) => {
             title: '业务名称',
             dataIndex: 'business_name',
             width: 160,
+            ellipsis: {
+                showTitle: false
+            },
             render: (text: any) => <PopoverEllipsis title={text} />,
         },
         {
@@ -184,6 +190,9 @@ const TestResultTable: React.FC<any> = (props) => {
             title: '备注',
             dataIndex: 'note',
             width: 80,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any, row: any) => (
                 <EllipsisEditColumn
                     title={_}
@@ -198,6 +207,9 @@ const TestResultTable: React.FC<any> = (props) => {
         {
             title: '操作',
             width: 145,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => (
                 <Access
                     accessible={access.wsRoleContrl(creator)}
@@ -406,7 +418,7 @@ const TestResultTable: React.FC<any> = (props) => {
                         }
                     </Space>
                 </Row>
-                <Table
+                <ResizeTable
                     columns={columns as any}
                     rowKey="suite_id"
                     dataSource={dataSource}

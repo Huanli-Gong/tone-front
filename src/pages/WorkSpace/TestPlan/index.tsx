@@ -10,7 +10,7 @@ import PlanSettingDrawer from './components/PlanSettingDrawer'
 import { queryPlanManageList, deleteTestPlan, copyTestPlan } from './services'
 import { getUserFilter, getSearchFilter, getRadioFilter } from '@/components/TableFilters'
 import { requestCodeMessage } from '@/utils/utils'
-
+import ResizeTable from '@/components/ResizeTable'
 interface OptionBtnProp {
     disabled?: boolean
 }
@@ -78,6 +78,9 @@ const TestPlanManage = (props: any) => {
     const columns = [{
         dataIndex: 'name',
         title: '计划名称',
+        ellipsis: {
+            showTitle: false
+        },
         ...getSearchFilter(pageParams, setPageParams, 'name')
     }, {
         dataIndex: 'cron_info',
@@ -106,9 +109,15 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'gmt_created',
         title: '创建时间',
+        ellipsis: {
+            showTitle: false
+        },
         width: 170,
     }, {
         title: '操作',
+        ellipsis: {
+            showTitle: false
+        },
         width: 220,
         render: (row: any) => (
             <Space>
@@ -147,7 +156,7 @@ const TestPlanManage = (props: any) => {
                     >
                         <Tabs.TabPane key={'list'} tab={<FormattedMessage id={`Workspace.TestPlan.${route.name}`} />} >
                             <div style={{ paddingLeft: 20, paddingRight: 20 }}>
-                                <Table
+                                <ResizeTable
                                     columns={columns}
                                     dataSource={data.data}
                                     size={'small'}
