@@ -7,10 +7,11 @@
         -moz-appearance: textfield;
     }
 }
-body{
+.selectCascader{
     :global {
-        .ant-cascader-menus > div > .ant-cascader-menu{
-            max-width: 370px;
+        div > .ant-cascader-menus > .ant-cascader-menu > .ant-cascader-menu-item > .ant-cascader-menu-item-content {
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
 }

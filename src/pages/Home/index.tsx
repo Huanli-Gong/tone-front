@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styles from './index.less'
 import { history, useModel, Access, useAccess } from 'umi'
-import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Carousel, Tabs, Input, Tooltip, Avatar } from 'antd'
+import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Spin, Tabs, Input, Tooltip, Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 // import JoinPopover from './Component/JoinPopover'
 import { enterWorkspaceHistroy, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
@@ -74,6 +74,7 @@ export default (): React.ReactNode => {
     const [wsData, setWsData]: Array<any> = useState([])
     const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
     const [loading, setLoading] = useState(true)
+    const [wsLoading, setWsLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
     const { user_id, ws_role_title, login_url } = initialState?.authList || {}
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
@@ -103,8 +104,12 @@ export default (): React.ReactNode => {
     }
 
     const queryWsTopList = async () => {
+        setWsLoading(true)
         const { data, code } = await queryWorkspaceTopList()
-        if (code === 200) setTopWs(data)
+        if (code === 200) {
+            setWsLoading(false)
+            setTopWs(data)
+        }
     }
     const handleTabChange = (key: string) => {
         const { keyword } = wsParmas
@@ -272,7 +277,7 @@ export default (): React.ReactNode => {
 
     //     return list
     // }, [topWs])
-    
+
     return (
         <Layout className={styles.content}>
             <HomePush ref={homePushRef} />
@@ -294,45 +299,45 @@ export default (): React.ReactNode => {
             </div>
             <Row gutter={20} justify="space-between" style={{ marginLeft: 0, marginRight: 0 }}>
                 <div style={{ display: 'inline-block', width: 'calc(100% - 356px)' }} id='bannerLayout'>
-
                     <Layout.Content className={styles.banner}>
                         <Row className={styles.title} style={{ padding: '0 20px' }} align="middle" justify="space-between">
                             <Typography.Text>推荐Workspace</Typography.Text>
-
                         </Row>
                         {/* <Row style={{ padding: '5px 4px 5px 20px',position: 'relative' }}> */}
-                        <Row className={styles.ws_row} style={{ paddingBottom: topWs.length > 1 ? 10 : 5 }}>
-                            {
-                                 <div className={styles.ws_group} >
-                                     {
-                                         topWs.map((item: any, number: any) => {
-                                            return (
-                                                <div
-                                                    className={styles.workspace}
-                                                    key={number}
-                                                    style={{ marginRight: (number + 1) % 3 ? 16 : 0, }}
-                                                    onClick={() => enterWorkspace(item)}
-                                                >
-                                                    <Row style={{ width: '100%', height: '100%' }}>
-                                                        <Col span={24} style={{ alignItems: 'flex-start', display: 'flex', height: 48, marginBottom: 8 }}>
-                                                            <AvatarCover size={'middle'} style={avatarStyle} {...item} />
-                                                            <div className={styles.right_part}>
-                                                                <b className={styles.ws_name}>{item.show_name}</b>
-                                                                <Space size={3}>
-                                                                    <Avatar size={16} src={item.avatar}></Avatar>
-                                                                    <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
-                                                                </Space>
-                                                                <EllipsisRect text={item.description} wsPublic={wsPublic} />
-                                                            </div>
-                                                        </Col>
-                                                    </Row>
-                                                </div>
-                                            )
-                                        })
-                                     }
-                                 </div>
-                            }
-                        </Row>
+                        <Spin spinning={wsLoading}>
+                            <Row className={styles.ws_row}>
+                                {
+                                    <div className={styles.ws_group} >
+                                        {
+                                            topWs.map((item: any, number: any) => {
+                                                return (
+                                                    <div
+                                                        className={styles.workspace}
+                                                        key={number}
+                                                        style={{ marginRight: (number + 1) % 3 ? 12 : 0, }}
+                                                        onClick={() => enterWorkspace(item)}
+                                                    >
+                                                        <Row style={{ width: '100%', height: '100%' }}>
+                                                            <Col span={24} style={{ alignItems: 'flex-start', display: 'flex', height: 48, marginBottom: 8 }}>
+                                                                <AvatarCover size={'middle'} style={avatarStyle} {...item} />
+                                                                <div className={styles.right_part}>
+                                                                    <b className={styles.ws_name}>{item.show_name}</b>
+                                                                    <Space size={3}>
+                                                                        <Avatar size={16} src={item.avatar}></Avatar>
+                                                                        <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
+                                                                    </Space>
+                                                                    <EllipsisRect text={item.description} wsPublic={wsPublic} />
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                }
+                            </Row>
+                        </Spin>
                     </Layout.Content>
                     <Layout.Content className={styles.banner}>
                         <Row className={styles.ws_list_title} style={{}}>

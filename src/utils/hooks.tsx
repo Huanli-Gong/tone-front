@@ -84,6 +84,10 @@ type ListProps = {
 }
 
 export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='top' >{name}</Tooltip>
+export const textRender = (name:any) => {
+    return <Tooltip title={name} placement='top'>{name}</Tooltip>
+}
+
 export const enumer = (name: any) => {
     const list = {
         system: '公共镜像',

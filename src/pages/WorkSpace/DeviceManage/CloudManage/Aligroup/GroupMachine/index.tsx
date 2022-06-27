@@ -7,6 +7,7 @@ import {
     querysImage, queryCategories, querysServer, querysAK, querysRegion, queryZone, queryVarName, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
+import { textRender } from '@/utils/hooks';
 import styles from './style.less';
 import { useParams } from 'umi';
 import { AgentSelect } from '@/components/utils'
@@ -144,7 +145,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         const { code, data, msg } = await queryZone({ ak_id: targetOption.ak_id, region: targetOption.value })
         targetOption.loading = false;
         if (code === 200) {
-            targetOption.children = data && data.map((item: any) => { return { label: item.id, value: item.id } });
+            targetOption.children = data && data.map((item: any) => { return { label: textRender(item.id), value: item.id } });
         }
         setRegion([...region])
         setValidateImage(false)
@@ -237,7 +238,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     list = data?.map((item: any) => {
                         return {
                             value: item.id,
-                            label: item.id,
+                            label: textRender(item.id),
                             ak_id: value[1],
                             isLeaf: false,
                         }
@@ -270,7 +271,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             if (item.id == param.region) {
                 return {
                     value: item.id,
-                    label: item.id,
+                    label: textRender(item.id),
                     ak_id: param.ak_id,
                     isLeaf: false,
                     children: query.map((item: any) => { return { label: item.id, value: item.id } })
@@ -278,7 +279,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             }
             return {
                 value: item.id,
-                label: item.id,
+                label: textRender(item.id),
                 ak_id: param.ak_id,
                 isLeaf: false,
             }
@@ -704,6 +705,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         options={options}
                                         loadData={loadAkData}
                                         onChange={onAkChange}
+                                        dropdownMatchSelectWidth={true}
+                                        dropdownClassName={styles.selectCascader}
                                     />
                                 </Form.Item>
                             </Col> :
@@ -724,6 +727,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             options={region}
                                             loadData={loadRegionData}
                                             onChange={onRegionChange}
+                                            dropdownMatchSelectWidth={true}
+                                            dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
                                 </Col> :
@@ -822,8 +827,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     >
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetECI(image, 'platform')}
-                                            expandTrigger="hover"
+                                            // expandTrigger="hover"
                                             displayRender={displayRender}
+                                            dropdownMatchSelectWidth={true}
+                                            dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
                                 </Col>
@@ -835,8 +842,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     >
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform')}
-                                            expandTrigger="hover"
+                                            // expandTrigger="hover"
                                             displayRender={displayRender}
+                                            dropdownMatchSelectWidth={true}
+                                            dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
                                 </Col> :

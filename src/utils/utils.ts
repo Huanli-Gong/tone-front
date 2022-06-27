@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { parse } from 'querystring';
-import { listRender, enumer } from './hooks';
+import { listRender, enumer, textRender } from './hooks';
 import { useModel, history } from 'umi';
 import _ from 'lodash';
 
@@ -183,7 +183,7 @@ export function resetImage(list: any, onceName: string, typeName: string) {
                     value: k.id,
                     label: listRender(k)
                 }))
-                return ({ value: item, label: item, children })
+                return ({ value: item, label: textRender(item), children })
             })
             const row = {
                 value: enumer(key),

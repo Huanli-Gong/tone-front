@@ -5,6 +5,7 @@ import {
     querysRegion, queryZone, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
+import { textRender } from '@/utils/hooks';
 import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
 import { PlusCircleTwoTone, MinusCircleTwoTone } from '@ant-design/icons'
 import styles from './style.less';
@@ -118,7 +119,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         targetOption.loading = true;
         const { data } = await queryZone({ ak_id: targetOption.ak_id, region: targetOption.value })
         targetOption.loading = false;
-        targetOption.children = data && data.map((item: any) => { return { label: item.id, value: item.id } });
+        targetOption.children = data && data.map((item: any) => { return { label: textRender(item.id), value: item.id } });
         setRegion([...region])
     };
     const loadAkData = async (selectedOptions: any) => {
@@ -177,7 +178,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 list = data.map((item: any) => {
                     return {
                         value: item.id,
-                        label: item.id,
+                        label: textRender(item.id),
                         ak_id: value[1],
                         isLeaf: false,
                     }
@@ -212,7 +213,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             if (item.id == param.region) {
                 return {
                     value: item.id,
-                    label: item.id,
+                    label: textRender(item.id),
                     ak_id: param.ak_id,
                     isLeaf: false,
                     children: query.map((item: any) => { return { label: item.id, value: item.id } })
@@ -220,7 +221,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             }
             return {
                 value: item.id,
-                label: item.id,
+                label: textRender(item.id),
                 ak_id: param.ak_id,
                 isLeaf: false,
             }
@@ -617,6 +618,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                         options={options}
                                         loadData={loadAkData}
                                         onChange={onAkChange}
+                                        dropdownMatchSelectWidth={true}
+                                        dropdownClassName={styles.selectCascader}
                                     />
                                 </Form.Item>
                             </Col> :
@@ -637,6 +640,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                             options={region}
                                             loadData={loadData}
                                             onChange={onRegionChange}
+                                            dropdownMatchSelectWidth={true}
+                                            dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
                                 </Col> :
@@ -740,8 +745,10 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     >
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetECI(image, 'platform')}
-                                            expandTrigger="hover"
+                                            // expandTrigger="hover"
                                             displayRender={displayRender}
+                                            dropdownMatchSelectWidth={true}
+                                            dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
                                 </Col>
@@ -755,8 +762,10 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     >
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform')}
-                                            expandTrigger="hover"
+                                            // expandTrigger="hover"
                                             displayRender={displayRender}
+                                            dropdownMatchSelectWidth={true}
+                                            dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
                                 </Col> :
