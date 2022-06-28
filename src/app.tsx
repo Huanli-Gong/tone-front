@@ -22,7 +22,7 @@ export async function getInitialState(): Promise<any> {
         refreshMenu: false,
         refreshWorkspaceList: undefined,
         jobTypeList: [],
-        authList: {},
+        AuthList: {},
         hasAdWs: ["fgq5x4by"],
         wsAdShow: isShowAd
     };
@@ -56,7 +56,7 @@ export async function getInitialState(): Promise<any> {
 
         return {
             ...initialState,
-            authList: {
+            AuthList: {
                 ws_id,
                 ...accessList,
             },

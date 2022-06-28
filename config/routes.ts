@@ -20,7 +20,7 @@ const routes = [
 		name: 'Dashboard',
 		path: '/dashboard',
 		component: './DashBoard/index',
-		access: 'canSysTestAdmin',
+		access: 'isAdmin',
 	},
 	{
 		path: '/refenerce/:type',
@@ -33,7 +33,7 @@ const routes = [
 		path: '/system',
 		component: './SystemConf/MenuLayout',
 		//showInWs: false,
-		access: 'canSysTestAdmin',
+		access: 'isSysTestAdmin',
 		routes: [
 			{
 				path: '/system/approve',
@@ -45,37 +45,37 @@ const routes = [
 				path: '/system/workspace',
 				name: 'workspaceManagement',
 				component: './SystemConf/WorkspaceManagement',
-				access: 'canSuperAdmin',
+				access: 'isAdmin',
 			},
 			{
 				path: '/system/user',
 				name: 'userManagement',
 				component: './SystemConf/UserManagement',
-				access: 'canSuperAdmin',
+				access: 'isAdmin',
 			},
 			{
 				path: '/system/suite',
 				name: 'suiteManagement',
 				component: './SystemConf/TestSuite',
-				access: 'canSysTestAdmin',
+				access: 'isSysTestAdmin',
 			},
 			{
 				path: '/system/kernel',
 				name: 'KernelManage',
 				component: '@/pages/SystemConf/KernelManage',
-				access: 'canSysTestAdmin',
+				access: 'isSysTestAdmin',
 			},
 			{
 				path: '/system/basic',
 				name: 'BasicSetting',
 				component: '@/pages/SystemConf/BasicSetting',
-				access: 'canSysTestAdmin',
+				access: 'isAdmin',
 			},
 			{
 				path: '/system/testfarm',
 				name: 'TestParmSetting',
 				component: '@/pages/SystemConf/TestParmSetting',
-				access: 'canSysTestAdmin',
+				access: 'isAdmin',
 			},
 			{
 				path: '*',
@@ -96,7 +96,7 @@ const routes = [
 			},
 			{
 				path: '/help_doc/new',
-				access: 'canSysTestAdmin',
+				access: 'isAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -105,7 +105,7 @@ const routes = [
 			},
 			{
 				path: '/help_doc/:help_id/edit',
-				access: 'canSysTestAdmin',
+				access: 'isAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -125,7 +125,7 @@ const routes = [
 			},
 			{
 				path: '/notice/new',
-				access: 'canSysTestAdmin',
+				access: 'isAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -134,7 +134,7 @@ const routes = [
 			},
 			{
 				path: '/notice/:help_id/edit',
-				access: 'canSysTestAdmin',
+				access: 'isAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
