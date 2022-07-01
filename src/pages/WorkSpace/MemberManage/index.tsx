@@ -12,13 +12,13 @@ let timer: any
 export default (props: any) => {
     const { ws_id } = props.match.params
     const access = useAccess();
-    const [role, setRole] = useState('ws_tester_admin')
+    const [role, setRole] = useState('ws_owner')
     const [keyword, setKeyword] = useState('')
     const [memberCounts, setMemberCounts] = useState<any>({
         all_count: 0,
         ws_owner: 0,
         ws_admin:0,
-        ws_tester_admin: 0,
+        ws_test_admin: 0,
         ws_member: 0
     })
     const [searchKey, setSearchKey] = useState('')
@@ -139,7 +139,7 @@ export default (props: any) => {
     const childTabs = [
         { name: `所有者 ${memberCounts.ws_owner}`, role: 'ws_owner' },
         { name: `管理员 ${memberCounts?.ws_admin}`, role: 'ws_admin' },
-        { name: `测试管理员 ${memberCounts?.ws_tester_admin}`, role: 'ws_tester_admin' },
+        { name: `测试管理员 ${memberCounts?.ws_test_admin}`, role: 'ws_test_admin' },
         { name: `Workspace成员 ${memberCounts.ws_member}`, role: 'ws_member' }
     ]
 

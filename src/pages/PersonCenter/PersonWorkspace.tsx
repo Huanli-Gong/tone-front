@@ -59,7 +59,7 @@ export default (props: any) => {
     const handleWs_Role = (title_type:any) => {
         const dict = {
             ws_member:'workspace成员',
-            ws_tester_admin:'测试管理员',
+            ws_test_admin:'测试管理员',
             ws_admin:'管理员',
             ws_tester:'测试人员',
             ws_owner:'所有者'

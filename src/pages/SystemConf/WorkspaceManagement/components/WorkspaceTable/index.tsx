@@ -15,7 +15,7 @@ import DragableBodyRow from '@/components/Table/DrageTable'
 import CommonPagination from '@/components/CommonPagination';
 import { QusetionIconTootip } from '@/components/Product';
 import { saveWorkspaceConfig } from '@/services/Workspace';
-
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 
 const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
     const [keyword, setKeyword] = useState<string>('')
@@ -95,7 +95,11 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     dataIndex: 'owner_name',
                     className: 'row_cursor',
                     width: 124,
-                    render: (_: number, row: WorkspaceTable) => <Space style={{ width: '124px' }}><Avatar size={25} src={row.owner_avatar} alt={row.owner_name} /><span>{row.owner_name}</span></Space>,
+                    // ellipsis: true,
+                    render: (_: number, row: WorkspaceTable) => <Space style={{ width: '124px' }}>
+                        <Avatar size={25} src={row.owner_avatar} alt={row.owner_name} />
+                        <EllipsisPulic title={row.owner_name || ''} width={99}/>
+                    </Space>,
                 }, {
                     title: '简介',
                     dataIndex: 'description',

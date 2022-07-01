@@ -42,11 +42,9 @@ export const switchUserRole = (name: string) => {
     return new Map([
         ['user', '普通用户'],
         ['sys_test_admin', '测试管理员'],
-        ['sys_tester_admin','测试管理员'],
         ['sys_admin', '系统管理员'],
         ['ws_tourist', '游客'],
         ['ws_member', 'workspace成员'],
-        ['ws_tester_admin', '测试管理员'],
         ['ws_test_admin', '测试管理员'],
         ['ws_tester', '测试人员'],
         ['ws_admin', '管理员'],
@@ -331,7 +329,7 @@ export const requestCodeMessage = (code: number, msg: string) => {
 export const role_type_enum = [
     { key: 'ws_member', name: 'worksapce成员' },
     { key: 'ws_tester', name: '测试人员' },
-    { key: 'ws_tester_admin', name: '测试管理员' },
+    { key: 'ws_test_admin', name: '测试管理员' },
     { key: 'sys_admin', name: '系统管理员' },
 ];
 

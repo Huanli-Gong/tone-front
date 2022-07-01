@@ -75,7 +75,7 @@ export default (): React.ReactNode => {
     const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
     const [loading, setLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
-    const { user_id, login_url } = initialState?.AuthList || {}
+    const { user_id, login_url } = initialState?.authList || {}
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
         page_size: 50,
         page_num: 1,
@@ -169,11 +169,14 @@ export default (): React.ReactNode => {
     }
 
     const enterWorkspace = async (record: any) => {
+        if(access.IsAdmin()){
+            return history.push(jumpWorkspace(record.id))
+        }
+
         if (!user_id && !record.is_public) {
             if (BUILD_APP_ENV === 'openanolis') {
                 return location.replace(login_url)
             }
-            // /ws/${record.id}/dashboard
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }
 

@@ -141,7 +141,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
-        const { user_id } = initialState?.AuthList
+        const { user_id } = initialState?.authList
         const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({
             ...q,

@@ -288,7 +288,7 @@ export default (props: any) => {
             </div>
 
             {
-                initialState.hasAdWs?.includes(wsId) &&
+                initialState?.hasAdWs?.includes(wsId) &&
                 <AdShowBtn onClick={openAd} />
             }
         </HeaderContainer >

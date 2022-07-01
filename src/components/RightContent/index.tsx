@@ -34,7 +34,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
     }
-    const { login_url, register_url, sys_role_title, ws_role_title } = initialState?.AuthList || {};
+    const { login_url, register_url, sys_role_title, ws_role_title } = initialState?.authList || {};
 
     useEffect(() => {
         setDropVisible(false)

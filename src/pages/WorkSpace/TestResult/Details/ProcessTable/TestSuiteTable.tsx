@@ -152,7 +152,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     const handleStopSuite = async (_: any) => {
         // 添加用户id
-        const { user_id } = initialState?.AuthList
+        const { user_id } = initialState?.authList
         const q = user_id ? { user_id } : {}
 
         const { code, msg } = await updateSuiteCaseOption({
@@ -173,7 +173,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     const handleSkipSuite = async (_: any) => {
         // 添加用户id
-        const { user_id } = initialState?.AuthList
+        const { user_id } = initialState?.authList
         const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({
             ...q,

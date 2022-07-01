@@ -106,7 +106,7 @@ const TestResultDetails: React.FC = (props: any) => {
         if (fetching) return
         setFetching(true)
         // 添加用户id
-        const { user_id } = initialState?.AuthList
+        const { user_id } = initialState?.authList
         const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({ ...q, editor_obj: 'job', job_id, state: 'stop' })
         if (code !== 200) {
