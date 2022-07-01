@@ -9,13 +9,15 @@ import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
 import BaselineDetail from './BaselineDetail'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import _ from 'lodash';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { useClientSize } from '@/utils/hooks'
+import { Access, useAccess } from 'umi'
 
 const { Search } = Input;
 
 export default (props: any) => {
     const { ws_id }: any = useParams()
+    const access = useAccess();
     const { query }: any = useLocation()
     const serverProvider = (/\/group$/).test(window.location.pathname) ? 'aligroup' : 'aliyun';
     const { baselineType } = props
@@ -241,18 +243,36 @@ export default (props: any) => {
                                             <Tooltip title={item.name} placement="right" overlayStyle={{ wordBreak: 'break-all' }}>
                                                 <Typography.Text className={styles.baseline_name}>{item.name}</Typography.Text>
                                             </Tooltip>
-                                            <Popconfirm
-                                                title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
-                                                onCancel={() => handleDelete(item)}
-                                                cancelText="确定删除"
-                                                cancelButtonProps={{ disabled: data.is_first ? true : false }}
-                                                okText="取消"
-                                                icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                            <Access 
+                                                accessible={access.WsMemberOperateSelf(item.creator)}
+                                                fallback={
+                                                    <Popconfirm
+                                                        title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
+                                                        onCancel={() => AccessTootip()}
+                                                        cancelText="确定删除"
+                                                        cancelButtonProps={{ disabled: data.is_first ? true : false }}
+                                                        okText="取消"
+                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                    >
+                                                        <MinusCircleOutlined
+                                                            className={hover === item.id ? styles.remove_active : styles.remove}
+                                                        />
+                                                    </Popconfirm>
+                                                }
                                             >
-                                                <MinusCircleOutlined
-                                                    className={hover === item.id ? styles.remove_active : styles.remove}
-                                                />
-                                            </Popconfirm>
+                                                <Popconfirm
+                                                    title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
+                                                    onCancel={() => handleDelete(item)}
+                                                    cancelText="确定删除"
+                                                    cancelButtonProps={{ disabled: data.is_first ? true : false }}
+                                                    okText="取消"
+                                                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                                                >
+                                                    <MinusCircleOutlined
+                                                        className={hover === item.id ? styles.remove_active : styles.remove}
+                                                    />
+                                                </Popconfirm>
+                                            </Access>
                                         </div>
                                     )
                                 )
@@ -300,7 +320,9 @@ export default (props: any) => {
                                     <EllipsisPulic title={current?.description} style={{ width: 318 }} />
                                 </div>
                             </Col>
-                            {dropdown}
+                            <Access accessible={access.WsMemberOperateSelf(current?.creator)}>
+                                {dropdown}
+                            </Access>
                         </Row>
                         <Row className={styles.right_code_context} >
                             <BaselineDetail

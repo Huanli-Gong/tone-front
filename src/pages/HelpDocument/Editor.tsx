@@ -52,8 +52,6 @@ const EllipsisRect = ({ record, text, helpId, reactNode, handleClick, index }: a
     }
     const handleDelClick = (e: any, index: number) => {
         e.stopPropagation();
-        // const flag = access.canSysTestAdmin()
-        // if (!flag) message.error('没有权限操作')
         const arrTr = document.querySelectorAll('tr')
         if (arrTr) {
             Array.from(arrTr).forEach((item: any, num: number) => {
@@ -84,7 +82,7 @@ const EllipsisRect = ({ record, text, helpId, reactNode, handleClick, index }: a
 
                 </span>
             }
-            <Access accessible={access.canSysTestAdmin()}>
+            <Access accessible={access.IsAdmin()}>
                 <Popover placement="bottom" content={reactNode(record)} trigger="click" className={styles.popover}>
                     <div className={styles.del_doc_icon} onClick={_.partial(handleDelClick, _, index)}>
                         <Ellipsis />
@@ -122,7 +120,7 @@ const getAllDocs = (data: any, id: any) => {
 }
 
 const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightLoading, typePath, isPermier, handleGetDocDetailFn }: any) => {
-    const [dataSource, getDataSource] = useState([])
+    const [dataSource, getDataSource] = useState<any>([])
 
     useEffect(() => {
         getDataSource(getAllDocs(allHelpsData, helpId))

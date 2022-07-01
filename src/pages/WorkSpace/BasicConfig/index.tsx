@@ -171,8 +171,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         />
                     </Form.Item>
                     <Access
-                        accessible={access.wsBasicContrl()}
-                        fallback={<Button style={{ marginBottom: 16 }} disabled={true} type="primary">确定</Button>}
+                        accessible={access.WsBtnPermission()}
                     >
                         <Button
                             style={{ marginBottom: 16 }}
@@ -218,7 +217,7 @@ const WorkspaceBasicConfig: React.FC = () => {
             </Row>
 
             <Access
-                accessible={access.wsBasicContrl()}
+                accessible={access.WsTransfer()}
             >
                 <Row className={styles.row_box}>
                     <Form

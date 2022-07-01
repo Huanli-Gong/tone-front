@@ -12,12 +12,10 @@ import SelectProductVersion from '@/components/Public/SelectProductVersion'
 import CommonPagination from '@/components/CommonPagination'
 import { queryReportList, delReportList, } from '../services'
 import _ from 'lodash'
-import { requestCodeMessage, matchRoleEnum } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+
 const { RangePicker } = DatePicker
 const ReportListTable = (props: any) => {
-    // 权限
-    //const { currentRole, currentRoleId } = matchRoleEnum();
-    //const limitAuthority =['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
     const access = useAccess()
     const { ws_id, tab, tableHeght } = props
     const [autoFocus, setFocus] = useState(true)
@@ -213,7 +211,7 @@ const ReportListTable = (props: any) => {
         }
 
     },
-    access.wsRoleContrl() && {
+    access.WsTourist() && {
         title: '操作',
         width: 200,
         fixed: 'right',
@@ -221,11 +219,11 @@ const ReportListTable = (props: any) => {
             const id = _.get(row, 'id')
             return (
                 <Access
-                    accessible={access.wsRoleContrl(row.creator_id)}
+                    accessible={access.WsMemberOperateSelf(row.creator_id)}
                     fallback={
                         <Space>
-                            <OptBtn style={{ color: '#ccc', cursor: 'not-allowed' }}>编辑</OptBtn>
-                            <OptBtn style={{ color: '#ccc', cursor: 'not-allowed' }}>删除</OptBtn>
+                            <OptBtn onClick={() => AccessTootip()}>编辑</OptBtn>
+                            <OptBtn onClick={() => AccessTootip()}>删除</OptBtn>
                         </Space>
                     }
                 >

@@ -13,12 +13,12 @@ import { runList } from '@/utils/utils';
 import { SearchColumnFilterTitle, CheckboxColumnFilterTitle, UserSearchColumnFilterTitle } from './components'
 import CodeViewer from '@/components/CodeViewer'
 import { TabCard } from '@/components/UpgradeUI';
+import { Access, useAccess } from 'umi'
 
 const SuiteManagement: React.FC<any> = (props) => {
 	const { ws_id } = props.match.params
-
+	const access = useAccess();
 	const testType = props.location.query.test_type || 'functional'
-
 	const { TabPane } = Tabs;
 	const [data, setData] = useState<any>([]);
 	const [refresh, setRefresh] = useState<boolean>(true)
@@ -155,7 +155,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			dataIndex: 'doc',
 			className: 'no_padding_head',
 			width: 190,
-			render: (_, row) => (
+			render: (_:any, row:any) => (
 				<div >
 					<ButtonEllipsis
 						title={row.doc}
@@ -176,7 +176,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			ellipsis: {
                 shwoTitle: false,
             },
-			render: (_, row) => {
+			render: (_:any, row:any) => {
 				return (
 					<PopoverEllipsis title={row.description} width={100} />
 				)
@@ -227,18 +227,20 @@ const SuiteManagement: React.FC<any> = (props) => {
 				</Tabs>
 			}
 			extra={
-				<Button type="primary" key="createSuite" 
-					onClick={() => {
-						if (['functional', 'performance', 'business'].includes(fetchParams.test_type)) {
-							// history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
-							history.push(`/ws/${ws_id}/new_suite/${fetchParams.test_type}`)
-						}
-						// else if (fetchParams.test_type === 'business') {
-						//   history.push(`/test_suite/add_business?ws=${ws_id}&test_type=${fetchParams.test_type}`)
-						// }
-					}}>
-					Test Suite管理
-				</Button>
+				<Access accessible={access.WsMemberOperateSelf()}>
+					<Button type="primary" key="createSuite" 
+						onClick={() => {
+							if (['functional', 'performance', 'business'].includes(fetchParams.test_type)) {
+								// history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
+								history.push(`/ws/${ws_id}/new_suite/${fetchParams.test_type}`)
+							}
+							// else if (fetchParams.test_type === 'business') {
+							//   history.push(`/test_suite/add_business?ws=${ws_id}&test_type=${fetchParams.test_type}`)
+							// }
+						}}>
+						Test Suite管理
+					</Button>
+				</Access>
 			}
 		>
 

@@ -20,7 +20,7 @@ const routes = [
 		name: 'Dashboard',
 		path: '/dashboard',
 		component: './DashBoard/index',
-		access: 'isAdmin',
+		access: 'IsAdmin',
 	},
 	{
 		path: '/refenerce/:type',
@@ -33,49 +33,49 @@ const routes = [
 		path: '/system',
 		component: './SystemConf/MenuLayout',
 		//showInWs: false,
-		access: 'isSysTestAdmin',
+		access: 'IsSysTestAdmin',
 		routes: [
 			{
 				path: '/system/approve',
 				name: 'joinApprove',
 				component: './SystemConf/JoinApprove',
-				access: BUILD_APP_ENV ? 'hiddenRoute' : 'canSuperAdmin',
+				access: 'IsAdmin',
 			},
 			{
 				path: '/system/workspace',
 				name: 'workspaceManagement',
 				component: './SystemConf/WorkspaceManagement',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 			},
 			{
 				path: '/system/user',
 				name: 'userManagement',
 				component: './SystemConf/UserManagement',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 			},
 			{
 				path: '/system/suite',
 				name: 'suiteManagement',
 				component: './SystemConf/TestSuite',
-				access: 'isSysTestAdmin',
+				access: 'IsSysTestAdmin',
 			},
 			{
 				path: '/system/kernel',
 				name: 'KernelManage',
 				component: '@/pages/SystemConf/KernelManage',
-				access: 'isSysTestAdmin',
+				access: 'IsSysTestAdmin',
 			},
 			{
 				path: '/system/basic',
 				name: 'BasicSetting',
 				component: '@/pages/SystemConf/BasicSetting',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 			},
 			{
 				path: '/system/testfarm',
 				name: 'TestParmSetting',
 				component: '@/pages/SystemConf/TestParmSetting',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 			},
 			{
 				path: '*',
@@ -96,7 +96,7 @@ const routes = [
 			},
 			{
 				path: '/help_doc/new',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -105,7 +105,7 @@ const routes = [
 			},
 			{
 				path: '/help_doc/:help_id/edit',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -125,7 +125,7 @@ const routes = [
 			},
 			{
 				path: '/notice/new',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -134,7 +134,7 @@ const routes = [
 			},
 			{
 				path: '/notice/:help_id/edit',
-				access: 'isAdmin',
+				access: 'IsAdmin',
 				component: './HelpDocument/EditOrNew',
 			},
 			{
@@ -289,24 +289,28 @@ const routes = [
 						path: '/ws/:ws_id/test_plan/:plan_id/edit',
 						hideInMenu: true,
 						name: 'Edit',
-						component: '@/pages/WorkSpace/TestPlan/PlanForm'
+						component: '@/pages/WorkSpace/TestPlan/PlanForm',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_plan/:plan_id/run',
 						hideInMenu: true,
 						name: 'Run',
-						component: '@/pages/WorkSpace/TestPlan/PlanForm'
+						component: '@/pages/WorkSpace/TestPlan/PlanForm',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_plan/create',
 						hideInMenu: true,
 						name: 'Create',
 						component: '@/pages/WorkSpace/TestPlan/PlanForm',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_plan',
 						name: 'Manage',
 						component: '@/pages/WorkSpace/TestPlan',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_plan/view',
@@ -323,7 +327,7 @@ const routes = [
 						path: '/ws/:ws_id/test_plan/view/detail/:plan_id',
 						hideInMenu: true,
 						name: 'Detail',
-						component: '@/pages/WorkSpace/TestPlan/PlanView/ViewDetail'
+						component: '@/pages/WorkSpace/TestPlan/PlanView/ViewDetail',
 					},
 					{
 						path: '*',
@@ -336,7 +340,8 @@ const routes = [
 				name: 'CreateReport',
 				hideInMenu: true,
 				inNav: true,
-				component: '@/pages/WorkSpace/TestReport/NewReport'
+				component: '@/pages/WorkSpace/TestReport/NewReport',
+				access: 'IsWsSetting',
 			},
 
 			{
@@ -350,7 +355,6 @@ const routes = [
 						component: '@/pages/WorkSpace/TestReport',
 						name: 'Report',
 					},
-
 					{
 						path: '/ws/:ws_id/test_report/compare',
 						hideInMenu: true,
@@ -360,28 +364,32 @@ const routes = [
 					{
 						path: '/ws/:ws_id/test_report/template',
 						name: 'TemplateCreate',
-						component: '@/pages/WorkSpace/TestReport/Template'
+						component: '@/pages/WorkSpace/TestReport/Template',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_report/template/:temp_id',
 						name: 'TemplateEdit',
 						component: '@/pages/WorkSpace/TestReport/Template',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_report/template/:temp_id/preview',
 						name: 'ReportTemplatePreview',
 						layout: false,
 						component: '@/pages/WorkSpace/TestReport/Template/Preview',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/test_report/:report_id',
 						name: 'Report',
-						component: '@/pages/WorkSpace/TestReport/NewReport'
+						component: '@/pages/WorkSpace/TestReport/NewReport',
 					},
 					{
 						path: '/ws/:ws_id/test_report/:report_id/edit',
 						name: 'EditReport',
-						component: '@/pages/WorkSpace/TestReport/NewReport'
+						component: '@/pages/WorkSpace/TestReport/NewReport',
+						access: 'IsWsSetting',
 					},
 					
 					{
@@ -433,48 +441,52 @@ const routes = [
 			{
 				path: '/ws/:ws_id/config',
 				name: 'WorkspaceConfig',
+				access: 'WsBtnPermission',
 				routes: [
 					{
 						path: '/ws/:ws_id/config',
 						name: 'BasicConfig',
 						component: './WorkSpace/BasicConfig',
-						access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+						access: 'WsBtnPermission',
 					},
 					{
 						path: '/ws/:ws_id/config/member',
 						name: 'MemberManage',
 						component: './WorkSpace/MemberManage',
-						access: 'canWsAdmin'
+						access: 'WsBtnPermission'
 					},
 					{
 						path: '/ws/:ws_id/config/join',
 						name: 'JoinDetail',
 						component: './WorkSpace/JoinDetail',
-						access: BUILD_APP_ENV ? 'hiddenRoute' : 'wsTouristFilter',
+						access: 'WsBtnPermission',
 					}
 				]
 			},
 			{
 				path: '/ws/:ws_id/job',
 				name: 'JobConfig',
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+				access: 'IsWsSetting',
 				routes: [
 					{
 						path: '/ws/:ws_id/job/types',
 						exact: true,
 						name: 'JobTypeManage',
 						component: './WorkSpace/JobTypeManage',
+						access: 'WsMemberNoPermission',
 					},
 					{
 						path: '/ws/:ws_id/job/templates',
 						name: 'TestTemplateManage',
 						component: './WorkSpace/TestTemplateManage',
+						access: 'IsWsSetting',
 						exact: true
 					},
 					{
 						path: '/ws/:ws_id/job/tags',
 						name: 'TagManage',
 						component: './WorkSpace/TagManage',
+						access: 'WsMemberNoPermission',
 						exact: true
 					},
 					{
@@ -483,6 +495,7 @@ const routes = [
 						name: 'CreateJobType',
 						hasLeftNav: false,
 						component: './WorkSpace/JobTypeManage/CreateJobType',
+						access: 'WsMemberNoPermission',
 					},
 					{
 						path: '/ws/:ws_id/job/update/:jt_id',
@@ -490,6 +503,7 @@ const routes = [
 						hasLeftNav: false,
 						exact: true,
 						name: 'JobTypeUpdate',
+						access: 'WsMemberNoPermission',
 						component: './WorkSpace/JobTypeManage/CreateJobType',
 					},
 				]
@@ -499,48 +513,55 @@ const routes = [
 				name: 'Baseline',
 				// hideInMenu : true ,
 				component: '@/pages/WorkSpace/Baseline',
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+				access: 'IsWsSetting',
 				routes: [
 					{
 						path: '/ws/:ws_id/baseline/group',
 						name: 'GroupBaseline',
-						component: '@/pages/WorkSpace/Baseline/Group'
+						component: '@/pages/WorkSpace/Baseline/Group',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/baseline/cluster',
 						name: 'ClusterBaseline',
-						component: '@/pages/WorkSpace/Baseline/Group'
+						component: '@/pages/WorkSpace/Baseline/Group',
+						access: 'IsWsSetting',
 					}
 				]
 			},
 			{
 				path: '/ws/:ws_id/device',
 				name: 'DeviceManage',
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+				access: 'IsWsSetting',
 				routes: [
 					{
 						path: '/ws/:ws_id/device/group',
 						name: 'GroupManage',
 						exact: true,
-						component: '@/pages/WorkSpace/DeviceManage/GroupManage'
+						component: '@/pages/WorkSpace/DeviceManage/GroupManage',
+						access: 'IsWsSetting',
+
 					},
 					{
 						path: '/ws/:ws_id/device/cloud',
 						name: 'CludeManage',
 						exact: true,
-						component: '@/pages/WorkSpace/DeviceManage/CloudManage'
+						component: '@/pages/WorkSpace/DeviceManage/CloudManage',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/device/tag',
 						name: 'DispatchTag',
 						exact: true,
 						component: '@/pages/WorkSpace/DeviceManage/DispatchTag',
+						access: 'IsWsSetting',
 					},
 					{
 						path: '/ws/:ws_id/device/CloudConfig',
 						name: 'CloudConfig',
 						exact: true,
 						component: '@/pages/WorkSpace/DeviceManage/CloudConfig',
+						access: 'WsMemberNoPermission',
 					}
 				]
 			},
@@ -548,7 +569,7 @@ const routes = [
 				path: '/ws/:ws_id/test_suite',
 				name: 'TestSuiteManage',
 				component: './WorkSpace/TestSuiteManage',
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+				access: 'IsWsSetting',
 			},
 			{
 				path: '/ws/:ws_id/new_suite/:test_type',
@@ -557,19 +578,19 @@ const routes = [
 				hideInMenu: true,
 				inNav: true,
 				component: './WorkSpace/TestSuiteManage/TestSuiteCreate',
+				access: 'WsMemberNoPermission',
 			},
 			{ //产品管理
 				path: '/ws/:ws_id/product',
 				name: 'Product',
 				component: '@/pages/WorkSpace/Product',
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+				access: 'WsMemberNoPermission',
 			},
 			{
 				path: '/ws/:ws_id/test_template',
 				hideInMenu: true,
 				inNav: true,
 				layout: false,
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
 				routes: [
 					{
 						path: '/ws/:ws_id/test_template/:jt_id/edit',
@@ -593,7 +614,7 @@ const routes = [
 			},
 			{
 				path: '/ws/:ws_id/devOps',
-				access: BUILD_APP_ENV ? 'canWsAdmin' : 'wsTouristFilter',
+				access: 'WsMemberNoPermission',
 				name: 'DevOps',
 				component: '@/pages/WorkSpace/DevOps'
 			},
@@ -617,7 +638,7 @@ const routes = [
 		layout: false,
 		hideInMenu: true,
 		component: './WorkSpace/CreateWorkspace',
-		access: BUILD_APP_ENV ? 'canSuperAdmin' : 'wsTouristFilter',
+		access: 'ApplyPrivate',
 	},
 	{
 		path: '/401',

@@ -7,9 +7,9 @@ import { useParams } from 'umi';
 
 export const EditableCell: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
-    const { user_info, select, is_owner } = props
+    const { user_info, select } = props
 
-    const { role_list, id } = user_info
+    const { role_list, id, can_update } = user_info
     const defaultName = role_list.map((item: any) => item.name)
 
     const onSelect = async (value: any) => {
@@ -27,23 +27,24 @@ export const EditableCell: React.FC<any> = (props) => {
         }
     }
 
-    return (
-        <div className={styles.roleStyle}>
-            {/** */}
-            <Select
-                size='small'
-                value={switchUserRole(defaultName[0])}
-                showSearch={false}
-                bordered={false}
-                showArrow={!is_owner}
-                dropdownMatchSelectWidth={false}
-                style={{ fontSize: 14, marginLeft: -10 }}
-                onSelect={onSelect}
-            >
-                {select?.map((item: any) => {
-                    return <Select.Option value={item.id} key={item.id}>{switchUserRole(item.name)}</Select.Option>
-                })}
-            </Select>
-        </div>
-    )
+    if(can_update){
+        return (
+            <div className={styles.roleStyle}>
+                <Select
+                    size='small'
+                    value={switchUserRole(defaultName[0])}
+                    showSearch={false}
+                    bordered={false}
+                    dropdownMatchSelectWidth={false}
+                    style={{ fontSize: 14, marginLeft: - 10 }}
+                    onSelect={onSelect}
+                >
+                    {select?.map((item: any) => {
+                        return <Select.Option value={item.id} key={item.id}>{switchUserRole(item.name)}</Select.Option>
+                    })}
+                </Select>
+            </div>
+        )
+    }
+    return <span>{switchUserRole(role_list[0].name)}</span>
 }

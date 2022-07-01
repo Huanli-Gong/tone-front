@@ -7,14 +7,14 @@ import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
 import _ from 'lodash';
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
-import { useRequest,useAccess,Access, useModel } from 'umi';
-import { requestCodeMessage } from '@/utils/utils';
+import { useRequest, useAccess, Access, useModel } from 'umi';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ResizeTable from '@/components/ResizeTable'
 export default ({ job_id, refresh = false, testType, provider_name }: any) => {
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
-    const [ skipBtn, setSkipBtn ] = useState<Boolean>(false)
-    const [ suiteId, setSuiteId ] = useState<number>(0)
+    const [skipBtn, setSkipBtn] = useState<Boolean>(false)
+    const [suiteId, setSuiteId] = useState<number>(0)
     const { data, loading, run } = useRequest(
         () => queryProcessSuiteList({ job_id }),
         {
@@ -92,34 +92,56 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                     color: state !== 'running' ? 'rgba(0,0,0,.25)' : '#1890FF',
                     cursor: state !== 'running' ? 'not-allowed' : 'pointer',
                 }
-                const pointerStyle = {color:'#1890FF',cursor:'pointer',marginLeft: 12};
-                const disablePointer = {color:'rgba(0,0,0,.25)',marginLeft: 12};
+                const pointerStyle = { color: '#1890FF', cursor: 'pointer', marginLeft: 12 };
+                const disablePointer = { color: 'rgba(0,0,0,.25)', marginLeft: 12 };
 
                 if (state === 'running')
                     return (
                         <>
-                            <Access 
-                                accessible={access.wsRoleContrl(_.creator)}
-                                fallback={<span style={style}>停止Suite</span>}
-                            >
-                                <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
+                            <Access accessible={access.WsTourist()}>
+                                <Access
+                                    accessible={access.WsMemberOperateSelf(_.creator)}
+                                    fallback={
+                                        <span>
+                                            <span style={style} onClick={() => AccessTootip()}>停止Suite</span>
+                                            {
+                                                skipBtn && suiteId === _.id
+                                                    ? <span style={disablePointer} >跳过suite</span>
+                                                    : <span style={pointerStyle} onClick={() => AccessTootip()}>跳过suite</span>
+                                            }
+                                        </span>
+                                    }
+                                >
+                                    <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
+                                    {
+                                        skipBtn && suiteId === _.id
+                                            ? <span style={disablePointer} >跳过suite</span>
+                                            : <span style={pointerStyle} onClick={() => handleSkipSuite(_)}>跳过suite</span>
+                                    }
+                                </Access>
                             </Access>
-                            {
-                                skipBtn && suiteId === _.id
-                                ? <span style={disablePointer} >跳过suite</span>
-                                : <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
-                            }
                         </>
                     )
                 else if (state === 'pending')
                     return (
                         <div>
                             <span style={style}>停止Suite</span>
-                            {
-                                skipBtn && suiteId === _.id
-                                ? <span style={disablePointer} >跳过suite</span>
-                                : <span style={pointerStyle} onClick={() => handleSkipSuite( _ ) }>跳过suite</span>
-                            }
+                            <Access accessible={access.WsTourist()}>
+                                <Access
+                                    accessible={access.WsMemberOperateSelf(_.creator)}
+                                    fallback={
+                                        skipBtn && suiteId === _.id
+                                            ? <span style={disablePointer} >跳过suite</span>
+                                            : <span style={pointerStyle} onClick={() => AccessTootip()}>跳过suite</span>
+                                    }
+                                >
+                                    {
+                                        skipBtn && suiteId === _.id
+                                            ? <span style={disablePointer} >跳过suite</span>
+                                            : <span style={pointerStyle} onClick={() => handleSkipSuite(_)}>跳过suite</span>
+                                    }
+                                </Access>
+                            </Access>
                         </div>
                     )
                 else
@@ -130,7 +152,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     const handleStopSuite = async (_: any) => {
         // 添加用户id
-        const { user_id } = initialState?.authList
+        const { user_id } = initialState?.AuthList
         const q = user_id ? { user_id } : {}
 
         const { code, msg } = await updateSuiteCaseOption({
@@ -149,9 +171,9 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
-    const handleSkipSuite = async (_: any)=> {
+    const handleSkipSuite = async (_: any) => {
         // 添加用户id
-        const { user_id } = initialState?.authList
+        const { user_id } = initialState?.AuthList
         const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({
             ...q,
@@ -159,7 +181,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
             state: 'skip',
             test_job_suite_id: _.id,
         })
-        if (code === 200){
+        if (code === 200) {
             setSuiteId(_.id)
             setSkipBtn(true)
             message.success('操作成功')
@@ -199,7 +221,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                     },
                     expandedRowRender: (record) => {
                         return (
-                            <TestConfTable {...record} job_id={job_id} testType={testType} provider_name={provider_name}/>
+                            <TestConfTable {...record} job_id={job_id} testType={testType} provider_name={provider_name} />
                         )
                     },
                     expandIcon: ({ expanded, onExpand, record }: any) => (

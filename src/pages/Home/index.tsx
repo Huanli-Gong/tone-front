@@ -75,11 +75,11 @@ export default (): React.ReactNode => {
     const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
     const [loading, setLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
-    const { user_id, ws_role_title, login_url } = initialState?.authList || {}
+    const { user_id, login_url } = initialState?.AuthList || {}
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
         page_size: 50,
         page_num: 1,
-        scope: ws_role_title == 'ws_tourist' ? 'all' : 'history'
+        scope: access.IsWsSetting() ? 'history' : 'all'  
     })
     const [helps, setHelps] = useState<Array<any>>([])
     const [topWs, setTopWs] = useState([])
@@ -112,7 +112,7 @@ export default (): React.ReactNode => {
     }
 
     const wsDom = () => {
-        const arrKey = ws_role_title === 'ws_tourist' ? tourKey : allKey
+        const arrKey = access.IsWsSetting() ? allKey : tourKey
 
         return (
             <Tabs defaultActiveKey="history" onChange={handleTabChange}>
@@ -177,7 +177,7 @@ export default (): React.ReactNode => {
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }
 
-        if (access.canSuperAdmin() || record.is_public || record.is_member) {
+        if (record.is_public || record.is_member) {
             const path: string = await getEnterWorkspaceState(record)
             return history.push(path)
         }
@@ -340,7 +340,7 @@ export default (): React.ReactNode => {
                             <div>
                                 <Space align='end'>
                                     <Input.Search placeholder="请输入搜索关键字" onSearch={onSearch} style={{ width: 200 }} allowClear={true} />
-                                    <Access accessible={access.canSuperAdmin()}>
+                                    <Access accessible={access.ApplyPrivate()}>
                                         <Button onClick={() => history.push('/workspace/create')}>新建Workspace</Button>
                                     </Access>
                                 </Space>

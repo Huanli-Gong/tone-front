@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { history } from 'umi'
+import { history, useAccess } from 'umi'
 import classes from 'classnames'
 import { useModel } from 'umi';
 import styles from './index.less'
@@ -45,16 +45,12 @@ const QuestionTip = (props: {
 
 export default (props: any): React.ReactElement => {
     const [imgUrl, setImgUrl] = useState({ path: '', link: '' })
+    const access = useAccess();
     const [isWsInit, setIsWsInit] = useState(false)
     const [form] = Form.useForm()
     const [pedding, setPedding] = useState(false)
     const [heightBox, setHeightBox] = useState(innerHeight)
-
     const timer: any = useRef(null)
-    const { initialState } = useModel('@@initialState');
-    const sysAuth = initialState?.authList
-    const { sys_role_title } = sysAuth
-
     const cropperRef = React.useRef<any>()
 
     // user_id :ws创建者
@@ -166,7 +162,7 @@ export default (props: any): React.ReactElement => {
                                     const nameValidate = await checkField("name", name)
                                     if (!nameValidate) return setPedding(false)
 
-                                    if (sys_role_title === 'super_admin' || sys_role_title === 'sys_admin') {
+                                    if (access.IsAdmin()) {
                                         setIsWsInit(true)
                                         queryCreateWs({ ...values, logo: imgUrl.path })
                                         setPedding(false)

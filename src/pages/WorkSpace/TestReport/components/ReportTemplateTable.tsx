@@ -11,7 +11,7 @@ import SelectUser from '@/components/Public/SelectUser'
 import CopyTemplateDrawer from './CopyComplate'
 import CommonPagination from '@/components/CommonPagination'
 import _ from 'lodash'
-import { requestCodeMessage, targetJump } from '@/utils/utils'
+import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils';
 
 const ReportTemplateTable: React.FC<any> = (props) => {
     const { ws_id, tab } = props
@@ -89,7 +89,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         container: 180,
         button_width: 90
     }
-    let columns:any = [
+    let columns: any = [
         {
             dataIndex: 'name',
             title: '模版名称',
@@ -190,21 +190,6 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 const isDefault = _.get(row, 'is_default')
                 return (
                     <Space>
-                        <Access
-                            accessible={access.wsRoleContrl(row.creator)}
-                            fallback={<span style={{ color: '#ccc', cursor: 'not-allowed' }}>编辑</span>}
-                        >
-                             {
-                                !isDefault &&
-                                <span 
-                                    style={{ color: '#1890FF', cursor: 'pointer' }} 
-                                    onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)}
-                                >
-                                    编辑
-                                </span>
-                            }
-                        </Access>
-                        <OptBtn onClick={_.partial(handleAddScript, row)}>复制</OptBtn>
                         <span
                             style={{ color: '#1890FF', cursor: 'pointer' }}
                             onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}/preview`)}
@@ -212,27 +197,53 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                             预览
                         </span>
                         <Access
-                            accessible={access.wsRoleContrl(row.creator)}
-                            fallback={<span style={{ color: '#ccc', cursor: 'not-allowed' }}>删除</span>}
-                        >
-                            {
-                                !isDefault &&
-                                <Popconfirm
-                                    title="确认删除该模板吗？"
-                                    okText="确认"
-                                    cancelText="取消"
-                                    onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
-                                >
-                                    <OptBtn>删除</OptBtn>
-                                </Popconfirm>
+                            accessible={access.WsMemberOperateSelf(row.creator)}
+                            fallback={
+                                <Space>
+                                    {
+                                        !isDefault &&
+                                        <span
+                                            style={{ color: '#1890FF', cursor: 'pointer' }}
+                                            onClick={() => AccessTootip()}
+                                        >
+                                            编辑
+                                        </span>
+                                    }
+                                    <OptBtn onClick={() => AccessTootip()}>复制</OptBtn>
+                                    { !isDefault && <OptBtn onClick={() => AccessTootip()}>删除</OptBtn>}
+                                </Space>
                             }
+                        >
+                            <Space>
+                                {
+                                    !isDefault &&
+                                    <span
+                                        style={{ color: '#1890FF', cursor: 'pointer' }}
+                                        onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)}
+                                    >
+                                        编辑
+                                    </span>
+                                }
+                                <OptBtn onClick={_.partial(handleAddScript, row)}>复制</OptBtn>
+                                {
+                                    !isDefault &&
+                                    <Popconfirm
+                                        title="确认删除该模板吗？"
+                                        okText="确认"
+                                        cancelText="取消"
+                                        onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
+                                    >
+                                        <OptBtn>删除</OptBtn>
+                                    </Popconfirm>
+                                }
+                            </Space>
                         </Access>
                     </Space>
-                    )
-                }
+                )
             }
+        }
     ]
-    
+
     return (
         <Spin spinning={loading}>
             <ClsResizeTable

@@ -6,15 +6,11 @@ import { history, Access, useAccess } from 'umi';
 import { ReportBody } from './styled'
 import ReportListTable from './components/ReportListTable'
 import ReportTemplateTable from './components/ReportTemplateTable'
-// import { matchRoleEnum } from '@/utils/utils';
 
 export default (props: any) => {
     const { match, location } = props
     const { ws_id } = match.params
     const intalMessage = `menu.Workspace.TestReport.${props.route.name}`
-    // 权限
-    //const { currentRole } = matchRoleEnum();
-    //const limitAuthority =['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
     const access = useAccess()
     writeDocumentTitle(intalMessage)
 
@@ -49,16 +45,16 @@ export default (props: any) => {
                     }}
                     tabBarExtraContent={
                         tab === 'list' ? (
-                            access.wsRoleContrl() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button>
+                            access.IsWsSetting() && <Button type="primary" onClick={handleCreateReport}>新建报告</Button>
                         ) : (
-                            access.wsRoleContrl() && <Button type="primary" onClick={hanldeCreateTemplate}>新建模版</Button>
+                            access.IsWsSetting() && <Button type="primary" onClick={hanldeCreateTemplate}>新建模版</Button>
                         )
                     }
                 >
                     <Tabs.TabPane key="list" tab="测试报告">
                         <ReportListTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                     </Tabs.TabPane>
-                    {access.wsRoleContrl() &&
+                    {access.IsWsSetting() &&
                         <Tabs.TabPane key="template" tab="报告模版">
                             <ReportTemplateTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                         </Tabs.TabPane>

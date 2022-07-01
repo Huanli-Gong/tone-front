@@ -14,13 +14,13 @@ import Highlighter from 'react-highlight-words'
 
 import { tooltipTd } from '../components'
 import styles from './index.less'
-import { targetJump } from '@/utils/utils'
+import { targetJump, AccessTootip } from '@/utils/utils'
 
 export default (props: any) => {
-    const { ws_id , id: job_id} = useParams() as any
+    const { ws_id, id: job_id } = useParams() as any
     const access = useAccess()
     const {
-        test_case_id, suite_id, testType,creator,
+        test_case_id, suite_id, testType, creator,
         server_provider, state = '', suite_name, conf_name,
         refreshId, setRefreshId
     } = props
@@ -155,7 +155,7 @@ export default (props: any) => {
             let context = row.description
             if (row.match_baseline && row.result === 'Fail')
                 context = _ ? `${_}(匹配基线)` : '匹配基线'
-            if (access.canWsAdmin()) 
+            if (access.IsWsSetting())
                 return (
                     <Tooltip placement="topLeft" title={context}>
                         <Typography.Link
@@ -211,19 +211,21 @@ export default (props: any) => {
         render: (_: any) => {
             let flag = _.result === 'Fail' && !_.bug
             return (
-                <Access
-                    accessible={access.wsRoleContrl(creator)}
-                    fallback={
+                <Access accessible={access.WsTourist()}>
+                    <Access
+                        accessible={access.WsMemberOperateSelf(creator)}
+                        fallback={
+                            <Space>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>编辑</span>
+                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>加入基线</span>}
+                            </Space>
+                        }
+                    >
                         <Space>
-                            <span style={{ color: '#ccc',cursor: 'not-allowed' }} >编辑</span>
-                            {flag && <span style={{ color: '#ccc',cursor: 'not-allowed' }}>加入基线</span>}
-                        </Space> 
-                    }
-                >
-                    <Space>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}>编辑</span>
-                        {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>加入基线</span>}
-                    </Space>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}>编辑</span>
+                            {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>加入基线</span>}
+                        </Space>
+                    </Access>
                 </Access>
             )
         }
@@ -262,7 +264,7 @@ export default (props: any) => {
                 test_type={testType}
                 ws_id={ws_id}
                 server_provider={server_provider}
-                accessible = {access.canWsAdmin()}
+                accessible={access.IsWsSetting()}
             />
         </>
     )

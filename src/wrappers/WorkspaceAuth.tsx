@@ -8,15 +8,15 @@ export default (props: any) => {
     const { children } = props
     const { ws_id } = props.match.params
     const { initialState, setInitialState } = useModel('@@initialState')
-    const { authList } = initialState
+    const { AuthList } = initialState
 
     const checkAccess = async () => {
-        let access = authList
+        let access = AuthList
 
-        if (ws_id !== authList.ws_id) {
+        if (ws_id !== AuthList.ws_id) {
             const { data } = await person_auth({ ws_id })
             const accessData = deepObject(data)
-            setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
+            setInitialState({ ...initialState, AuthList: { ...accessData, ws_id } })
             access = accessData
 
             if (!data) {

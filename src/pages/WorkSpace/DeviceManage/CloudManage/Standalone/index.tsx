@@ -19,8 +19,9 @@ import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable';
 import { useParams } from 'umi';
 import _ from 'lodash'
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
+import { Access, useAccess } from 'umi'
 // import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上单机
@@ -40,6 +41,7 @@ interface MachineParams {
 }
 export default (props: any) => {
     const { ws_id }: any = useParams()
+    const access = useAccess();
     const aloneMachine = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
@@ -327,14 +329,32 @@ export default (props: any) => {
                 render: (_: any, row: any) =>
                     <Space>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}>详情</Button>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
-                        {
-                            String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>
-                        }
-                        {
-                            String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>
-                        }
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(params.type) !== '0')}>{params.type == '0' ? '删除' : '释放'}</Button>
+                        <Access 
+                            accessible={access.WsMemberOperateSelf(row.owner)}
+                            fallback={
+                                <Space>
+                                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} >编辑</Button>
+                                    {
+                                        String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>部署</Button>
+                                    }
+                                    {
+                                        String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{'删除'}</Button>
+                                    }
+                                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{params.type == '0' ? '删除' : '释放'}</Button>
+                                </Space>
+                            }
+                        >
+                            <Space>
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
+                                {
+                                    String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>
+                                }
+                                {
+                                    String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>
+                                }
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(params.type) !== '0')}>{params.type == '0' ? '删除' : '释放'}</Button>
+                            </Space>
+                        </Access>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },

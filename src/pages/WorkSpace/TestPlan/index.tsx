@@ -2,15 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { Space, Table, Tabs, Button, message, Popconfirm, Spin } from 'antd'
-import { useRequest, history, FormattedMessage } from 'umi'
+import { useRequest, history, FormattedMessage, Access, useAccess } from 'umi'
 import CommonPagination from '@/components/CommonPagination'
 
 import styled from 'styled-components'
 import PlanSettingDrawer from './components/PlanSettingDrawer'
 import { queryPlanManageList, deleteTestPlan, copyTestPlan } from './services'
 import { getUserFilter, getSearchFilter, getRadioFilter } from '@/components/TableFilters'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
+
 interface OptionBtnProp {
     disabled?: boolean
 }
@@ -25,7 +26,7 @@ const OptButton = styled.span<OptionBtnProp>`
 const TestPlanManage = (props: any) => {
     const { route } = props
     const { ws_id } = props.match.params
-
+    const access = useAccess()
     writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
     const {height: layoutHeight} = useClientSize()
@@ -119,18 +120,32 @@ const TestPlanManage = (props: any) => {
             showTitle: false
         },
         width: 220,
-        render: (row: any) => (
+        render: (row: any,record:any) => (
             <Space>
                 <OptButton disabled={!row.enable} onClick={() => handleRun(row)}>运行</OptButton>
                 <OptButton onClick={() => handleView(row)}>查看</OptButton>
                 <OptButton onClick={() => handleCopy(row)}>复制</OptButton>
-                <OptButton onClick={() => handleEdit(row)}>编辑</OptButton>
-                <Popconfirm title="确认删除该计划吗？"
-                    onConfirm={() => handleDelete(row)}
-                    okText="确认"
-                    cancelText="取消">
-                    <OptButton>删除</OptButton>
-                </Popconfirm>
+                <Access accessible={access.WsTourist()}>
+                    <Access 
+                        accessible={access.WsMemberOperateSelf(record.creator)}
+                        fallback={
+                            <Space>
+                                <OptButton onClick={() => AccessTootip()}>编辑</OptButton>
+                                <OptButton onClick={() => AccessTootip()}>删除</OptButton>
+                            </Space>
+                        }
+                    >
+                        <Space>
+                            <OptButton onClick={() => handleEdit(row)}>编辑</OptButton>
+                            <Popconfirm title="确认删除该计划吗？"
+                                onConfirm={() => handleDelete(row)}
+                                okText="确认"
+                                cancelText="取消">
+                                <OptButton>删除</OptButton>
+                            </Popconfirm>
+                        </Space>
+                    </Access>
+                </Access>
             </Space>
         )
     }]

@@ -1,5 +1,5 @@
 import { Row, Dropdown, Menu, Tabs, Badge, message, Button, Space } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useModel, history, useAccess, Access } from 'umi';
 import SelectLang from './SelectLang'
 import styles from './index.less';
@@ -13,7 +13,8 @@ import { requestCodeMessage } from '@/utils/utils';
 
 export type SiderTheme = 'light' | 'dark';
 
-const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, wsId }) => {
+const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> = (props) => {
+    const { isWs, wsId, routes } = props;
     const { initialState } = useModel('@@initialState');
     const [tab, setTab] = useState('1')
     const [dropVisible, setDropVisible] = useState(false)
@@ -33,7 +34,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
     }
-    const { login_url, register_url } = initialState?.authList || {};
+    const { login_url, register_url, sys_role_title, ws_role_title } = initialState?.AuthList || {};
 
     useEffect(() => {
         setDropVisible(false)
@@ -43,8 +44,20 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
         if (!wsId) increment()
     }, [wsId])
 
+    const routeRight = useMemo(() => {
+        return routes.filter(
+            (cur: any) => !cur.inNav && !cur.unaccessible
+        )
+    }, [routes])
+
     const jumpPage = async () => {
-        history.push(`/ws/${wsId}/config`)
+        const path = routeRight[0].children[0].path
+        const realPath = path.replace(':ws_id', wsId)
+        if (path && !!realPath.length) {
+            history.push(realPath)
+        } else {
+            history.push({ pathname: '/401', state: wsId })
+        }
     }
 
     const handleAllRead = async () => {
@@ -65,7 +78,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
             {
                 isWs &&
-                <Access accessible={access.canWsAdmin()}>
+                <Access accessible={access.IsWsSetting()}>
                     <SettingIcon
                         onClick={() => jumpPage()}
                         style={{ /* marginRight : 24 , */ cursor: 'pointer' }}
@@ -73,7 +86,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string }> = ({ isWs, ws
                 </Access>
             }
             {/* <Input prefix={ <SearchOutlined /> } size="large" style={{ width : 192 , marginRight : 34 , borderRadius : 2 }} placeholder="搜索" />  */}
-            <Access accessible={access.wsTouristFilter()}>
+            <Access accessible={access.IsWsSetting()}>
                 <Dropdown
                     arrow={true}
                     overlayClassName={styles.messageDropdownArrowHide}

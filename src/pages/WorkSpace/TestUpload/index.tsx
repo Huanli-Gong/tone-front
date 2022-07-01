@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { FormattedMessage, useIntl, useAccess } from 'umi';
+import { FormattedMessage, useIntl, useAccess, Access } from 'umi';
 import { Layout, message, Tabs, Badge, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Spin } from 'antd';
 import UploadTable from './components/OfflineUploadTable';
 import { querySummary } from './services';
@@ -64,7 +64,9 @@ export default (props: any) => {
   }
 
   const operations = (
-    <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
+    <Access accessible={access.IsWsSetting()}>
+        <Button type="primary" onClick={uploadClick}><FormattedMessage id={"TestUpload.tab.tabBarExtraContent.upload"} /></Button>
+    </Access>
   )
 
   return (

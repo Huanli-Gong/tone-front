@@ -16,13 +16,15 @@ import SelectTags from '@/components/Public/SelectTags';
 import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
 import { useClientSize } from '@/utils/hooks'
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import PermissionTootip from '@/components/Public/Permission/index';
+import { Access, useAccess } from 'umi';
 /**
  * 内网集群
  */
 const Cluster = (props: any, ref: any) => {
     const { ws_id } = props.match.params
+    const access = useAccess();
     const { loading, dataSource, params, total, refresh, setParams, setRefresh } = usePageInit(ws_id)
     // 刷新子表格的标记
     const [syncServerLoading, setSyncServerLoading] = useState(false)
@@ -168,19 +170,23 @@ const Cluster = (props: any, ref: any) => {
             render: (record: any, row: any) => (
                 <Space>
                     <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}>添加</Button>
-                    <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}>编辑</Button>
+                    <Access 
+                        accessible={access.WsMemberOperateSelf(row.owner)}
+                        fallback={
+                            <Space>
+                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}>编辑</Button>
+                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}>删除</Button>
+                            </Space>
+                        }
+                    >
+                        <Space>
+                            <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}>编辑</Button>
+                            <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}>删除</Button>
+                        </Space>
+                    </Access>
                     <PermissionTootip>
                         <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}>日志</Button>
                     </PermissionTootip>
-                    {/* <Popconfirm placement="top"
-                        title="确定要删除吗？" 
-                        okText="确定"
-                        cancelText="取消"
-                        onConfirm={() => handleDeleteServer( record.id )}
-                    >
-                        <Button type="link" style={{ padding : 0 }}>删除</Button>
-                    </Popconfirm> */}
-                    <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}>删除</Button>
                 </Space>
             )
         }

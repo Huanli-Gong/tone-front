@@ -17,9 +17,10 @@ import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
 import { useClientSize } from '@/utils/hooks'
 import ResizeTable from '@/components/ResizeTable';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
+import { Access, useAccess } from 'umi';
 
 /**
  * 内网单机
@@ -27,7 +28,7 @@ import SelectVmServer from './Components/SelectVmServer';
 
 const Standalone = (props: any, ref: any) => {
     const { ws_id } = props.match.params
-
+    const access = useAccess();
     const [dataSource, setDataSource] = useState<any>([])
     const [loading, setLoading] = useState(true)
     const [defaultExpandRowKeys, setDefaultExpandRowKeys] = useState([])
@@ -45,7 +46,7 @@ const Standalone = (props: any, ref: any) => {
         open: addDeviceRef.current.show
     }))
 
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
 
     const [urlParmas, setUrlParams] = useState<any>({
         ws_id,
@@ -206,7 +207,7 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
-                        <ServerLink val={_} provider={'内网机器'} islink={row.channel_type === "staragent"}/>
+                        <ServerLink val={_} provider={'内网机器'} islink={row.channel_type === "staragent"} />
                     )
                 else
                     return (
@@ -249,7 +250,7 @@ const Standalone = (props: any, ref: any) => {
         },
         !BUILD_APP_ENV && {
             title: '机器类型',
-            dataIndex: 'device_type', 
+            dataIndex: 'device_type',
             width: 100,
             ellipsis: {
                 showTitle: false,
@@ -265,7 +266,7 @@ const Standalone = (props: any, ref: any) => {
         },
         !BUILD_APP_ENV && {
             title: '机型',
-            dataIndex: 'sm_name', 
+            dataIndex: 'sm_name',
             width: 100,
             ellipsis: {
                 showTitle: false,
@@ -277,7 +278,7 @@ const Standalone = (props: any, ref: any) => {
         },
         !BUILD_APP_ENV && {
             title: 'IDC',
-            width: 100, 
+            width: 100,
             ellipsis: {
                 showTitle: false,
             },
@@ -375,12 +376,12 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.tags && urlParmas.tags.length > 0 ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => 
+            filterDropdown: ({ confirm }: any) =>
                 <SelectTags
                     ws_id={ws_id}
                     run_mode={'standalone'}
-                    confirm={confirm} 
-                    onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page:1, tags:val  })}} 
+                    confirm={confirm}
+                    onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, tags: val }) }}
                 />,
             render: (record: any) => {
                 if (record.length > 0) {
@@ -420,37 +421,77 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}>详情</Button>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)} /*disabled={ _.state === 'Occupied' ? true : false }*/>编辑</Button>
-                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
-                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
-                    {
-                        !BUILD_APP_ENV ?
-                            row.sub_server_list && row.device_type === '物理机' ?
-                                <Dropdown
-                                    placement="bottomRight"
-                                    overlay={
-                                        <Menu
-                                            onClick={(item) => hanldeClickMenu(item, _)}
+                    <Access 
+                        accessible={access.WsMemberOperateSelf(row.owner)}
+                        fallback={
+                            <Space>
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
+                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
+                                {
+                                    !BUILD_APP_ENV ?
+                                        row.sub_server_list && row.device_type === '物理机' ?
+                                            <Dropdown
+                                                placement="bottomRight"
+                                                overlay={
+                                                    <Menu
+                                                        onClick={(item) => hanldeClickMenu(item, _)}
+                                                    >
+                                                        <Menu.Item key={'data'}>同步数据</Menu.Item>
+                                                        <Menu.Item key={'vm'}>同步机器</Menu.Item>
+                                                    </Menu>
+                                                }
+                                                trigger={['click', 'hover']}
+                                            >
+                                                <a className="ant-dropdown-link" onClick={()=> AccessTootip()}>
+                                                    同步 <DownOutlined />
+                                                </a>
+                                            </Dropdown> :
+                                            <Button
+                                                style={{ padding: 0 }}
+                                                size="small"
+                                                type="link"
+                                                onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}>
+                                                同步
+                                            </Button>
+                                        : null
+                                }
+                            </Space>
+                        }
+                    >
+                        <Space>
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)}>编辑</Button>
+                            <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
+                            {
+                                !BUILD_APP_ENV ?
+                                    row.sub_server_list && row.device_type === '物理机' ?
+                                        <Dropdown
+                                            placement="bottomRight"
+                                            overlay={
+                                                <Menu
+                                                    onClick={(item) => hanldeClickMenu(item, _)}
+                                                >
+                                                    <Menu.Item key={'data'}>同步数据</Menu.Item>
+                                                    <Menu.Item key={'vm'}>同步机器</Menu.Item>
+                                                </Menu>
+                                            }
+                                            trigger={['click', 'hover']}
                                         >
-                                            <Menu.Item key={'data'}>同步数据</Menu.Item>
-                                            <Menu.Item key={'vm'}>同步机器</Menu.Item>
-                                        </Menu>
-                                    }
-                                    trigger={['click', 'hover']}
-                                >
-                                    <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                        同步 <DownOutlined />
-                                    </a>
-                                </Dropdown> :
-                                <Button
-                                    style={{ padding: 0 }}
-                                    size="small"
-                                    type="link"
-                                    onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}>
-                                    同步
-                                </Button>
-                            : null
-                    }
+                                            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                                同步 <DownOutlined />
+                                            </a>
+                                        </Dropdown> :
+                                        <Button
+                                            style={{ padding: 0 }}
+                                            size="small"
+                                            type="link"
+                                            onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}>
+                                            同步
+                                        </Button>
+                                    : null
+                            }
+                        </Space>
+                    </Access>
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
                 </Space>
             )
         }

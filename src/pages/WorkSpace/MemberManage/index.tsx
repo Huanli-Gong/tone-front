@@ -4,20 +4,21 @@ import { queryMember, addWorkspaceMember, queryWorkspaceMemberCounts, queryWorks
 import styles from './index.less'
 import TableComponent from './Components/Table'
 import { roleList } from '@/pages/SystemConf/UserManagement/service'
+import { Access, useAccess } from 'umi'
 import { SingleTabCard } from '@/components/UpgradeUI';
-// import { requestCodeMessage, matchRoleEnum } from '@/utils/utils';
 import { requestCodeMessage, switchUserRole } from '@/utils/utils';
 let timeout: any
 let timer: any
 export default (props: any) => {
     const { ws_id } = props.match.params
+    const access = useAccess();
     const [role, setRole] = useState('ws_tester_admin')
     const [keyword, setKeyword] = useState('')
     const [memberCounts, setMemberCounts] = useState<any>({
         all_count: 0,
-        //ws_owner: 0,
+        ws_owner: 0,
+        ws_admin:0,
         ws_tester_admin: 0,
-        ws_tester: 0,
         ws_member: 0
     })
     const [searchKey, setSearchKey] = useState('')
@@ -29,9 +30,6 @@ export default (props: any) => {
     const [select, setSelect] = useState<any[]>([]);
     const [roleData, setRoleData] = useState<any[]>([]);
     const [form] = Form.useForm()
-    // 权限
-    // const { currentRole } = matchRoleEnum();
-    // const limitAuthority =['ws_tester_admin'].includes(currentRole);
         
     const getMemberList = async (name: string = '') => {
         const { data } = await queryMember({ keyword: name, scope: 'aligroup' })
@@ -47,7 +45,6 @@ export default (props: any) => {
     const getRoleWsList = async () => {
         const { data } = await roleList({ role_type: 'workspace', ws_id, is_filter: '1' })
         data && setRoleData(data.list)
-
     };
     useEffect(() =>{getRoleWsList()},[ws_id])
 
@@ -140,10 +137,9 @@ export default (props: any) => {
     }
 
     const childTabs = [
-        // { name: `所有者 ${memberCounts.ws_owner}`, role: 'ws_owner' },
-        // { name: `测试管理员 ${memberCounts.ws_test_admin}`, role: 'ws_test_admin' },
+        { name: `所有者 ${memberCounts.ws_owner}`, role: 'ws_owner' },
+        { name: `管理员 ${memberCounts?.ws_admin}`, role: 'ws_admin' },
         { name: `测试管理员 ${memberCounts?.ws_tester_admin}`, role: 'ws_tester_admin' },
-        { name: `测试人员 ${memberCounts.ws_tester || 0}`, role: 'ws_tester' },
         { name: `Workspace成员 ${memberCounts.ws_member}`, role: 'ws_member' }
     ]
 
@@ -184,7 +180,7 @@ export default (props: any) => {
                             value={searchKey}
                             onSearch={handleSearchWorkspaceMember}
                             onChange={handleSearchWorkspaceMember}
-                            onSelect={val => {
+                            onSelect={(val:any) => {
                                 setKeyword(val)
                                 setSearchKey(val)
                             }}
@@ -194,16 +190,16 @@ export default (props: any) => {
                                 onPressEnter={(evt: any) => setKeyword(evt.target.value)}
                             />
                         </AutoComplete>
-                        <Button type="primary" onClick={handleOpenAddMemberModal}>添加成员</Button>
+                        <Access
+                            accessible={access.WsBtnPermission()}
+                        >
+                            <Button type="primary" onClick={handleOpenAddMemberModal}>添加成员</Button>
+                        </Access>
                     </Space>
                 }
             >
                 <Tabs className={styles.tab_style} onChange={handleChangeTab} type="card">
                     {childTabs.map((item: any) => {
-                        // // 测试管理员, 隐藏[所有者]tab
-                        // if (limitAuthority && item.role == 'ws_owner') {
-                        //     return undefined
-                        // }
                         return (
                             <Tabs.TabPane tab={item.name} key={item.role}>
                                 {role === item.role &&

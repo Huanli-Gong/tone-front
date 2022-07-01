@@ -10,7 +10,8 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { Access, useAccess } from 'umi'
 
 const GroupTree: React.FC<any> = (props) => {
     const { cluster_id, width, onRef, size, top, handleOpenLogDrawer } = props
@@ -19,6 +20,7 @@ const GroupTree: React.FC<any> = (props) => {
     const [refresh, setRefresh] = useState<boolean>(true)
     const [columns, setColumns] = useState<any>([]);
     const aloneMachine = useRef<any>(null)
+    const access = useAccess();
 
     // step1.请求列表数据
     const getList = async () => {
@@ -133,6 +135,7 @@ const GroupTree: React.FC<any> = (props) => {
             title: 'Owner',
             width: 100,
             dataIndex: 'owner_name',
+            render: (_: any, row: any) => <EllipsisPulic title={row.owner_name} />
         },
         {
             title: '是否Local机器',
@@ -193,24 +196,37 @@ const GroupTree: React.FC<any> = (props) => {
             valueType: 'option',
             dataIndex: 'id',
             width: 140,
-            render: (_: number, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
-                <Popconfirm
-                    title={<div style={{ color: 'red' }}>确认要删除吗？</div>}
-                    placement="topRight"
-                    okText="取消"
-                    cancelText="确认删除"
-                    onCancel={() => { remMachine(row) }}
-                    overlayStyle={{ width: '224px' }}
-                    icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                >
-                    <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-                </Popconfirm>
-                {/* <PermissionTootip>
-                    <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
-                </PermissionTootip> */}
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
-            </Space>,
+            render: (_: number, row: any) => (
+                <Space>
+                    <Access 
+                        accessible={access.WsMemberOperateSelf(row.test_server.owner)}
+                        fallback={
+                            <Space>
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>编辑</Button>
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>删除</Button>
+                            </Space>
+                        }
+                    >
+                        <Space>
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
+                            <Popconfirm
+                                title={<div style={{ color: 'red' }}>确认要删除吗？</div>}
+                                placement="topRight"
+                                okText="取消"
+                                cancelText="确认删除"
+                                onCancel={() => { remMachine(row) }}
+                                overlayStyle={{ width: '224px' }}
+                                icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+                            >
+                                <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+                            </Popconfirm>
+                        </Space>
+                    </Access>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>日志</Button>
+                </Space>
+
+
+            )
         }
         ].filter(Boolean)
         setColumns(dataSource)

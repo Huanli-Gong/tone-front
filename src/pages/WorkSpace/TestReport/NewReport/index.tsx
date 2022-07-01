@@ -13,7 +13,7 @@ import Catalog from './components/Catalog'
 // import { writeDocumentTitle } from '@/utils/hooks';
 import { editReport, saveReport, detailTemplate, reportDetail } from '../services';
 import { history, useAccess, Access, useParams } from 'umi';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
 import _ from 'lodash';
@@ -109,9 +109,9 @@ const Report = (props: any) => {
                                 <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link"><IconLink style={{ marginRight: 4 }} />分享</span>
                                 {
                                     routeName !== 'ShareReport' && <Access
-                                        accessible={access.wsRoleContrl(Number(creator_id.substring(5,creator_id.length)))}
+                                        accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5,creator_id.length)))}
                                         fallback={
-                                            <span style={{ cursor: 'pointer',color:'#ccc' }}><IconWarp style={{ marginRight: 4 }} />编辑</span>
+                                            <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} />编辑</span>
                                         }
                                     >
                                         <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>

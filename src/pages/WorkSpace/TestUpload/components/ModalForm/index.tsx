@@ -262,18 +262,9 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
             <Button onClick={handleClose} disabled={loading}>
               <FormattedMessage id="Drawer.btn.close" />
             </Button>
-            <Access  
-              accessible={access.wsRoleContrl()} 
-              fallback={
-                <Tooltip placement="topLeft" title={AuthPop} color="#fff">
-                  <Button type="primary"><FormattedMessage id="Drawer.btn.confirm" /></Button>
-                </Tooltip>
-              }
-            >
-              <Button onClick={handleOk} type="primary" disabled={submitDisable || loading}>
-                <FormattedMessage id="Drawer.btn.confirm" />
-              </Button>
-            </Access>
+            <Button onClick={handleOk} type="primary" disabled={submitDisable || loading}>
+              <FormattedMessage id="Drawer.btn.confirm" />
+            </Button>
           </Space>
         </div>
       }>

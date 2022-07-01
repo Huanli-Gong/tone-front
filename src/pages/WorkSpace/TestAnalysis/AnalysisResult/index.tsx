@@ -254,7 +254,7 @@ const Report = (props: any) => {
                                         <IconLink style={{ marginRight: 5 }} />分享
                                     </span>
                                 }
-                                <Access accessible={access.wsRoleContrl()}>
+                                <Access accessible={access.IsWsSetting()}>
                                     {!form_id && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
                                 </Access>
                             </span>

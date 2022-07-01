@@ -9,9 +9,10 @@ import { getSearchFilter, getCheckboxFilter } from '@/components/TableFilters'
 import CompareBar from './compareBar'
 import styles from './compareBar.less'
 import _ from 'lodash'
-import { requestCodeMessage, matchRoleEnum } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
 import ResizeTable from '@/components/ResizeTable'
+
 const OptionButton = styled.span`
     color:#1890FF;
     cursor:pointer;
@@ -34,8 +35,6 @@ const ViewAllPlan = styled.div`
 
 const ViewTable = (props: ViewTableProps) => {
     // 权限
-    const { currentRole, currentRoleId } = matchRoleEnum();
-    const limitAuthority = ['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
     const access = useAccess()
     const { plan_id, ws_id, showPagination = false } = props
     const [pageParam, setPageParam] = useState<any>({ page_size: 10, page_num: 1, ws_id, plan_id })
@@ -140,7 +139,6 @@ const ViewTable = (props: ViewTableProps) => {
             title: '完成时间',
             width: 180
         },
-        access.wsRoleContrl() &&
         {
             title: '操作',
             width: 150,
@@ -159,18 +157,20 @@ const ViewTable = (props: ViewTableProps) => {
                         >
                             详情
                         </OptionButton>
-                        <Access
-                            accessible={access.wsRoleContrl(row.creator)}
-                            fallback={<span style={{ color: '#ccc', cursor: 'not-allowed' }}>删除</span>}
-                        >
-                            <Popconfirm
-                                title="确认删除该计划吗？"
-                                okText="确认"
-                                cancelText="取消"
-                                onConfirm={() => hanldeDeletePlan(row)}
+                        <Access accessible={access.WsTourist()}>
+                            <Access
+                                accessible={access.WsMemberOperateSelf(row.creator)}
+                                fallback={<OptionButton className="option-delete" onClick={()=> AccessTootip()}>删除</OptionButton>}
                             >
-                                <OptionButton className="option-delete">删除</OptionButton>
-                            </Popconfirm>
+                                <Popconfirm
+                                    title="确认删除该计划吗？"
+                                    okText="确认"
+                                    cancelText="取消"
+                                    onConfirm={() => hanldeDeletePlan(row)}
+                                >
+                                    <OptionButton className="option-delete">删除</OptionButton>
+                                </Popconfirm>
+                            </Access>
                         </Access>
                         <ViewReport
                             className={'option-detail'}

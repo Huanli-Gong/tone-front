@@ -19,7 +19,7 @@ import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import _, { isNull } from 'lodash'
 
 const TestResultDetails: React.FC = (props: any) => {
@@ -106,7 +106,7 @@ const TestResultDetails: React.FC = (props: any) => {
         if (fetching) return
         setFetching(true)
         // 添加用户id
-        const { user_id } = initialState?.authList
+        const { user_id } = initialState?.AuthList
         const q = user_id ? { user_id } : {}
         const { code, msg } = await updateSuiteCaseOption({ ...q, editor_obj: 'job', job_id, state: 'stop' })
         if (code !== 200) {
@@ -137,7 +137,7 @@ const TestResultDetails: React.FC = (props: any) => {
     )
 
     const EditNoteBtn: React.FC<any> = (props: any) => {
-        const { note } = props;
+        const { note, creator_id } = props;
         let noteStyle: any = {
             padding: 0,
             marginLeft: 10
@@ -153,9 +153,15 @@ const TestResultDetails: React.FC = (props: any) => {
             }
         }
         return (
-            <EditOutlined
-                onClick={handleOpenEditRemark}
-                style={{ ...noteStyle }} />
+            <Access 
+                accessible={access.WsMemberOperateSelf(creator_id)}
+                fallback={<EditOutlined onClick={()=> AccessTootip()} style={{ ...noteStyle }}/>}
+            >
+                <EditOutlined
+                    onClick={handleOpenEditRemark}
+                    style={{ ...noteStyle }} 
+                />
+            </Access>
         )
     }
 
@@ -284,8 +290,8 @@ const TestResultDetails: React.FC = (props: any) => {
                                                 ws_id={ws_id}
                                                 job_id={job_id}
                                                 tags={data.tags}
-                                                accessible={access.wsRoleContrl(data.creator)}
-                                                accessLabel={access.canWsAdmin()}
+                                                creator_id={data.creator}
+                                                accessLabel={access.WsMemberOperateSelf()}
                                             />
                                         </Row>
                                         <Row>
@@ -298,12 +304,11 @@ const TestResultDetails: React.FC = (props: any) => {
                                                     placement="topLeft"
                                                     overlayStyle={{ minWidth: 800 }}
                                                 >
-                                                    {
-                                                        data.note || '-'
-                                                    }
+                                                    { data.note || '-' }
                                                 </Tooltip>
-
-                                                {access.wsRoleContrl(data.creator) ? <EditNoteBtn note={data.note} /> : <></>}
+                                                <Access accessible={access.WsTourist()}>
+                                                    <EditNoteBtn note={data.note} creator_id={data.creator}/>
+                                                </Access>
                                             </div>
                                         </Row>
                                     </Col>
@@ -333,19 +338,16 @@ const TestResultDetails: React.FC = (props: any) => {
                                             origin={'jobDetail'}
                                             stylesButton={veiwReportHeight.current}
                                         />
-
-                                        <Access accessible={access.wsRoleContrl(data.creator)}
-                                            fallback={
-                                                initialState?.authList?.ws_role_title === 'ws_tester' ?
-                                                    <>
-                                                        <Button type={buttonType} disabled={true} style={{ marginRight: 8 }}>重跑</Button>
-                                                        {testProgressTab && <Button disabled={true} style={{ marginRight: 8 }}>停止Job</Button>}
-                                                    </>
-                                                    : null
-                                            }
-                                        >
+                                        <Access accessible={access.IsWsSetting()}>
                                             <Button type={buttonType} onClick={handleReplay} disabled={buttonDisable} style={{ marginRight: 8 }}>重跑</Button>
-                                            {testProgressTab && <Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
+                                        </Access>
+                                        <Access accessible={access.WsTourist()}>
+                                            <Access 
+                                                accessible={access.WsMemberOperateSelf(data.creator)}
+                                                fallback={testProgressTab && <Button onClick={()=> AccessTootip()} style={{ marginRight: 8 }}>停止Job</Button>}
+                                            >
+                                                {testProgressTab && <Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
+                                            </Access>
                                         </Access>
                                     </div>
                                 }

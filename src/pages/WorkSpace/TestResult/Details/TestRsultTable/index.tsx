@@ -16,7 +16,7 @@ import { ReactComponent as ErrorCircle } from '@/assets/svg/TestResult/suite/fai
 import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ResizeTable from '@/components/ResizeTable'
 const funcStates = [
     { key: 'count', name: '全部', value: '', color: '#649FF6' },
@@ -79,7 +79,7 @@ const TestResultTable: React.FC<any> = (props) => {
             defaultParams: [defaultParams]
         }
     )
-    
+
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
@@ -185,7 +185,7 @@ const TestResultTable: React.FC<any> = (props) => {
             width: 175,
             ...tooltipTd(),
         },
-        access.wsRoleContrl(creator) &&
+        access.WsTourist() &&
         {
             title: '备注',
             dataIndex: 'note',
@@ -197,6 +197,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 <EllipsisEditColumn
                     title={_}
                     width={80}
+                    access={access.WsMemberOperateSelf(creator)}
                     onEdit={
                         () => editRemarkDrawer.current.show({ ...row, suite_name: row.suite_name, editor_obj: 'test_job_suite' })
                     }
@@ -211,22 +212,21 @@ const TestResultTable: React.FC<any> = (props) => {
                 showTitle: false
             },
             render: (_: any) => (
-                <Access
-                    accessible={access.wsRoleContrl(creator)}
-                    fallback={
-                        initialState?.authList?.ws_role_title === 'ws_tester' ?
+                <Access accessible={access.WsTourist()}>
+                    <Access
+                        accessible={access.WsMemberOperateSelf(creator)}
+                        fallback={
                             <Space>
-                                <span style={{ color: '#ccc', cursor: 'pointer' }}>对比基线</span>
-                                <span style={{ color: '#ccc', cursor: 'pointer' }}>加入基线</span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>对比基线</span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>加入基线</span>
                             </Space>
-                            : <></>
-                    }
-                >
-                    <Space>
-                        {/* <span onClick={ () => handleEditRemark( _ ) } style={{ color : '#1890FF' , cursor : 'pointer' }}>编辑</span> */}
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
-                    </Space>
+                        }
+                    >
+                        <Space>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
+                        </Space>
+                    </Access>
                 </Access>
             )
         }
@@ -380,23 +380,22 @@ const TestResultTable: React.FC<any> = (props) => {
                             >
                                 {openAllRows ? '收起所有' : '展开所有'}
                             </Dropdown.Button>
-                            <Access
-                                accessible={access.wsRoleContrl(creator)}
-                                fallback={
-                                    initialState?.authList?.ws_role_title === 'ws_tester' ?
+                            <Access accessible={access.WsTourist()}>
+                                <Access
+                                    accessible={access.WsMemberOperateSelf(creator)}
+                                    fallback={
                                         <Space>
-                                            <Button disabled={true}>批量对比基线</Button>
-                                            <Button disabled={true}>批量加入基线</Button>
+                                            <Button onClick={() => AccessTootip()}>批量对比基线</Button>
+                                            <Button onClick={() => AccessTootip()}>批量加入基线</Button>
                                         </Space>
-                                        : <></>
-                                }
-                            >
-                                <Space>
-                                    <Button onClick={() => handleBatchContrastBaseline()}>批量对比基线</Button>
-                                    <Button onClick={() => handleBatchJoinBaseline()}>批量加入基线</Button>
-                                </Space>
+                                    }
+                                >
+                                    <Space>
+                                        <Button onClick={() => handleBatchContrastBaseline()}>批量对比基线</Button>
+                                        <Button onClick={() => handleBatchJoinBaseline()}>批量加入基线</Button>
+                                    </Space>
+                                </Access>
                             </Access>
-
                         </Space>
                     }
                     <Space>

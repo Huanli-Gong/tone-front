@@ -11,14 +11,15 @@ import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
-import { requestCodeMessage } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import treeSvg from '@/assets/svg/tree.svg'
+import { Access, useAccess } from 'umi'
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default (props: any) => {
     const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-
+    const access = useAccess();
     const [loading, setLoading] = useState(true)
     const [dataSource, setDataSoure] = useState<any>([])
     const [refrush, setRefrush] = useState(false)
@@ -188,32 +189,40 @@ export default (props: any) => {
             fixed: 'right',
             width: 220,
             align: 'center',
-            render: (_: any) => (
+            render: (_: any,row:any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>详情</Button>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
-                    <Popconfirm
-                        title="确定要删除吗？"
-                        okText="确定"
-                        cancelText="取消"
-                        onConfirm={() => handleDeleteServer(_.id)}
+                    <Access 
+                        accessible={access.WsMemberOperateSelf(row.test_server.owner)}
+                        fallback={
+                            <Space>
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
+                                <Popconfirm
+                                    title="确定要删除吗？"
+                                    okText="确定"
+                                    cancelText="取消"
+                                    onConfirm={() => AccessTootip()}
+                                >
+                                    <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
+                                </Popconfirm>
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button>
+                            </Space>
+                        }
                     >
-                        <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
-                    </Popconfirm>
+                        <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
+                        <Popconfirm
+                            title="确定要删除吗？"
+                            okText="确定"
+                            cancelText="取消"
+                            onConfirm={() => handleDeleteServer(_.id)}
+                        >
+                            <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
+                        </Popconfirm>
+                        <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>
+                    </Access>
                     <PermissionTootip>
                         <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
                     </PermissionTootip>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>
-                    {/* <Dropdown
-                        overlay={
-                            <Menu>
-                                <Menu.Item><Button style={{ padding : 0 }} type="link" size="small" onClick={ () => handleOpenLogDrawer( _.id ) }>日志</Button></Menu.Item>
-                                <Menu.Item><Button style={{ padding : 0 }} type="link" size="small" onClick={ () => handleUpdateServer( _.id ) }>同步</Button></Menu.Item>
-                            </Menu>
-                        }
-                    >
-                        <Button style={{ padding : 0 }} type="link" size="small" className={ styles.dorp_button }>...</Button>
-                    </Dropdown> */}
                 </Space>
             )
         }
