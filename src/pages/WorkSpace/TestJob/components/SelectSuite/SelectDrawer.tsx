@@ -6,6 +6,7 @@ import { cloneDeep } from 'lodash';
 import { getDomain } from './service'
 import styles from './style.less';
 import { targetJump } from '@/utils/utils'
+import DomainExpaned from './DomainExpanded';
 
 const SelectDrawer: React.FC<any> = ({
     testType,
@@ -22,7 +23,6 @@ const SelectDrawer: React.FC<any> = ({
     const access = useAccess()
     const [selectData, setSelectData] = useState<any>([])
     const [checkAll, setCheckAll] = useState<boolean>(false)
-    const [expand, setExpand] = useState<boolean>(false)
     const [domain, setDomain] = useState<any>('')
     const [name, setName] = React.useState<string>("")
 
@@ -202,54 +202,16 @@ const SelectDrawer: React.FC<any> = ({
                     style={{ width: 420 }}
                     allowClear
                 />
+                <div style={{ marginTop: 16 }}>
+                    {
+                        control.indexOf('domain') > -1 &&
+                        <DomainExpaned active={domain} onChange={setDomain} dataSource={domainList} />
+                    }
+                </div>
                 {
-                    control.indexOf('domain') > -1 ?
-                        <div style={{ position: 'relative', paddingTop: '16px', display: 'flex' }}>
-                            <div className={styles.nav}>领域：</div>
-                            <div style={{ width: 500 }}>
-                                <Button
-                                    type={domain === '' ? 'primary' : 'ghost'}
-                                    size="small"
-                                    style={{ marginRight: 8, marginBottom: 8, border: 'none' }}
-                                    onClick={() => setDomain('')}
-                                >
-                                    全部
-                                </Button>
-                                {
-                                    domainList.map((item: any, index: number) => {
-                                        if (!expand && index > 6) return
-                                        return (
-                                            <Button
-                                                key={item.id}
-                                                type={item.name == domain ? "primary" : "ghost"}
-                                                size="small"
-                                                style={{ marginRight: 8, marginBottom: 8, border: item.name == domain ? undefined : "none" }}
-                                                onClick={() => setDomain(item.name)}
-                                            >
-                                                {item.name}
-                                            </Button>
-                                        )
-                                    })
-                                }
-                            </div>
-                            {
-                                domainList.length > 6 &&
-                                <Button
-                                    type="link"
-                                    size="small"
-                                    style={{ position: 'absolute', right: 0 }}
-                                    onClick={() => setExpand(!expand)}
-                                    icon={expand ? <UpOutlined /> : <DownOutlined />}
-                                >
-                                    {expand ? '收起' : '展开'}
-                                </Button>
-                            }
-                        </div> :
-                        <div style={{ height: '16px' }}></div>
-                }
-                {
-                    (treeData?.length) &&
+                    (!!treeData?.length) &&
                     <Tree
+                        style={{ marginTop: 16 }}
                         checkedKeys={selectData}
                         checkable
                         onCheck={onCheck}
