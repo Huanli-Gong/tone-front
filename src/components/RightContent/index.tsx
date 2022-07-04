@@ -132,7 +132,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                 </Dropdown>
             </Access>
             {/* <AvatarDropdown /> */}
-            <SelectLang />
+            {/* <SelectLang /> */}
             {
                 BUILD_APP_ENV ?
                     <Access
