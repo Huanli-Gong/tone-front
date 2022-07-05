@@ -180,7 +180,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setSelectIpsValue('')
             }
         }
-        else if (channel_type && ip) {
+        else if (channel_type && ip && ip.length > 0) {
             /**
              * 编辑, 需要把机器id也传给后端。
              * @author jpt 校验通道失败
@@ -232,16 +232,17 @@ const AddDeviceDrawer = (props: any, ref: any) => {
 
     // 失焦校验
     const handleBlurIps = () => {
-        const matchResult: any = selectIpsValue.split(/,|\s/) || []
-        const resultIp: any = Array.from(
-            new Set(matchResult.concat(vals))
-        )
-        setVals(resultIp)
-        form.setFieldsValue({ ips: resultIp })
-
-        const channel_type = form.getFieldValue('channel_type')
-        if (channel_type) {
-            handleIpsCheck(channel_type)
+        if(selectIpsValue.length > 0){
+            const matchResult: any = selectIpsValue.split(/,|\s/) || []
+            const resultIp: any = Array.from(
+                new Set(matchResult.concat(vals))
+            )
+            setVals(resultIp)
+            form.setFieldsValue({ ips: resultIp })
+            const channel_type = form.getFieldValue('channel_type')
+            if (channel_type) {
+                handleIpsCheck(channel_type)
+            }
         }
     }
 
@@ -322,10 +323,9 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         <Form.Item
                             label={BUILD_APP_ENV ? "机器IP" : '机器'}
                             name="ips"
-                            validateStatus={ips.errors.length > 0 ? 'error' : ''}
-                            help={ips.errors.length > 0 && validateMsg}
+                            validateStatus={ips.errors.length > 0 ? 'error' : undefined}
+                            help={ips.errors.length > 0 ? validateMsg : undefined}
                             rules={[{ required: true }]}
-                        // validateTrigger={ 'onBlur' }
                         >
                             <Select
                                 mode="multiple"

@@ -3,6 +3,7 @@ import { Table, Tooltip } from 'antd'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ServerTooltip } from './ServerTooltip'
 import ResizeTable from '@/components/ResizeTable'
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 //测试用例及机器配置 expand table
 export default ({ data = [], testType, provider_name }: any) => {
     const columns: any = [
@@ -43,10 +44,9 @@ export default ({ data = [], testType, provider_name }: any) => {
                         (r, k, i) => r += `${i === 0 ? '' : ';'}${k}=${_.env_info[k]}`,
                         ''
                     ) : '-'
+               
                 return (
-                    <Tooltip title={envStr}>
-                        {envStr}
-                    </Tooltip>
+                    <EllipsisPulic title={envStr} width={150}/>
                 )
             }
         }, {

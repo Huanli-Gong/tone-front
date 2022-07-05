@@ -1,9 +1,10 @@
 import React from 'react'
-import { Button , Tooltip } from 'antd'
+import { Button, Tooltip } from 'antd'
 import { MinusCircleOutlined } from '@ant-design/icons'
 import { noop, isNull } from 'lodash'
 import styles from './style.less'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import Tag from 'antd/es/tag'
 
 interface ColumnsProp {
@@ -14,10 +15,10 @@ interface ColumnsProp {
     onDataSourceChange: any,
     dataSource: any,
     run_mode: string,
-    width:number
+    width: number
 }
 
-export default ( props : ColumnsProp ) => {
+export default (props: ColumnsProp) => {
     const {
         openCase = noop,
         checked = false,
@@ -67,29 +68,29 @@ export default ( props : ColumnsProp ) => {
         ellipsis: {
             shwoTitle: false,
         },
-        width : 150,
+        width: 150,
         render: (_: any, row: any) => {
             const { server_tag_id } = row
             if (server_tag_id && server_tag_id.length > 0) {
                 const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : '随机'
                 return (
-                    <Tooltip placement="topLeft" title={ tagList } >
-                        { tagList }
+                    <Tooltip placement="topLeft" title={tagList} >
+                        {tagList}
                     </Tooltip >
                 )
             }
 
-            if(isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}'){
+            if (isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}') {
                 return (
                     <Tooltip placement="topLeft" title={row.customer_server.custom_ip}>
-                        { row.customer_server.custom_ip}
+                        {row.customer_server.custom_ip}
                     </Tooltip>
                 )
             }
 
             return (
                 <Tooltip placement="topLeft" title={row.ip || '随机'}>
-                    { row.ip || '随机'}
+                    {row.ip || '随机'}
                 </Tooltip>
             )
         },
@@ -136,12 +137,7 @@ export default ( props : ColumnsProp ) => {
                     return item.name ? `${item.name || ''}=${item.val || ''};` : '-'
                 })
                 return (
-                    <PopoverEllipsis
-                        width={150}
-                        title={str}
-                    >
-                        <span>{str}</span>
-                    </PopoverEllipsis>
+                    <EllipsisPulic title={str} width={150}/>
                 )
             }
             return '-'
@@ -168,7 +164,7 @@ export default ( props : ColumnsProp ) => {
                     onClick={() => openCase(index, row)}
                 >
                     配置
-                    </Button>
+                </Button>
                 <MinusCircleOutlined
                     className={styles.remove}
                     onClick={() => onRemove(row.id)}
@@ -193,15 +189,15 @@ export default ( props : ColumnsProp ) => {
             ...option,
             fixed: 'right',
         })
-        const resultColumnsWidth = columns.reduce(( pre : any , cur : any ) => pre += cur.width , 0)
+        const resultColumnsWidth = columns.reduce((pre: any, cur: any) => pre += cur.width, 0)
         const checkedWidth = width - 8
-        if ( resultColumnsWidth < checkedWidth ) {
+        if (resultColumnsWidth < checkedWidth) {
             const elseWidth = checkedWidth - name.width - option.width - 30 - 2;
-            const elseColumnWidth = elseWidth / ( columns.length - 2 ) 
+            const elseColumnWidth = elseWidth / (columns.length - 2)
 
-            return columns.reduce(( pre : any , cur : any ) => {
-                if ( cur.dataIndex === 'title' ) return pre.concat( cur )
-                return pre.concat({ ...cur , width : elseColumnWidth })
+            return columns.reduce((pre: any, cur: any) => {
+                if (cur.dataIndex === 'title') return pre.concat(cur)
+                return pre.concat({ ...cur, width: elseColumnWidth })
             }, [])
         }
         return columns
@@ -215,15 +211,15 @@ export default ( props : ColumnsProp ) => {
             option
         ]
 
-        let newColumnsWidth = newColumns.reduce(( pre : any , cur : any ) => pre += cur.width , 0)
+        let newColumnsWidth = newColumns.reduce((pre: any, cur: any) => pre += cur.width, 0)
         const checkedWidth = width - 8
-        if ( newColumnsWidth < checkedWidth ) {
-            const elseWidth = width - name.width - option.width - 30 - 10 ;
-            const elseColumnWidth = elseWidth / ( newColumns.length - 2 ) 
+        if (newColumnsWidth < checkedWidth) {
+            const elseWidth = width - name.width - option.width - 30 - 10;
+            const elseColumnWidth = elseWidth / (newColumns.length - 2)
 
-            return newColumns.reduce(( pre : any , cur : any ) => {
-                if ( cur.dataIndex === 'title' ) return pre.concat( cur )
-                return pre.concat({ ...cur , width : elseColumnWidth })
+            return newColumns.reduce((pre: any, cur: any) => {
+                if (cur.dataIndex === 'title') return pre.concat(cur)
+                return pre.concat({ ...cur, width: elseColumnWidth })
             }, [])
         }
 

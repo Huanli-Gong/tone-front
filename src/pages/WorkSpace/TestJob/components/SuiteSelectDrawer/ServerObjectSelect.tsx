@@ -38,7 +38,7 @@ const ServerObjectSelect = (props: any) => {
 
     //云上单机
     const clusterStandaloneRequest = async (page_num = 1) => {
-        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance' })
+        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance',state: ['Available', 'Occupied', 'Reserved'] })
         if (code === 200 && data) setServerList(serverList.concat(data))
     }
 
@@ -156,7 +156,18 @@ const ServerObjectSelect = (props: any) => {
                                         {item.private_ip ? (
                                             ~item.instance_name.indexOf(' / ') ?
                                                 item.instance_name :
-                                                `${item.private_ip} / ${item.instance_name}`
+                                                <Space>
+                                                    {
+                                                        item.state === "Available" && <Badge status="success" /> 
+                                                    }
+                                                    {
+                                                        item.state === "Occupied" && <Badge status="error" /> 
+                                                    }
+                                                    {
+                                                        item.state === "Reserved" && <Badge status="warning" /> 
+                                                    }
+                                                    {item.private_ip} / {item.instance_name}
+                                                </Space>
                                         ) : item.instance_name}
                                     </Select.Option>
                                 )
