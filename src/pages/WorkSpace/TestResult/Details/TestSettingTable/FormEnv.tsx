@@ -7,7 +7,7 @@ import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushF
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import MonitorList from '@/pages/WorkSpace/TestJob/components/JobForms/MonitorList'
-
+import { getTextByJs } from '@/utils/hooks'
 import { useRequest } from 'umi'
 
 /**
@@ -91,7 +91,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 moniter_contrl = true
             }
 
-            const variable: any = env_info ? Object.keys(env_info).map((k: any) => `${k}=${env_info[k]}`).toString().replace(/,|，/g, '\n') : ''
+            const variable: any = env_info ? getTextByJs(env_info) : ''
 
             form.setFieldsValue({
                 ...params,
@@ -240,10 +240,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                     () => ({
                                         validator(rule, value) {
                                             if (value) {
-                                                const valArr = value.split(/,|，|\n/g)
-                                                const reg = /^(\S+=\S+)$/
-                                                let warry = valArr.filter((str: any) => !reg.test(str))
-                                                return warry.length === 0 ? Promise.resolve() : Promise.reject('格式：key=value，多个回车换行');
+                                                const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                                return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
                                             }
                                             else
                                                 return Promise.resolve()
@@ -251,7 +249,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                     })
                                 ]}
                             >
-                                <Input.TextArea disabled={disabled} placeholder="格式：key=value，多个回车换行" />
+                                <Input.TextArea disabled={disabled} placeholder="格式：key=value，多个用空格或换行分割" />
                             </Form.Item>
                         }
                         {

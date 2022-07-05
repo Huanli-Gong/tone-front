@@ -92,3 +92,16 @@ export const enumer = (name: any) => {
     }
     return list[name];
 }
+
+export const getTextByJs = (obj:any) => {
+    let str = "";
+    let len = Object.keys(obj).length
+    Object.keys(obj).map((k:any,i:number) => {
+        if(i === len - 1){
+            str += `${k}=${obj[k]}`
+        }else{
+            str += `${k}=${obj[k]}\n`
+        }
+    })
+    return str;
+}
