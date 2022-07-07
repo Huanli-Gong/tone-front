@@ -38,7 +38,7 @@ const ServerObjectSelect = (props: any) => {
 
     //云上单机
     const clusterStandaloneRequest = async (page_num = 1) => {
-        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance' })
+        const { data, code } = await queryClusterStandaloneServer({ ws_id, no_page: true, is_instance: serverObjectType === 'instance', state: ['Available', 'Occupied', 'Reserved'] })
         if (code === 200 && data) setServerList(serverList.concat(data))
     }
 
@@ -66,7 +66,7 @@ const ServerObjectSelect = (props: any) => {
     const handleServerPopupScroll = ({ target }: any) => { //server
         const { clientHeight, scrollHeight, scrollTop } = target
         if (clientHeight + scrollTop === scrollHeight) {
-            const num = pageNum + 1 
+            const num = pageNum + 1
             setPageNum(num)
             queryServerList(num)
         }
@@ -107,6 +107,7 @@ const ServerObjectSelect = (props: any) => {
                         allowClear
                         style={{ width: '100%' }}
                         placeholder={switchServerMessage}
+                        dropdownMatchSelectWidth={340}
                         showSearch
                         onSearch={handleSearch}
                         onChange={handleSelectChange}
@@ -129,15 +130,9 @@ const ServerObjectSelect = (props: any) => {
                                         (item: any) => (
                                             <Select.Option key={item.id} value={item.id}>
                                                 <Space>
-                                                    {
-                                                        item.state === "Available" && <Badge status="success" /> 
-                                                    }
-                                                    {
-                                                        item.state === "Occupied" && <Badge status="error" /> 
-                                                    }
-                                                    {
-                                                        item.state === "Reserved" && <Badge status="warning" /> 
-                                                    }
+                                                    {item.state === "Available" && <Badge status="success" />}
+                                                    {item.state === "Occupied" && <Badge status="error" />}
+                                                    {item.state === "Reserved" && <Badge status="warning" />}
                                                     <Tooltip placement="top" title={item.state}>
                                                         <Typography.Text ellipsis>{item.ip || item.sn}</Typography.Text>
                                                     </Tooltip>
@@ -151,12 +146,31 @@ const ServerObjectSelect = (props: any) => {
                         {
                             serverObjectType === 'instance' &&
                             serverList.filter((i: any) => i.is_instance).map((item: any) => {
+                                let ip = BUILD_APP_ENV ? item.private_ip : item.pub_ip
                                 return (
                                     <Select.Option value={item.id} key={item.id}>
-                                        {item.private_ip ? (
+                                        {ip ? (
                                             ~item.instance_name.indexOf(' / ') ?
                                                 item.instance_name :
-                                                `${item.private_ip} / ${item.instance_name}`
+                                                <Tooltip
+                                                    placement='topLeft'
+                                                    overlayInnerStyle={{ width:320 }}
+                                                    title={
+                                                        <div style={{ wordBreak: 'break-all' }}>
+                                                            {item.state === "Available" && <Badge status="success" />}
+                                                            {item.state === "Occupied" && <Badge status="error" />}
+                                                            {item.state === "Reserved" && <Badge status="warning" />}
+                                                            {ip} / {item.instance_name}
+                                                        </div>
+                                                    }
+                                                >
+                                                    <Typography.Text ellipsis>
+                                                        {item.state === "Available" && <Badge status="success" />}
+                                                        {item.state === "Occupied" && <Badge status="error" />}
+                                                        {item.state === "Reserved" && <Badge status="warning" />}
+                                                        {ip} / {item.instance_name}
+                                                    </Typography.Text>
+                                                </Tooltip>
                                         ) : item.instance_name}
                                     </Select.Option>
                                 )
