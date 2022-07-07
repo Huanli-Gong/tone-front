@@ -8,8 +8,8 @@ import { useParams, history, useModel } from "umi";
 
 const wrapperWidth = `
     // width: 85%;
-    width: 1200px;
-    height: 700px;
+    width: 850px;
+    height: 470px;
 `
 
 const AdContainer = styled.div`
@@ -69,10 +69,6 @@ const AdCarouseItem = styled.div`
     img {
         width: 100%;
         height: 100%;
-    }
-
-    h1 {
-        margin-bottom: 30px!important;
     }
 `
 const CloseOutlie = styled.div`
