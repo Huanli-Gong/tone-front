@@ -1209,6 +1209,8 @@ export default (props: any) => {
             style={{
                 // height: heightVal,
                 minHeight: layoutHeight - 50,
+                width: "100%",
+                overflowX: "hidden",
                 // overflowY: 'scroll',
                 background: "#fff"
             }}
@@ -1603,7 +1605,7 @@ export default (props: any) => {
                         className={styles.bottom_box}
                         style={{
                             display: radioValue === 2 || selectedRowKeys.length ? 'block' : 'none',
-                            zIndex:99
+                            zIndex: 99
                         }}
                     >
                         {
