@@ -10,6 +10,7 @@ import { useRequest } from 'umi'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 //测试准备 ==== Table
 export default ({ job_id, refresh = false, provider_name }: any) => {
     // 表格展开的行
@@ -88,7 +89,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                         if (idx === 0) {
                             for (let x = 0; x < item[server].length; x++) {
                                 const r = item[server][x]
-                                column = { ...r, server }
+                                column = { ...r, server: r.cluster_name }
                                 if (r.state === 'fail') break;
                             }
                         }
@@ -130,7 +131,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ServerLink val={_} provider={provider_name} />
+            render: (_: any, row: any) => <EllipsisPulic title={_}/>
         },
         {
             dataIndex: 'stage',
@@ -177,7 +178,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             title: '测试机器',
             render: (_: any, row: any) => (
                 _ ?
-                    <span>{_}</span>
+                    <ServerLink val={_} provider={provider_name} />
                     : '-'
             )
         },

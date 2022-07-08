@@ -24,7 +24,7 @@ export default ({ job_id , onRef, test_type, provider_name } : any ) => {
             <div style={{ background: '#F5F5F5' }}>
                 <TestBuildTable job_id={job_id} refresh={refresh} />
                 <TestPrepTable job_id={job_id} refresh={refresh} provider_name={provider_name}/>
-                <MonitorConfigTable job_id={job_id} refresh={refresh} />
+                <MonitorConfigTable job_id={job_id} refresh={refresh} provider_name={provider_name}/>
 		        <TestSuiteTable job_id={job_id} refresh={refresh} testType={testType} provider_name={provider_name}/>
             </div>
         </div>
