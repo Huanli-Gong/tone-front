@@ -26,10 +26,10 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 }
 
                 const [{ test_prepare }] = res.data
-                const { cluster, standalone } = test_prepare
+                const { cluster, standalone, data } = test_prepare
 
                 if (cluster || standalone) {
-                    const tableData = transPrepareData(cluster, '集群').concat(transPrepareData(standalone, '单机'))
+                    const tableData = transPrepareData(cluster, '集群', data).concat(transPrepareData(standalone, '单机', {}))
                     return tableData
                 }
                 return []
@@ -42,7 +42,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         run()
     }, [refresh])
 
-    const transPrepareData = (datas: any, mode: string) => {
+    const transPrepareData = (datas: any, mode: string, data: any) => {
         let source: any = []
         if (JSON.stringify(datas) !== '{}') {
             if (mode === '单机') {
@@ -89,7 +89,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                         if (idx === 0) {
                             for (let x = 0; x < item[server].length; x++) {
                                 const r = item[server][x]
-                                column = { ...r, server: r.cluster_name }
+                                column = { ...data, server: key }
                                 if (r.state === 'fail') break;
                             }
                         }
@@ -131,7 +131,13 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={_}/>
+            render: (_: any, row: any) => {
+                if (row.mode === '集群') {
+                    return <EllipsisPulic title={_} />
+                } else {
+                    return <ServerLink val={_} provider={provider_name} />
+                }
+            }
         },
         {
             dataIndex: 'stage',
@@ -176,6 +182,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'server',
             title: '测试机器',
+            width: 160,
             render: (_: any, row: any) => (
                 _ ?
                     <ServerLink val={_} provider={provider_name} />
