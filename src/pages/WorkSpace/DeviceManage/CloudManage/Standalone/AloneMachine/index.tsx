@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useImperativeHandle, useMemo } from 'react';
-import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Tag, Spin, Empty, message, Cascader, InputNumber, Badge, Space, Typography } from 'antd';
+import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Tag, Spin, Empty, message, Cascader, InputNumber, Badge, Space } from 'antd';
 import {
     addCloud, editCloud, queryTag, queryInstance, querysImage, queryCategories, querysServer, querysAK,
     querysRegion, queryZone, queryName
@@ -42,7 +42,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [instance, setInstance] = useState<any>([])
     const [image, setImage] = useState<any>([])
     const [sever, setSever] = useState<any>([])
-    const [ak, setAK] = useState<any>([])
     const [id, setId] = useState<number>()
     const [showZone, setShowZone] = useState<number>(0)
     const [region, setRegion] = useState<any>([])
@@ -55,7 +54,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [validateRegion, setValidateRegion] = React.useState(true); // 校验Region
     const [validateImage, setValidateImage] = React.useState(false); // 校验镜像
     const [manufacturerType, setChangeManufacturer] = React.useState(''); // 切换规格
-
+    const [btnLoading, setBtnLoading] = useState<boolean>(false)
     const getServerTagList = async (word?: string) => {
         const param = word && word.replace(/\s*/g, "")
         if (tagWord && tagWord == param) return
@@ -242,10 +241,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setRegion(list)
         setLoading(false)
     }
-    const getAK = async () => {
-        const { data } = await querysAK({ ws_id: ws_id })
-        setAK(data || [])
-    }
+   
     const onRegionChange = (value: any, selectedOptions: any) => {
         if (Array.isArray(selectedOptions) && selectedOptions.length) {
             let param = {
@@ -274,14 +270,14 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             regionResetStatus()
         }
     };
-    const handleTypeChange = (val:any) => {
+    const handleTypeChange = (val: any) => {
         let region = form.getFieldValue('region')
         let manufacturer = form.getFieldValue('manufacturer')
         let param = {
             ak_id: manufacturer[1],
             region: region[0],
             zone: region[1],
-            instance_type:val
+            instance_type: val
         }
         getImageList(param)
     }
@@ -349,13 +345,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 getInstancegList(params),
                 getImageList(params),
                 getCategoriesList(params),
-                getAK()
             ]).then(() => { setLoading(false), setDisabled(false) })
         } else {
             Promise.all([
                 getShowRegion(params),
                 getSeverList(params),
-                getAK()
             ]).then(() => { setLoading(false), setDisabled(false) })
         }
         // form.resetFields()
@@ -371,81 +365,93 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 const imageValue = selectType ? [selectType, editData.image] : undefined
                 form.setFieldsValue({ image: imageValue })
             } else {
-                const selectType = selectItem.length ? selectItem[0]['owner_alias'] : ''
-                const selectSec = selectItem.length ? selectItem[0]['platform'] : ''
-                const imageValue = selectType ? [enumerEnglish(selectType), selectSec, editData.image] : undefined
-                form.setFieldsValue({ image: imageValue })
+                if (!!selectItem.length) {
+                    const selectType = selectItem[0]['owner_alias']
+                    const selectSec = selectItem[0]['platform']
+                    const selectOs = selectItem[0]['os_name']
+                    const imageValue = selectType ? [enumerEnglish(selectType), selectSec, selectOs, editData.image] : undefined
+                    form.setFieldsValue({ image: imageValue })
+                }
             }
         }
     }, [image])
 
     const [form] = Form.useForm();
-    const submit = _.debounce(
-        async (params: any) => {
-            //setVisible(true)
-            let param = { ...params, ws_id }
-            param.is_instance = Number(type)
-            if (params.hasOwnProperty('manufacturer')) {
-                param.manufacturer = params?.manufacturer[0]
-                param.ak_id = params.manufacturer[1]
-                param.region = params.region[0]
-                param.zone = params.region[1]
-            }
-            if (params.hasOwnProperty('instance_id')) {
-                const selectName = params.instance_id.label // 分割字符串
-                param.instance_id = params.instance_id.value
-                param.name = selectName.indexOf(' / ') > -1 ? selectName.split(' / ')[1] : selectName
-            }
-            if (!id) {
-                param.ws_id = ws_id
-            }
-            // 规格
+    const submit = async (params: any) => {
+        setBtnLoading(true)
+        let param = { ...params, ws_id }
+        param.is_instance = Number(type)
+        if (params.hasOwnProperty('manufacturer')) {
+            param.manufacturer = params?.manufacturer[0]
+            param.ak_id = params.manufacturer[1]
+            param.region = params.region[0]
+            param.zone = params.region[1]
+        }
+        if (params.hasOwnProperty('instance_id')) {
+            const selectName = params.instance_id.label // 分割字符串
+            param.instance_id = params.instance_id.value
+            param.name = selectName.indexOf(' / ') > -1 ? selectName.split(' / ')[1] : selectName
+        }
+        if (!id) {
+            param.ws_id = ws_id
+        }
+        // 规格
+        if (manufacturerType === 'aliyun_eci') {
+            param.instance_type = `${params.instance_type_one}C${params.instance_type_two}G`
+        } else {
+            param.instance_type = params.instance_type
+        }
+        // 镜像
+        if (params.hasOwnProperty('image') && params.image.length) {
             if (manufacturerType === 'aliyun_eci') {
-                param.instance_type = `${params.instance_type_one}C${params.instance_type_two}G`
+                param.image = params.image[1]
+                // 获取镜像名
+                const imageSource = resetECI(image, 'platform') || []
+                const selectedItem = imageSource.find((item: any) => item.value == params.image[0]) || {}
+                const itemObj = selectedItem.children?.find((item: any) => item.value == params.image[1])
+                param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
             } else {
-                param.instance_type = params.instance_type
-            }
-            // 镜像
-            if (params.hasOwnProperty('image') && params.image.length) {
-                if (manufacturerType === 'aliyun_eci') {
-                    param.image = params.image[1]
-                    // 获取镜像名
-                    const imageSource = resetECI(image, 'platform') || []
-                    const selectedItem = imageSource.find((item: any) => item.value == params.image[0]) || {}
-                    const itemObj = selectedItem.children?.find((item: any) => item.value == params.image[1])
-                    param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+                if (params.image[3] === 'latest') {
+                    let str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
+                    param.image = str
+                    param.image_name = str
+                } else if(params.image.indexOf(':latest') > 0){
+                    param.image = params.image
+                    param.image_name = params.image
                 } else {
-                    param.image = params.image[2]
+                    param.image = params.image[3]
                     // 获取镜像名
-                    const imageSource = resetImage(image, 'owner_alias', 'platform') || []
+                    const imageSource = resetImage(image, 'owner_alias', 'platform', 'os_name') || []
                     const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
                     const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
-                    const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
+                    const LevelThree = LevelTwo.children?.find((item: any) => item.value == params.image[2]) || {}
+                    const itemObj = LevelThree.children?.find((item: any) => item.value == params.image[3])
                     param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
                 }
-            } else {
-                param.image = undefined
             }
-            param.description = params.description || ''
-            // console.log('param:', param)
-            const res = id ? await editCloud(id, { ...param }) : await addCloud({ ...param })
-            if (res.code === 200) {
-                message.success('操作成功');
-                onSuccess(param.is_instance || type, id)
-                setVisible(false)
-            } else if (res.code === 201) {
-                let msg = res.msg
-                let link_msg = res.link_msg
-                let endMsg = <span dangerouslySetInnerHTML=
-                    {{
-                        __html: msg.replace(link_msg, `<a href="/system/user" target="_blank">$&</a>`)
-                    }}
-                />
-                message.warning(endMsg)
-            } else {
-                requestCodeMessage(res.code, res.msg)
-            }
-        }, 1500)
+        } else {
+            param.image = undefined
+        }
+        param.description = params.description || ''
+        const res = id ? await editCloud(id, { ...param }) : await addCloud({ ...param })
+        if (res.code === 200) {
+            message.success('操作成功');
+            onSuccess(param.is_instance || type, id)
+            setBtnLoading(false)
+            setVisible(false)
+        } else if (res.code === 201) {
+            let msg = res.msg
+            let link_msg = res.link_msg
+            let endMsg = <span dangerouslySetInnerHTML=
+                {{
+                    __html: msg.replace(link_msg, `<a href="/system/user" target="_blank">$&</a>`)
+                }}
+            />
+            message.warning(endMsg)
+        } else {
+            requestCodeMessage(res.code, res.msg)
+        }
+    }
 
     const onSubmit = () => {
         form.validateFields().then(val => submit(val))
@@ -516,7 +522,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                     <Button onClick={onClose} style={{ marginRight: 8 }}>
                         取消
                     </Button>
-                    <Button onClick={() => onSubmit()} type="primary">
+                    <Button onClick={() => onSubmit()} type="primary" loading={btnLoading}>
                         确定
                     </Button>
                 </div>
@@ -761,10 +767,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                         rules={[{ required: true, message: '请选择' }]}
                                     >
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
-                                            options={resetImage(image, 'owner_alias', 'platform')}
-                                            // expandTrigger="hover"
+                                            options={resetImage(image, 'owner_alias', 'platform', 'os_name')}
                                             displayRender={displayRender}
-                                            dropdownMatchSelectWidth={true}
+                                            dropdownMenuColumnStyle={{ width: 170 }}
                                             dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
@@ -778,9 +783,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
                                     {categories.length == 0 ?
-                                        // <Input placeholder="请输入"
-                                        //     autoComplete="off"
-                                        //     disabled={disabled || image.length === 0} />
                                         <Select placeholder="资源紧缺" disabled={true} ></Select>
                                         :
                                         <Select placeholder="请选择" disabled={disabled} >
@@ -821,9 +823,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     name="storage_type"
                                 >
                                     {categories.length == 0 ?
-                                        // <Input placeholder="请输入"
-                                        //     autoComplete="off"
-                                        //     disabled={disabled || image.length === 0} />
                                         <Select placeholder="资源紧缺" disabled={true} ></Select>
                                         :
                                         <Select placeholder="请选择" disabled={disabled} >

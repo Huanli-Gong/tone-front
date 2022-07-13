@@ -83,9 +83,9 @@ type ListProps = {
     id: string
 }
 
-export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='top' >{name}</Tooltip>
+export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='topLeft' >{name}</Tooltip>
 export const textRender = (name:any) => {
-    return <Tooltip title={name} placement='top'>{name}</Tooltip>
+    return <Tooltip title={name} placement='topLeft'>{name}</Tooltip>
 }
 
 export const enumer = (name: any) => {

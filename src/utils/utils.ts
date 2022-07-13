@@ -161,7 +161,7 @@ export function isUrl2(str: any) {
 }
 
 // 重组数据结构
-export function resetImage(list: any, onceName: string, typeName: string) {
+export function resetImage(list: any, onceName: string, typeName: string, os_name: string,) {
     if (Array.isArray(list)) {
         // 收集第一层数据
         let keyList: any = []
@@ -170,6 +170,7 @@ export function resetImage(list: any, onceName: string, typeName: string) {
                 !_.isUndefined(item[onceName]) && keyList.push(item[onceName])
             }
         })
+
         const secondary = keyList.map((key: any) => {
             const group = list.filter((item: any) => item[onceName] === key)
             let arr: any = []
@@ -178,13 +179,28 @@ export function resetImage(list: any, onceName: string, typeName: string) {
                     arr.push(item[typeName])
                 }
             })
+
             const result = arr.map((item: any) => {
-                const children = list.filter((l: any) => l[onceName] === key && l[typeName] === item).map((k) => ({
-                    value: k.id,
-                    label: listRender(k)
-                }))
-                return ({ value: item, label: textRender(item), children })
+                const osList = list.filter((child: any) => child[onceName] === key && child[typeName] === item)
+                let arr: any = []
+                osList.forEach((item) => {
+                    if (arr.indexOf(item[os_name]) < 0) {
+                        arr.push(item[os_name])
+                    }
+                })
+                const osName = arr.map((r: any) => {
+                    const param: any = [{ value: 'latest', label: 'latest' }]
+                    const children = param.concat(
+                        list.filter((l: any) => l[onceName] === key && l[typeName] === item && l[os_name] === r).map((k) => ({
+                            value: k.id,
+                            label: listRender(k)
+                        }))
+                    )
+                    return ({ value: r, label: textRender(r), children })
+                })
+                return ({ value: item, label: textRender(item), children: osName })
             })
+
             const row = {
                 value: enumer(key),
                 label: enumer(key),
@@ -197,6 +213,7 @@ export function resetImage(list: any, onceName: string, typeName: string) {
     }
     return []
 }
+
 export function resetECI(list: any, typeName: string) {
     if (Array.isArray(list)) {
         // 收集第一层数据
