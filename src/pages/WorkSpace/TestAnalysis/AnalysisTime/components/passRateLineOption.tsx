@@ -1,4 +1,4 @@
-import { textTip } from './'
+import { textTip, commitLinkTip } from './'
 
 const passRateLineOption : any = ( dataSource : any , ws_id : any ) => {
     const source = Object.keys(dataSource).map(key => {
@@ -78,7 +78,7 @@ const passRateLineOption : any = ( dataSource : any , ws_id : any ) => {
                 const item = params.data
                 return `<div>
                     ${params.marker} ${item.start_time} <br />
-                    ${textTip('JobID' , item.job_id)}
+                    ${commitLinkTip('JobID' , item.job_id, ws_id)}
                     ${textTip('commit' , item.commit)}
                     通过率: ${Number(item.pass_rate).toFixed(2)}%<br />
                     ${textTip('总数' , item.all_case)}

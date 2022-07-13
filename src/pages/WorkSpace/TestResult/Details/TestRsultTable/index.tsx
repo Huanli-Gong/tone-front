@@ -480,6 +480,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 test_type={testType}
                 server_provider={serverProvider}
                 onOk={handleJoinBaselineOk}
+                accessible={access.IsWsSetting()}
             />
             <EditRemarks
                 ref={editRemarkDrawer}

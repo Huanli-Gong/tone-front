@@ -196,7 +196,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         <Row style={{ width: 'calc(100% - 70px)' }}>
                             <Col span={24}>
                                 <Space>
-                                    <Avatar size={25} src={detail?.creator_avatar} />
+                                    <Avatar size={25} src={detail?.owner_avatar} />
                                     <Text>{detail?.owner_name}</Text>
                                 </Space>
                             </Col>

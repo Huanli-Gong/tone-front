@@ -280,6 +280,7 @@ const CaseTable: React.FC<any> = ({
                 test_type={testType}
                 server_provider={server_provider}
                 onOk={refresh}
+                accessible={access.IsWsSetting()}
             />
             <ContrastBaseline
                 ref={contrastBaselineDrawer}

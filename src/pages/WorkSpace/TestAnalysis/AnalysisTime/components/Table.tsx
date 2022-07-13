@@ -39,7 +39,7 @@ export default memo(
             },
         ];
         
-        if (access.IsWsSetting()) {
+        if (access.WsTourist()) {
             columns = columns.concat([
                 {
                     title: '标注',
@@ -48,6 +48,7 @@ export default memo(
                         <EllipsisEditColumn
                             title={_}
                             width={135 + 28 - 20}
+                            access={access.WsMemberOperateSelf(row.creator_id)}
                             onEdit={
                                 () => handleEditMarks(row)
                             }

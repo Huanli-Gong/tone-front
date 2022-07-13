@@ -50,13 +50,15 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
         )
     }, [routes])
 
-    const jumpPage = async () => {
-        const path = routeRight[0].children[0].path
-        const realPath = path.replace(':ws_id', wsId)
-        if (path && !!realPath.length) {
-            history.push(realPath)
-        } else {
-            history.push({ pathname: '/401', state: wsId })
+    const jumpPage = () => {
+        if(!!routeRight.length){
+            const path = routeRight[0].children[0].path
+            const realPath = path.replace(':ws_id', wsId)
+            if (path && !!realPath.length) {
+                history.push(realPath)
+            } else {
+                history.push({ pathname: '/401', state: wsId })
+            }
         }
     }
 
@@ -86,7 +88,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                 </Access>
             }
             {/* <Input prefix={ <SearchOutlined /> } size="large" style={{ width : 192 , marginRight : 34 , borderRadius : 2 }} placeholder="搜索" />  */}
-            <Access accessible={access.IsWsSetting()}>
+            <Access accessible={access.loginBtn()}>
                 <Dropdown
                     arrow={true}
                     overlayClassName={styles.messageDropdownArrowHide}

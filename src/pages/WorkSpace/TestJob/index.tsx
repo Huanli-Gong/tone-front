@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access } from 'umi'
-import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType } from '@/utils/utils'
+import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import styles from './index.less'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
@@ -900,7 +900,11 @@ const TestJob: React.FC<any> = (props) => {
                                 !modifyTemplate &&
                                 <>
                                     <Button className="copy_link">复制链接</Button>
-                                    <Button onClick={handleModifySetting}>修改配置</Button>
+                                    <Access accessible={access.WsMemberOperateSelf(state.creator)}
+                                        fallback={<Button onClick={()=> AccessTootip()}>修改配置</Button>}
+                                    >
+                                        <Button onClick={handleModifySetting}>修改配置</Button>
+                                    </Access>
                                 </>
                             }
                         </Space>

@@ -79,7 +79,7 @@ export default (): React.ReactNode => {
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
         page_size: 50,
         page_num: 1,
-        scope: access.IsWsSetting() ? 'history' : 'all'  
+        scope: access.loginBtn() ? 'history' : 'all'  
     })
     const [helps, setHelps] = useState<Array<any>>([])
     const [topWs, setTopWs] = useState([])
@@ -112,8 +112,10 @@ export default (): React.ReactNode => {
     }
 
     const wsDom = () => {
-        const arrKey = access.IsWsSetting() ? allKey : tourKey
-
+        const tab = access.IsAdmin() ? allKey : allKey.filter((item:any) => item.key !== 'created')
+        const allTab = BUILD_APP_ENV ? tab :  allKey
+        const arrKey = access.loginBtn() ? allTab : tourKey
+        
         return (
             <Tabs defaultActiveKey="history" onChange={handleTabChange}>
                 {

@@ -100,7 +100,7 @@ export default (props: any) => {
             setWsId(null)
             setSelectedKeys([])
         }
-    }, [pathname])
+    }, [pathname,props.menuData])
 
     const handleMenuOpenChange = (keys: any) => setOpenKeys(keys)
 

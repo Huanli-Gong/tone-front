@@ -692,7 +692,7 @@ export default (props: any) => {
                 }
             ].filter(Boolean)
         )
-    }, [ws_id])
+    }, [ws_id,access])
 
 
     const handleTestReRun = (row: any) => {

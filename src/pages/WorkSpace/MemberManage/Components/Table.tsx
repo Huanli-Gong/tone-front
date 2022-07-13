@@ -87,7 +87,7 @@ export default (props: any) => {
             title: '操作',
             align: 'center',
             render: (_: any) => (
-                _.user_info.is_self 
+                _.user_info.is_self || !_.user_info.can_update
                 ? <Button type="link" disabled={true}>移除</Button>
                 :
                 <Popconfirm

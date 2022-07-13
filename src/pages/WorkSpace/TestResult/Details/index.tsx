@@ -218,8 +218,10 @@ const TestResultDetails: React.FC = (props: any) => {
                         <div style={{ minHeight: 270, marginBottom: 10, background: '#fff', padding: 20 }}>
                             <BreadcrumbItem bottomHeight={4} />
                             <div style={{ paddingLeft: 20, position: 'relative' }}>
-                                {!collection && <StarOutlined style={{ color: '#4F4F4F' }} className={styles.detail_collection} onClick={handleCollection} />}
-                                {collection && <StarFilled style={{ color: '#F7B500' }} className={styles.detail_collection} onClick={handleCollection} />}
+                                <Access accessible={access.WsTourist()}>
+                                    {!collection && <StarOutlined style={{ color: '#4F4F4F' }} className={styles.detail_collection} onClick={handleCollection} />}
+                                    {collection && <StarFilled style={{ color: '#F7B500' }} className={styles.detail_collection} onClick={handleCollection} />}
+                                </Access>
                                 <Row className={styles.test_result_name} align="middle">
                                     {`#${data.id} ${data.name}`}
                                     {data.created_from === 'offline' && <span className={styles.offline_flag}>离</span>}

@@ -1,9 +1,9 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
 import { Modal, Spin, Row, Col, Space, Avatar, Popconfirm, Button, Popover, message } from 'antd'
-import { workspaceRemove, info, authPersonal } from '@/pages/SystemConf/WorkspaceManagement/service';
+import { workspaceRemove, info } from '@/pages/SystemConf/WorkspaceManagement/service';
 
 import AvatarCover from '@/components/AvatarCover'
-import { history } from 'umi'
+import { history, useAccess } from 'umi'
 import { enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './style.less';
 
@@ -13,10 +13,9 @@ import { jumpWorkspace } from '@/utils/utils';
 
 const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { refresh } = props
-
+    const access = useAccess();
     const [visible, setVisible] = useState(false)
     const [show, setShow] = useState<boolean>(false)
-    const [authData, setAuthData] = useState<any>(null);
     const [source, setSource] = useState<any>({})
     const [ws_id, setWs] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
@@ -28,11 +27,6 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         }
     }), [])
 
-    const queryUserWsAccess = async () => {
-        const { data, code } = await authPersonal({ ws_id })
-        code === 200 && setAuthData(data)
-    }
-
     const queryWsInto = async () => {
         const { code, data } = await info(ws_id)
         code === 200 && setSource(data)
@@ -41,7 +35,6 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const init = async () => {
         setLoading(true)
         await queryWsInto()
-        await queryUserWsAccess()
         setLoading(false)
     }
 
@@ -69,7 +62,6 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     const handleCancel = () => {
         setVisible(false)
-        setAuthData(null)
         setSource(null)
         setLoading(true)
         setShow(false)
@@ -77,9 +69,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     };
 
     const judge = () => {
-        if (!authData) return
-        const { sys_role_title, role_title } = authData
-        if (source?.is_public || authData && (['super_admin', 'sys_admin'].includes(sys_role_title) || role_title))
+        if (source?.is_public || access.IsAdmin())
             return <span className={styles.link} onClick={toWS} >进入</span>
         return <span className={styles.link} style={{ display: 'none' }} onClick={toWS} >进入</span>
     }

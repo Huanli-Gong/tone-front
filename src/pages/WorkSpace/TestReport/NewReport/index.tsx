@@ -108,13 +108,16 @@ const Report = (props: any) => {
                             : <>
                                 <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link"><IconLink style={{ marginRight: 4 }} />分享</span>
                                 {
-                                    routeName !== 'ShareReport' && <Access
-                                        accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5,creator_id.length)))}
-                                        fallback={
-                                            <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} />编辑</span>
-                                        }
-                                    >
-                                        <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                    routeName !== 'ShareReport' && 
+                                    <Access accessible={access.WsTourist()}>
+                                        <Access
+                                            accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5,creator_id.length)))}
+                                            fallback={
+                                                <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} />编辑</span>
+                                            }
+                                        >
+                                            <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                        </Access>
                                     </Access>
                                 }
                             </>

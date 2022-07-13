@@ -169,7 +169,7 @@ export default (props: any) => {
                 <Space>
                     <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(ws_id, _.id)}>编辑</Button>
                     <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link" >预览</Button>
-                    {_.creator_name !== '系统预设' && <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>删除</Button>}
+                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> :  <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>删除</Button>}
                 </Space>
             )
         }
