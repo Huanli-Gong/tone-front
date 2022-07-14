@@ -239,7 +239,7 @@ const TestJob: React.FC<any> = (props) => {
             }: any = envVal
 
             installKernel = kernel_install
-            const envStr = env_info && env_info.replace(/,|，/g, '\n')
+            const envStr = env_info
 
             const build_pkg_info = {
                 code_repo, code_branch, compile_branch, cpu_arch, commit_id,
