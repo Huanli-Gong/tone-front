@@ -253,13 +253,13 @@ export const JobListStateTag: React.FC<any> = (props) => {
     if (state === 'running') {
         if (run_state)
             return (
-                <Space>
+                <Space size={0}>
                     <CustomStateTag {...props}>{state}</CustomStateTag>
                     <QuestionPopover title={'未分配到测试机器'} />
                 </Space>
             )
         return (
-            <Space>
+            <Space size={0}>
                 <CustomStateTag {...props}>{state}</CustomStateTag>
                 <QuestionPopover title={'正在运行中，请耐心等待'} />
             </Space>
@@ -268,7 +268,7 @@ export const JobListStateTag: React.FC<any> = (props) => {
 
     if (state === 'pending' && state_desc) {
         return (
-            <Space>
+            <Space size={0}>
                 <CustomStateTag {...props}>{state}</CustomStateTag>
                 <QuestionPopover
                     title={
