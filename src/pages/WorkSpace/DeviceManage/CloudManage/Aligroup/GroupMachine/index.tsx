@@ -664,8 +664,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             required: true,
                                             min: 1,
                                             max: 32,
-                                            pattern: /^[A-Za-z0-9\._-]+$/g,
-                                            message: '仅允许包含字母、数字、下划线、中划线、点，最长32个字符'
+                                            pattern: /^[A-Za-z][A-Za-z0-9\._-]*$/g,
+                                            message: '仅允许包含字母、数字、下划线、中划线、点，且只能以字母开头，最长32个字符'
                                         },
                                         { validator: checkName },
                                     ]}
