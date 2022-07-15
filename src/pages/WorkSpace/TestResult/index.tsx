@@ -844,6 +844,9 @@ export default (props: any) => {
                 return obj.name && obj[key]
             })
         })
+        if(parmas.creators && JSON.parse(parmas.creators).length === 0){
+            parmas.creators = null
+        }
         return { valuesCopy, parmas, filterData, projectDataNew: projectData }
     }
     // 过滤
