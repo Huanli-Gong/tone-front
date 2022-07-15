@@ -40,10 +40,10 @@ export const queryTestMetricDetails = async ( params : any ) => {
 // 4.conf详情页信息获取
 // 4.1 Test conf基本信息
 export const queryTestConf = async ( params : any ) => {
-  const { case_id } = params
+  const { case_id, ws_id } = params
   return request(`/api/case/test_case/detail/${case_id}/` , {
     method : 'GET',
-    params: { retrieve: 1 },
+    params: { retrieve: 1, ws_id },
   })
 }
 // 4.2 同级Test conf信息
