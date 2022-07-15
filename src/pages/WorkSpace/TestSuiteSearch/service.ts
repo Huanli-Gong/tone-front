@@ -2,8 +2,8 @@ import { request } from 'umi'
 
 // 1.默认列表页
 // 1.1 获取数量
-export const queryTotalNum = async () => {
-  return request(`/api/case/test_suite/retrieve/` , { method : 'GET', params: { total_num: true} })
+export const queryTotalNum = async ( params : any ) => {
+  return request(`/api/case/test_suite/retrieve/`, { params })
 }
 // 1.2 获取默认列表数据
 export const queryTestSuiteList = async ( params : any ) => {
