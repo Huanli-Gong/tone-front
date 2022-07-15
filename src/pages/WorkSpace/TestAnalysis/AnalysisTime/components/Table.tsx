@@ -3,7 +3,6 @@ import { Table, Card } from 'antd'
 import { useModel, useAccess, Access, useParams } from 'umi'
 import EditMarks from './EditMarks'
 import { EllipsisEditColumn } from '@/pages/WorkSpace/TestResult/Details/components'
-import { matchRoleEnum } from '@/utils/utils';
 
 export default memo(
     (props: any) => {
@@ -11,9 +10,6 @@ export default memo(
         const { refresh, dataSource, testType, showType } = props
         const editMarks: any = useRef(null)
         const access = useAccess()
-        // 权限
-        const { currentRole } = matchRoleEnum();
-        const limitAuthority = ['ws_tester', 'ws_tester_admin', 'sys_admin'].includes(currentRole);
 
         let columns = [
             {
@@ -43,7 +39,7 @@ export default memo(
             },
         ];
         
-        if (access.wsRoleContrl()) {
+        if (access.WsTourist()) {
             columns = columns.concat([
                 {
                     title: '标注',
@@ -52,6 +48,7 @@ export default memo(
                         <EllipsisEditColumn
                             title={_}
                             width={135 + 28 - 20}
+                            access={access.WsMemberOperateSelf(row.creator_id)}
                             onEdit={
                                 () => handleEditMarks(row)
                             }

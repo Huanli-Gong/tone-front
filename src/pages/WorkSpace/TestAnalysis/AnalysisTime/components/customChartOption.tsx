@@ -1,4 +1,4 @@
-import { textTip } from './'
+import { textTip, commitLinkTip } from './'
 
 const customChartOption: any = (dataSource: any, ws_id: any) => {
     const baseicData = [
@@ -151,7 +151,7 @@ const customChartOption: any = (dataSource: any, ws_id: any) => {
                 return (
                     `<div style="margin-right:10px">
                         ${params.marker} ${params.name} <br />
-                        ${textTip('JobID', item.job_id)}
+                        ${commitLinkTip('JobID', item.job_id, ws_id)}
                         ${textTip('commit', item.commit)}
                         ${textTip('标注', item.note)}
                     </div>`

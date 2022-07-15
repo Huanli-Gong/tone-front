@@ -6,7 +6,7 @@ import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
 import { useAccess, Access, useModel } from 'umi'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
@@ -121,13 +121,19 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 showTitle: false
             },
             render: (_: any) => (
-                <Access accessible={access.wsRoleContrl(_.creator)} >
-                    {
-                        _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} >中止</Button>
-                    }
-                    {
-                        _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} >跳过</Button>
-                    }
+                <Access accessible={access.WsTourist()}>
+                    <Access 
+                        accessible={access.WsMemberOperateSelf(_.creator)} 
+                        fallback={
+                            <span>
+                                { _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} >中止</Button> }
+                                { _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} >跳过</Button> }
+                            </span>
+                        }
+                    >
+                        { _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} >中止</Button> }
+                        { _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} >跳过</Button> }
+                    </Access>
                 </Access>
             )
         },

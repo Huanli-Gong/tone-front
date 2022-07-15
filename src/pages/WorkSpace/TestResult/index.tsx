@@ -5,7 +5,7 @@ import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { DownOutlined, UpOutlined, PlusCircleTwoTone, MinusCircleTwoTone, StarOutlined, StarFilled, SearchOutlined, CloseOutlined } from '@ant-design/icons'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { ReactComponent as Refresh } from '@/assets/svg/refresh.svg'
-import { requestCodeMessage, targetJump } from '@/utils/utils'
+import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils'
 import { QusetionIconTootip } from '@/components/Product';
 import {
     queryTestResultList,
@@ -508,7 +508,7 @@ export default (props: any) => {
     const columns: any = useMemo(() => {
         return (
             [
-                access.wsRoleContrl() && {
+                access.IsWsSetting() && {
                     title: '',
                     width: 30,
                     align: 'center',
@@ -652,7 +652,6 @@ export default (props: any) => {
                         </Tooltip>
                     )
                 },
-                access.wsRoleContrl() &&
                 {
                     title: '操作',
                     width: 160,
@@ -662,18 +661,18 @@ export default (props: any) => {
                         const commonStyle = { color: '#1890FF', cursor: 'pointer' }
                         return (
                             <Space>
-                                <Access accessible={access.wsRoleContrl(_.creator)}
-                                    fallback={
-                                        <Space>
-                                            <Typography.Text style={disableStyle}>重跑</Typography.Text>
-                                            <Typography.Text style={disableStyle}>删除</Typography.Text>
-                                        </Space>
-                                    }
-                                >
-                                    <Space>
-                                        <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
-                                            <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
-                                        </span>
+                                <Access accessible={access.IsWsSetting()}>
+                                    <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
+                                        <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
+                                    </span>
+                                </Access>
+                                <Access accessible={access.WsTourist()}>
+                                    <Access 
+                                        accessible={access.WsMemberOperateSelf(_.creator)}
+                                        fallback={
+                                            <span onClick={()=> AccessTootip()}><Typography.Text style={commonStyle}>删除</Typography.Text></span>
+                                        }
+                                    >
                                         <Popconfirm
                                             title="确定要删除吗？"
                                             onConfirm={() => handleDelete(_)}
@@ -684,7 +683,7 @@ export default (props: any) => {
                                                 删除
                                             </Typography.Text>
                                         </Popconfirm>
-                                    </Space>
+                                    </Access>
                                 </Access>
                                 <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
                             </Space>
@@ -693,7 +692,7 @@ export default (props: any) => {
                 }
             ].filter(Boolean)
         )
-    }, [ws_id])
+    }, [ws_id,access])
 
 
     const handleTestReRun = (row: any) => {
@@ -1170,7 +1169,7 @@ export default (props: any) => {
         setSelectRowData(lodash.differenceBy(selectRowData, arr, 'id'))
     }
 
-    const rowSelection: any = access.wsRoleContrl() ? {
+    const rowSelection: any = {
         selectedRowKeys,
         onSelect: selectedChange,
         // getCheckboxProps: (record: any) => {
@@ -1191,7 +1190,7 @@ export default (props: any) => {
                 cancleAllSelectFn(changeRows)
             }
         },
-    } : undefined;
+    };
 
     let heightVal = radioValue === 2 ? layoutHeight - 50 - 57 : layoutHeight - 50 - 106
     if (radioValue === 1 && !selectedRowKeys.length) heightVal = layoutHeight - 50
@@ -1203,7 +1202,7 @@ export default (props: any) => {
     const handleSearchList = () => {
         queryTestListTableData({ ...pageParams, search: searchInp })
     }
-    const tabsKey = access.wsRoleContrl() ? tabThree : tabSingle
+    const tabsKey = access.IsWsSetting() ? tabThree : tabSingle
     return (
         <Layout.Content
             style={{
@@ -1272,12 +1271,11 @@ export default (props: any) => {
                                                 </Space>
                                                 <Space>
                                                     {
-                                                        access.wsRoleContrl() &&
                                                         <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
                                                             <Typography.Text ellipsis={true} style={{ paddingRight: 5 }}>选择作用：</Typography.Text>
                                                             <Radio.Group onChange={handleRadioChange} value={radioValue}>
                                                                 <Radio value={1}>报告和分析</Radio>
-                                                                {access.canWsAdmin() && <Radio value={2}>批量删除</Radio>}
+                                                                {access.WsMemberOperateSelf() && <Radio value={2}>批量删除</Radio>}
                                                             </Radio.Group>
                                                         </div>
                                                     }

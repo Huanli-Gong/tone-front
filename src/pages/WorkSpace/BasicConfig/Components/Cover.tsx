@@ -54,8 +54,8 @@ const Cover: React.FC<IProps> = (props) => {
                     <div style={{ width: 'calc(100% - 96px - 20px)', marginLeft: 16 }} className={styles.first_part}>
                         <Row style={{ marginBottom: 8 }}>
                             <Access
-                                accessible={access.canSysTestAdmin()}
-                                fallback={<Button disabled={true}>更新封面</Button>}
+                                accessible={access.WsBtnPermission()}
+                                // fallback={<Button disabled={true}>更新封面</Button>}
                             >
                                 <Upload {...uploadProps}>
                                     <Button>更新封面</Button>

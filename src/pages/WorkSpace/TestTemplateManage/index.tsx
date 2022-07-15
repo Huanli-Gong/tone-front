@@ -8,10 +8,13 @@ import CommonPagination from '@/components/CommonPagination'
 import { getSearchFilter, getRadioFilter, getCheckboxFilter, getUserFilter } from '@/components/TableFilters'
 import { SingleTabCard } from '@/components/UpgradeUI';
 import ResizeTable from '@/components/ResizeTable';
-import { requestCodeMessage } from '@/utils/utils';
-import {cloneDeep,get} from 'lodash'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { cloneDeep, get } from 'lodash'
+import { Access, useAccess } from 'umi'
+
 export default (props: any) => {
     const { ws_id } = props.match.params
+    const access = useAccess();
     const PAGE_DEFAULT_PARAMS = { page_num: 1, page_size: 10, ws_id }
     const { initialState, setInitialState } = useModel<any>('@@initialState')
     const [deleteVisible, setDeleteVisible] = useState(false);
@@ -19,7 +22,7 @@ export default (props: any) => {
     const [deleteObj, setDeleteObj] = useState<any>({});
     const copyModal: any = useRef()
     const { state } = props.location
-    const {action} = props.history
+    const { action } = props.history
     const resizeTableRef = useRef<any>()
     const [scrollX, setScrollX] = useState(0)
 
@@ -33,7 +36,7 @@ export default (props: any) => {
             manual: true
         }
     )
-    const handleParmas = () =>{
+    const handleParmas = () => {
         const parmasCopy = cloneDeep(params)
         parmasCopy.userName = undefined
         return parmasCopy
@@ -41,10 +44,10 @@ export default (props: any) => {
     const handleCopyModalOk = () => {
         run(handleParmas())
     }
-    useEffect(() =>{
+    useEffect(() => {
         // action !== 'POP' 区分是否是当前页刷新
-        if(state && action !== 'POP') setParams({...params,...state})
-    },[state])
+        if (state && action !== 'POP') setParams({ ...params, ...state })
+    }, [state])
 
     useEffect(() => {
         run(handleParmas())
@@ -63,16 +66,16 @@ export default (props: any) => {
         const { code, msg } = await deleteTestTemplate({ template_id: deleteObj.id, ws_id })
         if (code === 200) {
             const parmasCopy = cloneDeep(params)
-            const {page_size,page_num} = parmasCopy
-            const remainNum = get(dataSource,'total') % page_size === 1
-            const totalPage:number = Math.floor(get(dataSource,'total') / page_size)
-            if(remainNum && totalPage && totalPage + 1 <= page_num){
+            const { page_size, page_num } = parmasCopy
+            const remainNum = get(dataSource, 'total') % page_size === 1
+            const totalPage: number = Math.floor(get(dataSource, 'total') / page_size)
+            if (remainNum && totalPage && totalPage + 1 <= page_num) {
                 parmasCopy.page_num = totalPage
                 setParams(parmasCopy)
             } else {
                 run(handleParmas())
             }
-            
+
             setInitialState({
                 ...initialState,
                 refreshMenu: !initialState?.refreshMenu
@@ -88,24 +91,26 @@ export default (props: any) => {
 
     const handleEdit = ({ id, job_type, }: any): any => {
         if (!job_type) return message.warning('问题模板，请及时删除！')
-        history.push({pathname: `/ws/${ws_id}/test_template/${id}/edit`, state: {params}})
+        history.push({ pathname: `/ws/${ws_id}/test_template/${id}/edit`, state: { params } })
     }
     const handleDetail = () => {
         window.open(`/ws/${ws_id}/refenerce/3/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
     const handlePreview = ({ id, job_type, creator }: any): any => {
         if (!job_type) return message.warning('问题模板，请及时删除')
-        history.push({ pathname: `/ws/${ws_id}/test_template/${id}/preview`, state: {
-            creator,
-            params
-        } })
+        history.push({
+            pathname: `/ws/${ws_id}/test_template/${id}/preview`, state: {
+                creator,
+                params
+            }
+        })
     }
 
     const handleCopy = (_: any) => {
         copyModal.current.show('模板复制', _)
     }
 
-    const columns : any = [{
+    const columns: any = [{
         title: '名称',
         dataIndex: 'name',
         ellipsis: true,
@@ -149,14 +154,14 @@ export default (props: any) => {
             setParams,
             initialState?.jobTypeList.map(({ id, name }: any) => ({ name, value: id })),
             'job_type_id',
-            {marginTop: 70}
+            { marginTop: 70 }
         )
     }, {
         width: 90,
         title: '创建人',
         ellipsis: true,
         dataIndex: 'creator_name',
-        ...getUserFilter({ name: 'creator', data: params, setDate: setParams,flag: true })
+        ...getUserFilter({ name: 'creator', data: params, setDate: setParams, flag: true })
     }, {
         width: 90,
         ellipsis: true,
@@ -179,19 +184,22 @@ export default (props: any) => {
         render: (_: any, row: any) => (
             <Space>
                 <span onClick={() => handlePreview(_)} style={{ color: '#1890FF', cursor: 'pointer' }}>预览</span>
-                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}>复制</span>
-                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}>编辑</span>
-                {/* <Popconfirm
-                    title="确定要删除改模板吗？"
-                    onConfirm={() => handleDelete(_)}
-                    okText="确认"
-                    cancelText="取消"
-                    >
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }}>
-                            删除
-                        </span>
-                </Popconfirm> */}
-                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}>删除</span>
+                <Access
+                    accessible={access.WsMemberOperateSelf(row.creator)}
+                    fallback={
+                        <Space>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>复制</span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>编辑</span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>删除</span>
+                        </Space>
+                    }
+                >
+                    <Space>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}>复制</span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}>编辑</span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}>删除</span>
+                    </Space>
+                </Access>
             </Space>
         )
     },]

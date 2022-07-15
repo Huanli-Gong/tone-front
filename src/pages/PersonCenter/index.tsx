@@ -96,7 +96,7 @@ export default (props: any) => {
                     <Tabs.TabPane tab="Workspace" key="workspace" className={styles.tab_item}>
                         {tab === 'workspace' && <PersonWorkspace loading={loading} workspaceList={data} userId={Number(authList.id)} />}
                     </Tabs.TabPane>
-                    {access.canWsAdmin() && (
+                    {access.IsWsSetting() && (
                         <Tabs.TabPane tab="我的申请" key="approve">
                             {tab === 'approve' && <PersonApprove loading={loading} approveData={data} handleTabClick={handleTabClick} userId={Number(authList.id)}/>}
                         </Tabs.TabPane>

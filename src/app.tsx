@@ -35,7 +35,7 @@ export async function getInitialState(): Promise<any> {
 
         const { data } = await person_auth({ ws_id })
         const accessList: any = deepObject(data)
-        const { ws_is_exist, ws_role_title } = accessList
+        const { ws_is_exist, ws_role_title, sys_role_title } = accessList
 
         if (!accessList) {
             history.push('/500')
@@ -47,10 +47,12 @@ export async function getInitialState(): Promise<any> {
                 history.push('/404')
                 return initialState
             }
-            if (!ws_role_title) {
+
+            if (sys_role_title !== 'sys_admin' && !ws_role_title) {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState
             }
+            
             enterWorkspaceHistroy({ ws_id })  //
         }
 

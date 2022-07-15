@@ -43,10 +43,8 @@ export const switchUserRole = (name: string) => {
         ['user', '普通用户'],
         ['sys_test_admin', '测试管理员'],
         ['sys_admin', '系统管理员'],
-        ['super_admin', '超级管理员'],
         ['ws_tourist', '游客'],
         ['ws_member', 'workspace成员'],
-        ['ws_tester_admin', '测试管理员'],
         ['ws_test_admin', '测试管理员'],
         ['ws_tester', '测试人员'],
         ['ws_admin', '管理员'],
@@ -327,17 +325,11 @@ export const requestCodeMessage = (code: number, msg: string) => {
  * @returns 用户的角色
  * */
 //
-export function matchRoleEnum(type = 'ws') {
-    const { initialState } = useModel('@@initialState');
-    const currentRole = initialState?.authList[`${type == 'ws' ? 'ws_role_title' : 'sys_role_title'}`]
-    const currentRoleId = initialState?.authList?.user_id;
-    return { currentRole, currentRoleId };
-};
 
 export const role_type_enum = [
     { key: 'ws_member', name: 'worksapce成员' },
     { key: 'ws_tester', name: '测试人员' },
-    { key: 'ws_tester_admin', name: '测试管理员' },
+    { key: 'ws_test_admin', name: '测试管理员' },
     { key: 'sys_admin', name: '系统管理员' },
 ];
 
@@ -357,4 +349,8 @@ export const deepObject = (data: any) => {
             p[c] = data[c]
         return p
     }, {})
+}
+
+export const AccessTootip = () => {
+    return message.error('没有操作权限')
 }

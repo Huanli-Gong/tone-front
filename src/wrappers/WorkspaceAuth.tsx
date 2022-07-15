@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { history, useModel } from 'umi'
 import { person_auth } from '@/services/user';
 import { enterWorkspaceHistroy } from '@/services/Workspace'
-import { deepObject } from '@/utils/utils';
+import { deepObject, jumpWorkspace } from '@/utils/utils';
 
 export default (props: any) => {
     const { children } = props
@@ -11,31 +11,30 @@ export default (props: any) => {
     const { authList } = initialState
 
     const checkAccess = async () => {
-        let access = authList
+        let flag = authList
 
-        if (ws_id !== authList.ws_id) {
-            const { data } = await person_auth({ ws_id })
-            const accessData = deepObject(data)
-            setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
-            access = accessData
+        const { data } = await person_auth({ ws_id })
+        const accessData = deepObject(data)
+        setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
+        flag = accessData
 
-            if (!data) {
-                history.push('/500')
-                return
-            }
-
-            if (data.ws_role_title)
-                enterWorkspaceHistroy({ ws_id })  //
+        if (!data) {
+            history.push('/500')
+            return
         }
 
-        const { ws_role_title, ws_is_exist } = access
+        const { ws_role_title, ws_is_exist, sys_role_title } = flag
+
+        if (ws_role_title){
+            enterWorkspaceHistroy({ ws_id }) 
+        }
 
         if (!ws_is_exist) {
             history.push(`/404`)
             return
         }
 
-        if (!ws_role_title) {
+        if (sys_role_title !== 'sys_admin' && !ws_role_title) {
             history.push({ pathname: '/401', state: ws_id })
             return
         }

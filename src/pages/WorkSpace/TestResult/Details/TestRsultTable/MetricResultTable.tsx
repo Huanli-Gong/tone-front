@@ -64,8 +64,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             return (
                 (_ && row.baseline_cv_value) ?
                     <Access
-                        accessible={access.canWsAdmin()}
-                        fallback={<span>{`${_}±${row.baseline_cv_value}`}</span>}
+                        accessible={access.IsWsSetting()}
                     >
                         <span
                             className={styles.hrefUrl}

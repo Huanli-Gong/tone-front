@@ -6,6 +6,7 @@ import { FormattedMessage, useIntl } from 'umi';
 import ShowDeployIPList from './DeployShowIPList';
 import { queryVersionList, agentDeploy } from '../../services'
 import styles from './index.less'
+import { isString } from 'lodash';
 
 /**
  * 部署Agent
@@ -41,7 +42,11 @@ export default forwardRef((props: any, ref: any) => {
             const res: any = await queryVersionList({ arch }); // { page_num: 1, page_size: 100000  }
             const { code, msg, data = [] } = res || {}
             if (code === 200) {
-                setData(data)
+                if (isString(data)) {
+                    setData([])
+                } else {
+                    setData(data)
+                }
             } else {
                 message.error(msg || '请求版本数据失败');
             }
@@ -124,7 +129,7 @@ export default forwardRef((props: any, ref: any) => {
             resetInitialState();
         }
     };
-
+    console.log('data', data)
     // Alert的提示内容
     const deployReactNode = () => {
         const { success_servers = [], fail_servers = [] } = deployResult
@@ -219,7 +224,7 @@ export default forwardRef((props: any, ref: any) => {
                                     <Radio value="common">通过用户名/密码部署</Radio>
                                     {
                                         (!useBuildEnv && radioType !== 'cloudManage') &&
-                                        <Radio value={ self_agent }>通过{ self_agent_name }部署</Radio>
+                                        <Radio value={self_agent}>通过{self_agent_name}部署</Radio>
                                     }
                                 </Radio.Group>
                             </Form.Item>
@@ -267,7 +272,7 @@ export default forwardRef((props: any, ref: any) => {
                                 filterOption={(input, option: any) =>
                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }>
-                                {data.map((item: any) => (
+                                {data?.map((item: any) => (
                                     <Select.Option key={item.id} value={item.version}>{item.version}</Select.Option>
                                 ))}
                             </Select>

@@ -71,38 +71,33 @@ export default (props: any) => {
             title: '账号',
             render: (_: any) => (<Typography.Text>{_.user_info.email}</Typography.Text>)
         },
+        
         {
             title: '角色',
             render: (_: any) => (
-                <EditableCell {..._} select={roleData} handleOk={init} onOk={onOk} is_owner={_.user_info.is_admin} />
+                <EditableCell {..._} select={roleData} handleOk={init} onOk={onOk} />
             ),
         },
         {
             title: '加入时间',
             dataIndex: 'join_date'
         },
-        access.canWsAdmin() &&
+        access.WsBtnPermission() &&
         {
             title: '操作',
             align: 'center',
             render: (_: any) => (
-                <>
-                    <Access accessible={access.canSuperAdmin()} fallback={<Button type="link" disabled={true}>移除</Button>}>
-                        {
-                            _.user_info.is_admin ?
-                                <Button type="link" disabled={true}>移除</Button>
-                                :
-                                <Popconfirm
-                                    title="确定要移除该用户吗？"
-                                    okText="确定"
-                                    cancelText="取消"
-                                    onConfirm={() => handleDeleteUser(_.user_info.id)}
-                                >
-                                    <Button type="link">移除</Button>
-                                </Popconfirm>
-                        }
-                    </Access>
-                </>
+                _.user_info.is_self || !_.user_info.can_update
+                ? <Button type="link" disabled={true}>移除</Button>
+                :
+                <Popconfirm
+                    title="确定要移除该用户吗？"
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => handleDeleteUser(_.user_info.id)}
+                >
+                    <Button type="link">移除</Button>
+                </Popconfirm>
             )
         }
     ].filter(Boolean)

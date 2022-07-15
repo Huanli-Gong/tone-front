@@ -16,6 +16,7 @@ import { ReactComponent as MinusSvg } from '@/assets/svg/TestResult/conf/skip.sv
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline'
 import treeSvg from '@/assets/svg/tree.svg'
+import { AccessTootip } from '@/utils/utils';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 const CaseTable: React.FC<any> = ({
@@ -137,7 +138,7 @@ const CaseTable: React.FC<any> = ({
                 width: 175,
                 ...tooltipTd(),
             },
-            access.wsRoleContrl(creator) &&
+            access.WsTourist() &&
             {
                 title: '备注',
                 dataIndex: 'note',
@@ -146,6 +147,7 @@ const CaseTable: React.FC<any> = ({
                     <EllipsisEditColumn
                         title={_}
                         width={80}
+                        access={access.WsMemberOperateSelf(creator)}
                         onEdit={
                             () => editRemarkDrawer.current.show({
                                 ...row,
@@ -161,20 +163,20 @@ const CaseTable: React.FC<any> = ({
                 title: '操作',
                 width: 145, //175,
                 render: (_: any) => (
-                    <Access accessible={access.wsRoleContrl(creator)}
-                        fallback={
-                            initialState?.authList?.ws_role_title === 'ws_tester' ?
+                    <Access accessible={access.WsTourist()}>
+                        <Access accessible={access.WsMemberOperateSelf(creator)}
+                            fallback={
                                 <Space>
-                                    <span style={{ color: '#ccc', cursor: 'pointer' }}>对比基线</span>
-                                    <span style={{ color: '#ccc', cursor: 'pointer' }}>加入基线</span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>对比基线</span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>加入基线</span>
                                 </Space>
-                                : <></>
-                        }
-                    >
-                        <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
-                        </Space>
+                            }
+                        >
+                            <Space>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
+                            </Space>
+                        </Access>
                     </Access>
                 )
             }
@@ -278,6 +280,7 @@ const CaseTable: React.FC<any> = ({
                 test_type={testType}
                 server_provider={server_provider}
                 onOk={refresh}
+                accessible={access.IsWsSetting()}
             />
             <ContrastBaseline
                 ref={contrastBaselineDrawer}

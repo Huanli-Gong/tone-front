@@ -11,7 +11,7 @@ import { useParams } from 'umi'
 interface ContainerProps {
     height?: number;
 }
-const { RangePicker } = DatePicker;
+const { RangePicker }:any = DatePicker;
 
 const Container = styled(Layout) <ContainerProps>`
     min-height:unset;
@@ -187,7 +187,7 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
                                     '一个月': [moment().startOf('month'), moment().endOf('month')],
                                 }}
                                 format="YYYY-MM-DD"
-                                onChange={(d, t) => getChartData(t)}
+                                onChange={(d:any, t:any) => getChartData(t)}
                             />
                         </RangeTime>
                     </Col>

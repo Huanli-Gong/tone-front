@@ -41,7 +41,7 @@ export default (props: any) => {
     const left = useSize(leftRef)
 
     const openAd = () => {
-        setInitialState(p => ({ ...p, wsAdShow: wsId }))
+        setInitialState((p:any) => ({ ...p, wsAdShow: wsId }))
     }
 
     const { data: types, run } = useRequest(
@@ -100,7 +100,7 @@ export default (props: any) => {
             setWsId(null)
             setSelectedKeys([])
         }
-    }, [pathname])
+    }, [pathname,props.menuData])
 
     const handleMenuOpenChange = (keys: any) => setOpenKeys(keys)
 
@@ -222,11 +222,6 @@ export default (props: any) => {
                                                             >
                                                                 {
                                                                     item.children.map((i: any) => {
-                                                                        if (!access.canWsAdmin()) {
-                                                                            if (i.name === '计划管理') {
-                                                                                return false
-                                                                            }
-                                                                        }
                                                                         return (
                                                                             <Menu.Item
                                                                                 key={i.path}
@@ -289,11 +284,11 @@ export default (props: any) => {
                 </HeaderCls>
             </Row>
             <div ref={leftRef}>
-                <RightContent wsId={wsId} isWs={isWs} />
+                <RightContent wsId={wsId} isWs={isWs} routes={routes}/>
             </div>
 
             {
-                initialState.hasAdWs?.includes(wsId) &&
+                initialState?.hasAdWs?.includes(wsId) &&
                 <AdShowBtn onClick={openAd} />
             }
         </HeaderContainer >

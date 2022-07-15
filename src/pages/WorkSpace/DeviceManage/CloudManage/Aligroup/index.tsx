@@ -16,37 +16,39 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
 import { useParams } from 'umi';
 import { useClientSize } from '@/utils/hooks';
+import { AccessTootip } from '@/utils/utils';
+import { Access, useAccess } from 'umi'
 // import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上集群
  * 
  */
 interface AligroupParams {
-    refresh:boolean,
-    page:number,
-    pageSize:number,
-    name:string,
-    owner:any,
-    tags:any,
-    description:string,
+    refresh: boolean,
+    page: number,
+    pageSize: number,
+    name: string,
+    owner: any,
+    tags: any,
+    description: string,
 }
 const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
-
+    const access = useAccess();
     const aloneMachine = useRef<any>(null)
     const tree = useRef<any>(null)
     const outTable = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>({ data: [] });
-    const [params,setParams] = useState<AligroupParams>({
-        refresh:true, 
-        page:1, 
-        pageSize:10, 
-        name:'', 
-        owner:'', 
-        tags:'', 
-        description:''
+    const [params, setParams] = useState<AligroupParams>({
+        refresh: true,
+        page: 1,
+        pageSize: 10,
+        name: '',
+        owner: '',
+        tags: '',
+        description: ''
     })
     const [visible, setVisible] = useState<boolean>(false)
     const [tagList, setTagList] = useState<any>([])
@@ -125,17 +127,17 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             cluster_type: 'aliyun',
             page_num: page,
             page_size: pageSize,
-            name, 
-            owner, 
-            tags, 
+            name,
+            owner,
+            tags,
             description,
             ws_id
         }
         getList(obj)
-    }, [ params ]);
+    }, [params]);
 
     const { width: windowWidth } = useClientSize()
-    
+
     const submit = async (param: any) => {
         if (outId) {
             let obj: any = {
@@ -150,7 +152,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 // 成功
                 setVisible(false)
                 message.success('操作成功');
-                setParams({ ...params, refresh: !params.refresh})
+                setParams({ ...params, refresh: !params.refresh })
                 return
             }
             // 失败
@@ -168,7 +170,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             // 成功
             setVisible(false)
             message.success('操作成功');
-            setParams({ ...params, page:1, refresh:!params.refresh })
+            setParams({ ...params, page: 1, refresh: !params.refresh })
             return
         }
         // 失败
@@ -206,7 +208,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         message.success('操作成功');
         setDeleteVisible(false)
         setDeleteDefault(false)
-        setParams({ ...params, refresh:!params.refresh })
+        setParams({ ...params, refresh: !params.refresh })
     }
     const onExpand = async (_: boolean, record: any) => {
         const currentId = record.id + ''
@@ -241,7 +243,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             title: '集群名',
             dataIndex: 'name',
             width: 150,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page:1, name:val })}} />,
+            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page: 1, name: val }) }} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -262,7 +264,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             dataIndex: 'owner_name',
             width: 150,
             filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setParams({ ...params, page:1, owner:val })}} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: number) => { setParams({ ...params, page: 1, owner: val }) }} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -276,12 +278,12 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             width: 250,
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) =>
-              <SelectTags
-                ws_id={ws_id}
-                run_mode={'cluster'}
-                autoFocus={autoFocus} 
-                confirm={confirm} 
-                onConfirm={(val: number) => { setParams({ ...params, page:1, tags:val })}} />,
+                <SelectTags
+                    ws_id={ws_id}
+                    run_mode={'cluster'}
+                    autoFocus={autoFocus}
+                    confirm={confirm}
+                    onConfirm={(val: number) => { setParams({ ...params, page: 1, tags: val }) }} />,
             render: (_: any, row: any) => <div>
                 {
                     row.tag_list.map((item: any, index: number) => {
@@ -298,7 +300,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             dataIndex: 'description',
             width: 300,
             filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page:1, description:val })}} />,
+            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page: 1, description: val }) }} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -320,21 +322,21 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             width: 180,
             render: (_: any, row: any) => <Space>
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { addMachine(row.id) }}>添加</Button>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => modifyGroup(row)}>编辑</Button>
-                {/* <Popconfirm title="确定要删除吗？"
-                        placement="topRight"
-                        okText="确定"
-                        cancelText="取消"
-                        onConfirm={() => { removeGroup(row.id) }}
-                        overlayStyle={{ width: '224px' }}
-                    >
-                        <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-                    </Popconfirm> */}
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row })}>删除</Button>
+                <Access 
+                    accessible={access.WsMemberOperateSelf(row.owner)}
+                    fallback={
+                        <Space>
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>编辑</Button>
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>删除</Button>
+                        </Space>
+                    }
+                >
+                    <Space>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => modifyGroup(row)}>编辑</Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row })}>删除</Button>
+                    </Space>
+                </Access>
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}>日志</Button>
-                {/* <PermissionTootip>
-                    <Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}>日志</Button>
-                </PermissionTootip> */}
             </Space>,
         },
     ];

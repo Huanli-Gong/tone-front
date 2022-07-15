@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access } from 'umi'
-import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType } from '@/utils/utils'
+import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import styles from './index.less'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
@@ -437,7 +437,7 @@ const TestJob: React.FC<any> = (props) => {
                     }
                     delete ctx.customer_server
                 }
-                if( flag && server_object_id ){
+                if (flag && server_object_id) {
                     delete ctx.server_tag_id
                 }
                 return ctx
@@ -848,7 +848,7 @@ const TestJob: React.FC<any> = (props) => {
         </Space>
     )
 
-    const queryProjectId = (id:any) => {
+    const queryProjectId = (id: any) => {
         setProjectId(id)
     }
     return (
@@ -900,7 +900,11 @@ const TestJob: React.FC<any> = (props) => {
                                 !modifyTemplate &&
                                 <>
                                     <Button className="copy_link">复制链接</Button>
-                                    <Button onClick={handleModifySetting}>修改配置</Button>
+                                    <Access accessible={access.WsMemberOperateSelf(state.creator)}
+                                        fallback={<Button onClick={()=> AccessTootip()}>修改配置</Button>}
+                                    >
+                                        <Button onClick={handleModifySetting}>修改配置</Button>
+                                    </Access>
                                 </>
                             }
                         </Space>
@@ -928,58 +932,60 @@ const TestJob: React.FC<any> = (props) => {
                             <Col span={24} >
                                 <Row justify="space-between">
                                     <span>{detail.name}</span>
-                                    {
-                                        (name === 'TestJob' && !loading) &&
-                                        <Popover
-                                            overlayClassName={styles.template_popover}
-                                            placement={"bottomRight"}
-                                            visible={templateBtnVisible}
-                                            onVisibleChange={handleTemplatePopoverChange}
-                                            title={
-                                                <Input
-                                                    autoComplete="off"
-                                                    prefix={<SearchOutlined />}
-                                                    className={styles.job_search_inp}
-                                                    placeholder="搜索模板"
-                                                    onChange={handleChangeTemplateName}
-                                                />
-                                            }
-                                            content={
-                                                <Menu style={{ maxHeight: 480, overflow: 'auto', paddingBottom: 12 }} >
-                                                    {
-                                                        Array.isArray(templateList) && templateList.length > 0 &&
-                                                        <>
-                                                            {
-                                                                templateList.map(
-                                                                    (item: any) => (
-                                                                        <div
-                                                                            className={styles.template_item}
-                                                                            key={item.id}
-                                                                            onClick={(): any => {
-                                                                                if (!item.job_type) return message.error('问题模板，请及时删除')
-                                                                                history.push(`/ws/${ws_id}/test_job/${item.job_type_id}?template_id=${item.id}`)
-                                                                                setTemplateBtnVisible(false)
-                                                                            }}
-                                                                        >
-                                                                            {item.name}
-                                                                        </div>
+                                    <Access accessible={access.IsWsSetting()}>
+                                        {
+                                            (name === 'TestJob' && !loading) &&
+                                            <Popover
+                                                overlayClassName={styles.template_popover}
+                                                placement={"bottomRight"}
+                                                visible={templateBtnVisible}
+                                                onVisibleChange={handleTemplatePopoverChange}
+                                                title={
+                                                    <Input
+                                                        autoComplete="off"
+                                                        prefix={<SearchOutlined />}
+                                                        className={styles.job_search_inp}
+                                                        placeholder="搜索模板"
+                                                        onChange={handleChangeTemplateName}
+                                                    />
+                                                }
+                                                content={
+                                                    <Menu style={{ maxHeight: 480, overflow: 'auto', paddingBottom: 12 }} >
+                                                        {
+                                                            Array.isArray(templateList) && templateList.length > 0 &&
+                                                            <>
+                                                                {
+                                                                    templateList.map(
+                                                                        (item: any) => (
+                                                                            <div
+                                                                                className={styles.template_item}
+                                                                                key={item.id}
+                                                                                onClick={(): any => {
+                                                                                    if (!item.job_type) return message.error('问题模板，请及时删除')
+                                                                                    history.push(`/ws/${ws_id}/test_job/${item.job_type_id}?template_id=${item.id}`)
+                                                                                    setTemplateBtnVisible(false)
+                                                                                }}
+                                                                            >
+                                                                                {item.name}
+                                                                            </div>
+                                                                        )
                                                                     )
-                                                                )
-                                                            }
-                                                        </>
-                                                    }
-                                                    {
-                                                        Array.isArray(templateList) && templateList.length === 0 &&
-                                                        <div style={{ lineHeight: '80px', textAlign: 'center', color: 'rgba(0,0,0,.35)' }}>
-                                                            暂无模板
-                                                        </div>
-                                                    }
-                                                </Menu>
-                                            }
-                                        >
-                                            <Button type="default" >用模板新建</Button>
-                                        </Popover>
-                                    }
+                                                                }
+                                                            </>
+                                                        }
+                                                        {
+                                                            Array.isArray(templateList) && templateList.length === 0 &&
+                                                            <div style={{ lineHeight: '80px', textAlign: 'center', color: 'rgba(0,0,0,.35)' }}>
+                                                                暂无模板
+                                                            </div>
+                                                        }
+                                                    </Menu>
+                                                }
+                                            >
+                                                <Button type="default" >用模板新建</Button>
+                                            </Popover>
+                                        }
+                                    </Access>
                                 </Row>
                                 <div className={styles.page_tags}>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{switchServerType(detail.server_type)}</Tag>
@@ -996,7 +1002,7 @@ const TestJob: React.FC<any> = (props) => {
                             <Row className={styles.page_body} justify="center" >
                                 <div ref={bodyRef} style={{ width: 1000 }} />
                                 {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
-                                <div style={isYamlFormat ? { width: 1240, display:'none' } : { width: 1000 }}>
+                                <div style={isYamlFormat ? { width: 1240, display: 'none' } : { width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>
                                         {name === 'TestJob' && <Row className={styles.page_body_title}>新建Job</Row>}
                                         {name === 'TestExport' && <Row className={styles.page_body_title}>导入配置</Row>}
@@ -1121,19 +1127,10 @@ const TestJob: React.FC<any> = (props) => {
                             >
                                 <Button >重 置</Button>
                             </Popconfirm>
-                            <Access
-                                accessible={access.canWsAdmin()}
-                            >
+                            <Access accessible={access.IsWsSetting()}>
                                 <Button onClick={handleOpenTemplate}>存为模板</Button>
                             </Access>
-                            <Access
-                                accessible={access.wsRoleContrl()}
-                                fallback={
-                                    <Tooltip placement="topLeft" title={AuthPop} color="#fff">
-                                        <Button type="primary">提交测试</Button>
-                                    </Tooltip>
-                                }
-                            >
+                            <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" onClick={handleSubmit} >提交测试</Button>
                             </Access>
                         </Space>

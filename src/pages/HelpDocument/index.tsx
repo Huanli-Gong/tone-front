@@ -28,12 +28,7 @@ export default (props: any) => {
     const [rightLoading, setRightLoading] = useState(false)
     const [paddingBottomVal, setPaddingBottomVal] = useState(166)
     const typePath = /^\/help_doc/.test(props.match.path) ? 'help_doc' : 'notice'
-    const { initialState } = useModel('@@initialState');
     const access = useAccess();
-    const sysAuth = initialState?.authList
-    const { sys_role_title, ws_role_title } = sysAuth
-    const isAuth = ['super_admin', 'sys_admin', 'sys_test_admin']
-    const isPermier = isAuth.includes(sys_role_title) || isAuth.includes(ws_role_title)
 
     const { loading, data: helpData } = useRequest(
         (data: any) => queryHelpDocList(data),
@@ -128,7 +123,7 @@ export default (props: any) => {
         }
 
     }, [currentDoc])
-    const closeFn = (box: any, arr: [], currentTagNum: any, number: any, that: any) => {
+    const closeFn = (box: any, arr: any[], currentTagNum: any, number: any, that: any) => {
         number = Number(number)
         const nextLevelTag = arr[number + 1].tag,
 
@@ -148,7 +143,7 @@ export default (props: any) => {
             closeFn(box, arr, currentTagNum, number, that)
         }
     }
-    const openFn = (box: any, arr: [], currentTagNum: any, number: any, that: any, item: any) => {
+    const openFn = (box: any, arr: any[], currentTagNum: any, number: any, that: any, item: any) => {
         number = Number(number)
         const nextLevelTag = arr[number + 1].tag,
             nextTagNum = nextLevelTag.replace("H", "");
@@ -201,8 +196,7 @@ export default (props: any) => {
             // if(Number(preTagNum) < Number(nextTagNum)){
             if (Number(preTagNum) < Number(currentNumber)) {
                 const num = arr[number].id
-                const ospan = document.querySelector(`#${num} span`)
-
+                const ospan:any = document.querySelector(`#${num} span`)
                 ospan.style.background = close
                 nextElementSibling = null
             }
@@ -269,7 +263,7 @@ export default (props: any) => {
         editor2 = new wangEditor('#showContentBox') // 传入两个元素
         editor2.config.minHeight = 500
         editor2.config.placeholder = ''
-        editor2.config.onCatalogChange = function (arr) {
+        editor2.config.onCatalogChange = function (arr:any) {
             // 大纲回调
             const box: any = document.getElementById("catalogBox2");
             if (!box) return
@@ -320,7 +314,7 @@ export default (props: any) => {
                 span.className = `${styles.catalogIcon}`
                 const brr = item.text.split('&nbsp;')
                 let text = ''
-                brr.forEach(val => {
+                brr.forEach((val:any) => {
                     if (val.trim()) text = text + val + ' '
                 })
                 item.text = text.trim()
@@ -418,7 +412,7 @@ export default (props: any) => {
                                 className={styles.script_left}>
                                 <div className={styles.use_help}>
                                     {typePath === 'help_doc' ? '使用帮助' : '公告'}
-                                    <Access accessible={access.canSysTestAdmin()}>
+                                    <Access accessible={access.IsAdmin()}>
                                         <AddDoc className={styles.add_help} onClick={_.partial(handleClick, 'new')} />
                                     </Access>
                                 </div>
@@ -433,7 +427,7 @@ export default (props: any) => {
                                         allHelpsData={helps}
                                         setRightLoading={setRightLoading}
                                         typePath={typePath}
-                                        isPermier={isPermier}
+                                        isPermier={access.IsAdmin()}
                                         handleGetDocDetailFn={debounced}
                                         helpId={helpId} />
                                 </div>
@@ -453,7 +447,7 @@ export default (props: any) => {
                                             <div className={styles.create_time}>{`创建时间：${currentDoc && currentDoc.gmt_created}`}</div>
                                         </div>
                                         <div className={styles.edit_doc_botton} style={{ opacity: helps.length ? 1 : 0 }} >
-                                            <Access accessible={access.canSysTestAdmin()}>
+                                            <Access accessible={access.IsAdmin()}>
                                                 <Space>
                                                     <EditOutlined />
                                                     <span className={styles.edit_doc_span} onClick={handleEdit}>编辑文档</span>

@@ -56,7 +56,7 @@ export const SettingEdit = ({
 }: {
     name: string,
     keyName: string,
-    size?: string,
+    size?: any,
     type?: string,
     disabled?: boolean,
     inputType: string

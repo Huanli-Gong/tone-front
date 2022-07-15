@@ -223,7 +223,7 @@ const SelectDrawer: React.FC<any> = ({
                     (treeData?.length === 0 || hasTree.length === 0) &&
                     <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
-                        <Access accessible={access.canWsAdmin()}>
+                        <Access accessible={access.WsMemberOperateSelf()}>
                             <Button
                                 type="primary"
                                 onClick={

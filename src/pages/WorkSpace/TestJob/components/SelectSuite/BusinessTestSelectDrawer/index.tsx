@@ -306,7 +306,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                 ) : (
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
-                        <Access accessible={access.canWsAdmin()}>
+                        <Access accessible={access.WsMemberOperateSelf()}>
                             <Button
                                 type="primary"
                                 onClick={

@@ -49,14 +49,6 @@ const RenderChart = (props: any) => {
                 }
                 else {
                     myChart.setOption(PerfLineOption(dataSource, ws_id))
-                    myChart.on("click", 'series.line', (params: any) => {
-                        console.log(params)
-                        const { data } = params
-                        if (data) {
-                            const { job_id } = data
-                            if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
-                        }
-                    })
                 }
             }
             if (testType === 'functional') {
@@ -69,6 +61,14 @@ const RenderChart = (props: any) => {
                         passRateLineOption(dataSource, ws_id)
                     )
             }
+            myChart.on("click", 'series.line', (params: any) => {
+                console.log(params)
+                const { data } = params
+                if (data) {
+                    const { job_id } = data
+                    if (job_id) targetJump(`/ws/${ws_id}/test_result/${job_id}`)
+                }
+            })
         }
         myChart.hideLoading()
         return () => {

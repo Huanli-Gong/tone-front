@@ -2,14 +2,14 @@ import React, { useState , useEffect , useRef } from 'react'
 import { Button, Select, Space, Tag , Row } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
-import { useRequest } from 'umi'
+import { useRequest, Access, useAccess } from 'umi'
 import { EditOutlined, PlusOutlined} from '@ant-design/icons'
 import { updateJobTags } from '../service'
 
 import JobTagsCreate from './JobTagsCreate'
 
 import styles from './index.less'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 
 export const tagRender = ( { label, closable, onClose , value } : any ) => (
     <Tag 
@@ -22,10 +22,10 @@ export const tagRender = ( { label, closable, onClose , value } : any ) => (
     </Tag>
 )
 
-export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessible, accessLabel } : any ) => {
+export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } : any ) => {
     const [ state , setState ] = useState( false )
     const [ keys , setKeys ] = useState([])
-
+    const access = useAccess();
     const { data : tagList , loading , refresh,  run : getTagList } = useRequest(() => queryTagList({ ws_id }) , { manual : true , initialData : [] })
     const jobTagsCreateModal : any = useRef( null )
     const handleOk = async () => {
@@ -79,9 +79,16 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessible, acc
                                 ( tag : any , index : number ) => <Tag color={ tag.color } key={ index }>{ tag.name }</Tag>
                             )
                         :
-                        !accessible && <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
+                        <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
                     }
-                    { accessible ? <EditOutlined onClick={ handleSetTags }/> : <></>}
+                    <Access accessible={access.WsTourist()}>
+                        <Access 
+                            accessible={access.WsMemberOperateSelf(creator_id)}
+                            fallback={<EditOutlined onClick={()=> AccessTootip()}/>}
+                        >
+                            <EditOutlined onClick={ handleSetTags }/>
+                        </Access>
+                    </Access>
                 </Space>
             </Row> :
             <Row >

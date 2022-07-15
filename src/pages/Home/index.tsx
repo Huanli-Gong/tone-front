@@ -76,11 +76,11 @@ export default (): React.ReactNode => {
     const [loading, setLoading] = useState(true)
     const [wsLoading, setWsLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
-    const { user_id, ws_role_title, login_url } = initialState?.authList || {}
+    const { user_id, login_url } = initialState?.authList || {}
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
         page_size: 50,
         page_num: 1,
-        scope: ws_role_title == 'ws_tourist' ? 'all' : 'history'
+        scope: access.loginBtn() ? 'history' : 'all'  
     })
     const [helps, setHelps] = useState<Array<any>>([])
     const [topWs, setTopWs] = useState([])
@@ -117,8 +117,10 @@ export default (): React.ReactNode => {
     }
 
     const wsDom = () => {
-        const arrKey = ws_role_title === 'ws_tourist' ? tourKey : allKey
-
+        const tab = access.IsAdmin() ? allKey : allKey.filter((item:any) => item.key !== 'created')
+        const allTab = BUILD_APP_ENV ? tab :  allKey
+        const arrKey = access.loginBtn() ? allTab : tourKey
+        
         return (
             <Tabs defaultActiveKey="history" onChange={handleTabChange}>
                 {
@@ -174,15 +176,18 @@ export default (): React.ReactNode => {
     }
 
     const enterWorkspace = async (record: any) => {
+        if(access.IsAdmin()){
+            return history.push(jumpWorkspace(record.id))
+        }
+
         if (!user_id && !record.is_public) {
             if (BUILD_APP_ENV === 'openanolis') {
                 return location.replace(login_url)
             }
-            // /ws/${record.id}/dashboard
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }
 
-        if (access.canSuperAdmin() || record.is_public || record.is_member) {
+        if (record.is_public || record.is_member) {
             const path: string = await getEnterWorkspaceState(record)
             return history.push(path)
         }
@@ -345,7 +350,7 @@ export default (): React.ReactNode => {
                             <div>
                                 <Space align='end'>
                                     <Input.Search placeholder="请输入搜索关键字" onSearch={onSearch} style={{ width: 200 }} allowClear={true} />
-                                    <Access accessible={access.canSuperAdmin()}>
+                                    <Access accessible={access.ApplyPrivate()}>
                                         <Button onClick={() => history.push('/workspace/create')}>新建Workspace</Button>
                                     </Access>
                                 </Space>

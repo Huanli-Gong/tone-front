@@ -202,9 +202,7 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            <Access accessible={access.canWsAdmin()} >
-                                <Button onClick={handleAddProduct} type="primary" >新增产品</Button>
-                            </Access>
+                            <Button onClick={handleAddProduct} type="primary" >新增产品</Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text>所有产品 ({data?.length && `${data?.length}`})</Typography.Text>
@@ -313,18 +311,16 @@ export default (props: any) => {
                                     </Col>
                                 </Row>
                             </Col>
-                            <Access accessible={access.canWsAdmin()} >
-                                <Dropdown
-                                    overlayStyle={{ cursor: 'pointer' }}
-                                    overlay={
-                                        <Menu>
-                                            <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
-                                        </Menu>
-                                    }
-                                >
-                                    <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
-                                </Dropdown>
-                            </Access>
+                            <Dropdown
+                                overlayStyle={{ cursor: 'pointer' }}
+                                overlay={
+                                    <Menu>
+                                        <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                                    </Menu>
+                                }
+                            >
+                                <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 0, top: 5 }} />
+                            </Dropdown>
                         </Row>
                         <Row className={styles.right_project}>
                             <Row style={{ width: '100%', height: 62 }}>

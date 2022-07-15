@@ -5,6 +5,7 @@ import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Clipboard from 'clipboard'
 import { history, useParams } from 'umi'
 import styled from 'styled-components'
+import { AccessTootip } from '@/utils/utils';
 
 export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
     const { ws_id }: any = useParams()
@@ -103,7 +104,7 @@ export const ellipsisCopyColumn = (_: any, width: any = '100%') => {
     )
 }
 
-export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit }) => {
+export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit, access }) => {
     const boxRef: any = useRef()
     const [show, setShow] = useState(false)
 
@@ -111,7 +112,12 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
         const scrollWidth = boxRef.current.scrollWidth
         setShow(width - 18 < scrollWidth - 2)
     }, [title])
-
+    
+    const edit = (
+        access 
+        ? <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
+        : <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={()=> AccessTootip()} />
+    )
     return (
         <>
             {
@@ -120,11 +126,11 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
                         <Tooltip placement="topLeft" title={title}>
                             <span style={{ width: width - 16 - 28 }} className={styles.ellips_copy_column}>{title}</span>
                         </Tooltip>
-                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
+                        {edit}
                     </Row> :
                     <Row className={styles.ellips_copy_column} justify="start" align="middle" >
                         {title || '-'}
-                        <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
+                        {edit}
                     </Row>
             }
             <div
@@ -133,7 +139,7 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
                 style={{ width: width - 16 }}
             >
                 {title || '-'}
-                <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
+                {edit}
             </div >
         </>
     )

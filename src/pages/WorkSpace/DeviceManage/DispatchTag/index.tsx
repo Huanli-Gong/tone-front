@@ -11,10 +11,11 @@ import PermissionTootip from '@/components/Public/Permission';
 import { useDetectZoom } from '@/utils/hooks';
 import { useParams } from 'umi'
 import AddModel from './components/AddModel'
+import { Access, useAccess } from 'umi'
 
 const SuiteManagement: React.FC<any> = props => {
 	const { ws_id } = useParams() as any
-
+	const access = useAccess();
 	const ratio = useDetectZoom()
 	const [dataSource, setDataSource] = useState<any>({});
 	const [name, setName] = useState<string>();
@@ -155,18 +156,22 @@ const SuiteManagement: React.FC<any> = props => {
 			render: (_: string, row: any) =>
 				row.create_user !== '系统预设' &&
 				<Space>
-					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}>编辑</Button>
-					<Popconfirm
-						title={<div style={{ color: 'red' }}>删除调度标签后，机器池、Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
-						placement="topRight"
-						okText="取消"
-						cancelText="确定删除"
-						onCancel={() => remOuter(row)}
-						icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-						overlayStyle={{ width: '300px' }}
-					>
-						<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
-					</Popconfirm>
+					<Access accessible={access.WsMemberOperateSelf()}>
+						<Space>
+							<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}>编辑</Button>
+							<Popconfirm
+								title={<div style={{ color: 'red' }}>删除调度标签后，机器池、Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
+								placement="topRight"
+								okText="取消"
+								cancelText="确定删除"
+								onCancel={() => remOuter(row)}
+								icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
+								overlayStyle={{ width: '300px' }}
+							>
+								<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+							</Popconfirm>
+						</Space>
+					</Access>
 					<PermissionTootip>
 						<Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
 					</PermissionTootip>
@@ -178,7 +183,9 @@ const SuiteManagement: React.FC<any> = props => {
 		<SingleTabCard
 			title="调度标签"
 			extra={
-				<Button key="3" type="primary" onClick={newSuite}> 创建标签 </Button>
+				<Access accessible={access.WsMemberOperateSelf()}>
+					<Button key="3" type="primary" onClick={newSuite}> 创建标签 </Button>
+				</Access>
 			}
 		>
 			<Spin spinning={loading}>

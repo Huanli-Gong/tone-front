@@ -26,7 +26,7 @@ export default ({ ws_id , types , onOk } : any ) => {
         </>
     )
     const operations = (
-        <Access accessible={access.canWsAdmin()}>
+        <Access accessible={access.WsMemberOperateSelf()}>
             <div onClick={handleCreateJobType}>{renderChild}</div>
         </Access>
     );
@@ -73,10 +73,12 @@ export default ({ ws_id , types , onOk } : any ) => {
                 {testTypeDom()}
                 <JobType ws_id={ws_id} dataSource={types} onOk={onOk} getData={handleJobTypeData} />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="通过模板新建" key="2">
-                {testTypeDom()}
-                <JobModal ws_id={ws_id} onOk={onOk} getData={handleJobTypeData} testType={testType}/>
-            </Tabs.TabPane>
+            <Access accessible={access.IsWsSetting()}>
+                <Tabs.TabPane tab="通过模板新建" key="2">
+                    {testTypeDom()}
+                    <JobModal ws_id={ws_id} onOk={onOk} getData={handleJobTypeData} testType={testType}/>
+                </Tabs.TabPane>
+            </Access>
         </Tabs>
     )
 }
