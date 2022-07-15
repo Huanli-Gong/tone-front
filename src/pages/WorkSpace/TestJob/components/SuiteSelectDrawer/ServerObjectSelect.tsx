@@ -10,16 +10,17 @@ const ServerObjectSelect = (props: any) => {
     const { ws_id } = useParams<any>()
     const { setServerList } = useContext<any>(DrawerProvider)
     const PAGE_SIZE = 100
-
     const [fetching, setFetching] = useState(true)
     const [pageNum, setPageNum] = useState(1)
-    const [serverListCopy, setServerListCopy] = useState(serverList)
+    const [serverListCopy, setServerListCopy] = useState([])
+
     useEffect(() => {
         if (serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id') {
             queryServerList(1)
             setPageNum(1)
         }
     }, [serverObjectType])
+
     useEffect(() => {
         setServerListCopy(serverList)
     }, [serverList])
@@ -82,108 +83,115 @@ const ServerObjectSelect = (props: any) => {
             }
         }, [serverObjectType]
     )
+
     const handleSearch = (value: string) => {
-        if (isFlag && Array.isArray(serverListCopy)) {
+        if (run_mode === 'standalone' && Array.isArray(serverListCopy)) {
             const data = serverList.filter((item: any) => {
-                const ip = item?.ip || item?.sn || ''
-                return ip.toLowerCase().includes(value)
+                let ip = ''
+                if (server_type === 'aligroup') {
+                    ip = item?.ip
+                } else {
+                    ip = BUILD_APP_ENV ? item?.private_ip : item?.pub_ip
+                }
+                const filterIp = ip || item?.sn || ''
+                return filterIp.toLowerCase().includes(value)
             })
             setServerListCopy(data)
         }
     }
-    const handleSelectChange = () => {
-        if (isFlag) setServerListCopy(serverList)
-    }
-    const isFlag = serverObjectType === 'server_object_id' && run_mode === 'standalone'
 
-    if (serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id')
-        return (
-            <Form.Item noStyle>
-                <Form.Item
-                    name="server_object_id"
-                    rules={[{ required: true, message: switchServerMessage }]}
-                >
-                    <Select
-                        allowClear
-                        style={{ width: '100%' }}
-                        placeholder={switchServerMessage}
-                        dropdownMatchSelectWidth={340}
-                        showSearch
-                        onSearch={handleSearch}
-                        onChange={handleSelectChange}
-                        loading={fetching}
-                        optionFilterProp="children"
-                        onPopupScroll={handleServerPopupScroll}
-                        filterOption={
-                            isFlag ? false : (input, option: any) => {
-                                return (
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    const handleSelectChange = () => {
+        if (run_mode === 'standalone') {
+            setServerListCopy(serverList)
+        }
+    }
+
+    const renderServerItem = useMemo(() => {
+        if (serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id')
+            return (
+                <Form.Item noStyle>
+                    <Form.Item
+                        name="server_object_id"
+                        rules={[{ required: true, message: switchServerMessage }]}
+                    >
+                        <Select
+                            allowClear
+                            style={{ width: '100%' }}
+                            placeholder={switchServerMessage}
+                            dropdownMatchSelectWidth={340}
+                            showSearch
+                            onSearch={handleSearch}
+                            onChange={handleSelectChange}
+                            loading={fetching}
+                            onPopupScroll={handleServerPopupScroll}
+                            optionFilterProp="children"
+                            filterOption={false}
+                        >
+                            {
+                                serverObjectType === 'server_object_id' &&
+                                (
+                                    run_mode === 'standalone' ?
+                                        serverListCopy.map(
+                                            (item: any) => (
+                                                <Select.Option key={item.id} value={item.id}>
+                                                    <Space>
+                                                        {item.state === "Available" && <Badge status="success" />}
+                                                        {item.state === "Occupied" && <Badge status="error" />}
+                                                        {item.state === "Reserved" && <Badge status="warning" />}
+                                                        <Tooltip placement="top" title={item.state}>
+                                                            <Typography.Text ellipsis>{item.ip || item.sn}</Typography.Text>
+                                                        </Tooltip>
+                                                    </Space>
+                                                </Select.Option>
+                                            )
+                                        ) :
+                                        RenderSelectItems(serverList, 'name')
                                 )
                             }
-                        }
-                    >
-                        {
-                            serverObjectType === 'server_object_id' &&
-                            (
-                                run_mode === 'standalone' ?
-                                    serverListCopy.map(
-                                        (item: any) => (
-                                            <Select.Option key={item.id} value={item.id}>
-                                                <Space>
-                                                    {item.state === "Available" && <Badge status="success" />}
-                                                    {item.state === "Occupied" && <Badge status="error" />}
-                                                    {item.state === "Reserved" && <Badge status="warning" />}
-                                                    <Tooltip placement="top" title={item.state}>
-                                                        <Typography.Text ellipsis>{item.ip || item.sn}</Typography.Text>
-                                                    </Tooltip>
-                                                </Space>
-                                            </Select.Option>
-                                        )
-                                    ) :
-                                    RenderSelectItems(serverList, 'name')
-                            )
-                        }
-                        {
-                            serverObjectType === 'instance' &&
-                            serverList.filter((i: any) => i.is_instance).map((item: any) => {
-                                let ip = BUILD_APP_ENV ? item.private_ip : item.pub_ip
-                                return (
-                                    <Select.Option value={item.id} key={item.id}>
-                                        {ip ? (
-                                            ~item.instance_name.indexOf(' / ') ?
-                                                item.instance_name :
-                                                <Tooltip
-                                                    placement='topLeft'
-                                                    overlayInnerStyle={{ width:320 }}
-                                                    title={
-                                                        <div style={{ wordBreak: 'break-all' }}>
+                            {
+                                serverObjectType === 'instance' &&
+                                serverListCopy.filter((i: any) => i.is_instance).map((item: any) => {
+                                    let ip = BUILD_APP_ENV ? item.private_ip : item.pub_ip
+                                    return (
+                                        <Select.Option value={item.id} key={item.id}>
+                                            {ip ? (
+                                                ~item.instance_name.indexOf(' / ') ?
+                                                    item.instance_name :
+                                                    <Tooltip
+                                                        placement='topLeft'
+                                                        overlayInnerStyle={{ width: 320 }}
+                                                        title={
+                                                            <div style={{ wordBreak: 'break-all' }}>
+                                                                {item.state === "Available" && <Badge status="success" />}
+                                                                {item.state === "Occupied" && <Badge status="error" />}
+                                                                {item.state === "Reserved" && <Badge status="warning" />}
+                                                                {ip} / {item.instance_name}
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <Typography.Text ellipsis>
                                                             {item.state === "Available" && <Badge status="success" />}
                                                             {item.state === "Occupied" && <Badge status="error" />}
                                                             {item.state === "Reserved" && <Badge status="warning" />}
                                                             {ip} / {item.instance_name}
-                                                        </div>
-                                                    }
-                                                >
-                                                    <Typography.Text ellipsis>
-                                                        {item.state === "Available" && <Badge status="success" />}
-                                                        {item.state === "Occupied" && <Badge status="error" />}
-                                                        {item.state === "Reserved" && <Badge status="warning" />}
-                                                        {ip} / {item.instance_name}
-                                                    </Typography.Text>
-                                                </Tooltip>
-                                        ) : item.instance_name}
-                                    </Select.Option>
-                                )
-                            })
-                        }
-                        {
-                            serverObjectType === 'setting' &&
-                            RenderSelectItems(serverList.filter((i: any) => !i.is_instance), 'template_name')
-                        }
-                    </Select>
+                                                        </Typography.Text>
+                                                    </Tooltip>
+                                            ) : item.instance_name}
+                                        </Select.Option>
+                                    )
+                                })
+                            }
+                            {
+                                serverObjectType === 'setting' &&
+                                RenderSelectItems(serverList.filter((i: any) => !i.is_instance), 'template_name')
+                            }
+                        </Select>
+                    </Form.Item>
                 </Form.Item>
-            </Form.Item>
-        )
-    return <></>
+            )
+        return <></>
+    }, [serverListCopy, serverList])
+
+    return renderServerItem
 }
 export default ServerObjectSelect
