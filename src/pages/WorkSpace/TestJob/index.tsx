@@ -239,7 +239,7 @@ const TestJob: React.FC<any> = (props) => {
             }: any = envVal
 
             installKernel = kernel_install
-            const envStr = env_info && env_info.replace(/,|，|\n/g, ',')
+            const envStr = env_info
 
             const build_pkg_info = {
                 code_repo, code_branch, compile_branch, cpu_arch, commit_id,
@@ -328,7 +328,7 @@ const TestJob: React.FC<any> = (props) => {
                         const envs: any = env_info.filter((i: any) => {
                             if (i.name && i.val) return i
                         })
-                        const evnInfoStr = envs.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? ',' : ''}${p.name}=${p.val}`), '')
+                        const evnInfoStr = envs.reduce((i: any, p: any, idx: number) => i.concat(`${idx ? '\n' : ''}${p.name}=${p.val}`), '')
 
                         let customer_server = undefined
                         if (custom_channel && custom_ip) {

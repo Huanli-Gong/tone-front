@@ -241,17 +241,15 @@ const BasicSetting = (props: any, ref: any) => {
                         () => ({
                             validator(rule, value) {
                                 if (value) {
-                                    const valArr = value.split(/,|，|\n/g)
-                                    const reg = /^(\S+=\S+)$/
-                                    let warry = valArr.filter((str: any) => !reg.test(str))
-                                    return warry.length === 0 ? Promise.resolve() : Promise.reject('格式：key=value，多个用英文逗号或换行分割');
+                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                    return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
                                 }
                                 return Promise.resolve()
                             },
                         })
                     ]}
                 >
-                    <Input.TextArea placeholder="格式：key=value，多个用英文逗号或换行分割" />
+                    <Input.TextArea placeholder="格式：key=value，多个用空格或换行分割" />
                 </Form.Item>
                 <Form.Item name="notice_name" label="通知主题">
                     <Input autoComplete="off" placeholder="[T-One] 你的测试已完成{date}" />

@@ -11,7 +11,7 @@ import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushF
 import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushForm'
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
-
+import { getTextByJs } from '@/utils/hooks'
 import MonitorList from './MonitorList'
 
 import { useRequest , useParams } from 'umi'
@@ -118,7 +118,7 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
                 moniter_contrl = true
             }
 
-            const variable: any = env_info ? Object.keys(env_info).map((k: any) => `${k}=${env_info[k]}`).toString().replace(/,|，/g, '\n') : ''
+            const variable: any = env_info ? getTextByJs(env_info) : ''
             const monitorInfo = _.isArray(monitor_info) ? monitor_info.map((item) => {
                 const obj:{monitor_type:string,server?:string} = {monitor_type:item.monitor_type}
                 if(_.get(item,'monitor_type') === 'custom_machine')  obj.server = item.server_input
@@ -267,10 +267,8 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
                         () => ({
                             validator(rule, value) {
                                 if (value) {
-                                    const valArr = value.split(/,|，|\n/g)
-                                    const reg = /^(.+=.+)$/
-                                    let warry = valArr.filter((str: any) => !reg.test(str))
-                                    return warry.length === 0 ? Promise.resolve() : Promise.reject('格式：key=value，多个用英文逗号或换行分割');
+                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                    return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
                                 }
                                 else
                                     return Promise.resolve()
@@ -278,7 +276,7 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
                         })
                     ]}
                 >
-                    <Input.TextArea disabled={disabled} placeholder="格式：key=value，多个用英文逗号或换行分割" />
+                    <Input.TextArea disabled={disabled} placeholder="格式：key=value，多个用空格或换行分割" />
                 </Form.Item>
             }
             {
