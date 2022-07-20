@@ -435,10 +435,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 const imageValue = selectType ? [selectType, editData.image] : undefined
                 form.setFieldsValue({ image: imageValue })
             } else {
-                const selectType = selectItem.length ? selectItem[0]['owner_alias'] : ''
-                const selectSec = selectItem.length ? selectItem[0]['platform'] : ''
-                const imageValue = selectType ? [enumerEnglish(selectType), selectSec, editData.image] : undefined
-                form.setFieldsValue({ image: imageValue })
+                if (!!selectItem.length) {
+                    const selectType = selectItem[0]['owner_alias']
+                    const selectSec = selectItem[0]['platform']
+                    const selectOs = selectItem[0]['os_name']
+                    const imageValue = selectType ? [enumerEnglish(selectType), selectSec, selectOs, editData.image] : undefined
+                    form.setFieldsValue({ image: imageValue })
+                }
             }
         }
     }, [image])
@@ -466,7 +469,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         } else {
             param.instance_type = params.instance_type
         }
-        console.log('params',params)
         // 镜像
         if (params.hasOwnProperty('image') && params.image.length) {
             if (manufacturerType === 'aliyun_eci') {
@@ -477,13 +479,23 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 const itemObj = selectedItem.children?.find((item: any) => item.value == params.image[1])
                 param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
             } else {
-                param.image = params.image[2]
-                // 获取镜像名
-                const imageSource = resetImage(image, 'owner_alias', 'platform') || []
-                const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
-                const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
-                const itemObj = LevelTwo.children?.find((item: any) => item.value == params.image[2])
-                param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+                if (params.image[3] === 'latest') {
+                    let str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
+                    param.image = str
+                    param.image_name = str
+                } else if(params.image.indexOf(':latest') > 0){
+                    param.image = params.image
+                    param.image_name = params.image
+                } else {
+                    param.image = params.image[3]
+                    // 获取镜像名
+                    const imageSource = resetImage(image, 'owner_alias', 'platform', 'os_name') || []
+                    const LevelOne = imageSource?.find((item: any) => item.value == params.image[0]) || {}
+                    const LevelTwo = LevelOne.children?.find((item: any) => item.value == params.image[1]) || {}
+                    const LevelThree = LevelTwo.children?.find((item: any) => item.value == params.image[2]) || {}
+                    const itemObj = LevelThree.children?.find((item: any) => item.value == params.image[3])
+                    param.image_name = itemObj?.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
+                }
             }
         } else {
             param.image = undefined
@@ -841,10 +853,9 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         rules={[{ required: true, message: '请选择' }]}
                                     >
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
-                                            options={resetImage(image, 'owner_alias', 'platform')}
-                                            // expandTrigger="hover"
+                                            options={resetImage(image, 'owner_alias', 'platform', 'os_name')}
                                             displayRender={displayRender}
-                                            dropdownMatchSelectWidth={true}
+                                            dropdownMenuColumnStyle={{ width: 170 }}
                                             dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
