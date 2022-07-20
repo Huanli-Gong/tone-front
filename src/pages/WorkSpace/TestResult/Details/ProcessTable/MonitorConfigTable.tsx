@@ -6,7 +6,9 @@ import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
 import { useRequest } from 'umi';
 import ResizeTable from '@/components/ResizeTable'
-export default ({ job_id , refresh = false } : any ) => {
+import ServerLink from '@/components/MachineWebLink/index';
+
+export default ({ job_id , refresh = false, provider_name } : any ) => {
     const { data , loading , run } = useRequest(
         () => queryMonitorList({ job_id }),
         {
@@ -31,11 +33,9 @@ export default ({ job_id , refresh = false } : any ) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: number | string | undefined) => (
+            render: (_: string | number | undefined) => (
                 _ ?
-                    <PopoverEllipsis title={_}>
-                        <span>{_}</span>
-                    </PopoverEllipsis>
+                    <ServerLink val={_} provider={provider_name} />
                     : '-'
             )
         },
