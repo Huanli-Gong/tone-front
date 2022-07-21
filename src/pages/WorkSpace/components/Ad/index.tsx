@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components"
-import { Carousel, Space, Row, Button } from "antd"
-import { Third } from '@/pages/Home/Component/HomePush/components';
+import { Carousel, Space, Row, Button, Typography } from "antd"
+import First from './First';
 import { ReactComponent as Close } from "@/assets/svg/close.svg"
 import imgPic from "@/assets/img/image.png"
 import { useParams, history, useModel } from "umi";
@@ -64,8 +64,11 @@ const AdCarouseItem = styled.div`
     ${wrapperWidth}
     /* height: 700px; */
     display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
     position: relative;
+
     img {
         width: 100%;
         height: 100%;
@@ -75,8 +78,8 @@ const CloseOutlie = styled.div`
     position: absolute;
     right: 10px;
     top: 10px;
-    width: 36px;
-    height: 36px;
+    /* width: 36px;
+    height: 36px; */
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -86,7 +89,7 @@ const CloseOutlie = styled.div`
     svg {
         width: 100%;
         height: 100%;
-        fill: #fff;
+        fill: #000;
     }
 `
 
@@ -123,29 +126,18 @@ const AdCompoent: React.FC = () => {
                     autoplay
                 >
                     <AdCarouseItem>
-                        <div style={{ padding: `30px 16px` }}>
-                            <Third />
-                            <Row
-                                justify="center"
-                                style={{ marginTop: 30 }}
-                            >
-                                <Button
-                                    type="primary"
-                                    onClick={() => history.push(`/ws/${ws_id}/test_result`)}
-                                >
-                                    查看详情
-                                </Button>
-                            </Row>
+                        <div style={{ padding: 24 }}>
+                            <First />
                         </div>
                     </AdCarouseItem>
                     <AdCarouseItem >
                         <img src={imgPic} />
                     </AdCarouseItem>
                 </Carousel>
+                <CloseOutlie onClick={handleClose}>
+                    <Typography.Text type="secondary">关闭</Typography.Text>
+                </CloseOutlie>
             </AdWrapper>
-            <CloseOutlie onClick={handleClose}>
-                <Close />
-            </CloseOutlie>
         </AdContainer>
     )
 }
