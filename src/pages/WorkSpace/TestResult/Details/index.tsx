@@ -19,7 +19,7 @@ import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, aligroupServer, aliyunServer } from '@/utils/utils';
 import _, { isNull } from 'lodash'
 
 const TestResultDetails: React.FC = (props: any) => {
@@ -89,8 +89,8 @@ const TestResultDetails: React.FC = (props: any) => {
         refresh()
     }
 
-    const conversion = (data:any) => {
-        if(!isNull(data.baseline_job_id)){
+    const conversion = (data: any) => {
+        if (!isNull(data.baseline_job_id)) {
             return <a href={`/ws/${ws_id}/test_result/${data.baseline_job_id}`}># {data.baseline_job_id}</a>
         }
         return data.baseline_name
@@ -153,13 +153,13 @@ const TestResultDetails: React.FC = (props: any) => {
             }
         }
         return (
-            <Access 
+            <Access
                 accessible={access.WsMemberOperateSelf(creator_id)}
-                fallback={<EditOutlined onClick={()=> AccessTootip()} style={{ ...noteStyle }}/>}
+                fallback={<EditOutlined onClick={() => AccessTootip()} style={{ ...noteStyle }} />}
             >
                 <EditOutlined
                     onClick={handleOpenEditRemark}
-                    style={{ ...noteStyle }} 
+                    style={{ ...noteStyle }}
                 />
             </Access>
         )
@@ -203,6 +203,24 @@ const TestResultDetails: React.FC = (props: any) => {
     // 判断是"执行过程tab"
     const testProgressTab = tab === 'testProgress' && isShowStopButton
 
+    const getProviderName = (name: string) => new Map(
+        [
+            ["内网机器", aligroupServer],
+            ["云上机器", aliyunServer],
+            ["aligroup", aligroupServer],
+            ["aliyun", aliyunServer],
+        ]
+    ).get(name)
+
+    const transProvider = (name: string) => new Map(
+        [
+            ["内网机器", "aligroup"],
+            ["云上机器", "aliyun"],
+            ["aligroup", "aligroup"],
+            ["aliyun", "aliyun"],
+        ]
+    ).get(name)
+
     return (
         <>
             <Spin spinning={loading} className={styles.spin_style}>
@@ -232,7 +250,9 @@ const TestResultDetails: React.FC = (props: any) => {
                                             <Space>
                                                 <StateTag state={data.state} />
                                                 {data.provider_name && <Tooltip title="机器类型" placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.provider_name}</Tag>
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>
+                                                        {getProviderName(data.provider_name)}
+                                                    </Tag>
                                                 </Tooltip>}
                                                 {data.test_type && <Tooltip title="测试类型" placement="bottom">
                                                     <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.test_type}</Tag>
@@ -306,10 +326,10 @@ const TestResultDetails: React.FC = (props: any) => {
                                                     placement="topLeft"
                                                     overlayStyle={{ minWidth: 800 }}
                                                 >
-                                                    { data.note || '-' }
+                                                    {data.note || '-'}
                                                 </Tooltip>
                                                 <Access accessible={access.WsTourist()}>
-                                                    <EditNoteBtn note={data.note} creator_id={data.creator}/>
+                                                    <EditNoteBtn note={data.note} creator_id={data.creator} />
                                                 </Access>
                                             </div>
                                         </Row>
@@ -323,7 +343,7 @@ const TestResultDetails: React.FC = (props: any) => {
                             </div>
                         </div>
                         <RenderMachineItem job_id={job_id} />
-                        <RenderMachinePrompt { ...data }/>
+                        <RenderMachinePrompt {...data} />
                         <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
@@ -344,9 +364,9 @@ const TestResultDetails: React.FC = (props: any) => {
                                             <Button type={buttonType} onClick={handleReplay} disabled={buttonDisable} style={{ marginRight: 8 }}>重跑</Button>
                                         </Access>
                                         <Access accessible={access.WsTourist()}>
-                                            <Access 
+                                            <Access
                                                 accessible={access.WsMemberOperateSelf(data.creator)}
-                                                fallback={testProgressTab && <Button onClick={()=> AccessTootip()} style={{ marginRight: 8 }}>停止Job</Button>}
+                                                fallback={testProgressTab && <Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>停止Job</Button>}
                                             >
                                                 {testProgressTab && <Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
                                             </Access>
@@ -365,7 +385,7 @@ const TestResultDetails: React.FC = (props: any) => {
                                         job_id={job_id}
                                         cases={data.case_result}
                                         caseResult={data.case_result}
-                                        provider_name={data.provider_name}
+                                        provider_name={transProvider(data.provider_name)}
                                         ws_id={ws_id}
                                     />
                                 </Tabs.TabPane>
@@ -374,13 +394,13 @@ const TestResultDetails: React.FC = (props: any) => {
                                         job_id={job_id}
                                         onRef={processTableRef}
                                         test_type={data.test_type}
-                                        provider_name={data.provider_name}
+                                        provider_name={transProvider(data.provider_name)}
                                     />
                                 </Tabs.TabPane>
                                 <Tabs.TabPane tab="测试配置" key="testConfig" >
                                     <TestSettingTable
                                         jt_id={data.job_type_id}
-                                        provider_name={data.provider_name}
+                                        provider_name={transProvider(data.provider_name)}
                                         test_type={data.test_type}
                                     />
                                 </Tabs.TabPane>

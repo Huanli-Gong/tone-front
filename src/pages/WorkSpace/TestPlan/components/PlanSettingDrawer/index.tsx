@@ -4,31 +4,30 @@ import { Drawer, Row, Col, Space, Button, message, Badge } from 'antd'
 
 import { queryTestPlanDetails } from '@/pages/WorkSpace/TestPlan/services'
 import { history } from 'umi'
-import { requestCodeMessage } from '@/utils/utils'
+import { aligroupServer, aliyunServer, requestCodeMessage } from '@/utils/utils'
 
-const PropItem = styled(Space)`
+const leftWidth = `160px`
+
+const PropItem = styled.div`
     width:100%;
-    .ant-space-item {
-        height:100%;
-    }
+    display: flex;
+    align-items: center;
 
-    b {
-        width : 100px; 
+    .setting_label {
+        width : ${leftWidth}; 
         font-weight: 600;
-        //
-        font-family: PingFangSC-Semibold;
+        display: inline-block;
         font-size: 14px;
         color: rgba(0,0,0,0.85);
-    }
-
-    & .ant-space-item:first-child  {
-        width : 130px; 
         text-align : right;
+        margin-right: 12px;
     }
 
-    & .ant-space-item:last-child {
-        width : calc( 100% - 100px - 8px );
+    .setting_link,
+    .setting_text {
+        width : calc( 100% - ${leftWidth} - 12px );
         overflow: hidden;
+        display: inline-block;
         height: 24px;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -67,9 +66,9 @@ const DrawerNavbar = styled.div`
 `
 const SettingSpaceItem: React.FC<any> = ({ name = '', val = '', isLink = false }) => (
     <PropItem>
-        <b>{name}</b>
+        <b className="setting_label">{name}</b>
         {
-            val ? isLink ? <a>{val}</a> : <span>{val}</span> :
+            val ? isLink ? <a className="setting_link">{val}</a> : <span className="setting_text">{val}</span> :
                 <>无</>
         }
     </PropItem>
@@ -78,9 +77,9 @@ const SettingSpaceItem: React.FC<any> = ({ name = '', val = '', isLink = false }
 const PrepSpaceItem: React.FC<any> = ({ name = '', val = '', isLink = false }) => (
     val &&
     <PropItem>
-        <b>{name}</b>
+        <b className="setting_label">{name}</b>
         {
-            val ? isLink ? <a>{val}</a> : val :
+            val ? isLink ? <a className="setting_link">{val}</a> : val :
                 <>无</>
         }
     </PropItem>
@@ -88,10 +87,10 @@ const PrepSpaceItem: React.FC<any> = ({ name = '', val = '', isLink = false }) =
 
 const SettingRow: React.FC<any> = ({ name = '', children }) => (
     <div style={{ width: '100%', display: 'flex' }}>
-        <div style={{ width: 130, marginRight: 8, textAlign: 'right' }}>
+        <div style={{ width: 160, marginRight: 12, textAlign: 'right' }}>
             <b>{name}</b>
         </div>
-        <div style={{ width: 'calc(100% - 100px - 8px)' }}>
+        <div style={{ width: 'calc(100% - 160px - 12px)' }}>
             {children}
         </div>
     </div>
@@ -111,7 +110,7 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 setVisible(true)
                 return
             }
-            return requestCodeMessage( code , msg )
+            return requestCodeMessage(code, msg)
         }
     }))
 
@@ -155,22 +154,26 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <SettingSpaceItem name="名称" val={dataSource?.name} />
                 <SettingSpaceItem name="创建人" val={dataSource?.creator_name} />
                 <SettingSpaceItem name="所属项目" val={dataSource?.project_name} />
-                <SettingSpaceItem name="内网功能基线" val={dataSource?.func_baseline_name} />
-                <SettingSpaceItem name="内网性能基线" val={dataSource?.perf_baseline_name} />
-                <SettingSpaceItem name="云上功能基线" val={dataSource?.func_baseline_aliyun_name} />
-                <SettingSpaceItem name="云上性能基线" val={dataSource?.perf_baseline_aliyun_name} />
+                {/* <SettingSpaceItem name="内网功能基线" val={dataSource?.func_baseline_name} /> */}
+                {/* <SettingSpaceItem name="内网性能基线" val={dataSource?.perf_baseline_name} /> */}
+                {/* <SettingSpaceItem name="云上功能基线" val={dataSource?.func_baseline_aliyun_name} />
+                <SettingSpaceItem name="云上性能基线" val={dataSource?.perf_baseline_aliyun_name} /> */}
+                <SettingSpaceItem name={`功能基线（${aligroupServer}）`} val={dataSource?.func_baseline_name} />
+                <SettingSpaceItem name={`性能基线（${aligroupServer}）`} val={dataSource?.perf_baseline_name} />
+                <SettingSpaceItem name={`功能基线（${aliyunServer}）`} val={dataSource?.func_baseline_aliyun_name} />
+                <SettingSpaceItem name={`性能基线（${aliyunServer}）`} val={dataSource?.perf_baseline_aliyun_name} />
                 <SettingSpaceItem name="描述" val={dataSource?.description} />
-                <SettingSpaceItem name="通知主题" val={dataSource?.notice_name ||((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
+                <SettingSpaceItem name="通知主题" val={dataSource?.notice_name || ((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
                 <SettingSpaceItem name="邮件通知" val={dataSource?.email_info} />
                 <SettingSpaceItem name="钉钉通知" val={dataSource?.ding_talk_info} />
                 <SettingSpaceItem
                     name="启用"
                     val={
-                        <span style={{ paddingLeft : 4 }}>
+                        <span style={{ paddingLeft: 4 }}>
                             {
                                 dataSource?.enable ?
-                                <Badge status="processing" text="是" /> :
-                                <Badge status="default" text="否" />
+                                    <Badge status="processing" text="是" /> :
+                                    <Badge status="default" text="否" />
                             }
                         </span>
                     }
@@ -206,7 +209,7 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <PrepSpaceItem name="全局RPM" val={dataSource?.rpm_info} />
                 <PrepSpaceItem name="全局变量" val={dataSource?.env_info} />
             </Row>
-            
+
             <Row style={{ marginBottom: 20 }}>
                 <DrawerNavbar>
                     <span>测试配置</span>
@@ -249,10 +252,10 @@ const ViewPlanDetail = (props: any, ref: any) => {
                         <SettingSpaceItem name="自动生成报告" val={<span style={{ paddingLeft: 4 }}><Badge status="processing" text="是" /></span>} />
                         <SettingSpaceItem name="报告名称" val={dataSource?.report_name || '{date} {plan_name} {plan_id} {product_version}'} />
                         <SettingSpaceItem name="报告模板" val={dataSource?.report_template_name} />
-                        <SettingSpaceItem name="分组方式" val={dataSource?.group_method === 'job' ? '以Job维度分组' : '以阶段维度分组' } />
-                        <SettingSpaceItem name="基准组" val={dataSource?.group_method === 'job' ? `${dataSource?.base_group_info?.stage_name||'-'} / ${dataSource?.base_group_info?.template_name}` : dataSource?.base_group_info?.stage_name} />
+                        <SettingSpaceItem name="分组方式" val={dataSource?.group_method === 'job' ? '以Job维度分组' : '以阶段维度分组'} />
+                        <SettingSpaceItem name="基准组" val={dataSource?.group_method === 'job' ? `${dataSource?.base_group_info?.stage_name || '-'} / ${dataSource?.base_group_info?.template_name}` : dataSource?.base_group_info?.stage_name} />
                         <SettingSpaceItem name="报告描述" val={dataSource?.report_description} />
-                    </> )
+                    </>)
                     :
                     <SettingSpaceItem name="自动生成报告" val={<span style={{ paddingLeft: 4 }}><Badge status="default" text="否" /></span>} />
                 }
@@ -262,10 +265,7 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <DrawerNavbar>
                     <span>触发配置</span>
                 </DrawerNavbar>
-                <PropItem>
-                    <b>触发规则</b>
-                    <span>{dataSource?.cron_info || '无'}</span>
-                </PropItem>
+                <SettingSpaceItem name="触发规则" val={dataSource?.cron_info || '无'} />
             </Row>
         </Drawer>
     )

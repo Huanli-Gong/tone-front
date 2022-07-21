@@ -16,6 +16,7 @@ import QuestionCircleComponent from '@/components/Public/QuestionCircle'
 import { queryReportTemplateList } from '@/pages/TestJob/services' */
 import styled from 'styled-components'
 import _ from 'lodash'
+import { aligroupServer, aliyunServer } from '@/utils/utils'
 const BaselineSpan = styled.span`
     position:absolute;
     right: 30px;
@@ -132,7 +133,10 @@ const BasicSetting = (props: any, ref: any) => {
                 <Form.Item label="测试基线">
                     <BaselineWrapper>
                         <Form.Item name="func_baseline" >
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择内网功能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                                /* placeholder="请选择内网功能基线" */
+                                placeholder={`请选择功能基线`}
+                            >
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aligroup').map(
                                         (item: any) => (
@@ -142,14 +146,20 @@ const BasicSetting = (props: any, ref: any) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <BaselineSpan >内网｜功能</BaselineSpan>
+                        <BaselineSpan >
+                            {/* 内网｜功能 */}
+                            {aligroupServer}｜功能
+                        </BaselineSpan>
                         {/* <div style={{ position : 'absolute' , right : -22 , top : -4 }}>
                             <QusetionIconTootip desc="" title="至少添加一种基线" />
                         </div> */}
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline">
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择内网性能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                                /* placeholder="请选择内网性能基线" */
+                                placeholder={`请选择性能基线`}
+                            >
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aligroup').map(
                                         (item: any) => (
@@ -159,26 +169,39 @@ const BasicSetting = (props: any, ref: any) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <BaselineSpan >内网｜性能</BaselineSpan>
+                        <BaselineSpan >
+                            {/* 内网｜性能 */}
+                            {aligroupServer}｜性能
+                        </BaselineSpan>
                     </BaselineWrapper>
 
                     {/** 新添加--云上 */}
                     <BaselineWrapper>
                         <Form.Item name="func_baseline_aliyun">
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择云上功能基线">
-                                {baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aliyun').map(
-                                    (item: any) => (
-                                        <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                                placeholder={`请选择功能基线`}
+                            // placeholder="请选择云上功能基线"
+                            >
+                                {
+                                    baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aliyun').map(
+                                        (item: any) => (
+                                            <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
+                                        )
                                     )
-                                )
                                 }
                             </Select>
                         </Form.Item>
-                        <BaselineSpan>云上｜功能</BaselineSpan>
+                        <BaselineSpan>
+                            {aliyunServer}｜功能
+                            {/* 云上｜功能 */}
+                        </BaselineSpan>
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline_aliyun">
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择云上性能基线">
+                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                                placeholder={`请选择性能基线`}
+                            // placeholder="请选择云上性能基线"
+                            >
                                 {baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aliyun').map(
                                     (item: any) => (
                                         <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
@@ -187,7 +210,10 @@ const BasicSetting = (props: any, ref: any) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <BaselineSpan>云上｜性能</BaselineSpan>
+                        <BaselineSpan>
+                            {aliyunServer}｜性能
+                            {/* 云上｜性能 */}
+                        </BaselineSpan>
                     </BaselineWrapper>
                 </Form.Item>
                 <Form.Item name="test_obj" label={"被测对象"}>

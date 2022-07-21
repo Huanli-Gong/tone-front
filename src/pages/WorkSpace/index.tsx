@@ -1,11 +1,10 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { Layout, Menu, Space } from 'antd'
 import styles from './index.less'
-import { FormattedMessage, history, useIntl, useModel, useParams } from 'umi'
+import { FormattedMessage, history, useIntl, useParams } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 import AdCompoent from './components/Ad'
-import path from 'path'
 
 const { document }: any = window
 

@@ -9,7 +9,7 @@ export default forwardRef(
         const defaultParmasAk = {
             page_num: 1,
             page_size: 1000,
-            ws_id:props.ws_id
+            ws_id: props.ws_id
         }
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
@@ -36,9 +36,9 @@ export default forwardRef(
                 show: (title: string = "新建Image", data: any = {}) => {
 
                     let type = ''
-                    if(data && data.provider) {
+                    if (data && data.provider) {
                         type = data.provider
-                        getAkList({...defaultParmasAk, provider:type})
+                        getAkList({ ...defaultParmasAk, provider: type })
                     }
                     const { ak_id } = data
                     // console.log('ak_id:', ak_id);
@@ -52,20 +52,20 @@ export default forwardRef(
                 }
             })
         )
-       
-        const getAkList = async (params:any) => {
+
+        const getAkList = async (params: any) => {
             const { data } = await queryCloudAk(params)
             setAkData(data || [])
         };
 
-        const getRegionList = async (params:any) => {
+        const getRegionList = async (params: any) => {
             const { data } = await queryRegionCloudAk(params)
             setRegionList(data || [])
         };
 
 
- 
-       const handleClose = () => {
+
+        const handleClose = () => {
             form.resetFields() // 重置一组字段到 initialValues
             setPadding(false)
             setVisible(false)
@@ -89,8 +89,8 @@ export default forwardRef(
                 form.resetFields() //重置一组字段到 initialValues
             }
             else {
-                if(code === 201){
-                    setQuerynameStatus(false)            
+                if (code === 201) {
+                    setQuerynameStatus(false)
                 } else {
                     message.error(msg)
                 }
@@ -98,7 +98,7 @@ export default forwardRef(
             setPadding(false)
         }
 
-        const handleOk = () => {        
+        const handleOk = () => {
             if (!form.getFieldValue('provider')) {
                 setProviderStatus(false)
                 return
@@ -145,24 +145,24 @@ export default forwardRef(
                 })
                 .catch(err => console.log(err))
         }
-        const providerArr = [{id:'aliyun_ecs',name: '阿里云ECS'},{id:'aliyun_eci',name: '阿里云ECI'}]
-        const providerSelectFn = (value:string)=>{
+        const providerArr = [{ id: 'aliyun_ecs', name: '阿里云ECS' }, { id: 'aliyun_eci', name: '阿里云ECI' }]
+        const providerSelectFn = (value: string) => {
             setProviderStatus(true)
-            if(value !== providerType){
+            if (value !== providerType) {
                 const fieldsValue = _.cloneDeep(form.getFieldsValue())
                 fieldsValue.ak_name = undefined
                 form.setFieldsValue(fieldsValue)
                 setProviderType(value)
 
             }
-            
-            getAkList({...defaultParmasAk,provider:value})
+
+            getAkList({ ...defaultParmasAk, provider: value })
         }
 
         return (
-            <Drawer 
-                maskClosable={ false }
-                keyboard={ false }
+            <Drawer
+                maskClosable={false}
+                keyboard={false}
                 title={title}
                 width="375"
                 onClose={handleClose}
@@ -180,13 +180,13 @@ export default forwardRef(
                 <Form
                     form={form}
                     layout="vertical" // 表单布局 ，垂直
-                    /*hideRequiredMark*/
-                    >
+                /*hideRequiredMark*/
+                >
                     <Form.Item
                         label="云服务商"
                         name="provider"
                         validateStatus={(!providerStatus) && 'error'}
-                        help={(!providerStatus && `云服务商不能为空`)}
+                        help={(!providerStatus ? `云服务商不能为空` : undefined)}
                         rules={[{ required: true }]}>
                         <Select
                             onSelect={providerSelectFn}
@@ -212,17 +212,19 @@ export default forwardRef(
                     <Form.Item
                         label="Ak Name"
                         name="ak_name"
-                        validateStatus={(!providerType || !nameAkStatus ) && 'error'}
-                        help={(!providerType && `请先选择云服务商`) || (!nameAkStatus && `AK Name不能为空`)}
+                        validateStatus={(!providerType || !nameAkStatus) && 'error'}
+                        help={(!providerType ? `请先选择云服务商` : undefined) || (!nameAkStatus ? `AK Name不能为空`: undefined)}
                         rules={[{ required: true }]}>
                         <Select
                             onChange={(value) => {
                                 form.setFieldsValue({ region: undefined });
-                                const oneItem = akData.filter((item: any) => item.name ===  value);
+                                const oneItem = akData.filter((item: any) => item.name === value);
                                 if (oneItem.length && oneItem[0].id) {
-                                  getRegionList({ ak_id: oneItem[0].id }) }}
+                                    getRegionList({ ak_id: oneItem[0].id })
                                 }
-                            onSelect={()=>{setNameAkStatus(true)}}
+                            }
+                            }
+                            onSelect={() => { setNameAkStatus(true) }}
                             placeholder="请选择AK Name"
                             disabled={!providerType ? true : false}
                             showSearch={true}
@@ -257,7 +259,7 @@ export default forwardRef(
                             setRegionStatus(true)
                         }} /> */}
                         <Select placeholder="请输入region" disabled={!regionList.length}>
-                            {regionList.map((item: any)=>
+                            {regionList.map((item: any) =>
                                 <Select.Option value={item.id} key={item.id}>
                                     {item.name}
                                 </Select.Option>
@@ -267,7 +269,7 @@ export default forwardRef(
                     <Form.Item
                         label="Image Group"
                         name="platform"
-                        validateStatus={(!platformStatus) && 'error'}
+                        validateStatus={(!platformStatus) ? 'error': undefined}
                         help={(!platformStatus && `Image Group不能为空`)}
                         rules={[{ required: true }]}>
                         <Input autoComplete="auto" placeholder="请输入Image Group" onChange={(e) => {
@@ -278,13 +280,13 @@ export default forwardRef(
                             setPlatformStatus(true)
                         }} />
                     </Form.Item>
-                    
+
 
                     <Form.Item
                         label="Image Name"
                         name="image_name"
                         validateStatus={(!nameStatus || !queryNameStatus) && 'error'}
-                        help={(!nameStatus && `Image Name不能为空`) || (!queryNameStatus && `Image Name不能重复`)}
+                        help={(!nameStatus ? `Image Name不能为空`: undefined) || (!queryNameStatus ? `Image Name不能重复`: undefined)}
                         rules={[{ required: true }]}>
                         <Input autoComplete="auto" placeholder="请输入Image Name" onChange={(e) => {
                             if (!e.target.value) {
@@ -299,7 +301,7 @@ export default forwardRef(
                         label="Image ID"
                         name="image_id"
                         validateStatus={(!idStatus) && 'error'}
-                        help={(!idStatus && `Image ID不能为空`)}
+                        help={(!idStatus ? `Image ID不能为空` : undefined)}
                         rules={[{ required: true }]}>
                         <Input autoComplete="auto" placeholder="请输入Image ID" onChange={(e) => {
                             if (!e.target.value) {
@@ -313,7 +315,7 @@ export default forwardRef(
                         label="Image Version"
                         name="image_version"
                         validateStatus={(!versionStatus) && 'error'}
-                        help={(!versionStatus && `Image Version不能为空`)}
+                        help={(!versionStatus ? `Image Version不能为空`: undefined)}
                         rules={[{ required: true }]}>
                         <Input autoComplete="auto" placeholder="请输入Image Version" onChange={(e) => {
                             if (!e.target.value) {

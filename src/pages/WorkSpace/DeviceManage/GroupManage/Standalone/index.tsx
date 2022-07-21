@@ -208,13 +208,21 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
-                        <ServerLink val={_} provider={'内网机器'} />
+                        <ServerLink
+                            val={_}
+                            // provider={'内网机器'}
+                            provider={"aligroup"}
+                        />
                     )
                 else
                     return (
                         <Row justify="start" align="middle">
                             <TreeSvg style={{ marginRight: 8, height: 40 }} />
-                            <ServerLink val={_} provider={'内网机器'} />
+                            <ServerLink
+                                val={_}
+                                // provider={'内网机器'}
+                                provider={"aligroup"}
+                            />
                         </Row>
                     )
             },
@@ -230,7 +238,13 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => <ServerLink val={_} provider={'内网机器'} />,
+            render: (_: any) => (
+                <ServerLink
+                    val={_}
+                    // provider={'内网机器'}
+                    provider={"aligroup"}
+                />
+            ),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
@@ -437,7 +451,7 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}>详情</Button>
-                    <Access 
+                    <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
@@ -445,7 +459,7 @@ const Standalone = (props: any, ref: any) => {
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link"
                                     onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}>
-                                        同步
+                                    同步
                                 </Button>
                             </Space>
                         }

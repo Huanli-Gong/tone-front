@@ -2,7 +2,7 @@ import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
-import zhCn from "antd/lib/locale/zh_CN"
+import zhCN from 'antd/lib/locale/zh_CN';
 
 const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list } = process.env;
 
@@ -11,7 +11,7 @@ export default defineConfig({
     hash: false,
     antd: {
         config: {
-            locale: zhCn
+            locale: zhCN
         }
     },
     dva: {

@@ -7,7 +7,8 @@ import { history } from 'umi';
 import styled from 'styled-components';
 import { JobListStateTag } from '../TestResult/Details/components/index'
 import { queryJobTypeList, querTempDel, querServerDel, querySuiteList } from './services';
-import { requestCodeMessage } from '@/utils/utils';
+import { aligroupServer, aliyunServer, requestCodeMessage } from '@/utils/utils';
+
 const Wapper = styled.div`
     .breadcrumb{
         height:50px;
@@ -67,43 +68,51 @@ const Refenerce = (props: any) => {
     const [JobData, setJobData] = useState<any>([])
     const [TempTotal, setTempTotal] = useState(0)
     const [TempData, setTempData] = useState<any>([])
-    let param =  new URLSearchParams(search);
-    let [ id, name, test_type ] = [param.get('id'),param.get('name'),param.get('test_type')]
-    const {height: layoutHeight} = useClientSize()
+    let param = new URLSearchParams(search);
+    let [id, name, test_type] = [param.get('id'), param.get('name'), param.get('test_type')]
+    const { height: layoutHeight } = useClientSize()
 
     let obj: any = {}
-    if (type == 1) obj.path = `/ws/${ws_id}/test_suite`, obj.name = 'Test Suite管理'
-    else if (type == 2) obj.path = `/ws/${ws_id}/job/types`, obj.name = 'Job类型管理'
-    else if (type == 3) obj.path = `/ws/${ws_id}/job/templates`, obj.name = '模板列表'
-    else if (type == 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = '内网单机'
-    else if (type == 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = '内网集群'
-    else if (type == 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = '云上单机'
-    else if (type == 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = '云上集群'
+    if (type == 1) obj.path = `/ws/${ws_id}/test_suite`, obj.name = `Test Suite管理`
+    else if (type == 2) obj.path = `/ws/${ws_id}/job/types`, obj.name = `Job类型管理`
+    else if (type == 3) obj.path = `/ws/${ws_id}/job/templates`, obj.name = `模板列表`
+    else if (type == 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aligroupServer}单机`
+    // else if (type == 4) obj.path = `/ws/${ws_id}/device/group`, obj.name = `内网单机`
+    else if (type == 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aligroupServer}集群`
+    // else if (type == 5) obj.path = `/ws/${ws_id}/device/group`, obj.name = `内网集群`
+    // else if (type == 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = `云上单机`
+    else if (type == 6) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aliyunServer}单机`
+    // else if (type == 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = `云上集群`
+    else if (type == 7) obj.path = `/ws/${ws_id}/device/group`, obj.name = `${aliyunServer}集群`
 
-    let text = ''
-    if (type == 1) text = 'Test Suite'
-    else if (type == 2) text = 'Job类型'
-    else if (type == 3) text = '模板'
-    else if (type == 4) text = '内网机器'
-    else if (type == 5) text = '内网集群'
-    else if (type == 6) text = '云上单机'
-    else if (type == 7) text = '云上集群'
+    let text = ``
+    if (type == 1) text = `Test Suite`
+    else if (type == 2) text = `Job类型`
+    else if (type == 3) text = `模板`
+    else if (type == 4) text = `${aligroupServer}单机`
+    // else if (type == 4) text = `内网机器`
+    else if (type == 5) text = `${aligroupServer}集群`
+    // else if (type == 5) text = `内网集群`
+    // else if (type == 6) text = `云上单机`
+    else if (type == 6) text = `${aliyunServer}单机`
+    // else if (type == 7) text = `云上集群`
+    else if (type == 7) text = `${aliyunServer}集群`
 
-    let JobObj: any = { 
+    let JobObj: any = {
         flag: 'job',
-        ws_id, 
-        suite_id_list:'', 
-        case_id_list:id, 
-        test_type, 
-        ...params 
-    }
-    let TempObj: any = { 
-        flag: 'template', 
-        ws_id, 
-        suite_id_list:'',
-        case_id_list:id, 
+        ws_id,
+        suite_id_list: '',
+        case_id_list: id,
         test_type,
-         ...tempParams 
+        ...params
+    }
+    let TempObj: any = {
+        flag: 'template',
+        ws_id,
+        suite_id_list: '',
+        case_id_list: id,
+        test_type,
+        ...tempParams
     }
 
     const BreadcrumbItem: React.FC<any> = () => (
@@ -124,7 +133,7 @@ const Refenerce = (props: any) => {
             setJobData(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
     const QuerySuiteTempData = async () => {
         setLoading(true)
@@ -134,7 +143,7 @@ const Refenerce = (props: any) => {
             setTempData(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
 
     const QueryTemplateData = async () => {
@@ -145,7 +154,7 @@ const Refenerce = (props: any) => {
             setDataSource(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
     const QueryPlanData = async () => {
         setLoading(true)
@@ -155,7 +164,7 @@ const Refenerce = (props: any) => {
             setDataSource(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
     const QueryStandLoneServerData = async () => {
         setLoading(true)
@@ -165,7 +174,7 @@ const Refenerce = (props: any) => {
             setDataSource(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
     const QueryClusterServerData = async () => {
         setLoading(true)
@@ -175,7 +184,7 @@ const Refenerce = (props: any) => {
             setDataSource(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
     const CloudStandLoneServerData = async () => {
         setLoading(true)
@@ -185,7 +194,7 @@ const Refenerce = (props: any) => {
             setDataSource(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
     const CloudClusterServerData = async () => {
         setLoading(true)
@@ -195,12 +204,12 @@ const Refenerce = (props: any) => {
             setDataSource(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
-    const showTemp = useMemo(()=>{
-        if(JobTotal > 0 ) return true
+    const showTemp = useMemo(() => {
+        if (JobTotal > 0) return true
         return false
-    },[JobTotal])
+    }, [JobTotal])
 
     useEffect(() => {
         if (type == 1) {
@@ -226,17 +235,17 @@ const Refenerce = (props: any) => {
             title: 'Conf',
             dataIndex: 'case_name_list',
             key: 'case_name_list',
-            width:400,
+            width: 400,
             ellipsis: {
                 shwoTitle: false,
             },
             render: (_: any, row: any) => (
-                <Tooltip 
+                <Tooltip
                     overlayStyle={{ maxWidth: 390 }}
-                    overlay={ <div>{_.replace(/,/g,'/' )}</div> } 
+                    overlay={<div>{_.replace(/,/g, '/')}</div>}
                     placement="topLeft"
                 >
-                    <span>{_.replace(/,/g,' / ')}</span>
+                    <span>{_.replace(/,/g, ' / ')}</span>
                 </Tooltip>
             )
         },
@@ -284,12 +293,12 @@ const Refenerce = (props: any) => {
                 shwoTitle: false,
             },
             render: (_: any, row: any) => (
-                test_type &&  <Tooltip 
+                test_type && <Tooltip
                     overlayStyle={{ maxWidth: 390 }}
-                    overlay={ <div>{_.replace(/,/g,'/' )}</div> }  
+                    overlay={<div>{_.replace(/,/g, '/')}</div>}
                     placement="topLeft"
                 >
-                    <span>{_.replace(/,/g,' / ')}</span> 
+                    <span>{_.replace(/,/g, ' / ')}</span>
                 </Tooltip>
             )
         },
@@ -433,12 +442,12 @@ const Refenerce = (props: any) => {
                     className="site-collapse-custom-collapse"
                 >
                     <Panel header={<div>模版列表<span className="total">{total}</span></div>} key="1" className="site-collapse-custom-panel">
-                        <Table 
-                            dataSource={dataSource} 
-                            columns={TempColumns} 
-                            size='small' 
-                            loading={loading} 
-                            rowKey="id" 
+                        <Table
+                            dataSource={dataSource}
+                            columns={TempColumns}
+                            size='small'
+                            loading={loading}
+                            rowKey="id"
                             pagination={false} />
                         <CommonPagination
                             pageSize={params.page_size}
