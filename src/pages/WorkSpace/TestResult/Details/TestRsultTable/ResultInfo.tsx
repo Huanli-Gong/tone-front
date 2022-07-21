@@ -51,7 +51,7 @@ const ResultInfo: React.FC<any> = ( props ) => {
                         <MonitorData { ...props } />
                     </Tabs.TabPane>
                 }
-                <Tabs.TabPane tab="结果文件" key="3">
+                <Tabs.TabPane tab="日志文件" key="3">
                     <ResultFile { ...props }/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="版本信息" key="4">

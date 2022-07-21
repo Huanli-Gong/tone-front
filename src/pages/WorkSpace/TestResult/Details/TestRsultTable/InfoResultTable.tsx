@@ -6,7 +6,7 @@ import { useRequest, Access, useAccess, useParams } from 'umi'
 import { queryCaseResult } from '../service'
 import EditRemarks from '../components/EditRemarks'
 import JoinBaseline from '../components/JoinBaseline'
-
+import { QusetionIconTootip } from '@/components/Product';
 import qs from 'querystring'
 
 import Highlighter from 'react-highlight-words'
@@ -139,7 +139,13 @@ export default (props: any) => {
         ...getColumnSearchProps('sub_case_name', 'TestCase'),
     }, {
         dataIndex: 'result',
-        title: '测试结果',
+        title: (
+            <QusetionIconTootip
+                placement="bottomLeft"
+                title='测试结果'
+                desc='测试结果详情请查看日志文件'
+            />
+        ),
         render: (_: any) => {
             let color = ''
             if (_ === 'Fail') color = '#C84C5A'
@@ -149,7 +155,13 @@ export default (props: any) => {
         }
     }, {
         dataIndex: 'description',
-        title: '问题描述',
+        title: (
+            <QusetionIconTootip
+                placement="bottomLeft"
+                title='基线说明'
+                desc='在这里可以记录对问题的一些官方的比较正式的分析说明，基线说明和基线关联'
+            />
+        ),
         ellipsis: true,
         render: (_: any, row: any) => {
             let context = row.description
@@ -204,7 +216,13 @@ export default (props: any) => {
         }
     }, {
         dataIndex: 'note',
-        title: '备注',
+        title:  (
+            <QusetionIconTootip
+                placement="bottomLeft"
+                title='结果备注'
+                desc='在这里可以记录对此次结果的说明，和对基线问题一些修正意见，结果备注和当前结果关联'
+            />
+        ),
         ...tooltipTd()
     }, {
         title: '操作',
