@@ -5,12 +5,13 @@ import styles from './index.less'
 import { queryBaselineDetail, deletePerfsDetail } from '../services'
 import _ from 'lodash'
 import Clipboard from 'clipboard'
-import { requestCodeMessage } from '@/utils/utils';
-import { useParams } from 'umi';
+import { AccessTootip, requestCodeMessage } from '@/utils/utils';
+import { useParams, Access, useAccess } from 'umi';
 
 export default forwardRef(
     (props: any, ref: any) => {
         const { ws_id }: any = useParams()
+        const access = useAccess();
         let { test_suite_name, test_case_name } = props;
         const { server_provider, test_type, id } = props.currentBaseline
         const { test_suite_id, test_case_id, server_sn } = props;
@@ -204,24 +205,33 @@ export default forwardRef(
                 key: 'id',
                 render: (record: any) => {
                     return (
-                        <Space size='small'>
-                            {/* 删除的弹框 */}
-                            <Popconfirm
-                                title="你确定要删除吗？"
-                                onConfirm={() => {
-                                    const generObj = handleDelete(record);
-                                    const excuteResult: any = generObj.next();
-                                    excuteResult.value.then((result: any) => {
-                                        const { code, msg } = result;
-                                        defaultOption(code, msg);
-                                    })
-                                }}
-                                okText="确认"
-                                cancelText="取消"
-                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-                                <span className={styles.fail_detail_operation}>删除</span>
-                            </Popconfirm>
-                        </Space>
+                        <Access 
+                            accessible={access.WsMemberOperateSelf(record.creator)}
+                            fallback={
+                                <Space size='small'>
+                                    <span className={styles.fail_detail_operation} onClick={()=> AccessTootip()}>删除</span>
+                                </Space>
+                            }
+                        >
+                            <Space size='small'>
+                                {/* 删除的弹框 */}
+                                <Popconfirm
+                                    title="你确定要删除吗？"
+                                    onConfirm={() => {
+                                        const generObj = handleDelete(record);
+                                        const excuteResult: any = generObj.next();
+                                        excuteResult.value.then((result: any) => {
+                                            const { code, msg } = result;
+                                            defaultOption(code, msg);
+                                        })
+                                    }}
+                                    okText="确认"
+                                    cancelText="取消"
+                                    icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+                                    <span className={styles.fail_detail_operation}>删除</span>
+                                </Popconfirm>
+                            </Space>
+                        </Access>
                     )
                 }
             }

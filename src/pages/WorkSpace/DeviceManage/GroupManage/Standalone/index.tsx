@@ -207,7 +207,7 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => {
                 if (row.sub_server_list)
                     return (
-                        <ServerLink val={_} provider={'内网机器'} islink={row.channel_type === "staragent"} />
+                        <ServerLink val={_} provider={'内网机器'} />
                     )
                 else
                     return (
@@ -427,34 +427,10 @@ const Standalone = (props: any, ref: any) => {
                             <Space>
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
-                                {
-                                    !BUILD_APP_ENV ?
-                                        row.sub_server_list && row.device_type === '物理机' ?
-                                            <Dropdown
-                                                placement="bottomRight"
-                                                overlay={
-                                                    <Menu
-                                                        onClick={(item) => hanldeClickMenu(item, _)}
-                                                    >
-                                                        <Menu.Item key={'data'}>同步数据</Menu.Item>
-                                                        <Menu.Item key={'vm'}>同步机器</Menu.Item>
-                                                    </Menu>
-                                                }
-                                                trigger={['click', 'hover']}
-                                            >
-                                                <a className="ant-dropdown-link" onClick={()=> AccessTootip()}>
-                                                    同步 <DownOutlined />
-                                                </a>
-                                            </Dropdown> :
-                                            <Button
-                                                style={{ padding: 0 }}
-                                                size="small"
-                                                type="link"
-                                                onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}>
-                                                同步
-                                            </Button>
-                                        : null
-                                }
+                                <Button style={{ padding: 0 }} size="small" type="link"
+                                    onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}>
+                                        同步
+                                </Button>
                             </Space>
                         }
                     >
