@@ -86,7 +86,7 @@ const CloseOutlie = styled.div`
     svg {
         width: 100%;
         height: 100%;
-        fill: #fff;
+        fill: #000;
     }
 `
 
@@ -142,10 +142,10 @@ const AdCompoent: React.FC = () => {
                         <img src={imgPic} />
                     </AdCarouseItem>
                 </Carousel>
+                <CloseOutlie onClick={handleClose}>
+                    <Close />
+                </CloseOutlie>
             </AdWrapper>
-            <CloseOutlie onClick={handleClose}>
-                <Close />
-            </CloseOutlie>
         </AdContainer>
     )
 }

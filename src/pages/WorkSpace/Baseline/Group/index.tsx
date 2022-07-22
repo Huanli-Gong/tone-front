@@ -246,18 +246,10 @@ export default (props: any) => {
                                             <Access 
                                                 accessible={access.WsMemberOperateSelf(item.creator)}
                                                 fallback={
-                                                    <Popconfirm
-                                                        title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
-                                                        onCancel={() => AccessTootip()}
-                                                        cancelText="确定删除"
-                                                        cancelButtonProps={{ disabled: data.is_first ? true : false }}
-                                                        okText="取消"
-                                                        icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
-                                                    >
-                                                        <MinusCircleOutlined
-                                                            className={hover === item.id ? styles.remove_active : styles.remove}
-                                                        />
-                                                    </Popconfirm>
+                                                    <MinusCircleOutlined
+                                                        className={hover === item.id ? styles.remove_active : styles.remove}
+                                                        onClick={()=> AccessTootip()}
+                                                    />
                                                 }
                                             >
                                                 <Popconfirm

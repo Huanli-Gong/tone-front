@@ -197,14 +197,7 @@ export default (props: any) => {
                         fallback={
                             <Space>
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
-                                <Popconfirm
-                                    title="确定要删除吗？"
-                                    okText="确定"
-                                    cancelText="取消"
-                                    onConfirm={() => AccessTootip()}
-                                >
-                                    <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
-                                </Popconfirm>
+                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button>
                             </Space>
                         }
