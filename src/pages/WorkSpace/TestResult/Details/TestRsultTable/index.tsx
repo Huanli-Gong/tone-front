@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
 import { queryTestResult } from '../service'
 import { Space, Table, Row, Button, message, Popover, Menu, Dropdown, Tooltip } from 'antd'
@@ -311,7 +311,14 @@ const TestResultTable: React.FC<any> = (props) => {
         run({ ...defaultParams, state })
         handleOpenAll()
     }
-
+    useEffect(()=> {
+        if(caseResult.count < 50){
+            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
+            // case2. 展开状态标志
+            setOpenAllRows(true)
+        }
+    },[ caseResult,dataSource ])
+    
     const rowSelection = testType === 'performance' ? {
         columnWidth: 40,
         selectedRowKeys,
