@@ -590,7 +590,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
     // Just show the latest item.
     function displayRender(label: any) {
-        return label[label.length - 1];
+        if(label[label.length - 1] !== 'latest'){
+            return label[label.length - 1];
+        }
+        return `${label[1].props.children}:${label[2].props.children}:latest`
     }
 
     return (
@@ -717,7 +720,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         options={options}
                                         loadData={loadAkData}
                                         onChange={onAkChange}
-                                        dropdownMatchSelectWidth={true}
+                                        dropdownMenuColumnStyle={{ width: 165 }}
                                         dropdownClassName={styles.selectCascader}
                                     />
                                 </Form.Item>
@@ -739,7 +742,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             options={region}
                                             loadData={loadRegionData}
                                             onChange={onRegionChange}
-                                            dropdownMatchSelectWidth={true}
+                                            dropdownMenuColumnStyle={{ width: 165 }}
                                             dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>
@@ -855,7 +858,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform', 'os_name')}
                                             displayRender={displayRender}
-                                            dropdownMenuColumnStyle={{ width: 170 }}
+                                            dropdownMenuColumnStyle={{ width: (724 - 48) / 4 }}
                                             dropdownClassName={styles.selectCascader}
                                         />
                                     </Form.Item>

@@ -96,11 +96,9 @@ export default (props: any) => {
                     <Tabs.TabPane tab="Workspace" key="workspace" className={styles.tab_item}>
                         {tab === 'workspace' && <PersonWorkspace loading={loading} workspaceList={data} userId={Number(authList.id)} />}
                     </Tabs.TabPane>
-                    {access.IsWsSetting() && (
-                        <Tabs.TabPane tab="我的申请" key="approve">
-                            {tab === 'approve' && <PersonApprove loading={loading} approveData={data} handleTabClick={handleTabClick} userId={Number(authList.id)}/>}
-                        </Tabs.TabPane>
-                    )}         
+                    <Tabs.TabPane tab="我的申请" key="approve">
+                        {tab === 'approve' && <PersonApprove loading={loading} approveData={data} handleTabClick={handleTabClick} userId={Number(authList.id)}/>}
+                    </Tabs.TabPane>
                     <Tabs.TabPane tab="安全配置" key="tokenConfig">
                         {tab === 'tokenConfig' && <TokenConfig loading={loading} tokenData={data} />}
                     </Tabs.TabPane>

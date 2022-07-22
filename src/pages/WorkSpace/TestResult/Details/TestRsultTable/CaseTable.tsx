@@ -24,11 +24,9 @@ const CaseTable: React.FC<any> = ({
     suiteSelect = [], onCaseSelect, state = '', openAllRows = false
 }) => {
     const { id: job_id, ws_id } = useParams() as any
-
     const background = `url(${treeSvg}) center center / 38.6px 32px `
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
-    const { initialState } = useModel('@@initialState');
 
     const access = useAccess()
     const [childState, setChildState] = useState(state)
@@ -143,6 +141,9 @@ const CaseTable: React.FC<any> = ({
                 title: '备注',
                 dataIndex: 'note',
                 width: 80,
+                ellipsis: {
+                    showTitle: false,
+                },
                 render: (_: any, row: any) => (
                     <EllipsisEditColumn
                         title={_}
@@ -217,7 +218,6 @@ const CaseTable: React.FC<any> = ({
             setExpandedRowKeys(expandedRowKeys.filter((i: number) => i !== record.test_case_id))
         }
     }
-
     // 行选回调
     useEffect(() => {
         onCaseSelect(suite_id, selectedRowKeys)
@@ -225,12 +225,12 @@ const CaseTable: React.FC<any> = ({
 
     // 子级表格会通过监听传入的状态：展开全部/收起。
     useEffect(() => {
-        if (data.length && openAllRows) {
+        if (data.length) {
             setExpandedRowKeys(data.map((i: any) => i.test_case_id))
         } else {
             setExpandedRowKeys([])
         }
-    }, [data, openAllRows])
+    }, [data])
 
     return (
         <div style={{ width: '100%' }}>

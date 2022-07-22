@@ -106,42 +106,30 @@ export const ellipsisCopyColumn = (_: any, width: any = '100%') => {
 
 export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit, access }) => {
     const boxRef: any = useRef()
-    const [show, setShow] = useState(false)
 
-    useEffect(() => {
-        const scrollWidth = boxRef.current.scrollWidth
-        setShow(width - 18 < scrollWidth - 2)
-    }, [title])
-    
     const edit = (
-        access 
-        ? <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
-        : <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={()=> AccessTootip()} />
+        access
+            ? <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={onEdit} />
+            : <EditOutlined style={{ marginLeft: 6, cursor: 'pointer' }} onClick={() => AccessTootip()} />
     )
     return (
-        <>
+        <div
+            ref={boxRef}
+            style={{ width: width }}
+        >
             {
-                show ?
-                    <Row style={{ width: width - 16 }} justify="start" align="middle">
-                        <Tooltip placement="topLeft" title={title}>
-                            <span style={{ width: width - 16 - 28 }} className={styles.ellips_copy_column}>{title}</span>
-                        </Tooltip>
-                        {edit}
-                    </Row> :
-                    <Row className={styles.ellips_copy_column} justify="start" align="middle" >
-                        {title || '-'}
-                        {edit}
-                    </Row>
+                <Row style={{ width }} justify="start" align="middle">
+                    <Tooltip placement="topLeft" title={title}>
+                        <span 
+                            style={{ width: width - 40, overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap' }}
+                        >
+                            {title}
+                        </span>
+                    </Tooltip>
+                    {edit}
+                </Row> 
             }
-            <div
-                ref={boxRef}
-                className={styles.ellips_column_refclass}
-                style={{ width: width - 16 }}
-            >
-                {title || '-'}
-                {edit}
-            </div >
-        </>
+        </div >
     )
 }
 
