@@ -11,7 +11,7 @@ import {
 } from '../styled'
 
 const TemplateCatalog = (props: any) => {
-    const { dataSource, collapsed, contrl, setDataSource, setCollapsed } = props
+    const { dataSource, collapsed, contrl, setDataSource, setCollapsed, prefix = "" } = props
     const [count, setCount] = useState<any>(0)
     const [roundHeight, setRoundHeight] = useState<Number>(3)
     /* 
@@ -165,7 +165,7 @@ const TemplateCatalog = (props: any) => {
     const handleCatalogItemClick = (name: string, num: number) => {
         setRoundHeight((document.querySelector(`#left_${name}`) as any)?.offsetTop)
         setCount(num)
-        document.querySelector(`#${name}`)?.scrollIntoView()
+        document.querySelector(`#${prefix}${name}`)?.scrollIntoView()
     }
 
     const handleSelectTree = (_: any, evt: any) => {
@@ -175,9 +175,10 @@ const TemplateCatalog = (props: any) => {
         const nativeEvent = evt?.nativeEvent
         const target = nativeEvent.target
 
+        console.log(prefix, id, prefix, document.querySelector(`#${prefix}${id}`))
         setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
         setCount(`${name}_${rowkey}`)
-        document.querySelector(`#${id}`)?.scrollIntoView()
+        document.querySelector(`#${prefix}${id}`)?.scrollIntoView()
     }
 
     return (
@@ -199,31 +200,39 @@ const TemplateCatalog = (props: any) => {
                             <LittleRound />
                         </CatalogRound>
                     }
+
                     <Space direction="vertical" style={{ width: '100%' }}>
                         {
-                            dataSource.need_test_background &&
-                            <span onClick={() => handleCatalogItemClick('need_test_background', 0)} id="left_need_test_background" style={{ color: count === 0 ? '#1890FF' : '', cursor: 'pointer' }}>测试背景</span>
+                            [
+                                ["need_test_background", "测试背景"],
+                                ["need_test_method", "测试方法"],
+                                ["need_test_conclusion", "测试结论"],
+                                ["need_test_summary", "Summary"],
+                                ["need_test_env", "测试环境", "need_env_description"],
+                                ["test_data", "测试数据", "need_func_data"]
+                            ].map((n: any, i: any) => {
+                                const [field, title, field_2] = n
+                                if (!dataSource) return
+                                if (dataSource[field] || dataSource[field_2])
+                                    return (
+                                        <span
+                                            key={field}
+                                            onClick={
+                                                () => handleCatalogItemClick(field, i)
+                                            }
+                                            id={`left_${field}`}
+                                            style={{
+                                                color: count === i ? '#1890FF' : '',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            {title}
+                                        </span>
+                                    )
+                                return
+                            })
                         }
-                        {
-                            dataSource.need_test_method &&
-                            <span onClick={() => handleCatalogItemClick('need_test_method', 1)} id="left_need_test_method" style={{ color: count === 1 ? '#1890FF' : '', cursor: 'pointer' }}>测试方法</span>
-                        }
-                        {
-                            dataSource.need_test_conclusion &&
-                            <span onClick={(e) => handleCatalogItemClick('need_test_conclusion', 2)} id="left_need_test_conclusion" style={{ color: count === 2 ? '#1890FF' : '', cursor: 'pointer' }}>测试结论</span>
-                        }
-                        {
-                            dataSource.need_test_summary &&
-                            <span onClick={(e) => handleCatalogItemClick('need_test_summary', 3)} id="left_need_test_summary" style={{ color: count === 3 ? '#1890FF' : '', cursor: 'pointer' }}>Summary</span>
-                        }
-                        {
-                            (dataSource.need_test_env || dataSource.need_env_description) &&
-                            <span onClick={(e) => handleCatalogItemClick('need_test_env', 4)} id="left_need_test_env" style={{ color: count === 4 ? '#1890FF' : '', cursor: 'pointer' }}>测试环境</span>
-                        }
-                        {
-                            (dataSource.need_perf_data || dataSource.need_func_data) &&
-                            <span onClick={(e) => handleCatalogItemClick('test_data', 5)} id="left_test_data" style={{ color: count === 5 ? '#1890FF' : '', cursor: 'pointer' }}>测试数据</span>
-                        }
+
                         {
                             catalogSource.map(
                                 (item: any, index: number) => (

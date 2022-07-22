@@ -54,7 +54,7 @@ const Description = styled.div`
 
 const SettingRow: React.FC<any> = ({ show, title, id }) => (
     show ?
-        <CustomRow id={id}>
+        <CustomRow id={`preview_${id}`}>
             <Space direction="vertical">
                 <Typography.Text strong><span className="line"></span>{title}</Typography.Text>
                 <span>此处内容需生成报告后手动填写</span>
@@ -77,6 +77,8 @@ const GroupTableRow = styled(FullRow)`
 const { document }: any = window
 
 const TemplatePreview = (props: any) => {
+    const { route, dataSet, setIsPreview } = props
+    const isCreatePreview = ["TemplateCreate", "TemplateEdit"].includes(route.name)
     const { ws_id, temp_id } = useParams<any>()
     const { height: windowHeight } = useClientSize()
     const [collapsed, setCollapsed] = useState(false)
@@ -115,41 +117,50 @@ const TemplatePreview = (props: any) => {
 
 
     const initData = async () => {
-        try {
-            setLoading(true)
-            const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
-            const { perf_item, func_item, perf_conf, func_conf, name } = data
-            document.title = `${name} - T-One`
-
-            setDataSource(produce(data, (draft: any) => {
-                draft.func_conf = func_conf || defaultConf
-                draft.perf_conf = perf_conf || defaultConf
-                draft.perf_item = refreshRowkey(perf_item)
-                draft.func_item = refreshRowkey(func_item)
-            }))
-
+        if (isCreatePreview) {
+            setDataSource(dataSet)
             setLoading(false)
         }
-        catch (error) {
-            console.log(error)
+        else {
+            try {
+                setLoading(true)
+                const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
+                const { perf_item, func_item, perf_conf, func_conf, name } = data
+                document.title = `${name} - T-One`
+
+                setDataSource(produce(data, (draft: any) => {
+                    draft.func_conf = func_conf || defaultConf
+                    draft.perf_conf = perf_conf || defaultConf
+                    draft.perf_item = refreshRowkey(perf_item)
+                    draft.func_item = refreshRowkey(func_item)
+                }))
+
+                setLoading(false)
+            }
+            catch (error) {
+                console.log(error)
+            }
         }
     }
 
     const handleBack = () => {
+        if (isCreatePreview) return setIsPreview(false)
         history.push(`/ws/${ws_id}/test_report?t=template`)
     }
 
     const [fixedRow, setFixedRow] = useState({
         left: 0,
         width: 0,
-        show: false
+        show: false,
+        scrollTop: 0
     })
 
     const hanldeScrollChange = lodash.debounce(({ target }: any) => {
         setFixedRow({
             left: groupRowRef.current?.offsetLeft,
             width: groupRowRef.current?.offsetWidth,
-            show: target.scrollTop > groupRowRef.current.offsetTop
+            show: target.scrollTop > groupRowRef.current.offsetTop,
+            scrollTop: target.scrollTop,
         })
     }, 30)
 
@@ -162,10 +173,9 @@ const TemplatePreview = (props: any) => {
     }, [groupRowRef.current, collapsed])
 
     useEffect(() => {
-        console.log('layout effect')
-        document.querySelector('#report-body-container').addEventListener('scroll', hanldeScrollChange)
+        document.querySelector('#report-body-container-preview').addEventListener('scroll', hanldeScrollChange)
         return () => {
-            document.querySelector('#report-body-container').removeEventListener('scroll', hanldeScrollChange)
+            document.querySelector('#report-body-container-preview').removeEventListener('scroll', hanldeScrollChange)
         }
     }, [])
 
@@ -174,8 +184,8 @@ const TemplatePreview = (props: any) => {
 
     const hanldePageResize = lodash.debounce(() => setBodyWidth(bodyRef.current.offsetWidth), 30)
 
-    useLayoutEffect(() => {
-        const targetNode = document.getElementById('report-body-container');
+    useEffect(() => {
+        const targetNode = document.getElementById('report-body-container-preview');
         const config = { attributes: true, childList: true, subtree: true };
         const observer = new MutationObserver(hanldePageResize);
         observer.observe(targetNode, config);
@@ -198,8 +208,12 @@ const TemplatePreview = (props: any) => {
                         </Space>
                     </Row>
                 </PreviewBar>
-                <Catalog {...{ dataSource, setDataSource, collapsed, setCollapsed, bodyWidth }} style={{ height: windowHeight - 50 }} />
-                <ReportBodyContainer id="report-body-container" collapsed={collapsed} style={{ height: windowHeight - 50 }}>
+                <Catalog
+                    {...{ dataSource, setDataSource, collapsed, setCollapsed, bodyWidth }}
+                    style={{ height: windowHeight - 50 }}
+                    prefix={"preview_"}
+                />
+                <ReportBodyContainer id="report-body-container-preview" collapsed={collapsed} style={{ height: windowHeight - 50 }}>
                     <ReportBody ref={bodyRef}>
                         {/* <TemplateBreadcrumb {...props} /> */}
 
@@ -212,9 +226,9 @@ const TemplatePreview = (props: any) => {
                             </Description>
                         </CustomRow>
 
-                        <SettingRow title="测试背景" id={'need_test_background'} show={dataSource?.need_test_background} />
-                        <SettingRow title="测试方法" id={'need_test_method'} show={dataSource?.need_test_method} />
-                        <SettingRow title="测试结论" id={'need_test_conclusion'} show={dataSource?.need_test_conclusion} />
+                        <SettingRow title="测试背景" id={'preview_need_test_background'} show={dataSource?.need_test_background} />
+                        <SettingRow title="测试方法" id={'preview_need_test_method'} show={dataSource?.need_test_method} />
+                        <SettingRow title="测试结论" id={'preview_need_test_conclusion'} show={dataSource?.need_test_conclusion} />
 
                         {
                             dataSource.need_test_summary &&
@@ -227,7 +241,7 @@ const TemplatePreview = (props: any) => {
                         />
 
                         <CustomRow >
-                            <div id={'test_data'} style={{ marginBottom: 8 }}><Typography.Text strong>测试数据</Typography.Text></div>
+                            <div id={'preview_test_data'} style={{ marginBottom: 8 }}><Typography.Text strong>测试数据</Typography.Text></div>
                             <GroupTableRow ref={groupRowRef} >
                                 <div><Typography.Text strong>对比组</Typography.Text></div>
                                 <div>
@@ -260,7 +274,7 @@ const TemplatePreview = (props: any) => {
                                 (dataSource?.need_perf_data) &&
                                 <>
                                     <div
-                                        id={'perf_item'}
+                                        id={'preview_perf_item'}
                                         style={{ marginBottom: 8 }}
                                     >
                                         <Typography.Text strong>
@@ -280,7 +294,7 @@ const TemplatePreview = (props: any) => {
                                 (dataSource?.need_func_data) &&
                                 <>
                                     <div
-                                        id={'func_item'}
+                                        id={'preview_func_item'}
                                         style={{ marginBottom: 8 }}
                                     >
                                         <Typography.Text strong>
