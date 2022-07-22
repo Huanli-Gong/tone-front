@@ -39,7 +39,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
 
   // 1.获取数量
   const getTotalNum = async () => {
-    const res = await queryTotalNum() || {}
+    const res = await queryTotalNum({ ws_id, total_num: true }) || {}
     if (res.code === 200 && res.data) {
       const { functional_num, performance_num } = res.data || {}
       setTotalNum({ functional_num, performance_num })

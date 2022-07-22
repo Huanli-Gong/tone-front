@@ -2,8 +2,8 @@ import { request } from 'umi'
 
 // 1.默认列表页
 // 1.1 获取数量
-export const queryTotalNum = async () => {
-  return request(`/api/case/test_suite/retrieve/` , { method : 'GET', params: { total_num: true} })
+export const queryTotalNum = async ( params : any ) => {
+  return request(`/api/case/test_suite/retrieve/`, { params })
 }
 // 1.2 获取默认列表数据
 export const queryTestSuiteList = async ( params : any ) => {
@@ -40,10 +40,10 @@ export const queryTestMetricDetails = async ( params : any ) => {
 // 4.conf详情页信息获取
 // 4.1 Test conf基本信息
 export const queryTestConf = async ( params : any ) => {
-  const { case_id } = params
+  const { case_id, ws_id } = params
   return request(`/api/case/test_case/detail/${case_id}/` , {
     method : 'GET',
-    params: { retrieve: 1 },
+    params: { retrieve: 1, ws_id },
   })
 }
 // 4.2 同级Test conf信息

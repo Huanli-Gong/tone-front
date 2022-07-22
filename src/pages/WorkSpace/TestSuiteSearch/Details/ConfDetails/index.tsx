@@ -133,7 +133,7 @@ const Index: React.FC<any> = (props: any) => {
 
   useEffect(() => {
     if (case_id) {
-      getListDataBasic({ case_id })
+      getListDataBasic({ case_id, ws_id })
       getListDataMetric({ case_id })
     }
     if (suite_id && case_id) {
