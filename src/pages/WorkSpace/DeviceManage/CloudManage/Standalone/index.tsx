@@ -22,6 +22,10 @@ import _ from 'lodash'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
 import { Access, useAccess } from 'umi'
+import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectCheck'
+import SelectRadio from '@/components/Public/SelectRadio';
+
+
 // import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上单机
@@ -29,16 +33,25 @@ import { Access, useAccess } from 'umi'
  */
 
 interface MachineParams {
-    type: any,
-    page_num: number,
-    page_size: number,
-    description: string,
-    name: string,
-    owner: any,
-    tags: any,
-    state: string | undefined,
-    real_state: string | undefined
+    type?: any,
+    page_num?: number,
+    page_size?: number,
+    description?: string,
+    name?: string,
+    owner?: any,
+    tags?: any,
+    state?: string | undefined,
+    real_state?: string | undefined;
+    [k: string]: any;
 }
+
+const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
+
+const isEmpty = (d: any) => {
+    const t = Object.prototype.toString.call(d)
+    return ['[object Null]', '[object Undefined]'].includes(t)
+}
+
 export default (props: any) => {
     const { ws_id }: any = useParams()
     const access = useAccess();
@@ -50,12 +63,6 @@ export default (props: any) => {
         type: '0',
         page_num: 1,
         page_size: 10,
-        description: '',
-        name: '',
-        owner: '',
-        tags: '',
-        state: '',
-        real_state: ''
     })
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -65,6 +72,43 @@ export default (props: any) => {
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
     const viewDetailRef: any = useRef(null)
+
+    const inputFilterCommonFields = (dataIndex: string) => ({
+        filterDropdown: ({ confirm }: any) => (
+            <SearchInput
+                confirm={confirm}
+                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+            />
+        ),
+        onFilterDropdownVisibleChange: (visible: any) => {
+            if (visible) {
+                setFocus(!autoFocus)
+            }
+        },
+        filterIcon: () => <FilterFilled style={{ color: params[dataIndex] ? '#1890ff' : undefined }} />,
+    })
+
+    const selectFilterCommonFields = (dataIndex: string, list: any[]) => ({
+        filterIcon: () => <FilterFilled style={{ color: params[dataIndex] ? '#1890ff' : undefined }} />,
+        filterDropdown: ({ confirm }: any) => (
+            <SelectCheck
+                list={list}
+                confirm={confirm}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
+            />
+        ),
+    })
+
+    const radioFilterCommonFields = (dataIndex: string, list: any[]) => ({
+        filterIcon: () => <FilterFilled style={{ color: !isEmpty(params[dataIndex]) ? '#1890ff' : undefined }} />,
+        filterDropdown: ({ confirm }: any) => (
+            <SelectRadio
+                list={list}
+                confirm={confirm}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
+            />
+        ),
+    })
 
     useEffect(() => {
         let columns: any = [
@@ -76,18 +120,7 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                filterDropdown: ({ confirm }: any) =>
-                    <SearchInput
-                        confirm={confirm}
-                        autoFocus={autoFocus}
-                        onConfirm={(val: string) => { setParams({ ...params, page_num: 1, name: val }) }}
-                    />,
-                onFilterDropdownVisibleChange: (visible: any) => {
-                    if (visible) {
-                        setFocus(!autoFocus)
-                    }
-                },
-                filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
+                ...inputFilterCommonFields("name"),
                 render: (_: any, row: any) => (
                     <EllipsisPulic title={row.name}>
                         <Highlighter
@@ -103,6 +136,7 @@ export default (props: any) => {
                 title: 'IP',
                 dataIndex: 'private_ip', // private_ip
                 width: params.type == '0' ? 0 : 140,
+                ...inputFilterCommonFields(BUILD_APP_ENV ? "pub_ip" : "private_ip"),
                 ellipsis: {
                     showTitle: false
                 },
@@ -111,6 +145,7 @@ export default (props: any) => {
             {
                 title: 'SN',
                 dataIndex: 'sn',
+                ...inputFilterCommonFields("sn"),
                 width: params.type == '0' ? 0 : 140,
                 ellipsis: {
                     showTitle: false
@@ -120,6 +155,7 @@ export default (props: any) => {
             {
                 title: 'InstanceId',
                 dataIndex: 'instance_id',
+                ...inputFilterCommonFields("instance_id"),
                 width: params.type == '0' ? 0 : 140,
                 ellipsis: {
                     showTitle: false
@@ -129,6 +165,7 @@ export default (props: any) => {
             {
                 title: '云厂商/Ak',
                 dataIndex: 'manufacturer',
+                ...inputFilterCommonFields("manufacturer_ak_name"),
                 width: 160,
                 ellipsis: {
                     showTitle: false
@@ -139,6 +176,7 @@ export default (props: any) => {
                 title: 'Region/Zone',
                 width: 160,
                 dataIndex: 'region',
+                ...inputFilterCommonFields("region_zone"),
                 ellipsis: {
                     showTitle: false
                 },
@@ -148,6 +186,7 @@ export default (props: any) => {
                 title: '规格',
                 width: 110,
                 dataIndex: 'instance_type',
+                ...inputFilterCommonFields("instance_type"),
                 ellipsis: {
                     showTitle: false
                 },
@@ -156,6 +195,7 @@ export default (props: any) => {
             {
                 title: '镜像',
                 dataIndex: 'image',
+                ...inputFilterCommonFields("image"),
                 width: 160,
                 ellipsis: {
                     showTitle: false
@@ -165,6 +205,7 @@ export default (props: any) => {
             {
                 title: '带宽',
                 width: 70,
+                ...inputFilterCommonFields("bandwidth"),
                 dataIndex: 'bandwidth',
                 ellipsis: {
                     showTitle: false
@@ -172,6 +213,15 @@ export default (props: any) => {
             },
             {
                 title: '数据盘',
+                ...selectFilterCommonFields(
+                    "storage_type",
+                    [
+                        ["cloud", "普通云盘"],
+                        ["cloud_efficiency", "高效云盘"],
+                        ["cloud_ssd", "SSD云盘"],
+                        ["cloud_essd", "ESSD云盘"],
+                    ].map(i => ({ id: i[0], name: i[1] }))
+                ),
                 dataIndex: 'storage_type',
                 width: 90,
                 ellipsis: {
@@ -182,8 +232,9 @@ export default (props: any) => {
             {
                 title: '用完释放',
                 align: 'center',
+                ...radioFilterCommonFields("release_rule", [{ id: 1, name: "是" }, { id: 0, name: "否" }]),
                 dataIndex: 'release_rule',
-                width: 90,
+                width: 110,
                 ellipsis: {
                     showTitle: false
                 },
@@ -205,6 +256,14 @@ export default (props: any) => {
                     showTitle: false
                 },
                 dataIndex: 'channel_type',
+                filterIcon: () => <FilterFilled style={{ color: params.channel_type ? '#1890ff' : undefined }} />,
+                filterDropdown: ({ confirm }: any) => (
+                    <SelectCheck
+                        list={channelTypeList}
+                        confirm={confirm}
+                        onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
+                    />
+                ),
             },
             {
                 title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
@@ -291,18 +350,7 @@ export default (props: any) => {
                 title: '备注',
                 width: 140,
                 dataIndex: 'description',
-                filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) =>
-                    <SearchInput
-                        confirm={confirm}
-                        autoFocus={autoFocus}
-                        onConfirm={(val: string) => { setParams({ ...params, page_num: 1, description: val }) }}
-                    />,
-                onFilterDropdownVisibleChange: (visible: any) => {
-                    if (visible) {
-                        setFocus(!autoFocus)
-                    }
-                },
+                ...inputFilterCommonFields("description"),
                 ellipsis: {
                     showTitle: false
                 },
@@ -360,7 +408,7 @@ export default (props: any) => {
             },
         ]
         setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
-    }, [params.type, params.tags])
+    }, [params])
 
     // 部署Agent
     const deployClick = (row: any) => {
@@ -380,17 +428,11 @@ export default (props: any) => {
         setParams({ ...params, page_num: page_num, page_size: page_size })
     }
     const getList = async () => {
-        const { type, page_num, page_size, description, name, owner, tags, state, real_state } = params
+        const { type, name } = params
         const obj = {
+            ...params,
             is_instance: !!(type - 0),
-            page_num,
-            page_size,
-            description,
             server_conf: name,
-            owner,
-            tags,
-            state,
-            real_state
         }
         setLoading(true)
         setData({ data: [] })
@@ -438,16 +480,9 @@ export default (props: any) => {
 
     const RadioChange = (val: any) => {
         setParams({
-            ...params,
             type: val,
             page_num: 1,
             page_size: 10,
-            description: '',
-            name: '',
-            owner: undefined,
-            tags: undefined,
-            state: '',
-            real_state: ''
         })
     }
     const addMachine = () => {
@@ -547,7 +582,7 @@ export default (props: any) => {
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
-                    <Button key="submit" type="danger" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
+                    <Button key="submit" type={"danger" as any} onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
                         {params.type == '0' || !deleteObj.is_release ? '确定删除' : '释放'}
                     </Button>,
                     <Button key="back" onClick={() => setDeleteDefault(false)}>

@@ -21,6 +21,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
 import { Access, useAccess } from 'umi';
+import SelectUser from '@/components/Public/SelectUser';
 
 /**
  * 内网单机
@@ -283,6 +284,10 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             dataIndex: 'idc',
+            filterIcon: () => <FilterFilled style={{ color: urlParmas.dic ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: totalParam })} />
+            )
         },
         !BUILD_APP_ENV && {
             title: 'Console配置',
@@ -354,6 +359,8 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            filterIcon: () => <FilterFilled style={{ color: urlParmas.owner ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, owner: val }) }} />,
         },
         {
             title: '备注',

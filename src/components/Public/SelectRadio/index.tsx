@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Radio, Button, Divider } from 'antd';
+import { Radio, Button, Divider, Space } from 'antd';
 import styles from './style.less';
 import { switchUserRole } from '@/utils/utils';
 
@@ -12,8 +12,8 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 
 	return (
 		<div className={styles.filter}>
-			<div>
-				<Radio.Group onChange={handleDomainRadio} value={val} >
+			<Radio.Group onChange={handleDomainRadio} value={val} >
+				<Space direction="vertical">
 					{
 						list.map((item: any) => (
 							<Radio
@@ -25,8 +25,8 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 							</Radio>
 						))
 					}
-				</Radio.Group>
-			</div>
+				</Space>
+			</Radio.Group>
 			<Divider style={{ margin: '10px 0' }} />
 			<div className={styles.confirm}>
 				<Button

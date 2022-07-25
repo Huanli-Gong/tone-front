@@ -124,6 +124,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     useEffect(() => {
         const { page, pageSize, name, owner, tags, description } = params;
         const obj = {
+            ...params,
             cluster_type: 'aliyun',
             page_num: page,
             page_size: pageSize,
@@ -238,18 +239,27 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         open: newGroup
     }), [])
 
+    const inputFilterCommonFields = (dataIndex: string) => ({
+        filterDropdown: ({ confirm }: any) => (
+            <SearchInput
+                confirm={confirm}
+                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+            />
+        ),
+        onFilterDropdownVisibleChange: (visible: any) => {
+            if (visible) {
+                setFocus(!autoFocus)
+            }
+        },
+        filterIcon: () => <FilterFilled style={{ color: params[dataIndex] ? '#1890ff' : undefined }} />,
+    })
+
     const columns: any = [
         {
             title: '集群名',
             dataIndex: 'name',
             width: 150,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page: 1, name: val }) }} />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                    setFocus(!autoFocus)
-                }
-            },
-            filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
+            ...inputFilterCommonFields("name"),
             render: (_: any, row: any) => <PopoverEllipsis title={row.name} width={120}>
                 <Highlighter
                     highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
@@ -299,13 +309,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             title: '备注',
             dataIndex: 'description',
             width: 300,
-            filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setParams({ ...params, page: 1, description: val }) }} />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                    setFocus(!autoFocus)
-                }
-            },
+            ...inputFilterCommonFields("description"),
             render: (_: any, row: any) => <PopoverEllipsis title={row.description} width={200} >
                 <Highlighter
                     highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}

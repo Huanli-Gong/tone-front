@@ -2,13 +2,18 @@ import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
+import zhCn from "antd/lib/locale/zh_CN"
 
 const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list } = process.env;
 
 export default defineConfig({
     // outputPath : 'build',
     hash: false,
-    antd: {},
+    antd: {
+        config: {
+            locale: zhCn
+        }
+    },
     dva: {
         hmr: true,
     },
@@ -25,7 +30,6 @@ export default defineConfig({
         self_agent_name: BUILD_APP_ENV ? null : self_agent_name
     },
     locale: {
-        // default zh-CN
         default: 'zh-CN',
         // default true, when it is true, will use `navigator.language` overwrite default
         antd: true,
