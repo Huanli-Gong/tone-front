@@ -28,6 +28,7 @@ const CardWrapper = styled(Card)`
     width: 100%;
     .ant-card-body {
         padding: 0 20px;
+        border: none;
     }
 `
 
@@ -62,7 +63,6 @@ const RenderChart = (props: any) => {
                     )
             }
             myChart.on("click", 'series.line', (params: any) => {
-                console.log(params)
                 const { data } = params
                 if (data) {
                     const { job_id } = data

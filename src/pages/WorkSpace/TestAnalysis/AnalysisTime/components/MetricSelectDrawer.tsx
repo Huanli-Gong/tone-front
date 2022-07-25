@@ -35,7 +35,7 @@ export default forwardRef(
          */
         useEffect(() => {
             if (projectId && activeSuite && activeConf) {
-              requestMetricList({ test_suite_id: activeSuite, test_case_id: activeConf })
+                requestMetricList({ test_suite_id: activeSuite, test_case_id: activeConf })
             }
         }, [projectId])
 
@@ -71,6 +71,10 @@ export default forwardRef(
         useImperativeHandle(ref, () => ({
             show: async () => {
                 setVisible(true)
+
+                if (!activeSuite && suiteList.length > 0) {
+                    setActiveSuite(suiteList[0].id)
+                }
             },
             reset: handleReset
         }))
@@ -181,82 +185,88 @@ export default forwardRef(
                                 (test_type === 'performance' || showType !== 'pass_rate') &&
                                 <Row>
                                     <Col span={12}>
-                                        <span style={{ width: 76, display: 'inline-block' }} >Test Suite:</span>
-                                        <Select
-                                            style={{ width: 'calc(100% - 91px - 8px)' }}
-                                            onChange={(v) => {
-                                                setMetricList([])
-                                                setActiveSuite(v)
-                                                setActiveConf(null)
-                                                setSelectMetric([])
-                                                setSelectSubcase([])
-                                            }}
-                                            value={activeSuite}
-                                            filterOption={(input, option: any) =>
-                                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            }
-                                            showSearch
-                                        >
-                                            {
-                                                suiteList.map((i: any) => (
-                                                    <Select.Option
-                                                        key={i.id}
-                                                        value={i.id}
-                                                    >
-                                                        {i.name}
-                                                    </Select.Option>
-                                                ))
-                                            }
-                                        </Select>
+                                        <Row align="middle">
+                                            <span style={{ width: 76, display: 'inline-block' }} >Test Suite:</span>
+                                            <Select
+                                                style={{ width: 'calc(100% - 91px - 8px)' }}
+                                                onChange={(v) => {
+                                                    setMetricList([])
+                                                    setActiveSuite(v)
+                                                    setActiveConf(null)
+                                                    setSelectMetric([])
+                                                    setSelectSubcase([])
+                                                }}
+                                                placeholder="请选择Test Suite"
+                                                value={activeSuite}
+                                                filterOption={(input, option: any) =>
+                                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                }
+                                                showSearch
+                                            >
+                                                {
+                                                    suiteList.map((i: any) => (
+                                                        <Select.Option
+                                                            key={i.id}
+                                                            value={i.id}
+                                                        >
+                                                            {i.name}
+                                                        </Select.Option>
+                                                    ))
+                                                }
+                                            </Select>
+                                        </Row>
                                     </Col>
                                     <Col span={12}>
-                                        <span style={{ width: 76, display: 'inline-block' }} >Test Conf:</span>
-                                        <Select
-                                            style={{ width: 'calc(100% - 91px - 8px)' }}
-                                            onChange={(test_case_id) => {
-                                                setActiveConf(test_case_id)
-                                                setSelectMetric([])
-                                                if (test_type === 'performance')
-                                                    requestMetricList({ test_suite_id: activeSuite, test_case_id })
-                                                if (test_type !== 'performance' && showType !== 'pass_rate')
-                                                    requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
-                                                setSelectSubcase([])
-                                            }}
-                                            filterOption={(input, option: any) =>
-                                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            }
-                                            showSearch
-                                            value={activeConf}
-                                        >
-                                            {
-                                                confList.map((i: any) => (
-                                                    <Select.Option
-                                                        key={i.id}
-                                                        value={i.id}
-                                                    >
-                                                        {i.name}
-                                                    </Select.Option>
-                                                ))
-                                            }
-                                        </Select>
+                                        <Row align="middle">
+                                            <span style={{ width: 76, display: 'inline-block' }} >Test Conf:</span>
+                                            <Select
+                                                style={{ width: 'calc(100% - 91px - 8px)' }}
+                                                onChange={(test_case_id) => {
+                                                    setActiveConf(test_case_id)
+                                                    setSelectMetric([])
+                                                    if (test_type === 'performance')
+                                                        requestMetricList({ test_suite_id: activeSuite, test_case_id })
+                                                    if (test_type !== 'performance' && showType !== 'pass_rate')
+                                                        requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
+                                                    setSelectSubcase([])
+                                                }}
+                                                filterOption={(input, option: any) =>
+                                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                }
+                                                showSearch
+                                                placeholder="请选择Test Conf"
+                                                value={activeConf}
+                                            >
+                                                {
+                                                    confList.map((i: any) => (
+                                                        <Select.Option
+                                                            key={i.id}
+                                                            value={i.id}
+                                                        >
+                                                            {i.name}
+                                                        </Select.Option>
+                                                    ))
+                                                }
+                                            </Select>
+                                        </Row>
                                     </Col>
                                 </Row>
                             }
                             {
                                 (test_type === 'functional' && showType === 'pass_rate') &&
-                                <Row>
+                                <Row align="middle">
                                     <span style={{ width: 76, display: 'inline-block' }} >Test Suite:</span>
                                     <Select
                                         style={{ width: 'calc(100% - 91px - 8px)' }}
                                         onChange={(v) => {
                                             setActiveSuite(v)
                                             setActiveConf(null)
-                                            console.log('suitesssss')
                                         }}
                                         filterOption={(input, option: any) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
                                         showSearch
+                                        placeholder="请选择Test Suite"
                                         value={activeSuite}
                                     >
                                         {
@@ -286,7 +296,6 @@ export default forwardRef(
                                     rowSelection={{
                                         selectedRowKeys: selectMetric,
                                         onChange: (list: any) => {
-                                            console.log(list)
                                             setSelectMetric(list)
                                         }
                                     }}

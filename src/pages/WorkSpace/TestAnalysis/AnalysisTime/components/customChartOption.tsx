@@ -1,5 +1,6 @@
 import { textTip, commitLinkTip } from './'
 
+
 const customChartOption: any = (dataSource: any, ws_id: any) => {
     const baseicData = [
         { value: "Fail", color: "#C84C5A" },
@@ -46,13 +47,13 @@ const customChartOption: any = (dataSource: any, ws_id: any) => {
                     y = y - rect.height;
                     arrowX = x + rect.width / 2;
                     arrowY = y - 3;
-                    pathData = `M ${arrowX} ${arrowY} L ${arrowX - 5} ${arrowY - 6} L ${arrowX + 5 } ${arrowY - 6}`;
+                    pathData = `M ${arrowX} ${arrowY} L ${arrowX - 5} ${arrowY - 6} L ${arrowX + 5} ${arrowY - 6}`;
                 }
 
                 if (seriesName === "Fail") {
                     arrowX = x + rect.width / 2;
                     arrowY = y + rect.height + 3;
-                    pathData = `M ${arrowX} ${arrowY} L ${arrowX - 5} ${arrowY + 6} L ${arrowX + 5 } ${arrowY + 6}`;
+                    pathData = `M ${arrowX} ${arrowY} L ${arrowX - 5} ${arrowY + 6} L ${arrowX + 5} ${arrowY + 6}`;
                 }
                 let children = [
                     {
@@ -93,7 +94,7 @@ const customChartOption: any = (dataSource: any, ws_id: any) => {
                         },
                         style
                     });
-                
+
                 return {
                     type: "group",
                     children
@@ -101,7 +102,10 @@ const customChartOption: any = (dataSource: any, ws_id: any) => {
             }
         };
     });
+
+    const baseZoomLen = 25
     const yAxisLabel = ["Pass", "Skip", "Fail"];
+
     const option = {
         grid: { left: '3%', right: 30 },
         legend: {
@@ -114,15 +118,17 @@ const customChartOption: any = (dataSource: any, ws_id: any) => {
                 textStyle: { color: baseicData.filter((v) => v.value === i)[0].color }
             }))
         },
-        dataZoom: [{
+
+        dataZoom: data.length > baseZoomLen ? [{
             type: 'slider',
             show: true,
             zoomLock: true,
-            start: 70,
-            end: 100,
+            start: 0,
+            end: parseInt(baseZoomLen / data.length * 100 as any),
             left: '20%',
             right: '20%',
-        }],
+        }] : undefined,
+
         yAxis: {
             type: "category",
             data: yAxisLabel.map((i) => ({

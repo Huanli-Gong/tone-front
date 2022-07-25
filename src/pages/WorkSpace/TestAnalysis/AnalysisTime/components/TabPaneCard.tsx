@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Row, Col, Form, Select, DatePicker, Card, Button, Empty, Tooltip, message, Descriptions } from 'antd'
+import { Row, Col, Form, Select, DatePicker, Card, Button, Empty, Tooltip, message, Descriptions, Spin } from 'antd'
 import moment from 'moment'
 import { useRequest, useLocation, useParams } from 'umi'
 import styled from 'styled-components'
@@ -13,6 +13,10 @@ import _ from 'lodash'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 // import { sourceData } from './SelectMertric_old'
 
+const CardWrapper = styled(Card)`
+    border: none;
+`
+
 const TootipTipRow = styled(Row)`
     position:relative;
     width:300px;
@@ -23,47 +27,51 @@ const TootipTipRow = styled(Row)`
     }
 `
 const fontStyle = {
-    fontWeight:'bold'
+    fontWeight: 'bold'
 }
-const SuiteConfMetric = ( props:any ) => {
-    let str = props.title.split('/')
-    return(
+
+const SuiteConfMetric = (props: any) => {
+    let str = props.title?.split('/')
+    return (
         <div style={{ color: '#000' }}>
             <Descriptions column={1}>
-                <Descriptions.Item 
-                    label="Suite" 
-                    labelStyle={{ ...fontStyle, paddingLeft:10 }}
+                <Descriptions.Item
+                    label="Suite"
+                    labelStyle={{ ...fontStyle, paddingLeft: 10 }}
                 >
                     {str[0]}
                 </Descriptions.Item>
-                <Descriptions.Item 
-                    label="Conf" 
-                    labelStyle={{ ...fontStyle, paddingLeft:12 }}
+                <Descriptions.Item
+                    label="Conf"
+                    labelStyle={{ ...fontStyle, paddingLeft: 12 }}
                 >
                     {str[1]}
                 </Descriptions.Item>
-                <Descriptions.Item 
-                    label="Metric" 
-                    contentStyle={{ display:'inline-block' }} 
+                <Descriptions.Item
+                    label="Metric"
+                    contentStyle={{ display: 'inline-block', paddingBottom: 8 }}
                     labelStyle={{ ...fontStyle }}
                 >
-                    { props.metric.map(
-                        (item:any,i:number) => 
+                    {props?.metric?.map(
+                        (item: any, i: number) =>
                             <div key={i}>{item}</div>)
                     }
                 </Descriptions.Item>
             </Descriptions>
         </div>
-    ) 
+    )
 }
-export default (props: any) => {
+
+const TabPaneCard: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
     const { query }: any = useLocation()
-    const { provider, testType, showType, onChange, setLoading, loading } = props
+    const { provider, testType, showType, onChange } = props
     const [chartData, setChartData] = useState<any>({})
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
-    const [projectId,setProjectId] = useState('')
+    const [projectId, setProjectId] = useState('')
+    const [loading, setLoading] = useState(false)
+
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
 
@@ -73,32 +81,27 @@ export default (props: any) => {
     const requestAnalysisData = async (params: any) => {
         onChange(params)
         setLoading(true)
+
         if (loading) return
         const { data, code } = testType === 'performance' ?
             await queryPerfAnalysisList(params) :
             await queryFuncAnalysisList(params)
+        setLoading(false)
 
         if (code === 200) {
             const { job_list, metric_map, case_map } = data
             if (job_list.length > 0) {
                 setChartData(testType === 'performance' ? metric_map : case_map)
                 setTableData(job_list)
-            }
-            else {
-                setTableData([])
-                setChartData({})
+                return
             }
         }
-        else {
-            setTableData([])
-            setChartData({})
-        }
-
-        setLoading(false)
+        setTableData([])
+        setChartData({})
     }
 
     const handleSelectMertric = () => {
-        if(form.getFieldValue('project_id')){
+        if (form.getFieldValue('project_id')) {
             selectMetricRef.current.show()
         } else {
             message.error('请先选择项目!!!')
@@ -161,7 +164,7 @@ export default (props: any) => {
         selectMetricRef.current.reset()
         setChartData(null)
         setTableData([])
-        form.resetFields()
+        // form.resetFields()
         setMetricData(null)
     }, [provider, showType, testType])
 
@@ -270,6 +273,7 @@ export default (props: any) => {
                             name="time"
                             initialValue={[moment().subtract(29, 'days'), moment().startOf('day')]}
                         >
+                            {/* @ts-ignore */}
                             <DatePicker.RangePicker
                                 style={{ width: 240 }}
                                 ranges={{
@@ -301,12 +305,12 @@ export default (props: any) => {
                             <Tooltip
                                 title={
                                     showType === 'result_trend' ?
-                                        metricData.sub_case_name : <SuiteConfMetric {...metricData}/>
+                                        metricData.sub_case_name : <SuiteConfMetric {...metricData} />
                                 }
                                 autoAdjustOverflow={true}
                                 placement="bottomLeft"
                                 color='#fff'
-                                overlayInnerStyle={{ minWidth: 300 , maxHeight: 300, overflowY:'auto' }}
+                                overlayInnerStyle={{ minWidth: 300, maxHeight: 300, overflowY: 'auto', color: "#333" }}
                             >
                                 <span className={styles.select_inner_span}>
                                     {metricData.title}
@@ -318,49 +322,53 @@ export default (props: any) => {
                 </Col>
             </Row>
             <Row style={{ height: 10, background: 'rgba(0, 0, 0, 0.04)' }} />
-            {
-                (testType === 'performance' && tableData?.length > 0) &&
-                Object.keys(chartData).map(
-                    (i: any, idx: any) => {
-                        return (
-                            <ChartRender
-                                key={idx}
-                                testType={testType}
-                                provider={provider}
-                                title={i}
-                                dataSource={chartData[i]}
-                                showType={showType}
-                            />
-                        )
-                    }
-                )
-            }
-            {
-                (testType !== 'performance' && tableData?.length > 0) &&
-                <ChartRender
-                    testType={testType}
-                    provider={provider}
-                    showType={showType}
-                    dataSource={chartData}
-                />
-            }
-            {
-                tableData?.length === 0 &&
-                <Card style={{ marginTop: 10, width: '100%' }}>
-                    <Row style={{ height: innerHeight - 176 - 50 - 120 }} justify="center" align="middle">
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                    </Row>
-                </Card>
-            }
-            {
-                tableData?.length > 0 &&
-                <AnalysisTable
-                    refresh={() => fetchAnalysis(metricData)}
-                    dataSource={tableData}
-                    testType={testType}
-                    showType={showType}
-                />
-            }
+
+            <Spin spinning={loading}>
+                {
+                    (testType === 'performance' && tableData?.length > 0) &&
+                    Object.keys(chartData).map(
+                        (i: any, idx: any) => {
+                            return (
+                                <ChartRender
+                                    key={idx}
+                                    testType={testType}
+                                    provider={provider}
+                                    title={i}
+                                    dataSource={chartData[i]}
+                                    showType={showType}
+                                />
+                            )
+                        }
+                    )
+                }
+                {
+                    (testType !== 'performance' && tableData?.length > 0) &&
+                    <ChartRender
+                        testType={testType}
+                        provider={provider}
+                        showType={showType}
+                        dataSource={chartData}
+                    />
+                }
+                {
+                    tableData?.length === 0 &&
+                    <CardWrapper style={{ marginTop: 10, width: '100%' }} bordered={false}>
+                        <Row style={{ height: innerHeight - 176 - 50 - 120 }} justify="center" align="middle">
+                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                        </Row>
+                    </CardWrapper>
+                }
+                {
+                    tableData?.length > 0 &&
+                    <AnalysisTable
+                        refresh={() => fetchAnalysis(metricData)}
+                        dataSource={tableData}
+                        testType={testType}
+                        showType={showType}
+                    />
+                }
+            </Spin>
+
             <SelectMertric
                 ref={selectMetricRef}
                 projectId={projectId}
@@ -371,3 +379,5 @@ export default (props: any) => {
         </>
     )
 }
+
+export default TabPaneCard
