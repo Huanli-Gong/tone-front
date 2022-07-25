@@ -82,13 +82,12 @@ export default (props: any) => {
             }
         )
     )
-    const queryKeyWordMember = async (name: any) => {
-        let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
-        setOptions(data ? searchResult(data, name) : [])
-    }
 
-    const handleSearchWorkspaceMember = (name: string) => {
-        queryKeyWordMember(name)
+    const handleSearchWorkspaceMember = async(name: string) => {
+        if(name){
+            let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
+            setOptions(data ? searchResult(data, name) : [])
+        }
     }
 
     const onSelect = (value: string) => {
