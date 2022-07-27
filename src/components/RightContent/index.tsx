@@ -140,15 +140,15 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>登录</Button>
-                                    <Button type="primary" onClick={() => location.replace(register_url)}>注册</Button>
+                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => history.push(login_url)}>登录</Button>
+                                    <Button type="primary" onClick={() => history.push(register_url)}>注册</Button>
                                 </Space> :
                                 <Space>
                                     <Button
                                         type="text"
                                         style={{ color: '#fff', fontWeight: 500 }}
                                         size="small"
-                                        onClick={() => history.push(`/login?redirect_url=${window.location.href.replace(window.location.origin, '')}`)}
+                                        onClick={() => history.push(`/login?redirect_url=${window.location.pathname}`)}
                                     >
                                         登录
                                     </Button>
