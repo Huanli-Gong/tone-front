@@ -66,6 +66,12 @@ const GroupTree: React.FC<any> = (props) => {
             width: 150,
             render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
         },
+        instance && {
+            title: 'TSN',
+            dataIndex: 'tsn',
+            width: 150,
+            render: (_: number, row: any) => <EllipsisPulic title={row.tsn} />
+        },
         !BUILD_APP_ENV &&
         {
             title: '公网IP',

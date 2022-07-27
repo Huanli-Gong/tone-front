@@ -109,6 +109,14 @@ export default (props: any) => {
             },
             render: (record: any) => <ServerLink val={record.test_server.sn} provider={'内网机器'} />
         },
+        {
+            title: 'TSN',
+            width: 150,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (record: any) => <EllipsisPulic title={record.test_server.tsn} />
+        },
         !BUILD_APP_ENV && {
             title: '机器名称',
             width: 150,
@@ -270,7 +278,7 @@ export default (props: any) => {
                         dataSource={dataSource}
                         size="small"
                         pagination={false}
-                        scroll={{ x: 1720 }}
+                        scroll={{ x: '100%' }}
                         rowClassName={() => styles.row_class}
                     />
                 </div>

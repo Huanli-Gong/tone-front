@@ -129,7 +129,7 @@ export default forwardRef((props: any, ref: any) => {
             resetInitialState();
         }
     };
-    console.log('data', data)
+    
     // Alert的提示内容
     const deployReactNode = () => {
         const { success_servers = [], fail_servers = [] } = deployResult
