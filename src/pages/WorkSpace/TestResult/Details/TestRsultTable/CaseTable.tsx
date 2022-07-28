@@ -247,12 +247,14 @@ const CaseTable: React.FC<any> = ({
                     dataSource={data}
                     pagination={false}
                     size="small"
+                    className={styles["resultCaseTableCls"]}
                     style={{ width: `calc(100% - 32px)` }}
                     rowSelection={rowSelection}
                     expandable={{
                         defaultExpandAllRows: openAllRows,
                         expandedRowKeys: expandedRowKeys,
                         onExpand: handleOnExpand,
+                        expandedRowClassName: () => "expandedRowClassNameCls",
                         expandedRowRender: (record: any) => (
                             <ResultInfo
                                 {...record}

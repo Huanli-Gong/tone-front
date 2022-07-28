@@ -204,8 +204,8 @@ export default (props: any): React.ReactElement => {
                                             if (!value)
                                                 return Promise.reject("Workspace显示名不能为空")
 
-                                            if (!/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/.test(value))
-                                                return Promise.reject("仅允许包含汉字、字母、数字、下划线、中划线、点，最多20个字符")
+                                            if (!/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/.test(value))
+                                                return Promise.reject("仅允许包含汉字、字母、数字、下划线、中划线、点，最多30个字符")
 
                                             return Promise.resolve()
                                         }
