@@ -123,7 +123,7 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
                         <span 
                             style={{ width: width - 40, overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap' }}
                         >
-                            {title}
+                            {title || '-'}
                         </span>
                     </Tooltip>
                     {edit}
