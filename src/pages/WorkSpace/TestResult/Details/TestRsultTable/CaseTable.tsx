@@ -1,8 +1,8 @@
-import { Table, Space, Row, Popover, Tooltip, Typography } from 'antd'
+import { Table, Space, Row } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
-import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
+import { useRequest, Access, useAccess, useParams } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
-import { contrastBaseline, queryTestResultSuiteConfList } from '../service'
+import { queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import JoinBaseline from '../components/JoinBaseline'
 import ResultInfo from './ResultInfo'
@@ -21,7 +21,7 @@ import { AccessTootip } from '@/utils/utils';
 
 const CaseTable: React.FC<any> = ({
     suite_id, testType, suite_name, server_provider, provider_name, creator,
-    suiteSelect = [], onCaseSelect, state = '', openAllRows = false
+    suiteSelect = [], onCaseSelect, state = '', openAllRows = false, isExpandAll = false, setIndexExpandFlag
 }) => {
     const { id: job_id, ws_id } = useParams() as any
     const background = `url(${treeSvg}) center center / 38.6px 32px `
@@ -209,12 +209,13 @@ const CaseTable: React.FC<any> = ({
         else setSelectedRowKeys([])
     }, [suiteSelect])
 
-
     const handleOnExpand = (expanded: boolean, record: any) => {
         if (expanded) {
+            setIndexExpandFlag(true)
             setExpandedRowKeys(expandedRowKeys.concat([record.test_case_id]))
         }
         else {
+            setIndexExpandFlag(false)
             setExpandedRowKeys(expandedRowKeys.filter((i: number) => i !== record.test_case_id))
         }
     }
@@ -222,16 +223,16 @@ const CaseTable: React.FC<any> = ({
     useEffect(() => {
         onCaseSelect(suite_id, selectedRowKeys)
     }, [selectedRowKeys])
-
+    
     // 子级表格会通过监听传入的状态：展开全部/收起。
     useEffect(() => {
-        if (data.length) {
+        if (data.length && isExpandAll) {
             setExpandedRowKeys(data.map((i: any) => i.test_case_id))
         } else {
             setExpandedRowKeys([])
         }
-    }, [data])
-
+    }, [data,isExpandAll])
+    
     return (
         <div style={{ width: '100%' }}>
             <Row justify="start">
@@ -264,7 +265,6 @@ const CaseTable: React.FC<any> = ({
                                 suite_id={suite_id}
                                 state={childState}
                                 suite_name={suite_name}
-                                openAllRows={openAllRows}
                                 refreshId={refreshId}
                                 setRefreshId={setRefreshId}
                             />
