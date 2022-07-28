@@ -202,16 +202,18 @@ export default (props: any) => {
                             </Space>
                         }
                     >
-                        <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
-                        <Popconfirm
-                            title="确定要删除吗？"
-                            okText="确定"
-                            cancelText="取消"
-                            onConfirm={() => handleDeleteServer(_.id)}
-                        >
-                            <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
-                        </Popconfirm>
-                        <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>
+                        <Space>
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
+                            <Popconfirm
+                                title="确定要删除吗？"
+                                okText="确定"
+                                cancelText="取消"
+                                onConfirm={() => handleDeleteServer(_.id)}
+                            >
+                                <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
+                            </Popconfirm>
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>
+                        </Space>
                     </Access>
                     <PermissionTootip>
                         <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
