@@ -10,12 +10,20 @@ import TaskInform from './components/TaskInform'
 import SystemInform from './components/SystemInform';
 import { allTagRead, allTagApplyRead } from '@/services/Workspace';
 import { requestCodeMessage } from '@/utils/utils';
+import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
+import { applyWorkspaceRole } from './services'
+import { isNull } from 'lodash';
+
+import { person_auth } from '@/services/user';
+import { deepObject } from '@/utils/utils';
+
+import cls from "classnames"
 
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> = (props) => {
     const { isWs, wsId, routes } = props;
-    const { initialState } = useModel('@@initialState');
+    const { initialState, setInitialState } = useModel('@@initialState');
     const [tab, setTab] = useState('1')
     const [dropVisible, setDropVisible] = useState(false)
     const access = useAccess()
@@ -34,7 +42,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
     }
-    const { login_url, register_url, sys_role_title, ws_role_title } = initialState?.authList || {};
+    const { login_url, register_url, ws_need_need_approval, ws_is_public, ws_role_title } = initialState?.authList || {};
 
     useEffect(() => {
         setDropVisible(false)
@@ -74,10 +82,55 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
+    
+    const NoReasonJoinWorkspace: React.FC<any> = () => {
+        const handleSubmit = async () => {
+            const ws_id = wsId
+            const { code, msg } = await applyWorkspaceRole({ ws_id })
+            requestCodeMessage(code, msg)
+            if (code === 200) {
+                const { data } = await person_auth({ ws_id })
+                const accessData = deepObject(data)
+                setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
+            }
+        }
+        return <Button type="primary" onClick={() => handleSubmit()}>申请加入</Button>
+    }
+
+    const needJoinWorkspace = React.useMemo(() => {
+        // const isBoolean = Object.prototype.toString.call(ws_is_common) === "[object Boolean]"
+        const isBoolean = Object.prototype.toString.call(ws_role_title )=== "[object String]"
+        const isTourist = ws_role_title === 'ws_tourist' || ''
+        return isWs && access.loginBtn() && ws_is_public && (isBoolean && isTourist)
+    }, [isWs, access, ws_is_public, ws_role_title])
+
+    React.useEffect(() => {
+        if (!initialState.shakeBtn) return
+        const timer = setTimeout(() => {
+            setTimeout(() => setInitialState(
+                (p: any) => ({ ...p, shakeBtn: undefined })
+            ))
+        }, 800)
+        return () => {
+            clearTimeout(timer)
+        }
+    }, [initialState.shakeBtn])
 
     return (
         <Row style={{ width: '100%', position: "relative" }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
+            {
+                needJoinWorkspace ?
+                <span className={cls("animate__animated", initialState.shakeBtn && "animate__shakeX animate__fast")}>
+                    {
+                        ws_need_need_approval ?
+                            <ApplyJoinWorkspace ws_id={wsId} style={{ margin: 0 }} /> :
+                            <NoReasonJoinWorkspace />
+                    }
+                </span>
+                :
+                <></>
+            }
             {
                 isWs &&
                 <Access accessible={access.IsWsSetting()}>
