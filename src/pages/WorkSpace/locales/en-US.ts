@@ -67,7 +67,6 @@ export default {
     "Workspace.TestJob": '新建Job',
     "Workspace.TestTemplate": 'Job模板',
     "Workspace.TestExport": '导入配置',
-    "Workspace.JobTypePreview": 'Job类型预览',
 
     "Workspace.TestResult": '测试结果',
     "Workspace.TestResult.TestResult": '测试结果',
