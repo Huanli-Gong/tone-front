@@ -123,7 +123,7 @@ export const GroupItemText = ({
 }) => {
 
     const [title, setTitle] = useState('')
-    console.log('data',dataSource)
+    
     useEffect(() => {
         setTitle(name)
     }, [name])

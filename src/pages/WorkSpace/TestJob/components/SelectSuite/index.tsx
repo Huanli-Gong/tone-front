@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useImperativeHandle } from 'react';
-import { Button, Card, Empty, Badge, Typography, Space } from 'antd'
+import { Button, Card, Empty, Badge, Typography, Space, Row, Col } from 'antd'
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash'
 import BusinessTestSelectDrawer from './BusinessTestSelectDrawer'
 import SelectDrawer from './SelectDrawer'
@@ -59,6 +60,18 @@ const SelectSuite: React.FC<any> = (
 			// if(_.isArray(_.get(item,'cases'))) count += item.cases.length
 		})
 		return count
+	}, [test_config])
+
+	const memoDeleteIp = useMemo(() => {
+		let list:any = []
+		test_config.map((item: any) => {
+			item.test_case_list.map((l:any) => {
+				if(l.server_is_deleted){
+					list = list.concat(l.server_deleted)
+				}
+			})
+		})
+		return list
 	}, [test_config])
 
 	const SuiteSelect = () => {
@@ -302,7 +315,24 @@ const SelectSuite: React.FC<any> = (
 					}
 				</div>
 			</div>
-
+			{
+				!!memoDeleteIp.length && 
+				<div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>
+					<Row style={{ padding:'10px' }}>
+						<Col span={24}>
+							<ExclamationCircleOutlined style={{ color: '#FAAD14',paddingRight: 5 }} />
+							{
+								memoDeleteIp.map((item:any) => (
+									<span style={{ marginRight: 20 }}>
+										{item.ip}/{item.sn}
+									</span>
+								))
+							}
+							<Typography.Text style={{ color: 'rgba(0,0,0,0.85)' }}>已被移除!</Typography.Text>
+						</Col>
+					</Row>
+				</div>
+			}
 			{
 				test_type === 'business' ?
 					<BusinessTestSelectDrawer  // 业务测试(选择用例)

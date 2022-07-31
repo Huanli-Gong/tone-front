@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Checkbox, Button, Divider } from 'antd';
+import { Checkbox, Button, Divider, Space } from 'antd';
 import styles from './index.less';
 
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
@@ -20,7 +20,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 
 	return (
 		<div className={styles.filter}>
-			<div style={{ display: 'flex', flexDirection: 'column' }}>
+			<div style={{ display: 'flex', flexDirection: 'column', maxHeight: 280, overflow: "auto" }}>
 				<Checkbox
 					indeterminate={init}
 					className={styles.domain}
@@ -30,11 +30,13 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 					全选
 				</Checkbox>
 				<Checkbox.Group onChange={handleDomainRadio} value={val}>
-					{
-						list.map((item: any) => {
-							return <Checkbox className={styles.domain} value={item.id} key={item.id}>{item.name}</Checkbox>
-						})
-					}
+					<Space direction="vertical" size={0}>
+						{
+							list.map((item: any) => {
+								return <Checkbox className={styles.domain} value={item.id} key={item.id}>{item.name}</Checkbox>
+							})
+						}
+					</Space>
 				</Checkbox.Group>
 			</div>
 			<Divider style={{ margin: '10px 0' }} />

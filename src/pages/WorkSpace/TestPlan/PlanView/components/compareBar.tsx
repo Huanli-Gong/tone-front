@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tag, Tooltip, Layout, Space, Table, Typography, Popconfirm, message, Tabs, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Breadcrumb, Modal, Checkbox } from 'antd';
-import { history } from 'umi'
+import { history, useParams } from 'umi'
 import _ from 'lodash'
 import styles from './compareBar.less'
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -9,10 +9,11 @@ import { queryPlanConstraint } from '../services'
 import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
-    const {selectedChange, wsId, allGroup,selectedRowKeys} = props
+    const { ws_id: wsId } = useParams() as any
+    const { selectedChange, allGroup, selectedRowKeys } = props
 
-    const scrollbarsRef:any = useRef(null)
-    const groupItems:any = useRef(null)
+    const scrollbarsRef: any = useRef(null)
+    const groupItems: any = useRef(null)
     const [padding, setPadding] = useState(false)
 
     const onResizeWidth = () => {
@@ -33,14 +34,14 @@ export default (props: any) => {
     }, [])
     useEffect(() => {
         onResizeWidth()
-    },[allGroup])
-    const handleCancle = () =>{
+    }, [allGroup])
+    const handleCancle = () => {
         selectedChange()
     }
-    const defaultOption = (code: number, msg: string, data:any) => {
+    const defaultOption = (code: number, msg: string, data: any) => {
         if (code === 200) {
-            const arrGroup = allGroup.map((item:any,index:any) => {
-                item.job_total = item.job_total.map((id:any) => String(id))
+            const arrGroup = allGroup.map((item: any, index: any) => {
+                item.job_total = item.job_total.map((id: any) => String(id))
                 const members = data.filter((obj: any) => item.job_total.includes(String(obj.id)))
                 const groupItem = {
                     name: `Group${index + 1}`,
@@ -53,7 +54,7 @@ export default (props: any) => {
             window.sessionStorage.setItem('originType', 'test_plan')
             history.push(`/ws/${wsId}/test_analysis/compare`)
         } else {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
         }
     }
     const queryResultFn = function* (paramData: any) {
@@ -74,27 +75,28 @@ export default (props: any) => {
         })
 
     }
- 
-    useEffect(()=>{
+
+    useEffect(() => {
         groupItems.current = document.querySelectorAll('#box li')
         if (groupItems.current) groupItems.current = Array.from(groupItems.current)
     }, [allGroup])
 
-    const getLeftVal = (index:number) => {
+    const getLeftVal = (index: number) => {
         if (groupItems.current && groupItems.current[0]) {
             const widthLi = parseInt(window.getComputedStyle(groupItems.current[0]).width)
             return index * widthLi
         }
+        return 0
     }
 
-   const getScrollLeftVal = () => {
-        if (scrollbarsRef.current){
-           const scrollTop = scrollbarsRef.current.getScrollLeft();
+    const getScrollLeftVal = () => {
+        if (scrollbarsRef.current) {
+            const scrollTop = scrollbarsRef.current.getScrollLeft();
             return scrollTop
         }
     }
     const handleScroll = () => {
-        const box:any = document.getElementById('job_group')
+        const box: any = document.getElementById('job_group')
         const width = box.clientWidth
         if (scrollbarsRef.current) {
             const scrollTop = getScrollLeftVal()
@@ -108,7 +110,7 @@ export default (props: any) => {
         width: '100%',
     }
     return (
-        <div className={styles.job_compare} style={{display: allGroup.length ? 'block' : 'none'}}>
+        <div className={styles.job_compare} style={{ display: allGroup.length ? 'block' : 'none' }}>
             <div className={styles.title}>对比栏<span>（{allGroup.length}）</span></div>
             <div className={styles.job_group} id='job_group'>
                 <Scrollbars style={scroll} ref={scrollbarsRef}>
@@ -120,7 +122,7 @@ export default (props: any) => {
                                     <li
                                         style={{ borderRight: allGroup.length > 1 && index !== allGroup.length - 1 ? '1px dashed rgba(151, 151, 151, 0.4)' : 'none', position: 'absolute', left: `${left}px` }}>
                                         <div className={styles.job_group_title}>{`Group${index + 1}(Job Num:${item.job_total && item.job_total.length || 0})`}</div>
-        
+
                                     </li>
                                 )
                             })
@@ -129,7 +131,7 @@ export default (props: any) => {
                 </Scrollbars>
                 <div className={styles.operate}>
                     <Space>
-                        <RightOutlined onClick={handleScroll} style={{opacity: padding ? 1 : 0}}/>
+                        <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0 }} />
                         <Button onClick={handleCancle}>取消</Button>
                         <Button type="primary" onClick={handleNext}>下一步</Button>
                     </Space>

@@ -111,7 +111,7 @@
     "reactcss": "^1.2.3",
     "styled-components": "^5.2.1",
     "sylvanas": "^0.6.1",
-    "umi": "^3.5.13",
+    "umi": "^3.5.26",
     "umi-request": "^1.0.8",
     "use-merge-value": "^1.0.1",
     "wangeditor": "4.5.3"
@@ -150,6 +150,5 @@
   },
   "engines": {
     "node": ">=10.0.0"
-  },
-  "__npminstall_done": false
+  }
 }

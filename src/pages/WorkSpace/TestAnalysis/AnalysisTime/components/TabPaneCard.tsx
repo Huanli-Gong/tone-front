@@ -6,7 +6,8 @@ import styled from 'styled-components'
 import AnalysisTable from './Table'
 
 import ChartRender from './RenderChart'
-import { queryProjectList, queryTagList, queryPerfAnalysisList, queryFuncAnalysisList } from '../services';
+import { queryProjectList, queryPerfAnalysisList, queryFuncAnalysisList } from '../services';
+import { tagList as queryJobTagList } from "@/pages/WorkSpace/TagManage/service"
 import SelectMertric from './MetricSelectDrawer'
 import styles from './index.less'
 import _ from 'lodash'
@@ -75,7 +76,10 @@ const TabPaneCard: React.FC<any> = (props) => {
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
 
-    const { data: tagList, run } = useRequest(queryTagList, { initialData: [], manual: true })
+    const { data: tagList } = useRequest(
+        (params = { ws_id, page_size: 999 }) => queryJobTagList(params),
+        { initialData: [] } /* , manual: true */
+    )
     const { data: projectList } = useRequest(() => queryProjectList({ ws_id }), { initialData: [] })
 
     const requestAnalysisData = async (params: any) => {
@@ -176,11 +180,11 @@ const TabPaneCard: React.FC<any> = (props) => {
             } = query
 
             if (test_type === testType) {
-                project_id && run({ project_id })
+                /* project_id && run({ project_id, page_size: 999 }) */
 
                 form.setFieldsValue({
-                    project_id: + project_id || '',
-                    tag: + tag || '',
+                    project_id: project_id ? + project_id : undefined,
+                    tag: tag ? + tag : undefined,
                 })
                 const params = {
                     metric: _.isArray(metric) ? metric : [metric],
@@ -204,7 +208,7 @@ const TabPaneCard: React.FC<any> = (props) => {
     }, [query])
 
     const handleProductChange = (val: any) => {
-        run({ project_id: val })
+        /* run({ project_id: val, page_size: 999 }) */
         setProjectId(val)
     }
 
@@ -251,7 +255,12 @@ const TabPaneCard: React.FC<any> = (props) => {
                                         <Select.Option value="">不区分</Select.Option>
                                         {
                                             tagList.map((i: any) => (
-                                                <Select.Option key={i.tag_id} value={i.tag_id}>{i.tag_name}</Select.Option>
+                                                <Select.Option
+                                                    key={i.id}
+                                                    value={i.id}
+                                                >
+                                                    {i.name}
+                                                </Select.Option>
                                             ))
                                         }
                                     </Select>
@@ -259,6 +268,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                                 <div className="tootip_pos">
                                     <Tooltip
                                         overlayClassName={styles.table_question_tooltip}
+                                        color="#fff"
                                         placement="top"
                                         arrowPointAtCenter
                                         title={'仅分析含有所选标签的Job数据，不区分标签。'}

@@ -82,8 +82,8 @@ export default (props: ColumnsProp) => {
 
             if (isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}') {
                 return (
-                    <Tooltip placement="topLeft" title={row.customer_server.custom_ip}>
-                        {row.customer_server.custom_ip}
+                    <Tooltip placement="topLeft" title={row.customer_server?.custom_ip || ''}>
+                        {row.customer_server?.custom_ip || ''}
                     </Tooltip>
                 )
             }
