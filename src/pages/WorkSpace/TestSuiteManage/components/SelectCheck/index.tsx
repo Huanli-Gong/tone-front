@@ -28,7 +28,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 
 	return (
 		<div className={styles.filter}>
-			<Space direction="vertical" style={{ padding: "0 8px" }}>
+			<div style={{ display: 'flex', flexDirection: 'column', maxHeight: 280, overflow: "auto" }}>
 				<Checkbox
 					indeterminate={init}
 					className={styles.domain}
@@ -38,17 +38,11 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 					全选
 				</Checkbox>
 				<Checkbox.Group onChange={handleDomainRadio} value={val}>
-					<Space direction="vertical">
+					<Space direction="vertical" size={0}>
 						{
-							list.map((item: any) => (
-								<Checkbox
-									className={styles.domain}
-									value={item.id}
-									key={item.id}
-								>
-									{item.name}
-								</Checkbox>
-							))
+							list.map((item: any) => {
+								return <Checkbox className={styles.domain} value={item.id} key={item.id}>{item.name}</Checkbox>
+							})
 						}
 					</Space>
 				</Checkbox.Group>

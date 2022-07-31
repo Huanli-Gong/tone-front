@@ -127,7 +127,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     // 失焦校验
     const handleBlurIp = (e: any) => {
         // const ipValue =  e.target.value
-        if (form.getFieldValue('channel_type')) {
+        if (form.getFieldValue('channel_type') && !BUILD_APP_ENV) {
             handleIpsCheck()
         }
     }
@@ -243,12 +243,16 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                     <Form.Item label="机器"
                                         name="ip"
                                         validateStatus={ips.errors.length > 0 ? 'error' : ''}
-                                        help={ips.errors.length > 0 && validateMsg}
-                                    >
-                                        <Input allowClear
-                                            onBlur={(e: any) => handleBlurIp(e)}
-                                            autoComplete="off"
-                                            placeholder={`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
+                                        help={ips.errors.length > 0 ? validateMsg : undefined}
+                                        rules={[{ 
+                                            required: true, 
+                                            pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
+                                            message:'请输入正确的机器IP!'
+                                        }]}>
+                                            <Input allowClear
+                                                onBlur={(e: any) => handleBlurIp(e)}
+                                                autoComplete="off"
+                                                placeholder={`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Popover, Table, Typography, Button } from 'antd'
+import { Popover, Table, Typography, Button, TableColumnProps } from 'antd'
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
@@ -7,15 +7,18 @@ import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
-import { history, useModel, Access, useAccess } from 'umi'
+import { history, useModel, Access, useAccess, useParams } from 'umi'
 import _ from 'lodash'
+
 const styleObj = {
     container: 245,
     button_width: 122
 }
+
 export default (props: any) => {
+    const { ws_id } = useParams() as any
     const { initialState } = useModel('@@initialState');
-    const { dreType, ws_id, jobInfo, origin, buttonStyle = {}, title } = props
+    const { dreType, jobInfo, origin, buttonStyle = {}, title } = props
     const viewAllReport = jobInfo && jobInfo.report_li
     const page_default_params: any = { name: '', creator_name: '' }
 
@@ -32,15 +35,15 @@ export default (props: any) => {
 
         let refAllJobCopy = _.cloneDeep(viewAllReport)
         if (searchVal === '') {
-            refAllJobCopy = nameFilterFn(params.name || '',refAllJobCopy)
+            refAllJobCopy = nameFilterFn(params.name || '', refAllJobCopy)
         } else {
-            refAllJobCopy = nameFilterFn(params.name || '',refAllJobCopy)
-            refAllJobCopy = creatorFilterFn(searchVal,refAllJobCopy)
+            refAllJobCopy = nameFilterFn(params.name || '', refAllJobCopy)
+            refAllJobCopy = creatorFilterFn(searchVal, refAllJobCopy)
         }
         setJobRefAllReport(refAllJobCopy)
         setParams({ ...params, ...obj })
     }
-    const creatorFilterFn = (creatorVal:string,arr:any[]) =>{
+    const creatorFilterFn = (creatorVal: string, arr: any[]) => {
         let refAllJobCopy = _.cloneDeep(arr)
         if (creatorVal) {
             refAllJobCopy = refAllJobCopy.filter((item: any) => {
@@ -51,7 +54,7 @@ export default (props: any) => {
         }
         return refAllJobCopy
     }
-    const nameFilterFn = (nameVal: string,arr:any[]) => {
+    const nameFilterFn = (nameVal: string, arr: any[]) => {
         let refAllJobCopy = _.cloneDeep(arr)
         if (nameVal) {
             refAllJobCopy = refAllJobCopy.filter((item: any) => {
@@ -61,13 +64,13 @@ export default (props: any) => {
         }
         return refAllJobCopy
     }
-    const columns = [
+    const columns: TableColumnProps<any>[] = [
         {
             dataIndex: 'name',
             title: '报告名称',
             width: 165,
             ellipsis: {
-                shwoTitle: false,
+                showTitle: false,
             },
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
@@ -76,10 +79,10 @@ export default (props: any) => {
                 onConfirm={(val: any) => {
                     let refAllJobCopy = _.cloneDeep(viewAllReport)
                     if (val === undefined) {
-                        refAllJobCopy = creatorFilterFn(params.creator_name || '',refAllJobCopy)
+                        refAllJobCopy = creatorFilterFn(params.creator_name || '', refAllJobCopy)
                     } else {
-                        refAllJobCopy = creatorFilterFn(params.creator_name || '',refAllJobCopy)
-                        refAllJobCopy = nameFilterFn(val,refAllJobCopy)
+                        refAllJobCopy = creatorFilterFn(params.creator_name || '', refAllJobCopy)
+                        refAllJobCopy = nameFilterFn(val, refAllJobCopy)
                     }
                     setJobRefAllReport(refAllJobCopy)
                     setParams({ ...params, name: val })
@@ -176,14 +179,14 @@ export default (props: any) => {
             <Popover placement={dreType} title="查看报告" content={getContent(jobRefReport)} trigger="click" overlayClassName={styles.popover_job} visible={visible}>
                 {
                     origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
-                    <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}>{title || '查看报告'}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
-                    </span>
-                </Typography.Text> :
-                    <Button type="primary"
-                        onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
-                        style={{ marginRight: 8,display: isFlag ? 'inlineBlock' : 'none',...buttonStyle }}>
-                       {title || '查看报告'}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
-                    </Button>
+                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}>{title || '查看报告'}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
+                        </span>
+                    </Typography.Text> :
+                        <Button type="primary"
+                            onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
+                            style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
+                            {title || '查看报告'}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
+                        </Button>
                 }
             </Popover>
         </div>

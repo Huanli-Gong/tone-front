@@ -47,7 +47,7 @@ export default forwardRef(
         const handleOk = () => {
             form.validateFields().then(async (values) => {
                 setPadding(true)
-                if (editData.id) {
+                if (editData && editData.id) {
                     const { code, msg } = await editBusiness({ id: editData.id, ...values })
                     defaultOption(code, msg, 'edit')
                 } else {

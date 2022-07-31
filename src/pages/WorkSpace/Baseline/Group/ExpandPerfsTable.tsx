@@ -5,7 +5,7 @@ import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons'
 import { useLocation, useParams } from 'umi'
 import { queryBaselineDetail } from '../services'
 import ExpandTable from './ExpandTable'
-import {partial} from 'lodash'
+import { partial } from 'lodash'
 import treeSvg from '@/assets/svg/tree.svg'
 
 // 二级详情
@@ -106,31 +106,55 @@ export default (props: any) => {
         {
             dataIndex: 'server_instance_type',
             title: '规格',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_) => <Tooltip title={_} placement="topLeft">{_ || "-"}</Tooltip>,
             key: 'server_instance_type',
         },
         {
             dataIndex: 'server_image',
             title: 'Image',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_) => <Tooltip title={_} placement="topLeft">{_ || "-"}</Tooltip>,
             key: 'server_image',
         },
         {
             dataIndex: 'server_bandwidth',
             title: 'Bandwidth',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_) => <Tooltip title={_} placement="topLeft">{_ || "-"}</Tooltip>,
             key: 'server_bandwidth',
         },
         {
             dataIndex: 'server_sn',
             title: 'SN',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_) => <Tooltip title={_} placement="topLeft">{_ || "-"}</Tooltip>,
             key: 'server_sn',
         },
         {
             dataIndex: 'server_ip',
             title: 'IP',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_) => <Tooltip title={_} placement="topLeft">{_ || "-"}</Tooltip>,
             key: 'server_ip',
         },
         {
             dataIndex: 'run_mode',
             title: 'RunMode',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_) => <Tooltip title={_} placement="topLeft">{_ || "-"}</Tooltip>,
             key: 'run_mode',
         },
         {

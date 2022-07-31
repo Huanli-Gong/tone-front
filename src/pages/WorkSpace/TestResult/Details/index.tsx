@@ -328,7 +328,7 @@ const TestResultDetails: React.FC = (props: any) => {
                             <Tabs
                                 defaultActiveKey={tab}
                                 onTabClick={handleTabClick}
-                                className={styles.result_tab_bar}
+                                className={styles.result_tab_nav}
                                 key={key}
                                 tabBarExtraContent={
                                     <div style={{ display: 'flex', marginRight: 12 }}>

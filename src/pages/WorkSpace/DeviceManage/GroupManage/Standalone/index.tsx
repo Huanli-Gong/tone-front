@@ -236,6 +236,15 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
             )
         },
+        {
+            title: 'TSN',
+            dataIndex: 'tsn',
+            width: 130,
+            ellipsis: {
+                shwoTitle: false,
+            },
+            render: (_: any) => <EllipsisPulic title={_} />,
+        },
         !BUILD_APP_ENV && {
             title: '机器名称',
             dataIndex: 'name',

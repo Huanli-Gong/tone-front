@@ -19,6 +19,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
     const [replaceId, setReplaceId] = useState(null)
 
     const [list, setList] = useState([])
+    const [allList, setAllList] = useState([])
     const [loading, setLoading] = useState(true)
 
     useImperativeHandle(ref, () => ({
@@ -45,6 +46,9 @@ const TemplateListDrawer = (props: any, ref: any) => {
             setList([])
             return
         }
+        if(search.length === 0){
+            setAllList(data)
+        }
         setList(data)
     }
 
@@ -65,7 +69,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
 
     const handleOk = () => {
         onOk({
-            list: list.filter((i: any) => {
+            list: allList.filter((i: any) => {
                 if (templates.filter((t: any) => i.id === t).length > 0)
                     return i
             }),
@@ -79,10 +83,10 @@ const TemplateListDrawer = (props: any, ref: any) => {
             message.warning('模版最多添加10个')
             return
         }
-        setTemplates(arr)
+        setTemplates([ ...templates, ...arr ])
     }
 
-    const handleReplace = (i: number | string) => {
+    const handleReplace = (i: any) => {
         onOk({
             ...i,
             rowkey,
@@ -129,7 +133,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
                                             value={i.id}
                                         >
                                             <Tooltip title={i.name} >
-                                                <Typography.Text ellipsis style={{ width: '90%' }}>
+                                                <Typography.Text ellipsis>
                                                     {i.name}
                                                 </Typography.Text>
                                             </Tooltip>

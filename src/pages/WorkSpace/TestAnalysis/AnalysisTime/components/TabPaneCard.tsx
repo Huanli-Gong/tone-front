@@ -6,7 +6,8 @@ import styled from 'styled-components'
 import AnalysisTable from './Table'
 
 import ChartRender from './RenderChart'
-import { queryProjectList, queryTagList, queryPerfAnalysisList, queryFuncAnalysisList } from '../services';
+import { queryProjectList, queryPerfAnalysisList, queryFuncAnalysisList } from '../services';
+import { tagList as queryJobTagList } from "@/pages/WorkSpace/TagManage/service"
 import SelectMertric from './MetricSelectDrawer'
 import styles from './index.less'
 import _ from 'lodash'
@@ -23,38 +24,39 @@ const TootipTipRow = styled(Row)`
     }
 `
 const fontStyle = {
-    fontWeight:'bold'
+    fontWeight: 'bold'
 }
-const SuiteConfMetric = ( props:any ) => {
+
+const SuiteConfMetric = (props: any) => {
     let str = props.title.split('/')
-    return(
+    return (
         <div style={{ color: '#000' }}>
             <Descriptions column={1}>
-                <Descriptions.Item 
-                    label="Suite" 
-                    labelStyle={{ ...fontStyle, paddingLeft:10 }}
+                <Descriptions.Item
+                    label="Suite"
+                    labelStyle={{ ...fontStyle, paddingLeft: 10 }}
                 >
                     {str[0]}
                 </Descriptions.Item>
-                <Descriptions.Item 
-                    label="Conf" 
-                    labelStyle={{ ...fontStyle, paddingLeft:12 }}
+                <Descriptions.Item
+                    label="Conf"
+                    labelStyle={{ ...fontStyle, paddingLeft: 12 }}
                 >
                     {str[1]}
                 </Descriptions.Item>
-                <Descriptions.Item 
-                    label="Metric" 
-                    contentStyle={{ display:'inline-block' }} 
+                <Descriptions.Item
+                    label="Metric"
+                    contentStyle={{ display: 'inline-block' }}
                     labelStyle={{ ...fontStyle }}
                 >
-                    { props.metric.map(
-                        (item:any,i:number) => 
+                    {props.metric.map(
+                        (item: any, i: number) =>
                             <div key={i}>{item}</div>)
                     }
                 </Descriptions.Item>
             </Descriptions>
         </div>
-    ) 
+    )
 }
 export default (props: any) => {
     const { ws_id } = useParams() as any
@@ -63,11 +65,14 @@ export default (props: any) => {
     const [chartData, setChartData] = useState<any>({})
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
-    const [projectId,setProjectId] = useState('')
+    const [projectId, setProjectId] = useState('')
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
 
-    const { data: tagList, run } = useRequest(queryTagList, { initialData: [], manual: true })
+    const { data: tagList } = useRequest(
+        (params = { ws_id, page_size: 999 }) => queryJobTagList(params),
+        { initialData: [] } /* , manual: true */
+    )
     const { data: projectList } = useRequest(() => queryProjectList({ ws_id }), { initialData: [] })
 
     const requestAnalysisData = async (params: any) => {
@@ -98,7 +103,7 @@ export default (props: any) => {
     }
 
     const handleSelectMertric = () => {
-        if(form.getFieldValue('project_id')){
+        if (form.getFieldValue('project_id')) {
             selectMetricRef.current.show()
         } else {
             message.error('请先选择项目!!!')
@@ -173,11 +178,11 @@ export default (props: any) => {
             } = query
 
             if (test_type === testType) {
-                project_id && run({ project_id })
+                /* project_id && run({ project_id, page_size: 999 }) */
 
                 form.setFieldsValue({
-                    project_id: + project_id || '',
-                    tag: + tag || '',
+                    project_id: project_id ? + project_id : undefined,
+                    tag: tag ? + tag : undefined,
                 })
                 const params = {
                     metric: _.isArray(metric) ? metric : [metric],
@@ -201,7 +206,7 @@ export default (props: any) => {
     }, [query])
 
     const handleProductChange = (val: any) => {
-        run({ project_id: val })
+        /* run({ project_id: val, page_size: 999 }) */
         setProjectId(val)
     }
 
@@ -248,7 +253,12 @@ export default (props: any) => {
                                         <Select.Option value="">不区分</Select.Option>
                                         {
                                             tagList.map((i: any) => (
-                                                <Select.Option key={i.tag_id} value={i.tag_id}>{i.tag_name}</Select.Option>
+                                                <Select.Option
+                                                    key={i.id}
+                                                    value={i.id}
+                                                >
+                                                    {i.name}
+                                                </Select.Option>
                                             ))
                                         }
                                     </Select>
@@ -256,6 +266,7 @@ export default (props: any) => {
                                 <div className="tootip_pos">
                                     <Tooltip
                                         overlayClassName={styles.table_question_tooltip}
+                                        color="#fff"
                                         placement="top"
                                         arrowPointAtCenter
                                         title={'仅分析含有所选标签的Job数据，不区分标签。'}
@@ -270,6 +281,7 @@ export default (props: any) => {
                             name="time"
                             initialValue={[moment().subtract(29, 'days'), moment().startOf('day')]}
                         >
+                            {/* @ts-ignore */}
                             <DatePicker.RangePicker
                                 style={{ width: 240 }}
                                 ranges={{
@@ -301,12 +313,12 @@ export default (props: any) => {
                             <Tooltip
                                 title={
                                     showType === 'result_trend' ?
-                                        metricData.sub_case_name : <SuiteConfMetric {...metricData}/>
+                                        metricData.sub_case_name : <SuiteConfMetric {...metricData} />
                                 }
                                 autoAdjustOverflow={true}
                                 placement="bottomLeft"
                                 color='#fff'
-                                overlayInnerStyle={{ minWidth: 300 , maxHeight: 300, overflowY:'auto' }}
+                                overlayInnerStyle={{ minWidth: 300, maxHeight: 300, overflowY: 'auto' }}
                             >
                                 <span className={styles.select_inner_span}>
                                     {metricData.title}

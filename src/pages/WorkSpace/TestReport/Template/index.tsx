@@ -20,6 +20,8 @@ import {
 import TestGroup from './components/Group'
 import TestItem from './components/Term'
 
+import Preview from './Preview'
+
 const defaultConf = {
     need_test_suite_description: true,
     need_test_env: true,
@@ -34,6 +36,7 @@ const TemplatePage = (props: any) => {
     const { ws_id, temp_id } = props.match.params
     const access = useAccess()
     const [loading, setLoading] = useState(false)
+    const [isPreview, setIsPreview] = React.useState(false)
     const { height: windowHeight } = useClientSize()
     const suiteSelectRef = useRef<any>()
 
@@ -341,10 +344,9 @@ const TemplatePage = (props: any) => {
 
     const handleSelectSuiteOk = ({ result, rowkey, testType }: any) => handleFieldChange(result, 'list', rowkey, testType)
 
-    // const hanldePreview = () => {
-    //     const win: any = window.open("");
-    //     setTimeout(function () { win.location.href = `${location.href}/preview` })
-    // }
+    const hanldePreview = () => {
+
+    }
 
     const checkName = (data: any) => {
         const obj = {}
@@ -400,7 +402,7 @@ const TemplatePage = (props: any) => {
                 history.push(`/ws/${ws_id}/test_report?t=template`)
             else requestCodeMessage(data.code, data.message)
         }
-        catch (err:any) {
+        catch (err: any) {
             message.warning(err)
         }
         setLoading(false)
@@ -579,7 +581,7 @@ const TemplatePage = (props: any) => {
             <Spin spinning={loading}>
                 <ReportTemplate height={windowHeight - 50} >
                     {/* 目录部分 */}
-                    <Catalog {...{ dataSource, setDataSource, collapsed, setCollapsed, contrl }}/>
+                    <Catalog {...{ dataSource, setDataSource, collapsed, setCollapsed, contrl }} />
                     {/* body */}
                     <ReportBodyContainer id={'report-body-container'} collapsed={collapsed}>
                         <ReportBody ref={bodyRef}>
@@ -646,10 +648,7 @@ const TemplatePage = (props: any) => {
 
                     <TemplateBar justify="end" align="middle">
                         <Space>
-                            {/* {
-                                route.name !== 'TemplateCreate' &&
-                                <Button onClick={hanldePreview}>预览</Button>
-                            } */}
+                            <Button onClick={() => setIsPreview(true)}>预览</Button>
                             {
                                 !dataSource.is_default &&
                                 <Access accessible={contrl}>
@@ -669,6 +668,12 @@ const TemplatePage = (props: any) => {
                     />
                 </ReportTemplate>
             </Spin>
+            {
+                isPreview &&
+                <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, top: 0, zIndex: 9999 }}>
+                    <Preview {...props} dataSet={dataSource} setIsPreview={setIsPreview} />
+                </div>
+            }
         </ReportTemplateContext.Provider>
     )
 }
