@@ -61,8 +61,8 @@ const WorkspaceBasicConfig: React.FC = () => {
 
     const setInitFormStatus = (data: any) => {
         const { show_name, name, description } = data
-        let regShowName = !(/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/g.test(show_name))
-        let regName = !(/^[a-z0-9_-]{1,20}$/.test(name))
+        let regShowName = !(/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/g.test(show_name))
+        let regName = !(/^[a-z0-9_-]{1,30}$/.test(name))
         let regDescription = !(/^([\w\W]){1,200}$/.test(description))
         setErrorReg({ regShowName, regName, regDescription })
     }
@@ -118,7 +118,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         label="显示名 "
                         name="show_name"
                         validateStatus={errorReg.regShowName ? 'error' : undefined}
-                        help={errorReg.regShowName ? '长度最多20位,仅允许包含汉字、字母、数字、下划线、中划线、点' : undefined}
+                        help={errorReg.regShowName ? '长度最多30位,仅允许包含汉字、字母、数字、下划线、中划线、点' : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -133,7 +133,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         label="名称 "
                         name="name"
                         validateStatus={errorReg.regName ? 'error' : undefined}
-                        help={errorReg.regName ? '只允许英文小写、下划线和数字，最多20个字符' : undefined}
+                        help={errorReg.regName ? '只允许英文小写、下划线和数字，最多30个字符' : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"

@@ -17,6 +17,12 @@
     :global( .ant-table-thead .ant-table-cell ) {
         background: #EDEDED;
     }
+
+    :global {
+        .ant-table.ant-table-small.ant-table-empty {
+            margin: 0!important;
+        }
+    }
 }
 
 .result_info_table_row {
@@ -61,4 +67,12 @@
 
 .dir_icon {
     background-position: 0 -16px;
+}
+
+.resultCaseTableCls {
+    :global {
+        .expandedRowClassNameCls>td {
+            overflow: hidden;
+        }
+    }
 }

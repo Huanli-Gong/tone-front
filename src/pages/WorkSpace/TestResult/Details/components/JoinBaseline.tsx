@@ -13,6 +13,7 @@ import { requestCodeMessage } from '@/utils/utils'
 const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { ws_id } = useParams() as any
     const { test_type, server_provider, onOk, accessible } = props
+
     const [form] = Form.useForm()
     const [visible, setVisible] = useState(false)
     const [data, setData] = useState<any>({ suite_list: [], suite_data: [] })
@@ -32,7 +33,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { data: baselineList, loading, run: getRequestRun } = useRequest(
         () => queryBaselineList({
             ws_id,
-            test_type: 'functional',
+            test_type,
             server_provider
         }),
         {
@@ -46,8 +47,8 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         if (!name) return
         const { code } = await createBaseline({
             name,
-            server_provider: "aligroup",
-            test_type: "performance",
+            server_provider,
+            test_type,
             version: '',
             ws_id,
         })
@@ -58,7 +59,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const getBaselinePerfData = async () => {
         const { data, code } = await queryBaselineList({
             ws_id,
-            test_type: 'performance',
+            test_type,
             server_provider
         })
 
@@ -106,11 +107,13 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .validateFields()
             .then(
                 async (values: any) => {
+                    console.log(values)
+                    // const { baseline_id } = values
                     if (data.suite_list || data.suite_data) {
                         if (data.suite_list.length || data.suite_data.length) {
                             const baseline_id = values.baseline_id[0] || ''
                             const { suite_list, suite_data, job_id } = data
-                            const { code, msg } = await perfJoinBaselineBatch({ server_provider, ws_id, suite_list, suite_data, job_id, baseline_name: baseline_id, test_type: 'performance' })
+                            const { code, msg } = await perfJoinBaselineBatch({ server_provider, ws_id, suite_list, suite_data, job_id, baseline_name: baseline_id, test_type })
                             defaultOption(code, msg)
                             return
                         }
@@ -118,14 +121,14 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
                     if (test_type === 'functional') {
                         const { suite_id: test_suite_id, test_case_id, job_id: test_job_id, id } = data
-                        const { code, msg } = await createFuncsDetail({ ...values, server_provider, ws_id, test_job_id, test_suite_id, test_case_id, result_id: id, test_type: 'functional' })
+                        const { code, msg } = await createFuncsDetail({ ...values, server_provider, ws_id, test_job_id, test_suite_id, test_case_id, result_id: id, test_type })
                         defaultOption(code, msg)
                     }
                     else {
                         const { suite_id, test_case_id: case_id, job_id } = data
                         const baseline_id = values.baseline_id[0] || ''
-                        const { code, msg } = case_id ? await perfJoinBaseline({ server_provider, ws_id, job_id, suite_id, case_id, baseline_name: baseline_id, test_type: 'performance' }) :
-                            await perfJoinBaselineBatch({ server_provider, ws_id, job_id, suite_list: [suite_id], baseline_name: baseline_id, test_type: 'performance' })
+                        const { code, msg } = case_id ? await perfJoinBaseline({ server_provider, ws_id, job_id, suite_id, case_id, baseline_name: baseline_id, test_type }) :
+                            await perfJoinBaselineBatch({ server_provider, ws_id, job_id, suite_list: [suite_id], baseline_name: baseline_id, test_type })
                         defaultOption(code, msg)
                     }
                 }

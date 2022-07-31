@@ -118,6 +118,15 @@ export default (props: any) => {
                 render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
             },
             {
+                title: 'TSN',
+                dataIndex: 'tsn',
+                width: params.type == '0' ? 0 : 140,
+                ellipsis: {
+                    showTitle: false
+                },
+                render: (_: any, row: any) => <EllipsisPulic title={row.tsn} /> 
+            },
+            {
                 title: 'InstanceId',
                 dataIndex: 'instance_id',
                 width: params.type == '0' ? 0 : 140,

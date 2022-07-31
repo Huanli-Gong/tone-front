@@ -10,6 +10,8 @@ import { ReactComponent as TermIcon } from '@/assets/svg/TestReport/TestItem.svg
 import { ReactComponent as IconLink } from '@/assets/svg/icon_openlink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg'
 
+const prefix = "preview_"
+
 const Wrapper = styled(Row)`
     
 `
@@ -265,7 +267,7 @@ const TermItem: React.FC<any> = memo(
 
         return (
             <Term >
-                <TermTitle justify="space-between" id={`${field}-${rowkey}`} ref={title}>
+                <TermTitle justify="space-between" id={`${prefix}${field}-${rowkey}`} ref={title}>
                     <Typography.Text strong>
                         <Space align="start">
                             <TermIcon style={{ transform: 'translate(0px, 2px)' }} />
@@ -358,7 +360,7 @@ const PerformanceTest: React.FC<any> = ({ perf_item, perf_conf, field, is_defaul
                 perf_item.map(
                     (item: any, index: number) => (
                         item.is_group ?
-                            <Group id={`${field}-${item.rowkey}`} key={item.rowkey} ref={title}>
+                            <Group id={`${prefix}${field}-${item.rowkey}`} key={item.rowkey} ref={title}>
                                 <GroupTitle >
                                     <Space align="center">
                                         <GroupIcon style={{ transform: 'translate(0px, 1px)' }} />

@@ -103,7 +103,7 @@ export default forwardRef(
                     >
                         <Input autoComplete="off" placeholder="请输入" />
                     </Form.Item>
-                    <Form.Item label="内核包路径" name="kernel_link">
+                    <Form.Item label="kernel包路径" name="kernel_link">
                         <Input autoComplete="off" placeholder="请输入" />
                     </Form.Item>
                     <Form.Item label="devel包路径" name="devel_link">

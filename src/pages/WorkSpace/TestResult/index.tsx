@@ -715,21 +715,6 @@ export default (props: any) => {
         setFilter(!filter)
     }
 
-    const handleClear = () => {
-        setLeftSelectProjectList([])
-        setFormFieldsValue({ project: [], time: [] })
-        setFilterData({})
-        setFilterparmas({})
-        setUrlQuery(null)
-        setShareParmas(location.origin + location.pathname)
-        queryTestListTableData({ ...PAGE_DEFAULT_PARAMS, search: searchInp, tab })
-    }
-
-    const handleRefresh = (e: any) => {
-        e.stopPropagation()
-        queryTestListTableData()
-    }
-
     const hanldeClickShare = () => {
         const clipboard = new Clipboard('.test_analysis_copy_link', { text: () => shareParmas })
         clipboard.on('success', function (e: any) {
@@ -1228,13 +1213,11 @@ export default (props: any) => {
                         style={{ paddingBottom: tabMarginBottom }}
                     >
                         {
-
                             tabsKey.map(
                                 (item: any) => (
                                     <Tabs.TabPane
                                         key={item.key}
                                         tab={
-
                                             <div
                                                 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                                                 className={styles.result_tab_item}
@@ -1632,7 +1615,6 @@ export default (props: any) => {
                                     setIsloading={setIsloading}
                                 />
                         }
-
                     </div>
                 </Layout.Content>
                 <Modal

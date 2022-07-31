@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Layout, Tabs, Space, Avatar, Typography, Button, message, Input, Modal, Select, Checkbox, Row, Col, Form, AutoComplete, Popover, Card } from 'antd'
+import { Layout, Tabs, Space, Avatar, Typography, Button, message, Input, Modal, Select, Row, Col, Form, AutoComplete } from 'antd'
 import { queryMember, addWorkspaceMember, queryWorkspaceMemberCounts, queryWorkspaceMember } from '@/services/Workspace'
 import styles from './index.less'
 import TableComponent from './Components/Table'
@@ -7,6 +7,7 @@ import { roleList } from '@/pages/SystemConf/UserManagement/service'
 import { Access, useAccess } from 'umi'
 import { SingleTabCard } from '@/components/UpgradeUI';
 import { requestCodeMessage, switchUserRole } from '@/utils/utils';
+
 let timeout: any
 let timer: any
 export default (props: any) => {
@@ -17,11 +18,10 @@ export default (props: any) => {
     const [memberCounts, setMemberCounts] = useState<any>({
         all_count: 0,
         ws_owner: 0,
-        ws_admin:0,
+        ws_admin: 0,
         ws_test_admin: 0,
         ws_member: 0
     })
-    const [searchKey, setSearchKey] = useState('')
     const [memberList, setMemberList] = useState<any[]>([])
     const [options, setOptions] = useState<any>([])
     const [visible, setVisible] = useState(false)
@@ -30,7 +30,7 @@ export default (props: any) => {
     const [select, setSelect] = useState<any[]>([]);
     const [roleData, setRoleData] = useState<any[]>([]);
     const [form] = Form.useForm()
-        
+
     const getMemberList = async (name: string = '') => {
         const { data } = await queryMember({ keyword: name, scope: 'aligroup' })
         if (timeout) {
@@ -42,11 +42,13 @@ export default (props: any) => {
             setMemberList(data)
         }, 300)
     }
+
     const getRoleWsList = async () => {
         const { data } = await roleList({ role_type: 'workspace', ws_id, is_filter: '1' })
         data && setRoleData(data.list)
     };
-    useEffect(() =>{getRoleWsList()},[ws_id])
+
+    useEffect(() => { getRoleWsList() }, [ws_id])
 
     const getRoleList = async () => {
         const { data } = await roleList({ role_type: 'workspace', ws_id })
@@ -60,8 +62,6 @@ export default (props: any) => {
             clearTimeout(timer)
         }
     }, [visible])
-
-    
 
     const replaceWord = (title: string, word: string) => title.replace(new RegExp(`(${word})`), `<span style="color:#1890ff">$1</span>`)
 
@@ -83,19 +83,16 @@ export default (props: any) => {
         )
     )
 
-    const handleSearchWorkspaceMember = async (name: string) => {
-        setSearchKey(name)
-        let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
-
-        if (timer) {
-            clearTimeout(timer)
-            timer = null
-        }
-
-        timer = setTimeout(() => {
+    const handleSearchWorkspaceMember = async(name: string) => {
+        if(name){
+            let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
             setOptions(data ? searchResult(data, name) : [])
-        }, 300);
+        }
     }
+
+    const onSelect = (value: string) => {
+        setKeyword(value)
+    };
 
     const handleOk = () => {
         if (padding) return;
@@ -118,7 +115,7 @@ export default (props: any) => {
                         setRefresh(!refresh)
                     }
                     else {
-                        requestCodeMessage( data.code , data.msg )
+                        requestCodeMessage(data.code, data.msg)
                     }
                 }
             )
@@ -150,10 +147,9 @@ export default (props: any) => {
 
     useEffect(() => {
         getMemberCounts()
-    }, [role,refresh])
+    }, [role, refresh])
 
     const handleChangeTab = (val: string) => {
-        setSearchKey('')
         setKeyword('')
         setRole(val)
     }
@@ -164,26 +160,11 @@ export default (props: any) => {
                 extra={
                     <Space>
                         <AutoComplete
-                            dropdownMatchSelectWidth={200}
+                            dropdownMatchSelectWidth={true}
                             style={{ width: 200 }}
-                            showSearch
                             options={options}
-                            onFocus={(evt: any) => {
-                                if (evt.target.value) {
-                                    handleSearchWorkspaceMember(evt.target.value)
-                                }
-                                else {
-                                    setSearchKey(evt.target.value)
-                                    setKeyword(evt.target.value)
-                                }
-                            }}
-                            value={searchKey}
+                            onSelect={onSelect}
                             onSearch={handleSearchWorkspaceMember}
-                            onChange={handleSearchWorkspaceMember}
-                            onSelect={(val:any) => {
-                                setKeyword(val)
-                                setSearchKey(val)
-                            }}
                         >
                             <Input.Search
                                 placeholder="搜索用户"
@@ -214,7 +195,7 @@ export default (props: any) => {
                                 }
                             </Tabs.TabPane>
                         )
-                        })
+                    })
                     }
                 </Tabs>
             </SingleTabCard>
@@ -227,8 +208,8 @@ export default (props: any) => {
                     onCancel={handleCancel}
                     maskClosable={false}
                 >
-                    <Form 
-                        layout="vertical" 
+                    <Form
+                        layout="vertical"
                         form={form}
                     >
                         <Form.Item label="用户" name="emp_id_list"

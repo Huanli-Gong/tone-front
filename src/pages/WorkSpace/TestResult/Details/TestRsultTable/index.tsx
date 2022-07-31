@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
 import { queryTestResult } from '../service'
-import { Space, Table, Row, Button, message, Popover, Menu, Dropdown, Tooltip } from 'antd'
+import { Space, Row, Button, Menu, Dropdown } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { matchTestType } from '@/utils/utils'
@@ -44,12 +44,10 @@ const TestResultTable: React.FC<any> = (props) => {
     const { caseResult = {}, test_type = '功能', provider_name = '', creator } = props
     const defaultParams = { state: '', job_id }
     const initialData: any[] = []
-    const { initialState } = useModel('@@initialState');
     const testType = matchTestType(test_type)
 
     const serverProvider = ~provider_name.indexOf('云上') ? 'aliyun' : 'aligroup'
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
-    // ??
     const [openAllRows, setOpenAllRows] = useState(false)
     const [suiteCaseSelectKeys, setSuiteCaseSelectKeys] = useState<any>([])
     const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
@@ -59,6 +57,7 @@ const TestResultTable: React.FC<any> = (props) => {
     // const [openAllExpand, setOpenAllExpand] = useState(false)
     const access = useAccess()
     const [refreshCaseTable, setRefreshCaseTable] = useState(false)
+    const [isExpandAll, setIsExpandAll] = useState(false)
     // 展开指标级的标志
     const [indexExpandFlag, setIndexExpandFlag] = useState(false)
 
@@ -270,8 +269,15 @@ const TestResultTable: React.FC<any> = (props) => {
     }
 
     const handleOpenAll = () => {
-        setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
-        setOpenAllRows(true)
+        setOpenAllRows(!openAllRows)
+        setIndexExpandFlag(!indexExpandFlag)
+        if (!openAllRows) {
+            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
+            setIsExpandAll(true)
+        } else {
+            setExpandedRowKeys([])
+            setIsExpandAll(false)
+        }
     }
 
     // conf级
@@ -282,28 +288,21 @@ const TestResultTable: React.FC<any> = (props) => {
             // case2. 展开状态标志
             setOpenAllRows(true)
         } else {
-            // case1.收起 & 收起子级表格
             setExpandedRowKeys([])
             setIndexExpandFlag(false)
-            // case2.收起的状态标志
             setOpenAllRows(false)
         }
     }
-
     // index级
     const indexExpandClick = () => {
-        // step1.修改标志状态
-        setIndexExpandFlag(!indexExpandFlag)
         if (!indexExpandFlag) {
-            // case1.展开，收集所有行号
             setOpenAllRows(true)
+            setIndexExpandFlag(true)
             setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
-            // case2.控制子级表格
-            // 子级表格会通过监听传入的状态做出动作
+            setIsExpandAll(true)
         } else {
-            // case1. 收起
-            // case2.控制子级表格
-            // 子级表格会通过监听传入的状态做出动作
+            setIndexExpandFlag(false)
+            setIsExpandAll(false)
         }
     }
 
@@ -311,14 +310,16 @@ const TestResultTable: React.FC<any> = (props) => {
         run({ ...defaultParams, state })
         handleOpenAll()
     }
-    useEffect(()=> {
-        if(caseResult.count < 50){
+    useEffect(() => {
+        if (caseResult.count < 50) {
             setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
             // case2. 展开状态标志
             setOpenAllRows(true)
+            setIndexExpandFlag(true)
+            setIsExpandAll(true)
         }
-    },[ caseResult,dataSource ])
-    
+    }, [caseResult, dataSource])
+
     const rowSelection = testType === 'performance' ? {
         columnWidth: 40,
         selectedRowKeys,
@@ -327,7 +328,6 @@ const TestResultTable: React.FC<any> = (props) => {
         }
     } : undefined
 
-    // 
     const handleCaseSelect = (suite_id: any, case_list: any) => {
         let suiteData: any = []
         if (case_list.length > 0) {
@@ -348,45 +348,42 @@ const TestResultTable: React.FC<any> = (props) => {
         }
         setSuiteCaseSelectKeys(uniqBy(suiteData, 'suite_id'))
     }
-
+    const childName = ['functional', 'business_functional', 'business_business'].includes(testType) ? 'Case' : '指标'
     const expandBtnText = openAllRows ? '收起所有Conf' : '展开所有Conf'
-    const expandIndexBtnText = indexExpandFlag ? '收起所有指标' : '展开所有指标'
+    const expandIndexBtnText = indexExpandFlag ? `收起所有${childName}` : `展开所有${childName}`
 
     return (
         <>
-            <div style={{ padding: "20px 20px" }}>
+            <div style={{ padding: "4px 20px 20px 20px" }}>
                 <Row justify="space-between" >
-                    {['functional', 'business_functional', 'business_business'].includes(testType) ?
-                        <Button onClick={handleOpenExpandBtn}>
-                            {openAllRows ? '收起所有Conf' : '展开所有Conf'}
-                        </Button>
-                        :
-                        <Space>
-                            <Dropdown.Button
-                                onClick={handleOpenExpandBtn}
-                                placement="bottomLeft"
-                                icon={<DownOutlined />}
-                                overlay={
-                                    <Menu>
-                                        <Menu.Item
-                                            key="1"
-                                            className={styles.expandConf}
-                                            onClick={handleOpenExpandBtn}
-                                        >
-                                            {expandBtnText}
-                                        </Menu.Item>
-                                        <Menu.Item
-                                            key="2"
-                                            className={styles.expandIndex}
-                                            onClick={indexExpandClick}
-                                        >
-                                            {expandIndexBtnText}
-                                        </Menu.Item>
-                                    </Menu>
-                                }
-                            >
-                                {openAllRows ? '收起所有' : '展开所有'}
-                            </Dropdown.Button>
+                    <Space>
+                        <Dropdown.Button
+                            onClick={handleOpenAll}
+                            placement="bottomLeft"
+                            icon={<DownOutlined />}
+                            overlay={
+                                <Menu>
+                                    <Menu.Item
+                                        key="1"
+                                        className={styles.expandConf}
+                                        onClick={handleOpenExpandBtn}
+                                    >
+                                        {expandBtnText}
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        key="2"
+                                        className={styles.expandIndex}
+                                        onClick={indexExpandClick}
+                                    >
+                                        {expandIndexBtnText}
+                                    </Menu.Item>
+                                </Menu>
+                            }
+                        >
+                            {openAllRows ? '收起所有' : '展开所有'}
+                        </Dropdown.Button>
+                        {
+                            ['performance', 'business_performance'].includes(testType) &&
                             <Access accessible={access.WsTourist()}>
                                 <Access
                                     accessible={access.WsMemberOperateSelf(creator)}
@@ -403,8 +400,8 @@ const TestResultTable: React.FC<any> = (props) => {
                                     </Space>
                                 </Access>
                             </Access>
-                        </Space>
-                    }
+                        }
+                    </Space>
                     <Space>
                         {
                             states.map(
@@ -466,7 +463,9 @@ const TestResultTable: React.FC<any> = (props) => {
                                 provider_name={provider_name}
                                 testType={testType}
                                 job_id={job_id}
-                                openAllRows={indexExpandFlag}
+                                openAllRows={openAllRows}
+                                setIndexExpandFlag={setIndexExpandFlag}
+                                isExpandAll={isExpandAll}
                                 state={params[0].state}
                                 suiteSelect={selectedRowKeys}
                                 onCaseSelect={handleCaseSelect}

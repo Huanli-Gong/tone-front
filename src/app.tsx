@@ -9,6 +9,8 @@ import defaultSettings from '../config/defaultSettings';
 import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { deepObject } from '@/utils/utils';
 
+import zhCn from "antd/lib/locale/zh_CN"
+
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
 
 const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
@@ -81,6 +83,14 @@ export const layout = ({
         menuRender: false,
         headerRender: props => <Headers {...props} />,
         onMenuHeaderClick: () => false,
+        childrenRender: (dom: JSX.Element) => (
+            <ConfigProvider
+                locale={zhCn}
+                input={{ autoComplete: 'off' }}
+            >
+                {dom}
+            </ConfigProvider>
+        ),
         disableMobile: true,
         ...initialState?.settings,
     };

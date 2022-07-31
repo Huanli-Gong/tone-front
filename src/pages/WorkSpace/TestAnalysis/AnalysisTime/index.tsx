@@ -8,7 +8,9 @@ import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.sv
 import Clipboard from 'clipboard'
 import { stringify } from 'querystring';
 
-export default (props: any) => {
+const tabData = [{ key: 'performance', tab: '性能分析' }, { key: 'functional', tab: '功能分析' }]
+
+const AnalysisTime: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
     const { query } = useLocation() as any
     const { route } = props
@@ -22,17 +24,6 @@ export default (props: any) => {
     const [showType, setShowType] = useState(query.show_type || 'pass_rate')
     const [loading, setLoading] = useState(false)
     const [instance, setInstance] = useState<any>(null)
-
-    useEffect(() => {
-        const clipboard = new Clipboard('.test_analysis_copy_link')
-        clipboard.on('success', function (e) {
-            message.success('复制成功')
-            e.clearSelection();
-        })
-        return () => {
-            clipboard.destroy()
-        }
-    }, [])
 
     const handleProviderChange = ({ target }: any) => {
         setProvider(target.value)
@@ -49,24 +40,31 @@ export default (props: any) => {
         setInstance(null)
     }
 
-    const tabData = [{ key: 'performance', tab: '性能分析' }, { key: 'functional', tab: '功能分析' }]
-
-    const targetCopyLink = useMemo(() => {
-        if (instance) {
-            const { origin, pathname } = window.location
-            return origin + pathname + '?' + stringify({ test_type: testType, show_type: showType, ...instance })
-        }
-        return ''
-    }, [instance, testType, showType])
+    const copy = () => {
+        const dom = document.createElement("a")
+        dom.style.width = "0px";
+        dom.style.height = "0px"
+        document.body.appendChild(dom)
+        const { origin, pathname } = window.location
+        const isFunc = testType === "functional"
+        const text = origin + pathname + '?' + stringify({
+            test_type: testType,
+            [isFunc ? "show_type" : "provider_env"]: isFunc ? showType : provider,
+            ...instance
+        })
+        const cp = new Clipboard(dom, {
+            text: () => text
+        })
+        cp.on("success", () => {
+            message.success("已复制到剪切板！")
+        })
+        dom.click()
+        cp.destroy()
+        document.body.removeChild(dom)
+    }
 
     return (
         <Layout.Content style={{ minHeight: layoutHeight - 40, overflow: 'auto', marginBottom: 20, background: '#fff' }}>
-            <div
-                style={{ height: 0, width: 0, position: "absolute", left: -111111, zIndex: -999 }}
-                className="copy_link_target"
-            >
-                {targetCopyLink}
-            </div>
             <Row style={{ background: '#fff' }}>
                 <Tabs
                     activeKey={testType}
@@ -75,7 +73,11 @@ export default (props: any) => {
                     onTabClick={handleTabClick}
                     tabBarExtraContent={
                         <Row justify="center" align="middle">
-                            <CopyLink className="test_analysis_copy_link" data-clipboard-target=".copy_link_target" style={{ cursor: 'pointer', marginRight: 20 }} />
+                            <CopyLink
+                                className="test_analysis_copy_link"
+                                style={{ cursor: 'pointer', marginRight: 20 }}
+                                onClick={copy}
+                            />
                             {
                                 testType === 'performance' ?
                                     <Radio.Group value={provider} style={{ marginRight: 20 }} onChange={handleProviderChange}>
@@ -113,3 +115,5 @@ export default (props: any) => {
         </Layout.Content>
     )
 }
+
+export default AnalysisTime

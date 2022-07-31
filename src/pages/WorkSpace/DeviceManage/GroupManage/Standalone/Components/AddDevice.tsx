@@ -23,7 +23,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const [tagList, setTagList] = useState([])
     const [form] = Form.useForm()
     /* const [ members , setMembers ] = useState([]) */
-    const [ips, setIps] = useState({ success: [], errors: [] })
+    const [ips, setIps] = useState<any>({ success: [], errors: [] })
     const [validateMsg, setValidateMsg] = useState<any>('');
     const [padding, setPadding] = useState(false)
     const [loading, setLoading] = useState(true)
@@ -240,7 +240,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             setVals(resultIp)
             form.setFieldsValue({ ips: resultIp })
             const channel_type = form.getFieldValue('channel_type')
-            if (channel_type) {
+            if (channel_type && !BUILD_APP_ENV) {
                 handleIpsCheck(channel_type)
             }
         }
@@ -325,7 +325,11 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                             name="ips"
                             validateStatus={ips.errors.length > 0 ? 'error' : undefined}
                             help={ips.errors.length > 0 ? validateMsg : undefined}
-                            rules={[{ required: true }]}
+                            rules={[{ 
+                                required: true,
+                                pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
+                                message:'请输入正确的机器IP!'
+                            }]}
                         >
                             <Select
                                 mode="multiple"

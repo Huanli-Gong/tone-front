@@ -240,7 +240,7 @@ const routes = [
 						path: '/ws/:ws_id/test_result',
 						hideInMenu: true,
 						name: 'TestResult',
-						component: '@/pages/WorkSpace/TestResult',
+						component: "@/pages/WorkSpace/TestResult/JobList"
 					},
 					{
 						path: '/ws/:ws_id/test_result/:id',

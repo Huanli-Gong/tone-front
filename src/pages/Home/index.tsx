@@ -182,7 +182,7 @@ export default (): React.ReactNode => {
 
         if (!user_id && !record.is_public) {
             if (BUILD_APP_ENV === 'openanolis') {
-                return location.replace(login_url)
+                return history.push(login_url)
             }
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }

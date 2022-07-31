@@ -67,20 +67,13 @@ const ReportTestEnv = () => {
                                 ))
                             })
                         }
-                        <MachineGroupL>RPM</MachineGroupL>
+                        <MachineGroupL>Kernel</MachineGroupL>
                         {
                             Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return  server.server_info.concat(len).map((item: any, idx: number) => (
+                                return server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            autoAdjustOverflow={false}
-                                            title={<div>{item.rpm?.map((i: any, idx: number) => (<span key={idx}>{i}<br /></span>))}</div>}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                        >
-                                            <span className="enviroment_child">{item.rpm || '-'}</span>
-                                        </Tooltip>
+                                        <span>{item.kernel || '-'}</span>
                                     </MachineGroupR>
                                 ))
                             })
@@ -97,6 +90,24 @@ const ReportTestEnv = () => {
                                             overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
                                             title={item.gcc}>
                                             <span className="enviroment_child">{item.gcc || '-'}</span>
+                                        </Tooltip>
+                                    </MachineGroupR>
+                                ))
+                            })
+                        }
+                        <MachineGroupL>RPM</MachineGroupL>
+                        {
+                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
+                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
+                                return  server.server_info.concat(len).map((item: any, idx: number) => (
+                                    i === idx && <MachineGroupR gLen={group} key={idx}>
+                                        <Tooltip
+                                            placement="bottomLeft"
+                                            autoAdjustOverflow={false}
+                                            title={<div>{item.rpm?.map((i: any, idx: number) => (<span key={idx}>{i}<br /></span>))}</div>}
+                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
+                                        >
+                                            <span className="enviroment_child">{item.rpm || '-'}</span>
                                         </Tooltip>
                                     </MachineGroupR>
                                 ))
