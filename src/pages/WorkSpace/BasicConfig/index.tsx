@@ -105,11 +105,10 @@ const WorkspaceBasicConfig: React.FC = () => {
         && _.get(detail, 'is_public') === _.get(firstDetail, 'is_public'))
 
     return (
-        <Layout.Content style={{ background: '#f5f5f5' }}>
+        <Layout.Content style={{ background: '#f5f5f5',overflowY:'auto' }}>
             <Row className={styles.row_box}>
                 <Form
                     {...layout}
-                    colon={true}
                     layout="vertical"
                     style={{ width: '100%' }}
                 >
@@ -119,7 +118,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         label="显示名 "
                         name="show_name"
                         validateStatus={errorReg.regShowName ? 'error' : undefined}
-                        help={errorReg.regShowName && '长度最多30位,仅允许包含汉字、字母、数字、下划线、中划线、点'}
+                        help={errorReg.regShowName ? '长度最多30位,仅允许包含汉字、字母、数字、下划线、中划线、点' : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -134,7 +133,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         label="名称 "
                         name="name"
                         validateStatus={errorReg.regName ? 'error' : undefined}
-                        help={errorReg.regName && '只允许英文小写、下划线和数字，最多30个字符'}
+                        help={errorReg.regName ? '只允许英文小写、下划线和数字，最多30个字符' : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -148,7 +147,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                     </Form.Item>
                     <Form.Item
                         validateStatus={errorReg.regDescription ? 'error' : undefined}
-                        help={errorReg.regDescription && '长度最多200位'}
+                        help={errorReg.regDescription ? '长度最多200位' : undefined}
                         label="介绍 "
                         name="description">
                         <SettingEdit
@@ -187,7 +186,6 @@ const WorkspaceBasicConfig: React.FC = () => {
             <Row className={styles.row_box}>
                 <Form
                     {...layout}
-                    colon={true}
                     style={{ width: '100%' }}
                 >
                     <PartDom text='Workspace信息' />
