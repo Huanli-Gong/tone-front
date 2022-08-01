@@ -13,7 +13,7 @@ import AddScripotDrawer from './components/DomianConf/AddScript'
 import { requestCodeMessage } from '@/utils/utils';
 import { useLocation } from 'umi';
 
-const SetDomain: React.FC<any> = (props, ref) => {
+const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { query }: any = useLocation()
 
     const { test_type } = query

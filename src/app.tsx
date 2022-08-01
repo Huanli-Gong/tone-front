@@ -15,7 +15,7 @@ const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' 
 
 const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
 
-const AD_WS_ID = "fgq5x4by"
+const AD_WS_ID = "qorjejwq"
 
 export async function getInitialState(): Promise<any> {
     const isShowAd = localStorage[`ad_str_${AD_WS_ID}_display`] ? undefined : AD_WS_ID
@@ -25,7 +25,7 @@ export async function getInitialState(): Promise<any> {
         refreshWorkspaceList: undefined,
         jobTypeList: [],
         authList: {},
-        hasAdWs: ["fgq5x4by"],
+        hasAdWs: [AD_WS_ID],
         wsAdShow: isShowAd
     };
 
@@ -54,7 +54,7 @@ export async function getInitialState(): Promise<any> {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState
             }
-            
+
             enterWorkspaceHistroy({ ws_id })  //
         }
 
