@@ -48,33 +48,33 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 						</Space>
 					</Checkbox.Group>
 				</Space>
-				<Divider style={{ margin: '10px 0' }} />
-				<div className={styles.confirm}>
-					<Button
-						size="small"
-						type="link"
-						onClick={() => {
-							confirm && confirm()
-							const params = val && val.join(',')
-							onConfirm(params)
-						}}
-					>
-						确定
-					</Button>
-					<Button
-						size="small"
-						type="text"
-						onClick={() => {
-							confirm && confirm()
-							setVal([])
-							onConfirm(undefined)
-							setAll(false)
-							setInit(false)
-						}}
-					>
-						重置
-					</Button>
-				</div>
+			</div>
+			<Divider style={{ margin: '10px 0' }} />
+			<div className={styles.confirm}>
+				<Button
+					size="small"
+					type="link"
+					onClick={() => {
+						confirm && confirm()
+						const params = val && val.join(',')
+						onConfirm(params)
+					}}
+				>
+					确定
+				</Button>
+				<Button
+					size="small"
+					type="text"
+					onClick={() => {
+						confirm && confirm()
+						setVal([])
+						onConfirm(undefined)
+						setAll(false)
+						setInit(false)
+					}}
+				>
+					重置
+				</Button>
 			</div>
 		</div>
 	);
