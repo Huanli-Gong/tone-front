@@ -120,13 +120,13 @@ const ListRow: React.FC<ListRowProps> = ({ title, state, result, colHover, rowHo
                 <Col span={14} className={cls(colHover && 'col-hover')}>
                     {title || '-'}
                 </Col>
-                <Col span={6}>
+                <Col span={4}>
                     {start_time || "-"}
                 </Col>
-                <Col span={2}>
+                <Col span={3}>
                     {state || '-'}
                 </Col>
-                <Col span={2}>
+                <Col span={3}>
                     {result || '-'}
                 </Col>
             </Row>
