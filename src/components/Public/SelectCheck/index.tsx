@@ -19,7 +19,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 	}
 	return (
 		<div className={styles.filter}>
-			<div style={{ display: 'flex', flexDirection: 'column', maxHeight: 280, overflow: "auto" }}>
+			<div style={{ display: 'flex', flexDirection: 'column', maxHeight: 280, overflow: "auto", gap: 4 }}>
 				<Checkbox
 					indeterminate={init}
 					className={styles.domain}
@@ -29,7 +29,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 					全选
 				</Checkbox>
 				<Checkbox.Group onChange={handleDomainRadio} value={val}>
-					<Space direction="vertical" size={0}>
+					<Space direction="vertical" size={4}>
 						{
 							list.map((item: any) => {
 								return <Checkbox className={styles.domain} value={item.id} key={item.id}>{item.name}</Checkbox>
@@ -47,8 +47,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 						confirm()
 						const params = val && val.join(',')
 						onConfirm(params)
-					}
-					}
+					}}
 				>
 					确定
 				</Button>
@@ -62,8 +61,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 						onConfirm(undefined)
 						setAll(false)
 						setInit(false)
-					}
-					}
+					}}
 				>
 					重置
 				</Button>
