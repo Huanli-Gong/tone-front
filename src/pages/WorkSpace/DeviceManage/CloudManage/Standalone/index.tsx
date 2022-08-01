@@ -140,7 +140,13 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: (text: any, row: any) => <ServerLink val={text} provider={'云上机器'} />
+                render: (text: any, row: any) => (
+                    <ServerLink
+                        val={text}
+                        provider={"aliyun"}
+                    // provider={'云上机器'}
+                    />
+                )
             },
             {
                 title: 'SN',
@@ -386,7 +392,7 @@ export default (props: any) => {
                 render: (_: any, row: any) =>
                     <Space>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}>详情</Button>
-                        <Access 
+                        <Access
                             accessible={access.WsMemberOperateSelf(row.owner)}
                             fallback={
                                 <Space>

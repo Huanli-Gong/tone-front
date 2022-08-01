@@ -44,7 +44,7 @@ export default forwardRef(
                 cancelText="取消"
             >
                 <Row>
-                    <b>ServerProvider</b>
+                    <b>测试环境</b>
                     <span></span>
                 </Row>
                 <Row>

@@ -6,7 +6,7 @@ import settingDrawer from './zh-CN/settingDrawer';
 import settings from './zh-CN/settings';
 
 export default {
-  'navbar.lang' : 'En',
+  'navbar.lang': 'En',
   //
   //
   'Drawer.btn.close': '取消',

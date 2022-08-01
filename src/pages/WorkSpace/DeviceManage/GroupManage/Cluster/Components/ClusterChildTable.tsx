@@ -94,12 +94,19 @@ export default (props: any) => {
             requestCodeMessage(res.code, res.msg)
         }
     }
+
     const columns: any = [
         {
             title: 'IP',
             width: 170,
             fixed: 'left',//TreeIcon
-            render: (record: any) => <ServerLink val={record.test_server.ip} provider={'内网机器'} />
+            render: (record: any) => (
+                <ServerLink
+                    provider={"aligroup"}
+                    val={record.test_server.ip}
+                // provider={'内网机器'}
+                />
+            )
         },
         {
             title: 'SN',
@@ -107,7 +114,13 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (record: any) => <ServerLink val={record.test_server.sn} provider={'内网机器'} />
+            render: (record: any) => (
+                <ServerLink
+                    provider={"aligroup"}
+                    val={record.test_server.sn}
+                // provider={'内网机器'} 
+                />
+            )
         },
         {
             title: 'TSN',
@@ -197,10 +210,10 @@ export default (props: any) => {
             fixed: 'right',
             width: 220,
             align: 'center',
-            render: (_: any,row:any) => (
+            render: (_: any, row: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>详情</Button>
-                    <Access 
+                    <Access
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>

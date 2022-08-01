@@ -129,7 +129,7 @@ export default (props: any) => {
             render: (_: string) => switchTestType(_)
         },
         {
-            title: 'ServerProvider',
+            title: '测试环境',
             dataIndex: 'server_type',
             render: (_: string) => switchServerType(_)
         },

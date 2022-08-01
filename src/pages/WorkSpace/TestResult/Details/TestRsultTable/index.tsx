@@ -41,12 +41,11 @@ const businessBusinessStates = [
 
 const TestResultTable: React.FC<any> = (props) => {
     const { id: job_id, ws_id } = useParams() as any
-    const { caseResult = {}, test_type = '功能', provider_name = '', creator } = props
+    const { caseResult = {}, test_type = '功能', provider_name: serverProvider = '', creator } = props
     const defaultParams = { state: '', job_id }
     const initialData: any[] = []
     const testType = matchTestType(test_type)
 
-    const serverProvider = ~provider_name.indexOf('云上') ? 'aliyun' : 'aligroup'
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [openAllRows, setOpenAllRows] = useState(false)
     const [suiteCaseSelectKeys, setSuiteCaseSelectKeys] = useState<any>([])
@@ -460,7 +459,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                 ws_id={ws_id}
                                 creator={creator}
                                 server_provider={serverProvider}
-                                provider_name={provider_name}
+                                provider_name={serverProvider}
                                 testType={testType}
                                 job_id={job_id}
                                 openAllRows={openAllRows}

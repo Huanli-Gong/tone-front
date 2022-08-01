@@ -3,6 +3,7 @@ import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { createBaseline, updateBaseline } from '../services'
 import styles from './index.less'
 import { useParams } from 'umi'
+import { aligroupServer, aliyunServer } from '@/utils/utils'
 
 export default forwardRef(
     (props: any, ref: any) => {
@@ -54,7 +55,8 @@ export default forwardRef(
         }
 
         const routeName = window.location.pathname.split('baseline/')[1];
-        const manageType = routeName === 'group' ? '内网环境' : '云上环境';
+        const manageType = `${routeName === "group" ? aligroupServer : aliyunServer}环境`
+        // const manageType = routeName === 'group' ? '内网环境' : '云上环境';
         const baselineType = props.baselineType === 'functional' ? '功能' : ' 性能';
         const serverProvider = routeName === 'group' ? 'aligroup' : 'aliyun';
         const testType = props.baselineType === 'functional' ? 'functional' : 'performance';
@@ -99,7 +101,7 @@ export default forwardRef(
             >
                 <div className={styles.server_provider}>
                     <Space>
-                        <Typography.Text className={styles.script_right_name} strong={true}>ServerProvider</Typography.Text>
+                        <Typography.Text className={styles.script_right_name} strong={true}>测试环境</Typography.Text>
                         <Typography.Text>{manageType}</Typography.Text>
                     </Space>
                 </div>
@@ -122,7 +124,7 @@ export default forwardRef(
                         label="基线名称"
                         name="name"
                         validateStatus={(!nameStatus || !queryStatus) && 'error' || ''}
-                        help={(!nameStatus && `基线名称不能为空`) || (!queryStatus && `基线名称已存在`)}
+                        help={(!nameStatus ? `基线名称不能为空` : undefined) || (!queryStatus ? `基线名称已存在` : undefined)}
                         rules={[{ required: true }]}
                     >
                         <Input

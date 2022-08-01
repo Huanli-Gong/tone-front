@@ -5,7 +5,7 @@ import { Tooltip } from 'antd';
 import styled from 'styled-components';
 interface ServerType {
     val: string,
-    provider: string,
+    provider: "aligroup" | "aliyun",
     islink?: boolean;
 }
 const TextWarp = styled.div`
@@ -28,7 +28,7 @@ const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => 
     }
 
     const handleIpHerf = async () => {
-        if (provider === '云上机器') {
+        if (provider === "aliyun") {
             const { data, code, msg } = await querySeverLink({ ip: val })
             if (code === 200) {
                 const win: any = window.open("");
@@ -43,7 +43,7 @@ const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => 
             // setTimeout(function () { win.location.href = href })
         }
     }
-    const flag = (BUILD_APP_ENV && provider === '内网机器') || !islink
+    const flag = (BUILD_APP_ENV && provider === "aligroup") || !islink
 
     const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
         : (

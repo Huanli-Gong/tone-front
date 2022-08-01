@@ -9,7 +9,7 @@ import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
 import BaselineDetail from './BaselineDetail'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import _ from 'lodash';
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, aligroupServer, aliyunServer } from '@/utils/utils';
 import { useClientSize } from '@/utils/hooks'
 import { Access, useAccess } from 'umi'
 
@@ -25,8 +25,8 @@ export default (props: any) => {
     const PAGE_DEFAULT_PARAMS: any = {
         server_provider: serverProvider,
         test_type: baselineType,
-        page_size: 20, 
-        page_num: 1, 
+        page_size: 20,
+        page_num: 1,
         ws_id
     }
 
@@ -55,8 +55,8 @@ export default (props: any) => {
     const handleCurrentChange = (item: any) => {
         setCurrent(item)
     }
-    
-    
+
+
     const baselineData = useMemo(() => {
         return data.data && Array.isArray(data.data) ? data.data : []
     }, [data])
@@ -96,13 +96,13 @@ export default (props: any) => {
             window.removeEventListener('click', fn, false)
         }
     }, []);
-    
+
     useEffect(() => {
-        run({ ...params,test_type: baselineType })
+        run({ ...params, test_type: baselineType })
         setSearch('')
         setCurrent({})
         setFilterVisible(false)
-        setParams({ ...params,test_type: baselineType })
+        setParams({ ...params, test_type: baselineType })
     }, [baselineType])
 
     const handleChange = (page_num: number) => {
@@ -184,7 +184,8 @@ export default (props: any) => {
     )
 
     let server_provider = serverProvider || '--'
-    server_provider = server_provider === 'aligroup' ? '内网环境' : '云上环境'
+    server_provider = server_provider === "aligroup" ? aligroupServer : aliyunServer
+    // server_provider = server_provider === 'aligroup' ? '内网环境' : '云上环境'
     const baelineTotal = data && data.total ? data.total : 0
 
     const clientSize = useClientSize()
@@ -243,12 +244,12 @@ export default (props: any) => {
                                             <Tooltip title={item.name} placement="right" overlayStyle={{ wordBreak: 'break-all' }}>
                                                 <Typography.Text className={styles.baseline_name}>{item.name}</Typography.Text>
                                             </Tooltip>
-                                            <Access 
+                                            <Access
                                                 accessible={access.WsMemberOperateSelf(item.creator)}
                                                 fallback={
                                                     <MinusCircleOutlined
                                                         className={hover === item.id ? styles.remove_active : styles.remove}
-                                                        onClick={()=> AccessTootip()}
+                                                        onClick={() => AccessTootip()}
                                                     />
                                                 }
                                             >
@@ -302,7 +303,7 @@ export default (props: any) => {
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong style={{ minWidth: 118 }}>ServerProvider：</Typography.Text>
+                                    <Typography.Text className={styles.script_right_name} strong >测试环境：</Typography.Text>
                                     <EllipsisPulic title={baselineData.length ? server_provider : '-'} style={{ width: 230 }} />
                                 </div>
                             </Col>

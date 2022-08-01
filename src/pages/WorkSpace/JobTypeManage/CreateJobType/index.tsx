@@ -9,7 +9,7 @@ import { RectSelect } from './components/RectSelect'
 import PreviewComponent from './components/Preview'
 import Breadcrumb from 'antd/es/breadcrumb'
 import { SingleTabCard } from '@/components/UpgradeUI'
-import { requestCodeMessage } from '@/utils/utils'
+import { aligroupServer, aliyunServer, requestCodeMessage } from '@/utils/utils'
 
 const { document }: any = window
 
@@ -310,10 +310,16 @@ export default (props: any) => {
                     >
                         <Input autoComplete="off" placeholder="请输入类型名称" style={{ width: 500 }} />
                     </Form.Item>
-                    <Form.Item label="ServerProvider" initialValue={"aliyun"} name="server_type">
+                    <Form.Item label="测试环境" initialValue={"aliyun"} name="server_type">
                         <Radio.Group onChange={handleServerChange}>
-                            <Radio value="aligroup">内网环境</Radio>
-                            <Radio value="aliyun">云上环境</Radio>
+                            <Radio value="aligroup">
+                                {aligroupServer}
+                            </Radio>
+                            <Radio value="aliyun">
+                                {aliyunServer}
+                            </Radio>
+                            {/* <Radio value="aligroup">内网环境</Radio>
+                            <Radio value="aliyun">云上环境</Radio> */}
                         </Radio.Group>
                     </Form.Item>
 

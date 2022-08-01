@@ -3,7 +3,6 @@ import { Tabs, Button } from 'antd';
 import Standalone from './Standalone'
 import Aligroup from './Aligroup'
 import { TabCard } from '@/components/UpgradeUI';
-
 /**
  * 机器管理 - 云上机器
  */
@@ -21,8 +20,10 @@ export default (props: any) => {
         <TabCard
             title={
                 <Tabs defaultActiveKey="1" onTabClick={handleTabClick}>
-                    <TabPane tab="云上单机" key={'1'} />
-                    <TabPane tab="云上集群" key={'2'} />
+                    <TabPane tab={`单机`} key={'1'} />
+                    <TabPane tab={`集群`} key={'2'} />
+                    {/* <TabPane tab="云上单机" key={'1'} />
+                    <TabPane tab="云上集群" key={'2'} /> */}
                 </Tabs>
             }
             extra={

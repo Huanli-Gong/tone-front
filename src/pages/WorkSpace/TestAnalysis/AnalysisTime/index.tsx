@@ -7,6 +7,7 @@ import TabPaneCard from './components/TabPaneCard'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from 'clipboard'
 import { stringify } from 'querystring';
+import { aligroupServer, aliyunServer } from '@/utils/utils';
 
 const tabData = [{ key: 'performance', tab: '性能分析' }, { key: 'functional', tab: '功能分析' }]
 

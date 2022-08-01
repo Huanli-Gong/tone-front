@@ -31,8 +31,10 @@ export default (props: any) => {
         <TabCard
             title={
                 <Tabs defaultActiveKey='standalone' onTabClick={ handleTabClick }>
-                    <Tabs.TabPane key="standalone" tab="内网单机" />
-                    <Tabs.TabPane key="cluster" tab="内网集群" />
+                    {/* <Tabs.TabPane key="standalone" tab={`内网单机`} />
+                    <Tabs.TabPane key="cluster" tab={`内网集群`} /> */}
+                    <Tabs.TabPane key="standalone" tab={`单机`} />
+                    <Tabs.TabPane key="cluster" tab={`集群`} />
                 </Tabs>
             }
             extra={
