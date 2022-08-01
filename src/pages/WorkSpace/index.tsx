@@ -18,6 +18,7 @@ const WorkspaceLayout = (props: any) => {
     const timeStampKey = useMemo(() => new Date().getTime(), [props.location])
     const intl = useIntl()
 
+    console.log(intl)
     const [openKeys, setOpenKeys] = useState<any>([])
 
     const realPath = pathname.replace(ws_id, ':ws_id')

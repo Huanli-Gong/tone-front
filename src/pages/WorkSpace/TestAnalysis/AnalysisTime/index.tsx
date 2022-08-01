@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Layout, Tabs, Row, Radio, message, Col } from 'antd';
 import styles from './index.less'
-import { useLocation } from 'umi';
+import { useLocation, useParams } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from 'clipboard'
@@ -88,12 +88,16 @@ const AnalysisTime: React.FC<any> = (props) => {
                                 {
                                     testType === 'performance' ?
                                         <Radio.Group value={provider} style={{ marginRight: 20 }} onChange={handleProviderChange}>
-                                            <Radio.Button style={{ width: 88, textAlign: 'center' }} value="aligroup">内网</Radio.Button>
-                                            <Radio.Button style={{ width: 88, textAlign: 'center' }} value="aliyun">云上</Radio.Button>
+                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="aligroup">
+                                                {aligroupServer}
+                                            </Radio.Button>
+                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="aliyun">
+                                                {aliyunServer}
+                                            </Radio.Button>
                                         </Radio.Group> :
                                         <Radio.Group value={showType} style={{ marginRight: 20 }} onChange={handleShowTypeChange}>
-                                            <Radio.Button style={{ width: 88, textAlign: 'center' }} value="pass_rate">通过率</Radio.Button>
-                                            <Radio.Button style={{ width: 90, textAlign: 'center' }} value="result_trend">结果趋势</Radio.Button>
+                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="pass_rate">通过率</Radio.Button>
+                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="result_trend">结果趋势</Radio.Button>
                                         </Radio.Group>
                                 }
                             </Row>

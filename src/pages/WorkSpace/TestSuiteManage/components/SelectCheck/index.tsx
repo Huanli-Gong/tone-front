@@ -29,50 +29,52 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 	return (
 		<div className={styles.filter}>
 			<div style={{ display: 'flex', flexDirection: 'column', maxHeight: 280, overflow: "auto" }}>
-				<Checkbox
-					indeterminate={init}
-					className={styles.domain}
-					onChange={onCheckAllChange}
-					checked={all}
-				>
-					全选
-				</Checkbox>
-				<Checkbox.Group onChange={handleDomainRadio} value={val}>
-					<Space direction="vertical" size={0}>
-						{
-							list.map((item: any) => {
-								return <Checkbox className={styles.domain} value={item.id} key={item.id}>{item.name}</Checkbox>
-							})
-						}
-					</Space>
-				</Checkbox.Group>
-			</Space>
-			<Divider style={{ margin: '10px 0' }} />
-			<div className={styles.confirm}>
-				<Button
-					size="small"
-					type="link"
-					onClick={() => {
-						confirm && confirm()
-						const params = val && val.join(',')
-						onConfirm(params)
-					}}
-				>
-					确定
-				</Button>
-				<Button
-					size="small"
-					type="text"
-					onClick={() => {
-						confirm && confirm()
-						setVal([])
-						onConfirm(undefined)
-						setAll(false)
-						setInit(false)
-					}}
-				>
-					重置
-				</Button>
+				<Space style={{ paddingLeft: 8, paddingRight: 8 }} direction={"vertical"} size={4}>
+					<Checkbox
+						indeterminate={init}
+						className={styles.domain}
+						onChange={onCheckAllChange}
+						checked={all}
+					>
+						全选
+					</Checkbox>
+					<Checkbox.Group onChange={handleDomainRadio} value={val}>
+						<Space direction="vertical" size={4}>
+							{
+								list.map((item: any) => {
+									return <Checkbox className={styles.domain} value={item.id} key={item.id}>{item.name}</Checkbox>
+								})
+							}
+						</Space>
+					</Checkbox.Group>
+				</Space>
+				<Divider style={{ margin: '10px 0' }} />
+				<div className={styles.confirm}>
+					<Button
+						size="small"
+						type="link"
+						onClick={() => {
+							confirm && confirm()
+							const params = val && val.join(',')
+							onConfirm(params)
+						}}
+					>
+						确定
+					</Button>
+					<Button
+						size="small"
+						type="text"
+						onClick={() => {
+							confirm && confirm()
+							setVal([])
+							onConfirm(undefined)
+							setAll(false)
+							setInit(false)
+						}}
+					>
+						重置
+					</Button>
+				</div>
 			</div>
 		</div>
 	);

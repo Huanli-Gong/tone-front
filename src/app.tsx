@@ -83,6 +83,7 @@ export const layout = ({
         menuRender: false,
         headerRender: props => <Headers {...props} />,
         onMenuHeaderClick: () => false,
+        /* @ts-ignore */
         childrenRender: (dom: JSX.Element) => (
             <ConfigProvider
                 locale={zhCn}
