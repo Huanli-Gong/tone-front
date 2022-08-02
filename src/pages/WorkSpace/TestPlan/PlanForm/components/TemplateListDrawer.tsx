@@ -2,10 +2,11 @@ import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'rea
 
 import { Drawer, Space, Button, Checkbox, Input, message, Row, Typography, Tooltip, Spin } from 'antd'
 import { queryTestTemplateList } from '@/pages/WorkSpace/TestTemplateManage/service'
-import { SearchOutlined } from '@ant-design/icons'
+import { CompassOutlined, SearchOutlined } from '@ant-design/icons'
 import { isArray } from 'lodash'
 
 import styles from './index.less'
+import { set } from 'immer/dist/internal'
 
 const TemplateListDrawer = (props: any, ref: any) => {
     const { ws_id, onOk } = props
@@ -46,7 +47,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
             setList([])
             return
         }
-        if(search.length === 0){
+        if (search.length === 0) {
             setAllList(data)
         }
         setList(data)
@@ -68,6 +69,8 @@ const TemplateListDrawer = (props: any, ref: any) => {
     }
 
     const handleOk = () => {
+        // const data = templates.concat(checkTemp)
+        // console.log('data',data)
         onOk({
             list: allList.filter((i: any) => {
                 if (templates.filter((t: any) => i.id === t).length > 0)
@@ -79,13 +82,19 @@ const TemplateListDrawer = (props: any, ref: any) => {
     }
 
     const hanldeTemplateListChange = (arr: any) => {
-        if (arr.length > 10) {
+        if (search.length === 0) {
+            arr = [...new Set(arr)]
+        } else {
+            arr = [...new Set([...templates, ...arr])]
+        }
+
+        if (arr.length >= 10) {
             message.warning('模版最多添加10个')
             return
         }
-        setTemplates([ ...templates, ...arr ])
+        setTemplates(arr)
     }
-
+    
     const handleReplace = (i: any) => {
         onOk({
             ...i,
@@ -118,8 +127,9 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 <Input
                     prefix={<SearchOutlined />}
                     value={search}
+                    onPressEnter={initList}
                     onChange={({ target }: any) => setSearch(target.value)}
-                    onBlur={initList}
+                // onBlur={initList}
                 />
                 <Spin spinning={loading} >
                     {
