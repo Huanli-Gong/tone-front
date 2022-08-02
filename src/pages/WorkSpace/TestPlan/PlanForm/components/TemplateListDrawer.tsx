@@ -1,12 +1,10 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
+import React, { useState, useImperativeHandle, forwardRef } from 'react'
 
 import { Drawer, Space, Button, Checkbox, Input, message, Row, Typography, Tooltip, Spin } from 'antd'
 import { queryTestTemplateList } from '@/pages/WorkSpace/TestTemplateManage/service'
-import { CompassOutlined, SearchOutlined } from '@ant-design/icons'
+import { SearchOutlined } from '@ant-design/icons'
 import { isArray } from 'lodash'
-
 import styles from './index.less'
-import { set } from 'immer/dist/internal'
 
 const TemplateListDrawer = (props: any, ref: any) => {
     const { ws_id, onOk } = props
@@ -53,11 +51,6 @@ const TemplateListDrawer = (props: any, ref: any) => {
         setList(data)
     }
 
-    // const { data: list, run } = useRequest(
-    //     () => queryTestTemplateList({ ws_id, enable: 'True', name: search, page_size: 100 }),
-    //     { initialData: [] }
-    // )
-
     const handleClose = () => {
         setVisible(false)
         setTemplates([])
@@ -69,8 +62,6 @@ const TemplateListDrawer = (props: any, ref: any) => {
     }
 
     const handleOk = () => {
-        // const data = templates.concat(checkTemp)
-        // console.log('data',data)
         onOk({
             list: allList.filter((i: any) => {
                 if (templates.filter((t: any) => i.id === t).length > 0)
@@ -129,7 +120,6 @@ const TemplateListDrawer = (props: any, ref: any) => {
                     value={search}
                     onPressEnter={initList}
                     onChange={({ target }: any) => setSearch(target.value)}
-                // onBlur={initList}
                 />
                 <Spin spinning={loading} >
                     {
