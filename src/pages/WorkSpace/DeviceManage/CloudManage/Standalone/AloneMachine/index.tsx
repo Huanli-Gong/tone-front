@@ -437,7 +437,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         if (res.code === 200) {
             message.success('操作成功');
             onSuccess(param.is_instance || type, id)
-            setBtnLoading(false)
             setVisible(false)
         } else if (res.code === 201) {
             let msg = res.msg
@@ -451,6 +450,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         } else {
             requestCodeMessage(res.code, res.msg)
         }
+        setBtnLoading(false)
     }
 
     const onSubmit = () => {
@@ -463,6 +463,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setChangeManufacturer('')
         setEditData({})
         setVisible(false)
+        setBtnLoading(false)
     }
     const tagRender = (props: any) => {
         const { label, closable, onClose } = props;
