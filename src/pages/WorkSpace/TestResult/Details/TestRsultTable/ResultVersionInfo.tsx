@@ -28,7 +28,6 @@ export default ({ test_case_id , suite_id } : any ) => {
         }
     )
     
-    console.log( data )
     return (
         <div style={{ background : '#fff' , padding : 20 }}>
             <Spin spinning={ loading } >
