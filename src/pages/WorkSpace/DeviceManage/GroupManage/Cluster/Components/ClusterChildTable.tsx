@@ -122,7 +122,7 @@ export default (props: any) => {
                 />
             )
         },
-        {
+        BUILD_APP_ENV && {
             title: 'TSN',
             width: 150,
             ellipsis: {

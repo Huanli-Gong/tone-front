@@ -85,6 +85,7 @@ const TestResultTable: React.FC<any> = (props) => {
         {
             title: 'Test Suite',
             dataIndex: 'suite_name',
+            width: 300,
             ...tooltipTd(),
         },
         ['functional', 'performance'].includes(testType) &&
@@ -427,6 +428,7 @@ const TestResultTable: React.FC<any> = (props) => {
                     pagination={false}
                     size="small"
                     loading={loading}
+                    scroll={{ x: '100%' }}
                     className={styles.result_expand_table}
                     style={{ marginTop: 20 }}
                     rowSelection={rowSelection}
