@@ -53,6 +53,7 @@ const TestResultTable: React.FC<any> = (props) => {
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
     const editRemarkDrawer: any = useRef(null)
+    const [filterData, setFilterData] = useState<any>([])
     // const [openAllExpand, setOpenAllExpand] = useState(false)
     const access = useAccess()
     const [refreshCaseTable, setRefreshCaseTable] = useState(false)
@@ -77,6 +78,13 @@ const TestResultTable: React.FC<any> = (props) => {
             defaultParams: [defaultParams]
         }
     )
+    const queryDefaultTestData = async() => {
+        const { data } = await queryTestResult({ state: '', job_id  })
+        setFilterData(data)
+    }
+    useEffect(()=> {
+        queryDefaultTestData()
+    },[])
 
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
@@ -307,7 +315,11 @@ const TestResultTable: React.FC<any> = (props) => {
 
     const handleStateChange = (state: string) => {
         run({ ...defaultParams, state })
-        handleOpenAll()
+        if(!!filterData.length){
+            setExpandedRowKeys(filterData.map(({ suite_id }: any) => suite_id))
+            setIsExpandAll(true)
+        }
+        // handleOpenAll()
     }
     useEffect(() => {
         if (caseResult.count < 50) {
@@ -440,6 +452,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                 if (tempList?.length === dataSource.length) {
                                     // 展开的状态标志
                                     setOpenAllRows(true)
+                                    setIndexExpandFlag(true)
                                 }
                             }
                             else {
