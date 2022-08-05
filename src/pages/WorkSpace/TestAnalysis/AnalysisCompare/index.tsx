@@ -333,7 +333,11 @@ export default (props: any) => {
     }
 
     const handleEditMark = () => {
-        editGroupMark.current?.show('编辑组名称', _.cloneDeep(currentEditGroup))
+        editGroupMark.current?.show(
+            '编辑组名称', 
+            _.cloneDeep(currentEditGroup), 
+            groupData[currentEditGroupIndex].members[0].product_version
+        )
     }
     const handleDelGroup = () => {
         let arr = _.cloneDeep(groupData)

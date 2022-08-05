@@ -1,4 +1,4 @@
-import { Drawer, Space, Button, Form, Select, Checkbox } from 'antd'
+import { Drawer, Space, Button, Form, AutoComplete } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import styles from './index.less'
 import _ from 'lodash'
@@ -9,43 +9,38 @@ export default forwardRef(
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
         const [title, setTitle] = useState('') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
-        const [nameStatus, setNameStatus] = useState(true)
-        const [markeVal, setMarkeVal] = useState<any>([])
-        const [funcsSelectVal,setFuncsSelectVal] = useState('')
+        const [options, setOptions] = useState<{ value: string }[]>([]);
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "编辑对比组", data: any = {}) => {
+                show: (title: string = "编辑对比组", data: any = {}, name:string = '') => {
                     setVisible(true)
                     setTitle(title)
                     let mark = _.get(data,'product_version') || ''
                     mark = mark.replace(/\n/g,' ')
                     data.product_version = mark
                     setEditer(data)
+                    setOptions([{ value: name }])
                     form.setFieldsValue({ name: [mark] })
-                    setMarkeVal([mark])
                 }
             })
         )
         const handleClose = () => {
             form.resetFields() // 重置一组字段到 initialValues
             setPadding(false)
-            setNameStatus(true)
             setVisible(false)
         }
-
-
-       
+        
+        const onSelect = (data: string) => {
+            form.setFieldsValue({ name: data })
+        };
+        
         const handleOk = () => {
-            if (!form.getFieldValue('name')) {
-                setNameStatus(false)
-                return
-            }
             setPadding(true)
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
                     const newEditer = editer
-                    newEditer.product_version = values.name[0]
+                    newEditer.product_version = values.name
                     props.onOk(newEditer)
                     form.setFieldsValue({ name: [] })
                     setPadding(false)
@@ -53,30 +48,7 @@ export default forwardRef(
                 })
                 .catch(err => console.log(err))
         }
-        const onChange = (list: any) => {
-            setMarkeVal([])
-            setNameStatus(true)
-            if(!list.length) {
-                form.setFieldsValue({ name: undefined })
-                return
-            }
-            const length = list.length
-            form.setFieldsValue({ name: [list[length - 1]] })
-            setMarkeVal(list[length - 1]);
-        }
-        const handlePerfBaselineSelectBlur = () => {
-            if(funcsSelectVal){
-                form.setFieldsValue({ name: [funcsSelectVal]})
-                setFuncsSelectVal('')
-                setMarkeVal([])
-                setNameStatus(true)
-            }
-        }
-        const handleFuncsBaselineSelectSearch = (val: any) => {
-            setFuncsSelectVal(val)
-            setNameStatus(true)
-        }
-
+        
         return (
             <Drawer 
                 maskClosable={ false }
@@ -95,7 +67,7 @@ export default forwardRef(
                     </div>
                 }
             >
-                <Form
+                {/* <Form
                     form={form}
                     layout="vertical" // 表单布局 ，垂直
                     validateTrigger={''}
@@ -122,6 +94,24 @@ export default forwardRef(
                                 )
                         }}
                         placeholder="请输入对比组名称"
+                        />
+                    </Form.Item>
+                </Form> */}
+                <Form
+                    form={form}
+                    layout="vertical" // 表单布局 ，垂直
+                    >
+                    <Form.Item
+                        label="对比组"
+                        name="name"
+                        rules={[{ required: true, message:'对比组名称不能为空' }]}
+                    >
+                        <AutoComplete
+                            allowClear={true}
+                            options={options}
+                            style={{ width: '98%' }}
+                            onSelect={onSelect}
+                            placeholder="请输入对比组名称"
                         />
                     </Form.Item>
                 </Form>
