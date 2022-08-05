@@ -12,6 +12,7 @@ import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
+import ServerLink from '@/components/MachineWebLink/index';
 
 const GroupTree: React.FC<any> = (props) => {
     const { cluster_id, width, onRef, size, top, handleOpenLogDrawer } = props
@@ -58,7 +59,16 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'name',
             width: 160,
             fixed: 'left',
-            render: (_: number, row: any) => <EllipsisPulic title={row.name} />
+            render: (_: any, row: any) => (
+                instance ?
+                <ServerLink
+                    val={_}
+                    param={row.id}
+                    provider={"aliyun"}
+                    isClick={access.IsAdmin()}
+                />
+                : <EllipsisPulic title={row.name} />
+            )
         },
         instance && {
             title: 'SN',

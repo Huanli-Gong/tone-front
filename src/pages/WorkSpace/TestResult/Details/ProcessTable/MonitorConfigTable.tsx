@@ -1,14 +1,15 @@
-import { Card, Table, Tooltip } from 'antd'
+import { Card, Row, Table, Tooltip } from 'antd'
 import React, { useEffect } from 'react'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
-import { useRequest } from 'umi';
+import { useRequest, useAccess } from 'umi';
 import ResizeTable from '@/components/ResizeTable'
 import ServerLink from '@/components/MachineWebLink/index';
 
 export default ({ job_id , refresh = false, provider_name } : any ) => {
+    const access = useAccess()
     const { data , loading , run } = useRequest(
         () => queryMonitorList({ job_id }),
         {
@@ -33,9 +34,9 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: string | number | undefined) => (
+            render: (_: string | number | undefined,row:any) => (
                 _ ?
-                    <ServerLink val={_} provider={provider_name} />
+                    <ServerLink val={_} param={row.server_id} provider={provider_name} isClick={access.IsAdmin()}/>
                     : '-'
             )
         },

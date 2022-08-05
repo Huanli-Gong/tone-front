@@ -210,8 +210,8 @@ const Standalone = (props: any, ref: any) => {
                     return (
                         <ServerLink
                             val={_}
-                            // provider={'内网机器'}
                             provider={"aligroup"}
+                            isClick={access.IsAdmin()}
                         />
                     )
                 else
@@ -220,8 +220,8 @@ const Standalone = (props: any, ref: any) => {
                             <TreeSvg style={{ marginRight: 8, height: 40 }} />
                             <ServerLink
                                 val={_}
-                                // provider={'内网机器'}
                                 provider={"aligroup"}
+                                isClick={access.IsAdmin()}
                             />
                         </Row>
                     )
@@ -243,6 +243,7 @@ const Standalone = (props: any, ref: any) => {
                     val={_}
                     // provider={'内网机器'}
                     provider={"aligroup"}
+                    isClick={access.IsAdmin()}
                 />
             ),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,

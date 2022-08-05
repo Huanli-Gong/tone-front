@@ -143,8 +143,9 @@ export default (props: any) => {
                 render: (text: any, row: any) => (
                     <ServerLink
                         val={text}
+                        param={row.id}
                         provider={"aliyun"}
-                    // provider={'云上机器'}
+                        isClick={access.IsAdmin()}
                     />
                 )
             },

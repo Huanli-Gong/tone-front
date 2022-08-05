@@ -3,6 +3,7 @@ import { Table, Card } from 'antd'
 import { useModel, useAccess, Access, useParams } from 'umi'
 import EditMarks from './EditMarks'
 import { EllipsisEditColumn } from '@/pages/WorkSpace/TestResult/Details/components'
+import ServerLink from '@/components/MachineWebLink/index';
 
 export default memo(
     (props: any) => {
@@ -24,8 +25,13 @@ export default memo(
             }, {
                 title: '测试机器（TestConf）',
                 dataIndex: 'server',
-                render: (_: any) => (
-                    <span>{_}</span>
+                render: (_: any, row:any) => (
+                    <ServerLink
+                        val={_}
+                        param={row.server_id}
+                        provider={row.server_provider}
+                        isClick={access.IsAdmin()}
+                    />
                 )
             }, {
                 title: '创建人',

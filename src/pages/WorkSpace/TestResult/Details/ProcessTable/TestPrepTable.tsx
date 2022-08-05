@@ -6,13 +6,14 @@ import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryProcessPrepareList } from '../service'
-import { useRequest } from 'umi'
+import { useRequest, useAccess } from 'umi'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
 //测试准备 ==== Table
 export default ({ job_id, refresh = false, provider_name }: any) => {
+    const access = useAccess();
     // 表格展开的行
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
@@ -135,7 +136,12 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 if (row.mode === '集群') {
                     return <EllipsisPulic title={_} />
                 } else {
-                    return <ServerLink val={_} provider={provider_name} />
+                    return <ServerLink 
+                        val={_} 
+                        param={row.server_id}
+                        provider={provider_name} 
+                        isClick={access.IsAdmin()}
+                    />
                 }
             }
         },
@@ -185,7 +191,12 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             width: 160,
             render: (_: any, row: any) => (
                 _ ?
-                    <ServerLink val={_} provider={provider_name} />
+                    <ServerLink 
+                        val={_} 
+                        param={row.server_id}
+                        provider={provider_name} 
+                        isClick={access.IsAdmin()}
+                    />
                     : '-'
             )
         },

@@ -391,7 +391,7 @@ export const deepObject = (data: any) => {
 export const AccessTootip = () => {
   return message.error('没有操作权限');
 };
-console.log(BUILD_APP_ENV)
+
 export const getServerType = (type: 1 | 2): any => {
   const isOpenSource = ['openanolis', 'opensource'].includes(BUILD_APP_ENV as string);
   const serverArray: any = isOpenSource
