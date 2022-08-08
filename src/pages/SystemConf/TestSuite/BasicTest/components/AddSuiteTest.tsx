@@ -7,6 +7,7 @@ import { useLocation, useRequest } from 'umi'
 import _ from 'lodash'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { useSuiteProvider } from '../../hooks'
+import { QusetionIconTootip } from '@/components/Product/index'
 
 /**
  * @module 系统级
@@ -238,7 +239,9 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="is_default"
-                                    label="默认用例"
+                                    label={
+                                        <QusetionIconTootip title="默认用例" desc="是：自动加入新建workspace" />
+                                    }
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
                                     <Radio.Group>
