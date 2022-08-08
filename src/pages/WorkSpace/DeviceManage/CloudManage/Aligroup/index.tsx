@@ -41,6 +41,11 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const outTable = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>({ data: [] });
+    const [tagParam, setTagParam] = useState({
+        total: 0,
+        page_num: 1,
+        page_size: 20
+    })
     const [params, setParams] = useState<AligroupParams>({
         refresh: true,
         page: 1,
@@ -52,9 +57,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     })
     const [visible, setVisible] = useState<boolean>(false)
     const [tagList, setTagList] = useState<any>([])
-    // const [keyword, setKeyword] = useState<string>()
     const [tagWord, setTagword] = useState<string>()
-    // const [user, setUser] = useState<any>([])
     const [outId, setOutId] = useState<number>()
     const [fetching, setFetching] = useState<boolean>(true)
     const [expandKey, setExpandKey] = useState<string[]>([])
@@ -79,15 +82,36 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const handlePage = (page_num: number, page_size: any) => {
         setParams({ ...params, page: page_num, pageSize: page_size })
     }
+
     const getServerTagList = async (word?: string) => {
         const param = word && word.replace(/\s*/g, "")
         if (tagWord && tagWord == param) return
         setTagword(param)
-        setFetching(true)
-        const { data } = await queryTag({ name: param, ws_id }) //run_mode: 'cluster', run_environment: 'aliyun', 
-        setTagList(data || [])
-        setFetching(false)
+        requestData({ name: param, page_num: 1, page_size: 20, ws_id }, 'reset')
     }
+
+    const requestData = async (query: any, option="concat") => {
+		setFetching(true)
+		try {
+			let res = await queryTag(query)
+			if (res.code === 200) {
+				if (option === 'concat') {
+					const data = tagList.concat(res.data || [])
+					setTagList(data || [])
+					setTagParam(res);
+				} else if (option === 'reset') {
+					setTagList(res.data || [])
+					setTagParam(res);
+				}
+			} else {
+				message.error(res.msg || '请求数据失败');
+			}
+			setFetching(false)
+		} catch (err) {
+			setFetching(false)
+		}
+	}
+
     const getList = async (params: any = {}) => {
         setLoading(true)
         setData({ data: [] })
@@ -95,15 +119,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         data && setData(data)
         setLoading(false)
     };
-    // const handleSearch = async (word?: string) => {
-    //     const param = word && word.replace(/\s*/g, "")
-    //     if (keyword && keyword == param) return
-    //     setKeyword(param)
-    //     setFetching(true)
-    //     let { data } = await queryMember({ keyword: param,/* scope:'aligroup'  */ })
-    //     setUser(data || [])
-    //     setFetching(false)
-    // }
+    
     const tagRender = (props: any) => {
         const { label, closable, onClose } = props;
         const { color, children } = label.props || {}
@@ -115,7 +131,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
     const newGroup = () => {
         setOutId(undefined)
-        //handleSearch()
         getServerTagList()
         setVisible(true)
         form.resetFields()
@@ -243,7 +258,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, page: 1, [dataIndex]: val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {
@@ -345,6 +360,18 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         },
     ];
 
+    const handlePopupScroll = (e:any) => {
+        const { page_num, page_size, total, } = tagParam
+        const { clientHeight, scrollHeight, scrollTop} = e.target
+        if ( clientHeight + scrollTop >= scrollHeight && !isNaN(page_num) && Math.ceil(total/page_size) > page_num) {
+            requestData({ name: tagWord, page_num: page_num + 1, page_size, ws_id }, 'concat')
+        }
+    }
+    // 过滤后清除重调查询接口
+    const handleClear = () => {
+        getServerTagList()
+    }
+
     return (
         <div className={styles.warp}>
             <Table
@@ -443,8 +470,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     placeholder="请选择"
                                     onSearch={getServerTagList}
                                     style={{ width: '100%' }}
-                                    showArrow={false}
-                                    showSearch
+                                    showArrow={true}
+                                    onClear={handleClear}
+                                    onPopupScroll={handlePopupScroll}
                                     tagRender={tagRender}
                                 >
                                     {
