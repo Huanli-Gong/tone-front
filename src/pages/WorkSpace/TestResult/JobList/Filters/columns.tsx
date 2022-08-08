@@ -185,11 +185,12 @@ const ServerSelect: React.FC<any> = (props) => {
     if (!data)
         return (
             <Select
-                placeholder={placeholder}
+                mode="multiple"
+                {...props}
             />
         )
 
-    const options = data.map((ips: any) => ({ label: ips, value: ips }))
+    const options = data.map((ips: any) => ({ label: ips, value: ips })).filter(Boolean)
 
     return (
         <Select
