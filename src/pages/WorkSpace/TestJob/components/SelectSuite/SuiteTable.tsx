@@ -23,8 +23,7 @@ export default (props: any) => {
 
 	const [columnsOutter, setColumnsOutter] = useState<any>([])
 	const [columnsInner, setColumnsInner] = useState<any>([])
-
-	const [checked, setChecked] = useState<boolean>(false)
+	const [checked, setChecked] = useState<boolean>(dataSource[0].isAdvancedConfig)
 	const [selectedSuiteKeys, setSelectedSuiteKeys] = useState<any[]>([])
 	const [selectedCaseKeys, setSelectedCaseKeys] = useState<any[]>([])
 	const [selectedCaseObj,setSelectedCaseObj] = useState<any>({})
@@ -230,7 +229,7 @@ export default (props: any) => {
 					(dataSource.length > 0 && !disabled) &&
 					<Space style={{ height: '32px' }}>
 						<span className={styles.title}>高级配置</span>
-						<Switch size="small" onChange={onChange} />
+						<Switch size="small" onChange={onChange} checked={checked}/>
 					</Space>
 				}
 			</Row>
