@@ -82,7 +82,7 @@ const DrawerForm = forwardRef((props, ref) => {
         })
     }
 
-    const EditItem = () => {
+    const EditItem: React.FC = () => {
         return (
             <>
                 {
@@ -116,8 +116,8 @@ const DrawerForm = forwardRef((props, ref) => {
         )
     }
 
-    const ItemRow = ({ label, text, type }: any) => {
-        if ( !text ) return false
+    const ItemRow: React.FC<any> = ({ label, text, type }) => {
+        if ( !text ) return <></>
         return (
             <div className={styles.ItemRow}>
                 <div className={styles.label}>{label}</div>
