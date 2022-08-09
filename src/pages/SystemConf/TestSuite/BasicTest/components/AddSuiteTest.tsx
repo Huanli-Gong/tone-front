@@ -240,7 +240,7 @@ export default forwardRef(
                                 <Form.Item
                                     name="is_default"
                                     label={
-                                        <QusetionIconTootip title="默认用例" desc="是：自动加入新建workspace" />
+                                        <QusetionIconTootip title="默认用例" desc="自动加入新建workspace" />
                                     }
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
@@ -254,20 +254,7 @@ export default forwardRef(
                                 <Form.Item
                                     name="certificated"
                                     label={
-                                        <span>
-                                            是否认证&nbsp;
-                                            <Popover
-                                                overlayClassName={styles.cer_tips}
-                                                content={
-                                                    <div>
-                                                        <p>只有认证过得用例才能同步到Testfarm</p>
-                                                    </div>
-                                                }
-                                                placement="bottomLeft"
-                                                destroyTooltipOnHide={true}>
-                                                <QuestionCircleOutlined />
-                                            </Popover>
-                                        </span>
+                                        <QusetionIconTootip title="是否认证" desc="只有认证过得用例才能同步到Testfarm" />
                                     }
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
