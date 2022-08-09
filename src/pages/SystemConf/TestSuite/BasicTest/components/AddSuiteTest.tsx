@@ -223,7 +223,7 @@ export default forwardRef(
                                     label="领域"
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
-                                    <Select placeholder="请选择" mode="multiple" getPopupContainer={node => node.parentNode}>
+                                    <Select placeholder="请选择" mode="multiple" showArrow showSearch={false} getPopupContainer={node => node.parentNode}>
                                         {
                                             domainList.map((item: any, index: number) => {
                                                 return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
