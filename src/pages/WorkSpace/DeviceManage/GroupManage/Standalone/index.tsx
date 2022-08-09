@@ -250,7 +250,7 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
             )
         },
-        {
+        BUILD_APP_ENV && {
             title: 'TSN',
             dataIndex: 'tsn',
             width: 130,

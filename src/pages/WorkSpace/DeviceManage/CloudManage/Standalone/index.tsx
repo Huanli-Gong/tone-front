@@ -158,7 +158,7 @@ export default (props: any) => {
                 },
                 render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
             },
-            {
+            BUILD_APP_ENV && {
                 title: 'TSN',
                 dataIndex: 'tsn',
                 width: params.type == '0' ? 0 : 140,
@@ -421,7 +421,7 @@ export default (props: any) => {
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },
-        ]
+        ].filter(Boolean)
         setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
     }, [params])
 
