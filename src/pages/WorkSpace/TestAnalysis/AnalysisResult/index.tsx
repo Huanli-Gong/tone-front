@@ -29,6 +29,7 @@ const Report = (props: any) => {
     const [environmentResult, setEnvironmentResult] = useState<any>({})
     const [envData, setEnvData] = useState<Array<{}>>([])
     const [suiteLen, setSuiteLen] = useState(1)
+    const [shareId, setShareId] = useState<Number>(0)
     const [scrollLeft, setScrollLeft] = useState(0)
     // const windowHeight = () => setLayoutHeight(innerHeight)
     const saveReportDraw: any = useRef(null)
@@ -146,29 +147,39 @@ const Report = (props: any) => {
         }
     }, [testDataParam, paramEenvironment])
 
+    const handleReportId = async() => {
+        let form_data: any = {
+            allGroupData,
+            baselineGroupIndex,
+            testDataParam,
+            envDataParam: paramEenvironment
+        }
+        const { data } =  await compareForm({ form_data })
+        setShareId(data)
+    }
+
+    useEffect(()=> {
+        handleReportId()
+    },[])
+    
     const handleShare = useCallback(
-        async () => {
-            let form_data: any = {
-                allGroupData,
-                baselineGroupIndex,
-                testDataParam,
-                envDataParam: paramEenvironment
+         () => {
+            if(shareId){
+                const clipboard = new Clipboard('.test_result_copy_link', {
+                    text: function (trigger) {
+                        return location.origin + `/share/analysis_result/${shareId}`
+                    }
+                });
+               
+                clipboard.on('success', function (e: any) {
+                    message.success('复制分享链接成功')
+                    e.clearSelection();
+                });
+                
+                (document.querySelector('.test_result_copy_link') as any).click()
+                clipboard.destroy()
             }
-            const data = await compareForm({ form_data })
-            const clipboard = new Clipboard('.test_result_copy_link', {
-                text: function (trigger) {
-                    return location.origin + `/share/analysis_result/${data.data}`
-                }
-            });
-
-            clipboard.on('success', function (e: any) {
-                message.success('复制成功')
-                e.clearSelection();
-            });
-
-            (document.querySelector('.test_result_copy_link') as any).click()
-            clipboard.destroy()
-        }, [allGroupData, baselineGroupIndex]
+        }, [allGroupData, shareId]
     )
     
     const handleCreatReportOk = () => { // suiteData：已选的
@@ -250,7 +261,7 @@ const Report = (props: any) => {
                             <TypographyText>对比分析结果</TypographyText>
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
-                                { !form_id && <span  onClick={handleShare} style={{ cursor: 'pointer' }} >
+                                { !form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
                                         <IconLink style={{ marginRight: 5 }} />分享
                                     </span>
                                 }
