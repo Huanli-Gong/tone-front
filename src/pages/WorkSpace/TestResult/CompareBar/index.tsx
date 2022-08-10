@@ -12,7 +12,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
-    const {selectedChange, wsId, setIsloading, allSelectRowData} = props
+    const {selectedChange, wsId, allSelectRowData} = props
     const access = useAccess()
     const scrollbarsRef:any = useRef(null)
     const [padding, setPadding] = useState(false)
@@ -191,14 +191,12 @@ export default (props: any) => {
         // })
     }
     const creatReportCallback = (reportData:any) => { 
-        setIsloading(true)
         // suitData：已选的
         const confIdArr:any = handleCompareOk(suitData).confIdArr
         const paramCompare:any = handleCompareOk(suitData).paramData
         const paramEenvironment = handlEenvironment(suitData)
         Promise.all([queryCompareResultFn(paramCompare), queryEenvironmentResultFn(paramEenvironment),queryDomainGroupFn(confIdArr)])
             .then((result: any) => {
-                setIsloading(false)
                 if (_.get(result[0],'code') === 200 && _.get(result[1],'code') === 200 && _.get(result[2],'code')=== 200) {
                     history.push({
                         pathname: `/ws/${wsId}/test_create_report`,
@@ -227,8 +225,8 @@ export default (props: any) => {
                     message.error(result[1].msg)
                 }
             })
+           
             .catch((e) => {
-                setIsloading(false)
                 message.error('请求失败')
                 console.log(e)
             })

@@ -1612,7 +1612,6 @@ export default (props: any) => {
                                     allSelectedRowKeys={selectedRowKeys}
                                     allSelectRowData={selectRowData}
                                     wsId={ws_id}
-                                    setIsloading={setIsloading}
                                 />
                         }
                     </div>
