@@ -23,16 +23,16 @@ export default (props: any) => {
 
 	const [columnsOutter, setColumnsOutter] = useState<any>([])
 	const [columnsInner, setColumnsInner] = useState<any>([])
-	const [checked, setChecked] = useState<boolean>(dataSource[0].isAdvancedConfig)
+	const [checked, setChecked] = useState<boolean>(false)
 	const [selectedSuiteKeys, setSelectedSuiteKeys] = useState<any[]>([])
 	const [selectedCaseKeys, setSelectedCaseKeys] = useState<any[]>([])
-	const [selectedCaseObj,setSelectedCaseObj] = useState<any>({})
+	const [selectedCaseObj, setSelectedCaseObj] = useState<any>({})
 
 	const [caseKeyList, setCaseKeyList] = useState<any>([])
 	const [caseKeyListObj, setCaseKeyListObj] = useState<any>({})
 	const [indeterminateSuite, setIndeterminateSuite] = useState<boolean>(false)
 	const [suiteAll, setSuiteAll] = useState<boolean>(false)
-	
+
 	const [expandedRowKeys, setExpandedRowKeys] = useState<any>([])
 	const onSelectSuite = (e: any) => {
 		const check = e.target.checked
@@ -81,6 +81,14 @@ export default (props: any) => {
 	}
 
 	useEffect(() => {
+		dataSource.map((item: any) => {
+			if (item.isAdvancedConfig) {
+				setChecked(true)
+			} 
+		})
+	}, [dataSource])
+
+	useEffect(() => {
 		handleColumnsChange()
 	}, [checked])
 
@@ -97,21 +105,21 @@ export default (props: any) => {
 	};
 
 
-	const setSelectedCaseKeysFn = (obj:any) => {
+	const setSelectedCaseKeysFn = (obj: any) => {
 		let selectedCaseObjCopy = _.cloneDeep(selectedCaseObj) || {}
 		selectedCaseObjCopy = { ...selectedCaseObjCopy, ...obj }
 		setSelectedCaseObj(selectedCaseObjCopy)
 	}
-	useEffect(()=>{
-		let selectedRowKeys:number[] = []
-		Object.values(selectedCaseObj).forEach((itemArr:any) =>{
+	useEffect(() => {
+		let selectedRowKeys: number[] = []
+		Object.values(selectedCaseObj).forEach((itemArr: any) => {
 			selectedRowKeys = selectedRowKeys.concat(itemArr)
 		})
 		const len = caseKeyList.length
 		setIndeterminateCase(!!selectedRowKeys.length && selectedRowKeys.length < len)
 		setCaseAll(selectedRowKeys.length == len)
 		setSelectedCaseKeys(selectedRowKeys)
-	},[selectedCaseObj])
+	}, [selectedCaseObj])
 
 	useEffect(() => {
 		const newSelectCaseObj = {}
@@ -155,7 +163,7 @@ export default (props: any) => {
 				list = list.concat(el.test_case_list.filter((c: any) => c.id == item))
 			})
 		})
-		settingDrawerRef.current?.show('case',list)
+		settingDrawerRef.current?.show('case', list)
 	}
 
 	const suiteBentch = () => {
@@ -171,7 +179,7 @@ export default (props: any) => {
 	useEffect(() => {
 		handleColumnsChange()
 		let caseKeysList: any = []
-		let caseKeysListObj:any = {}
+		let caseKeysListObj: any = {}
 		dataSource.forEach(
 			(item: any) => {
 				caseKeysList = caseKeysList.concat(item.test_case_list.map((el: any) => el.id + ''))
@@ -229,7 +237,7 @@ export default (props: any) => {
 					(dataSource.length > 0 && !disabled) &&
 					<Space style={{ height: '32px' }}>
 						<span className={styles.title}>高级配置</span>
-						<Switch size="small" onChange={onChange} checked={checked}/>
+						<Switch size="small" onChange={onChange} checked={checked} />
 					</Space>
 				}
 			</Row>
@@ -312,9 +320,9 @@ export default (props: any) => {
 				run_mode={run_mode}
 				contrl={control}
 				checked={checked}
-				onDataSourceChange={ onDataSourceChange }
-				testSuiteData={ dataSource }
-				onOk={ hanldeSettingOk }
+				onDataSourceChange={onDataSourceChange}
+				testSuiteData={dataSource}
+				onOk={hanldeSettingOk}
 			/>
 		</div>
 	)
