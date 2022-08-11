@@ -18,6 +18,7 @@ import { useParams } from 'umi';
 import { useClientSize } from '@/utils/hooks';
 import { AccessTootip } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
+import OverflowList from '@/components/TagOverflow/index'
 // import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上集群
@@ -90,27 +91,26 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         requestData({ name: param, page_num: 1, page_size: 20, ws_id }, 'reset')
     }
 
-    const requestData = async (query: any, option="concat") => {
-		setFetching(true)
-		try {
-			let res = await queryTag(query)
-			if (res.code === 200) {
-				if (option === 'concat') {
-					const data = tagList.concat(res.data || [])
-					setTagList(data || [])
-					setTagParam(res);
-				} else if (option === 'reset') {
-					setTagList(res.data || [])
-					setTagParam(res);
-				}
-			} else {
-				message.error(res.msg || '请求数据失败');
-			}
-			setFetching(false)
-		} catch (err) {
-			setFetching(false)
-		}
-	}
+    const requestData = async (query: any, option = "concat") => {
+        setFetching(true)
+        try {
+            let res = await queryTag(query)
+            if (res.code === 200) {
+                if (option === 'concat') {
+                    const data = tagList.concat(res.data || [])
+                    setTagList(data || [])
+                } else if (option === 'reset') {
+                    setTagList(res.data || [])
+                }
+                setTagParam(res);
+            } else {
+                message.error(res.msg || '请求数据失败');
+            }
+            setFetching(false)
+        } catch (err) {
+            setFetching(false)
+        }
+    }
 
     const getList = async (params: any = {}) => {
         setLoading(true)
@@ -119,7 +119,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         data && setData(data)
         setLoading(false)
     };
-    
+
     const tagRender = (props: any) => {
         const { label, closable, onClose } = props;
         const { color, children } = label.props || {}
@@ -199,8 +199,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const modifyGroup = (row: any) => {
-        // setUser([{ id: row.owner, last_name: row.owner_name }])
-        getServerTagList()
+        requestData({ cluster_id: row.id, page_num: 1, page_size: 20, ws_id }, 'reset')
         row.tags = row.tag_list.map((item: any) => { return item.id })
         setOutId(row.id)
         setVisible(true)
@@ -300,6 +299,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         {
             title: '标签',
             dataIndex: 'tag_list',
+            ellipsis: {
+                showTitle: false
+            },
             width: 250,
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) =>
@@ -309,16 +311,13 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     autoFocus={autoFocus}
                     confirm={confirm}
                     onConfirm={(val: number) => { setParams({ ...params, page: 1, tags: val }) }} />,
-            render: (_: any, row: any) => <div>
-                {
+            render: (_: any, row: any) => (
+                <OverflowList list={
                     row.tag_list.map((item: any, index: number) => {
                         return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
                     })
-                }
-                {
-                    row.tag_list.length == 0 ? '-' : ''
-                }
-            </div>
+                } />
+            )
         },
         {
             title: '备注',
@@ -341,7 +340,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             width: 180,
             render: (_: any, row: any) => <Space>
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { addMachine(row.id) }}>添加</Button>
-                <Access 
+                <Access
                     accessible={access.WsMemberOperateSelf(row.owner)}
                     fallback={
                         <Space>
@@ -360,10 +359,10 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         },
     ];
 
-    const handlePopupScroll = (e:any) => {
+    const handlePopupScroll = (e: any) => {
         const { page_num, page_size, total, } = tagParam
-        const { clientHeight, scrollHeight, scrollTop} = e.target
-        if ( clientHeight + scrollTop >= scrollHeight && !isNaN(page_num) && Math.ceil(total/page_size) > page_num) {
+        const { clientHeight, scrollHeight, scrollTop } = e.target
+        if (clientHeight + scrollTop >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
             requestData({ name: tagWord, page_num: page_num + 1, page_size, ws_id }, 'concat')
         }
     }
