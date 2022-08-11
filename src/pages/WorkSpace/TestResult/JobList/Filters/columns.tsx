@@ -1,6 +1,6 @@
 import React from "react"
 import { Select, SelectProps, Spin, Tag, Empty, Input } from "antd"
-import { useRequest, useParams } from "umi"
+import { useRequest, useParams, request } from "umi"
 import {
     queryCreators,
     queryTag,
@@ -161,10 +161,12 @@ const TagSelect: React.FC<any> = (props) => {
 }
 
 const ServerSelect: React.FC<any> = (props) => {
-    const { onChange } = props
+    const { onChange, placeholder } = props
     const { ws_id } = useParams() as any
 
-    const { data: group } = useRequest(() => queryTestServer({ ws_id, page_size: 999 }), { initialData: [] })
+    const { data } = useRequest(() => request(`/api/server/server_snapshot/`, { params: { ws_id } }))
+
+    /* const { data: group } = useRequest(() => queryTestServer({ ws_id, page_size: 999 }), { initialData: [] })
     const { data: cloud } = useRequest(() => queryTestCloudServer({ ws_id, page_size: 999 }), { initialData: [] })
 
     const cloudList = cloud.filter((obj: any) => obj && obj.is_instance).map((i: any) => ({ value: i.private_ip, label: i.private_ip }))
@@ -177,7 +179,18 @@ const ServerSelect: React.FC<any> = (props) => {
         return pre.concat({ value: ip, label: ip }, list)
     }, [])
 
-    const options = groupList.concat(cloudList)
+    const options = groupList.concat(cloudList) */
+
+
+    if (!data)
+        return (
+            <Select
+                mode="multiple"
+                {...props}
+            />
+        )
+
+    const options = data.map((ips: any) => ({ label: ips, value: ips })).filter(Boolean)
 
     return (
         <Select
