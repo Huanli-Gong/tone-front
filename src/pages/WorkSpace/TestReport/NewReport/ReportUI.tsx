@@ -332,33 +332,6 @@ export const EnvGroup = styled.div`
     border-right:none;
     display:flex;
 `
-export const MachineGroup = styled.div`
-    border: 1px solid rgba(0,0,0,0.10);
-    height:240px;
-    margin-bottom:13px;
-    border-bottom:none;
-    border-right:none;
-`
-export const MachineGroupL = styled(EnvGroupL)`
-    height:40px;
-    line-height:40px;
-    color:rgba(0,0,0,0.85);
-    border-bottom:1px solid rgba(0,0,0,0.10);
-    font-weight:500;
-`
-export const MachineGroupR = styled.div<GroupRowProps>`
-    width: ${({ gLen }) => setEnvGroupWdith(gLen)};
-    float:left;
-    padding:0px 13px;
-    border-right:1px solid rgba(0,0,0,0.10);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height:40px;
-    line-height:40px;
-    border-bottom:1px solid rgba(0,0,0,0.10);
-    border-right:1px solid rgba(0,0,0,0.10);
-`
 // 性能测试数据style
 export const FuncItem = styled.div`
     height:57px;

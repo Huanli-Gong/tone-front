@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { toPercentage, handleIcon } from '@/components/AnalysisMethods/index';
+import { handleColor, switchExpectation } from './ChartMethod';
 const TypeChart = (props: any) => {
-    const { name, envData, data, chartType } = props
+    const { callBackColor, name, envData, chartType, time, data } = props
     const chart = useRef<any>()
     const chartDom: any = useRef()
 
@@ -13,56 +14,24 @@ const TypeChart = (props: any) => {
         });
     }, [name])
 
-    const handleColor = (name: any) => {
-        const dict = {
-            normal: 'rgba(0,0,0,1)',
-            increase: '#81BF84',
-            decline: '#C84C5A',
-            invalid: 'rgba(0,0,0,0.25)',
+    const ChartList = useMemo(()=> {
+        let obj : any = {
+            series:[], // 结果List
+            xAxisData:[], // 横坐标name
+            legData:[], // 图例
+            subText:[], // 副标题
+            dataZoom_end:100,
         }
-        return dict[name]
-    }
-    const switchExpectation = (str:string) => {
-        let text = '';
-        switch (str) {
-            case 'increase':
-                text = 'more is better'
-                break;
-            case '上升':
-                text = 'more is better'
-                break;
-            case 'decline':
-                text = 'less is better'
-                break;
-            case '下降':
-                text = 'less is better'
-                break;
-            default:
-                text = '-'
-                break;
-        }
-        return text;
-    }
-    useEffect(() => {
-        chartDom.current = echarts.init(chart.current, {});
-        let series: any = [] // 结果List
         let metricData: any = [] // test_value
-        let xAxisData: any = [] // 横坐标name
-        let legData: any = [] // 图例
-        let subText: any = [] // 副标题
         let result = [] // 组装后数组处理的容器
         let metricLen = 0
-        let dataZoom_end: number = 100
         let len = 0
-        legData.push(envData.base_group.tag)
+        obj.legData.push(envData.base_group.tag)
         for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
-            legData.push(compare[k].tag)
+            obj.legData.push(compare[k].tag)
         }
         if (chartType == '1') {
-            metricData.push({
-                value: data.test_value,
-            })
-            subText.push(data.direction)
+            obj.subText.push(data.direction)
             for (let compare = data.compare_data, i = 0; i < compare.length; i++) {
                 metricData.push({
                     value: compare[i]?.test_value,
@@ -71,16 +40,16 @@ const TypeChart = (props: any) => {
                 })
                 len = compare.length
             }
-            xAxisData.push(data.metric)
-            for (let j = 0; j < len + 1; j++) {
-                series.push({
+            obj.xAxisData.push(data.metric)
+            for (let j = 0; j < len; j++) {
+                obj.series.push({
                     type: 'bar',
                     data: [{
                         value: metricData[j].value,
                         compare_value: metricData[j].compare_value,
                         compare_result: metricData[j].compare_result
                     }],
-                    name: legData[j],
+                    name: obj.legData[j],
                     barWidth: '10px',
                     barGap: '80%',
                     barCategoryGap: '40%'
@@ -89,14 +58,14 @@ const TypeChart = (props: any) => {
         } else {
             if(chartType == '2'){
                 if (data.length > 5) {
-                    dataZoom_end = (5 / data.length) * 100;
+                    obj.dataZoom_end = (5 / data.length) * 100;
                 } 
                 for (let i = 0; i < data.length; i++) {
                     metricData.push({
                         value: data[i].test_value,
                     })
-                    xAxisData.push(data[i].conf_name)
-                    subText.push(data[i].direction)
+                    obj.xAxisData.push(data[i].conf_name)
+                    obj.subText.push(data[i].direction)
                     len = data[i].compare_data.length
                     metricLen = data.length
                 }
@@ -116,15 +85,10 @@ const TypeChart = (props: any) => {
             }
             if(chartType == '3'){
                 if (data.metric_list > 5) {
-                    dataZoom_end = (5 / data.metric_list) * 100;
+                    obj.dataZoom_end = (5 / data.metric_list) * 100;
                 } 
                 for (let b = 0, metric = data.metric_list; b < metric.length; b++) {
-                    metricData.push({
-                        value: metric[b].test_value,
-                        cv_threshold: metric[b].cv_threshold,
-                        cmp_threshold: metric[b].cmp_threshold
-                    })
-                    xAxisData.push(metric[b].metric)
+                    obj.xAxisData.push(metric[b].metric)
                     len = metric[b].compare_data.length
                     metricLen = metric.length
                 }
@@ -141,20 +105,24 @@ const TypeChart = (props: any) => {
             for (let k = 0, leng = metricData.length; k < leng; k += metricLen) {
                 result.push(metricData.slice(k, k + metricLen));
             }
-            for (let m = 0; m < len + 1; m++) {
-                series.push({
+            for (let m = 0; m < len; m++) {
+                obj.series.push({
                     type: 'bar',
                     data: result[m],
-                    name: legData[m],
+                    name: obj.legData[m],
                     barWidth: '10px',
                     barGap: '80%',
                     barCategoryGap: '40%'
                 })
             }
         }
-        // 渲染数据展示
-        chartDom.current.clear()
-        chartDom.current.setOption({
+        return obj;
+    },[ data ])
+    
+    useEffect(() => {
+        const { series, subText, xAxisData, legData, dataZoom_end } = ChartList
+        const duration = time.reduce((p: any, c: any) => p += c * 2, 0)
+        let option = {
             title: {
                 subtext: chartType == '3' ? '' : switchExpectation(subText.toString()) 
             },
@@ -247,10 +215,8 @@ const TypeChart = (props: any) => {
                                 </div>
                                 ${result}`
                     }
-
                 }
             },
-            // color: ['#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB'],
             yAxis: {
                 type: 'value',
                 axisLine: { show: false },
@@ -263,8 +229,11 @@ const TypeChart = (props: any) => {
                     fontSize: 10,
                     margin: 2,
                     formatter: function (value: any) {
-                        if (value >= 10000 && value < 10000000) {
-                            value = value / 10000 + "w";
+                        if (value >= 10000 && value < 100000000) {
+                            value = value / 10000 + "万";
+                        }
+                        if (value >= 100000000 && value < 1000000000000) {
+                            value = value / 100000000 + "亿";
                         }
                         return value;
                     }
@@ -291,15 +260,28 @@ const TypeChart = (props: any) => {
                     moveOnMouseMove:true,
                     moveOnMouseWheel:true,
                     preventDefaultMouseMove: false,
-                }],
+                }
+            ],
+        }
+        const timer = setTimeout(() => {
+            // 渲染数据展示
+            const chartObj = echarts.init(chart.current, undefined, {
+                renderer: 'svg',
+            });
+            chartObj.setOption(option as any)
+            callBackColor(chartObj.getOption().color)
+            chartDom.current  = chartObj
+        }, duration )
+        
+        return () => {
+            timer && clearTimeout(timer)
+            chartDom.current && chartDom.current.dispose()
+        }
+        
+    }, [ ChartList ])
 
-        })
-        props.callBackColor(chartDom.current.getOption().color)
-    }, [ chartType, data ])
     return (
-        <React.Suspense fallback={ <div> loading... </div> } >
-            <div ref={chart} style={{ width: chartType !== '1' ? '100%' : 268, height: 376, display: 'inline-block', flexShrink: 0 }} />
-        </React.Suspense>
+        <div ref={chart} style={{ width: chartType !== '1' ? '100%' : 268, height: 376, display: 'inline-block', flexShrink: 0 }} />
     )
 }
 export default React.memo(TypeChart);

@@ -10,6 +10,7 @@ export default {
   'menu.exception.500': '500',
   'menu.nofoundpage.404': '404页面',
   'menu.server.500': '500页面',
+  "menu.ShareReport": '分享报告',
 
   'menu.home': '首页',
   'menu.workspace': '工作台',
@@ -21,8 +22,6 @@ export default {
   'menu.BasicSetting': '基础配置',
   'menu.TestParmSetting': 'Testfarm配置',
   'menu.DirectRoute': 'directRoute',
-
-  'menu.ShareReport': '测试报告',
 
   'menu.JobTypePreview': '模板预览',
   'menu.TemplateEdit': '模板编辑',
@@ -49,7 +48,6 @@ export default {
   'menu.Workspace.TestReport.TemplateEdit': '编辑报告模版',
   'menu.Workspace.TestReport.Report': '测试报告',
   'menu.Workspace.TestReport.EditReport': '编辑报告',
-  // "menu.Workspace.TestReport.ShareReport": '分享报告',
   'menu.Workspace.TestReport.CompareAnalysisConf': '结果页',
 
   'menu.Workspace.CreateReport': '创建报告',

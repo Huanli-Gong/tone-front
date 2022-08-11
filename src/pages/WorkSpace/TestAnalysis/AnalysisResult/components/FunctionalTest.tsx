@@ -30,7 +30,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = (props) => {
-    const { allGroupData, compareResult, baselineGroupIndex, ws_id, group } = useContext(ReportContext)
+    const { allGroupData, compareResult, baselineGroupIndex, group } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
@@ -51,12 +51,10 @@ const ReportTestFunc: React.FC<any> = (props) => {
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
-        let subCaseList = _.cloneDeep(sub_case_list)
         return (
             <>
                 {
-                    expand && subCaseList?.map((item: any, idx: number) => {
-                        item.compare_data.splice(baseIndex, 0, item.result)
+                    expand && sub_case_list?.map((item: any, idx: number) => {
                         const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
                         len.forEach((i) => item.compare_data.push('-'))
                         return (
@@ -75,7 +73,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                         })
                                         :
                                         <SubCaseText gLen={group} >
-                                            <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
+                                            <Typography.Text>-</Typography.Text>
                                         </SubCaseText>
                                 }
                             </TestSubCase>
@@ -226,7 +224,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                             {
                                                                 i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
                                                                     对比结果
-                                                                    <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                                                    <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor:'pointer' }}>
                                                                         {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow title="差异化排序" />}
                                                                     </span>
                                                                     <DiffTootip />
@@ -241,42 +239,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                             {
                                                 (item.conf_list && item.conf_list.length) ? item.conf_list.map((conf: any, cid: number) => {
                                                     const expand = expandKeys.includes(conf.conf_id)
-                                                    const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
                                                     let conf_data = conf.conf_compare_data || conf.compare_conf_list
-                                                    let metricList: any = []
-                                                    for (let i = 0; i < allGroupData.length; i++) {
-                                                        if (i === baseIndex)
-                                                            metricList.push({
-                                                                all_case,
-                                                                success_case,
-                                                                fail_case,
-                                                                obj_id,
-                                                            })
-                                                        !!conf_data.length ?
-                                                            conf_data?.forEach((item: any, idx: number) => {
-                                                                if (item !== null) {
-                                                                    const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
-                                                                    idx === i && metricList.push({
-                                                                        all_case,
-                                                                        success_case,
-                                                                        fail_case,
-                                                                        obj_id
-                                                                    })
-                                                                } else {
-                                                                    idx === i && metricList.push({
-                                                                        all_case: '-',
-                                                                        success_case: '-',
-                                                                        fail_case: '-'
-                                                                    })
-                                                                }
-                                                            })
-                                                            :
-                                                            (allGroupData.length > 1) && (i - 1) && metricList.push({
-                                                                all_case: '-',
-                                                                success_case: '-',
-                                                                fail_case: '-'
-                                                            })
-                                                    }
                                                     return (
                                                         <div key={cid}>
                                                             <TestCase expand={expand}>
@@ -290,16 +253,16 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                     </EllipsisPulic>
                                                                 </CaseTitle>
                                                                 {
-                                                                    metricList?.map((item: any, idx: number) => (
+                                                                    conf_data?.map((metric: any, idx: number) => (
                                                                             <CaseText gLen={group} key={idx}>
                                                                                 <Space size={16}>
-                                                                                    <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(item.all_case)}</Typography.Text>
-                                                                                    <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
-                                                                                    <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
+                                                                                    <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(metric.all_case)}</Typography.Text>
+                                                                                    <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(metric.success_case)}</Typography.Text>
+                                                                                    <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
                                                                                 </Space>
-                                                                                {item !== null &&
-                                                                                    <span style={{ cursor: 'pointer', paddingLeft: 10 }} onClick={() => targetJump(`/ws/${ws_id}/test_result/${item.obj_id}`)}>
-                                                                                        {item.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
+                                                                                {metric !== null &&
+                                                                                    <span style={{ cursor: 'pointer', paddingLeft: 10 }} onClick={() => targetJump(`/ws/${item.ws_id}/test_result/${metric.obj_id}`)}>
+                                                                                        {metric.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
                                                                                     </span>
                                                                                 }
                                                                             </CaseText>
@@ -318,9 +281,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                     </TestSuite>
                                 </div>
                             )
-                        })
-                        :
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                        }) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
             </TestWrapper>
         </>

@@ -1,13 +1,14 @@
-import { Space, Button, Spin, Table, Typography, message, Divider, Tabs, Steps, Collapse, Empty } from 'antd'
+import { Space, Button, Spin, Table, Typography, Divider, Tabs, Steps, Collapse, Empty } from 'antd'
 import { CaretRightFilled, CaretDownFilled, CaretRightOutlined } from '@ant-design/icons'
 import React, { useState, useEffect, useRef } from 'react'
 import { useClientSize } from '@/utils/hooks';
-import { querySuiteList } from './services'
+import { querySuiteList, queryConfList, queryDuplicate } from './services'
 import styles from './index.less'
 import _ from 'lodash'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { ReactComponent as BaseIcon } from '@/assets/svg/BaseIcon.svg'
 import ExpandTable from './ExpandTable'
+import { getSelectedDataFn } from './CommonMethod';
 import { requestCodeMessage } from '@/utils/utils';
 import { Access, useAccess } from 'umi';
 const { Panel } = Collapse;
@@ -22,67 +23,27 @@ export default (props: any) => {
     const allGroupData = groupAll.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length) // 去掉空组但基线组除外
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
     const [copySuitData, setCopySuitData] = useState<any>({}) // 复制得全量数据
+    const [duplicateData, setDuplicateData] = useState<any>([]) // 复制得全量数据
+    const [oneLevelDetailData, setOneLevelDetailData] = useState<any>([])
+    const [confData, setConfData] = useState<any>({})
     const [loading, setLoading] = useState(true)
+    const [duplicateLoading, setDuplicateLoading] = useState(false)
     const [tab, setTab] = useState('functional')
-
-    let [selectedFunRowKeys, setSelectedFunRowKeys] = useState<any>([])
-    let [selectedPersRowKeys, setSelectedPersRowKeys] = useState<any>([])
-
-    let [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
-    let [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
-
-    const [expandKeyFun, setExpandKeyFun] = useState<string[]>([])
-    const [expandKeyPerf, setExpandKeyPerf] = useState<string[]>([])
-
+    const [selectedFuncRowKeys, setSelectedFuncRowKeys] = useState<any>([])
+    const [selectedPerfRowKeys, setSelectedPerfRowKeys] = useState<any>([])
+    const [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
+    const [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
     const [currentStep, setCurrentStep] = useState(0)
     const [expandRepeatTableKey, setExpandRepeatTableKey] = useState<string[]>([])
     const [selSuiteData, setSelSuiteData] = useState<any>()
-    const [groupRelConf, setGroupRelConf] = useState(_.fill(Array(allGroupData.length + 1), 0))
     const [currentJobIndex, setCurrentJobIndex] = useState()
-
     const allFunRowKeys: any = useRef(null)
     const allPersRowKeys: any = useRef(null)
 
-    const handleStepChange = (current: number) => {
-        if (current === 1) {
-            let func_suite = suitData.func_suite_dic || {}
-            let perf_suite = suitData.perf_suite_dic || {}
-            let newSuiteData = {
-                func_suite_dic: getSelectedDataFn(func_suite, selectedFunRowKeys),
-                perf_suite_dic: getSelectedDataFn(perf_suite, selectedPersRowKeys)
-            }
-            let func_suite_dic = _.cloneDeep(newSuiteData).func_suite_dic || {}
-            let perf_suite_dic = _.cloneDeep(newSuiteData).perf_suite_dic || {}
-
-            const selData = [...Object.values(func_suite_dic), ...Object.values(perf_suite_dic)]
-            let selKeys = [...Object.keys(func_suite_dic), ...Object.keys(perf_suite_dic)]
-            selKeys = selKeys.map(key => String(key))
-            // 统计每个组下conf关联的job大于等于2的conf有多少条，空组除外
-            const arr: any = _.fill(Array(allGroupData.length + 1), 0);
-            selData.forEach((suite: any) => {
-                const confDic = suite.conf_dic
-                Object.values(confDic).forEach((conf: any) => {
-                    const groupArr = conf['compare_groups']
-                    const baseGroup = conf['base_obj_li']
-                    if (_.isArray(baseGroup) && baseGroup.length > 1) arr[0] = ++arr[0]
-                    if (_.isArray(groupArr)) {
-                        groupArr.forEach((item: any, index: number) => {
-                            if (_.isArray(item) && item.length > 1) arr[index + 1] = ++arr[index + 1]
-                        })
-                    }
-                })
-            })
-            setGroupRelConf(arr)
-            setSelSuiteData(selData)
-            setExpandRepeatTableKey(selKeys)
-        }
-
-        setCurrentStep(current)
-
-    }
     const handleTabClick = (tab: string) => {
         setTab(tab)
     }
+
     const getemptyTableDom = () => {
         const emptyDom: any = document.querySelector('#list_container table .ant-empty-normal')
         if (emptyDom) {
@@ -91,111 +52,83 @@ export default (props: any) => {
             emptyDom.style.margin = `${number}px 0`
         }
     }
+
     useEffect(() => {
         getemptyTableDom()
     }, [suitData, tab, layoutHeight])
-    useEffect(() => {
-        if (currentStep === 0) setTab('functional')
-        if (currentStep === 1) {
-            const index = _.findIndex(groupRelConf, function (o) { return o });
-            setTab(`group${index}`)
-        }
-    }, [currentStep])
 
     const getSuitDetail = async (params: any) => {
         let { data, code, msg } = await querySuiteList(params)
-
         if (code === 200) {
             let obj1 = data.func_suite_dic || {}
             let obj2 = data.perf_suite_dic || {}
+            let arr = []
             const arrKey1 = Object.keys(obj1).map((keys: any) => String(keys))
             const arrKey2 = Object.keys(obj2).map((keys: any) => String(keys))
-            const arrVal1 = Object.values(obj1)
-            const arrVal2 = Object.values(obj2)
-            let secondFunKeys: any = []
-            let secondPersKeys: any = []
-            let allObjKeyFun = {}
-            let allObjKeyPerf = {}
-            arrVal1.forEach((obj: any) => {
-                const objConf = obj.conf_dic || {}
-                secondFunKeys = [...secondFunKeys, ...Object.keys(objConf)]
-                const id = obj.suite_id
-                allObjKeyFun[id] = Object.keys(objConf)
-                allObjKeyFun[id] = allObjKeyFun[id].map(keys => String(keys))
-
-            })
-            arrVal2.forEach((obj: any) => {
-                const objConf = obj.conf_dic || {}
-                secondPersKeys = [...secondPersKeys, ...Object.keys(objConf)]
-                const id = obj.suite_id
-                allObjKeyPerf[id] = Object.keys(objConf)
-                allObjKeyPerf[id] = allObjKeyPerf[id].map(keys => String(keys))
-            })
-
-            secondFunKeys = secondFunKeys.map((keys: any) => String(keys))
-            secondPersKeys = secondPersKeys.map((keys: any) => String(keys))
-
-            allFunRowKeys.current = [...secondFunKeys, ...arrKey1]
-            allPersRowKeys.current = [...secondPersKeys, ...arrKey2]
-            if (!allFunRowKeys.current.length && allPersRowKeys.current.length) setTab('performance')
-            setSelectedFunRowKeys([...secondFunKeys, ...arrKey1])
-            setSelectedPersRowKeys([...secondPersKeys, ...arrKey2])
-
-            setAllObjKeyFun(allObjKeyFun)
-            setAllObjKeyPerf(allObjKeyPerf)
-
-            setExpandKeyFun(arrKey1)
-            setExpandKeyPerf(arrKey2)
+            allFunRowKeys.current = [...arrKey1]
+            allPersRowKeys.current = [...arrKey2]
+            let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
+            if (tabValue) setTab('performance')
+            arr = tabValue ? Object.values(obj2) : Object.values(obj1)
+            let obj = tabValue ? obj2 : obj1
+            setSelectedFuncRowKeys([...arrKey1])
+            setSelectedPerfRowKeys([...arrKey2])
+            setOneLevelDetailData(arr)
             setSuitData(data)
-            setCopySuitData(data)
+            setConfData(obj)
             setLoading(false)
         } else {
             requestCodeMessage(code, msg)
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (currentStep === 0) setTab('functional')
+        if (currentStep === 1) setTab('group0')
+    }, [currentStep])
+
     useEffect(() => {
         let arr = _.get(baselineGroup, 'members')
-
         const paramData: any = {
             func_data: {
-                base_obj_li: [],
-                compare_groups: []
+                base_job: [],
+                compare_job: []
             },
             perf_data: {
-                base_obj_li: [],
-                compare_groups: []
+                base_job: [],
+                compare_job: []
             }
         }
         if (_.isArray(arr)) {
             const flag = baselineGroup.type === 'baseline'
             arr.forEach((item: any) => {
                 if (!flag && item.test_type === '功能测试') {
-                    paramData.func_data.base_obj_li.push({ is_job: 1, obj_id: item.id })
+                    paramData.func_data.base_job.push(item.id)
                 }
                 if (!flag && item.test_type === '性能测试') {
-                    paramData.perf_data.base_obj_li.push({ is_job: 1, obj_id: item.id })
+                    paramData.perf_data.base_job.push(item.id)
                 }
                 if (flag && item.test_type === 'functional') {
-                    paramData.func_data.base_obj_li.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
+                    paramData.func_data.base_job.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
                 }
                 if (flag && item.test_type === 'performance') {
-                    paramData.perf_data.base_obj_li.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
+                    paramData.perf_data.base_obj.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
                 }
             })
         }
+        let brrFun: any = []
+        let brrFers: any = []
         allGroupData.forEach((item: any, index: number) => {
             let membersArr = _.get(item, 'members')
-            let brrFun: any = []
-            let brrFers: any = []
             if (_.isArray(membersArr)) {
                 const flag = baselineGroup.type === 'baseline'
                 membersArr.forEach((item: any) => {
                     if (!flag && item.test_type === '功能测试') {
-                        brrFun.push({ is_job: 1, obj_id: item.id })
+                        brrFun.push(item.id)
                     }
                     if (!flag && item.test_type === '性能测试') {
-                        brrFers.push({ is_job: 1, obj_id: item.id })
+                        brrFers.push(item.id)
                     }
                     if (flag && item.test_type === 'functional') {
                         brrFun.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
@@ -205,213 +138,246 @@ export default (props: any) => {
                     }
                 })
             }
-            paramData.func_data.compare_groups[index] = brrFun
-            paramData.perf_data.compare_groups[index] = brrFers
-
         })
-        paramData.group_num = allGroupData.length + 1
+        paramData.func_data.compare_job = brrFun
+        paramData.perf_data.compare_job = brrFers
         getSuitDetail(paramData)
-
     }, [])
 
-
     const handleClose = () => {
-        // setPadding(false)
         handleCancle()
     }
 
-    const getSelectedDataFn = (data: any, selectedKeys: any) => {
-        const objKeys = tab === 'functional' ? allObjKeyFun : allObjKeyPerf
-        // 二级
-
-        const suite = _.cloneDeep(data)
-        Object.values(suite).forEach((obj: any) => {
-            const childKeys: any = objKeys[obj.suite_id + '']
-            // 取交集
-            const arr = _.intersection(selectedKeys, childKeys)
-            if (selectedKeys.includes(String(obj.suite_id)) || arr.length) {
-                const conf_dic = Object.keys(obj.conf_dic)
-                conf_dic.forEach(keys => {
-                    if (!selectedKeys.includes(keys)) {
-                        delete obj.conf_dic[keys]
-                    }
+    const onExpand = async (expanded: boolean, record: any) => {
+        const { test_job_id, suite_id } = record
+        if (expanded) {
+            const data = await queryConfList({ test_job_id, suite_id })
+            if (data.code === 200) {
+                const { conf_dic } = data.data
+                confData[suite_id].conf_dic = conf_dic
+                setConfData({
+                    ...confData,
                 })
-
-            } else {
-                delete suite[obj.suite_id]
+                let selectedKeys: any = []
+                selectedKeys = [...selectedKeys, ...Object.keys(conf_dic)]
+                setSelectedFuncRowKeys([ ...selectedFuncRowKeys, ...selectedKeys ])
+                setSelectedPerfRowKeys([ ...selectedPerfRowKeys, ...selectedKeys ])
             }
-        })
-        return suite
+        }
+    }
 
+    useEffect(() => {
+        if (confData) {
+            let id: any = Object.keys(confData).map((keys: any) => String(keys))
+            let result = []
+            result = Object.values(confData).map((item: any, index: number) => {
+                if (item.conf_dic) {
+                    item.conf_list = Object.values(item.conf_dic)
+                    item.conf_list = item.conf_list.map((value: any, index: number) => {
+                        return (
+                            {
+                                key: value.conf_id,
+                                suite_id: id,
+                                conf_id: value.conf_id,
+                                conf_name: value.conf_name,
+                                title: 'Test conf',
+                                level: 2,
+                            }
+                        )
+                    })
+                } 
+                return item
+            })
+            setOneLevelDetailData(result)
+            let newObj = {}
+            let name = tab === 'functional' ? 'func_suite_dic' : 'perf_suite_dic'
+            newObj[name] = confData
+            setCopySuitData(newObj)
+            const arrVal = Object.values(confData)
+            let selectedKeys: any = []
+            let allObjKey: any = []
+            arrVal.forEach((obj: any) => {
+                const objConf = obj.conf_dic || {}
+                selectedKeys = [...selectedKeys, ...Object.keys(objConf)]
+                const id = obj.suite_id
+                allObjKey[id] = Object.keys(objConf).map((keys: any) => String(keys))
+            })
+            selectedKeys = selectedKeys.map((keys: any) => String(keys))
+            allFunRowKeys.current = [...id, ...selectedKeys]
+            allPersRowKeys.current = [...id, ...selectedKeys]
+            setAllObjKeyFun(allObjKey)
+            setAllObjKeyPerf(allObjKey)
+        }
+    }, [confData])
+    
+    const handleStepChange = async (current: number) => {
+        setDuplicateLoading(true)
+        let suite_data = _.cloneDeep(oneLevelDetailData)
+        if (current === 1) {
+            let group_jobs: any = []
+            const groupAll = _.cloneDeep(props.allGroupData)
+            // let baseIndex = baselineGroupIndex === -1 ? 0 : baselineGroupIndex
+            groupAll.map((item:any) => {
+                group_jobs.push({
+                    group_name: item.product_version,
+                    test_job_id: [].concat(item.members.map((i: any) => i.id))
+                })
+            })
+            let rowKeys = tab === 'functional' ? selectedFuncRowKeys : selectedPerfRowKeys
+            let selectdRows = suite_data.filter((i: any) => rowKeys.includes(String(i.suite_id)))
+            let suite_list: any = []
+            selectdRows.forEach((item: any) => {
+                let is_all = item.conf_dic ? 0 : 1
+                let conf_list =  item.conf_dic ? Object.keys(item.conf_dic).filter((i: any) => rowKeys.includes(String(i))) : []
+                if (item.test_job_id.length > 1) {
+                    suite_list.push({
+                        suite_id: item.suite_id,
+                        is_all,
+                        conf_list,
+                        test_job_id: item.test_job_id
+                    })
+                }
+            })
+            const params = {
+                group_jobs,
+                suite_list
+            }
+            const { data, code, msg } = await queryDuplicate(params)
+            if (code === 200) {
+                setSelSuiteData(data.duplicate_data)
+                setDuplicateLoading(false)
+            } else {
+                requestCodeMessage(code, msg)
+                setDuplicateLoading(false)
+            }
+        }
+        setDuplicateLoading(false)
+        setCurrentStep(current)
     }
 
     const handleOk = (sureOkFn: any) => {
-        let func_suite = suitData.func_suite_dic || {}
-        let perf_suite = suitData.perf_suite_dic || {}
-
+        let data = JSON.stringify(copySuitData) === '{}' ? suitData : copySuitData
+        let func_suite = data.func_suite_dic || {}
+        let perf_suite = data.perf_suite_dic || {}
+        let allGroupData = props.allGroupData || []
+        const baseIndex = baselineGroupIndex === -1 ? 0 : baselineGroupIndex
         let newSuiteData = {
-            func_suite_dic: getSelectedDataFn(func_suite, selectedFunRowKeys),
-            perf_suite_dic: getSelectedDataFn(perf_suite, selectedPersRowKeys)
+            func_suite_dic: getSelectedDataFn(
+                func_suite,
+                allGroupData,
+                baseIndex,
+                selectedFuncRowKeys,
+                duplicateData
+            ),
+            perf_suite_dic: getSelectedDataFn(
+                perf_suite,
+                allGroupData,
+                baseIndex,
+                selectedPerfRowKeys,
+                duplicateData
+            )
         }
         sureOkFn(newSuiteData)
     }
 
-    const onExpand = async (expanded: boolean, record: any) => {
-        const setFn = tab === 'functional' ? setExpandKeyFun : setExpandKeyPerf
-        const arr = tab === 'functional' ? expandKeyFun : expandKeyPerf
-        if (expanded) setFn([...arr, record.suite_id + ''])
-        if (!expanded) {
-            const brr = arr.filter(key => Number(key) !== Number(record.suite_id))
-            setFn(brr)
-        }
-    }
-
-
-    const selectedChange = (record, selected, selectedRows) => {
-        if (String(record.suite_id).startsWith('test_conf')) return
+    const selectedChange = (record: any, selected: any) => {
         // 去掉未选组的job 开始
-        let arrKeys = tab === 'functional' ? _.cloneDeep(selectedFunRowKeys) : _.cloneDeep(selectedPersRowKeys)
+        let arrKeys = tab === 'functional' ? _.cloneDeep(selectedFuncRowKeys) : _.cloneDeep(selectedPerfRowKeys)
         const objKeys = tab === 'functional' ? allObjKeyFun : allObjKeyPerf
+        let childKeys: any = !record.level ? objKeys[record.suite_id + ''] : objKeys[record.level_id + '']
         if (selected) {
-            let childKeys = []
-            // 一级
             if (!record.level) {
-                childKeys = objKeys[record.suite_id]
+                // 一级
                 arrKeys = [...arrKeys, record.suite_id + '', ...childKeys]
-            } else {
-                // 二级
-                childKeys = objKeys[record.level_id]
-                arrKeys = [...arrKeys, record.suite_id + '']
-                const flag = childKeys.every(val => arrKeys.includes(val))
-                if (flag) arrKeys = [...arrKeys, ...childKeys, record.level_id]
+                arrKeys = Array.from(new Set(arrKeys.map((keys: any) => String(keys))))
+            }else{
+                arrKeys = [...arrKeys, record.conf_id + '']
+                arrKeys = Array.from(new Set(arrKeys.map((keys: any) => String(keys))))
             }
-
-            arrKeys = arrKeys.map(keys => String(keys))
-            arrKeys = Array.from(new Set(arrKeys))
+           
         } else {
-            let childKeys: any = []
-            // 一级
             if (!record.level) {
-                childKeys = objKeys[record.suite_id + '']
+                // 一级
                 arrKeys = arrKeys.filter((keys: any) => !childKeys.includes(keys))
                 arrKeys = arrKeys.filter((keys: any) => String(keys) !== String(record.suite_id))
-            } else {
-                // 二级
-                arrKeys = arrKeys.filter((keys: any) => {
-                    if (String(keys) !== String(record.suite_id) && String(keys) !== String(record.level_id)) {
-                        return true
-                    }
-                    return false
-                })
-            }
+            }else{
+                arrKeys = arrKeys.filter((keys: any) => String(keys) !== String(record.conf_id))
+            }   
+            
         }
-
-        tab === 'functional' ? setSelectedFunRowKeys(arrKeys) : setSelectedPersRowKeys(arrKeys)
-
+        tab === 'functional' ? setSelectedFuncRowKeys(arrKeys) : setSelectedPerfRowKeys(arrKeys)
     }
+
     const rowSelection = {
-        selectedRowKeys: tab === 'functional' ? selectedFunRowKeys : selectedPersRowKeys,
+        selectedRowKeys: tab === 'functional' ? selectedFuncRowKeys : selectedPerfRowKeys,
         preserveSelectedRowKeys: false,
         onSelect: selectedChange,
         checkStrictly: false,
         onSelectAll: (selected: boolean) => {
-            if (!selected) tab === 'functional' ? setSelectedFunRowKeys([]) : setSelectedPersRowKeys([])
-            if (selected) tab === 'functional' ? setSelectedFunRowKeys(allFunRowKeys.current) : setSelectedPersRowKeys(allPersRowKeys.current)
+            if (!selected) tab === 'functional' ? setSelectedFuncRowKeys([]) : setSelectedPerfRowKeys([])
+            if (selected) tab === 'functional' ? setSelectedFuncRowKeys(allFunRowKeys.current) : setSelectedPerfRowKeys(allPersRowKeys.current)
         },
     };
 
     const columns = [
-        Table.SELECTION_COLUMN,
-        Table.EXPAND_COLUMN,
         {
             dataIndex: 'suite_name',
             title: 'Test Suite',
             key: 'Test Suite',
         }
     ]
-
-    let oneLevelFunData: any = []
-    let oneLevelPerslData: any = []
+    const ConfColumns = [
+        {
+            dataIndex: 'conf_name',
+            title: 'Test Conf',
+            key: 'Test Conf',
+        }
+    ]
+    
     let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
     let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
-    const arrKey1 = Object.keys(obj1)
-    const arrKey2 = Object.keys(obj2)
-    const arrVal1 = Object.values(obj1)
-    const arrVal2 = Object.values(obj2)
-    oneLevelFunData = arrVal1.map((obj: any, index: number) => ({ ...obj, suite_id: arrKey1[index] }))
-    oneLevelPerslData = arrVal2.map((obj: any, index: number) => ({ ...obj, suite_id: arrKey2[index] }))
-    let oneLevelDetailData = tab === 'functional' ? oneLevelFunData : oneLevelPerslData
+    let dataSource: any = []
+    if (tab === 'functional' && JSON.stringify(obj1) !== '{}') {
+        dataSource = oneLevelDetailData
+    }
+    if (tab === 'performance' && JSON.stringify(obj2) !== '{}') {
+        dataSource = oneLevelDetailData
+    }
 
-    oneLevelDetailData = oneLevelDetailData.map((item: any, index: number) => {
-        /* const aa = {
-            key: 2234,
-            suite_id: `test_conf_${index}`,
-            suite_name: 'Test conf',
-            title: 'Test conf',
-            level: 2
-        } */
-        const obj = item.conf_dic
-        item.confs = Object.values(obj)
-        item.confs = item.confs.map((value: any, index: number) => {
-            return (
-                {
-                    key: value.conf_id,
-                    suite_id: value.conf_id,
-                    suite_name: value.conf_name,
-                    title: 'Test conf',
-                    level: 2,
-                    level_id: item.suite_id
-                }
-            )
-        })
-        // item.children.unshift(aa)
-        return item
-    })
     // 滚动条参数
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条
         height: maxHeight - 330 > 430 ? 430 : maxHeight - 330 + 14,
         // width: 2000
     }
+
     const colCallback = (key: any) => {
         setExpandRepeatTableKey(key)
     }
-    const handleChangeDefaultJob = (itemSuitId: any, itemSuit: any) => {
-        let suiteCopy = _.cloneDeep(suitData)
-        let func_suite_dic = suitData.func_suite_dic || {}
-        let perf_suite_dic = suitData.perf_suite_dic || {}
-        let flag = true
-        for (let key in func_suite_dic) {
-            if (String(key) === String(itemSuitId) && flag) {
-                func_suite_dic[key] = itemSuit
-                flag = false
+    const handleChangeDefaultJob = (itemSuit: any) => {
+        let duplicate_data: any = []
+        itemSuit.forEach((item: any) => {
+            duplicate_data.push({
+                conf_id: item.conf_id,
+                job_id: item.job_list.filter((child: any) => child.isSelect)
+            })
+        });
+       
+        duplicate_data = duplicate_data.filter((item:any) => !!item.job_id.length)
+        duplicate_data = duplicate_data.map((item:any) => {
+            return {
+                ...item,
+                job_id: item.job_id[0].job_id
             }
-        }
-        if (flag) {
-            for (let key in perf_suite_dic) {
-                if (String(key) === String(itemSuitId) && flag) {
-                    perf_suite_dic[key] = itemSuit
-                    flag = false
-                }
-            }
-        }
-        suiteCopy = { ...suiteCopy, func_suite_dic, perf_suite_dic }
-
-        let selSuiteDataCopy = _.cloneDeep(selSuiteData)
-        selSuiteDataCopy = selSuiteDataCopy.map((item: any) => {
-            if (String(_.get(item, 'suite_id')) === String(itemSuitId)) return itemSuit
-            return item
         })
-        setSelSuiteData(selSuiteDataCopy)
-        setCopySuitData(suiteCopy)
-        setSuitData(suiteCopy)
+        setDuplicateData([...duplicateData, ...duplicate_data])
     }
+    
     const selectRepeatData = () => {
-        // if(!selSuiteData.length) return ''
         let currentGroupIndex = Number(tab.replace('group', ''))
         const flag = isNaN(currentGroupIndex)
-        const blag = groupRelConf.every(val => val === 0)
-        if (!selSuiteData.length || blag) {
+        let cId = flag ? 0 : currentGroupIndex
+        if (!selSuiteData.length) {
             return <Empty
                 description="暂无重复数据"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -424,17 +390,9 @@ export default (props: any) => {
                 expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
             >
                 {
-                    selSuiteData.map((item: any) => {
-                        const confDic = item.conf_dic
-                        let arr: any = []
-                        Object.values(confDic).forEach((obj: any) => {
-                            const isFlag = !flag && currentGroupIndex > 0
-                            const groupArr = isFlag ? obj['compare_groups'][currentGroupIndex - 1] : obj['base_obj_li']
-                            if (groupArr.length > 1) arr = [...arr, ...groupArr]
-                        })
-                        if (!arr.length) return ''
+                    selSuiteData[cId].suite_list.map((item: any,idx:number) => {
                         return (
-                            <Panel header={_.get(item, 'suite_name')} key={_.get(item, 'suite_id')} className={styles.Panel}>
+                            <Panel header={_.get(item, 'suite_name')} key={idx} className={styles.Panel}>
                                 <ExpandTable
                                     setCurrentJobIndex={setCurrentJobIndex}
                                     currentJobIndex={currentJobIndex}
@@ -453,49 +411,38 @@ export default (props: any) => {
         return (
             <Table
                 rowSelection={rowSelection}
-                dataSource={oneLevelDetailData}
+                dataSource={dataSource}
                 columns={columns}
                 rowKey={(record: any) => record.suite_id + ''}
                 loading={loading}
                 pagination={false}
                 size="small"
                 expandable={{
-                    columnWidth: 0,
                     onExpand: (_, record: any) => {
                         onExpand(_, record)
                     },
+                    indentSize:20,
                     expandedRowRender(record) {
-                        if (!record.confs || record.confs.length === 0) return <></>
-                        return (
-                            <Table
-                                columns={columns}
-                                showHeader={false}
-                                pagination={false}
-                                dataSource={record.confs}
-                                size="small"
-                                rowKey={(record: any) => record.suite_id + ''}
-                                rowSelection={{
-                                    selectedRowKeys: tab === 'functional' ? selectedFunRowKeys : selectedPersRowKeys,
-                                    onSelect(record, selected, selectedRows) {
-                                        const allKeys = tab === "functional" ? selectedFunRowKeys : selectedPersRowKeys
-                                        const selectedRowKeys = selected ? allKeys.concat(record.suite_id + "") : allKeys.filter((item: any) => item !== record.suite_id + "")
-
-                                        if (tab === "functional")
-                                            setSelectedFunRowKeys(selectedRowKeys)
-                                        else
-                                            setSelectedFunRowKeys(selectedRowKeys)
-                                    }
-                                }}
-                            />
-                        )
+                        return <Table 
+                            className={styles.ConfColum}
+                            columns={ConfColumns} 
+                            dataSource={record.conf_list}
+                            pagination={false}
+                            rowKey={(record: any) => record.conf_id + ''}
+                            rowSelection={rowSelection}
+                        />
                     },
-                    defaultExpandedRowKeys: selectedPersRowKeys,
+                    // defaultExpandedRowKeys:selectedPerfRowKeys,
+
                     expandIcon: ({ expanded, onExpand, record }: any) => {
-                        return (
-                            expanded ?
-                                (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
-                                (<CaretRightFilled onClick={e => onExpand(record, e)} />)
-                        )
+                        if (!record.level) {
+                            return (
+                                expanded ?
+                                    (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
+                                    (<CaretRightFilled onClick={e => onExpand(record, e)} />)
+                            )
+                        }
+                        return
                     },
                 }}
             />
@@ -517,13 +464,7 @@ export default (props: any) => {
     }
 
     const allGroupReact = () => {
-        let groupAll = _.cloneDeep(allGroupData)
-        const baseGroup = _.cloneDeep(baselineGroup)
-        if (JSON.stringify(baseGroup) === '{}' && !groupAll.length) return ''
-        groupAll = [baseGroup, ...groupAll]// 去掉空组
         const num = /^group[0-9]+$/.test(tab) ? tab.replace('group', '') : 0
-        const blag = groupRelConf.every(val => val === 0)
-
         return (
             <>
                 <Tabs
@@ -533,23 +474,23 @@ export default (props: any) => {
                     activeKey={tab}
                 >
                     {
-                        groupAll.map((groupItem: any, index: number) => {
-                            if (!groupRelConf[index]) return ''
-                            const version = _.get(groupItem, 'product_version')
+                        selSuiteData.map((item: any, index: number) => {
                             return <Tabs.TabPane
                                 tab={<>
-                                    {index === 0 && <span style={{ marginRight: 5 }}><BaseIcon /></span>}
-                                    {version}
+                                    {baselineGroupIndex === index && <span style={{ marginRight: 5 }}><BaseIcon /></span>}
+                                    {item.group_name}
                                 </>}
                                 key={`group${index}`} />
                         })
                     }
                 </Tabs>
-                {!blag && <Typography.Text style={{ display: 'inline-block', height: '44px', lineHeight: '44px' }}>注：{groupRelConf[num]}个conf有重复job数据</Typography.Text>}
+                <Typography.Text style={{ display: 'inline-block', height: '44px', lineHeight: '44px' }}>
+                    {selSuiteData[num].desc}
+                </Typography.Text>
             </>
         )
     }
-    
+
     return (
         <div className={styles.compare_suite} id="list_container">
             <div className={styles.server_provider}>
@@ -568,9 +509,8 @@ export default (props: any) => {
 
             <Steps size="small" current={currentStep} onChange={handleStepChange} className={styles.steps}>
                 <Step title="选择对比数据" />
-                <Step title="选择重复数据" disabled={loading} />
+                <Step title="选择重复数据" disabled={duplicateLoading} />
             </Steps>
-
 
             <Spin spinning={loading}>
                 <div className={styles.suit_detail}>
@@ -582,6 +522,7 @@ export default (props: any) => {
                     </Scrollbars>
                 </div>
             </Spin>
+
             <div className={styles.bottom_button}>
                 <Divider style={{ margin: '38px 0 12px 0', width: 'calc(100% + 48px)', transform: 'translateX(-24px)' }} />
                 {
@@ -591,14 +532,9 @@ export default (props: any) => {
                             <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
                         </Access>
                         <Button disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button>
-                        <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)}>下一步</Button>
+                        <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)} loading={duplicateLoading}>下一步</Button>
                     </Space>
                 }
-                {/* {
-                    currentStep === 1 &&
-                    <Button onClick={handleClose}>上一步</Button>
-                } */}
-
                 {
                     currentStep === 1 &&
                     <div>
@@ -614,6 +550,5 @@ export default (props: any) => {
                 }
             </div>
         </div>
-
     )
 }

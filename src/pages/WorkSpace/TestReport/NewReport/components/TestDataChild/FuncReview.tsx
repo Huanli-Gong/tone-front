@@ -37,8 +37,7 @@ const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
     const { child, name, id, subObj, onDelete, dataSource, setDataSource } = props
-    const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-    const { btnState, allGroupData, baselineGroupIndex, groupLen } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, groupLen, isOldReport } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -46,16 +45,15 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [funcData, setFuncData] = useState<any>({})
-    // let group = allGroupData?.length
 
     useEffect(() => {
         setFuncData(child)
     }, [child])
 
-    const baseIndex = useMemo(()=>{
-        if(baselineGroupIndex === -1) return 0
+    const baseIndex = useMemo(() => {
+        if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
-    },[ baselineGroupIndex ])
+    }, [baselineGroupIndex])
 
     // 筛选操作
     const handleConditions = (value: any) => {
@@ -140,7 +138,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 []
         )
     }, [btn])
-   
+
     const handleDelete = (name: string, row: any, rowKey: any) => {
         if (name == 'suite') {
             setDataSource(dataSource.map((item: any) => {
@@ -221,12 +219,12 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
-        let subCaseList = _.cloneDeep(sub_case_list)
+        let subCaseList = isOldReport ? _.cloneDeep(sub_case_list) : sub_case_list
         return (
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                        item.compare_data.splice(baseIndex, 0, item.result)
+                        isOldReport && item.compare_data.splice(baseIndex, 0, item.result)
                         const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
                         len.forEach((i) => item.compare_data.push('-'))
                         return (
@@ -236,19 +234,28 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
-                                    !!item.compare_data.length ?
-                                        item.compare_data.map((cur: any,idx:number) => {
+                                    isOldReport ?
+                                        !!item.compare_data.length ?
+                                            item.compare_data.map((cur: any, idx: number) => {
+                                                return (
+                                                    <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
+                                                        <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
+                                                    </SubCaseText>
+                                                )
+                                            })
+                                            :
+                                            <SubCaseText gLen={groupLen} btnState={btnState}>
+                                                <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
+                                            </SubCaseText>
+                                        :
+                                        !!item.compare_data.length &&
+                                        item.compare_data.map((cur: any, idx: number) => {
                                             return (
                                                 <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                     <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
                                                 </SubCaseText>
                                             )
                                         })
-                                        :
-                                        <SubCaseText gLen={groupLen} btnState={btnState}>
-                                            <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
-                                        </SubCaseText>
-
                                 }
                             </TestSubCase>
                         )
@@ -257,6 +264,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </>
         )
     }
+
     let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData.list.map((suite: any, idx: number) => (
             <TestSuite key={idx}>
@@ -283,7 +291,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     {
                                         i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
                                             对比结果
-                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
                                                 {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                             </span>
                                             <DiffTootip />
@@ -333,8 +341,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         success_case: '-',
                                         fail_case: '-'
                                     })
-
                             }
+                            const data_list = isOldReport ? metricList : conf_data
                             return (
                                 <div key={cid}>
                                     <TestCase expand={expand}>
@@ -349,7 +357,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             </EllipsisPulic>
                                         </CaseTitle>
                                         {
-                                            metricList?.map((item: any,idx: number) => {
+                                            data_list?.map((item: any, idx: number) => {
                                                 return (
                                                     <CaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                         <Space size={16}>
@@ -358,7 +366,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                         </Space>
                                                         {item !== null &&
-                                                            <a style={{ cursor: 'pointer', paddingLeft: 10 }} href={`/ws/${ws_id}/test_result/${item.obj_id}`} target="_blank">
+                                                            <a style={{ cursor: 'pointer', paddingLeft: 10 }} href={`/ws/${suite.ws_id}/test_result/${item.obj_id}`} target="_blank">
                                                                 {item.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
                                                             </a>
                                                         }

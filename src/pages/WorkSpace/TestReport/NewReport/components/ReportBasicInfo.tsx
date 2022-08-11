@@ -1,7 +1,7 @@
 import React, { useContext, memo } from 'react';
 import { SettingTextArea } from './EditPublic';
 import { ReportContext } from '../Provider';
-import { ModuleWrapper, EditTitle, SubTitle } from '../ReportUI';
+import { ModuleWrapper, SubTitle } from '../ReportUI';
 import _ from 'lodash';
 const ReportBasicInfo = (props: any) => {
     const { btnState, obj, setObj, saveReportData, summaryData, btnConfirm, domainResult } = useContext(ReportContext)

@@ -4,6 +4,7 @@ import { Space, Tooltip } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as BaseLine } from '@/assets/svg/Report/BaseLine.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import { isNaN, isUndefined } from 'lodash';
 import {
     ModuleWrapper,
     Summary,
@@ -20,12 +21,11 @@ import {
 } from '../ReportUI'
 
 const ReportSummary = () => {
-    const { logoData, envData, domainResult, baselineGroupIndex, groupLen } = useContext(ReportContext)
-    // let group = allGroupData?.length
+    const { logoData, envData, domainResult, groupLen } = useContext(ReportContext)
     const conversionNum = (val: any) => {
         if (val == 0) {
             return 0;
-        } else if (val == undefined) {
+        } else if (isNaN(val) || isUndefined(val)){
             return '-';
         } else {
             return val;
@@ -64,13 +64,13 @@ const ReportSummary = () => {
                         <PerfResultTitle gLen={groupLen}>性能测试</PerfResultTitle>
                         {
                             Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { all, increase, decline } = item.perf_data || item
+                                const { perfAll, increase, decline } = item.perf_data || item
                                 return (
                                     <PerfResultData gLen={groupLen} key={idx}>
                                         <div style={{ display: 'flex', margin: '18px 0' }}>
                                             <Statistical>
                                                 <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(baselineGroupIndex === idx?  '-' : all)}</b>
+                                                <b className="all">{conversionNum(perfAll)}</b>
                                             </Statistical>
                                             <Statistical>
                                                 <i className="logo">上升</i><br />
@@ -93,13 +93,13 @@ const ReportSummary = () => {
                         <PerfResultTitle gLen={groupLen}>性能测试</PerfResultTitle>
                         {
                             Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { all, increase, decline } = item.perf_data || item
+                                const { perfAll, increase, decline } = item.perf_data || item
                                 return (
                                     <PerfResultData gLen={groupLen} key={idx}>
                                         <div style={{ display: 'flex', margin: '18px 0' }}>
                                             <Statistical>
                                                 <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(baselineGroupIndex === idx?  '-' : all)}</b>
+                                                <b className="all">{conversionNum(perfAll)}</b>
                                             </Statistical>
                                             <Statistical>
                                                 <i className="logo">上升</i><br />
@@ -122,13 +122,13 @@ const ReportSummary = () => {
                         <FuncResultTitle gLen={groupLen}>功能测试</FuncResultTitle>
                         {
                             Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { all, success, fail } = item.func_data || item
+                                const { funcAll, success, fail } = item.func_data || item
                                 return (
                                     <FuncResultData gLen={groupLen} key={idx}>
                                         <div style={{ display: 'flex', margin: '18px 0' }}>
                                             <Statistical >
                                                 <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(all)}</b>
+                                                <b className="all">{conversionNum(funcAll)}</b>
                                             </Statistical>
                                             <Statistical >
                                                 <i className="logo">通过</i><br />
@@ -151,13 +151,13 @@ const ReportSummary = () => {
                         <FuncResultTitle gLen={groupLen}>功能测试</FuncResultTitle>
                         {
                             Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { all, success, fail } = item.func_data || item
+                                const { funcAll, success, fail } = item.func_data || item
                                 return (
                                     <FuncResultData gLen={groupLen} key={idx}>
                                         <div style={{ display: 'flex', margin: '18px 0' }}>
                                             <Statistical >
                                                 <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(all)}</b>
+                                                <b className="all">{conversionNum(funcAll)}</b>
                                             </Statistical>
                                             <Statistical >
                                                 <i className="logo">通过</i><br />

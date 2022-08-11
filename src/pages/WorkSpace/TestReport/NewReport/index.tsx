@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Col, Breadcrumb, Button, message, Spin } from 'antd';
 import { ReactComponent as IconEdit } from '@/assets/svg/icon_edit.svg';
 import { ReactComponent as IconWarp } from '@/assets/svg/iconEdit.svg';
@@ -10,8 +10,7 @@ import ReportTestEnv from './components/ReportTestEnv';
 import ReportTestPref from './components/ReportTestPerf';
 import { useClientSize } from '@/utils/hooks'
 import Catalog from './components/Catalog'
-// import { writeDocumentTitle } from '@/utils/hooks';
-import { editReport, saveReport, detailTemplate, reportDetail } from '../services';
+import { editReport, saveReport } from '../services';
 import { history, useAccess, Access, useParams } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
@@ -21,14 +20,13 @@ import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadD
 import { CreatePageData, EditPageData } from './hooks';
 
 const Report = (props: any) => {
+    const access = useAccess();
     const { ws_id } = props.match.params
-    // const { report_id, creator_id } = useParams();
     const { report_id } = useParams() as any;
     const [btnState, setBtnState] = useState<Boolean>(false)
     const [btnConfirm, setBtnConfirm ] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
     const { height: windowHeight } = useClientSize()
-    const access = useAccess();
     const bodyRef = useRef<any>(null)
     const [obj, setObj] = useState<any>({
         test_item:{
@@ -36,7 +34,7 @@ const Report = (props: any) => {
             perf_data:[]
         }
     })
-    
+    const creator_id = window.location.search
     const routeName = props.route.name
     
     const basicData:any = routeName === 'Report' || routeName === 'EditReport' || routeName === 'ShareReport' ? EditPageData(props) : CreatePageData(props);
@@ -55,7 +53,7 @@ const Report = (props: any) => {
         queryReport,
     } = basicData
     
-    //writeDocumentTitle(`Workspace.${props.route.name}`)
+    const groupLen = allGroupData?.length
     window.document.title = saveReportData.name || 'T-one'
 
     useEffect(() => {
@@ -65,7 +63,6 @@ const Report = (props: any) => {
             setBtnState(false)
         }else {
             setBtnState(true)
-            //env?.base_index = baselineGroupIndex
             obj.test_env = _.cloneDeep(environmentResult) 
             obj.test_conclusion = _.cloneDeep(summaryData)
             setObj({
@@ -73,10 +70,6 @@ const Report = (props: any) => {
             })
         }
     }, [routeName])
-
-    const handleEdit = () => {
-        setBtnState(true)
-    }
 
     // job_li
     const getSelAllJob = () => {
@@ -92,7 +85,7 @@ const Report = (props: any) => {
         }
         return result
     }
-    const creator_id = window.location.search
+
     // 面包屑
     const BreadcrumbItem: React.FC<any> = () => (
         <ReportBread>
@@ -116,7 +109,7 @@ const Report = (props: any) => {
                                                 <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} />编辑</span>
                                             }
                                         >
-                                            <span style={{ cursor: 'pointer' }} onClick={handleEdit}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                            <span style={{ cursor: 'pointer' }} onClick={()=> setBtnState(true)}><IconEdit style={{ marginRight: 4 }} />编辑</span>
                                         </Access>
                                     </Access>
                                 }
@@ -140,8 +133,6 @@ const Report = (props: any) => {
         }
     }, [])
     
-    
-   
     //保存报告
     const handleSubmit = async () => {
         setBtnConfirm(true)
@@ -173,7 +164,8 @@ const Report = (props: any) => {
             }
         }
     }
-    let groupLen = allGroupData?.length
+    const isOldReport =  '2022-8-10 10:05:45' > saveReportData?.gmt_created
+
     return (
         <ReportContext.Provider value={{
             btnState,
@@ -192,7 +184,7 @@ const Report = (props: any) => {
             collapsed,
             groupLen,
             bodyRef,
-            ws_id,
+            isOldReport,
             setCollapsed,
             setObj
         }}>
@@ -231,6 +223,6 @@ const Report = (props: any) => {
         </ReportContext.Provider>
     )
 }
-export default memo(Report);
+export default Report;
 
 

@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Space, Popconfirm, Button,message, Popover } from 'antd';
+import { Space, Popconfirm, Button, message, Popover } from 'antd';
 import { history, Access, useAccess } from 'umi'
 import _ from 'lodash'
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { CloseOutlined, RightOutlined } from '@ant-design/icons'
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport'
-import { querySuiteList,queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from '../services'
-import {handleCompareOk,getJobRefSuit} from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
+import { querySuiteList, queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from '../services'
+import { getJobRefSuit, handleDomainList, getSelectedDataFn, fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
-    const {selectedChange, wsId, allSelectRowData} = props
+    const { selectedChange, wsId, allSelectRowData } = props
     const access = useAccess()
-    const scrollbarsRef:any = useRef(null)
+    const scrollbarsRef: any = useRef(null)
     const [padding, setPadding] = useState(false)
     const [firstRowData, setFirstRowData] = useState([])
     const [secondRowData, setSecondRowData] = useState([])
@@ -36,14 +36,17 @@ export default (props: any) => {
             window.removeEventListener('resize', onResizeWidth)
         }
     }, [])
+
     useEffect(() => {
         onResizeWidth()
-    },[allSelectRowData])
-    const handleCancle = () =>{
+    }, [allSelectRowData])
+
+    const handleCancle = () => {
         selectedChange()
     }
-    const handleNext = (path:string) =>{
-        if(path === 'test_report/report') return
+
+    const handleNext = (path: string) => {
+        if (path === 'test_report/report') return
         history.push({
             pathname: `/ws/${wsId}/${path}`,
             state: {
@@ -53,20 +56,20 @@ export default (props: any) => {
             }
         })
     }
- 
-    const handleDelete = (obj:any) => {
-        selectedChange(obj,false)
+
+    const handleDelete = (obj: any) => {
+        selectedChange(obj, false)
     }
 
-
-   const getScrollLeftVal = () => {
-        if (scrollbarsRef.current){
-           const scrollTop = scrollbarsRef.current.getScrollLeft();
+    const getScrollLeftVal = () => {
+        if (scrollbarsRef.current) {
+            const scrollTop = scrollbarsRef.current.getScrollLeft();
             return scrollTop
         }
     }
+
     const handleScroll = () => {
-        const box:any = document.getElementById('job_group')
+        const box: any = document.getElementById('job_group')
         const width = box.clientWidth
         if (scrollbarsRef.current) {
             const scrollTop = getScrollLeftVal()
@@ -90,50 +93,53 @@ export default (props: any) => {
         setFirstRowData(first)
         setSecondRowData(second)
     }, [allSelectRowData])
+
     const getSuitDetail = async (params: any) => {
         let { data, code, msg } = await querySuiteList(params)
         if (code === 200) {
             setSuitData(data)
-        }else {
-            requestCodeMessage( code , msg )
+        } else {
+            requestCodeMessage(code, msg)
         }
     }
+
     const handleSaveReportScript = () => {
-        const paramData:any = {
+        const paramData: any = {
             func_data: {
-                base_obj_li: [],
-                compare_groups: []
+                base_job: [],
+                compare_job: []
             },
             perf_data: {
-                base_obj_li: [],
-                compare_groups: []
+                base_job: [],
+                compare_job: []
             },
             group_num: 1
         }
         if (_.isArray(allSelectRowData)) {
             allSelectRowData.forEach((item: any) => {
                 if (item.test_type === '功能测试') {
-                    paramData.func_data.base_obj_li.push({ is_job: 1, obj_id: item.id })
+                    paramData.func_data.base_job.push(item.id)
                 }
                 if (item.test_type === '性能测试') {
-                    paramData.perf_data.base_obj_li.push({ is_job: 1, obj_id: item.id })
+                    paramData.perf_data.base_job.push(item.id)
                 }
                 if (item.test_type === 'functional') {
-                    paramData.func_data.base_obj_li.push({ is_job: 0, obj_id: item.id,baseline_type: 'func' })
+                    paramData.func_data.base_job.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
                 }
                 if (item.test_type === 'performance') {
-                    paramData.perf_data.base_obj_li.push({ is_job: 0, obj_id: item.id,baseline_type: 'perf' })
+                    paramData.perf_data.base_job.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
                 }
             })
         }
         getSuitDetail(paramData)
         saveReportDraw.current?.show(allSelectRowData)
     }
+
     const queryDomainGroupFn = async (paramData: any) => {
         const result = await queryDomainGroup(paramData)
         return result
-
     }
+
     const queryCompareResultFn = async (paramData: any) => {
         const result = await queryCompareResultList(paramData)
         return result
@@ -144,6 +150,7 @@ export default (props: any) => {
         return result
 
     }
+
     const getBaselineGroup = () => {
         const version = allSelectRowData.length ? allSelectRowData[0].product_version : 'Group1'
         const baselineGroup = {
@@ -155,9 +162,10 @@ export default (props: any) => {
         }
         return baselineGroup
     }
-    const handlEenvironment = (selData:any) => {
-        const {obj:baseObj} = getJobRefSuit(selData)
-        const compare_groups:[] = []
+
+    const handlEenvironment = (selData: any) => {
+        const { obj: baseObj } = getJobRefSuit(selData)
+        const compare_groups: [] = []
         const baselineGroup = getBaselineGroup()
         const brr: any = []
         let baseMembers = _.get(baselineGroup, 'members')
@@ -167,10 +175,10 @@ export default (props: any) => {
         const flag = baselineGroup.type === 'baseline'
         baseMembers.forEach((item: any) => {
             if (!flag) {
-                brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {}})
+                brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {} })
             }
             if (flag) {
-                brr.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: baseObj[item.id] || {}})
+                brr.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: baseObj[item.id] || {} })
             }
         })
         const base_group = {
@@ -183,83 +191,96 @@ export default (props: any) => {
             compare_groups
         }
         return paramData
-        // const generObj = queryCompareResultFn(paramData)
-        // const excuteResult: any = generObj.next();
-        // excuteResult.value.then((result: any) => {
-        //     const { code, msg } = result;
-        //     defaultOption(code, msg);
-        // })
     }
-    const creatReportCallback = (reportData:any) => { 
+
+    const creatReportCallback = (reportData: any) => {
         // suitData：已选的
-        const confIdArr:any = handleCompareOk(suitData).confIdArr
-        const paramCompare:any = handleCompareOk(suitData).paramData
-        const paramEenvironment = handlEenvironment(suitData)
-        Promise.all([queryCompareResultFn(paramCompare), queryEenvironmentResultFn(paramEenvironment),queryDomainGroupFn(confIdArr)])
+        let func_suite = suitData.func_suite_dic || {}
+        let perf_suite = suitData.perf_suite_dic || {}
+        const baseIndex = 0;
+        let func_keys = Object.keys(func_suite) || []
+        let perf_keys = Object.keys(perf_suite) || []
+        const duplicate: any = []
+        let allGroupData:any =  []
+        allGroupData.push({ members: allSelectRowData })
+        let newSuiteData = {
+            func_suite_dic: getSelectedDataFn(
+                func_suite,
+                allGroupData,
+                baseIndex,
+                func_keys,
+                duplicate
+            ),
+            perf_suite_dic: getSelectedDataFn(
+                perf_suite,
+                allGroupData,
+                baseIndex,
+                perf_keys,
+                duplicate
+            )
+        }
+        const params: any = handleDomainList(newSuiteData)
+        const paramEenvironment = handlEenvironment(newSuiteData)
+        Promise.all([queryEenvironmentResultFn(paramEenvironment), queryDomainGroupFn(params)])
             .then((result: any) => {
-                if (_.get(result[0],'code') === 200 && _.get(result[1],'code') === 200 && _.get(result[2],'code')=== 200) {
+                if (_.get(result[0], 'code') === 200 && _.get(result[1], 'code') === 200) {
                     history.push({
                         pathname: `/ws/${wsId}/test_create_report`,
                         state: {
-                            wsId: wsId,
-                            environmentResult: result[1].data,
+                            environmentResult: result[0].data,
                             baselineGroupIndex: 0,
                             allGroupData: [getBaselineGroup()],
-                            compareResult: result[0].data,
-                            compareGroupData: paramEenvironment.compare_groups,
-                            domainGroupResult: result[2].data,
+                            testDataParam: _.cloneDeep(newSuiteData),
+                            domainGroupResult: result[1].data,
                             saveReportData: reportData
                         }
                     })
                     return
                 }
-                if (result[1].code === 1358) {
+                if (result[0].code === 1358) {
                     message.error('请添加对比组数据')
-                    return
-                }
-                if (result[0].code !== 200) {
-                    message.error(result[0].msg)
                     return
                 }
                 if (result[1].code !== 200) {
                     message.error(result[1].msg)
                 }
             })
-           
+
             .catch((e) => {
                 message.error('请求失败')
                 console.log(e)
             })
     }
+    
     const getDisabled = () => {
         let disabled = false
         if (_.isArray(allSelectRowData)) {
             const versionArr = _.reduce(allSelectRowData, (arr: any, item: any) => {
                 const version = _.get(item, 'product_version')
                 const id = _.get(item, 'product_id')
-                arr.push({product_version: version, product_id: id })
+                arr.push({ product_version: version, product_id: id })
                 return arr
             }, [])
-            disabled =  _.uniqWith(versionArr, _.isEqual).length > 1 // 产品版本 + 产品id来判断唯一性
+            disabled = _.uniqWith(versionArr, _.isEqual).length > 1 // 产品版本 + 产品id来判断唯一性
         }
         return disabled
     }
-    
+
     return (
         <div className={styles.job_compare} style={{ display: allSelectRowData.length ? 'block' : 'none' }}>
             <div className={styles.title}>对比栏<span>（{allSelectRowData.length}）</span>  <Popover
-                        content={
-                            <div>
-                                {"合并规则：取所有Job的并集数据；"}
-                                <div>{"如果有重复的，排序靠前的Job优先。"}</div>
-                            </div>
-                        }
-                        placement="right"
-                    >
-                        <QuestionCircleOutlined
-                            className={styles.question_icon}
-                        />
-                    </Popover></div>
+                content={
+                    <div>
+                        {"合并规则：取所有Job的并集数据；"}
+                        <div>{"如果有重复的，排序靠前的Job优先。"}</div>
+                    </div>
+                }
+                placement="right"
+            >
+                <QuestionCircleOutlined
+                    className={styles.question_icon}
+                />
+            </Popover></div>
             <div className={styles.job_group} id='job_group'>
                 <Scrollbars style={scroll} ref={scrollbarsRef}>
                     <ul id='box'>
@@ -296,10 +317,10 @@ export default (props: any) => {
                         <Access accessible={access.IsWsSetting()}>
                             <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}>生成报告</Button>
                         </Access>
-                        <Button type="primary" onClick={_.partial(handleNext,'test_analysis/compare')}>对比分析</Button>
+                        <Button type="primary" onClick={_.partial(handleNext, 'test_analysis/compare')}>对比分析</Button>
                     </Space>
                 </div>
-                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id = {wsId} allGroup = {[getBaselineGroup()]}/>
+                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id={wsId} allGroup={[getBaselineGroup()]} />
             </div>
         </div>
     )

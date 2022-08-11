@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef, memo, useMemo } from 'react';
-import { Popconfirm, Empty } from 'antd';
+import { Popconfirm, Empty, Row, Col, Button } from 'antd';
 import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
@@ -27,7 +27,6 @@ const GroupBar = styled.div<{ width: number, y: number }>`
     position: absolute;
     top: 57px;
     height: 50px;
-    // willChange: transform;
     border: 1px solid rgba(0,0,0,0.10);
     z-index: 5;
     width:${({ width }) => width || 0}px;
@@ -43,7 +42,6 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     if (!floatRow && !testDataEle) return <></>
     const testOffset = (testDataEle as any).offsetTop || 0
     const width = floatRow?.offsetWidth
-
     const visible = top > (testOffset + floatRow.offsetTop)
 
     if (visible) {
@@ -52,30 +50,44 @@ const GroupBarWrapper: React.FC<any> = (props) => {
                 width={width}
                 y={top - testOffset - floatRow.offsetTop}
             >
-                 <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
-                        <Group>
-                            <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
-                            <Identify envData={envData} group={groupLen} isData={true}/>
-                        </Group>
-                    </Summary>
+                <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
+                    <Group>
+                        <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
+                        <Identify envData={envData} group={groupLen} isData={true} />
+                    </Group>
+                </Summary>
             </GroupBar>
         )
-    }else{
+    } else {
         return <></>
     }
-    
+
 }
 
 const ReportTestPref = () => {
     const { btnState, obj, setObj, envData, domainResult, groupLen } = useContext(ReportContext)
     const testDataRef = useRef(null)
+    // const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
+    const [btn, setBtn] = useState<boolean>(true)
+    const [btnName, setBtnName] = useState<string>('')
+    const [dataSource, setDataSource] = useState<any>([])
+    const groupRowRef = useRef<any>(null)
     const data = useMemo(() => {
         if (Array.isArray(domainResult.perf_item)) {
             return domainResult.perf_item
         }
+        return []
     }, [domainResult])
 
-    const [dataSource, setDataSource] = useState<any>([])
+    // 图表、列表模式切换
+    const switchMode = () => {
+        setBtn(!btn)
+    }
+
+    useEffect(() => {
+        setBtnName(btn ? '图表模式' : '列表模式')
+    }, [btn])
+    // console.log('hellp',data)
 
     useEffect(() => {
         setDataSource(data)
@@ -114,8 +126,8 @@ const ReportTestPref = () => {
     const simplify = (child: any, idx: number, listId: number, name: string) => {
         let suite_list: any = []
         child.list?.map((suite: any, suiteId: number) => {
-            const { 
-                suite_id, 
+            const {
+                suite_id,
                 suite_name,
                 test_suite_description = '-',
                 test_env,
@@ -155,7 +167,7 @@ const ReportTestPref = () => {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list?.map((child: any, listId: number) => {
-                        let suite_list =  simplify(child, idx, listId, 'group')
+                        let suite_list = simplify(child, idx, listId, 'group')
                         new_pref_data.push({
                             name: `${item.name}:${child.name}`,
                             suite_list,
@@ -176,95 +188,119 @@ const ReportTestPref = () => {
         })
     }, [dataSource])
 
-    const groupRowRef = useRef<any>(null)
-
+    const RenderPerfList: React.FC<any> = (props) => {
+        const { dataSource } = props;
+        const data = useMemo(() => {
+            return (
+                <>
+                    
+                </>
+            )
+        }, [dataSource])
+        return data;
+    }
+    // console.log('data',dataSource)
     return (
-        <ModuleWrapper 
-            style={{ width: groupLen > 3 ? groupLen * 390 : 1200, position: 'relative' }} 
-            ref={testDataRef} 
-            id="test_data" 
-            className="position_mark" 
+        <ModuleWrapper
+            style={{
+                width: groupLen > 3 ? groupLen * 390 : 1200,
+                position: 'relative'
+            }}
+            ref={testDataRef}
+            id="test_data"
+            className="position_mark"
         >
             <SubTitle><span className="line"></span>测试数据</SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>
                     <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
-                    <Identify envData={envData} group={groupLen} isData={true}/>
+                    <Identify envData={envData} group={groupLen} isData={true} />
                 </Group>
             </Summary>
-            <GroupBarWrapper
-                groupRowRef={groupRowRef}
-                parentDom={testDataRef}
-                envData={envData}
-                groupLen={groupLen}
-            />
+            {
+                btn && <GroupBarWrapper
+                    groupRowRef={groupRowRef}
+                    parentDom={testDataRef}
+                    envData={envData}
+                    groupLen={groupLen}
+                />
+            }
             {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
-                    <TestDataTitle>性能测试</TestDataTitle>
+                    <Row align="middle">
+                        <Col span={12}>
+                            <TestDataTitle>性能测试</TestDataTitle>
+                        </Col>
+                        <Col span={12} style={{ textAlign: 'right' }}>
+                            <Button onClick={switchMode}>{btnName}</Button>
+                        </Col>
+                    </Row>
                     <TestWrapper id="perf_item" className="position_mark">
-                        {
-                            Array.isArray(dataSource) && !!dataSource.length ?
-                                dataSource?.map((item: any, idx: number) => {
-                                    return (
-                                        <div key={idx}>
-                                            {
-                                                item.is_group ?
-                                                    <>
-                                                        <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
-                                                            <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
-                                                            <TestItemText>
-                                                                <GroupItemText
-                                                                    name={item.name}
-                                                                    rowKey={item.rowKey}
-                                                                    btn={btnState}
+                    {
+                        Array.isArray(dataSource) && !!dataSource.length ?
+                            dataSource.map((item: any, idx: number) => (
+                                <div key={idx}>
+                                    {
+                                        item.is_group ?
+                                            <>
+                                                <TestGroup id={`pref_item-${item.rowKey}`} className="tree_mark">
+                                                    <TestGroupIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
+                                                    <TestItemText>
+                                                        <GroupItemText
+                                                            name={item.name}
+                                                            rowKey={item.rowKey}
+                                                            btn={btnState}
+                                                            dataSource={dataSource}
+                                                            setDataSource={setDataSource}
+                                                        />
+                                                    </TestItemText>
+                                                    <Popconfirm
+                                                        title='确认要删除吗！'
+                                                        onConfirm={() => handleDelete('item', item.name, item.rowKey)}
+                                                        cancelText="取消"
+                                                        okText="删除"
+                                                    >
+                                                        {btnState && <CloseBtn />}
+                                                    </Popconfirm>
+                                                </TestGroup>
+                                                {
+                                                    item.list.map((child: any, id: number) => {
+                                                        return (
+                                                            <div key={id}>
+                                                                <Performance
+                                                                    child={child}
+                                                                    wsId={domainResult?.ws_id}
+                                                                    btn={btn}
+                                                                    name="group"
+                                                                    id={child.rowKey}
                                                                     dataSource={dataSource}
                                                                     setDataSource={setDataSource}
+                                                                    onDelete={handleDelete}
                                                                 />
-                                                            </TestItemText>
-                                                            <Popconfirm
-                                                                title='确认要删除吗！'
-                                                                onConfirm={() => handleDelete('item', item.name, item.rowKey)}
-                                                                cancelText="取消"
-                                                                okText="删除"
-                                                            >
-                                                                {btnState && <CloseBtn />}
-                                                            </Popconfirm>
-                                                        </TestGroup>
-                                                        {
-                                                            item.list.map((child: any, id: number) => {
-                                                                return (
-                                                                    <div key={id}>
-                                                                        <Performance
-                                                                        child={child}
-                                                                        name="group"
-                                                                        id={child.rowKey}
-                                                                        dataSource={dataSource}
-                                                                        setDataSource={setDataSource}
-                                                                        onDelete={handleDelete}
-                                                                    />
-                                                                    </div>
-                                                                    
-                                                                )
-                                                            })
-                                                        }
-                                                    </> 
-                                                    : 
-                                                    <Performance
-                                                        child={item}
-                                                        name="item"
-                                                        id={item.rowKey}
-                                                        dataSource={dataSource}
-                                                        setDataSource={setDataSource}
-                                                        onDelete={handleDelete}
-                                                    />
-                                            }
-                                        </div>
-                                    )
-                                })
-                                :
-                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                        }
+                                                            </div>
+
+                                                        )
+                                                    })
+                                                }
+                                            </>
+                                            :
+                                            <Performance
+                                                child={item}
+                                                btn={btn}
+                                                wsId={domainResult?.ws_id}
+                                                name="item"
+                                                id={item.rowKey}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
+                                                onDelete={handleDelete}
+                                            />
+                                    }
+                                </div>
+                            ))
+                            :
+                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    }
                     </TestWrapper>
                 </>
             }
