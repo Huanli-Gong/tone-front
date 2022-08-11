@@ -34,6 +34,7 @@
     border: 1px solid rgba(44, 40, 40, 0.1);
     box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.04);
     cursor: pointer;
+    position: relative;
     border-radius: 4px;
     //margin:0 8px 16px 8px;
     &:hover {
@@ -42,7 +43,9 @@
     .right_default {
       height: 31px;
       width: 31px;
-      float: right;
+      position: absolute;
+      right: 0;
+      top: 0;
       background: #fff url('~@/assets/img/project_default_icon.svg') no-repeat right top / 31px 31px;
       cursor: pointer;
     }
