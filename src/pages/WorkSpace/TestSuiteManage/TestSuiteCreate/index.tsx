@@ -11,7 +11,8 @@ import styles from './index.less'
 import { unionBy } from 'lodash'
 import CodeViewer from '@/components/CodeViewer'
 import { useClientSize } from '@/utils/hooks'
-export default (props: any) => {
+
+const TestSuiteCreate: React.FC = () => {
     const { ws_id, test_type }: any = useParams()
 
     const [leftWsHasSuiteArr, setLeftWsHasSuiteArr] = useState<Array<any>>([])
@@ -110,13 +111,6 @@ export default (props: any) => {
     useEffect(() => {
         getTestSuiteList()
     }, [suiteParams])
-
-    const handleExpandRowChange = useCallback(
-        (expandedRows: any) => {
-            setExpandRows(expandedRows)
-        },
-        []
-    )
 
     const onExpand = async (record: any) => {
         setExpandRows([+ record.id])
@@ -268,19 +262,8 @@ export default (props: any) => {
             )
         )
         const arr = leftWsHasSuiteArr.filter(item => item && item.id !== record.id)
-        //const delArr = leftWsHasSuiteArr.filter(item => item && item.id === record.id)
         setLeftWsHasSuiteArr(arr)
     }
-    // const suite_id_list = useMemo(()=>{
-    //     let suiteIdList: number[] = []
-    //     leftWsHasSuiteArr.forEach(
-    //         (suite: any) => {
-    //         if (suite.addCaseCount === 'all')
-    //             suiteIdList.push(suite.id)
-    //         }
-    //     )
-    //     return suiteIdList.toString()
-    // },[ leftWsHasSuiteArr ])
 
     const case_id_list = useMemo(() => {
         let caseIdList: number[] = []
@@ -294,17 +277,6 @@ export default (props: any) => {
     }, [leftWsHasSuiteArr])
 
     const handleDelete = async () => {
-        // let suiteIdList: number[] = []
-        // let caseIdList: number[] = []
-        // leftTableDataSource.forEach(
-        //     (suite: any) => {
-        //         if (suite.test_case_list && suite.test_case_list.length > 0)
-        //             caseIdList = caseIdList.concat(...suite.test_case_list.map((item: { id: any }) => item.id))
-        //         else
-        //             if (suite.addCaseCount === 'all')
-        //                 suiteIdList.push(suite.id)
-        //     }
-        // )
         setBtnLoad(true)
         if (ws_id) {
             //setPadding(true)
@@ -324,39 +296,19 @@ export default (props: any) => {
                 message.error('提交失败，请重试!')
         }
     }
+
     const handleCancel = () => {
         setDeleteVisible(false)
-        //history.go(-1)
     }
+
     const handleDetail = () => {
-        // let suiteIdList: number[] = []
-        // let caseIdList: number[] = []
-        // leftTableDataSource.forEach(
-        //     (suite: any) => {
-        //         if (suite.test_case_list && suite.test_case_list.length > 0)
-        //             caseIdList = caseIdList.concat(...suite.test_case_list.map((item: { id: any }) => item.id))
-        //         else
-        //             if (suite.addCaseCount === 'all')
-        //                 suiteIdList.push(suite.id)
-        //     }
-        // )
         window.open(`/ws/${ws_id}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${case_id_list}`)
     }
+
     const handleSave = async () => {
         if (addFlag) {
             handleDelete()
         } else {
-            // let suiteIdList: number[] = []
-            // let caseIdList: number[] = []
-            // leftTableDataSource.forEach(
-            //     (suite: any) => {
-            //         if (suite.test_case_list && suite.test_case_list.length > 0)
-            //             caseIdList = caseIdList.concat(...suite.test_case_list.map((item: { id: any }) => item.id))
-            //         else
-            //             if (suite.addCaseCount === 'all')
-            //                 suiteIdList.push(suite.id)
-            //     }
-            // )
             const data = await queryWsCaseConfirm({
                 flag: 'pass',
                 ws_id,
@@ -371,6 +323,7 @@ export default (props: any) => {
             }
         }
     }
+
     const computeLeftTableData = (suiteListArr: any, leftTableData: any = leftWsHasSuiteArr) => {
         let leftSuites: any = []
 
@@ -390,10 +343,8 @@ export default (props: any) => {
 
         const arr = unionBy(leftSuites, leftTableData, 'id');
         setLeftWsHasSuiteArr(arr)
-        // return leftSuites 
     }
 
-    // const leftTableDataSource = useMemo( computeLeftTableData , [ suiteList, leftWsHasSuiteArr ] )
     const leftTableDataSource = leftWsHasSuiteArr
 
     const toolTipSetting = {
@@ -409,6 +360,36 @@ export default (props: any) => {
                 )
             else return <span>-</span>
         }
+    }
+
+    const handleAddAllSuite = () => {
+        const arr = suiteList.map((suite: any) => {
+            return {
+                ...suite,
+                hasAdd: true,
+                addCaseCount: "all",
+                test_case_list: suite.test_case_list.map((conf: any) => ({ ...conf, isAdd: true }))
+            }
+        })
+        setSuiteList(arr)
+        setLeftWsHasSuiteArr(arr)
+    }
+
+    const hanldeRemoveAllSelectedSuite = () => {
+        setSuiteList(
+            (list: any[]) => list.map(
+                (suite: any) => {
+                    if (suite.test_case_list && suite.test_case_list.length > 0) {
+                        const test_case_list = suite.test_case_list.map(
+                            (item: any) => ({ ...item, isAdd: false })
+                        )
+                        return { ...suite, hasAdd: false, addCaseCount: 0, test_case_list }
+                    }
+                    return { ...suite, hasAdd: false, addCaseCount: 0 }
+                }
+            )
+        )
+        setLeftWsHasSuiteArr([])
     }
 
     return (
@@ -457,10 +438,35 @@ export default (props: any) => {
                                             size="small"
                                             className={styles.right_table_style}
                                             scroll={{ y: innerHeight - 90 - 72 - 39 }}
-                                            columns={[{ title: 'Test Suite', dataIndex: 'name' }]}
+                                            columns={[
+                                                Table.SELECTION_COLUMN,
+                                                Table.EXPAND_COLUMN,
+                                                { title: 'Test Suite', dataIndex: 'name' }
+                                            ]}
+                                            rowSelection={{
+                                                columnWidth: 24,
+                                                columnTitle: (
+                                                    <MinusCircleFilled
+                                                        style={{ color: 'red' }}
+                                                        onClick={
+                                                            () => hanldeRemoveAllSelectedSuite()
+                                                        }
+                                                    />
+                                                ),
+                                                renderCell(_, record, index) {
+                                                    return (
+                                                        <MinusCircleFilled
+                                                            style={{ color: 'red' }}
+                                                            onClick={
+                                                                () => handleIsAddSuiteMinus(record)
+                                                            }
+                                                        />
+                                                    )
+                                                }
+                                            }}
                                             dataSource={leftTableDataSource}
                                             expandable={{
-                                                // onExpandedRowsChange: handleExpandRowChange,
+                                                columnWidth: 24,
                                                 onExpand: (_, record) => _ ? onExpand(record) : setExpandRows([]),
                                                 expandedRowKeys: expandRows,
                                                 expandedRowRender: (_: any) => (
@@ -487,15 +493,10 @@ export default (props: any) => {
                                                     />
                                                 ),
                                                 expandIcon: ({ expanded, onExpand, record }: any) => (
-                                                    <Space>
-                                                        <MinusCircleFilled
-                                                            style={{ color: 'red' }}
-                                                            onClick={
-                                                                () => handleIsAddSuiteMinus(record)
-                                                            }
-                                                        />
-                                                        <CaretRightFilled rotate={expanded ? 90 : 0} onClick={(e: any) => onExpand(record, e)} />
-                                                    </Space>
+                                                    <CaretRightFilled
+                                                        rotate={expanded ? 90 : 0}
+                                                        onClick={(e: any) => onExpand(record, e)}
+                                                    />
                                                 )
                                             }}
                                             rowKey="id"
@@ -531,11 +532,6 @@ export default (props: any) => {
                                             ))
                                         }
                                     </Select>
-                                    {/* <Input.Search
-                                        placeholder="搜索TestSuites"
-                                        allowClear
-                                        onChange={ handleTestSuiteSearch }
-                                    /> */}
                                     <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
                                         <Input
                                             style={{ width: 160, height: 32 }}
@@ -559,37 +555,84 @@ export default (props: any) => {
                         <Table
                             rowKey="id"
                             loading={loading}
-                            columns={test_type === 'business' ?
-                                [
-                                    { title: 'Test Suite', dataIndex: 'name', },
-                                    { title: '业务名称', dataIndex: 'business_name', },
-                                    { title: '测试类型', dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? item.name : '')}</>, },
-                                ] : [
-                                    { title: 'Test Suite', dataIndex: 'name', },
-                                    { title: '变量', dataIndex: 'var', ...toolTipSetting },
-                                    {
-                                        title: '说明', dataIndex: 'doc', ellipsis: true, render(text: any, record: any) {
-                                            const { doc, description } = record
-                                            const _ = doc || description
-                                            return (
-                                                _ ?
-                                                    <Tooltip placement='leftTop' arrowPointAtCenter overlayClassName={styles.tooltipCss} color="#fff" title={<CodeViewer code={_} />} >
-                                                        <span>
+                            columns={
+                                test_type === 'business' ?
+                                    [
+                                        Table.SELECTION_COLUMN,
+                                        Table.EXPAND_COLUMN,
+                                        { title: 'Test Suite', dataIndex: 'name', },
+                                        { title: '业务名称', dataIndex: 'business_name', },
+                                        { title: '测试类型', dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? item.name : '')}</>, },
+                                    ] :
+                                    [
+                                        Table.SELECTION_COLUMN,
+                                        Table.EXPAND_COLUMN,
+                                        { title: 'Test Suite', dataIndex: 'name', },
+                                        { title: '变量', dataIndex: 'var', width: 180, ...toolTipSetting },
+                                        {
+                                            title: '说明',
+                                            dataIndex: 'doc',
+                                            ellipsis: {
+                                                showTitle: false,
+                                            },
+                                            width: 200,
+                                            render(text: any, record: any) {
+                                                const { doc, description } = record
+                                                const _ = doc || description
+                                                return (
+                                                    _ ?
+                                                        <Tooltip
+                                                            placement='leftTop'
+                                                            // overlayClassName={styles.tooltipCss}
+                                                            overlayInnerStyle={{ width: 450, height: 300, overflow: "auto" }}
+                                                            color="#fff"
+                                                            title={<CodeViewer code={_} />}
+                                                        >
                                                             {_}
-                                                        </span>
-                                                    </Tooltip> : '-'
-                                            )
+                                                        </Tooltip> :
+                                                        '-'
+                                                )
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
                             }
                             size="small"
                             className={styles.left_table_style}
                             dataSource={suiteList}
                             pagination={false}
                             scroll={{ y: innerHeight - 90 - 72 - 39 }}
+                            rowSelection={{
+                                columnTitle: (
+                                    <PlusCircleFilled
+                                        style={{ color: '#1890ff', cursor: 'pointer' }}
+                                        // onClick={() => handleTestSuiteChildPlus([], null)}
+                                        onClick={() => handleAddAllSuite()}
+                                    />
+                                ),
+                                columnWidth: 24,
+                                renderCell(_, record, index) {
+                                    const { hasAdd, addCaseCount } = record
+                                    let color = '#1890ff'
+                                    if (addCaseCount === 'all')
+                                        color = '#eee'
+                                    if (hasAdd && addCaseCount !== 'all')
+                                        return (
+                                            <UnFullExpand
+                                                onClick={() => handleTestSuitePlus(record)}
+                                                style={{ fontSize: 14, width: 14, height: 14, cursor: 'pointer' }}
+                                            />
+                                        )
+                                    return (
+                                        <PlusCircleFilled
+                                            style={{ color }}
+                                            onClick={() => handleTestSuitePlus(record)}
+                                        />
+                                    )
+                                }
+                            }}
                             expandable={{
                                 // onExpandedRowsChange: handleExpandRowChange,
+                                columnWidth: 24,
                                 expandedRowKeys: expandRows,
                                 onExpand: (_, record) => _ ? onExpand(record) : setExpandRows([]),
                                 expandedRowRender: (record: any) => {
@@ -625,16 +668,26 @@ export default (props: any) => {
                                                             </Space>
                                                         )
                                                     },
-                                                    { title: '变量', dataIndex: 'var', ...toolTipSetting },
+                                                    { title: '变量', dataIndex: 'var', width: 180, ...toolTipSetting },
                                                     {
-                                                        dataIndex: 'doc', ellipsis: true, render(text: any, record: any) {
+                                                        dataIndex: 'doc',
+                                                        ellipsis: true,
+                                                        width: 200,
+                                                        render(text: any, record: any) {
                                                             const { doc, description } = record
                                                             const _ = doc || description
                                                             return (
                                                                 _ ?
-                                                                    <Tooltip placement={_.length > 100 ? 'left' : 'top'} title={_}>
-                                                                        <span>{_}</span>
-                                                                    </Tooltip> : '-'
+                                                                    <Tooltip
+                                                                        placement='leftTop'
+                                                                        // overlayClassName={styles.tooltipCss}
+                                                                        overlayInnerStyle={{ width: 450, height: 300, overflow: "auto" }}
+                                                                        color="#fff"
+                                                                        title={<CodeViewer code={_} />}
+                                                                    >
+                                                                        {_}
+                                                                    </Tooltip> :
+                                                                    '-'
                                                             )
                                                         }
                                                     }
@@ -647,31 +700,12 @@ export default (props: any) => {
                                     )
                                 },
                                 expandIcon: ({ expanded, onExpand, record }: any) => {
-                                    const { hasAdd, addCaseCount } = record
-                                    let color = '#1890ff'
-                                    if (addCaseCount === 'all')
-                                        color = '#eee'
-
                                     return (
-                                        <Space>
-                                            {/*一级表格前面的添加图标*/}
-                                            {
-                                                hasAdd && addCaseCount !== 'all' ?
-                                                    <UnFullExpand
-                                                        onClick={() => handleTestSuitePlus(record)}
-                                                        style={{ fontSize: 14, width: 14, height: 14, cursor: 'pointer' }}
-                                                    /> :
-                                                    <PlusCircleFilled
-                                                        style={{ color }}
-                                                        onClick={() => handleTestSuitePlus(record)}
-                                                    />
-                                            }
-                                            <CaretRightFilled
-                                                rotate={expanded ? 90 : 0}
-                                                style={{ cursor: 'pointer' }}
-                                                onClick={(e: any) => onExpand(record, e)}
-                                            />
-                                        </Space>
+                                        <CaretRightFilled
+                                            rotate={expanded ? 90 : 0}
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={(e: any) => onExpand(record, e)}
+                                        />
                                     )
                                 }
                             }}
@@ -706,3 +740,5 @@ export default (props: any) => {
         </Layout.Content>
     )
 }
+
+export default TestSuiteCreate
