@@ -140,7 +140,6 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                         val={_} 
                         param={row.server_id}
                         provider={provider_name} 
-                        isClick={access.IsAdmin()}
                     />
                 }
             }
@@ -195,7 +194,6 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                         val={_} 
                         param={row.server_id}
                         provider={provider_name} 
-                        isClick={access.IsAdmin()}
                     />
                     : '-'
             )

@@ -211,7 +211,6 @@ const Standalone = (props: any, ref: any) => {
                         <ServerLink
                             val={_}
                             provider={"aligroup"}
-                            isClick={access.IsAdmin()}
                         />
                     )
                 else
@@ -221,7 +220,6 @@ const Standalone = (props: any, ref: any) => {
                             <ServerLink
                                 val={_}
                                 provider={"aligroup"}
-                                isClick={access.IsAdmin()}
                             />
                         </Row>
                     )
@@ -243,7 +241,6 @@ const Standalone = (props: any, ref: any) => {
                     val={_}
                     // provider={'内网机器'}
                     provider={"aligroup"}
-                    isClick={access.IsAdmin()}
                 />
             ),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,

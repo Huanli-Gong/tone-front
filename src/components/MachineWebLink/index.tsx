@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { requestCodeMessage } from '@/utils/utils'
 import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
+import { useAccess } from 'umi'
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 interface ServerType {
     val: string | number,
     param?: string | number,
     provider: "aligroup" | "aliyun",
-    isClick?: boolean;
 }
 const TextWarp = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-const ServerLink: React.FC<ServerType> = ({ val, param, provider, isClick, }) => {
+const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
+    const access = useAccess();
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
 
@@ -44,7 +45,7 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, isClick, }) =>
             // setTimeout(function () { win.location.href = href })
         }
     }
-    const flag = (BUILD_APP_ENV && provider === "aligroup") || !isClick
+    const flag = (BUILD_APP_ENV && provider === "aligroup") || !access.IsAdmin()
 
     const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
         : (

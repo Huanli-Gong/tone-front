@@ -104,8 +104,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.ip}
-                    isClick={access.IsAdmin()}
-                // provider={'内网机器'}
+                    // provider={'内网机器'}
                 />
             )
         },
@@ -119,8 +118,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.sn}
-                    isClick={access.IsAdmin()}
-                // provider={'内网机器'} 
+                    // provider={'内网机器'} 
                 />
             )
         },

@@ -76,7 +76,6 @@ const CaseTable: React.FC<any> = ({
                         val={_} 
                         param={row.server_id} 
                         provider={provider_name} 
-                        isClick={access.IsAdmin()}
                     />
                 )
                 

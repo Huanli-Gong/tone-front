@@ -145,7 +145,6 @@ export default (props: any) => {
                         val={text}
                         param={row.id}
                         provider={"aliyun"}
-                        isClick={access.IsAdmin()}
                     />
                 )
             },

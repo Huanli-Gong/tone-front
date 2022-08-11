@@ -65,7 +65,6 @@ const GroupTree: React.FC<any> = (props) => {
                     val={_}
                     param={row.id}
                     provider={"aliyun"}
-                    isClick={access.IsAdmin()}
                 />
                 : <EllipsisPulic title={row.name} />
             )

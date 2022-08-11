@@ -30,7 +30,6 @@ export default memo(
                         val={_}
                         param={row.server_id}
                         provider={row.server_provider}
-                        isClick={access.IsAdmin()}
                     />
                 )
             }, {
