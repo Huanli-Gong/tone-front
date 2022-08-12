@@ -210,7 +210,6 @@ const Standalone = (props: any, ref: any) => {
                     return (
                         <ServerLink
                             val={_}
-                            // provider={'内网机器'}
                             provider={"aligroup"}
                         />
                     )
@@ -220,7 +219,6 @@ const Standalone = (props: any, ref: any) => {
                             <TreeSvg style={{ marginRight: 8, height: 40 }} />
                             <ServerLink
                                 val={_}
-                                // provider={'内网机器'}
                                 provider={"aligroup"}
                             />
                         </Row>

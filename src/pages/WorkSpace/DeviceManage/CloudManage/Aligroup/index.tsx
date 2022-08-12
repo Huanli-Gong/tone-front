@@ -243,7 +243,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, page: 1, [dataIndex]: val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {

@@ -70,7 +70,14 @@ const CaseTable: React.FC<any> = ({
                 ellipsis: {
                     showHeader: false,
                 },
-                render: (_: string, row: any) => <ServerLink val={_} provider={provider_name} />
+                render: (_: string, row: any) => (
+                    <ServerLink 
+                        val={_} 
+                        param={row.server_id} 
+                        provider={provider_name} 
+                    />
+                )
+                
             },
             ['functional', 'business_functional', 'business_business'].includes(testType) &&
             {
