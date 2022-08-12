@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useImperativeHandle, forwardRef } from 'react'
 import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip } from 'antd'
 
-import { queryTestServerAppGroup, queryTestServerNewList, addServerGroup, checkTestServerIps } from '../../services'
+import { queryTestServerAppGroup, queryTestServerNewList, addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
 import Owner from '@/components/Owner/index';
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils';
@@ -28,13 +28,14 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     useImperativeHandle(ref, () => ({
         show(_: any) {
             setVisible(true)
-            getAppGroupList()
+            BUILD_APP_ENV ? getTestServerList(undefined) : getAppGroupList()
             if (_) {
                 setSource(_)
             }
         }
     }))
 
+    
     const getAppGroupList = useCallback(
         async () => {
             setLoading(true)
@@ -47,12 +48,13 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     const getTestServerList = useCallback(
         async (app_group) => {
             form.resetFields(['ip'])
+            setLoading(true)
             setTestServerLoading(true)
             setAppGroup(app_group)
-            let params = BUILD_APP_ENV ? undefined : app_group
-            const { data } = await queryTestServerNewList({ ws_id, app_group : params })
+            const { data } = await queryTestServerNewList({ ws_id, app_group, page_num: 1, page_size: 200 })
             setTestServerList(data)
             setTestServerLoading(false)
+            setLoading(false)
         },
         [appGroup]
     )
