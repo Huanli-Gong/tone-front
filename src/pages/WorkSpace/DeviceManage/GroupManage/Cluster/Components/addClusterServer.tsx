@@ -246,8 +246,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                         help={ips.errors.length > 0 ? validateMsg : undefined}
                                         rules={[{ 
                                             required: true, 
-                                            pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
-                                            message:'请输入正确的机器IP!'
+                                            // pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
+                                            message:`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`
                                         }]}>
                                             <Input allowClear
                                                 onBlur={(e: any) => handleBlurIp(e)}

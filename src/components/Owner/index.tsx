@@ -31,7 +31,7 @@ export default () => {
                 filterOption={false}
                 onSearch={handleSearch}
                 style={{ width: '100%' }}
-                showArrow={false}
+                showArrow={true}
                 showSearch
                 listHeight={160}
                 getPopupContainer={node => node.parentNode}

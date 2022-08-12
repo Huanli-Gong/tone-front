@@ -1,10 +1,9 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
+import React, { useState, useImperativeHandle, forwardRef } from 'react'
 
 import { Drawer, Space, Button, Checkbox, Input, message, Row, Typography, Tooltip, Spin } from 'antd'
 import { queryTestTemplateList } from '@/pages/WorkSpace/TestTemplateManage/service'
 import { SearchOutlined } from '@ant-design/icons'
 import { isArray } from 'lodash'
-
 import styles from './index.less'
 
 const TemplateListDrawer = (props: any, ref: any) => {
@@ -46,16 +45,11 @@ const TemplateListDrawer = (props: any, ref: any) => {
             setList([])
             return
         }
-        if(search.length === 0){
+        if (search.length === 0) {
             setAllList(data)
         }
         setList(data)
     }
-
-    // const { data: list, run } = useRequest(
-    //     () => queryTestTemplateList({ ws_id, enable: 'True', name: search, page_size: 100 }),
-    //     { initialData: [] }
-    // )
 
     const handleClose = () => {
         setVisible(false)
@@ -79,13 +73,19 @@ const TemplateListDrawer = (props: any, ref: any) => {
     }
 
     const hanldeTemplateListChange = (arr: any) => {
-        if (arr.length > 10) {
+        if (search.length === 0) {
+            arr = [...new Set(arr)]
+        } else {
+            arr = [...new Set([...templates, ...arr])]
+        }
+
+        if (arr.length >= 10) {
             message.warning('模版最多添加10个')
             return
         }
-        setTemplates([ ...templates, ...arr ])
+        setTemplates(arr)
     }
-
+    
     const handleReplace = (i: any) => {
         onOk({
             ...i,
@@ -118,8 +118,8 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 <Input
                     prefix={<SearchOutlined />}
                     value={search}
+                    onPressEnter={initList}
                     onChange={({ target }: any) => setSearch(target.value)}
-                    onBlur={initList}
                 />
                 <Spin spinning={loading} >
                     {

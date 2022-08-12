@@ -505,16 +505,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
         const res = id ? await editGroupMachine(id, { ...param }) : await addGroupMachine({ ...param })
         if (res.code === 200) {
-            setBtnLoading(false)
             message.success('操作成功');
             // case1.初始化状态&&重置表单
             initialState()
             // case2.回调函数
             onSuccess({ parentId: cluster_id })
         } else {
-            setBtnLoading(false)
             requestCodeMessage(res.code, res.msg)
         }
+        setBtnLoading(false)
     }
     useEffect(() => {
         AkResetStatus()
@@ -525,6 +524,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     }
     const onClose = () => {
         initialState()
+        setBtnLoading(false)
     }
 
     // 初始化状态

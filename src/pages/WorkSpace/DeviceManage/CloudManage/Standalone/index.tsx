@@ -24,7 +24,7 @@ import SelectDropSync from '@/components/Public/SelectDropSync';
 import { Access, useAccess } from 'umi'
 import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectCheck'
 import SelectRadio from '@/components/Public/SelectRadio';
-
+import OverflowList from '@/components/TagOverflow/index'
 
 // import PermissionTootip from '@/components/Public/Permission/index';
 /**
@@ -143,8 +143,8 @@ export default (props: any) => {
                 render: (text: any, row: any) => (
                     <ServerLink
                         val={text}
+                        param={row.id}
                         provider={"aliyun"}
-                    // provider={'云上机器'}
                     />
                 )
             },
@@ -158,14 +158,14 @@ export default (props: any) => {
                 },
                 render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
             },
-            {
+            BUILD_APP_ENV && {
                 title: 'TSN',
                 dataIndex: 'tsn',
                 width: params.type == '0' ? 0 : 140,
                 ellipsis: {
                     showTitle: false
                 },
-                render: (_: any, row: any) => <EllipsisPulic title={row.tsn} /> 
+                render: (_: any, row: any) => <EllipsisPulic title={row.tsn} />
             },
             {
                 title: 'InstanceId',
@@ -350,16 +350,11 @@ export default (props: any) => {
                         confirm={confirm}
                         onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }}
                     />,
-                render: (_: any, row: any) => <div>
-                    {
-                        row.tag_list.map((item: any, index: number) => {
-                            return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
-                        })
-                    }
-                    {
-                        row.tag_list.length == 0 ? '-' : ''
-                    }
-                </div>
+                render: (_: any, row: any) => (
+                    <OverflowList list={row.tag_list.map((item: any, index: number) => {
+                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                    })} />
+                )
             },
             {
                 title: '备注',
@@ -421,7 +416,7 @@ export default (props: any) => {
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
                     </Space>,
             },
-        ]
+        ].filter(Boolean)
         setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
     }, [params])
 

@@ -104,7 +104,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.ip}
-                // provider={'内网机器'}
+                    // provider={'内网机器'}
                 />
             )
         },
@@ -118,11 +118,11 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.sn}
-                // provider={'内网机器'} 
+                    // provider={'内网机器'} 
                 />
             )
         },
-        {
+        BUILD_APP_ENV && {
             title: 'TSN',
             width: 150,
             ellipsis: {

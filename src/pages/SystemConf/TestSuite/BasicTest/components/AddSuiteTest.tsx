@@ -7,6 +7,7 @@ import { useLocation, useRequest } from 'umi'
 import _ from 'lodash'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { useSuiteProvider } from '../../hooks'
+import { QusetionIconTootip } from '@/components/Product/index'
 
 /**
  * @module 系统级
@@ -167,7 +168,7 @@ export default forwardRef(
                                     <Input
                                         autoComplete="off"
                                         placeholder="请输入"
-                                        onBlur={handleBlur}
+                                        // onBlur={handleBlur} 配合debug需求，临时注释
                                         onFocus={hanldFocus}
                                         onChange={handleChange}
                                     />
@@ -223,7 +224,7 @@ export default forwardRef(
                                     label="领域"
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
-                                    <Select placeholder="请选择" mode="multiple" getPopupContainer={node => node.parentNode}>
+                                    <Select placeholder="请选择" mode="multiple" showArrow showSearch={false} getPopupContainer={node => node.parentNode}>
                                         {
                                             domainList.map((item: any, index: number) => {
                                                 return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
@@ -238,7 +239,9 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="is_default"
-                                    label="默认用例"
+                                    label={
+                                        <QusetionIconTootip title="默认用例" desc="自动加入新建workspace" />
+                                    }
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
                                     <Radio.Group>
@@ -251,20 +254,7 @@ export default forwardRef(
                                 <Form.Item
                                     name="certificated"
                                     label={
-                                        <span>
-                                            是否认证&nbsp;
-                                            <Popover
-                                                overlayClassName={styles.cer_tips}
-                                                content={
-                                                    <div>
-                                                        <p>只有认证过得用例才能同步到Testfarm</p>
-                                                    </div>
-                                                }
-                                                placement="bottomLeft"
-                                                destroyTooltipOnHide={true}>
-                                                <QuestionCircleOutlined />
-                                            </Popover>
-                                        </span>
+                                        <QusetionIconTootip title="是否认证" desc="只有认证过得用例才能同步到Testfarm" />
                                     }
                                     rules={[{ required: true, message: '请选择' }]}
                                 >
