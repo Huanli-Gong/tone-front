@@ -1,7 +1,6 @@
 import React, { useContext, useState, useRef, useEffect, memo, useMemo } from 'react';
 import { Space, Empty, Row, Col, Select, Button, Typography, Tooltip } from 'antd';
 import { ReportContext } from '../Provider';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -14,7 +13,7 @@ import ChartTypeChild from '../../../TestReport/NewReport/components/TestDataChi
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { useScroll } from 'ahooks'
 import styled from 'styled-components'
-
+import { JumpResult } from '@/utils/hooks';
 import {
     TestDataTitle,
     Summary,
@@ -102,7 +101,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 //     return dataArr;
 // }
 const ReportTestPref: React.FC<any> = (props) => {
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group } = useContext(ReportContext)
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
@@ -227,17 +226,12 @@ const ReportTestPref: React.FC<any> = (props) => {
             }))
         }
     }
-    const renderShare = (conf: any, wsId:any) => {
+    const renderShare = (conf: any) => {
         let obj = conf.conf_compare_data || conf.compare_conf_list || []
         return (
             obj.map((item: any, idx: number) => (
                 <PrefDataText gLen={group} key={idx}>
-                    <a style={{ cursor: 'pointer' }}
-                        href={`/ws/${wsId}/test_result/${item}`}
-                        target="_blank"
-                    >
-                        {item ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                    </a>
+                    <JumpResult ws_id={wsId} job_id={item.obj_id || item}/>
                 </PrefDataText>
             ))
         )
@@ -315,7 +309,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
                                                                 <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                                {renderShare(conf,item.ws_id)}
+                                                                {renderShare(conf)}
                                                             </PrefData>
                                                             {
                                                                 conf.metric_list.map((metric: any, idx: number) => (

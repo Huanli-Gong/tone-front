@@ -3,7 +3,6 @@ import { ReportContext } from '../../Provider';
 import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { GroupItemText } from '../EditPerfText';
 import { PerfTextArea } from '../EditPerfText';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
@@ -17,7 +16,7 @@ import { filterResult, conversion } from '@/components/Report/index'
 import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
 import { QuestionCircleOutlined } from '@ant-design/icons';
-// import { FixedSizeList as List } from 'react-window';
+import { JumpResult } from '@/utils/hooks';
 import _ from 'lodash';
 import {
     TestGroupItem,
@@ -47,8 +46,8 @@ import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMeth
 const { Option } = Select;
 
 const Performance = (props: any) => {
-    const { child, btn, wsId, name, id, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, isOldReport } = useContext(ReportContext)
+    const { child, btn, name, id, onDelete, dataSource, setDataSource } = props
+    const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
@@ -95,6 +94,7 @@ const Performance = (props: any) => {
         //     timer && clearTimeout(timer)
         // })
         const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
+        console.log('data',data,isOldReport)
         btn ? setPerData(data) : setPerData({
             ...child, list: child.list.map((item: any) => {
                 return {
@@ -263,16 +263,19 @@ const Performance = (props: any) => {
     }
 
     const renderShare = (conf: any) => {
+        let objList: any = []
+        let objConf = conf?.conf_source || conf
+        allGroupData?.map((c: any, i: number) => {
+            objList.push((conf.conf_compare_data || conf.compare_conf_list)[i])
+        })
+        objList.splice(baseIndex, 0, objConf)
+        
         let obj = conf.conf_compare_data || conf.compare_conf_list
+        let arr = isOldReport ? objList : obj
         return (
-            obj.map((item: any, idx: number) => (
+            arr.map((item: any, idx: number) => (
                 <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
-                    <a style={{ cursor: 'pointer' }}
-                        href={`/ws/${wsId}/test_result/${item?.obj_id || item}`}
-                        target="_blank"
-                    >
-                        {item?.obj_id || item ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                    </a>
+                    <JumpResult ws_id={wsId} job_id={item?.obj_id || item}/>
                 </PrefDataText>
             ))
         )

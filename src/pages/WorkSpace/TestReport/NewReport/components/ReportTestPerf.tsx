@@ -67,8 +67,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 const ReportTestPref = () => {
     const { btnState, obj, setObj, envData, domainResult, groupLen } = useContext(ReportContext)
     const testDataRef = useRef(null)
-    // const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
-    const [btn, setBtn] = useState<boolean>(true)
+    const [btn, setBtn] = useState<boolean>(true)   
     const [btnName, setBtnName] = useState<string>('')
     const [dataSource, setDataSource] = useState<any>([])
     const groupRowRef = useRef<any>(null)
@@ -79,6 +78,10 @@ const ReportTestPref = () => {
         return []
     }, [domainResult])
 
+    useEffect(()=> {
+        setBtn(domainResult.perf_conf?.show_type === 'list')
+    },[ domainResult ])
+    
     // 图表、列表模式切换
     const switchMode = () => {
         setBtn(!btn)
@@ -87,7 +90,6 @@ const ReportTestPref = () => {
     useEffect(() => {
         setBtnName(btn ? '图表模式' : '列表模式')
     }, [btn])
-    // console.log('hellp',data)
 
     useEffect(() => {
         setDataSource(data)
@@ -188,18 +190,6 @@ const ReportTestPref = () => {
         })
     }, [dataSource])
 
-    const RenderPerfList: React.FC<any> = (props) => {
-        const { dataSource } = props;
-        const data = useMemo(() => {
-            return (
-                <>
-                    
-                </>
-            )
-        }, [dataSource])
-        return data;
-    }
-    // console.log('data',dataSource)
     return (
         <ModuleWrapper
             style={{
@@ -270,7 +260,6 @@ const ReportTestPref = () => {
                                                             <div key={id}>
                                                                 <Performance
                                                                     child={child}
-                                                                    wsId={domainResult?.ws_id}
                                                                     btn={btn}
                                                                     name="group"
                                                                     id={child.rowKey}
@@ -288,7 +277,6 @@ const ReportTestPref = () => {
                                             <Performance
                                                 child={item}
                                                 btn={btn}
-                                                wsId={domainResult?.ws_id}
                                                 name="item"
                                                 id={item.rowKey}
                                                 dataSource={dataSource}

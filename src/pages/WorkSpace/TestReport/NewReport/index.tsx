@@ -50,6 +50,7 @@ const Report = (props: any) => {
         setDomainResult,
         loading,
         saveReportData,
+        wsId,
         queryReport,
     } = basicData
     
@@ -164,8 +165,7 @@ const Report = (props: any) => {
             }
         }
     }
-    const isOldReport =  '2022-8-10 10:05:45' > saveReportData?.gmt_created
-
+    
     return (
         <ReportContext.Provider value={{
             btnState,
@@ -184,7 +184,8 @@ const Report = (props: any) => {
             collapsed,
             groupLen,
             bodyRef,
-            isOldReport,
+            wsId,
+            isOldReport: saveReportData?.old_report,
             setCollapsed,
             setObj
         }}>

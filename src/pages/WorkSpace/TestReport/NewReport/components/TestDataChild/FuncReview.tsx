@@ -3,7 +3,6 @@ import { ReportContext } from '../../Provider';
 import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col } from 'antd';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
@@ -12,6 +11,7 @@ import { GroupItemText } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { deleteSuite, deleteConf } from './DelMethod.js';
+import { JumpResult } from '@/utils/hooks';
 import {
     TestItemText,
     TestSuite,
@@ -37,7 +37,7 @@ const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
     const { child, name, id, subObj, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, groupLen, isOldReport } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -264,7 +264,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </>
         )
     }
-
+    
     let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData.list.map((suite: any, idx: number) => (
             <TestSuite key={idx}>
@@ -366,9 +366,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                         </Space>
                                                         {item !== null &&
-                                                            <a style={{ cursor: 'pointer', paddingLeft: 10 }} href={`/ws/${suite.ws_id}/test_result/${item.obj_id}`} target="_blank">
-                                                                {item.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                                                            </a>
+                                                            <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }}/>
                                                         }
                                                     </CaseText>
                                                 )

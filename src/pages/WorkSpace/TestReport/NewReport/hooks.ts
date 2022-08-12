@@ -716,6 +716,7 @@ export const EditPageData = (props: any) => {
         id: dataSource.id,
         name: dataSource.name,
         template: dataSource.tmpl_id,
+        old_report: dataSource.old_report,
         report_source: dataSource.report_source,
         test_background: dataSource.test_background,
         test_method: dataSource.test_method,
@@ -757,6 +758,7 @@ export const EditPageData = (props: any) => {
         setDomainResult: setTemplate,
         loading,
         saveReportData,
+        wsId: dataSource.ws_id,
         queryReport
     }
 }

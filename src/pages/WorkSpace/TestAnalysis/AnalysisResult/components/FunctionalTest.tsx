@@ -1,13 +1,12 @@
 import React, { useContext, memo, useMemo, useState, useEffect } from 'react';
 import { Empty, Row, Col, Typography, Space, Button, Select } from 'antd';
 import { ReportContext } from '../Provider';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
-import { targetJump } from '@/utils/utils'
+import { JumpResult } from '@/utils/hooks';
 const { Option } = Select
 import {
     TestDataTitle,
@@ -30,7 +29,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = (props) => {
-    const { allGroupData, compareResult, baselineGroupIndex, group } = useContext(ReportContext)
+    const { allGroupData, compareResult, baselineGroupIndex, group, wsId } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
@@ -261,9 +260,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
                                                                                 </Space>
                                                                                 {metric !== null &&
-                                                                                    <span style={{ cursor: 'pointer', paddingLeft: 10 }} onClick={() => targetJump(`/ws/${item.ws_id}/test_result/${metric.obj_id}`)}>
-                                                                                        {metric.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                                                                                    </span>
+                                                                                    <JumpResult ws_id={wsId} job_id={metric.obj_id} style={{ paddingLeft: 10 }}/>
                                                                                 }
                                                                             </CaseText>
                                                                         )
