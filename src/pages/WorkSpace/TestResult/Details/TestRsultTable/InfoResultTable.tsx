@@ -102,6 +102,7 @@ export default (props: any) => {
         if (state === 'success') run(1)
         if (state === 'fail') run(2)
         if (state === 'skip') run(5)
+        if (state === 'warn') run(6)
         if (state === '') run()
     }
 
@@ -150,6 +151,7 @@ export default (props: any) => {
             let color = ''
             if (_ === 'Fail') color = '#C84C5A'
             if (_ === 'Pass') color = '#81BF84'
+            if (_ === 'Warning') color = '#dcc506'
             if (_ === 'Stop') color = '#1D1D1D'
             return <span style={{ color }}>{_}</span>
         }

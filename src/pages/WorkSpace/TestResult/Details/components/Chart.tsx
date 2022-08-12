@@ -11,6 +11,7 @@ const switchState = ( state : string, testType: string ) => {
 
     if ( state === 'success' )  return { color : '#81BF84', name : testType === 'business_business' ? '成功' : '通过' , legend : '#389E0D' }
     if ( state === 'fail' )     return { color : '#C84C5A', name : '失败' , legend : '#C84C5A' }
+    if ( state === 'warn' )     return { color : '#DCC506', name : '警告' , legend : '#DCC506' }
     if ( state === 'skip' )     return { color : '#6A737D', name : '跳过' , legend : '#000000' }
     return 
 }

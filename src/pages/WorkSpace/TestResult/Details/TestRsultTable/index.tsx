@@ -22,6 +22,7 @@ const funcStates = [
     { key: 'count', name: '全部', value: '', color: '#649FF6' },
     { key: 'success', name: '通过', value: 'success', color: '#81BF84' },
     { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
+    { key: 'warn', name: '警告', value: 'warn', color: '#dcc506' },
     { key: 'skip', name: '跳过', value: 'skip', color: '#DDDDDD' },
 ]
 const perfStates = [
@@ -77,7 +78,6 @@ const TestResultTable: React.FC<any> = (props) => {
             defaultParams: [defaultParams]
         }
     )
-
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
@@ -131,8 +131,8 @@ const TestResultTable: React.FC<any> = (props) => {
             }
         },
         {
-            title: ['functional', 'business_functional'].includes(testType) ? '总计/通过/失败/跳过' : (testType === 'business_business' ? '总计/成功/失败' : 'Metric总计/上升/下降/正常/无效/NA'),
-            width: ['performance', 'business_performance'].includes(testType) ? 255 : 200,
+            title: ['functional', 'business_functional'].includes(testType) ? '总计/通过/失败/警告/跳过' : (testType === 'business_business' ? '总计/成功/失败' : 'Metric总计/上升/下降/正常/无效/NA'),
+            width: 255,
             render: (_: any) => {
                 return (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
@@ -141,6 +141,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                 <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.conf_count}</div>
                                 <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('success')} >{_.conf_success}</div>
                                 <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('fail')} >{_.conf_fail}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#dcc506" }} onClick={() => handleStateChange('warn')} >{_.conf_warn}</div>
                                 {testType !== 'business_business' && (
                                     <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('skip')} >{_.conf_skip}</div>
                                 )}

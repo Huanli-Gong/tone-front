@@ -180,6 +180,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             <Option value="All">全部</Option>
                             <Option value="Pass">成功</Option>
                             <Option value="Fail">失败</Option>
+                            <Option value="Warn">警告</Option>
                             <Option value="Skip">跳过</Option>
                         </Select>
                     </Space>

@@ -46,7 +46,13 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
         ),
         // render: (_: any) => <span style={{ paddingLeft: 8, paddingRight: 8 }}>{_ || '-'}</span>
     }, {
-        title: <QusetionIconTootip title="测试结果" desc="AVG ± CV" />,
+        title:(
+            <QusetionIconTootip
+                placement="bottomLeft"
+                title='测试结果'
+                desc='测试结果详情请查看日志文件'
+            />
+        ),
         dataIndex: 'test_value',
         width: 120,
         render: (_: any, row: any, index: number) => (
