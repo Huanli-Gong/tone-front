@@ -31,7 +31,7 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
 
     const handleIpHerf = async () => {
         if (provider === "aliyun") {
-            const { data, code, msg } = await querySeverLink({ ip: param })
+            const { data, code, msg } = await querySeverLink({ id: param })
             if (code === 200) {
                 const win: any = window.open("");
                 setTimeout(function () { win.location.href = data.link })
@@ -45,8 +45,10 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
             // setTimeout(function () { win.location.href = href })
         }
     }
-    const flag = (BUILD_APP_ENV && provider === "aligroup") || !access.IsAdmin()
-
+    const flag = 
+        (BUILD_APP_ENV && provider === "aligroup") || 
+        (BUILD_APP_ENV && !access.IsAdmin()) || (!BUILD_APP_ENV && !access.IsWsSetting())
+        
     const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
         : (
             <TextWarp ref={ellipsis} style={{ color: '#1890ff', cursor: 'pointer' }} onClick={handleIpHerf}>
