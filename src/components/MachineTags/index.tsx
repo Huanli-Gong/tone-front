@@ -17,7 +17,7 @@ export default (props:any) => {
     })
 
     useEffect(() => {
-        if(isQuery === 'edit' && !!list.length){
+        if(isQuery === 'edit'){
             requestData({ tag_id_list: list + '' , page_num: 1, page_size: 20, ws_id }, 'reset')
         }
 
