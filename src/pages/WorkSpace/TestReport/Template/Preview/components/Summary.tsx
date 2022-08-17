@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { Typography, Row , Space } from 'antd'
+import { Typography, Row, Space } from 'antd'
 import styled from 'styled-components'
 import { PreviewTableTr, FullRow, CustomRow } from '../styled'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
@@ -77,7 +77,7 @@ const GroupTableRow = () => (
         </PreviewTableTr>
         <PreviewTableTr>
             <Space align="center">
-                <BaseGroupIcon style={{ transform: 'translateY(2px)'}}/>
+                <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
                 <Typography.Text strong>基准组</Typography.Text>
             </Space>
         </PreviewTableTr>
@@ -88,7 +88,7 @@ const GroupTableRow = () => (
 
 const Summary = (props: any) => {
     return (
-        <CustomRow id={'need_test_summary'}>
+        <CustomRow id={'preview_need_test_summary'}>
             <div><Typography.Title level={5} >Summary</Typography.Title></div>
             <GroupTableRow />
             <SummaryTest>
