@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { PreviewTableTr, FullRow, CustomRow } from '../styled'
-import { Typography , Space } from 'antd'
+import { Typography, Space } from 'antd'
 
 import styled from 'styled-components'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
@@ -36,7 +36,7 @@ const GroupTableRow = () => (
         <PreviewTableTr><Typography.Text strong>对比组</Typography.Text></PreviewTableTr>
         <PreviewTableTr>
             <Space>
-                <BaseGroupIcon style={{ transform: 'translateY(2px)'}}/>
+                <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
                 <Typography.Text strong>基准组</Typography.Text>
             </Space>
         </PreviewTableTr>
@@ -48,18 +48,19 @@ const GroupTableRow = () => (
 const TestEnv = (props: any) => {
     const {
         need_test_env,
-        need_env_description
+        need_env_description,
+        env_description_desc
     } = props
 
     if (need_test_env || need_env_description)
         return (
-            <CustomRow id={'need_test_env'}>
+            <CustomRow id={'preview_need_test_env'}>
                 <div><Typography.Title level={5} >测试环境</Typography.Title></div>
                 {
                     need_env_description &&
                     <>
                         <EnvTitle><Typography.Text strong>环境描述</Typography.Text></EnvTitle>
-                        <div><Typography.Text >此处内容需生成报告后手动填写</Typography.Text></div>
+                        <div><Typography.Text >{env_description_desc || "此处内容需生成报告后手动填写"}</Typography.Text></div>
                     </>
                 }
                 {
