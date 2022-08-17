@@ -22,7 +22,7 @@ const ReportTestFunc: React.FC<any> = () => {
             return data
         }
     }, [domainResult])
-
+    
     const [dataSource, setDataSource] = useState<any>([])
     const [subObj, setSubObj] = useState<Array<{}>>([])
 
@@ -41,7 +41,7 @@ const ReportTestFunc: React.FC<any> = () => {
             }
         })
     }, [dataSource])
-
+    
     /* 
         ** 删除测试项 测试组
     */

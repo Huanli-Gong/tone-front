@@ -94,7 +94,6 @@ const Performance = (props: any) => {
         //     timer && clearTimeout(timer)
         // })
         const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
-        console.log('data',data,isOldReport)
         btn ? setPerData(data) : setPerData({
             ...child, list: child.list.map((item: any) => {
                 return {

@@ -84,8 +84,8 @@ const TypeChart = (props: any) => {
                 } // metric 对比数据 遍历
             }
             if(chartType == '3'){
-                if (data.metric_list > 5) {
-                    obj.dataZoom_end = (5 / data.metric_list) * 100;
+                if (data.metric_list.length > 5) {
+                    obj.dataZoom_end = (5 / data.metric_list.length) * 100;
                 } 
                 for (let b = 0, metric = data.metric_list; b < metric.length; b++) {
                     obj.xAxisData.push(metric[b].metric)

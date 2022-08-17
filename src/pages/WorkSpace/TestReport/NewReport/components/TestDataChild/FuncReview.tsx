@@ -219,12 +219,14 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
-        let subCaseList = isOldReport ? _.cloneDeep(sub_case_list) : sub_case_list
+        let subCaseList = _.cloneDeep(sub_case_list) 
+        
+        // console.log('subCaseList',subCaseList)
         return (
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                        isOldReport && item.compare_data.splice(baseIndex, 0, item.result)
+                    //    item.compare_data.splice(baseIndex, 0, item.result)
                         const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
                         len.forEach((i) => item.compare_data.push('-'))
                         return (
@@ -234,7 +236,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
-                                    isOldReport ?
                                         !!item.compare_data.length ?
                                             item.compare_data.map((cur: any, idx: number) => {
                                                 return (
@@ -247,15 +248,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             <SubCaseText gLen={groupLen} btnState={btnState}>
                                                 <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
                                             </SubCaseText>
-                                        :
-                                        !!item.compare_data.length &&
-                                        item.compare_data.map((cur: any, idx: number) => {
-                                            return (
-                                                <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
-                                                    <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
-                                                </SubCaseText>
-                                            )
-                                        })
+                                        
                                 }
                             </TestSubCase>
                         )
@@ -306,43 +299,46 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     {
                         suite.conf_list.map((conf: any, cid: number) => {
                             const expand = expandKeys.includes(conf.conf_id)
-                            const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
-                            let conf_data = conf.conf_compare_data || conf.compare_conf_list
-                            let metricList: any = []
-                            for (let i = 0; i < allGroupData.length; i++) {
-                                if (i === baseIndex)
-                                    metricList.push({
-                                        all_case,
-                                        success_case,
-                                        fail_case,
-                                        obj_id,
-                                    })
-                                !!conf_data.length ?
-                                    conf_data?.map((item: any, idx: number) => {
-                                        if (item !== null) {
-                                            const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
-                                            idx === i && metricList.push({
-                                                all_case,
-                                                success_case,
-                                                fail_case,
-                                                obj_id
-                                            })
-                                        } else {
-                                            idx === i && metricList.push({
-                                                all_case: '-',
-                                                success_case: '-',
-                                                fail_case: '-'
-                                            })
-                                        }
-                                    })
-                                    :
-                                    (allGroupData.length > 1) && (i - 1) && metricList.push({
-                                        all_case: '-',
-                                        success_case: '-',
-                                        fail_case: '-'
-                                    })
+                            let data_list:any = []
+                            if(isOldReport){
+                                const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
+                                let conf_data = conf.conf_compare_data || conf.compare_conf_list
+                                let metricList: any = []
+                                for (let i = 0; i < allGroupData.length; i++) {
+                                    if (i === baseIndex)
+                                        metricList.push({
+                                            all_case,
+                                            success_case,
+                                            fail_case,
+                                            obj_id,
+                                        })
+                                    !!conf_data.length ?
+                                        conf_data?.map((item: any, idx: number) => {
+                                            if (item !== null) {
+                                                const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
+                                                idx === i && metricList.push({
+                                                    all_case,
+                                                    success_case,
+                                                    fail_case,
+                                                    obj_id
+                                                })
+                                            } else {
+                                                idx === i && metricList.push({
+                                                    all_case: '-',
+                                                    success_case: '-',
+                                                    fail_case: '-'
+                                                })
+                                            }
+                                        })
+                                        :
+                                        (allGroupData.length > 1) && (i - 1) && metricList.push({
+                                            all_case: '-',
+                                            success_case: '-',
+                                            fail_case: '-'
+                                        })
+                                }
                             }
-                            const data_list = isOldReport ? metricList : conf_data
+                            data_list = conf.conf_compare_data || conf.compare_conf_list
                             return (
                                 <div key={cid}>
                                     <TestCase expand={expand}>

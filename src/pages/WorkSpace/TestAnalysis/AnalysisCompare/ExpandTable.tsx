@@ -151,7 +151,6 @@ export default (props: any) => {
         handleChangeDefaultJob(allConf)
         setPopoverVisible(false)
     }
-
     const rowSelection = {
         selectedRowKeys,
         preserveSelectedRowKeys: false,

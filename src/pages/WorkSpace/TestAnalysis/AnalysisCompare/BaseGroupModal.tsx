@@ -35,7 +35,7 @@ export default (props: any) => {
     const [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
     const [currentStep, setCurrentStep] = useState(0)
     const [expandRepeatTableKey, setExpandRepeatTableKey] = useState<string[]>([])
-    const [selSuiteData, setSelSuiteData] = useState<any>()
+    const [selSuiteData, setSelSuiteData] = useState<any>([])
     const [currentJobIndex, setCurrentJobIndex] = useState()
     const allFunRowKeys: any = useRef(null)
     const allPersRowKeys: any = useRef(null)
@@ -84,7 +84,8 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-        if (currentStep === 0) setTab('functional')
+        let flag = JSON.stringify(suitData.func_suite_dic) !== '{}' ? 'functional' : 'performance'
+        if (currentStep === 0) setTab(flag)
         if (currentStep === 1) setTab('group0')
     }, [currentStep])
 
@@ -254,7 +255,7 @@ export default (props: any) => {
         setDuplicateLoading(false)
         setCurrentStep(current)
     }
-
+    
     const handleOk = (sureOkFn: any) => {
         let data = JSON.stringify(copySuitData) === '{}' ? suitData : copySuitData
         let func_suite = data.func_suite_dic || {}
@@ -370,14 +371,18 @@ export default (props: any) => {
                 job_id: item.job_id[0].job_id
             }
         })
-        setDuplicateData([...duplicateData, ...duplicate_data])
+        let arr = [ ...duplicateData ,...duplicate_data]
+        const strings = arr.map((item) => JSON.stringify(item));
+        const removeDupList = [...new Set(strings)]; 
+        const result = removeDupList.map((item) => JSON.parse(item)); 
+        setDuplicateData(result)
     }
     
     const selectRepeatData = () => {
         let currentGroupIndex = Number(tab.replace('group', ''))
         const flag = isNaN(currentGroupIndex)
         let cId = flag ? 0 : currentGroupIndex
-        if (!selSuiteData.length) {
+        if (_.isUndefined(selSuiteData) || !selSuiteData.length) {
             return <Empty
                 description="暂无重复数据"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -466,7 +471,7 @@ export default (props: any) => {
     const allGroupReact = () => {
         const num = /^group[0-9]+$/.test(tab) ? tab.replace('group', '') : 0
         return (
-            <>
+            selSuiteData &&  <>
                 <Tabs
                     defaultActiveKey={tab}
                     onTabClick={handleTabClick}
