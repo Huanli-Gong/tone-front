@@ -27,6 +27,7 @@ const ReportTestEnv = () => {
         routeName,
         btnConfirm,
         groupLen,
+        domainResult,
     } = useContext(ReportContext)
     const handleChangeVal = (val: any, text: string) => {
         if(environmentResult && environmentResult !== undefined){
@@ -46,7 +47,7 @@ const ReportTestEnv = () => {
             <SubTitle><span className="line"></span>测试环境</SubTitle>
             <EditTitle>环境描述</EditTitle>
             <SettingTextArea
-                name={saveReportData?.test_env?.text}
+                name={saveReportData?.test_env?.text || domainResult?.env_description_desc}
                 btnConfirm={btnConfirm}
                 defaultHolder="请输入环境描述"
                 btn={btnState}
