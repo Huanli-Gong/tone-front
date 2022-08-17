@@ -1,17 +1,18 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
 
 import { Drawer, Form, Input, Space, Button, message, Spin } from 'antd'
-import { queryServerTagList, createServerGroup, updateServerGroup } from '../../services'
-import { TagSelect } from '../../Components'
+import { createServerGroup, updateServerGroup } from '../../services'
 import Owner from '@/components/Owner/index'
 import { requestCodeMessage } from '@/utils/utils'
+import MachineTags from '@/components/MachineTags';
 
 const CreateGroupDrawer = (props: any, ref: any) => {
     const { ws_id, run_mode, run_environment, onFinish } = props
-
-    const [tagList, setTagList] = useState([])
+    const [tagFlag, setTagFlag] = useState({
+        list: [],
+        isQuery: '',
+    })
     const [padding, setPadding] = useState(false)
-    const [loading, setLoading] = useState(true)
     const [visible, setVisible] = useState(false)
     const [source, setSource] = useState<any>(null)
 
@@ -20,22 +21,18 @@ const CreateGroupDrawer = (props: any, ref: any) => {
     useImperativeHandle(ref, () => ({
         show(_: any) {
             setVisible(true)
-            initDrawer()
             if (_) {
                 setSource(_)
                 let params = _
-                params.tags = params.tag_list.map((i: any) => i.id)
+                const list = params.tag_list.map((i:any) => i.id)
+                params.tags = list
+                setTagFlag({ ...tagFlag, isQuery: 'edit', list })
                 form.setFieldsValue(params)
+            }else{
+                setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
             }
         }
     }))
-
-    const initDrawer = async () => {
-        setLoading(true)
-        const { data } = await queryServerTagList({ ws_id, page_size: 500 }) //run_mode , run_environment , 
-        setTagList(data || [])
-        setLoading(false)
-    }
 
     const handleFinish = () => {
         setPadding(true)
@@ -93,38 +90,25 @@ const CreateGroupDrawer = (props: any, ref: any) => {
                 </div>
             }
         >
-            <Spin spinning={loading} >
-                <Form
-                    layout="vertical"
-                    /*hideRequiredMark*/
-                    form={form}
-                    name="createGroup"
-                >
-                    <Form.Item name="name" label="集群名称" rules={[{ message: '名称不能为空', required: true }]}>
-                        <Input autoComplete="off" placeholder="请输入" />
-                    </Form.Item>
-                    <Owner />
-                    <TagSelect tags={tagList} />
-                    <Form.Item name="description" label="备注">
-                        <Input.TextArea
-                            placeholder="请输入备注信息"
-                        />
-                    </Form.Item>
-                </Form>
-            </Spin>
+            <Form
+                layout="vertical"
+                /*hideRequiredMark*/
+                form={form}
+                name="createGroup"
+            >
+                <Form.Item name="name" label="集群名称" rules={[{ message: '名称不能为空', required: true }]}>
+                    <Input autoComplete="off" placeholder="请输入" />
+                </Form.Item>
+                <Owner />
+                <MachineTags {...tagFlag}/>
+                <Form.Item name="description" label="备注">
+                    <Input.TextArea
+                        placeholder="请输入备注信息"
+                    />
+                </Form.Item>
+            </Form>
         </Drawer>
     )
 }
 
 export default forwardRef(CreateGroupDrawer)
-
-
-{/* {
-                        members && 
-                        <MemberSelect 
-                            initialValue={ source.owner } 
-                            members={ members } 
-                            callback={ ( data : any ) => setMembers( data ) }
-                            rules={[{message : 'Owner不能为空' , required : true }]}
-                        />
-                    } */}

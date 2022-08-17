@@ -5,7 +5,7 @@ import { queryTag } from './service'
 const { Option } = Select;
 
 export default (props:any) => {
-    const { isQuery, object_id } = props;
+    const { isQuery, list } = props;
     const { ws_id }: any = useParams()
     const [fetching, setFetching] = useState<boolean>(true)
     const [tagList, setTagList] = useState<any>([])
@@ -17,14 +17,15 @@ export default (props:any) => {
     })
 
     useEffect(() => {
-        if(isQuery === 'edit' && object_id > 0){
-            requestData({ object_id, page_num: 1, page_size: 20, ws_id }, 'reset')
+        if(isQuery === 'edit' && !!list.length){
+            requestData({ tag_id_list: list + '' , page_num: 1, page_size: 20, ws_id }, 'reset')
         }
 
         if(isQuery === 'add'){
             getServerTagList()
         }
-    },[ isQuery, object_id ])
+
+    },[ isQuery, list ])
 
     const requestData = async (query: any, option = "concat") => {
         setFetching(true)

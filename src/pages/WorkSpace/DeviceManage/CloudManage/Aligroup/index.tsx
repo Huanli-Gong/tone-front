@@ -53,7 +53,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         description: ''
     })
     const [ tagFlag, setTagFlag ] = useState({
-        object_id: '',
+        list: [],
         isQuery: '',
     })
     const [visible, setVisible] = useState<boolean>(false)
@@ -91,7 +91,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     
     const newGroup = () => {
         setOutId(undefined)
-        setTagFlag({ ...tagFlag, isQuery: 'add', object_id:'' })
+        setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
         setVisible(true)
         form.resetFields()
     }
@@ -159,7 +159,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const modifyGroup = (row: any) => {
-        setTagFlag({ ...tagFlag, isQuery: 'edit', object_id: row.id })
+        const list = row.tag_list.map((item:any) => item.id)
+        setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         row.tags = row.tag_list.map((item: any) => { return item.id })
         setOutId(row.id)
         setVisible(true)
