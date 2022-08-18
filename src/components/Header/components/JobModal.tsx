@@ -1,78 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { Layout, Row, Input, Tooltip, message, Spin, Tag, Col, Typography, Space } from 'antd'
+import React from 'react'
+import { Layout, Row, Input, message, Spin, Tag, Col, Typography, Space } from 'antd'
 import { switchServerType, switchChineseType } from '@/utils/utils'
-import { history, useModel } from 'umi'
+import { history } from 'umi'
 import styles from './jobModel.less'
 import { SearchOutlined, FrownOutlined } from '@ant-design/icons'
 
-import { queryTestTemplateList } from '@/pages/WorkSpace/TestTemplateManage/service'
+import { useHeaderContext } from '../Provider'
 
-export default (props: any) => {
-    const ws_id = props.ws_id
+const defaultParams = { enable: "True", page_num: 1, page_size: 999 }
 
-    const defaultParams = { ws_id, name: '', enable: 'True', page_num: 1, page_size: 100 }
-    const { initialState } = useModel('@@initialState')
+const JobTemplateModal: React.FC<Record<string, any>> = (props) => {
+    const { ws_id, jobTemplates, templatesRun, templateFetchLoading } = useHeaderContext()
 
-    const [pageParams, setPageParams] = useState(defaultParams)
-    const [dataSource, setDatasource] = useState([])
-    const [loading, setLoading] = useState(false)
+    const dataSourceCopy = props.getData(jobTemplates)
 
-    const [over, setOver] = useState(false)
-
-    const queryTemplate = async (params: any) => {
-        setLoading(true)
-        const { code, data, total_page } = await queryTestTemplateList(params)
-        if (code === 200) {
-            setDatasource(dataSource.concat(data))
-            if (data.length === params.page_size) {
-                const num = params.page_num
-                setPageParams({ ...params, page_num: total_page > num ? num : total_page })
-            }
-            else setOver(true)
-        }
-        setLoading(false)
-    }
-
-    const initTemplate = async (params = defaultParams) => {
-        setLoading(true)
-        const { code, data } = await queryTestTemplateList(params)
-        if (code === 200) {
-            setDatasource(data)
-        }
-        setLoading(false)
-    }
-
-    const handleChangeTemplateName = ({ target }: any) => {
-        setPageParams({ ...defaultParams, name: target.value })
-        initTemplate({ ...defaultParams, name: target.value })
-    }
-
-    useEffect(() => {
-        initTemplate()
-    }, [initialState?.refreshMenu, ws_id])
-    useEffect(() => {
-        if (pageParams.name) {
-            initTemplate()
-            setPageParams({ ...defaultParams })
-        }
-    }, [props.testType])
-
-    const handleScroll = ({ target }: any) => {
-        const { clientHeight, scrollHeight, scrollTop } = target
-        if (clientHeight + scrollTop === scrollHeight && !over) {
-            queryTemplate({ ...pageParams, page_num: pageParams.page_num + 1 })
-        }
-    }
-    const TootipOver: React.FC<any> = (props: any) => {
-        let content = props.children
-        if (content.length > 23) {
-            return <Tooltip title={content}>
-                {content}
-            </Tooltip>
-        }
-        return content
-    }
-    const dataSourceCopy = props.getData(dataSource)
     return (
         <Layout.Content style={{ minWidth: 468, maxWidth: 912, paddingBottom: 8 }} key={props.testType}>
             <Row style={{ paddingLeft: 20, paddingRight: 19, marginBottom: 16 }}>
@@ -81,10 +22,10 @@ export default (props: any) => {
                     prefix={<SearchOutlined />}
                     className={styles.job_search_inp}
                     placeholder="搜索模板"
-                    onChange={handleChangeTemplateName}
+                    onChange={({ target }: any) => templatesRun({ name: target.value, ...defaultParams, ws_id })}
                 />
             </Row>
-            <Spin spinning={loading}>
+            <Spin spinning={templateFetchLoading}>
                 <div
                     style={{ width: 912, maxHeight: 320, overflowX: "hidden", overflowY: "scroll" }}
                 >
@@ -163,3 +104,5 @@ export default (props: any) => {
         </Layout.Content>
     )
 }
+
+export default JobTemplateModal

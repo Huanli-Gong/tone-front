@@ -3,21 +3,23 @@ import { Tabs } from 'antd'
 
 import JobModal from './JobModal'
 import JobType from './JobType'
-import { history,useAccess,Access } from 'umi'
+import { history, useAccess, Access } from 'umi'
 import { PlusOutlined } from '@ant-design/icons'
 import styles from './index.less'
+import { useHeaderContext } from '../Provider'
 
-export default ({ ws_id , types , onOk } : any ) => {
-    const [ tab , setTab ] = useState('1')
-    const [ testType , setTestType ] = useState('全部')
-    const handleTabClick = ( tab : string ) => {
-        setTab( tab )
+const JobTypeTab: React.FC<Record<string, any>> = ({ onOk }) => {
+    const { ws_id } = useHeaderContext()
+    const [tab, setTab] = useState('1')
+    const [testType, setTestType] = useState('全部')
+    const handleTabClick = (tab: string) => {
+        setTab(tab)
         setTestType('全部')
     }
     const access = useAccess()
     const handleCreateJobType = () => {
         onOk()
-        history.push({ pathname:`/ws/${ ws_id }/job/create` })
+        history.push({ pathname: `/ws/${ws_id}/job/create` })
     }
     const renderChild = (
         <>
@@ -30,22 +32,21 @@ export default ({ ws_id , types , onOk } : any ) => {
             <div onClick={handleCreateJobType}>{renderChild}</div>
         </Access>
     );
-    const typeName = (type:string) => {
-        switch ( type ) {
-            case '功能测试'     : return 'functional'
-            case '性能测试'  : return 'performance'
-            case '业务测试'    : return 'business'
-            case '稳定性测试'    : return 'stability'
-            default : return 'all'
+    const typeName = (type: string) => {
+        switch (type) {
+            case '功能测试': return 'functional'
+            case '性能测试': return 'performance'
+            case '业务测试': return 'business'
+            case '稳定性测试': return 'stability'
+            default: return 'all'
         }
     }
-    const handleJobTypeData = (dataSource:[]):any[] => {
-        if(testType === '全部') return dataSource
+    const handleJobTypeData = (dataSource: []): any[] => {
+        if (testType === '全部') return dataSource
         const type = tab === '1' ? typeName(testType) : testType
-        return dataSource.filter((item:any) => item && item.test_type === type)
-        
+        return dataSource.filter((item: any) => item && item.test_type === type)
     }
-    
+
     const testTypeDom = () => {
         const type = ['全部', '功能测试', '性能测试']
         return (
@@ -61,6 +62,11 @@ export default ({ ws_id , types , onOk } : any ) => {
             </ul>
         )
     }
+
+    React.useEffect(() => {
+        setTestType("全部")
+    }, [ws_id])
+
     return (
         <Tabs
             defaultActiveKey={tab}
@@ -71,14 +77,16 @@ export default ({ ws_id , types , onOk } : any ) => {
         >
             <Tabs.TabPane tab="通过Job类型新建" key="1">
                 {testTypeDom()}
-                <JobType ws_id={ws_id} dataSource={types} onOk={onOk} getData={handleJobTypeData} />
+                <JobType onOk={onOk} getData={handleJobTypeData} />
             </Tabs.TabPane>
-            { access.IsWsSetting() &&
+            {access.IsWsSetting() &&
                 <Tabs.TabPane tab="通过模板新建" key="2">
                     {testTypeDom()}
-                    <JobModal ws_id={ws_id} onOk={onOk} getData={handleJobTypeData} testType={testType}/>
+                    <JobModal onOk={onOk} getData={handleJobTypeData} testType={testType} />
                 </Tabs.TabPane>
             }
         </Tabs>
     )
 }
+
+export default JobTypeTab
