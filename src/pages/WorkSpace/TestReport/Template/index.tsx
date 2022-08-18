@@ -567,10 +567,6 @@ const TemplatePage = (props: any) => {
 
     const handleSelectSuiteOk = ({ result, rowkey, testType }: any) => handleFieldChange(result, 'list', rowkey, testType)
 
-    const hanldePreview = () => {
-
-    }
-
     const checkName = (data: any) => {
         const obj = {}
         for (let x = 0, len = data.length; x < len; x++) {
