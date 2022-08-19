@@ -1,12 +1,9 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react'
-
 import { Form, Radio, Row, Col, Select, Input } from 'antd'
-
 import styles from './index.less'
 import { FormProps } from './index'
-
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
-
+import QuestionCircleComponent from '@/components/Public/QuestionCircle'
 import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushForm'
 import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushForm'
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
@@ -14,20 +11,20 @@ import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import { getTextByJs } from '@/utils/hooks'
 import MonitorList from './MonitorList'
 
-import { useRequest , useParams } from 'umi'
+import { useRequest, useParams } from 'umi'
 import _ from 'lodash'
 
 /**
  * 环境配置
  */
-export default ({ contrl, disabled = false, project_id, onRef = null, template = {} }: FormProps) => {
-    const { ws_id } : any = useParams()
+export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = null, template = {} }: FormProps) => {
+    const { ws_id }: any = useParams()
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
     const [monitor, setMonitor] = useState(false) // 监控
 
-    const [kernel, setKernal] = useState( project_id ? 'install_build_kernel' : 'no' )
+    const [kernel, setKernal] = useState(project_id ? 'install_build_kernel' : 'no')
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
@@ -45,41 +42,46 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
                 setMonitor(false)
                 form.resetFields()
             },
-            setVal: (data:Object) =>{
-                let {rpm_info,script_info,kernel_version,kernel_info,build_pkg_info}:any = data
-                 rpm_info = rpm_info || [{pos: 'before',rpm: ''}]
-                 script_info = script_info || [{pos: 'before',script: ''}]
-                 form.resetFields()
-                 let kernelType = 'no'
-                 if(kernel_info && _.get(kernel_info,'kernel') && _.get(kernel_info,'devel') && _.get(kernel_info,'headers') && kernel_version) {
+            setVal: (data: Object) => {
+                let { rpm_info, script_info, kernel_version, kernel_info, build_pkg_info }: any = data
+                rpm_info = rpm_info || [{ pos: 'before', rpm: '' }]
+                script_info = script_info || [{ pos: 'before', script: '' }]
+                form.resetFields()
+                let kernelType = 'no'
+                if (kernel_info && _.get(kernel_info, 'kernel') && _.get(kernel_info, 'devel') && _.get(kernel_info, 'headers') && kernel_version) {
                     kernelType = 'install_push'
-                    form.setFieldsValue({...data,kernel_install: kernelType,rpm_info,script_info})
+                    form.setFieldsValue({ ...data, kernel_install: kernelType, rpm_info, script_info })
                     setKernal(kernelType)
                     return
-                 }
-                 if(kernel_info && _.get(kernel_info,'kernel') && _.get(kernel_info,'devel') && _.get(kernel_info,'headers') && !kernel_version) {
+                }
+                if (kernel_info && _.get(kernel_info, 'kernel') && _.get(kernel_info, 'devel') && _.get(kernel_info, 'headers') && !kernel_version) {
                     kernelType = 'install_un_push'
-                    form.setFieldsValue({...data,kernel_install: kernelType,rpm_info,script_info})
+                    form.setFieldsValue({ ...data, kernel_install: kernelType, rpm_info, script_info })
                     setKernal(kernelType)
                     return
-                 }
-                 if(build_pkg_info && _.get(build_pkg_info,'code_repo') && _.get(build_pkg_info,'code_branch') && _.get(build_pkg_info,'cpu_arch')) {
+                }
+                if (build_pkg_info && _.get(build_pkg_info, 'code_repo') && _.get(build_pkg_info, 'code_branch') && _.get(build_pkg_info, 'cpu_arch')) {
                     kernelType = 'install_build_kernel'
-                    form.setFieldsValue({...data,kernel_install: kernelType,rpm_info,script_info})
+                    form.setFieldsValue({ ...data, kernel_install: kernelType, rpm_info, script_info })
                     setKernal(kernelType)
                     return
-                 }
-                form.setFieldsValue({...data,kernel_install: kernelType,rpm_info,script_info})
+                }
+                form.setFieldsValue({ ...data, kernel_install: kernelType, rpm_info, script_info })
                 setKernal(kernelType)
             }
         }),
     )
 
+    useEffect(()=> {
+        if(envErrorFlag){
+            form.scrollToField('env_info')
+        }
+    },[ envErrorFlag ])
     // 新建job已经发布版本不过滤。
     const { data: kernelList } = useRequest(
         () => queryKernelList({ enable: 'True' }) // , release : 'True'
     )
-    
+
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
             const {
@@ -120,12 +122,12 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
 
             const variable: any = env_info ? getTextByJs(env_info) : ''
             const monitorInfo = _.isArray(monitor_info) ? monitor_info.map((item) => {
-                const obj:{monitor_type:string,server?:string} = {monitor_type:item.monitor_type}
-                if(_.get(item,'monitor_type') === 'custom_machine')  obj.server = item.server_input
+                const obj: { monitor_type: string, server?: string } = { monitor_type: item.monitor_type }
+                if (_.get(item, 'monitor_type') === 'custom_machine') obj.server = item.server_input
                 return obj
             }) : []
             form.setFieldsValue({
-                monitor_info: monitor_info && monitor_info.length > 0 ? monitorInfo : [{monitor_type: 'case_machine',server: ''}],
+                monitor_info: monitor_info && monitor_info.length > 0 ? monitorInfo : [{ monitor_type: 'case_machine', server: '' }],
                 rpm_info: rpm_info && rpm_info.length > 0 ? rpm_info : [{ pos: 'before', rpm: '' }],
                 script_info: script_info && script_info.length > 0 ? script_info : [{ pos: 'before', script: '' }],
                 need_reboot,
@@ -165,7 +167,7 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
             initialValues={{
                 rpm_info: [{ pos: 'before', rpm: '' }],
                 script_info: [{ pos: 'before', script: '' }],
-                monitor_info: [{monitor_type: 'case_machine',server: ''}],
+                monitor_info: [{ monitor_type: 'case_machine', server: '' }],
                 need_reboot: false,
                 hotfix_install: true,
                 scripts: [{ pos: 'before', script: '' }],
@@ -243,7 +245,7 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
             }
             {
                 kernel === 'install_build_kernel' &&
-                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} project_id={project_id}/>
+                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} project_id={project_id} />
             }
             {
                 'reboot' in contrl &&
@@ -260,23 +262,40 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
             {
                 'global_variable' in contrl &&
                 <Form.Item
-                    name="env_info"
-                    // label="全局变量"
                     label={contrl.global_variable.alias || contrl.global_variable.show_name}
-                    rules={[
-                        () => ({
-                            validator(rule, value) {
-                                if (value) {
-                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                    return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
-                                }
-                                else
-                                    return Promise.resolve()
-                            },
-                        })
-                    ]}
                 >
-                    <Input.TextArea disabled={disabled} placeholder="格式：key=value，多个用空格或换行分割" />
+                    <Form.Item
+                        name="env_info"
+                        // label="全局变量"
+                        rules={[
+                            () => ({
+                                validator(rule, value) {
+                                    if (value) {
+                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                        return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
+                                    }
+                                    else
+                                        return Promise.resolve()
+                                },
+                            })
+                        ]}
+                    >
+                        <Input.TextArea
+                            disabled={disabled}
+                            placeholder="格式：key=value，多个用空格或换行分割"
+                        />
+                    </Form.Item>
+                    <QuestionCircleComponent
+                        style={{ transform: "unset", top: 6 }}
+                        contextNode={
+                            <ul style={{ listStyle: 'auto', paddingInlineStart: 20, paddingTop: 15 }}>
+                                <li>定义多个全局变量，请使用空格和换行分割</li>
+                                <li>必须是字母、数字和下划线组合</li>
+                                <li>支持 value 中有双等号</li>
+                                <li>可以定义一个数组（使用括号）</li>
+                                <li>value中包含空格，则必须用双引号括起来</li>
+                            </ul>
+                        } />
                 </Form.Item>
             }
             {
@@ -319,8 +338,8 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
                         disabled={disabled}
                         onChange={({ target }) => {
                             setMonitor(target.value)
-                            if(target) {
-                                form.setFieldsValue({...form.getFieldsValue(),monitor_info: [{monitor_type: 'case_machine',server: ''}]})
+                            if (target) {
+                                form.setFieldsValue({ ...form.getFieldsValue(), monitor_info: [{ monitor_type: 'case_machine', server: '' }] })
                             }
                         }}
                     >
@@ -331,31 +350,8 @@ export default ({ contrl, disabled = false, project_id, onRef = null, template =
             }
             {
                 monitor &&
-                <MonitorList disabled={disabled} formComponent={form} template={template}/>
+                <MonitorList disabled={disabled} formComponent={form} template={template} />
             }
         </Form>
     )
 }
-
-
-
-// const getVal = ( val : any ) => {
-//     const t = typeof val
-
-//     if ( t === 'string' ) {
-//         const v = JSON.parse( val )
-//         const s = Object.prototype.toString.call( v )
-
-//         if ( s === '[object Array]' )
-//             return v > 0 ? v : false
-
-//         if ( s === '[object Object]' )
-//             return JSON.stringify( v ) !== '{}' ? v : false
-//     }
-// }
-
-// const envs      = getVal( env_info )
-// const kernels   = getVal( kernel_info )
-// const monitors  = getVal( monitor_info )
-// const scr_info  = getVal( script_info )
-// const rpms      = getVal( rpm_info )

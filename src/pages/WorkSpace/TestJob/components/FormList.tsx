@@ -24,7 +24,7 @@ export default ( { label , listName , textName , disabled , radioName , buttonSh
                                             >
                                                 <Col span={ 24 } style={{ position : 'relative' }}>
                                                     <Form.Item noStyle name={[ field.name, textName ]} >
-                                                        <Input.TextArea style={ disabledStyles } readOnly={ disabled } placeholder={ placeholder }/>
+                                                        <Input.TextArea style={ disabledStyles } readOnly={ disabled } placeholder={ placeholder } rows={label == '执行脚本' ? 4 : 2}/>
                                                     </Form.Item>
                                                     {
                                                         ( !disabled && index > 0 ) && 
