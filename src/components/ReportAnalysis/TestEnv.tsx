@@ -19,7 +19,7 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
         return (
             <>
                 {
-                    Array.isArray(envData) && !!envData.length && envData.map((server: any) => {
+                     envData.map((server: any) => {
                         const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                         return server.server_info.concat(len).map((item: any, idx: number) => (
                             i === idx && <MachineGroupR style={style} gLen={group} key={idx}>
@@ -33,7 +33,7 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
     }
 
     return (
-        <>
+        Array.isArray(envData) && !!envData.length ? <>
             {
                 len.map((item: any, i: number) => (
                     <MachineGroup key={i}>
@@ -93,6 +93,6 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                     </MachineGroup>
                 ))
             }
-        </>
+        </> : <></>
     )
 }

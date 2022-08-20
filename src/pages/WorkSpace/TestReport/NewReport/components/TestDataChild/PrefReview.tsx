@@ -59,7 +59,6 @@ const Performance = (props: any) => {
         setBtn(!btn)
         // setChartType('1')
     }
-
     useEffect(() => {
         setBtnName(btn ? '图表模式' : '列表模式')
     }, [btn])
@@ -270,14 +269,20 @@ const Performance = (props: any) => {
         objList.splice(baseIndex, 0, obj)
         return (
             objList.map((item: any, idx: number) => (
-                item !== undefined && <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
-                    <a style={{ cursor: 'pointer' }}
-                        href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
-                        target="_blank"
-                    >
-                        {item?.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                    </a>
-                </PrefDataText>
+                _.isUndefined(item) ? <></>
+                    : <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                        {
+                            item?.obj_id ?
+                                <a style={{ cursor: 'pointer' }}
+                                    href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
+                                    target="_blank"
+                                >
+                                    <IconLink style={{ width: 9, height: 9 }} />
+                                </a>
+                                :
+                                <>&nbsp;</>
+                        }
+                    </PrefDataText>
             ))
         )
     }
@@ -406,7 +411,7 @@ const Performance = (props: any) => {
                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                             <PrefData>
                                                 <DelBtn conf={conf} cid={cid} />
-                                                <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name}/></PrefDataTitle>
+                                                <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
                                                 {renderShare(conf)}
                                             </PrefData>
                                             {
@@ -492,7 +497,7 @@ const Performance = (props: any) => {
 
     return (
         <div key={id}>
-            <TestGroupItem id={`perf_item-${id}`} className="tree_mark"  isGroup={name === 'group'} > 
+            <TestGroupItem id={`perf_item-${id}`} className="tree_mark" isGroup={name === 'group'} >
                 <TestItemIcon style={{ marginLeft: 12, verticalAlign: 'middle' }} />
                 <TestItemText>
                     <GroupItemText
@@ -512,7 +517,7 @@ const Performance = (props: any) => {
                     {btnState && <CloseBtn />}
                 </Popconfirm>
                 {!btnState && <ItemFunc />}
-            </TestGroupItem> 
+            </TestGroupItem>
             {JSON.stringify(perData) !== '{}' && RenderSuite()}
         </div>
     )

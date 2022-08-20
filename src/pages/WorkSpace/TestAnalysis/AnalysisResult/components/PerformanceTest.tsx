@@ -234,8 +234,8 @@ const ReportTestPref: React.FC<any> = (props) => {
         })
         objList.splice(baseIndex, 0, obj)
         return (
-            objList.map((item: any) => (
-                item !== undefined && <PrefDataText gLen={group}>
+            objList.map((item: any,i:number) => (
+                item !== undefined && <PrefDataText gLen={group} key={i}>
                     <a style={{ cursor: 'pointer' }}
                         href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
                         target="_blank"
