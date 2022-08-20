@@ -1,7 +1,6 @@
 import React, { useContext , memo } from 'react';
 import { SettingTextArea } from './EditPublic';
 import { ReportContext } from '../Provider';
-import { Tooltip } from 'antd';
 import _ from 'lodash'; 
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import {
@@ -10,10 +9,8 @@ import {
     SubTitle,
     EnvGroup,
     EnvGroupL,
-    MachineGroup,
-    MachineGroupL,
-    MachineGroupR,
 } from '../ReportUI';
+import { TestEnv } from '@/components/ReportAnalysis/TestEnv';
 
 const ReportTestEnv = () => {
     const { 
@@ -65,91 +62,7 @@ const ReportTestEnv = () => {
                 <Identify envData={envData} group={groupLen}/>
             </EnvGroup>
             {/* 机器信息 */}
-            {
-                len.map((item: any, i: number) => (
-                    <MachineGroup key={i}>
-                        <MachineGroupL style={{ background: '#fafafa' }}>IP{`${!BUILD_APP_ENV ? "/SN" : ""}`}</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR style={{ background: '#fafafa', color: '#1890FF' }} gLen={groupLen} key={idx}>
-                                        <span>{item['ip/sn'] || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                        <MachineGroupL>机型</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
-                                        <span>{item.distro || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                        <MachineGroupL>OS</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
-                                        <span>{item.os || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                        <MachineGroupL>Kernel</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
-                                        <span>{item.kernel || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                        <MachineGroupL>GCC</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return  server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx &&  <MachineGroupR gLen={groupLen} key={idx}>
-                                        <Tooltip 
-                                            placement="bottomLeft" 
-                                            autoAdjustOverflow={false}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                            title={item.gcc}>
-                                            <span className="enviroment_child">{item.gcc || '-'}</span>
-                                        </Tooltip>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                        <MachineGroupL>RPM</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return  server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={groupLen} key={idx}>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            autoAdjustOverflow={false}
-                                            title={<div>{item.rpm?.map((i: any, idx: number) => (<span key={idx}>{i}<br /></span>))}</div>}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                        >
-                                            <span className="enviroment_child">{item.rpm || '-'}</span>
-                                        </Tooltip>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                    </MachineGroup>
-                ))
-            }
+            <TestEnv len={len} envData={envData} environmentResult={environmentResult} group={groupLen} />
         </ModuleWrapper>
     )
 }

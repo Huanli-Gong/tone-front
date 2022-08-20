@@ -314,7 +314,7 @@ const Performance = (props: any) => {
                                         <TestTitle>测试环境</TestTitle>
                                         <TestContent>
                                             <PerfTextArea
-                                                name={suite.test_env || domainResult.perf_conf?.test_env_desc}
+                                                name={suite.test_env}
                                                 field="test_env"
                                                 suite={suite}
                                                 dataSource={dataSource}
@@ -334,7 +334,7 @@ const Performance = (props: any) => {
                                         <TestTitle>测试说明</TestTitle>
                                         <TestContent>
                                             <PerfTextArea
-                                                name={suite.test_description || domainResult.perf_conf?.test_description_desc}
+                                                name={suite.test_description}
                                                 field="test_description"
                                                 suite={suite}
                                                 dataSource={dataSource}
@@ -354,7 +354,7 @@ const Performance = (props: any) => {
                                         <TestTitle>测试结论</TestTitle>
                                         <TestContent>
                                             <PerfTextArea
-                                                name={suite.test_conclusion || domainResult.perf_conf?.test_conclusion_desc}
+                                                name={suite.test_conclusion}
                                                 field="test_conclusion"
                                                 suite={suite}
                                                 dataSource={dataSource}

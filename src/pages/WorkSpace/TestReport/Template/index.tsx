@@ -136,7 +136,7 @@ const RenderTestBody: React.FC<any> = memo(
                                         </Tooltip> */}
                                     </Space>
                                     <Space
-                                        direction="vertical"
+                                        direction="horizontal"
                                         style={{ width: "100%" }}
                                     >
                                         {
@@ -232,32 +232,39 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
     }
 
     return (
-        <Space
-            direction="vertical"
-            style={{ width: "100%" }}
+        <Checkbox
+            disabled={!contrl}
+            onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
+            checked={dataSource[field][name]}
         >
-            <Checkbox
-                disabled={!contrl}
-                onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
-                checked={dataSource[field][name]}
-            >
-                {title}
-            </Checkbox>
-            {
-                text &&
-                <Input.TextArea
-                    allowClear
-                    placeholder={`请输入${title}`}
-                    value={dataSource[field][text]}
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                    disabled={!dataSource[field][name]}
-                    onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
-                        console.log(field)
-                        handleConfItemChange(target.value, text, field)
-                    }}
-                />
-            }
-        </Space>
+            {title}
+        </Checkbox>
+        // <Space
+        //     direction="vertical"
+        //     style={{ width: "100%" }}
+        // >
+        //     <Checkbox
+        //         disabled={!contrl}
+        //         onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
+        //         checked={dataSource[field][name]}
+        //     >
+        //         {title}
+        //     </Checkbox>
+        //     {
+        //         text &&
+        //         <Input.TextArea
+        //             allowClear
+        //             placeholder={`请输入${title}`}
+        //             value={dataSource[field][text]}
+        //             autoSize={{ minRows: 3, maxRows: 3 }}
+        //             disabled={!dataSource[field][name]}
+        //             onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
+        //                 console.log(field)
+        //                 handleConfItemChange(target.value, text, field)
+        //             }}
+        //         />
+        //     }
+        // </Space>
     )
 }
 
