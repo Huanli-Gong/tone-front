@@ -228,8 +228,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
                         item.compare_data.splice(baseIndex, 0, item.result)
-                        const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
-                        len.forEach((i) => item.compare_data.push('-'))
+                        // const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
+                        // len.forEach((i) => item.compare_data.push('-'))
                         return (
                             <TestSubCase key={idx}>
                                 <DelBtnEmpty />
