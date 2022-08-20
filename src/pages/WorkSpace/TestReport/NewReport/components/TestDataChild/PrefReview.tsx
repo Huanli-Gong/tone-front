@@ -270,7 +270,8 @@ const Performance = (props: any) => {
         objList.splice(baseIndex, 0, obj)
         return (
             objList.map((item: any, idx: number) => (
-                item !== undefined && <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                _.isUndefined(item) ? <></>
+                : <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                     <a style={{ cursor: 'pointer' }}
                         href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
                         target="_blank"
