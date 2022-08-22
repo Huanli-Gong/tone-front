@@ -9,7 +9,7 @@ import { requestCodeMessage } from '@/utils/utils';
 
 const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) => {
     const [taskMsg, setTaskMsg] = useState([])
-    const [params, setParams] = useState<any>({ page_num: 1, page_size: 20, is_read: '' })
+    const [params, setParams] = useState<any>({ page_num: 1, page_size: 20, is_read: '1' })
     const [taskLoading, setTaskLoading] = useState(false)
     const [total, setTotal] = useState<any>([])
     const { msgNum, increment } = useModel('msg', (ret) => ({
@@ -18,9 +18,8 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) 
     }));
 
     // 获取任务通知消息列表
-    const getTaskMsg = async (num: string) => {
+    const getTaskMsg = async () => {
         setTaskLoading(true)
-        params.is_read = num
         const data = await queryTaskMsg(params)
         if (data.code === 200) {
             setTaskMsg(data.data)
@@ -28,11 +27,16 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) 
             setTaskLoading(false)
         }
     }
+
+    useEffect(() => {
+        getTaskMsg()
+    }, [params])
+
     // 点击详情跳转
     const handleJump = async (item: any) => {
         const data = await singleTagRead({ msg_id: item.id })
         if (data.code === 200) {
-            getTaskMsg('1')
+            setParams({ ...params, is_read: '1' })
             increment()
         }
         const obj = JSON.parse(item.content)
@@ -47,7 +51,7 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) 
         const data = await allTagRead()
         if (data.code === 200) {
             //message.success(data.msg)
-            getTaskMsg('1')
+            setParams({ ...params, is_read: '1' })
             increment()
         } else {
             requestCodeMessage(data.code, data.msg)
@@ -55,14 +59,12 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) 
     }
     // 只看未读
     const handleUnRead = () => {
-        getTaskMsg('0')
+        if (params.page_num * params.page_size > msgNum.task_msg_unread_num) {
+            setParams({ ...params, page_num: 1, is_read: '0' })
+        } else {
+            setParams({ ...params, is_read: '0' })
+        }
     }
-    useEffect(() => {
-        if (tab === '1')
-            getTaskMsg('1')
-        //increment()
-    }, [tab, params])
-
 
     return (
         <Spin spinning={taskLoading} >
@@ -144,7 +146,7 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) 
                             </div>
                         </div>
                         <Row style={{ marginTop: 15, height: 35 }}>
-                            <Col span={4} style={{ paddingLeft:15 }}>
+                            <Col span={4} style={{ paddingLeft: 15 }}>
                                 共 {total.total} 条
                             </Col>
                             <Col span={20} style={{ textAlign: 'right' }}>
