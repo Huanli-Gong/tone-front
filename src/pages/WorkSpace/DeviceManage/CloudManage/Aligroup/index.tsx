@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { Button, Pagination, Space, Tag, Drawer, Row, Col, Form, Input, Select, Spin, Empty, message, Table, Modal } from 'antd';
+import { Button, Pagination, Space, Tag, Drawer, Row, Col, Form, Input, message, Table, Modal } from 'antd';
 import styles from './style.less';
 import { CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
-import { querysCluster, queryTag, queryMember, addGroup, editGroup, delGroup } from '../service';
+import { querysCluster, addGroup, editGroup, delGroup } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import GroupTree from './GroupTree';
 import GroupMachine from './GroupMachine'
@@ -11,6 +11,7 @@ import SelectUser from '@/components/Public/SelectUser';
 import SelectTags from '@/components/Public/SelectTags';
 import Highlighter from 'react-highlight-words';
 import Owner from '@/components/Owner/index';
+import MachineTags from '@/components/MachineTags';
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
@@ -41,12 +42,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const tree = useRef<any>(null)
     const outTable = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState<any>({ data: [] });
-    const [tagParam, setTagParam] = useState({
-        total: 0,
-        page_num: 1,
-        page_size: 20
-    })
+    const [data, setData] = useState<any>({ data: [] });    
     const [params, setParams] = useState<AligroupParams>({
         refresh: true,
         page: 1,
@@ -56,18 +52,18 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         tags: '',
         description: ''
     })
+    const [ tagFlag, setTagFlag ] = useState({
+        list: [],
+        isQuery: '',
+    })
     const [visible, setVisible] = useState<boolean>(false)
-    const [tagList, setTagList] = useState<any>([])
-    const [tagWord, setTagword] = useState<string>()
     const [outId, setOutId] = useState<number>()
-    const [fetching, setFetching] = useState<boolean>(true)
     const [expandKey, setExpandKey] = useState<string[]>([])
     const top = 39, size = 41;
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
-    const { Option } = Select;
     const [operation, setOperation] = useState<string>('machine_cluster_aliyun')
     const logDrawer: any = useRef()
     const [validateResult, setValidateResult] = useState<any>({});
@@ -84,34 +80,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         setParams({ ...params, page: page_num, pageSize: page_size })
     }
 
-    const getServerTagList = async (word?: string) => {
-        const param = word && word.replace(/\s*/g, "")
-        if (tagWord && tagWord == param) return
-        setTagword(param)
-        requestData({ name: param, page_num: 1, page_size: 20, ws_id }, 'reset')
-    }
-
-    const requestData = async (query: any, option = "concat") => {
-        setFetching(true)
-        try {
-            let res = await queryTag(query)
-            if (res.code === 200) {
-                if (option === 'concat') {
-                    const data = tagList.concat(res.data || [])
-                    setTagList(data || [])
-                } else if (option === 'reset') {
-                    setTagList(res.data || [])
-                }
-                setTagParam(res);
-            } else {
-                message.error(res.msg || '请求数据失败');
-            }
-            setFetching(false)
-        } catch (err) {
-            setFetching(false)
-        }
-    }
-
     const getList = async (params: any = {}) => {
         setLoading(true)
         setData({ data: [] })
@@ -120,18 +88,10 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         setLoading(false)
     };
 
-    const tagRender = (props: any) => {
-        const { label, closable, onClose } = props;
-        const { color, children } = label.props || {}
-        return (
-            <Tag color={color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-                {children}
-            </Tag>
-        )
-    }
+    
     const newGroup = () => {
         setOutId(undefined)
-        getServerTagList()
+        setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
         setVisible(true)
         form.resetFields()
     }
@@ -199,7 +159,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const modifyGroup = (row: any) => {
-        requestData({ cluster_id: row.id, page_num: 1, page_size: 20, ws_id }, 'reset')
+        const list = row.tag_list.map((item:any) => item.id)
+        setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         row.tags = row.tag_list.map((item: any) => { return item.id })
         setOutId(row.id)
         setVisible(true)
@@ -359,18 +320,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         },
     ];
 
-    const handlePopupScroll = (e: any) => {
-        const { page_num, page_size, total, } = tagParam
-        const { clientHeight, scrollHeight, scrollTop } = e.target
-        if (clientHeight + scrollTop >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
-            requestData({ name: tagWord, page_num: page_num + 1, page_size, ws_id }, 'concat')
-        }
-    }
-    // 过滤后清除重调查询接口
-    const handleClear = () => {
-        getServerTagList()
-    }
-
     return (
         <div className={styles.warp}>
             <Table
@@ -457,34 +406,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             <Owner />
                         </Col>
                         <Col span={24}>
-                            <Form.Item
-                                name="tags"
-                                label="标签"
-                            >
-                                <Select
-                                    mode="multiple"
-                                    allowClear
-                                    notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                                    filterOption={false}
-                                    placeholder="请选择"
-                                    onSearch={getServerTagList}
-                                    style={{ width: '100%' }}
-                                    showArrow={true}
-                                    onClear={handleClear}
-                                    onPopupScroll={handlePopupScroll}
-                                    tagRender={tagRender}
-                                >
-                                    {
-                                        tagList.map(
-                                            (item: any) => (
-                                                <Option key={item.id} value={item.id}>
-                                                    <Tag color={item.tag_color} key={item.id}>{item.name}</Tag>
-                                                </Option>
-                                            )
-                                        )
-                                    }
-                                </Select>
-                            </Form.Item>
+                            <MachineTags {...tagFlag}/>
                         </Col>
                         <Col span={24}>
                             <Form.Item
