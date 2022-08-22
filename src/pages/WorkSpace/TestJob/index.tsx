@@ -51,7 +51,7 @@ const TestJob: React.FC<any> = (props) => {
     const [detail, setDetail] = useState<any>({ name: '', server_type: '', test_type: '' })
     const [items, setItems] = useState<any>({ basic: {}, env: {}, suite: {}, more: {} })
     const [loading, setLoading] = useState(true)
-
+    const [envErrorFlag, setEnvErrorFlag] = useState(false)
     const [isloading, setIsloading] = useState(false)
     const [disabled, setDisabled] = useState(name === 'TemplatePreview')
     const [modifyTemplate, setModifyTemplate] = useState(false)
@@ -373,6 +373,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleSubmit = async () => {
         if (fetching) return false
+        setEnvErrorFlag(false)
         setFetching(true)
         let resultData = {}
         if (isYamlFormat) {
@@ -417,6 +418,10 @@ const TestJob: React.FC<any> = (props) => {
         if (code === 200) {
             setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
             history.push(`/ws/${ws_id}/test_result`)
+        }
+        if( code === 1380) {
+            setEnvErrorFlag(true)
+            requestCodeMessage(code, msg)
         }
         else
             requestCodeMessage(code, msg)
@@ -1054,6 +1059,7 @@ const TestJob: React.FC<any> = (props) => {
                                                 <EnvForm
                                                     onRef={envForm}
                                                     contrl={items.env}
+                                                    envErrorFlag={envErrorFlag}
                                                     project_id={projectId}
                                                     {...modalProps}
                                                 />
