@@ -60,7 +60,7 @@ const TestEnv = (props: any) => {
                     need_env_description &&
                     <>
                         <EnvTitle><Typography.Text strong>环境描述</Typography.Text></EnvTitle>
-                        <div><Typography.Text >{env_description_desc || "此处内容需生成报告后手动填写"}</Typography.Text></div>
+                        <div><Typography.Text style={{ whiteSpace:'pre-wrap'}}>{env_description_desc || "此处内容需生成报告后手动填写"}</Typography.Text></div>
                     </>
                 }
                 {

@@ -48,12 +48,6 @@ const ReportTestEnv = () => {
                 btnConfirm={btnConfirm}
                 defaultHolder="请输入环境描述"
                 btn={btnState}
-                fontStyle={{
-                    fontSize:14,
-                    fontFamily:'PingFangSC-Regular',
-                    color:'rgba(0,0,0,0.65)',
-                    whiteSpace: 'pre-line',
-                }}
                 onOk={(val: any) => handleChangeVal(val, 'text')}
             />
             <EditTitle style={{ margin: '17px 0 14px 0' }}>机器环境</EditTitle>

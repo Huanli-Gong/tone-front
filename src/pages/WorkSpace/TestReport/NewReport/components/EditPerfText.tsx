@@ -15,7 +15,12 @@ export const PerfTextArea = ({
         setDataSource,
         style,
         space = '0px',
-        fontStyle,
+        fontStyle={
+            fontSize: 14,
+            fontFamily: 'PingFangSC-Regular',
+            color: 'rgba(0,0,0,0.65)',
+            whiteSpace: 'pre-wrap',
+        },
         defaultHolder,
         btn = false,
     }:

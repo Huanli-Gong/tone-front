@@ -306,17 +306,17 @@ const Performance = (props: any) => {
                     <TestConfWarpper>
                         {!domainResult.is_default &&
                             <Configuration>
-                                {domainResult.perf_conf.need_test_suite_description &&
+                                {/* {domainResult.perf_conf.need_test_suite_description &&
                                     <SigleWrapper>
                                         <TestTitle>测试工具</TestTitle>
                                         <TestContent>
                                             <CodeViewer code={suite.tool || suite.test_suite_description} />
                                         </TestContent>
                                     </SigleWrapper>
-                                }
+                                } */}
                                 {domainResult.perf_conf.need_test_env &&
                                     <SigleWrapper>
-                                        <TestTitle>测试环境</TestTitle>
+                                        <TestTitle>环境要求</TestTitle>
                                         <TestContent>
                                             <PerfTextArea
                                                 name={suite.test_env}
@@ -324,11 +324,6 @@ const Performance = (props: any) => {
                                                 suite={suite}
                                                 dataSource={dataSource}
                                                 setDataSource={setDataSource}
-                                                fontStyle={{
-                                                    fontSize: 14,
-                                                    fontFamily: 'PingFangSC-Regular',
-                                                    color: 'rgba(0,0,0,0.65)'
-                                                }}
                                                 btn={btnState}
                                             />
                                         </TestContent>
@@ -344,11 +339,6 @@ const Performance = (props: any) => {
                                                 suite={suite}
                                                 dataSource={dataSource}
                                                 setDataSource={setDataSource}
-                                                fontStyle={{
-                                                    fontSize: 14,
-                                                    fontFamily: 'PingFangSC-Regular',
-                                                    color: 'rgba(0,0,0,0.65)'
-                                                }}
                                                 btn={btnState}
                                             />
                                         </TestContent>
@@ -364,11 +354,6 @@ const Performance = (props: any) => {
                                                 suite={suite}
                                                 dataSource={dataSource}
                                                 setDataSource={setDataSource}
-                                                fontStyle={{
-                                                    fontSize: 14,
-                                                    fontFamily: 'PingFangSC-Regular',
-                                                    color: 'rgba(0,0,0,0.65)'
-                                                }}
                                                 btn={btnState}
                                             />
                                         </TestContent>
