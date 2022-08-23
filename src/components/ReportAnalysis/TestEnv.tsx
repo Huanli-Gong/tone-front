@@ -37,8 +37,8 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
             {
                 len.map((item: any, i: number) => (
                     <MachineGroup key={i}>
-                        {/* <MachineGroupL style={{ background: '#fafafa' }}>IP</MachineGroupL>
-                        <RenderItem i={i} name='ip/sn' style={{ background: '#fafafa' }} /> */}
+                        <MachineGroupL style={{ background: '#fafafa' }}>IP</MachineGroupL>
+                        <RenderItem i={i} name='ip/sn' style={{ background: '#fafafa' }} />
                         {/* <MachineGroupL>机型</MachineGroupL>
                         <RenderItem i={i} name='distro' /> */}
                         <MachineGroupL>OS</MachineGroupL>
