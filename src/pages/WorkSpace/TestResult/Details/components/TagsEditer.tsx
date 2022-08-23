@@ -63,6 +63,11 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
     const newLabel = () => {
         jobTagsCreateModal.current?.show()
     }
+
+    const editBtn = {
+        paddingTop: 5
+    }
+    
     return (
         <>
             {/* <Typography.Text className={ styles.test_summary_item }>
@@ -72,6 +77,14 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
             !state ?
             <Row align="middle">
                 <Space>
+                    <Access accessible={access.WsTourist()}>
+                        <Access 
+                            accessible={access.WsMemberOperateSelf(creator_id)}
+                            fallback={<EditOutlined onClick={()=> AccessTootip()} style={editBtn}/>}
+                        >
+                            <EditOutlined onClick={ handleSetTags } style={editBtn}/>
+                        </Access>
+                    </Access>
                     {
                         tags.length > 0 
                         ?
@@ -81,14 +94,6 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                         :
                         <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
                     }
-                    <Access accessible={access.WsTourist()}>
-                        <Access 
-                            accessible={access.WsMemberOperateSelf(creator_id)}
-                            fallback={<EditOutlined onClick={()=> AccessTootip()}/>}
-                        >
-                            <EditOutlined onClick={ handleSetTags }/>
-                        </Access>
-                    </Access>
                 </Space>
             </Row> :
             <Row >
