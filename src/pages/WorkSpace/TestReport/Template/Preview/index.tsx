@@ -57,7 +57,7 @@ const SettingRow: React.FC<any> = ({ show, title, id, desc }) => (
         <CustomRow id={`preview_${id}`}>
             <Space direction="vertical">
                 <Typography.Text strong><span className="line"></span>{title}</Typography.Text>
-                <span>
+                <span style={{ whiteSpace:'pre-wrap'}}>
                     {desc || "此处内容需生成报告后手动填写"}
                 </span>
             </Space>

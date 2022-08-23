@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip, Space } from 'antd';
+import { Tooltip, Space, Typography } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as BaseLine } from '@/assets/svg/Report/BaseLine.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -25,6 +25,7 @@ const Identify: React.FC<any> = (props) => {
                             <BaseLine
                                 style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
                             />
+                            <Typography.Text>（测试基线）</Typography.Text>
                         </Tooltip>
                     }
                 </Space>
