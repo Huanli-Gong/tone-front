@@ -9,11 +9,14 @@ import {
     CatalogExpand, CatalogExpandInnerIcon, Catalog, CatalogBody, CatalogTitle,
     CatalogDrageSpace, CatalogRound, LittleRound
 } from '../styled'
+import { v4 as uuidv4 } from 'uuid';
 
 const TemplateCatalog = (props: any) => {
     const { dataSource, collapsed, contrl, setDataSource, setCollapsed, prefix = "" } = props
     const [count, setCount] = useState<any>(0)
     const [roundHeight, setRoundHeight] = useState<Number>(3)
+
+    const containerDom = prefix ? "#report-body-container-preview" : "#report-body-container"
     /* 
             dragOverGapTop 拖拽上
     
@@ -52,18 +55,18 @@ const TemplateCatalog = (props: any) => {
         return pre.concat(cur)
     }
 
-    const treeDataRefreshRowkey = (i: any, rowkey: string) => {
+    const treeDataRefreshRowkey = (i: any) => {
         if (i.is_group) {
             return {
                 name: i.title,
-                rowkey: `${rowkey}`,
+                rowkey: uuidv4(),
                 is_group: i.is_group,
-                list: i.children.map((x: any, idx: number) => treeDataRefreshRowkey(x, `${rowkey}-${idx}`))
+                list: i.children.map((x: any, idx: number) => treeDataRefreshRowkey(x))
             }
         }
         return {
             name: i.title,
-            rowkey: `${rowkey}`,
+            rowkey: uuidv4(),
             list: i.list
         }
     }
@@ -149,7 +152,7 @@ const TemplateCatalog = (props: any) => {
                 const newData = delDate.reduce(
                     (pre: any, cur: any) => filterDropSrouce(pre, cur, node, dragNode), []
                 )
-                const refreshData = newData.map((i: any, index: number) => treeDataRefreshRowkey(i, `${index}`))
+                const refreshData = newData.map((i: any) => treeDataRefreshRowkey(i))
                 setDataSource(
                     produce(
                         dataSource,
@@ -162,8 +165,71 @@ const TemplateCatalog = (props: any) => {
         })
     }
 
+    const [dots, setDots] = React.useState<any[]>([])
+
+    /* @ts-ignore */
+    const eleY = (name: string) => document.querySelector(containerDom)?.scrollTop + document.querySelector(name)?.getBoundingClientRect().y - 48
+
+    const getTreeClasses = (tree: any[], name: string): any[] => {
+        return tree.reduce((pre, cur) => {
+            const { is_group, list, rowkey } = cur
+            const basic = [rowkey, eleY(`#${prefix}${name}-${rowkey}`), name]
+            if (is_group && list.length > 0) {
+                return pre.concat([basic, ...getTreeClasses(list, name)])
+            }
+            return pre.concat([basic])
+        }, [])
+    }
+
+    React.useEffect(() => {
+        const list = [
+            "need_test_background",
+            "need_test_method",
+            "need_test_conclusion",
+            "need_test_summary",
+            "need_test_env",
+            "test_data"
+        ].map((i, idx) => [i, eleY(`#${prefix}${i}`), idx])
+        const cases = catalogSource.reduce((pre, cur, index) => {
+            const { treeData, id } = cur
+            /* @ts-ignore */
+            return pre.concat([[id, eleY(`#${prefix}${id}`), 6 + index], ...getTreeClasses(treeData, id)])
+        }, [])
+        const topSort = [...list, ...cases].sort((a: any, b: any) => a[1] - b[1])
+        setDots(topSort)
+    }, [catalogSource])
+
+    const scrollChange = (event: any) => {
+        const { target } = event;
+        const { scrollTop } = target
+        if (dots.length === 0) return
+        for (let t = 0; t < dots.length; t++) {
+            const [n, y, c] = dots[t]
+            const pf = `#left_${n}`
+            const $dom = document.querySelector(pf) as HTMLDivElement
+            if (scrollTop < y) {
+                if (Object.prototype.toString.call(c) === "[object String]") {
+                    const treeNode = document.querySelector(`#left_tree_${c}`) as HTMLDivElement
+                    setRoundHeight($dom?.offsetParent?.offsetTop + treeNode?.offsetTop)
+                    setCount(`${c}_${n}`)
+                    return
+                }
+                setRoundHeight($dom.offsetTop)
+                setCount(c)
+                return
+            }
+        }
+    }
+
+    React.useEffect(() => {
+        const dom = document.querySelector(containerDom)
+        dom?.addEventListener("scroll", scrollChange)
+        return () => {
+            dom?.removeEventListener("scroll", scrollChange)
+        }
+    }, [dots, containerDom])
+
     const handleCatalogItemClick = (name: string, num: number) => {
-        console.log(name)
         setRoundHeight((document.querySelector(`#left_${name}`) as any)?.offsetTop)
         setCount(num)
         document.querySelector(`#${prefix}${name}`)?.scrollIntoView()
@@ -176,10 +242,13 @@ const TemplateCatalog = (props: any) => {
         const nativeEvent = evt?.nativeEvent
         const target = nativeEvent.target
 
-        console.log(prefix, id, prefix, document.querySelector(`#${prefix}${id}`))
-        setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
-        setCount(`${name}_${rowkey}`)
-        document.querySelector(`#${prefix}${id}`)?.scrollIntoView()
+        if (~target.offsetParent.className.indexOf("ant-tree-node-content-wrapper")) {
+            console.log(`${name}_${rowkey}`)
+            // console.log(prefix, id, prefix, document.querySelector(`#${prefix}${id}`))
+            setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
+            setCount(`${name}_${rowkey}`)
+            document.querySelector(`#${prefix}${id}`)?.scrollIntoView()
+        }
     }
 
     return (
