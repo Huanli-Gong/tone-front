@@ -159,8 +159,10 @@ const Report = (props: any) => {
     }
 
     useEffect(()=> {
-        handleReportId()
-    },[])
+        if(!!allGroupData.length){
+            handleReportId()
+        }
+    },[allGroupData, baselineGroupIndex])
     
     const handleShare = useCallback(
          () => {
@@ -179,7 +181,7 @@ const Report = (props: any) => {
                 (document.querySelector('.test_result_copy_link') as any).click()
                 clipboard.destroy()
             }
-        }, [allGroupData, shareId]
+        }, [shareId]
     )
     
     const handleCreatReportOk = () => { // suiteData：已选的
