@@ -55,6 +55,7 @@ const CaseTable: React.FC<any> = ({
             {
                 title: 'Test Suite',
                 dataIndex: 'conf_name',
+                width: 250,
                 ...tooltipTd(),
             },
             {
