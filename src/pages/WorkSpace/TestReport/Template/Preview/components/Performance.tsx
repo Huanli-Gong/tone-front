@@ -251,10 +251,10 @@ const ToolHeaderRow: React.FC<any> = ({ data, title }) => (
 
 const SuiteConfTools: React.FC<SuiteConfToolsProps> = ({ perf_conf }) => (
     <ToolsIssue>
-        <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} />
+        {/* <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} /> */}
         {
             [
-                ["测试环境", "need_test_env", "test_env_desc"],
+                ["环境要求", "need_test_env", "test_env_desc"],
                 ["测试说明", "need_test_description", "test_description_desc"],
                 ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
             ].map((item: any) => {

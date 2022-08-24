@@ -1,5 +1,5 @@
 export const transQuery = (obj: any) => {
-    console.log(obj)
+    // console.log(obj)
     const json = Object.entries(obj).reduce((pre: any, cur: any) => {
         const [name, val] = cur;
         if (['creation_time', 'completion_time'].includes(name)) {

@@ -15,7 +15,12 @@ export const PerfTextArea = ({
         setDataSource,
         style,
         space = '0px',
-        fontStyle,
+        fontStyle={
+            fontSize: 14,
+            fontFamily: 'PingFangSC-Regular',
+            color: 'rgba(0,0,0,0.65)',
+            whiteSpace: 'pre-wrap',
+        },
         defaultHolder,
         btn = false,
     }:
@@ -33,14 +38,13 @@ export const PerfTextArea = ({
     }) => {
 
     const [title, setTitle] = useState('')
-    
 
     useEffect(() => {
         setTitle(name)
     }, [name])
 
     const handleEle = (item:any,field:any,data:any) => {
-        let ret = item.list.map((i:any) => {
+         return item.list.map((i:any) => {
             if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
                 i[field] = title
             }
@@ -48,10 +52,7 @@ export const PerfTextArea = ({
                 ...i, 
             }
         })
-        return {
-            ...item,
-            list: ret,
-        }
+       
     }
     const handleBlur = () => {
         setDataSource(dataSource.map((ele:any) => {
@@ -121,7 +122,6 @@ export const GroupItemText = ({
     defaultHolder?:string,
     
 }) => {
-
     const [title, setTitle] = useState('')
     
     useEffect(() => {

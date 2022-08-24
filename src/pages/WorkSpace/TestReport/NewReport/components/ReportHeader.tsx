@@ -34,7 +34,7 @@ const ReportHeader = () => {
                     fontSize:32,
                     color:'rgba(0,0,0,0.85)',
                     fontFamily:'PingFangSC-Semibold',
-                    whiteSpace: 'pre-line',
+                    whiteSpace: 'pre-wrap',
                 }}
                 onOk={(val: any) => handleChangeVal(val, 'name')}
             />
@@ -44,12 +44,6 @@ const ReportHeader = () => {
                 defaultHolder="请输入报告描述"
                 btnConfirm={btnConfirm}
                 style={{ marginBottom:8 }}
-                fontStyle={{
-                    fontSize:14,
-                    color:'rgba(0,0,0,0.85)',
-                    fontFamily:'PingFangSC-Regular' ,
-                    whiteSpace: 'pre-line',
-                }}
                 onOk={(val: any) => handleChangeVal(val, 'description')}
             />
             { !btnState && <Row>

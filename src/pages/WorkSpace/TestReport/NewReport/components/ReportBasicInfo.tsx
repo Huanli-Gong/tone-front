@@ -29,12 +29,6 @@ const ReportBasicInfo = (props: any) => {
                             name={saveReportData?.test_background}
                             btnConfirm={btnConfirm}
                             defaultHolder="请输入测试背景"
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)',
-                                whiteSpace: 'pre-line',
-                            }}
                             btn={btnState}
                             onOk={(val: any) => handleChangeVal(val, 'test_background')}
                         />
@@ -44,12 +38,6 @@ const ReportBasicInfo = (props: any) => {
                         <SettingTextArea
                             name={saveReportData?.test_method}
                             defaultHolder="请输入测试方法"
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)',
-                                whiteSpace: 'pre-line',
-                            }}
                             btn={btnState}
                             btnConfirm={btnConfirm}
                             onOk={(val: any) => handleChangeVal(val, 'test_method')}
@@ -62,12 +50,6 @@ const ReportBasicInfo = (props: any) => {
                             btn={btnState}
                             defaultHolder="请输入测试结论"
                             btnConfirm={btnConfirm}
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)',
-                                whiteSpace: 'pre-line',
-                            }}
                             onOk={(val: any) => handleChangeVal(val, 'custom')}
                         />
                     </ModuleWrapper>
@@ -81,11 +63,6 @@ const ReportBasicInfo = (props: any) => {
                             name={saveReportData?.test_background || domainResult?.background_desc}
                             btnConfirm={btnConfirm}
                             defaultHolder="请输入测试背景"
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)'
-                            }}
                             btn={btnState}
                             onOk={(val: any) => handleChangeVal(val, 'test_background')}
                         />
@@ -97,11 +74,6 @@ const ReportBasicInfo = (props: any) => {
                             <SettingTextArea
                                 name={saveReportData?.test_method || domainResult?.test_method_desc}
                                 defaultHolder="请输入测试方法"
-                                fontStyle={{
-                                    fontSize: 14,
-                                    fontFamily: 'PingFangSC-Regular',
-                                    color: 'rgba(0,0,0,0.65)'
-                                }}
                                 btn={btnState}
                                 btnConfirm={btnConfirm}
                                 onOk={(val: any) => handleChangeVal(val, 'test_method')}
@@ -115,11 +87,6 @@ const ReportBasicInfo = (props: any) => {
                                 btn={btnState}
                                 defaultHolder="请输入测试结论"
                                 btnConfirm={btnConfirm}
-                                fontStyle={{
-                                    fontSize: 14,
-                                    fontFamily: 'PingFangSC-Regular',
-                                    color: 'rgba(0,0,0,0.65)'
-                                }}
                                 onOk={(val: any) => handleChangeVal(val, 'custom')}
                             />
                         </ModuleWrapper>

@@ -47,7 +47,8 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
     }
     const flag = 
         (BUILD_APP_ENV && provider === "aligroup") || 
-        (BUILD_APP_ENV && !access.IsAdmin()) || (!BUILD_APP_ENV && !access.IsWsSetting())
+        (provider === "aliyun" && !access.IsAdmin()) || 
+        (!BUILD_APP_ENV && provider === "aligroup" && !access.IsWsSetting())
         
     const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
         : (

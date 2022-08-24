@@ -115,46 +115,50 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                 direction="vertical"
                                 style={{ width: "100%" }}
                             >
-                                <Space>
-                                    <Typography.Text>基础信息</Typography.Text>
-                                </Space>
                                 <Space
                                     direction="vertical"
                                     style={{ width: "100%" }}
                                 >
-                                    {
-                                        [
-                                            ["测试工具", "need_test_suite_description"],
-                                            ["测试环境", "need_test_env", "test_env_desc"],
-                                            ["测试说明", "need_test_description", "test_description_desc"],
-                                            ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
-                                        ].map((item: any) => {
-                                            const [title, name, text] = item
-                                            return (
-                                                <ConfigCheckbox
-                                                    key={name}
-                                                    field={bodyProps.conf}
-                                                    title={title}
-                                                    name={name}
-                                                    text={text}
-                                                />
-                                            )
-                                        })
-                                    }
+                                    <Space>
+                                        <Typography.Text>基础信息</Typography.Text>
+                                    </Space>
+                                    <Space
+                                        style={{ width: "100%" }}
+                                    >
+                                        {
+                                            [
+                                                // ["测试工具", "need_test_suite_description"],
+                                                ["环境要求", "need_test_env"],
+                                                ["测试说明", "need_test_description"],
+                                                ["测试结论", "need_test_conclusion"],
+                                            ].map((item: any) => {
+                                                const [title, name, text] = item
+                                                return (
+                                                    <ConfigCheckbox
+                                                        key={name}
+                                                        field={bodyProps.conf}
+                                                        title={title}
+                                                        name={name}
+                                                        text={text}
+                                                    />
+                                                )
+                                            })
+                                        }
+                                    </Space>
+                                    <Row >
+                                        <Col span={2}>数据视图样式</Col>
+                                        <Col span={22}>
+                                            <Radio.Group
+                                                disabled={!contrl}
+                                                value={dataSource[bodyProps.conf].show_type}
+                                                onChange={({ target }) => handleConfItemChange(target.value, 'show_type', bodyProps.conf)}
+                                            >
+                                                <Radio value={'list'}>列表视图</Radio>
+                                                <Radio value={'chart'}>图表视图</Radio>
+                                            </Radio.Group>
+                                        </Col>
+                                    </Row>
                                 </Space>
-                                <Row >
-                                    <Col span={2}>数据视图样式</Col>
-                                    <Col span={22}>
-                                        <Radio.Group
-                                            disabled={!contrl}
-                                            value={dataSource[bodyProps.conf].show_type}
-                                            onChange={({ target }) => handleConfItemChange(target.value, 'show_type', bodyProps.conf)}
-                                        >
-                                            <Radio value={'list'}>列表视图</Radio>
-                                            <Radio value={'chart'}>图表视图</Radio>
-                                        </Radio.Group>
-                                    </Col>
-                                </Row>
                             </Space>
                         </Col>
                     }

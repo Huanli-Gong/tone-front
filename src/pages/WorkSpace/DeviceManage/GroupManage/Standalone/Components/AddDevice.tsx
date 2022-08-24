@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, useMemo } from 'react'
-import { Drawer, Space, Button, Form, Select, Input, Badge, message, Alert, Spin, Tooltip } from 'antd'
-import { queryServerTagList, checkTestServerIps, addTestServer, putTestServer, batchPutTestServer } from '../../services'
+import { Drawer, Space, Button, Form, Select, Input, Badge, message, Spin, Tooltip } from 'antd'
+import { checkTestServerIps, addTestServer, putTestServer, batchPutTestServer } from '../../services'
 import _ from 'lodash'
 import Owner from '@/components/Owner/index';
-import { TagSelect } from '../../Components'
 import DeployServer from '../../Components/DeployServer'
 import DeployModal from './DeployModal'
 import styles from './AddDevice.less'
 import { useParams } from 'umi'
 import { AgentSelect } from '@/components/utils';
+import MachineTags from '@/components/MachineTags';
 
 const AddDeviceDrawer = (props: any, ref: any) => {
     const { ws_id }: any = useParams()
@@ -19,19 +19,21 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const deployServerRef: any = useRef(null)
     // 部署Agent对话框
     const deployModal: any = useRef(null)
-
-    const [tagList, setTagList] = useState([])
     const [form] = Form.useForm()
     /* const [ members , setMembers ] = useState([]) */
     const [ips, setIps] = useState<any>({ success: [], errors: [] })
     const [validateMsg, setValidateMsg] = useState<any>('');
     const [padding, setPadding] = useState(false)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [selectIpsValue, setSelectIpsValue] = useState('')
     const [vals, setVals] = useState([])
     const [validateResult, setValidateResult] = useState<any>({});
     const [isMoreEdit, setIsMoreEdit] = useState<boolean>(false)
     const SELECT_IPS_PLACEHOLDER_STRING = `输入${BUILD_APP_ENV ? '机器IP' : 'IP/SN'},多个以空格或英文逗号分隔`
+    const [tagFlag, setTagFlag] = useState({
+        list: [],
+        isQuery: '',
+    })
 
     // 机器状态是occupied--编辑时：控制通道、机器、使用状态不能编辑。
     useImperativeHandle(ref, () => ({
@@ -43,27 +45,18 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setModifyProps(data)
                 setIsMoreEdit(_.get(data, 'opreateType') === 'moreEdit')
                 data.ip && form.setFieldsValue({ ips: [data.ip] })
+                const list = data.tag_list.map((item:any) => item.id)
+                setTagFlag({ ...tagFlag, isQuery: 'edit', list })
+            }else{
+                setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
             }
+            
         }
     }))
 
     const disabledState = useMemo(() => {
         return modifyProps && modifyProps.state === 'Occupied'
     }, [modifyProps])
-
-
-    const queryTagList = async () => {
-        setLoading(true)
-        const { data } = await queryServerTagList({ ws_id, page_size: 500 }) //run_mode, run_environment, 
-        setTagList(data || [])
-        /*  let memberList = await getMembers()
-         setMembers( memberList ) */
-        setLoading(false)
-    }
-
-    useEffect(() => {
-        queryTagList()
-    }, [])
 
     // 提交
     const handleFinish = () => {
@@ -100,6 +93,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setPadding(false)
             })
     }
+    
     // 提交
     const handleMoreEditFinish = () => {
         setPadding(true)
@@ -375,17 +369,9 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         </>
                     }
 
-                    {/*                     <Form.Item name="add_parent" label="添加物理机" initialValue={ true }>
-                        <Radio.Group>
-                            <Radio value={ true }>是</Radio>
-                            <Radio value={ false }>否</Radio>
-                        </Radio.Group>
-                    </Form.Item> */}
-
                     {!isMoreEdit && <Form.Item
                         label="使用状态"
                         name="state"
-                        // hasFeedback
                         rules={[{ required: true, message: '请选择机器状态!' }]}
                         initialValue={'Available'}
                     >
@@ -396,7 +382,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         </Select>
                     </Form.Item>}
                     {!isMoreEdit && <Owner />}
-                    {!isMoreEdit && tagList && <TagSelect initialValue={[]} tags={tagList} />}
+                    {!isMoreEdit && <MachineTags {...tagFlag}/>}
                     <Form.Item label="备注" name="description">
                         <Input.TextArea placeholder="请输入备注信息" />
                     </Form.Item>

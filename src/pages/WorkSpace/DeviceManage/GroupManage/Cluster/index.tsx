@@ -1,12 +1,10 @@
 import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import styles from './index.less'
 
-import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table, Tooltip } from 'antd'
+import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table } from 'antd'
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
-
 import { MembersFilter } from './Components/FilterDropdowns'
-
 import CreateGroupServer from './Components/CreateGroupServer'
 import AddClusterServer from './Components/addClusterServer'
 import ClusterChildTable from './Components/ClusterChildTable'
@@ -19,6 +17,9 @@ import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import PermissionTootip from '@/components/Public/Permission/index';
 import { Access, useAccess } from 'umi';
+import OverflowList from '@/components/TagOverflow/index'
+
+
 /**
  * 内网集群
  */
@@ -120,32 +121,13 @@ const Cluster = (props: any, ref: any) => {
         {
             title: '标签',
             dataIndex: 'tag_list',
-            render: (record: any) => {
-                if (record.length > 0) {
-                    const firstTag = record[0]
-                    const ele = <Tag color={firstTag.tag_color} >{firstTag.name}</Tag>
-
-                    if (record.length > 1)
-                        return (
-                            <Typography.Text>
-                                {ele}
-                                <Tooltip
-                                    color="#fff"
-                                    placement="top"
-                                    title={
-                                        record.map(
-                                            (item: any) => <Tag color={item.tag_color} style={{ marginBottom: 4 }} key={item.id}>{item.name}</Tag>
-                                        )
-                                    }
-                                >
-                                    <Typography.Text style={{ cursor : 'default' }}>...</Typography.Text>
-                                </Tooltip>
-                            </Typography.Text>
-                        )
-                    return ele
-                }
-                return <>-</>
-            },
+            render: (record: any) => (
+                <OverflowList list={
+                    record.map((item: any, index: number) => {
+                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                    })
+                } />
+            ),
             filterIcon: () => <FilterFilled style={{ color: params.tags ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectTags

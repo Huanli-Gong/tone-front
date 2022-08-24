@@ -137,20 +137,10 @@ const TestResultDetails: React.FC = (props: any) => {
     )
 
     const EditNoteBtn: React.FC<any> = (props: any) => {
-        const { note, creator_id } = props;
+        const { creator_id } = props;
         let noteStyle: any = {
-            padding: 0,
-            marginLeft: 10
-        }
-        if (isNull(note)) {
-            noteStyle.marginLeft = 0
-        } else {
-            let len = note.split('\n')
-            if (len.length >= 2) {
-                noteStyle.position = 'absolute'
-                noteStyle.top = 26
-                noteStyle.left = len[0].length > 64 ? 'calc(100% - 22px)' : len[1].length * 14
-            }
+            paddingTop: 5,
+            marginRight: 10,
         }
         return (
             <Access
@@ -166,21 +156,16 @@ const TestResultDetails: React.FC = (props: any) => {
     }
 
     let TextStyle: any = {
-        width: 'calc(100% - 74px)',
+        width: 'calc(100% - 104px)',
         wordBreak: 'break-all',
-    }
-    let BtnStyle: any = {
         whiteSpace: 'pre-wrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: '-webkit-box',
         WebkitBoxOrient: 'vertical',
         WebkitLineClamp: 2,
-        position: 'relative'
     }
-    if (!isNull(data.note) && data.note?.indexOf('\n') !== -1) {
-        TextStyle = { ...TextStyle, ...BtnStyle }
-    }
+    
     const BreadcrumbItem: React.FC<any> = (d: any) => (
         <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
             <Breadcrumb.Item >
@@ -316,10 +301,13 @@ const TestResultDetails: React.FC = (props: any) => {
                                                 accessLabel={access.WsMemberOperateSelf()}
                                             />
                                         </Row>
-                                        <Row>
+                                        <Row style={{ position: 'relative' }}>
                                             <Typography.Text className={styles.test_summary_item}>
                                                 备注
                                             </Typography.Text>
+                                            <Access accessible={access.WsTourist()}>
+                                                <EditNoteBtn note={data.note} creator_id={data.creator} />
+                                            </Access>
                                             <div style={TextStyle}>
                                                 <Tooltip
                                                     title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>}
@@ -328,9 +316,6 @@ const TestResultDetails: React.FC = (props: any) => {
                                                 >
                                                     {data.note || '-'}
                                                 </Tooltip>
-                                                <Access accessible={access.WsTourist()}>
-                                                    <EditNoteBtn note={data.note} creator_id={data.creator} />
-                                                </Access>
                                             </div>
                                         </Row>
                                     </Col>
