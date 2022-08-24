@@ -94,7 +94,7 @@ const TestResultTable: React.FC<any> = (props) => {
         {
             title: 'Test Suite',
             dataIndex: 'suite_name',
-            width: 300,
+            width: 280,
             ...tooltipTd(),
         },
         ['functional', 'performance'].includes(testType) &&
