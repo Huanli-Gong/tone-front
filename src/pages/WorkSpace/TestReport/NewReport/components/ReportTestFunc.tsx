@@ -79,18 +79,13 @@ const ReportTestFunc: React.FC<any> = () => {
         child.list.map((suite: any, suiteId: number) => {
             let conf_list: any = []
             suite.conf_list.map((conf: any, index: number) => {
+                let baseJobList = []
+                baseJobList.push(conf.obj_id || conf.conf_source.obj_id || '')
+                let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => i.obj_id || '')
                 conf_list.push({
                     conf_id: conf.conf_id,
                     conf_name: conf.conf_name,
-                    conf_source: {
-                        all_case: transField(conf, 'all_case'),//conf.all_case || conf.conf_source.all_case,
-                        success_case: transField(conf, 'success_case'),//conf.success_case || conf.conf_source.success_case,
-                        fail_case: transField(conf, 'fail_case'), //conf.fail_case || conf.conf_source.fail_case
-                        is_job: transField(conf, 'is_job'), //conf.is_job || conf.conf_source.is_job,
-                        obj_id: transField(conf, 'obj_id'),//conf.obj_id || conf.conf_source.obj_id,
-                    },
-                    compare_conf_list: conf.conf_compare_data || conf.compare_conf_list,
-                    sub_case_list: conf.sub_case_list
+                    job_list: baseJobList.concat(compareJobList)
                 })
             })
             suite_list.push({

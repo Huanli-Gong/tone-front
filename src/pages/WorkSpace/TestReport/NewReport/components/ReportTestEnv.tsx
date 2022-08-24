@@ -27,8 +27,10 @@ const ReportTestEnv = () => {
         domainResult,
     } = useContext(ReportContext)
     const handleChangeVal = (val: any, text: string) => {
-        if(environmentResult && environmentResult !== undefined){
+        if(environmentResult && JSON.stringify(environmentResult) !== '{}'){
             let env = _.cloneDeep(environmentResult) 
+            delete env.base_group.server_info
+            env.compare_groups.map((item:any) => delete item.server_info)
             env[text] = val
             if( routeName !== 'Report') env.base_index = baselineGroupIndex
             obj.test_env = env

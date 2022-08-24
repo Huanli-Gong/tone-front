@@ -124,21 +124,18 @@ const ReportTestPref = () => {
             } = suite
             let conf_list: any = []
             suite.conf_list.map((conf: any, index: number) => {
+                let baseJobList = []
+                baseJobList.push(conf.obj_id || conf.conf_source.obj_id || '')
+                let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => i.obj_id || '')
                 conf_list.push({
                     conf_id: conf.conf_id,
                     conf_name: conf.conf_name,
-                    conf_source: {
-                        is_job: transField(conf, 'is_job'),
-                        obj_id: transField(conf, 'obj_id'),
-                    },
-                    compare_conf_list: (conf.conf_compare_data || conf.compare_conf_list),
-                    metric_list: conf.metric_list
+                    job_list: baseJobList.concat(compareJobList)
                 })
             })
             suite_list.push({
                 suite_id,
                 suite_name,
-                // show_type: !switchReport ? 0 : describe?.show_type == 'list' ? 0 : 1,
                 test_suite_description,
                 test_env,
                 test_description,
