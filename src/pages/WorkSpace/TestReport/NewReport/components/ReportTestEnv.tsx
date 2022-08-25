@@ -19,6 +19,7 @@ const ReportTestEnv = () => {
         obj, 
         setObj, 
         envData, 
+        compareGroupData,
         baselineGroupIndex, 
         environmentResult,
         routeName,
@@ -26,12 +27,16 @@ const ReportTestEnv = () => {
         groupLen,
         domainResult,
     } = useContext(ReportContext)
+
+    
     const handleChangeVal = (val: any, text: string) => {
-        if(environmentResult && JSON.stringify(environmentResult) !== '{}'){
+        if(environmentResult && JSON.stringify(environmentResult) !== '{}' && JSON.stringify(compareGroupData) !== '{}'){
             let env = _.cloneDeep(environmentResult) 
-            delete env.base_group.server_info
-            env.compare_groups.map((item:any) => delete item.server_info)
             env[text] = val
+            if(!_.isUndefined(compareGroupData)){
+                env.base_group = compareGroupData.base_group 
+                env.compare_groups = compareGroupData.compare_groups
+            }
             if( routeName !== 'Report') env.base_index = baselineGroupIndex
             obj.test_env = env
             setObj({

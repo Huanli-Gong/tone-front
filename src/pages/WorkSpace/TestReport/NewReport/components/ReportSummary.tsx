@@ -1,6 +1,6 @@
 import React, { useContext, memo } from 'react';
 import { ReportContext } from '../Provider';
-import { Space, Tooltip } from 'antd';
+import { Space, Tooltip, Typography } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as BaseLine } from '@/assets/svg/Report/BaseLine.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -49,7 +49,9 @@ const ReportSummary = () => {
                                         </Tooltip> : 
                                         item.is_base && <Tooltip title="基线组">
                                             <BaseLine style={{ marginRight: 4, marginTop: 17 }} />
+                                            <Typography.Text>（测试基线）</Typography.Text>
                                         </Tooltip>
+                                        
                                         }
                                     </Space>
                                     <EllipsisPulic title={item.tag} />
