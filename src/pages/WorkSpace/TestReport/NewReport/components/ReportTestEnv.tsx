@@ -33,8 +33,10 @@ const ReportTestEnv = () => {
         if(environmentResult && JSON.stringify(environmentResult) !== '{}' && JSON.stringify(compareGroupData) !== '{}'){
             let env = _.cloneDeep(environmentResult) 
             env[text] = val
-            env.base_group = compareGroupData.base_group
-            env.compare_groups = compareGroupData.compare_groups
+            if(!_.isUndefined(compareGroupData)){
+                env.base_group = compareGroupData.base_group 
+                env.compare_groups = compareGroupData.compare_groups
+            }
             if( routeName !== 'Report') env.base_index = baselineGroupIndex
             obj.test_env = env
             setObj({
