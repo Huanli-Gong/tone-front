@@ -206,7 +206,7 @@ export default (props: any) => {
                             baselineGroupIndex: 0,
                             allGroupData: [getBaselineGroup()],
                             compareResult: result[0].data,
-                            compareGroupData: paramEenvironment.compare_groups,
+                            compareGroupData: paramEenvironment,
                             domainGroupResult: result[2].data,
                             saveReportData: reportData
                         }

@@ -1,6 +1,5 @@
-import React, { memo } from "react"
+import React, { memo, useEffect } from "react"
 import { Tooltip, Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
-import type { TableColumnProps } from "antd"
 import { useAccess, Access, useParams, useRequest } from 'umi'
 import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
@@ -336,6 +335,11 @@ const ListTable: React.FC<IProps> = (props) => {
         setSelectRowData(arrData);
     }
 
+    // useEffect(()=> {
+    //     if(radioValue === 2){
+    //         refresh()
+    //     }
+    // }, [ radioValue ])
     const allSelectFn = (allData: any) => {
         const arr = lodash.isArray(allData) ? allData : []
         const keysArr: any = []
@@ -454,13 +458,17 @@ const ListTable: React.FC<IProps> = (props) => {
                         </Space>
                         <Space>
                             <Button onClick={handleResetSelectedKeys}>取消</Button>
-                            <Button
-                                type="primary"
-                                onClick={handleMoreDeleOk}
-                                disabled={!selectedRowKeys.length}
+                            <Popconfirm
+                                title={<div style={{ color:'red' }}>确定要删除吗？</div>}
+                                okText="确定"
+								cancelText="取消"
+								onConfirm={() => handleMoreDeleOk()}
                             >
-                                批量删除
-                            </Button>
+                                <Button type="primary" disabled={!selectedRowKeys.length}>
+                                    批量删除
+                                </Button>
+                            </Popconfirm>
+                            
                         </Space>
                     </Row>
                 </SelectionRow>

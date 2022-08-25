@@ -39,6 +39,7 @@ export const CreatePageData = (props:any) => {
         allGroupData = [],
         baselineGroupIndex = 0,
         compareResult = {},
+        compareGroupData= {},
         domainGroupResult = {},
         saveReportData = {},
     } = props.history.location.state
@@ -528,6 +529,7 @@ export const CreatePageData = (props:any) => {
         allGroupData:allGroupList,
         baselineGroupIndex,
         compareResult,
+        compareGroupData,
         domainGroupResult,
         saveReportData,
         logoData,
