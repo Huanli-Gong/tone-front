@@ -474,7 +474,7 @@ export default (props: any) => {
                             baselineGroupIndex: baselineGroupIndex,
                             allGroupData: handleGroupData(),
                             // compareResult: _.cloneDeep(result[0].data),
-                            compareGroupData: paramEenvironment.compare_groups,
+                            compareGroupData: paramEenvironment,
                             domainGroupResult: result[0].data,
                             testDataParam:paramCompare,
                             envDataParam:paramEenvironment,
@@ -520,7 +520,7 @@ export default (props: any) => {
                             baselineGroupIndex: baselineGroupIndex,
                             allGroupData: handleGroupData(),
                             compareResult: _.cloneDeep(result[0].data),
-                            compareGroupData: paramEenvironment.compare_groups,
+                            compareGroupData: paramEenvironment,
                             domainGroupResult: result[2].data,
                             saveReportData: reportData
                         }

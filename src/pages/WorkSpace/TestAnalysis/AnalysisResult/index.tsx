@@ -24,6 +24,7 @@ const Report = (props: any) => {
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
+    const [compareGroupData, setCompareGroupData] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
     const [environmentResult, setEnvironmentResult] = useState<any>({})
@@ -58,6 +59,7 @@ const Report = (props: any) => {
             if (local.state && JSON.stringify(local.state) !== '{}') {
                 setTestDataParam(local.state.testDataParam)
                 setParamEenvironment(local.state.envDataParam)
+                setCompareGroupData(local.state.compareGroupData)
                 setAllGroupData(local.state.allGroupData)
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
             }
@@ -187,7 +189,6 @@ const Report = (props: any) => {
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
     }
-
     const creatReportCallback = (reportData: any) => { // suiteData：已选的
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
@@ -197,7 +198,7 @@ const Report = (props: any) => {
                 baselineGroupIndex,
                 allGroupData,
                 compareResult: _.cloneDeep(compareResult),
-                compareGroupData: local.state.compareGroupData,
+                compareGroupData,
                 domainGroupResult: local.state.domainGroupResult,
                 saveReportData: reportData
             }

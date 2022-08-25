@@ -49,6 +49,7 @@ const Report = (props: any) => {
         envData,
         summaryData,
         domainResult,
+        compareGroupData,
         setDomainResult,
         loading,
         saveReportData,
@@ -77,7 +78,6 @@ const Report = (props: any) => {
     const handleEdit = () => {
         setBtnState(true)
     }
-
     // job_li
     const getSelAllJob = () => {
         let result = []
@@ -140,8 +140,6 @@ const Report = (props: any) => {
         }
     }, [])
     
-    
-   
     //保存报告
     const handleSubmit = async () => {
         setBtnConfirm(true)
@@ -179,6 +177,7 @@ const Report = (props: any) => {
             obj,
             saveReportData,
             allGroupData,
+            compareGroupData,
             logoData,
             envData,
             routeName,
