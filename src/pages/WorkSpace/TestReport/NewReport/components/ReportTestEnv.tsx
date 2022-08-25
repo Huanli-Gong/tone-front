@@ -1,7 +1,7 @@
-import React, { useContext , memo } from 'react';
+import React, { useContext, memo } from 'react';
 import { SettingTextArea } from './EditPublic';
 import { ReportContext } from '../Provider';
-import _ from 'lodash'; 
+import _ from 'lodash';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import {
     ModuleWrapper,
@@ -13,14 +13,14 @@ import {
 import { TestEnv } from '@/components/ReportAnalysis/TestEnv';
 
 const ReportTestEnv = () => {
-    const { 
-        btnState, 
+    const {
+        btnState,
         saveReportData,
-        obj, 
-        setObj, 
-        envData, 
+        obj,
+        setObj,
+        envData,
         compareGroupData,
-        baselineGroupIndex, 
+        baselineGroupIndex,
         environmentResult,
         routeName,
         btnConfirm,
@@ -28,17 +28,21 @@ const ReportTestEnv = () => {
         domainResult,
     } = useContext(ReportContext)
 
-    
+
     const handleChangeVal = (val: any, text: string) => {
-        if(environmentResult && JSON.stringify(environmentResult) !== '{}' && JSON.stringify(compareGroupData) !== '{}'){
-            let env = _.cloneDeep(environmentResult) 
-            env[text] = val
-            if(!_.isUndefined(compareGroupData)){
-                env.base_group = compareGroupData.base_group 
+        if (environmentResult && JSON.stringify(environmentResult) !== '{}') {
+            if (_.isUndefined(compareGroupData)) {
+                obj.test_env = {
+                    text: val
+                }
+            } else {
+                let env = _.cloneDeep(environmentResult)
+                env[text] = val
+                env.base_group = compareGroupData.base_group
                 env.compare_groups = compareGroupData.compare_groups
+                if (routeName !== 'Report') env.base_index = baselineGroupIndex
+                obj.test_env = env
             }
-            if( routeName !== 'Report') env.base_index = baselineGroupIndex
-            obj.test_env = env
             setObj({
                 ...obj,
             })
@@ -60,7 +64,7 @@ const ReportTestEnv = () => {
             <EditTitle style={{ margin: '17px 0 14px 0' }}>机器环境</EditTitle>
             <EnvGroup>
                 <EnvGroupL>对比组名称</EnvGroupL>
-                <Identify envData={envData} group={groupLen}/>
+                <Identify envData={envData} group={groupLen} />
             </EnvGroup>
             {/* 机器信息 */}
             <TestEnv len={len} envData={envData} environmentResult={environmentResult} group={groupLen} />
