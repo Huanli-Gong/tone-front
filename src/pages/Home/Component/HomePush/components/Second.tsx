@@ -1,8 +1,10 @@
 import React from 'react';
+import { useIntl, FormattedMessage } from 'umi'
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import styles from './Second.less';
 
 export default ({ style={}, }) => {
-
+  const { formatMessage } = useIntl()
   const ArrowUp = () => (
     <div className={styles['arrow_content']}>
       <span className={styles['arrow_up']}></span>
@@ -12,7 +14,10 @@ export default ({ style={}, }) => {
   
   return (
     <div className={styles['second_root']} style={style}>
-        <h1 className={styles['second_header']}>平台架构</h1>
+        <h1 className={styles['second_header']}>
+          {/* 平台架构 */}
+          <FormattedMessage id="pages.home.push.platform" />
+        </h1>
         <div className={styles['second_content']}>
           {/** 第一行 */}
           <div className={styles.row}>
@@ -27,10 +32,10 @@ export default ({ style={}, }) => {
             </div>
             <div className={styles.right}>
               <div className={styles.menu_item}>Dashboard</div>
-              <div className={styles.menu_item}>项目数据</div>
-              <div className={styles.menu_item}>数据分析</div>
-              <div className={styles.menu_item}>离线模式</div>
-              <div className={styles.menu_item}>数据认证</div>
+              <div className={styles.menu_item}><FormattedMessage id="pages.home.push.project" /></div>
+              <div className={styles.menu_item}><FormattedMessage id="pages.home.push.analysis" /></div>
+              <div className={styles.menu_item}><FormattedMessage id="pages.home.push.offline" /></div>
+              <div className={styles.menu_item}><FormattedMessage id="pages.home.push.authentication" /></div>
             </div>
           </div>
           {/** 第二行 */}
@@ -38,7 +43,7 @@ export default ({ style={}, }) => {
             <div className={styles.left}>
               <div className={styles.project} style={{height: 112,position: 'relative'}}>
                 <div>T-One</div>
-                <div>管理平台</div>
+                <div><FormattedMessage id="pages.home.push.manage" /></div>
                 <ArrowUp />
               </div>
               <div className={styles.bridge}>
@@ -49,23 +54,23 @@ export default ({ style={}, }) => {
             <div className={styles.right}>
               <div className={styles.menu}>
                 <div className={styles.menu_content}>
-                  <div className={styles.menu_item}>测试执行</div>
-                  <div className={styles.menu_item}>测试计划</div>
-                  <div className={styles.menu_item}>测试分析</div>
-                  <div className={styles.menu_item}>测试报告</div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.test.execution" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.test.plan" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.test.analysis" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.test.report" /></div>
                 </div>
                 <div className={styles.menu_content} style={{marginTop: 10,}}>
-                  <div className={styles.menu_item}>用例集成认证</div>
-                  <div className={styles.menu_item}>测试流程管理</div>
-                  <div className={styles.menu_item}>Workspace管理</div>
-                  <div className={styles.menu_item}>Master推送</div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.case.certification" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.test.manage" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.ws.manage" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.master.push" /></div>
                 </div>
               </div>
               <div>
                 <div className={styles.menu_item}>
                   <p>API</p>
-                  <p>通知</p>
-                  <p>权限</p>
+                  <p><FormattedMessage id="pages.home.push.notice" /></p>
+                  <p><FormattedMessage id="pages.home.push.authority" /></p>
                 </div>
               </div>
             </div>
@@ -75,9 +80,8 @@ export default ({ style={}, }) => {
           <div className={styles.row}>
             <div className={styles.left}>
               <div className={styles.project} style={{height: 112}}>
-                <div>tone-runner</div>
-                <div>分布式任务执</div>
-                <div>行引擎</div>
+                <div>T-One Runner</div>
+                <div><FormattedMessage id="pages.home.push.distributed.tasks.engine" /></div>
               </div>
               <div className={styles.bridge}>
                 <div className={styles.globule}></div>
@@ -87,23 +91,23 @@ export default ({ style={}, }) => {
             <div className={styles.right}>
               <div className={styles.menu}>
                 <div className={styles.menu_content}>
-                  <div className={styles.menu_item}>功能、性能测试</div>
-                  <div className={styles.menu_item}>单机、多机测试</div>
-                  <div className={styles.menu_item}>应用集群测试</div>
-                  <div className={styles.menu_item}>云上测试</div>
+                  <div className={styles.menu_item}><EllipsisPulic title={formatMessage({ id: "pages.home.push.func.and.perf" })} style={{ width: 140, padding: '0 15px'}}/></div>
+                  <div className={styles.menu_item}><EllipsisPulic title={formatMessage({ id: "pages.home.push.single.and.multi" })} style={{ width: 140, padding: '0 15px'}}/></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.application.cluster" /></div>
+                  <div className={styles.menu_item}><FormattedMessage id="pages.home.push.cloud" /></div>
                 </div>
                 <div className={styles.menu_content} style={{marginTop: 10}}>
-                  <div className={styles.menu_item}>分布式任务调度</div>
-                  <div className={styles.menu_item}>DAG流程引擎</div>
+                  <div className={styles.menu_item}><EllipsisPulic title={formatMessage({ id: "pages.home.push.tasks.scheduling" })} style={{ width: 140, padding: '0 15px'}}/></div>
+                  <div className={styles.menu_item}><EllipsisPulic title={formatMessage({ id: "pages.home.push.process.engine" })} style={{ width: 140, padding: '0 15px'}}/></div>
                   <div className={styles.menu_item}>Tone wrapper</div>
-                  <div className={styles.menu_item}>机器调度</div>
+                  <div className={styles.menu_item}><EllipsisPulic title={formatMessage({ id: "pages.home.push.machine.scheduling" })} style={{ width: 140, padding: '0 15px'}}/></div>
                 </div>
               </div>
               <div>
                 <div className={styles.menu_item}>
-                  <p>消息</p>
+                  <p><FormattedMessage id="pages.home.push.message" /></p>
                   <p>&emsp;</p>
-                  <p>事件</p>
+                  <p><FormattedMessage id="pages.home.push.event" /></p>
                 </div>
               </div>
             </div>
@@ -112,12 +116,12 @@ export default ({ style={}, }) => {
           {/** 第四行 */}
           <div className={styles.row4}>
             <div className={styles.row4_flex}>
-              <div className={styles.menu_item} style={{width: 535}}>tone-agent<span>（主动模式）</span></div>
-              <div className={styles.menu_item} style={{width: 535}}>tone-agent<span>（被动模式）</span></div>
+              <div className={styles.menu_item} style={{width: 535}}>tone-agent<span><FormattedMessage id="pages.home.push.active.mode" /></span></div>
+              <div className={styles.menu_item} style={{width: 535}}>tone-agent<span><FormattedMessage id="pages.home.push.passive.mode" /></span></div>
             </div>
             <div className={styles.menu_item} style={{width: '100%'}}>
-              <div>测试机器池   tone测试框架</div>
-              <p>企业内网、云上、隔离等多环境支持  phy/vm/docker等</p>
+              <div><FormattedMessage id="pages.home.push.test.framework" /></div>
+              <p><FormattedMessage id="pages.home.push.support.env" /></p>
             </div>
           </div>
 

@@ -86,7 +86,7 @@ export const layout = ({
         /* @ts-ignore */
         childrenRender: (dom: JSX.Element) => (
             <ConfigProvider
-                locale={zhCn}
+                // locale={zhCn}
                 input={{ autoComplete: 'off' }}
             >
                 {dom}

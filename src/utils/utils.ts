@@ -56,6 +56,21 @@ export const switchUserRole = (name: string) => {
   ]).get(name);
 };
 
+export const switchUserRole2 = (name: string, formatMessage: any) => {
+  return new Map([
+    ['user', formatMessage({id: 'member.type.user'})],
+    ['sys_test_admin', formatMessage({id: 'member.type.sys_test_admin'})],
+    ['sys_admin', formatMessage({id: 'member.type.sys_admin'})],
+    ['ws_tourist', formatMessage({id: 'member.type.ws_tourist'})],
+    ['ws_member', formatMessage({id: 'member.type.ws_member'})],
+    ['ws_test_admin', formatMessage({id: 'member.type.ws_test_admin'})],
+    ['ws_tester', formatMessage({id: 'member.type.ws_tester'})],
+    ['ws_admin', formatMessage({id: 'member.type.ws_admin'})],
+    ['all', formatMessage({id: 'member.type.all'})],
+    ['ws_owner', formatMessage({id: 'member.type.ws_owner'})],
+  ]).get(name);
+};
+
 export const switchBusinessType = (business_type: string) => {
   switch (business_type) {
     case 'functional':
@@ -392,24 +407,114 @@ export const AccessTootip = () => {
   return message.error('没有操作权限');
 };
 
-export const getServerType = (type: 1 | 2): any => {
-  const isOpenSource = ['openanolis', 'opensource'].includes(BUILD_APP_ENV as string);
-  const serverArray: any = isOpenSource
-    ? [
-        [1, '固定机器池'],
-        [2, '弹性机器池'],
-      ]
-    : [
-        [1, '内网'],
-        [2, '云上'],
-      ];
+// ----------------- start 由环境决定的文案 ------------------
+// export const getServerType = (type: 1 | 2): any => {
+//   const isOpenSource = ['openanolis', 'opensource'].includes(BUILD_APP_ENV as string);
+//   const serverArray: any = isOpenSource
+//     ? [
+//         [1, '固定机器池'],
+//         [2, '弹性机器池'],
+//       ]
+//     : [
+//         [1, '内网'],
+//         [2, '云上'],
+//       ];
 
-  const result = new Map(serverArray).get(type);
-  return result;
-};
+//   const result = new Map(serverArray).get(type);
+//   return result;
+// };
 
-export const GROUP_MANAGE = `${getServerType(1)}${!BUILD_APP_ENV ? '机器' : ''}`;
-export const CLOUD_MANAGE = `${getServerType(2)}${!BUILD_APP_ENV ? '机器' : ''}`;
+// export const GROUP_MANAGE = `${getServerType(1)}${!BUILD_APP_ENV ? '机器' : ''}`;
+// export const CLOUD_MANAGE = `${getServerType(2)}${!BUILD_APP_ENV ? '机器' : ''}`;
 
-export const aligroupServer = getServerType(1);
-export const aliyunServer = getServerType(2);
+// export const aligroupServer = getServerType(1);
+// export const aliyunServer = getServerType(2);
+// ----------------- end 由环境决定的文案 ------------------
+
+
+// ----------------- start 替换上面的逻辑 ------------------
+const isOpenSource = ['openanolis', 'opensource'].includes(BUILD_APP_ENV as string);
+
+const list_cn = {
+  'fixed_pool': '固定机器池',
+  'elastic_pool': '弹性机器池',
+  'aligroup': '内网',
+  'aliyun': '云上',
+
+  // 机器
+  'fixed_pool.server': '固定机器池机器',
+  'elastic_pool.server': '弹性机器池机器',
+  'aligroup.server': '内网机器',
+  'aliyun.server': '云上机器',
+  // 基线
+  'fixed_pool.baseline': '固定机器池基线',
+  'elastic_pool.baseline': '弹性机器池基线',
+  'aligroup.baseline': '内网基线',
+  'aliyun.baseline': '云上基线',
+  // 单机 | 集群
+  'fixed_pool.standalone': '固定机器池单机',
+  'elastic_pool.standalone': '弹性机器池单机',
+  'aligroup.standalone': '内网单机',
+  'aliyun.standalone': '云上单机',
+  //
+  'fixed_pool.cluster': '固定机器池集群',
+  'elastic_pool.cluster': '弹性机器池集群',
+  'aligroup.cluster': '内网集群',
+  'aliyun.cluster': '云上集群',
+}
+const list_en = {
+  'fixed_pool': 'fixed_pool',
+  'elastic_pool': 'elastic_pool',
+  'aligroup': '内网',
+  'aliyun': '云上',
+  // 机器
+  'fixed_pool.server': 'fixed_pool.server',
+  'elastic_pool.server': 'elastic_pool.server',
+  'aligroup.server': 'aligroup.server',
+  'aliyun.server': 'aliyun.server',
+  // 基线
+  'fixed_pool.baseline': 'fixed_pool.baseline',
+  'elastic_pool.baseline': 'elastic_pool.baseline',
+  'aligroup.baseline': 'aligroup.baseline',
+  'aliyun.baseline': 'aliyun.baseline',
+  // 单机 | 集群
+  'fixed_pool.standalone': 'fixed_pool.standalone',
+  'elastic_pool.standalone': 'elastic_pool.standalone',
+  'aligroup.standalone': 'aligroup.standalone',
+  'aliyun.standalone': 'aliyun.standalone',
+  //
+  'fixed_pool.cluster': 'fixed_pool.cluster',
+  'elastic_pool.cluster': 'elastic_pool.cluster',
+  'aligroup.cluster': 'aligroup.cluster',
+  'aliyun.cluster': 'aliyun.cluster',
+}
+// ----------------- cn ------------------
+export const aligroupServer = isOpenSource ? list_cn['fixed_pool'] : list_cn['aligroup'];
+export const aliyunServer = isOpenSource ? list_cn['elastic_pool'] : list_cn['aliyun'];
+// 机器
+export const GROUP_MANAGE = !BUILD_APP_ENV ? (isOpenSource ? list_cn['fixed_pool.server'] : list_cn['aligroup.server']): aligroupServer;
+export const CLOUD_MANAGE = !BUILD_APP_ENV ? (isOpenSource ? list_cn['elastic_pool.server'] : list_cn['aliyun.server']): aliyunServer;
+// 基线
+export const aligroupServer_baseline = isOpenSource ? list_cn['fixed_pool.baseline'] : list_cn['aligroup.baseline'];
+export const aliyunServer_baseline = isOpenSource ? list_cn['elastic_pool.baseline'] : list_cn['aliyun.baseline'];
+// 单机 | 集群
+export const aligroupServer_standalone = isOpenSource ? list_cn['fixed_pool.standalone'] : list_cn['aligroup.standalone'];
+export const aliyunServer_standalone = isOpenSource ? list_cn['elastic_pool.standalone'] : list_cn['aliyun.standalone'];
+export const aligroupServer_cluster = isOpenSource ? list_cn['fixed_pool.cluster'] : list_cn['aligroup.cluster'];
+export const aliyunServer_cluster = isOpenSource ? list_cn['elastic_pool.cluster'] : list_cn['aliyun.cluster'];
+
+//------------------ en ------------------
+export const aligroupServer_en = isOpenSource ? list_en['fixed_pool'] : list_en['aligroup'];
+export const aliyunServer_en = isOpenSource ? list_en['elastic_pool'] : list_en['aliyun'];
+// 机器
+export const GROUP_MANAGE_en = !BUILD_APP_ENV ? (isOpenSource ? list_en['fixed_pool.server'] : list_en['aligroup.server']): aligroupServer_en;
+export const CLOUD_MANAGE_en = !BUILD_APP_ENV ? (isOpenSource ? list_en['elastic_pool.server'] : list_en['aliyun.server']): aliyunServer_en;
+// 基线
+export const aligroupServer_baseline_en = isOpenSource ? list_en['fixed_pool.baseline'] : list_en['aligroup.baseline'];
+export const aliyunServer_baseline_en = isOpenSource ? list_en['elastic_pool.baseline'] : list_en['aliyun.baseline'];
+// 单机 | 集群
+export const aligroupServer_standalone_en = isOpenSource ? list_en['fixed_pool.standalone'] : list_en['aligroup.standalone'];
+export const aliyunServer_standalone_en = isOpenSource ? list_en['elastic_pool.standalone'] : list_en['aliyun.standalone'];
+export const aligroupServer_cluster_en = isOpenSource ? list_en['fixed_pool.cluster'] : list_en['aligroup.cluster'];
+export const aliyunServer_cluster_en = isOpenSource ? list_en['elastic_pool.cluster'] : list_en['aliyun.cluster'];
+// ----------------- end 替换上面的逻辑 ------------------

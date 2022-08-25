@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
 import { ClickParam } from 'antd/es/menu';
-import { history, useModel } from 'umi';
+import { history, useModel, useIntl, FormattedMessage } from 'umi';
 import { getPageQuery } from '@/utils/utils';
 import { outLogin } from '@/services/login';
 
@@ -71,20 +71,20 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             {menu && (
                 <Menu.Item key="center">
                     <UserOutlined />
-                    个人中心
+                    <FormattedMessage id="right.content.center" />
                 </Menu.Item>
             )}
             {menu && (
                 <Menu.Item key="settings">
                     <SettingOutlined />
-                    个人设置
+                    <FormattedMessage id="right.content.settings" />
                 </Menu.Item>
             )}
             {menu && <Menu.Divider />}
 
             <Menu.Item key="logout">
                 <LogoutOutlined />
-                退出登录
+                <FormattedMessage id="right.content.logout" />
             </Menu.Item>
         </Menu>
     );

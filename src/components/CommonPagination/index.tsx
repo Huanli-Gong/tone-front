@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { Pagination , Row , Col } from 'antd'
 import styled from 'styled-components'
 
@@ -19,6 +19,7 @@ interface PaginationProps {
 } 
 
 export default ( props : PaginationProps ) => {
+    const { formatMessage } = useIntl()
     const { total = 0 , largePage = false, pageSize = 10 , currentPage = 1 , onPageChange , ...rest } = props 
     let sizeNumber = ['10','20','50','100']
     if ( total === 0  ) return <CommonPagination className="commom_pagination" justify="space-around" {...rest} />
@@ -27,7 +28,9 @@ export default ( props : PaginationProps ) => {
     }
     return (
         <CommonPagination className="commom_pagination" justify="space-around" {...rest}>
-            <Col span={ 4 } style={{ textAlign : 'left' }}>{ `共${ total }条`}</Col>
+            <Col span={ 4 } style={{ textAlign : 'left' }}>
+               {formatMessage({id: 'pagination.total.strip'}, {data: total})}
+            </Col>
             <Col span={ 20 } style={{ textAlign : 'right' }}>
                 <Pagination 
                     total={ total }

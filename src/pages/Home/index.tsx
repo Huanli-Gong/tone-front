@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styles from './index.less'
-import { history, useModel, Access, useAccess } from 'umi'
+import { history, useModel, Access, useAccess, FormattedMessage, useIntl } from 'umi'
 import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Spin, Tabs, Input, Tooltip, Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 // import JoinPopover from './Component/JoinPopover'
@@ -62,14 +62,35 @@ const avatarStyle = {
     marginRight: 10
 }
 
-const docType = { 'mustRead': '必看', 'course': '教程', 'docs': '文档' }
-const noticeType = { 'maintain': '维护', 'notice': '通知', 'upgrade': '升级', 'stop': '暂停' }
 
-const allKey = [{ tab: '全部Workspace', key: 'all' }, { tab: '最近访问', key: 'history' }, { tab: '我加入的', key: 'joined' }, { tab: '我创建的', key: 'created' }]
-const tourKey = [{ tab: '全部Workspace', key: 'all' }]
 
 export default (): React.ReactNode => {
     const access = useAccess();
+
+    const { formatMessage } = useIntl()
+    const docType = {
+        'mustRead': formatMessage({ id: 'pages.home.mustRead', defaultMessage: "" }),
+        'course': formatMessage({ id: 'pages.home.course' }),
+        'docs': formatMessage({ id: 'pages.home.docs' }),
+    }
+    const noticeType = {
+        'maintain': formatMessage({ id: 'pages.home.maintain' }),
+        'notice': formatMessage({ id: 'pages.home.notice' }),
+        'upgrade': formatMessage({ id: 'pages.home.upgrade' }),
+        'stop': formatMessage({ id: 'pages.home.stop' }),
+    }
+    const allKey = [
+        { tab: formatMessage({ id: 'pages.home.tab.all' }), key: 'all' },
+        { tab: formatMessage({ id: 'pages.home.tab.history' }), key: 'history' },
+        { tab: formatMessage({ id: 'pages.home.tab.joined' }), key: 'joined' },
+        { tab: formatMessage({ id: 'pages.home.tab.created' }), key: 'created' },
+    ]
+    const tourKey = [{
+        tab: formatMessage({ id: 'pages.home.tab.all' }), key: 'all'
+    },
+    ]
+
+
 
     const [wsData, setWsData]: Array<any> = useState([])
     const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
@@ -80,7 +101,7 @@ export default (): React.ReactNode => {
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
         page_size: 50,
         page_num: 1,
-        scope: access.loginBtn() ? 'history' : 'all'  
+        scope: access.loginBtn() ? 'history' : 'all'
     })
     const [helps, setHelps] = useState<Array<any>>([])
     const [topWs, setTopWs] = useState([])
@@ -117,10 +138,10 @@ export default (): React.ReactNode => {
     }
 
     const wsDom = () => {
-        const tab = access.IsAdmin() ? allKey : allKey.filter((item:any) => item.key !== 'created')
-        const allTab = BUILD_APP_ENV ? tab :  allKey
+        const tab = access.IsAdmin() ? allKey : allKey.filter((item: any) => item.key !== 'created')
+        const allTab = BUILD_APP_ENV ? tab : allKey
         const arrKey = access.loginBtn() ? allTab : tourKey
-        
+
         return (
             <Tabs defaultActiveKey="history" onChange={handleTabChange}>
                 {
@@ -176,7 +197,7 @@ export default (): React.ReactNode => {
     }
 
     const enterWorkspace = async (record: any) => {
-        if(access.IsAdmin()){
+        if (access.IsAdmin()) {
             return history.push(jumpWorkspace(record.id))
         }
 
@@ -232,17 +253,18 @@ export default (): React.ReactNode => {
             render: (_: any) => (
                 <Space>
                     {_ ? <PublicIcon /> : <NPublicIcon />}
-                    {_ ? '公开' : '私密'}
+                    {_ ? <FormattedMessage id="pages.home.public" /> : <FormattedMessage id="pages.home.private" />}
                 </Space>
             )
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation" />,
             align: 'center',
             width: 120,
             render: (_: any) => (
                 <Button onClick={() => enterWorkspace(_)} >
-                    进入
+                    {/* 进入 */}
+                    <FormattedMessage id="pages.home.enter" />
                 </Button>
             )
         }
@@ -288,12 +310,12 @@ export default (): React.ReactNode => {
             <HomePush ref={homePushRef} />
             <div className={styles.welcome_box}>
                 <Row className={styles.welcome}>
-                    <Typography.Title level={2} style={{ fontWeight: 'normal' }}>Hi，欢迎使用开源质量协作平台 T-One ！</Typography.Title>
+                    <Typography.Title level={2} style={{ fontWeight: 'normal' }}><FormattedMessage id="pages.home.title" /></Typography.Title>
                     <Row>
                         <Space>
-                            <Typography.Text style={{ color: 'rgba(0,0,0,0.50)' }}>T-One（testing in one）提供一站式自动化测试集成、管理、执行、分析，以及跨团队、跨企业质量协作能力。</Typography.Text>
+                            <Typography.Text style={{ color: 'rgba(0,0,0,0.50)' }}><FormattedMessage id="pages.home.subTitle" /></Typography.Text>
                             <span className={styles.home_push_button} onClick={() => { homePushRef?.current?.show({ initial: false }) }}>
-                                更多介绍
+                                <FormattedMessage id="pages.home.more.introduction" />
                             </span>
                         </Space>
                     </Row>
@@ -306,7 +328,7 @@ export default (): React.ReactNode => {
                 <div style={{ display: 'inline-block', width: 'calc(100% - 356px)' }} id='bannerLayout'>
                     <Layout.Content className={styles.banner}>
                         <Row className={styles.title} style={{ padding: '0 20px' }} align="middle" justify="space-between">
-                            <Typography.Text>推荐Workspace</Typography.Text>
+                            <Typography.Text><FormattedMessage id="pages.home.recommend.Workspace" /></Typography.Text>
                         </Row>
                         {/* <Row style={{ padding: '5px 4px 5px 20px',position: 'relative' }}> */}
                         <Spin spinning={wsLoading}>
@@ -349,9 +371,11 @@ export default (): React.ReactNode => {
                             {wsDom()}
                             <div>
                                 <Space align='end'>
-                                    <Input.Search placeholder="请输入搜索关键字" onSearch={onSearch} style={{ width: 200 }} allowClear={true} />
+                                    <Input.Search placeholder={formatMessage({ id: 'pages.home.input.placeholder' })} onSearch={onSearch} style={{ width: 270 }} allowClear={true} />
                                     <Access accessible={access.ApplyPrivate()}>
-                                        <Button onClick={() => history.push('/workspace/create')}>新建Workspace</Button>
+                                        <Button onClick={() => history.push('/workspace/create')}>
+                                            <FormattedMessage id="pages.home.create.workspace" />
+                                        </Button>
                                     </Access>
                                 </Space>
                             </div>
@@ -384,11 +408,13 @@ export default (): React.ReactNode => {
                     <Row>
                         <div className={styles.notice}>
                             <div className={styles.title}>
-                                公告
+                                {/* 公告 */}
+                                <FormattedMessage id="pages.home.announcement" />
                                 <div
                                     onClick={() => history.push(`/notice`)}
                                     className={styles.helps_list_more}>
-                                    查看全部
+                                    {/* 查看全部 */}
+                                    <FormattedMessage id="pages.home.view.all" />
                                 </div>
                             </div>
                             <div className={styles.content} style={{ height: !noticeAll.length ? 110 : 'auto', paddingBottom: !noticeAll.length ? 0 : 20 }}>
@@ -422,19 +448,21 @@ export default (): React.ReactNode => {
                                 }
                                 {
                                     !noticeAll.length &&
-                                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无公告" />
+                                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="pages.home.empty.notice" />} />
                                 }
                             </div>
                         </div>
                     </Row>
                     <div className={styles.helps}>
                         <div className={styles.title}>
-                            使用帮助
+                            {/* 使用帮助 */}
+                            <FormattedMessage id="pages.home.using.help" />
                             <div
                                 onClick={() => history.push(`/help_doc`)}
                                 style={{ marginRight: 0 }}
                                 className={styles.helps_list_more}>
-                                查看全部
+                                {/* 查看全部 */}
+                                <FormattedMessage id="pages.home.view.all" />
                             </div>
                         </div>
                         <div className={styles.helps_box} style={{ height: !noticeAll.length ? 90 : 'auto' }}>
@@ -468,7 +496,7 @@ export default (): React.ReactNode => {
                             }
                             {
                                 !helpDocAll.length &&
-                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无帮助" />
+                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="pages.home.no.help" />} />
                             }
                         </div>
                     </div>

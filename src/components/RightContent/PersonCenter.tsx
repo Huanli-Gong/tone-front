@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import ClickParam from 'antd/es/menu';
-import { useModel } from 'umi';
+import { useModel, useIntl, FormattedMessage } from 'umi';
 import styles from './index.less';
 import request from 'umi-request';
 import AvatarCover from '../AvatarCover';
@@ -70,11 +70,13 @@ const PersonCenter = () => {
             <Menu.Divider />
             <Menu.Item key="page">
                 <UserOutlined />
-                个人主页
+                {/* 个人主页 */}
+                <FormattedMessage id="right.content.home.page" />
             </Menu.Item>
             <Menu.Item key="logout">
                 <LogoutOutlined rotate={-90} />
-                退出登录
+                {/* 退出登录 */}
+                <FormattedMessage id="right.content.logout" />
             </Menu.Item>
         </Menu>
     );

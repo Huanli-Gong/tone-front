@@ -1,29 +1,33 @@
 import React from 'react';
 import { Typography, Tooltip } from 'antd';
+import { useIntl, FormattedMessage } from 'umi';
 import styles from './index.less'
-import { switchUserRole } from '@/utils/utils';
+import { switchUserRole2 } from '@/utils/utils';
 
 //枚举
 const handleTypeWait = (name: string) => {
+    const { formatMessage } = useIntl()
     const dict = {
-        create: '创建',
-        delete: '注销',
-        join: '加入',
+        create: formatMessage({ id: 'right.content.wait.create'}), // '创建',
+        delete: formatMessage({ id: 'right.content.wait.delete'}), // '注销',
+        join: formatMessage({ id: 'right.content.wait.join'}), //'加入',
     }
     return dict[name]
 }
 const handleTypePassed = (name: string) => {
+    const { formatMessage } = useIntl()
     const dict = {
-        create: '创建申请',
-        delete: '注销申请',
-        join: '申请'
+        create: formatMessage({ id: 'right.content.passed.create'}), //'创建申请',
+        delete: formatMessage({ id: 'right.content.passed.delete'}), //'注销申请',
+        join: formatMessage({ id: 'right.content.passed.join'}), //'申请'
     }
     return dict[name]
 }
 const handleTypeRefused = (name: string) => {
+    const { formatMessage } = useIntl()
     const dict = {
-        create: '创建申请',
-        delete: '注销申请',
+        create: formatMessage({ id: 'right.content.refused.create'}), //'创建申请',
+        delete: formatMessage({ id: 'right.content.refused.delete'}), //'注销申请',
         join: '',
     }
     return dict[name]
@@ -64,6 +68,7 @@ export const NameText: React.FC = ({ children }) => (
 )
 
 export const handleMsgType = (item: any) => {
+    const { formatMessage } = useIntl()
     const obj = JSON.parse(item.content)
     const username = <Typography.Text className={styles.list_user} >{obj.operator_info.user_name}</Typography.Text>
 
@@ -71,15 +76,17 @@ export const handleMsgType = (item: any) => {
         return (
             <>
                 {username}
-                <TitleText >申请{handleTypeWait(obj.action)}Workspace</TitleText>
-                <NameText >{obj.ws_info.ws_show_name}</NameText>
+                <TitleText>
+                    <FormattedMessage id="right.content.passed.join" />{handleTypeWait(obj.action)}Workspace
+                </TitleText>
+                <NameText>{obj.ws_info.ws_show_name}</NameText>
             </>
         )
     } else if (obj.status === 'passed') {
         return (
             <>
                 {username}
-                <TitleText>{obj.action === 'join' ? '通过你加入' : '通过'}</TitleText>
+                <TitleText>{obj.action === 'join' ? <FormattedMessage id="right.content.join.through.you" /> : <FormattedMessage id="right.content.pass" />}</TitleText>
                 <NameText>{obj.ws_info.ws_show_name}</NameText>
                 <Tooltip placement="topLeft" title={handleTypePassed(obj.action)}>
                     <TitleText>{handleTypePassed(obj.action)}</TitleText>
@@ -90,7 +97,7 @@ export const handleMsgType = (item: any) => {
         return (
             <>
                 {username}
-                <TitleText>{obj.action === 'join' ? '拒绝你加入' : '拒绝'}</TitleText>
+                <TitleText>{obj.action === 'join' ? <FormattedMessage id="right.content.refuse.you.to.join" /> : <FormattedMessage id="right.content.refuse" />}</TitleText>
                 <Tooltip placement="topLeft" title={obj.ws_info.ws_show_name}>
                     <TitleText>{obj.ws_info.ws_show_name}</TitleText>
                 </Tooltip>
@@ -105,24 +112,24 @@ export const handleMsgType = (item: any) => {
                 <>
                     {username}
                     <TitleText>
-                        {obj.operator_info.action === 'add' ? '把你添加为' : '把你设置为'}
+                        {obj.operator_info.action === 'add' ? <FormattedMessage id="right.content.add.you.as" /> : <FormattedMessage id="right.content.set.you.to" />}
                     </TitleText>
                     <NameText>{obj.ws_info.ws_show_name}</NameText>
-                    <TitleText>{switchUserRole(obj.role_title)}</TitleText>
+                    <TitleText>{switchUserRole2(obj.role_title, formatMessage)}</TitleText>
                 </>
             )
         } else if (obj.action === 'set_sys_role') {
             return (
                 <>
                     {username}
-                    <TitleText>把你添加为T-One{switchUserRole(obj.role_title)}</TitleText>
+                    <TitleText><FormattedMessage id="right.content.add.you.as.t-one" />{switchUserRole2(obj.role_title, formatMessage)}</TitleText>
                 </>
             )
         } else if (obj.action === 'remove') {
             return (
                 <>
                     {username}
-                    <TitleText>把你移除</TitleText>
+                    <TitleText><FormattedMessage id="right.content.remove.you" /></TitleText>
                     <TitleText>{obj.ws_info.ws_show_name}</TitleText>
                 </>
             )
@@ -130,9 +137,15 @@ export const handleMsgType = (item: any) => {
             return (
                 <>
                     {username}
-                    <TitleText>把</TitleText>
+                    <TitleText>
+                        {/* 把 */}
+                        <FormattedMessage id="right.content.put" />
+                    </TitleText>
                     <NameText>{obj.ws_info.ws_show_name}</NameText>
-                    <TitleText>owner转让给你</TitleText>
+                    <TitleText>
+                        {/* owner转让给你 */}
+                        <FormattedMessage id="right.content.transfer.to.you" />
+                    </TitleText>
                 </>
             )
         }

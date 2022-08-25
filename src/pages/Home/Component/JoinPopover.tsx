@@ -1,17 +1,22 @@
 import React, { useState } from 'react'
 import { Button, Space, Row, Input, Typography, Col, Divider, Popover, message, Avatar } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from '../index.less'
 import { applyWorkspaceMember } from '@/services/Workspace'
 import LogoEllipsis from '@/components/LogoEllipsis/index';
+
 const JoinPopover = (props: any) => {
+    const { formatMessage } = useIntl()
     const [reason, setReason] = useState('')
 
     return (
         <Row>
             <Col span={24} style={{ marginBottom: 8 }}>
                 <Space>
-                    <Typography.Text>申请理由</Typography.Text>
-                    <Typography.Text disabled>(选填)</Typography.Text>
+                    <Typography.Text><FormattedMessage id="pages.home.join.popover.reason" /></Typography.Text>
+                    <Typography.Text disabled>
+                        <FormattedMessage id="pages.home.join.popover.optional" />
+                    </Typography.Text>
                 </Space>
             </Col>
             <Col span={24}>
@@ -34,9 +39,13 @@ const JoinPopover = (props: any) => {
                                 }
                             }
                         >
-                            取消
+                            {/* 取消 */}
+                            <FormattedMessage id="pages.home.join.popover.btn.cancel" />
                         </Button>
-                        <Button type="primary" onClick={() => props.handleSubmit(reason)}>提交申请</Button>
+                        <Button type="primary" onClick={() => props.handleSubmit(reason)}>
+                            {/* 提交申请 */}
+                            <FormattedMessage id="pages.home.join.popover.btn.submit" />
+                        </Button>
                     </Space>
                 </Row>
             </Col>
@@ -45,6 +54,7 @@ const JoinPopover = (props: any) => {
 }
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const [visible, setVisible] = useState(false)
     const [padding, setPadding] = useState(false)
 
@@ -54,13 +64,13 @@ export default (props: any) => {
             ws_id: props.id,
             reason
         })
-        message.success('操作成功！')
+        message.success(formatMessage({id: 'operation.success'}) )
         setVisible(false)
         setPadding(false)
     }
     return (
         <Popover
-            title="申请加入"
+            title={<FormattedMessage id="pages.home.popover.title" /> }
             trigger="click"
             visible={visible}
             placement={props.type === 'show_name' ? 'topLeft' : 'top'}
@@ -74,7 +84,10 @@ export default (props: any) => {
                 />
             }
         >
-            <Button disabled={padding} onClick={() => setVisible(true)} style={{ display: props.type === 'operate' ? 'inlineBlock' : 'none' }} >加入</Button>
+            <Button disabled={padding} onClick={() => setVisible(true)} style={{ display: props.type === 'operate' ? 'inlineBlock' : 'none' }}>
+                {/* 加入 */}
+                <FormattedMessage id="pages.home.join.popover.btn.join" />
+            </Button>
             { props.type === 'show_name' && <div className={styles.showName}>
                 <LogoEllipsis props={props} size={32} />
             </div>

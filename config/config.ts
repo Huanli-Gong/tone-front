@@ -10,9 +10,9 @@ export default defineConfig({
     // outputPath : 'build',
     hash: false,
     antd: {
-        config: {
-            locale: zhCN
-        }
+        // config: {
+        //   locale: zhCN
+        // }
     },
     dva: {
         hmr: true,
