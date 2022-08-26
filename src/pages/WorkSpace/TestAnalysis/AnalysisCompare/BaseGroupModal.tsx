@@ -161,7 +161,6 @@ export default (props: any) => {
     },[ suitData, tab ])
     const onExpand = async (expanded: boolean, record: any) => {
         const { test_job_id, suite_id } = record
-        console.log('record',record)
         if (expanded) {
             const data = await queryConfList({ test_job_id, suite_id })
             if (data.code === 200) {
@@ -270,7 +269,6 @@ export default (props: any) => {
     
     const handleOk = (sureOkFn: any) => {
         // let data = JSON.stringify(copySuitData) === '{}' ? suitData : copySuitData
-        console.log('data',suitData)
         let func_suite = suitData.func_suite_dic || {}
         let perf_suite = suitData.perf_suite_dic || {}
         let allGroupData = props.allGroupData || []
@@ -291,7 +289,6 @@ export default (props: any) => {
                 duplicateData
             )
         }
-        console.log('newSuiteData',newSuiteData)
         sureOkFn(newSuiteData)
     }
 
