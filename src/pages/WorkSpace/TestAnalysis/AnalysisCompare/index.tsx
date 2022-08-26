@@ -431,6 +431,8 @@ export default (props: any) => {
                             wsId: ws_id,
                             baselineGroupIndex: baselineGroupIndex,
                             allGroupData: handleGroupData(),
+                            // compareResult: _.cloneDeep(result[0].data),
+                            compareGroupData: paramEenvironment,
                             domainGroupResult: result[0].data,
                             testDataParam: suiteData,
                             envDataParam: paramEenvironment,
@@ -484,6 +486,7 @@ export default (props: any) => {
                             allGroupData: handleGroupData(),
                             testDataParam: _.cloneDeep(newSuiteData),
                             domainGroupResult: result[1].data,
+                            compareGroupData: paramEenvironment,
                             saveReportData: reportData
                         }
                     })

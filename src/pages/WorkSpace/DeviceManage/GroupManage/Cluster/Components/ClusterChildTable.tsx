@@ -104,7 +104,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.ip}
-                // provider={'内网机器'}
+                    // provider={'内网机器'}
                 />
             )
         },
@@ -118,7 +118,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.sn}
-                // provider={'内网机器'} 
+                    // provider={'内网机器'} 
                 />
             )
         },
@@ -219,7 +219,7 @@ export default (props: any) => {
                             <Space>
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button>
+                                { !BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button> }
                             </Space>
                         }
                     >
@@ -233,7 +233,7 @@ export default (props: any) => {
                             >
                                 <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
                             </Popconfirm>
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>
+                            { !BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button> }
                         </Space>
                     </Access>
                     <PermissionTootip>

@@ -163,6 +163,7 @@ const TemplateCatalog = (props: any) => {
     }
 
     const handleCatalogItemClick = (name: string, num: number) => {
+        console.log(name)
         setRoundHeight((document.querySelector(`#left_${name}`) as any)?.offsetTop)
         setCount(num)
         document.querySelector(`#${prefix}${name}`)?.scrollIntoView()

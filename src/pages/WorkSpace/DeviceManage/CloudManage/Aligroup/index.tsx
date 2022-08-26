@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { Button, Pagination, Space, Tag, Drawer, Row, Col, Form, Input, Select, Spin, Empty, message, Table, Modal } from 'antd';
+import { Button, Pagination, Space, Tag, Drawer, Row, Col, Form, Input, message, Table, Modal } from 'antd';
 import styles from './style.less';
 import { CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
-import { querysCluster, queryTag, queryMember, addGroup, editGroup, delGroup } from '../service';
+import { querysCluster, addGroup, editGroup, delGroup } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import GroupTree from './GroupTree';
 import GroupMachine from './GroupMachine'
@@ -11,6 +11,7 @@ import SelectUser from '@/components/Public/SelectUser';
 import SelectTags from '@/components/Public/SelectTags';
 import Highlighter from 'react-highlight-words';
 import Owner from '@/components/Owner/index';
+import MachineTags from '@/components/MachineTags';
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
@@ -18,6 +19,7 @@ import { useParams } from 'umi';
 import { useClientSize } from '@/utils/hooks';
 import { AccessTootip } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
+import OverflowList from '@/components/TagOverflow/index'
 // import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上集群
@@ -40,7 +42,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const tree = useRef<any>(null)
     const outTable = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState<any>({ data: [] });
+    const [data, setData] = useState<any>({ data: [] });    
     const [params, setParams] = useState<AligroupParams>({
         refresh: true,
         page: 1,
@@ -50,20 +52,18 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         tags: '',
         description: ''
     })
+    const [ tagFlag, setTagFlag ] = useState({
+        list: [],
+        isQuery: '',
+    })
     const [visible, setVisible] = useState<boolean>(false)
-    const [tagList, setTagList] = useState<any>([])
-    // const [keyword, setKeyword] = useState<string>()
-    const [tagWord, setTagword] = useState<string>()
-    // const [user, setUser] = useState<any>([])
     const [outId, setOutId] = useState<number>()
-    const [fetching, setFetching] = useState<boolean>(true)
     const [expandKey, setExpandKey] = useState<string[]>([])
     const top = 39, size = 41;
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
-    const { Option } = Select;
     const [operation, setOperation] = useState<string>('machine_cluster_aliyun')
     const logDrawer: any = useRef()
     const [validateResult, setValidateResult] = useState<any>({});
@@ -79,15 +79,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const handlePage = (page_num: number, page_size: any) => {
         setParams({ ...params, page: page_num, pageSize: page_size })
     }
-    const getServerTagList = async (word?: string) => {
-        const param = word && word.replace(/\s*/g, "")
-        if (tagWord && tagWord == param) return
-        setTagword(param)
-        setFetching(true)
-        const { data } = await queryTag({ name: param, ws_id }) //run_mode: 'cluster', run_environment: 'aliyun', 
-        setTagList(data || [])
-        setFetching(false)
-    }
+
     const getList = async (params: any = {}) => {
         setLoading(true)
         setData({ data: [] })
@@ -95,28 +87,11 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         data && setData(data)
         setLoading(false)
     };
-    // const handleSearch = async (word?: string) => {
-    //     const param = word && word.replace(/\s*/g, "")
-    //     if (keyword && keyword == param) return
-    //     setKeyword(param)
-    //     setFetching(true)
-    //     let { data } = await queryMember({ keyword: param,/* scope:'aligroup'  */ })
-    //     setUser(data || [])
-    //     setFetching(false)
-    // }
-    const tagRender = (props: any) => {
-        const { label, closable, onClose } = props;
-        const { color, children } = label.props || {}
-        return (
-            <Tag color={color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-                {children}
-            </Tag>
-        )
-    }
+
+    
     const newGroup = () => {
         setOutId(undefined)
-        //handleSearch()
-        getServerTagList()
+        setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
         setVisible(true)
         form.resetFields()
     }
@@ -184,8 +159,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const modifyGroup = (row: any) => {
-        // setUser([{ id: row.owner, last_name: row.owner_name }])
-        getServerTagList()
+        const list = row.tag_list.map((item:any) => item.id)
+        setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         row.tags = row.tag_list.map((item: any) => { return item.id })
         setOutId(row.id)
         setVisible(true)
@@ -243,7 +218,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, page: 1, [dataIndex]: val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {
@@ -285,6 +260,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         {
             title: '标签',
             dataIndex: 'tag_list',
+            ellipsis: {
+                showTitle: false
+            },
             width: 250,
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) =>
@@ -294,16 +272,13 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     autoFocus={autoFocus}
                     confirm={confirm}
                     onConfirm={(val: number) => { setParams({ ...params, page: 1, tags: val }) }} />,
-            render: (_: any, row: any) => <div>
-                {
+            render: (_: any, row: any) => (
+                <OverflowList list={
                     row.tag_list.map((item: any, index: number) => {
                         return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
                     })
-                }
-                {
-                    row.tag_list.length == 0 ? '-' : ''
-                }
-            </div>
+                } />
+            )
         },
         {
             title: '备注',
@@ -326,7 +301,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             width: 180,
             render: (_: any, row: any) => <Space>
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { addMachine(row.id) }}>添加</Button>
-                <Access 
+                <Access
                     accessible={access.WsMemberOperateSelf(row.owner)}
                     fallback={
                         <Space>
@@ -431,33 +406,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                             <Owner />
                         </Col>
                         <Col span={24}>
-                            <Form.Item
-                                name="tags"
-                                label="标签"
-                            >
-                                <Select
-                                    mode="multiple"
-                                    allowClear
-                                    notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                                    filterOption={false}
-                                    placeholder="请选择"
-                                    onSearch={getServerTagList}
-                                    style={{ width: '100%' }}
-                                    showArrow={false}
-                                    showSearch
-                                    tagRender={tagRender}
-                                >
-                                    {
-                                        tagList.map(
-                                            (item: any) => (
-                                                <Option key={item.id} value={item.id}>
-                                                    <Tag color={item.tag_color} key={item.id}>{item.name}</Tag>
-                                                </Option>
-                                            )
-                                        )
-                                    }
-                                </Select>
-                            </Form.Item>
+                            <MachineTags {...tagFlag}/>
                         </Col>
                         <Col span={24}>
                             <Form.Item

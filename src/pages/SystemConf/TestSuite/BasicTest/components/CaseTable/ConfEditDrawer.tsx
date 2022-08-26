@@ -163,6 +163,7 @@ export default forwardRef(
                     form={form}
                     initialValues={{
                         repeat: query.test_type === 'performance' ? 3 : 1,
+                        timeout: 3600,
                         is_default: 1,
                         var: [{ name: '', val: '', des: '' }],
                     }}

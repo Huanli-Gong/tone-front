@@ -19,7 +19,6 @@ const ReportBasicInfo = (props: any) => {
             ...obj,
         })
     }
-
     return (
         <>
             {domainResult?.is_default ?
@@ -30,12 +29,6 @@ const ReportBasicInfo = (props: any) => {
                             name={saveReportData?.test_background}
                             btnConfirm={btnConfirm}
                             defaultHolder="请输入测试背景"
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)',
-                                whiteSpace: 'pre-line',
-                            }}
                             btn={btnState}
                             onOk={(val: any) => handleChangeVal(val, 'test_background')}
                         />
@@ -45,12 +38,6 @@ const ReportBasicInfo = (props: any) => {
                         <SettingTextArea
                             name={saveReportData?.test_method}
                             defaultHolder="请输入测试方法"
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)',
-                                whiteSpace: 'pre-line',
-                            }}
                             btn={btnState}
                             btnConfirm={btnConfirm}
                             onOk={(val: any) => handleChangeVal(val, 'test_method')}
@@ -63,12 +50,6 @@ const ReportBasicInfo = (props: any) => {
                             btn={btnState}
                             defaultHolder="请输入测试结论"
                             btnConfirm={btnConfirm}
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)',
-                                whiteSpace: 'pre-line',
-                            }}
                             onOk={(val: any) => handleChangeVal(val, 'custom')}
                         />
                     </ModuleWrapper>
@@ -79,14 +60,9 @@ const ReportBasicInfo = (props: any) => {
                     <ModuleWrapper id="need_test_background" className="position_mark">
                         <SubTitle><span className="line"></span>测试背景</SubTitle>
                         <SettingTextArea
-                            name={saveReportData?.test_background}
+                            name={saveReportData?.test_background || domainResult?.background_desc}
                             btnConfirm={btnConfirm}
                             defaultHolder="请输入测试背景"
-                            fontStyle={{
-                                fontSize: 14,
-                                fontFamily: 'PingFangSC-Regular',
-                                color: 'rgba(0,0,0,0.65)'
-                            }}
                             btn={btnState}
                             onOk={(val: any) => handleChangeVal(val, 'test_background')}
                         />
@@ -96,13 +72,8 @@ const ReportBasicInfo = (props: any) => {
                         <ModuleWrapper id="need_test_method" className="position_mark">
                             <SubTitle><span className="line"></span>测试方法</SubTitle>
                             <SettingTextArea
-                                name={saveReportData?.test_method}
+                                name={saveReportData?.test_method || domainResult?.test_method_desc}
                                 defaultHolder="请输入测试方法"
-                                fontStyle={{
-                                    fontSize: 14,
-                                    fontFamily: 'PingFangSC-Regular',
-                                    color: 'rgba(0,0,0,0.65)'
-                                }}
                                 btn={btnState}
                                 btnConfirm={btnConfirm}
                                 onOk={(val: any) => handleChangeVal(val, 'test_method')}
@@ -112,15 +83,10 @@ const ReportBasicInfo = (props: any) => {
                         <ModuleWrapper id="need_test_conclusion" className="position_mark">
                             <SubTitle><span className="line"></span>测试结论</SubTitle>
                             <SettingTextArea
-                                name={saveReportData?.test_conclusion?.custom}
+                                name={saveReportData?.test_conclusion?.custom || domainResult?.test_conclusion_desc}
                                 btn={btnState}
                                 defaultHolder="请输入测试结论"
                                 btnConfirm={btnConfirm}
-                                fontStyle={{
-                                    fontSize: 14,
-                                    fontFamily: 'PingFangSC-Regular',
-                                    color: 'rgba(0,0,0,0.65)'
-                                }}
                                 onOk={(val: any) => handleChangeVal(val, 'custom')}
                             />
                         </ModuleWrapper>

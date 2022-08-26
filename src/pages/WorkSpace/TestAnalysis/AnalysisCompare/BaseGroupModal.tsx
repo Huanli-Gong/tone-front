@@ -24,7 +24,9 @@ export default (props: any) => {
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
     const [copySuitData, setCopySuitData] = useState<any>({}) // 复制得全量数据
     const [duplicateData, setDuplicateData] = useState<any>([]) // 复制得全量数据
-    const [oneLevelDetailData, setOneLevelDetailData] = useState<any>([])
+    const [oneLevelData, setOneLevelData] = useState<any>([])
+    const [oneLevelFunc, setOneLevelFunc] = useState<any>([])
+    const [oneLevelPref, setOneLevelPref] = useState<any>([])
     const [confData, setConfData] = useState<any>({})
     const [loading, setLoading] = useState(true)
     const [duplicateLoading, setDuplicateLoading] = useState(false)
@@ -62,18 +64,18 @@ export default (props: any) => {
         if (code === 200) {
             let obj1 = data.func_suite_dic || {}
             let obj2 = data.perf_suite_dic || {}
-            let arr = []
             const arrKey1 = Object.keys(obj1).map((keys: any) => String(keys))
             const arrKey2 = Object.keys(obj2).map((keys: any) => String(keys))
             allFunRowKeys.current = [...arrKey1]
             allPersRowKeys.current = [...arrKey2]
             let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
             if (tabValue) setTab('performance')
-            arr = tabValue ? Object.values(obj2) : Object.values(obj1)
             let obj = tabValue ? obj2 : obj1
             setSelectedFuncRowKeys([...arrKey1])
             setSelectedPerfRowKeys([...arrKey2])
-            setOneLevelDetailData(arr)
+            setOneLevelData(tabValue ? Object.values(obj2) : Object.values(obj1))
+            setOneLevelFunc(Object.values(obj1))
+            setOneLevelPref(Object.values(obj2))
             setSuitData(data)
             setConfData(obj)
             setLoading(false)
@@ -148,9 +150,18 @@ export default (props: any) => {
     const handleClose = () => {
         handleCancle()
     }
-
+    useEffect(() => {
+        let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
+        let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
+        if(tab === 'functional'){
+            setOneLevelFunc(Object.values(obj1))
+        }else{
+            setOneLevelPref(Object.values(obj2))
+        }
+    },[ suitData, tab ])
     const onExpand = async (expanded: boolean, record: any) => {
         const { test_job_id, suite_id } = record
+        console.log('record',record)
         if (expanded) {
             const data = await queryConfList({ test_job_id, suite_id })
             if (data.code === 200) {
@@ -189,7 +200,8 @@ export default (props: any) => {
                 } 
                 return item
             })
-            setOneLevelDetailData(result)
+            setOneLevelFunc(result)
+            setOneLevelPref(result)
             let newObj = {}
             let name = tab === 'functional' ? 'func_suite_dic' : 'perf_suite_dic'
             newObj[name] = confData
@@ -213,7 +225,7 @@ export default (props: any) => {
     
     const handleStepChange = async (current: number) => {
         setDuplicateLoading(true)
-        let suite_data = _.cloneDeep(oneLevelDetailData)
+        let suite_data = tab === 'functional' ? _.cloneDeep(oneLevelFunc) : _.cloneDeep(oneLevelPref)
         if (current === 1) {
             let group_jobs: any = []
             const groupAll = _.cloneDeep(props.allGroupData)
@@ -257,9 +269,10 @@ export default (props: any) => {
     }
     
     const handleOk = (sureOkFn: any) => {
-        let data = JSON.stringify(copySuitData) === '{}' ? suitData : copySuitData
-        let func_suite = data.func_suite_dic || {}
-        let perf_suite = data.perf_suite_dic || {}
+        // let data = JSON.stringify(copySuitData) === '{}' ? suitData : copySuitData
+        console.log('data',suitData)
+        let func_suite = suitData.func_suite_dic || {}
+        let perf_suite = suitData.perf_suite_dic || {}
         let allGroupData = props.allGroupData || []
         const baseIndex = baselineGroupIndex === -1 ? 0 : baselineGroupIndex
         let newSuiteData = {
@@ -278,6 +291,7 @@ export default (props: any) => {
                 duplicateData
             )
         }
+        console.log('newSuiteData',newSuiteData)
         sureOkFn(newSuiteData)
     }
 
@@ -335,16 +349,16 @@ export default (props: any) => {
         }
     ]
     
+
     let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
     let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
     let dataSource: any = []
     if (tab === 'functional' && JSON.stringify(obj1) !== '{}') {
-        dataSource = oneLevelDetailData
+        dataSource = oneLevelFunc
     }
     if (tab === 'performance' && JSON.stringify(obj2) !== '{}') {
-        dataSource = oneLevelDetailData
+        dataSource = oneLevelPref
     }
-
     // 滚动条参数
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条

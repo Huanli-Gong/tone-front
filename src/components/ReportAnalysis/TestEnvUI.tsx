@@ -17,7 +17,7 @@ export const EnvGroupL = styled.div`
 `
 export const MachineGroup = styled.div`
     border: 1px solid rgba(0,0,0,0.10);
-    height:240px;
+    height:200px;
     margin-bottom:13px;
     border-bottom:none;
     border-right:none;
@@ -42,4 +42,3 @@ export const MachineGroupR = styled.div<GroupRowProps>`
     border-bottom:1px solid rgba(0,0,0,0.10);
     border-right:1px solid rgba(0,0,0,0.10);
 `
-

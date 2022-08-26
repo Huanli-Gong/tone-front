@@ -50,12 +50,12 @@ const CaseTable: React.FC<any> = ({
     const editRemarkDrawer: any = useRef(null)
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
-
     const columns = React.useMemo(() => {
         return [
             {
                 title: 'Test Suite',
                 dataIndex: 'conf_name',
+                width: 250,
                 ...tooltipTd(),
             },
             {
@@ -71,7 +71,14 @@ const CaseTable: React.FC<any> = ({
                 ellipsis: {
                     showHeader: false,
                 },
-                render: (_: string, row: any) => <ServerLink val={_} provider={provider_name} />
+                render: (_: string, row: any) => (
+                    <ServerLink 
+                        val={_} 
+                        param={row.server_id} 
+                        provider={provider_name} 
+                    />
+                )
+                
             },
             ['functional', 'business_functional', 'business_business'].includes(testType) &&
             {
@@ -87,7 +94,7 @@ const CaseTable: React.FC<any> = ({
                 }
             },
             { // title : '总计/通过/失败/跳过',
-                width: ['performance', 'business_performance'].includes(testType) ? 255 : 200,
+                width: 255,
                 render: (_: any) => (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
                         (
@@ -95,6 +102,7 @@ const CaseTable: React.FC<any> = ({
                                 <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }}>{_.result_data.case_count}</span>
                                 <span onClick={() => hanldeChangeChildState(_.test_case_id, 'success')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }}>{_.result_data.case_success}</span>
                                 <span onClick={() => hanldeChangeChildState(_.test_case_id, 'fail')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }}>{_.result_data.case_fail}</span>
+                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'warn')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#dcc506" }}>{_.result_data.case_warn}</span>
                                 <span onClick={() => hanldeChangeChildState(_.test_case_id, 'skip')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }}>{_.result_data.case_skip}</span>
                             </Space>
                         ) :
@@ -182,7 +190,7 @@ const CaseTable: React.FC<any> = ({
                 )
             }
         ].filter(Boolean)
-    }, [testType, access, creator])
+    }, [testType, access, creator, data])
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
@@ -247,6 +255,7 @@ const CaseTable: React.FC<any> = ({
                     showHeader={false}
                     dataSource={data}
                     pagination={false}
+                    scroll={{ x: '100%' }}
                     size="small"
                     className={styles["resultCaseTableCls"]}
                     style={{ width: `calc(100% - 32px)` }}

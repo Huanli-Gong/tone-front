@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { useParams } from 'umi'
 import { stringify } from 'querystring'
 import { reRunCheckedText } from '../../index'
+import { targetJump } from '@/utils/utils'
 
 const Content = styled(Modal)`
     .ant-modal-body {
@@ -32,6 +33,8 @@ const ReRunModal = (props: any, ref: any) => {
         form.resetFields()
     }
 
+    const [okLink, setOkLink] = React.useState<string | null>(null)
+
     const hanldeOk = () => {
         form
             .validateFields()
@@ -44,17 +47,22 @@ const ReRunModal = (props: any, ref: any) => {
                     }
                 )
                 const search = JSON.stringify(obj) !== '{}' ? `?${stringify(obj)}` : ''
-                window.open(`/ws/${ws_id}/test_job/${source.id}/import${search}`)
+                setOkLink(`/ws/${ws_id}/test_job/${source.id}/import${search}`)
+                hanldeCancle()
             })
+    }
+
+    const afterClose = () => {
+        okLink && targetJump(okLink)
     }
 
     const [form] = Form.useForm()
 
     useImperativeHandle(ref, () => ({
         show(_: any) {
-            console.log(_)
             _ && setSource(_)
             setVisible(true)
+            setOkLink(null)
         }
     }))
 
@@ -68,6 +76,7 @@ const ReRunModal = (props: any, ref: any) => {
             onOk={hanldeOk}
             onCancel={hanldeCancle}
             maskClosable={false}
+            afterClose={afterClose}
         >
             <Row style={{ backgroundColor: '#fff', height: 66, marginBottom: 10, paddingLeft: 20 }} align="middle" >
                 <Col span={4} style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 600 }}>Job名称</Col>

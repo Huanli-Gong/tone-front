@@ -9,7 +9,7 @@ const QuestionCircleOutlinedStyle = styled(QuestionCircleOutlined)`
 	right: -22px;
 	top: 5px;
 `
-const QuestionCircleComponent: React.FC<any> = ({ contextNode,placement='top' }) => {
+const QuestionCircleComponent: React.FC<any> = ({ contextNode,placement='top',style={} }) => {
 	return (
 		<Popover
 			placement={placement}
@@ -17,7 +17,7 @@ const QuestionCircleComponent: React.FC<any> = ({ contextNode,placement='top' })
 			content={contextNode}
 			color="#fff"
 		>
-			<QuestionCircleOutlinedStyle />
+			<QuestionCircleOutlinedStyle style={style}/>
 		</Popover>
 	);
 };

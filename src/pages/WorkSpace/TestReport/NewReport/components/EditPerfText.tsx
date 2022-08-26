@@ -8,16 +8,22 @@ const TextAreaWarrper = styled(TextArea)`
     width: 100%;
 `
 export const PerfTextArea = ({
-    name,
-    field,
-    suite,
-    dataSource,
-    setDataSource,
-    style,
-    space = '0px',
-    defaultHolder,
-    btn = false,
-}:
+        name,
+        field,
+        suite,
+        dataSource,
+        setDataSource,
+        style,
+        space = '0px',
+        fontStyle={
+            fontSize: 14,
+            fontFamily: 'PingFangSC-Regular',
+            color: 'rgba(0,0,0,0.65)',
+            whiteSpace: 'pre-wrap',
+        },
+        defaultHolder,
+        btn = false,
+    }:
     {
         name: string,
         field: string,
@@ -26,24 +32,19 @@ export const PerfTextArea = ({
         setDataSource: any,
         style?: any,
         space?: string,
+        fontStyle?:any,
         defaultHolder?: string,
         btn: Boolean,
     }) => {
 
     const [title, setTitle] = useState('')
 
-    const fontStyle = {
-        fontSize: 14,
-        fontFamily: 'PingFangSC-Medium',
-        color: 'rgba(0,0,0,0.85)'
-    }
-
     useEffect(() => {
         setTitle(name)
     }, [name])
 
-    const handleEle = (item: any, field: any, data: any) => {
-        let ret = item.list.map((i: any) => {
+    const handleEle = (item:any,field:any,data:any) => {
+         return item.list.map((i:any) => {
             if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
                 i[field] = title
             }
@@ -51,10 +52,7 @@ export const PerfTextArea = ({
                 ...i,
             }
         })
-        return {
-            ...item,
-            list: ret,
-        }
+       
     }
     const handleBlur = () => {
         setDataSource(dataSource.map((ele: any) => {
@@ -115,16 +113,15 @@ export const GroupItemText = ({
     setDataSource,
     defaultHolder,
 }:
-    {
-        name: string,
-        rowKey: any,
-        btn: Boolean,
-        dataSource: any,
-        setDataSource: any,
-        defaultHolder?: string,
-
-    }) => {
-
+{
+    name: string,
+    rowKey:any,
+    btn: Boolean,
+    dataSource:any,
+    setDataSource:any,
+    defaultHolder?:string,
+    
+}) => {
     const [title, setTitle] = useState('')
 
     useEffect(() => {

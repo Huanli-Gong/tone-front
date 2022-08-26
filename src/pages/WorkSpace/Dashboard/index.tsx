@@ -107,7 +107,7 @@ const WorkpsaceDashboard = (props: any) => {
                     <Col span={6}>
                         <WhiteBlock height={96} justify="center" align="middle">
                             <Iconip />
-                            <CommonStatic groupSeparator="" title={'机器使用数'} value={data?.server_use_num} />
+                            <CommonStatic groupSeparator="" title={'机器正在使用数'} value={data?.server_use_num} />
                         </WhiteBlock>
                     </Col>
                 </Row>

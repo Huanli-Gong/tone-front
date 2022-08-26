@@ -300,8 +300,7 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
     }
 
     const basicText = server_ip || '-'
-
-    if (provider_name === "cluster" && !["", null, "随机"].includes(server_ip) && $isNumber)
+    if (provider_name === "aliyun" && !["", null, "随机"].includes(server_ip) && $isNumber)
         return (
             <Tooltip
                 visible={visible}

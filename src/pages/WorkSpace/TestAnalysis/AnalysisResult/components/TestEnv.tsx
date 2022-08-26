@@ -1,14 +1,14 @@
 import React, { useContext, memo } from 'react';
 import { ReportContext } from '../Provider';
-import _ from 'lodash';
+import _ from 'lodash'; 
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
-import { TestEnv } from '@/components/ReportAnalysis/TestEnv';
 import {
     ModuleWrapper,
     SubTitle,
     EnvGroup,
     EnvGroupL,
 } from '../AnalysisUI';
+import { TestEnv } from '@/components/ReportAnalysis/TestEnv';
 
 const ReportTestEnv = () => {
     const {

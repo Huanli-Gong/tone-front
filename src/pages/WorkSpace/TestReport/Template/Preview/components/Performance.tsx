@@ -231,11 +231,13 @@ interface SuiteConfToolsProps {
     }
 }
 
-const ToolRow: React.FC<any> = ({ data, title }) => (
+const ToolRow: React.FC<any> = ({ data, title, desc }) => (
     data &&
     <IssueRow>
         <div><Typography.Text strong>{title}</Typography.Text></div>
-        <div>此处内容需生成报告后手动填写</div>
+        <div>
+            {desc || "此处内容需生成报告后手动填写"}
+        </div>
     </IssueRow>
 )
 
@@ -249,10 +251,24 @@ const ToolHeaderRow: React.FC<any> = ({ data, title }) => (
 
 const SuiteConfTools: React.FC<SuiteConfToolsProps> = ({ perf_conf }) => (
     <ToolsIssue>
-        <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} />
-        <ToolRow title={'测试环境'} data={perf_conf.need_test_env} />
-        <ToolRow title={'测试说明'} data={perf_conf.need_test_description} />
-        <ToolRow title={'测试结论'} data={perf_conf.need_test_conclusion} />
+        {/* <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} /> */}
+        {
+            [
+                ["环境要求", "need_test_env", "test_env_desc"],
+                ["测试说明", "need_test_description", "test_description_desc"],
+                ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
+            ].map((item: any) => {
+                const [title, field, desc] = item
+                return (
+                    <ToolRow
+                        key={field}
+                        title={title}
+                        data={perf_conf[field]}
+                        desc={perf_conf[desc]}
+                    />
+                )
+            })
+        }
     </ToolsIssue>
 )
 

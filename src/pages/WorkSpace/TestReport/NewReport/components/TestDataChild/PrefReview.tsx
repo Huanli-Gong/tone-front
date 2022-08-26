@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
-import { Typography, Space, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
+import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { GroupItemText } from '../EditPerfText';
 import { PerfTextArea } from '../EditPerfText';
+import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
@@ -11,7 +12,7 @@ import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.sv
 import CodeViewer from '@/components/CodeViewer';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { deleteSuite, deleteConf } from './DelMethod.js';
-import { filterResult, conversion } from '@/components/Report/index'
+import { filterResult } from '@/components/Report/index'
 // import ChartsIndex from '../../../../AnalysisResult/components/ChartIndex';
 import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
@@ -46,12 +47,23 @@ import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMeth
 const { Option } = Select;
 
 const Performance = (props: any) => {
-    const { child, btn, name, id, onDelete, dataSource, setDataSource } = props
+    const { child, name, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
+    const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
+    const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
+    // let group = allGroupData?.length
+    const switchMode = () => {
+        setBtn(!btn)
+        // setChartType('1')
+    }
+    useEffect(() => {
+        setBtnName(btn ? '图表模式' : '列表模式')
+    }, [btn])
+
     const baseIndex = useMemo(() => {
         if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
@@ -75,24 +87,6 @@ const Performance = (props: any) => {
         return dataArr;
     }
     useEffect(() => {
-        // let timer: any;
-        // if (btn) {
-        //     timer = setTimeout(() => {
-        //         setPerData(child)
-        //     }, 100);
-        // } else {
-        // setPerData({
-        //     ...child, list: child.list.map((item: any) => {
-        //         return {
-        //             ...item,
-        //             chartType: '1'
-        //         }
-        //     })
-        // })
-        // }
-        // return (() => {
-        //     timer && clearTimeout(timer)
-        // })
         const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
         btn ? setPerData(data) : setPerData({
             ...child, list: child.list.map((item: any) => {
@@ -103,7 +97,6 @@ const Performance = (props: any) => {
             })
         })
     }, [child, btn])
-
     // 筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
@@ -120,7 +113,7 @@ const Performance = (props: any) => {
                 })
                 return {
                     ...item,
-                    conf_list,
+                    conf_list
                 }
             })
             let obj = {
@@ -130,6 +123,7 @@ const Performance = (props: any) => {
             setPerData(obj)
         }
     }
+
     const DelBtn: React.FC<any> = (props: any) => {
         const { conf, cid } = props;
         return (
@@ -180,19 +174,22 @@ const Performance = (props: any) => {
     const ItemFunc: React.FC<any> = () => {
         return (
             <TestItemFunc>
-                {
-                    btn && <Space>
-                        <Typography.Text>筛选: </Typography.Text>
-                        <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="all">全部</Option>
-                            <Option value="invalid">无效</Option>
-                            <Option value="volatility">波动大（包括上升、下降）</Option>
-                            <Option value="increase">上升</Option>
-                            <Option value="decline">下降</Option>
-                            <Option value="normal">正常</Option>
-                        </Select>
-                    </Space>
-                }
+                <Space>
+                    <Button onClick={switchMode}>{btnName}</Button>
+                    {
+                        btn && <Space>
+                            <Typography.Text>筛选: </Typography.Text>
+                            <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
+                                <Option value="all">全部</Option>
+                                <Option value="invalid">无效</Option>
+                                <Option value="volatility">波动大（包括上升、下降）</Option>
+                                <Option value="increase">上升</Option>
+                                <Option value="decline">下降</Option>
+                                <Option value="normal">正常</Option>
+                            </Select>
+                        </Space>
+                    }
+                </Space>
             </TestItemFunc>
         )
     }
@@ -268,209 +265,208 @@ const Performance = (props: any) => {
             objList.push((conf.conf_compare_data || conf.compare_conf_list)[i])
         })
         objList.splice(baseIndex, 0, objConf)
-        
         let obj = conf.conf_compare_data || conf.compare_conf_list
         let arr = isOldReport ? objList : obj
         return (
             arr.map((item: any, idx: number) => (
-                <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                _.isUndefined(item) ? <></>
+                :<PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                     <JumpResult ws_id={wsId} job_id={item?.obj_id || item}/>
                 </PrefDataText>
             ))
         )
     }
-    
     // suite遍历
     const RenderSuite = () => {
         return (
-            <>
-                {
-                    Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
-                        <TestSuite key={id}>
-                            <SuiteName>
-                                {suite.suite_name}
-                                <Popconfirm
-                                    title='确认要删除吗！'
-                                    onConfirm={() => handleDelete('suite', suite, id)}
-                                    cancelText="取消"
-                                    okText="删除"
-                                >
-                                    {btnState && <CloseBtn />}
-                                </Popconfirm>
-                                <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
-                            </SuiteName>
-                            <TestConfWarpper>
-                                {!domainResult.is_default &&
-                                    <Configuration>
-                                        {domainResult.perf_conf.need_test_suite_description &&
-                                            <SigleWrapper>
-                                                <TestTitle>测试工具</TestTitle>
-                                                <TestContent>
-                                                    <CodeViewer code={suite.tool || suite.test_suite_description} />
-                                                </TestContent>
-                                            </SigleWrapper>
-                                        }
-                                        {domainResult.perf_conf.need_test_env &&
-                                            <SigleWrapper>
-                                                <TestTitle>测试环境</TestTitle>
-                                                <TestContent>
-                                                    <PerfTextArea
-                                                        name={suite.test_env}
-                                                        field="test_env"
-                                                        suite={suite}
-                                                        dataSource={dataSource}
-                                                        setDataSource={setDataSource}
-                                                        btn={btnState}
-                                                    />
-                                                </TestContent>
-                                            </SigleWrapper>
-                                        }
-                                        {domainResult.perf_conf.need_test_description &&
-                                            <SigleWrapper>
-                                                <TestTitle>测试说明</TestTitle>
-                                                <TestContent>
-                                                    <PerfTextArea
-                                                        name={suite.test_description}
-                                                        field="test_description"
-                                                        suite={suite}
-                                                        dataSource={dataSource}
-                                                        setDataSource={setDataSource}
-                                                        btn={btnState}
-                                                    />
-                                                </TestContent>
-                                            </SigleWrapper>
-                                        }
-                                        {domainResult.perf_conf.need_test_conclusion &&
-                                            <SigleWrapper>
-                                                <TestTitle>测试结论</TestTitle>
-                                                <TestContent>
-                                                    <PerfTextArea
-                                                        name={suite.test_conclusion}
-                                                        field="test_conclusion"
-                                                        suite={suite}
-                                                        dataSource={dataSource}
-                                                        setDataSource={setDataSource}
-                                                        btn={btnState}
-                                                    />
-                                                </TestContent>
-                                            </SigleWrapper>
-                                        }
-                                    </Configuration>
+            Array.isArray(perData.list) && !!perData.list.length ? perData.list.map((suite: any, id: number) => (
+                <TestSuite key={id}>
+                    <SuiteName>
+                        {suite.suite_name}
+                        <Popconfirm
+                            title='确认要删除吗！'
+                            onConfirm={() => handleDelete('suite', suite, id)}
+                            cancelText="取消"
+                            okText="删除"
+                        >
+                            {btnState && <CloseBtn />}
+                        </Popconfirm>
+                        <ChartTypeChild btn={btn} isReport={true} obj={perData} suiteId={suite.suite_id} setPerData={setPerData} />
+                    </SuiteName>
+                    <TestConfWarpper>
+                        {!domainResult.is_default &&
+                            <Configuration>
+                                {/* {domainResult.perf_conf.need_test_suite_description &&
+                                    <SigleWrapper>
+                                        <TestTitle>测试工具</TestTitle>
+                                        <TestContent>
+                                            <CodeViewer code={suite.tool || suite.test_suite_description} />
+                                        </TestContent>
+                                    </SigleWrapper>
+                                } */}
+                                {domainResult.perf_conf.need_test_env &&
+                                    <SigleWrapper>
+                                        <TestTitle>环境要求</TestTitle>
+                                        <TestContent>
+                                            <PerfTextArea
+                                                name={suite.test_env}
+                                                field="test_env"
+                                                suite={suite}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
+                                                btn={btnState}
+                                            />
+                                        </TestContent>
+                                    </SigleWrapper>
                                 }
-                                {
-                                    btn ?
-                                        (suite.conf_list && !!suite.conf_list.length) ? suite.conf_list.map((conf: any, cid: number) => (
-                                            !!conf.metric_list.length &&
-                                            <div key={cid}>
-                                                <TestConf>
-                                                    <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Test Conf / 指标 </ConfTitle>
-                                                    {
-                                                        allGroupData?.map((cont: any, i: number) => (
-                                                            <ConfData gLen={groupLen} key={i} btnState={btnState}>
-                                                                {
-                                                                    i !== baselineGroupIndex ?
-                                                                        <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', justifyContent: 'space-between' }}>
-                                                                            <span style={{ display: 'inline-block', color: 'rgba(0,0,0,0.45)' }}>{cont.tag}</span>
-                                                                            <RightResult>
-                                                                                对比结果/跟踪结果
-                                                                                <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
-                                                                                    {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
-                                                                                </span>
-                                                                                <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
-                                                                                    title={
-                                                                                        <span style={{ color: 'rgba(0,0,0,0.65)' }}>性能测试与BaseGroup差值比例越大差异化越大。<br />规则如下：<br />下降&gt;上升&gt;波动不大&gt;无效</span>
-                                                                                    }>
-                                                                                    <QuestionCircleOutlined />
-                                                                                </Tooltip>
-                                                                            </RightResult>
-                                                                        </div>
-                                                                        : <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{cont.tag}</Typography.Text>
-                                                                }
-                                                            </ConfData>
-                                                        ))
-                                                    }
-                                                </TestConf>
-                                                <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
-                                                    <PrefData>
+                                {domainResult.perf_conf.need_test_description &&
+                                    <SigleWrapper>
+                                        <TestTitle>测试说明</TestTitle>
+                                        <TestContent>
+                                            <PerfTextArea
+                                                name={suite.test_description}
+                                                field="test_description"
+                                                suite={suite}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
+                                                btn={btnState}
+                                            />
+                                        </TestContent>
+                                    </SigleWrapper>
+                                }
+                                {domainResult.perf_conf.need_test_conclusion &&
+                                    <SigleWrapper>
+                                        <TestTitle>测试结论</TestTitle>
+                                        <TestContent>
+                                            <PerfTextArea
+                                                name={suite.test_conclusion}
+                                                field="test_conclusion"
+                                                suite={suite}
+                                                dataSource={dataSource}
+                                                setDataSource={setDataSource}
+                                                btn={btnState}
+                                            />
+                                        </TestContent>
+                                    </SigleWrapper>
+                                }
+                            </Configuration>
+                        }
+                        {
+                            btn ?
+                                (suite.conf_list && !!suite.conf_list.length) ? suite.conf_list.map((conf: any, cid: number) => (
+                                    <div key={cid}>
+                                        <TestConf>
+                                            <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Test Conf / 指标 </ConfTitle>
+                                            {
+                                                allGroupData?.map((cont: any, i: number) => (
+                                                    <ConfData gLen={groupLen} key={i} btnState={btnState}>
+                                                        {
+                                                            i !== baselineGroupIndex ?
+                                                                <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', justifyContent: 'space-between' }}>
+                                                                    <span style={{ display: 'inline-block', color: 'rgba(0,0,0,0.45)' }}>结果</span>
+                                                                    <RightResult>
+                                                                        对比结果/跟踪结果
+                                                                        <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                                                            {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
+                                                                        </span>
+                                                                        <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
+                                                                            title={
+                                                                                <span style={{ color: 'rgba(0,0,0,0.65)' }}>性能测试与BaseGroup差值比例越大差异化越大。<br />规则如下：<br />下降&gt;上升&gt;波动不大&gt;无效</span>
+                                                                            }>
+                                                                            <QuestionCircleOutlined />
+                                                                        </Tooltip>
+                                                                    </RightResult>
+                                                                </div>
+                                                                : <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{allGroupData.length > 1 ? '基准' : '结果'}</Typography.Text>
+                                                        }
+                                                    </ConfData>
+                                                ))
+                                            }
+                                        </TestConf>
+                                        <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
+                                            <PrefData>
+                                                <DelBtn conf={conf} cid={cid} />
+                                                <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
+                                                {renderShare(conf)}
+                                            </PrefData>
+                                            {
+                                                conf.metric_list.map((metric: any, idx: number) => (
+                                                    <PrefMetric key={idx}>
                                                         <DelBtn conf={conf} cid={cid} />
-                                                        <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                        {renderShare(conf)}
-                                                    </PrefData>
-                                                    {
-                                                        conf.metric_list.map((metric: any, idx: number) => (
-                                                            <PrefMetric key={idx}>
-                                                                <DelBtn conf={conf} cid={cid} />
-                                                                <MetricTitle gLen={groupLen}>
+                                                        {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
+                                                        <MetricTitle gLen={groupLen}>
+                                                            <Row justify="space-between">
+                                                                <Col span={16} >
+                                                                    <Row justify="start">
+                                                                        <EllipsisPulic
+                                                                            title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
+                                                                        // width={210}
+                                                                        >
+                                                                            <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
+                                                                                {metric.metric}{metric.unit && <span>({metric.unit})</span>}
+                                                                            </Typography.Text>
+                                                                        </EllipsisPulic>
+                                                                    </Row>
+                                                                </Col>
+                                                                <Col span={8}>
+                                                                    <Row justify="end">
+                                                                        <RightResult>({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})</RightResult>
+                                                                    </Row>
+                                                                </Col>
+                                                            </Row>
+                                                        </MetricTitle>
+                                                        {
+                                                            Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
+                                                            metric.compare_data.map((item: any, i: number) => (
+                                                                <MetricText gLen={groupLen} btnState={btnState} key={i}>
                                                                     <Row justify="space-between">
-                                                                        <Col span={16} >
+                                                                        <Col span={item && item.compare_result ? 12 : 20}>
                                                                             <Row justify="start">
                                                                                 <EllipsisPulic
-                                                                                    title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
-                                                                                // width={210}
+                                                                                    title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
+                                                                                    width={210}
                                                                                 >
-                                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
-                                                                                        {metric.metric}{metric.unit && <span>({metric.unit})</span>}
+                                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
+                                                                                        {
+                                                                                            !item || JSON.stringify(item) === '{}'
+                                                                                                ? '-'
+                                                                                                : item.test_value && `${item.test_value}±${item.cv_value}`
+                                                                                        }
                                                                                     </Typography.Text>
                                                                                 </EllipsisPulic>
                                                                             </Row>
                                                                         </Col>
-                                                                        <Col span={8}>
-                                                                            <Row justify="end">
-                                                                                <RightResult>({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})</RightResult>
-                                                                            </Row>
-                                                                        </Col>
+                                                                        {
+                                                                            item && item.compare_result &&
+                                                                            <Col span={12}>
+                                                                                <Row justify="end">
+                                                                                    <RightResult>
+                                                                                        <span className={handleColor(item.compare_result)}>
+                                                                                            {item.compare_value || '-'}
+                                                                                        </span>
+                                                                                        <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 9px ' }}>
+                                                                                            {handleIcon(item.compare_result)}
+                                                                                        </span>
+                                                                                    </RightResult>
+                                                                                </Row>
+                                                                            </Col>
+                                                                        }
                                                                     </Row>
-                                                                </MetricTitle>
-                                                                {
-                                                                    Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
-                                                                    metric.compare_data.map((item: any, i: number) => (
-                                                                        <MetricText gLen={groupLen} btnState={btnState} key={i}>
-                                                                            <Row justify="space-between">
-                                                                                <Col span={item && item.compare_result ? 12 : 20}>
-                                                                                    <Row justify="start">
-                                                                                        <EllipsisPulic
-                                                                                            title={conversion(item)}
-                                                                                            width={210}
-                                                                                        >
-                                                                                            <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
-                                                                                                {conversion(item)}
-                                                                                            </Typography.Text>
-                                                                                        </EllipsisPulic>
-                                                                                    </Row>
-                                                                                </Col>
-                                                                                {
-                                                                                    item && item.compare_result &&
-                                                                                    <Col span={12}>
-                                                                                        <Row justify="end">
-                                                                                            <RightResult>
-                                                                                                <span className={handleColor(item.compare_result)}>
-                                                                                                    {item.compare_value || '-'}
-                                                                                                </span>
-                                                                                                <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 9px ' }}>
-                                                                                                    {handleIcon(item.compare_result)}
-                                                                                                </span>
-                                                                                            </RightResult>
-                                                                                        </Row>
-                                                                                    </Col>
-                                                                                }
-                                                                            </Row>
-                                                                        </MetricText>
-                                                                    ))
-                                                                }
-                                                            </PrefMetric>
-                                                        ))
-                                                    }
-                                                </div>
-                                            </div> 
-                                        )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                        :
-                                        <ChartsIndex {...suite} envData={environmentResult} base_index={baseIndex}/>
-                                }
-                            </TestConfWarpper>
-                        </TestSuite >
-                    )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                }
-            </>
+                                                                </MetricText>
+                                                            ))
+                                                        }
+                                                    </PrefMetric>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                                :
+                                <ChartsIndex {...suite} envData={environmentResult} />
+                        }
+                    </TestConfWarpper>
+                </TestSuite >
+            )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )
     }
 

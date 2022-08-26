@@ -1,6 +1,7 @@
 export interface FormProps {
     contrl : any ,
     disabled? : boolean,
+    envErrorFlag?: boolean,
     callBackProjectId?:any,
     project_id?:number,
     ws_id ? : string

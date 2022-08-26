@@ -36,7 +36,7 @@ import _ from 'lodash';
 const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
-    const { child, name, id, subObj, onDelete, dataSource, setDataSource } = props
+    const { child, name, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
@@ -129,15 +129,25 @@ const FuncDataIndex: React.FC<any> = (props) => {
     useEffect(() => {
         setBtnName(btn ? '收起所有' : '展开所有')
         setExpandKeys([])
+        let ExpandObj:any = []
+        dataSource?.map((item: any) => {
+            if (item.is_group) {
+                item.list.map((child: any) => {
+                    ExpandObj.push(child.list)
+                })
+            } else {
+                ExpandObj.push(item.list)
+            }
+        })
         setExpandKeys(
             btn ?
-                subObj?.reduce(
+                ExpandObj?.reduce(
                     (p: any, c: any) => p.concat(c.conf_list.map((item: any) => item.conf_id))
                     , [])
                 :
                 []
         )
-    }, [btn])
+    }, [btn,dataSource])
 
     const handleDelete = (name: string, row: any, rowKey: any) => {
         if (name == 'suite') {
@@ -178,6 +188,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             <Option value="All">全部</Option>
                             <Option value="Pass">成功</Option>
                             <Option value="Fail">失败</Option>
+                            <Option value="Warn">警告</Option>
                             <Option value="Skip">跳过</Option>
                         </Select>
                     </Space>
@@ -214,21 +225,18 @@ const FuncDataIndex: React.FC<any> = (props) => {
         else
             setExpandKeys(expandKeys.concat(id))
     }
-
     // 单个展开
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
-        let subCaseList = _.cloneDeep(sub_case_list) 
-        
-        // console.log('subCaseList',subCaseList)
+        let subCaseList =  _.cloneDeep(sub_case_list) 
         return (
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                    //    item.compare_data.splice(baseIndex, 0, item.result)
-                        const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
-                        len.forEach((i) => item.compare_data.push('-'))
+                        if(isOldReport){
+                            item.compare_data.splice(baseIndex, 0, item.result)
+                        }
                         return (
                             <TestSubCase key={idx}>
                                 <DelBtnEmpty />
@@ -299,11 +307,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     {
                         suite.conf_list.map((conf: any, cid: number) => {
                             const expand = expandKeys.includes(conf.conf_id)
-                            let data_list:any = []
+                            let metricList: any = []
                             if(isOldReport){
                                 const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
                                 let conf_data = conf.conf_compare_data || conf.compare_conf_list
-                                let metricList: any = []
                                 for (let i = 0; i < allGroupData.length; i++) {
                                     if (i === baseIndex)
                                         metricList.push({
@@ -313,8 +320,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             obj_id,
                                         })
                                     !!conf_data.length ?
-                                        conf_data?.map((item: any, idx: number) => {
-                                            if (item !== null) {
+                                        conf_data.map((item: any, idx: number) => {
+                                            if (item) {
                                                 const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
                                                 idx === i && metricList.push({
                                                     all_case,
@@ -338,7 +345,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                         })
                                 }
                             }
-                            data_list = conf.conf_compare_data || conf.compare_conf_list
+                            let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
                             return (
                                 <div key={cid}>
                                     <TestCase expand={expand}>
@@ -353,7 +360,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             </EllipsisPulic>
                                         </CaseTitle>
                                         {
-                                            data_list?.map((item: any, idx: number) => {
+                                            dataList?.map((item: any, idx: number) => {
                                                 return (
                                                     <CaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                         <Space size={16}>
@@ -361,7 +368,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                         </Space>
-                                                        {item !== null &&
+                                                        {item &&
                                                             <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }}/>
                                                         }
                                                     </CaseText>

@@ -52,12 +52,14 @@ const Description = styled.div`
     margin-top:8px;
 `
 
-const SettingRow: React.FC<any> = ({ show, title, id }) => (
+const SettingRow: React.FC<any> = ({ show, title, id, desc }) => (
     show ?
         <CustomRow id={`preview_${id}`}>
             <Space direction="vertical">
                 <Typography.Text strong><span className="line"></span>{title}</Typography.Text>
-                <span>此处内容需生成报告后手动填写</span>
+                <span style={{ whiteSpace:'pre-wrap'}}>
+                    {desc || "此处内容需生成报告后手动填写"}
+                </span>
             </Space>
         </CustomRow> :
         <></>
@@ -226,9 +228,24 @@ const TemplatePreview = (props: any) => {
                             </Description>
                         </CustomRow>
 
-                        <SettingRow title="测试背景" id={'preview_need_test_background'} show={dataSource?.need_test_background} />
-                        <SettingRow title="测试方法" id={'preview_need_test_method'} show={dataSource?.need_test_method} />
-                        <SettingRow title="测试结论" id={'preview_need_test_conclusion'} show={dataSource?.need_test_conclusion} />
+                        {
+                            [
+                                ["测试背景", "need_test_background", "background_desc"],
+                                ["测试方法", "need_test_method", "test_method_desc"],
+                                ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
+                            ].map((item: any) => {
+                                const [title, field, desc] = item
+                                return (
+                                    <SettingRow
+                                        key={field}
+                                        title={title}
+                                        id={field}
+                                        show={dataSource[field]}
+                                        desc={dataSource[desc]}
+                                    />
+                                )
+                            })
+                        }
 
                         {
                             dataSource.need_test_summary &&
@@ -236,6 +253,7 @@ const TemplatePreview = (props: any) => {
                         }
 
                         <TestEnv
+                            env_description_desc={dataSource?.env_description_desc}
                             need_test_env={dataSource?.need_test_env}
                             need_env_description={dataSource?.need_env_description}
                         />

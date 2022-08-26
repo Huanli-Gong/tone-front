@@ -65,11 +65,8 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
-    const { btnState, obj, setObj, envData, domainResult, groupLen } = useContext(ReportContext)
+    const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport } = useContext(ReportContext)
     const testDataRef = useRef(null)
-    const [btn, setBtn] = useState<boolean>(true)   
-    const [btnName, setBtnName] = useState<string>('')
-    const [dataSource, setDataSource] = useState<any>([])
     const groupRowRef = useRef<any>(null)
     const data = useMemo(() => {
         if (Array.isArray(domainResult.perf_item)) {
@@ -77,19 +74,7 @@ const ReportTestPref = () => {
         }
         return []
     }, [domainResult])
-
-    useEffect(()=> {
-        setBtn(domainResult.perf_conf?.show_type === 'list')
-    },[ domainResult ])
-    
-    // 图表、列表模式切换
-    const switchMode = () => {
-        setBtn(!btn)
-    }
-
-    useEffect(() => {
-        setBtnName(btn ? '图表模式' : '列表模式')
-    }, [btn])
+    const [dataSource, setDataSource] = useState<any>([])
 
     useEffect(() => {
         setDataSource(data)
@@ -121,10 +106,7 @@ const ReportTestPref = () => {
             setDataSource(dataSource.filter((item: any) => item.name !== domain && item.rowKey !== rowKey))
         }
     }
-    const transField = (conf: any, key: string) => {
-        const { conf_source } = conf
-        return conf[key] ? conf[key] : conf_source ? conf_source[key] : ''
-    }
+    
     const simplify = (child: any, idx: number, listId: number, name: string) => {
         let suite_list: any = []
         child.list?.map((suite: any, suiteId: number) => {
@@ -138,21 +120,17 @@ const ReportTestPref = () => {
             } = suite
             let conf_list: any = []
             suite.conf_list.map((conf: any, index: number) => {
+                let baseJobList = isOldReport ? [conf?.obj_id || conf.conf_source?.obj_id] : []
+                let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => i?.obj_id || '')
                 conf_list.push({
                     conf_id: conf.conf_id,
                     conf_name: conf.conf_name,
-                    conf_source: {
-                        is_job: transField(conf, 'is_job'),
-                        obj_id: transField(conf, 'obj_id'),
-                    },
-                    compare_conf_list: (conf.conf_compare_data || conf.compare_conf_list),
-                    metric_list: conf.metric_list
+                    job_list: baseJobList.concat(compareJobList)
                 })
             })
             suite_list.push({
                 suite_id,
                 suite_name,
-                // show_type: !switchReport ? 0 : describe?.show_type == 'list' ? 0 : 1,
                 test_suite_description,
                 test_env,
                 test_description,
@@ -207,25 +185,16 @@ const ReportTestPref = () => {
                     <Identify envData={envData} group={groupLen} isData={true} />
                 </Group>
             </Summary>
-            {
-                btn && <GroupBarWrapper
-                    groupRowRef={groupRowRef}
-                    parentDom={testDataRef}
-                    envData={envData}
-                    groupLen={groupLen}
-                />
-            }
+            <GroupBarWrapper
+                groupRowRef={groupRowRef}
+                parentDom={testDataRef}
+                envData={envData}
+                groupLen={groupLen}
+            />
             {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
-                    <Row align="middle">
-                        <Col span={12}>
-                            <TestDataTitle>性能测试</TestDataTitle>
-                        </Col>
-                        <Col span={12} style={{ textAlign: 'right' }}>
-                            <Button onClick={switchMode}>{btnName}</Button>
-                        </Col>
-                    </Row>
+                    <TestDataTitle>性能测试</TestDataTitle>
                     <TestWrapper id="perf_item" className="position_mark">
                     {
                         Array.isArray(dataSource) && !!dataSource.length ?
@@ -260,7 +229,6 @@ const ReportTestPref = () => {
                                                             <div key={id}>
                                                                 <Performance
                                                                     child={child}
-                                                                    btn={btn}
                                                                     name="group"
                                                                     id={child.rowKey}
                                                                     dataSource={dataSource}
@@ -276,7 +244,6 @@ const ReportTestPref = () => {
                                             :
                                             <Performance
                                                 child={item}
-                                                btn={btn}
                                                 name="item"
                                                 id={item.rowKey}
                                                 dataSource={dataSource}

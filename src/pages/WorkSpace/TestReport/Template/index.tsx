@@ -8,12 +8,12 @@ import SuiteSelectDrawer from './components/SuiteSelectDrawer'
 import { createReportTemplate, queryReportTemplateDetails, updateReportTemplate } from './services'
 import produce from 'immer'
 import { requestCodeMessage } from '@/utils/utils'
-import { ReportTemplateContext } from './Provider'
+import { ReportTemplateContext, useProvider } from './Provider'
 import Catalog from './components/TemplateCatalog'
 import TemplateBreadcrumb from './components/TemplateBreadcrumb'
 
 import {
-    ProjectTitle, PeddingRow, TemplateBar, ReportBody,
+    ProjectTitle, TemplateBar, ReportBody,
     ReportBodyContainer, ReportIssue, ReportTemplate
 } from './styled'
 
@@ -29,6 +29,287 @@ const defaultConf = {
     need_test_conclusion: true,
     show_type: "list",
     test_data: false,
+}
+
+const RenderTestBody: React.FC<any> = memo(
+    ({ testType }) => {
+        const { dataSource, setDataSource, contrl } = useProvider()
+
+        let bodyProps: any = { name: '性能测试数据', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
+        if (testType !== 'performance')
+            bodyProps = { name: '功能测试数据', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
+
+        const handleAddTestItem = (name: string) => {
+            setDataSource(
+                produce(dataSource, (draftState: any) => {
+                    const rowkey: any = `${dataSource[name].length}`
+                    draftState[name] = dataSource[name].concat({
+                        name: `测试项${rowkey - 0 + 1}`,
+                        rowkey,
+                        list: [{
+                            test_suite_id: null,
+                            suite_show_name: "suite",
+                            case_source: [],
+                            rowkey: `${rowkey}-1`
+                        }]
+                    })
+                })
+            )
+        }
+
+        const handleAddTestGroup = (name: string) => {
+            setDataSource(
+                produce(dataSource, (draftState: any) => {
+                    const rowkey: any = `${dataSource[name].length}`
+                    draftState[name] = dataSource[name].concat({
+                        name: `测试组${rowkey - 0 + 1}`,
+                        list: [],
+                        is_group: true,
+                        rowkey
+                    })
+                })
+            )
+        }
+
+        const handeleCheckboxChange = (name: string, val: boolean | string) => {
+            setDataSource(
+                produce(dataSource, (draftState: any) => {
+                    draftState[name] = val
+                })
+            )
+        }
+
+        const handleConfItemChange = (val: any, name: string, field: string) => {
+            setDataSource(
+                produce(
+                    dataSource,
+                    (draftState: any) => {
+                        const params = {
+                            ...dataSource[field],
+                        }
+                        params[name] = val
+                        draftState[field] = params
+                    }
+                )
+            )
+        }
+
+        return (
+            <Card id={bodyProps.dataItem} style={{ marginTop: 20 }} bodyStyle={{ padding: '12px 20px' }}>
+                <Row >
+                    <Checkbox
+                        checked={dataSource[bodyProps.testRadioName]}
+                        disabled={!contrl}
+                        onChange={({ target }: any) => handeleCheckboxChange(bodyProps.testRadioName, target.checked)}
+                    >
+                        <Typography.Text strong style={{ fontSize: 16 }}>{bodyProps.name}</Typography.Text>
+                    </Checkbox>
+                </Row>
+                {
+                    dataSource[bodyProps.testRadioName] &&
+                    <Row style={{ paddingLeft: 24 }}>
+                        {
+                            bodyProps.name !== '功能测试数据' &&
+                            <Col
+                                span={24}
+                                style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
+                            >
+                                <Space
+                                    direction="vertical"
+                                    style={{ width: "100%" }}
+                                >
+                                    <Space>
+                                        <Typography.Text>基础信息</Typography.Text>
+                                        {/* <Tooltip
+                                            placement="bottomLeft"
+                                            color="#fff"
+                                            overlayInnerStyle={{ width: 415, color: '#000' }}
+                                            arrowPointAtCenter
+                                            title={
+                                                <>
+                                                    【测试工具】将会自动从Testsuite中获取<br />
+                                                    【测试环境】【测试说明】【测试结论】需生成报告后手动填写
+                                                </>
+                                            }
+                                        >
+                                            <QuestionCircleOutlined />
+                                        </Tooltip> */}
+                                    </Space>
+                                    <Space
+                                        direction="horizontal"
+                                        style={{ width: "100%" }}
+                                    >
+                                        {
+                                            [
+                                                // ["测试工具", "need_test_suite_description"],
+                                                ["环境要求", "need_test_env", "test_env_desc"],
+                                                ["测试说明", "need_test_description", "test_description_desc"],
+                                                ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
+                                            ].map((item: any) => {
+                                                const [title, name, text] = item
+                                                return (
+                                                    <ConfigCheckbox
+                                                        key={name}
+                                                        field={bodyProps.conf}
+                                                        title={title}
+                                                        name={name}
+                                                        text={text}
+                                                    />
+                                                )
+                                            })
+                                        }
+                                    </Space>
+                                    <Row >
+                                        <Col span={2}>数据视图样式</Col>
+                                        <Col span={22}>
+                                            <Radio.Group
+                                                disabled={!contrl}
+                                                value={dataSource[bodyProps.conf].show_type}
+                                                onChange={({ target }) => handleConfItemChange(target.value, 'show_type', bodyProps.conf)}
+                                            >
+                                                <Radio value={'list'}>列表视图</Radio>
+                                                <Radio value={'chart'}>图表视图</Radio>
+                                            </Radio.Group>
+                                        </Col>
+                                    </Row>
+                                </Space>
+                            </Col>
+                        }
+                        <Col span={24}>
+                            {
+                                dataSource[bodyProps.dataItem].map(
+                                    (item: any, idx: number) => (
+                                        item.is_group ?
+                                            <TestGroup key={idx}  {...bodyProps} source={item} /> :
+                                            <TestItem key={idx}  {...bodyProps} source={item} />
+                                    )
+                                )
+                            }
+                        </Col>
+                        <Divider style={{ margin: '12px 0' }} />
+                        <Col span={24}>
+                            <span onClick={() => handleAddTestItem(bodyProps.dataItem)}>
+                                <Typography.Link >
+                                    <Space>
+                                        <PlusOutlined />
+                                        测试项
+                                    </Space>
+                                </Typography.Link>
+                            </span>
+                            <Divider type="vertical" />
+                            <span onClick={() => handleAddTestGroup(bodyProps.dataItem)}>
+                                <Typography.Link >
+                                    <Space>
+                                        <PlusOutlined />
+                                        测试组
+                                    </Space>
+                                </Typography.Link>
+                            </span>
+                        </Col>
+                    </Row>
+                }
+            </Card>
+        )
+    }
+)
+
+const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
+    const { dataSource, setDataSource, contrl } = useProvider()
+
+    const handleConfItemChange = (val: any, name: string, field: string) => {
+        setDataSource(
+            produce(
+                dataSource,
+                (draftState: any) => {
+                    const params = {
+                        ...dataSource[field],
+                    }
+                    params[name] = val
+                    draftState[field] = params
+                }
+            )
+        )
+    }
+
+    return (
+        <Checkbox
+            disabled={!contrl}
+            onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
+            checked={dataSource[field][name]}
+        >
+            {title}
+        </Checkbox>
+        // <Space
+        //     direction="vertical"
+        //     style={{ width: "100%" }}
+        // >
+        //     <Checkbox
+        //         disabled={!contrl}
+        //         onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
+        //         checked={dataSource[field][name]}
+        //     >
+        //         {title}
+        //     </Checkbox>
+        //     {
+        //         text &&
+        //         <Input.TextArea
+        //             allowClear
+        //             placeholder={`请输入${title}`}
+        //             value={dataSource[field][text]}
+        //             autoSize={{ minRows: 3, maxRows: 3 }}
+        //             disabled={!dataSource[field][name]}
+        //             onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
+        //                 console.log(field)
+        //                 handleConfItemChange(target.value, text, field)
+        //             }}
+        //         />
+        //     }
+        // </Space>
+    )
+}
+
+
+const RenderCheckbox: React.FC<any> = (props) => {
+    const { name, title, desc } = props
+    const { dataSource, setDataSource, contrl } = useProvider()
+
+    const handeleCheckboxChange = (name: string, val: boolean | string) => {
+        setDataSource(
+            produce(dataSource, (draftState: any) => {
+                draftState[name] = val
+            })
+        )
+    }
+
+    return (
+        <Space
+            direction="vertical"
+            style={{ width: "100%", background: "#fff", padding: 20 }}
+        >
+            <Checkbox
+                {...props}
+                id={name}
+                disabled={!contrl}
+                onChange={({ target }) => handeleCheckboxChange(name, target.checked)}
+                checked={dataSource[name]}
+            >
+                {title}
+            </Checkbox>
+            {
+                desc &&
+                <Input.TextArea
+                    placeholder={`请输入${title}`}
+                    allowClear
+                    disabled={!dataSource[name]}
+                    value={dataSource[desc]}
+                    onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        handeleCheckboxChange(desc, target.value)
+                    }}
+                    autoSize={{ minRows: 3, maxRows: 6 }}
+                />
+            }
+        </Space>
+    )
 }
 
 const TemplatePage = (props: any) => {
@@ -94,7 +375,10 @@ const TemplatePage = (props: any) => {
     const editPageSetData = async () => {
         setLoading(true)
         const { data } = await queryReportTemplateDetails({ ws_id, id: temp_id })
-        const { perf_item, func_item, perf_conf, func_conf } = data
+
+        const {
+            perf_item, func_item, perf_conf, func_conf,
+        } = data
         setContrl(access.WsMemberOperateSelf(data.creator))
 
         const params: any = {
@@ -115,29 +399,6 @@ const TemplatePage = (props: any) => {
         else
             document.title = `创建报告模版 - T-One`
     }, [])
-
-    const handeleCheckboxChange = (name: string, val: boolean) => {
-        setDataSource(
-            produce(dataSource, (draftState: any) => {
-                draftState[name] = val
-            })
-        )
-    }
-
-    const RenderCheckbox: React.FC<any> = (props) => {
-        const { name, title } = props
-        return (
-            <Checkbox
-                {...props}
-                id={name}
-                disabled={!contrl}
-                onChange={({ target }) => handeleCheckboxChange(name, target.checked)}
-                checked={dataSource[name]}
-            >
-                {title}
-            </Checkbox>
-        )
-    }
 
     const filterFieldData = (data: any, rowkey: string, name: string, field: any) => {
         return produce(
@@ -310,43 +571,8 @@ const TemplatePage = (props: any) => {
         )
     }
 
-    const handleAddTestItem = (name: string) => {
-        setDataSource(
-            produce(dataSource, (draftState: any) => {
-                const rowkey: any = `${dataSource[name].length}`
-                draftState[name] = dataSource[name].concat({
-                    name: `测试项${rowkey - 0 + 1}`,
-                    rowkey,
-                    list: [{
-                        test_suite_id: null,
-                        suite_show_name: "suite",
-                        case_source: [],
-                        rowkey: `${rowkey}-1`
-                    }]
-                })
-            })
-        )
-    }
-
-    const handleAddTestGroup = (name: string) => {
-        setDataSource(
-            produce(dataSource, (draftState: any) => {
-                const rowkey: any = `${dataSource[name].length}`
-                draftState[name] = dataSource[name].concat({
-                    name: `测试组${rowkey - 0 + 1}`,
-                    list: [],
-                    is_group: true,
-                    rowkey
-                })
-            })
-        )
-    }
 
     const handleSelectSuiteOk = ({ result, rowkey, testType }: any) => handleFieldChange(result, 'list', rowkey, testType)
-
-    const hanldePreview = () => {
-
-    }
 
     const checkName = (data: any) => {
         const obj = {}
@@ -407,138 +633,6 @@ const TemplatePage = (props: any) => {
         }
         setLoading(false)
     }
-
-    const handleConfItemChange = (val: any, name: string, field: string) => {
-        setDataSource(
-            produce(
-                dataSource,
-                (draftState: any) => {
-                    const params = {
-                        ...dataSource[field],
-                    }
-                    params[name] = val
-                    draftState[field] = params
-                }
-            )
-        )
-    }
-
-    const ConfigCheckbox: React.FC<any> = ({ field, name, title }) => (
-        <Checkbox
-            disabled={!contrl}
-            onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
-            checked={dataSource[field][name]}
-        >
-            {title}
-        </Checkbox>
-    )
-
-    const RenderTestBody: React.FC<any> = memo(
-        ({ testType }) => {
-            let bodyProps: any = { name: '性能测试数据', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
-            if (testType !== 'performance')
-                bodyProps = { name: '功能测试数据', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
-
-            return (
-                <Card id={bodyProps.dataItem} style={{ marginTop: 20 }} bodyStyle={{ padding: '12px 20px' }}>
-                    <Row >
-                        <Checkbox
-                            checked={dataSource[bodyProps.testRadioName]}
-                            disabled={!contrl}
-                            onChange={({ target }: any) => handeleCheckboxChange(bodyProps.testRadioName, target.checked)}
-                        >
-                            <Typography.Text strong style={{ fontSize: 16 }}>{bodyProps.name}</Typography.Text>
-                        </Checkbox>
-                    </Row>
-                    {
-                        dataSource[bodyProps.testRadioName] &&
-                        <Row style={{ paddingLeft: 24 }}>
-                            {
-                                bodyProps.name !== '功能测试数据' &&
-                                <Col
-                                    span={24}
-                                    style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
-                                >
-
-                                    <Row style={{ marginBottom: 12, }} gutter={10}>
-                                        <Col span={2} style={{ textAlign: 'right' }}>
-                                            <Space>
-                                                <Typography.Text>基础信息</Typography.Text>
-                                                <Tooltip
-                                                    placement="bottomLeft"
-                                                    color="#fff"
-                                                    overlayInnerStyle={{ width: 415, color: '#000' }}
-                                                    arrowPointAtCenter
-                                                    title={
-                                                        <>
-                                                            【测试工具】将会自动从Testsuite中获取<br />
-                                                            【测试环境】【测试说明】【测试结论】需生成报告后手动填写
-                                                        </>
-                                                    }
-                                                >
-                                                    <QuestionCircleOutlined />
-                                                </Tooltip>
-                                            </Space>
-                                        </Col>
-                                        <Col span={22}>
-                                            <ConfigCheckbox field={bodyProps.conf} title={'测试工具'} name={'need_test_suite_description'} />
-                                            <ConfigCheckbox field={bodyProps.conf} title={'测试环境'} name={'need_test_env'} />
-                                            <ConfigCheckbox field={bodyProps.conf} title={'测试说明'} name={'need_test_description'} />
-                                            <ConfigCheckbox field={bodyProps.conf} title={'测试结论'} name={'need_test_conclusion'} />
-                                        </Col>
-                                    </Row>
-                                    <Row >
-                                        <Col span={2}>数据视图样式</Col>
-                                        <Col span={22}>
-                                            <Radio.Group
-                                                disabled={!contrl}
-                                                value={dataSource[bodyProps.conf].show_type}
-                                                onChange={({ target }) => handleConfItemChange(target.value, 'show_type', bodyProps.conf)}
-                                            >
-                                                <Radio value={'list'}>列表视图</Radio>
-                                                <Radio value={'chart'}>图表视图</Radio>
-                                            </Radio.Group>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            }
-                            <Col span={24}>
-                                {
-                                    dataSource[bodyProps.dataItem].map(
-                                        (item: any, idx: number) => (
-                                            item.is_group ?
-                                                <TestGroup key={idx}  {...bodyProps} source={item} /> :
-                                                <TestItem key={idx}  {...bodyProps} source={item} />
-                                        )
-                                    )
-                                }
-                            </Col>
-                            <Divider style={{ margin: '12px 0' }} />
-                            <Col span={24}>
-                                <span onClick={() => handleAddTestItem(bodyProps.dataItem)}>
-                                    <Typography.Link >
-                                        <Space>
-                                            <PlusOutlined />
-                                            测试项
-                                        </Space>
-                                    </Typography.Link>
-                                </span>
-                                <Divider type="vertical" />
-                                <span onClick={() => handleAddTestGroup(bodyProps.dataItem)}>
-                                    <Typography.Link >
-                                        <Space>
-                                            <PlusOutlined />
-                                            测试组
-                                        </Space>
-                                    </Typography.Link>
-                                </span>
-                            </Col>
-                        </Row>
-                    }
-                </Card>
-            )
-        }
-    )
 
     const [collapsed, setCollapsed] = useState(false)
 
@@ -601,40 +695,38 @@ const TemplatePage = (props: any) => {
                                         onChange={({ target }) => hanldeEditIssueInput('description', target.value)}
                                         style={{ width: '100%' }}
                                         value={dataSource.description}
+                                        autoSize={{ minRows: 3, maxRows: 6 }}
                                         placeholder="请输入报告描述，例如：本测试报告为XXX项目的测试报告，目的在于总结测试阶段的测试以及分析测试结果，描述系统是否符合需求（或达到XXX功能目标）。预期参考人员包括用户、测试人员、、开发人员、项目管理者、其他质量管理人员和需要阅读本报告的高层经理。"
                                     />
                                 </Space>
                             </ReportIssue>
                             {/* 基础信息 */}
-                            <div style={{ marginTop: 20, background: '#fff', padding: '20px 0' }}>
-                                <ProjectTitle id="basic">
-                                    <Space>
-                                        <Typography.Text strong>基础信息</Typography.Text>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            color="#fff"
-                                            overlayInnerStyle={{ width: 563, color: '#000' }}
-                                            arrowPointAtCenter
-                                            title={
-                                                <span>
-                                                    【测试背景】【测试方法】【测试结论】【测试环境(文字描述)】需生成报告后手动填写
-                                                    【Summary】【测试环境(机器)】将会自动生成
-                                                </span>
-                                            }
-                                        >
-                                            <QuestionCircleOutlined />
-                                        </Tooltip>
-                                    </Space>
-                                </ProjectTitle>
-                                <PeddingRow style={{ marginTop: 16 }}>
-                                    <RenderCheckbox title={'测试背景'} name={'need_test_background'} />
-                                    <RenderCheckbox title={'测试方法'} name={'need_test_method'} />
-                                    <RenderCheckbox title={'测试结论'} name={'need_test_conclusion'} />
-                                    <RenderCheckbox title={'Summary'} name={'need_test_summary'} />
-                                    <RenderCheckbox title={'环境描述'} name={'need_env_description'} />
-                                    <RenderCheckbox title={'机器环境'} name={'need_test_env'} />
-                                </PeddingRow>
-                            </div>
+                            <Space
+                                direction="vertical"
+                                style={{ width: "100%", marginTop: 20 }}
+                                size={20}
+                            >
+                                {
+                                    [
+                                        ["测试背景", "need_test_background", "background_desc"],
+                                        ["测试方法", "need_test_method", "test_method_desc"],
+                                        ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
+                                        ["Summary", "need_test_summary"],
+                                        ["环境描述", "need_env_description", "env_description_desc"],
+                                        ["机器环境", "need_test_env"],
+                                    ].map((item: any) => {
+                                        const [title, name, desc] = item
+                                        return (
+                                            <RenderCheckbox
+                                                key={name}
+                                                title={title}
+                                                name={name}
+                                                desc={desc}
+                                            />
+                                        )
+                                    })
+                                }
+                            </Space>
                             {/* 测试数据 */}
                             <div style={{ padding: 20, background: '#fff', marginTop: 20 }} >
                                 <ProjectTitle id="test_data">
@@ -678,4 +770,4 @@ const TemplatePage = (props: any) => {
     )
 }
 
-export default memo(TemplatePage)
+export default TemplatePage

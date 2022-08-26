@@ -9,7 +9,7 @@ import ViewReports from './ViewReports'
 import { queryTestResultList } from '@/pages/WorkSpace/TestResult/services'
 import styled from 'styled-components'
 import { useParams, Access, useAccess } from 'umi'
-import RerunModal from './RerunModal'
+import RerunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 
@@ -164,23 +164,23 @@ const JobTable = (props: any) => {
                 return (
                     <Space>
                         <Access accessible={access.WsTourist()}>
-                            <Access 
+                            <Access
                                 accessible={access.WsMemberOperateSelf(_.creator)}
                                 fallback={
                                     <Space>
-                                    {_.created_from === 'offline' ?
-                                        <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
-                                        :
+                                        {_.created_from === 'offline' ?
+                                            <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
+                                            :
+                                            <span onClick={() => AccessTootip()}>
+                                                <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                            </span>
+                                        }
                                         <span onClick={() => AccessTootip()}>
-                                            <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                            <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>
+                                                删除
+                                            </Typography.Text>
                                         </span>
-                                    }
-                                    <span onClick={() => AccessTootip()}>
-                                        <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>
-                                            删除
-                                        </Typography.Text>
-                                    </span>
-                                </Space>
+                                    </Space>
                                 }
                             >
                                 <Space>
@@ -204,7 +204,7 @@ const JobTable = (props: any) => {
                                             删除
                                         </Typography.Text>
                                     </Popconfirm>
-                                    
+
                                 </Space>
                             </Access>
                         </Access>

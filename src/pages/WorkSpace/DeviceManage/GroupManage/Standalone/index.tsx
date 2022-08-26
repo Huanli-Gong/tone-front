@@ -22,7 +22,7 @@ import ServerLink from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
 import { Access, useAccess } from 'umi';
 import SelectUser from '@/components/Public/SelectUser';
-
+import OverflowList from '@/components/TagOverflow/index'
 /**
  * 内网单机
  */
@@ -44,7 +44,7 @@ const Standalone = (props: any, ref: any) => {
     const addDeviceRef: any = useRef(null)
 
     useImperativeHandle(ref, () => ({
-        open: addDeviceRef.current.show
+        open: addDeviceRef.current.show 
     }))
 
     const { height: layoutHeight } = useClientSize()
@@ -210,7 +210,6 @@ const Standalone = (props: any, ref: any) => {
                     return (
                         <ServerLink
                             val={_}
-                            // provider={'内网机器'}
                             provider={"aligroup"}
                         />
                     )
@@ -220,7 +219,6 @@ const Standalone = (props: any, ref: any) => {
                             <TreeSvg style={{ marginRight: 8, height: 40 }} />
                             <ServerLink
                                 val={_}
-                                // provider={'内网机器'}
                                 provider={"aligroup"}
                             />
                         </Row>
@@ -413,32 +411,13 @@ const Standalone = (props: any, ref: any) => {
                     confirm={confirm}
                     onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, tags: val }) }}
                 />,
-            render: (record: any) => {
-                if (record.length > 0) {
-                    const firstTag = record[0]
-                    const ele = <Tag color={firstTag.tag_color} >{firstTag.name}</Tag>
-
-                    if (record.length > 1)
-                        return (
-                            <Typography.Text>
-                                {ele}
-                                <Tooltip
-                                    color="#fff"
-                                    placement="top"
-                                    title={
-                                        record.map(
-                                            (item: any) => <Tag color={item.tag_color} style={{ marginBottom: 4 }} key={item.id}>{item.name}</Tag>
-                                        )
-                                    }
-                                >
-                                    <Typography.Text style={{ cursor: 'default' }}>...</Typography.Text>
-                                </Tooltip>
-                            </Typography.Text>
-                        )
-                    return ele
-                }
-                return <>-</>
-            },
+            render: (record: any) => (
+                <OverflowList list={
+                    record.map((item: any, index: number) => {
+                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                    })
+                } />
+            ),
         },
         {
             title: '操作',

@@ -1,19 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { requestCodeMessage } from '@/utils/utils'
 import { querySeverLink } from '@/pages/WorkSpace/TestResult/Details/service'
+import { useAccess } from 'umi'
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 interface ServerType {
-    val: string,
+    val: string | number,
+    param?: string | number,
     provider: "aligroup" | "aliyun",
-    islink?: boolean;
 }
 const TextWarp = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => {
+const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
+    const access = useAccess();
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
 
@@ -29,7 +31,7 @@ const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => 
 
     const handleIpHerf = async () => {
         if (provider === "aliyun") {
-            const { data, code, msg } = await querySeverLink({ ip: val })
+            const { data, code, msg } = await querySeverLink({ id: param })
             if (code === 200) {
                 const win: any = window.open("");
                 setTimeout(function () { win.location.href = data.link })
@@ -43,8 +45,11 @@ const ServerLink: React.FC<ServerType> = ({ val, provider, islink = true, }) => 
             // setTimeout(function () { win.location.href = href })
         }
     }
-    const flag = (BUILD_APP_ENV && provider === "aligroup") || !islink
-
+    const flag = 
+        (BUILD_APP_ENV && provider === "aligroup") || 
+        (provider === "aliyun" && !access.IsAdmin()) || 
+        (!BUILD_APP_ENV && provider === "aligroup" && !access.IsWsSetting())
+        
     const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
         : (
             <TextWarp ref={ellipsis} style={{ color: '#1890ff', cursor: 'pointer' }} onClick={handleIpHerf}>

@@ -45,7 +45,7 @@ const AnalysisTime: React.FC<any> = (props) => {
         setShowType(target.value)
         clearModalProvider()
     }
-
+    
     const copy = () => {
         const dom = document.createElement("a")
         dom.style.width = "0px";

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Row, Col, Form, Radio, Input, Select, Button, Space, message, Spin } from 'antd'
 
 import { queryBasicJobItms, createJobType, queryJobTypeDetail, updateJobType, queryJobTypeItems } from './services'
-import { history, FormattedMessage, useIntl } from 'umi'
+import { history, FormattedMessage, useIntl, useModel } from 'umi'
 
 import CheckBoxSelect from './components/CheckBoxSelect'
 import { RectSelect } from './components/RectSelect'
@@ -15,6 +15,9 @@ const { document }: any = window
 
 export default (props: any) => {
     const { ws_id, jt_id } = props.match.params
+
+    const { setInitialState } = useModel("@@initialState")
+
     const intl = useIntl()
     document.title = intl.messages[`Workspace.JobConfig.${props.route.name}`]
     const { route } = props
@@ -154,6 +157,10 @@ export default (props: any) => {
                 const { code, msg, id } = isUpdatePage ? await updateJobType({ ...params, jt_id }) : await createJobType(params)
 
                 if (code === 200) {
+                    setInitialState((state: any) => ({
+                        ...state,
+                        refreshMenu: !state?.refreshMenu
+                    }))
                     message.success('操作成功！')
                     if (saveType === 'job')
                         history.push(`/ws/${ws_id}/test_job/${id}`)

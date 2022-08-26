@@ -51,7 +51,14 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ServerLink val={_} provider={provider_name} />
+            render: (_: any, row: any) => (
+                <ServerLink 
+                    val={_} 
+                    param={row.server_id}
+                    provider={provider_name} 
+                />
+            )
+                
         },
         {
             title: '环境准备',

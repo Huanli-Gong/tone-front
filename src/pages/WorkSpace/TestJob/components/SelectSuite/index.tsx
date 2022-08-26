@@ -121,7 +121,7 @@ const SelectSuite: React.FC<any> = (
 				const suiteIdx = treeData.findIndex(({ id }: any) => id === suiteId)
 				if (suiteIdx > -1) {
 					let testCaseList: any = []
-
+					let isAdvancedConfig:Boolean = false
 					cases.forEach(
 						(conf: any) => {
 							if (treeData[suiteIdx]) {
@@ -159,7 +159,7 @@ const SelectSuite: React.FC<any> = (
 										custom_channel,
 										custom_ip,
 									}
-
+									
 									if (server_tag_id) {
 										if (_.isArray(server_tag_id)) {
 											obj.server_tag_id = _.filter(server_tag_id)
@@ -178,6 +178,7 @@ const SelectSuite: React.FC<any> = (
 									testCaseList.push(obj)
 								}
 							}
+							isAdvancedConfig = JSON.stringify(conf.env_info) !== '{}'
 						}
 					)
 
@@ -189,6 +190,7 @@ const SelectSuite: React.FC<any> = (
 						setup_info: setup_info === '[]' ? '' : setup_info,
 						cleanup_info,
 						monitor_info,
+						isAdvancedConfig,
 						priority,
 						test_case_list: testCaseList,
 						run_mode: treeData[suiteIdx].run_mode
@@ -264,7 +266,7 @@ const SelectSuite: React.FC<any> = (
 		else
 			setTest_config(cluster.concat(data))
 	}
-
+	
 	const TableProps = {
 		disabled,
 		width,

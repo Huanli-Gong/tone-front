@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'umi'
 import moment from 'moment'
 import type { Moment } from 'moment'
-import { Col, Row, Space, Typography, Tooltip } from 'antd'
+import { Col, Row, Space, Typography, Tooltip, Badge } from 'antd'
 import { InfoCircleOutlined, DownSquareOutlined, CloseOutlined, CheckOutlined, UpSquareOutlined } from '@ant-design/icons'
 import { JobListStateTag } from '@/pages/WorkSpace/TestResult/Details/components'
 import styled from 'styled-components'
@@ -255,7 +255,12 @@ const CardBodyData = styled.div<{ state: string }>`
     justify-content: center;
     align-items: center;
 `
-
+const CardProcessing = styled(Badge)`
+    & .ant-badge-status-dot {
+        width: 20px;
+        height: 20px;
+    }
+`
 const CardExpandedRow = styled.div`
     width: 100%;
     background-color: #ffffff;
@@ -325,20 +330,23 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                                         <Typography.Text>{getCurrentTimeStr(time) + filterIssue(x.project_state)}</Typography.Text>
                                     }
                                 >
-                                    <CardBodyData state={x.project_state}>
-                                        {
-                                            x.project_state === 'fail' &&
-                                            <CloseOutlined style={{ color: '#fff', fontSize: 10 }} />
-                                        }
-                                        {
-                                            x.project_state === 'success' &&
-                                            <CheckOutlined style={{ color: '#fff', fontSize: 10 }} />
-                                        }
-                                    </CardBodyData>
+                                    {
+                                        x.project_state === 'pending' 
+                                            ? <CardProcessing status="processing" />
+                                            :
+                                            <CardBodyData state={x.project_state}>
+                                                {
+                                                    x.project_state === 'fail' &&
+                                                    <CloseOutlined style={{ color: '#fff', fontSize: 10 }} />
+                                                }
+                                                {
+                                                    x.project_state === 'success' &&
+                                                    <CheckOutlined style={{ color: '#fff', fontSize: 10 }} />
+                                                }
+                                            </CardBodyData>
+                                    }
                                 </Tooltip>
-
                             </CardBody>
-
                             <JobData {...x} tab={tab} setTab={setTab} time={time} />
                         </CardItem>
                     ))

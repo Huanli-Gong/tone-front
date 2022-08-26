@@ -12,19 +12,16 @@ import styles from '@/pages/WorkSpace/TestJob/components/SelectSuite/style.less'
 const CustomDrawer = (props: any, ref: any) => {
     const { ws_id } = useParams<any>()
     const { onOk, perfKeys, funcKeys } = props
-
     const [visible, setVisible] = useState(false)
     const [source, setSource] = useState<any>(null)
     const [pedding, setPedding] = useState(false)
     const [selectData, setSelectData] = useState<any>([])
-
     const [selectIds, setSelectIds] = useState<any>([])
     const [domain, setDomain] = useState('')
     const [name, setName] = useState('')
     const [expand, setExpand] = useState<boolean>(false)
-
     const [testType, setTestType] = useState('')
-
+    const [expandedKeys, setExpandedKeys] = useState<any>([])
     const { data: domainList } = useRequest(
         () => getDomain({ ws_id, page_size: 100 }),
         { initialData: [] }
@@ -59,7 +56,7 @@ const CustomDrawer = (props: any, ref: any) => {
             }, [])
             return pre.concat({
                 ...cur,
-                key: `${index}`,
+                key: cur.id + '',
                 title: cur.name,
                 children: test_case_list,
                 checkable: sum !== cur.test_case_list.length,
@@ -75,7 +72,24 @@ const CustomDrawer = (props: any, ref: any) => {
     const onNameChange = (n: any) => {
         setName(n)
         run({ domain, ws_id, test_type: testType, name: n, page_size: 100 })
+            .then((res: any) => {
+                if (!!res.length) {
+                    for (let i = 0; i < res.length; i++) {
+                        if (res[i].name.indexOf(n) === -1) {
+                            let key = []
+                            key.push(res[i].id + '')
+                            setExpandedKeys(key)
+                        } else {
+                            setExpandedKeys([''])
+                        }
+                    }
+                }
+            })
     }
+
+    const onExpand = (expandedKeysValue: React.Key[]) => {
+        setExpandedKeys(expandedKeysValue);
+    };
 
     const onCheck = (checkedKeys: any) => {
         setSelectData(checkedKeys)
@@ -118,12 +132,10 @@ const CustomDrawer = (props: any, ref: any) => {
     const handleClose = useCallback(() => {
         setVisible(false)
         setSource(null)
-
         setDomain('')
         setName('')
         setSelectData([])
         setExpand(false)
-
         setSelectIds([])
     }, [])
 
@@ -233,6 +245,8 @@ const CustomDrawer = (props: any, ref: any) => {
                 <Tree
                     treeData={treeData}
                     checkedKeys={selectData}
+                    onExpand={onExpand}
+                    expandedKeys={expandedKeys}
                     checkable
                     onCheck={onCheck}
                 />

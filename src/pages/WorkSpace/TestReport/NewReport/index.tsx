@@ -47,6 +47,7 @@ const Report = (props: any) => {
         envData,
         summaryData,
         domainResult,
+        compareGroupData,
         setDomainResult,
         loading,
         saveReportData,
@@ -150,7 +151,6 @@ const Report = (props: any) => {
                 message.success('更新报告成功')
                 queryReport();
                 setBtnState(false)
-                setBtnConfirm(false)
             } else {
                 requestCodeMessage(res.code, res.msg)
             }
@@ -158,12 +158,12 @@ const Report = (props: any) => {
             const data = await saveReport(obj)
             if (data.code === 200) {
                 message.success('保存报告成功')
-                setBtnConfirm(false)
                 history.push(`/ws/${ws_id}/test_report?t=list`)
             } else {
                 requestCodeMessage(data.code, data.msg)
             }
         }
+        setBtnConfirm(false)
     }
     
     return (
@@ -172,6 +172,7 @@ const Report = (props: any) => {
             obj,
             saveReportData,
             allGroupData,
+            compareGroupData,
             logoData,
             envData,
             routeName,

@@ -14,55 +14,47 @@ interface EnvType {
 }
 
 export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, group }) => {
+
+    const RenderItem: React.FC<any> = ({ i, name, style = {} }) => {
+        return (
+            <>
+                {
+                     envData.map((server: any) => {
+                        const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
+                        return server.server_info.concat(len).map((item: any, idx: number) => (
+                            i === idx && <MachineGroupR style={style} gLen={group} key={idx}>
+                                <span>{item[name] || '-'}</span>
+                            </MachineGroupR>
+                        ))
+                    })
+                }
+            </>
+        )
+    }
+
     return (
-        <>
+        Array.isArray(envData) && !!envData.length ? <>
             {
                 len.map((item: any, i: number) => (
                     <MachineGroup key={i}>
                         <MachineGroupL style={{ background: '#fafafa' }}>IP</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR style={{ background: '#fafafa' }} gLen={group} key={idx}>
-                                        <span>{item['ip/sn'] || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
-                        <MachineGroupL>机型</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <span>{item.distro || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
+                        <RenderItem i={i} name='ip/sn' style={{ background: '#fafafa' }} />
+                        {/* <MachineGroupL>机型</MachineGroupL>
+                        <RenderItem i={i} name='distro' /> */}
                         <MachineGroupL>OS</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <span>{item.os || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
+                        <RenderItem i={i} name='os' />
                         <MachineGroupL>Kernel</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <span>{item.kernel || '-'}</span>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        }
+                        <RenderItem i={i} name='kernel' />
+                        <MachineGroupL>Glibc</MachineGroupL>
+                        <RenderItem i={i} name='glibc' />
+                        {/* <MachineGroupL>内存</MachineGroupL>
+                        <RenderItem i={i} name='memory_info' />
+                        <MachineGroupL>CPU</MachineGroupL>
+                        <RenderItem i={i} name='cpu_info' />
+                        <MachineGroupL>磁盘</MachineGroupL>
+                        <RenderItem i={i} name='disk' />
+                        <MachineGroupL>网卡信息</MachineGroupL>
+                        <RenderItem i={i} name='ether' /> */}
                         <MachineGroupL>GCC</MachineGroupL>
                         {
                             Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
@@ -80,7 +72,7 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                                 ))
                             })
                         }
-                        <MachineGroupL>RPM</MachineGroupL>
+                        {/* <MachineGroupL>RPM</MachineGroupL>
                         {
                             Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
@@ -97,10 +89,10 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                                     </MachineGroupR>
                                 ))
                             })
-                        }
+                        } */}
                     </MachineGroup>
                 ))
             }
-        </>
+        </> : <></>
     )
 }

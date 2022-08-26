@@ -24,6 +24,7 @@ const Report = (props: any) => {
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
+    const [compareGroupData, setCompareGroupData] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
     const [environmentResult, setEnvironmentResult] = useState<any>({})
@@ -56,6 +57,7 @@ const Report = (props: any) => {
             if (local.state && JSON.stringify(local.state) !== '{}') {
                 setTestDataParam(local.state.testDataParam)
                 setParamEenvironment(local.state.envDataParam)
+                setCompareGroupData(local.state.compareGroupData)
                 setAllGroupData(local.state.allGroupData)
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
             }
@@ -89,7 +91,7 @@ const Report = (props: any) => {
         if (res.code !== 200) {
             message.error(res.msg)
         }
-
+        console.log('testDataParam',testDataParam)
         const { perf_suite_dic, func_suite_dic } = testDataParam
         let perfArr: any = []
         let funcArr: any = []
@@ -99,8 +101,8 @@ const Report = (props: any) => {
         if (func_suite_dic && JSON.stringify(func_suite_dic) !== '{}') {
             funcArr = fillData(func_suite_dic)
         }
-
-        let resLen: any = perfArr.length > funcArr.length ? perfArr : funcArr
+        let resLen: any = []
+        resLen = perfArr.concat(funcArr)
         setSuiteLen(resLen.length)
         resLen.map((item: any, i: number) => queryCompareResultFn(item)
             .then(res => {
@@ -128,7 +130,7 @@ const Report = (props: any) => {
         const { func_data_result, perf_data_result } = compareResult
         let perf = perf_data_result.length
         let func = func_data_result.length
-        return func > perf ? func : perf
+        return perf + func
     }, [compareResult])
 
     useEffect(() => {
@@ -138,8 +140,15 @@ const Report = (props: any) => {
     }, [testDataParam, paramEenvironment])
 
     const handleReportId = async () => {
+        let arr = allGroupData.map((item:any) => {
+            let members = item.members.map((i:any) => i.id)
+            return {
+                ...item,
+                members
+            }
+        })
         let form_data: any = {
-            allGroupData,
+            allGroupData:arr,
             baselineGroupIndex,
             testDataParam,
             envDataParam: paramEenvironment
@@ -148,12 +157,12 @@ const Report = (props: any) => {
         setShareId(data)
     }
 
-    useEffect(() => {
+    useEffect(()=> {
         if(!!allGroupData.length){
             handleReportId()
         }
-    }, [allGroupData, baselineGroupIndex])
-
+    },[allGroupData, baselineGroupIndex])
+    
     const handleShare = useCallback(
         () => {
             if (shareId) {
@@ -177,7 +186,6 @@ const Report = (props: any) => {
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
     }
-
     const creatReportCallback = (reportData: any) => { // suiteData：已选的
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
@@ -186,6 +194,8 @@ const Report = (props: any) => {
                 baselineGroupIndex,
                 allGroupData,
                 testDataParam: _.cloneDeep(testDataParam),
+                compareResult: _.cloneDeep(compareResult),
+                compareGroupData,
                 domainGroupResult: local.state.domainGroupResult,
                 saveReportData: reportData
             }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useImperativeHandle, useMemo } from 'react';
-import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Tag, Spin, Empty, message, Cascader, InputNumber, Badge, Space } from 'antd';
+import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Tag, Spin, message, Cascader, InputNumber, Badge, Space } from 'antd';
 import {
-    addCloud, editCloud, queryTag, queryInstance, querysImage, queryCategories, querysServer, querysAK,
+    addCloud, editCloud, queryInstance, querysImage, queryCategories, querysServer, querysAK,
     querysRegion, queryZone, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
@@ -12,6 +12,7 @@ import styles from './style.less';
 import { useParams } from 'umi';
 import _ from 'lodash';
 import { AgentSelect } from '@/components/utils'
+import MachineTags from '@/components/MachineTags';
 
 /**
  * 
@@ -31,12 +32,13 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             isLeaf: false,
         },
     ];
+    const [tagFlag, setTagFlag] = useState({
+        list: [],
+        isQuery: '',
+    })
     const [options, setOptions] = React.useState(optionLists);
     const [loading, setLoading] = useState<boolean>(false)
     const [visible, setVisible] = useState<boolean>(false)
-    const [tagsPagination, setTagsPagination] = useState({ total: 0, page_num: 1, page_size: 10 });
-    const [tagList, setTagList] = useState<any>([])
-    const [fetching, setFetching] = useState<boolean>(true)
     const { Option } = Select;
     const [is_instance, setIs_instance] = useState<number>(0) // 默认"机器配置"
     const [instance, setInstance] = useState<any>([])
@@ -45,7 +47,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [id, setId] = useState<number>()
     const [showZone, setShowZone] = useState<number>(0)
     const [region, setRegion] = useState<any>([])
-    const [tagWord, setTagWord] = useState<string>()
     const [categories, setCategories] = useState<any>([])
     const [disabled, setDisabled] = useState<boolean>(true)
     // 编辑的数据
@@ -55,42 +56,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const [validateImage, setValidateImage] = React.useState(false); // 校验镜像
     const [manufacturerType, setChangeManufacturer] = React.useState(''); // 切换规格
     const [btnLoading, setBtnLoading] = useState<boolean>(false)
-    const getServerTagList = async (word?: string) => {
-        const param = word && word.replace(/\s*/g, "")
-        if (tagWord && tagWord == param) return
-        setTagWord(param)
-        requestData({ ws_id, page_num: 1, page_size: 10, name: param }, 'reset')
-    }
-    const handlePopupScroll = (e: any) => {
-        const { page_num, page_size, total, } = tagsPagination
-        const { clientHeight, scrollHeight, scrollTop } = e.target
-        if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
-            requestData({ ws_id, page_num: page_num + 1, page_size, name: tagWord }, 'concat')
-        }
-    }
-    const requestData = async (query: any, option = "concat") => {
-        setFetching(true)
-        try {
-            let res = await queryTag(query)
-            if (res.code === 200) {
-                // 分页数据合并。
-                if (option === 'concat') {
-                    const data = tagList.concat(res.data || [])
-                    setTagList(data || [])
-                    setTagsPagination(res);
-                } else if (option === 'reset') {
-                    // 新的数据。
-                    setTagList(res.data || [])
-                    setTagsPagination(res);
-                }
-            } else {
-                message.error(res.msg || '请求数据失败');
-            }
-            setFetching(false)
-        } catch (err) {
-            setFetching(false)
-        }
-    }
 
     const getInstancegList = async (param: any) => {
         const { data } = await queryInstance(param)
@@ -241,7 +206,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setRegion(list)
         setLoading(false)
     }
-   
+
     const onRegionChange = (value: any, selectedOptions: any) => {
         if (Array.isArray(selectedOptions) && selectedOptions.length) {
             let param = {
@@ -270,6 +235,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             regionResetStatus()
         }
     };
+
     const handleTypeChange = (val: any) => {
         let region = form.getFieldValue('region')
         let manufacturer = form.getFieldValue('manufacturer')
@@ -281,6 +247,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         }
         getImageList(param)
     }
+
     const newMachine = () => {
         setId(undefined)
         setVisible(true)
@@ -292,8 +259,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setRegion([])
         setValidateImage(false)
         setCategories([])
+        setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
         form.resetFields()
-        getServerTagList()
         setTimeout(function () {
             form.setFieldsValue({
                 is_instance: type - 0,
@@ -303,15 +270,19 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
             })
         }, 1)
     }
+
     useImperativeHandle(onRef, () => ({
         newMachine: newMachine,
         editMachine: (row: any) => { editMachine(row) }
     }));
+
     const editMachine = (row: any) => {
         setEditData(row)
         setShowZone(1)
         setLoading(true)
         setVisible(true)
+        const list = row.tag_list.map((item:any) => item.id)
+        setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         let param = { ...row }
         param.extra_param = JSON.stringify(param.extra_param) === '{}' ? [{ param_key: '', param_value: '' }] : param.extra_param
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
@@ -323,7 +294,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setChangeManufacturer(row.manufacturer)
         setId(row.id)
         setIs_instance(Number(type))
-        setTagList(row.tag_list) // 因为标签字段数据源是分页的，某些已选标签匹配不上数据源，所以要拿已选标签做数据源。
         let params = {
             ak_id: param.ak_id,
             region: param.region[0],
@@ -415,7 +385,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                     let str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
                     param.image = str
                     param.image_name = str
-                } else if(params.image.indexOf(':latest') > 0){
+                } else if (params.image.indexOf(':latest') > 0) {
                     param.image = params.image
                     param.image_name = params.image
                 } else {
@@ -465,14 +435,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setVisible(false)
         setBtnLoading(false)
     }
-    const tagRender = (props: any) => {
-        const { label, closable, onClose } = props;
-        return (
-            <Tag color={label?.props?.color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-                {label?.props?.children}
-            </Tag>
-        )
-    }
     /**
      * @function 1.校验名称输入字符串
      */
@@ -497,7 +459,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
 
     // Just show the latest item.
     function displayRender(label: any) {
-        if(label[label.length - 1] !== 'latest'){
+        if (label[label.length - 1] !== 'latest') {
             return label[label.length - 1];
         }
         return `${label[1].props.children}:${label[2].props.children}:latest`
@@ -975,35 +937,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             <Owner />
                         </Col>
                         <Col span={12}>
-                            <Form.Item
-                                name="tags"
-                                label="标签"
-                            >
-                                <Select
-                                    mode="multiple"
-                                    allowClear
-                                    notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                                    filterOption={false}
-                                    showSearch
-                                    placeholder="请选择"
-                                    onSearch={getServerTagList}
-                                    onPopupScroll={fetching ? () => { } : handlePopupScroll} // 防抖
-                                    style={{ width: '100%' }}
-                                    showArrow={false}
-                                    onFocus={() => { getServerTagList() }}
-                                    getPopupContainer={node => node.parentNode}
-                                    tagRender={tagRender}
-                                >
-                                    {tagList.map(
-                                        (item: any) => (
-                                            <Option key={item.id} value={item.id}>
-                                                <Tag color={item.tag_color} >{item.name}</Tag>
-                                            </Option>
-                                        )
-                                    )
-                                    }
-                                </Select>
-                            </Form.Item>
+                            <MachineTags {...tagFlag} />
                         </Col>
                         <Col span={12}>
                             <Form.Item label="控制通道"

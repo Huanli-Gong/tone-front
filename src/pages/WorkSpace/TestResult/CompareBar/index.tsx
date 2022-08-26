@@ -232,6 +232,8 @@ export default (props: any) => {
                             allGroupData: [getBaselineGroup()],
                             testDataParam: _.cloneDeep(newSuiteData),
                             domainGroupResult: result[1].data,
+                            compareResult: result[0].data,
+                            compareGroupData: paramEenvironment,
                             saveReportData: reportData
                         }
                     })
