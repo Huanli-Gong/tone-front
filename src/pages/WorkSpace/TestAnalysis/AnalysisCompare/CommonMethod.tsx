@@ -66,22 +66,21 @@ const getFinallyData = (suite_dic: any) => {
 }
 
 const getRegroupData = (suite: any) => {
-    let arr: any = []
-    Object.values(suite).map((item: any) => {
+    // let arr: any = []
+    return Object.values(suite).map((item: any) => {
         if (!item.is_all) {
-            arr.push({
+            return {
                 suite_id: item.suite_id,
                 is_all: item.is_all,
                 conf_list: Object.keys(item.conf_dic).map((i:any) => Number(i))
-            })
-        } else {
-            arr.push({
-                suite_id: item.suite_id,
-                is_all: item.is_all,
-            })
+            }
+        } 
+        return {
+            suite_id: item.suite_id,
+            is_all: item.is_all,
         }
     })
-    return arr
+    // return arr
 }
 
 const fillData = (data: any) => {
@@ -154,11 +153,11 @@ const handleDomainList = (data: any) => {
     let funcSuite = suiteDataCopy.func_suite_dic || {}
     let perfSuitec = suiteDataCopy.perf_suite_dic || {}
     let paramData: any = []
-    if (JSON.stringify(funcSuite) === '{}') {
-        paramData = getRegroupData(perfSuitec)
+    if (JSON.stringify(funcSuite) !== '{}') {
+        paramData = paramData.concat(getRegroupData(funcSuite))
     }
-    if (JSON.stringify(perfSuitec) === '{}') {
-        paramData = getRegroupData(funcSuite)
+    if (JSON.stringify(perfSuitec) !== '{}') {
+        paramData = paramData.concat(getRegroupData(perfSuitec))
     }
     return paramData;
 }

@@ -48,7 +48,7 @@ export const CreatePageData = (props: any) => {
         baselineGroupIndex = 0,
         allGroupData = [],
         testDataParam = {},
-        compareGroupData= {},
+        compareGroupData = {},
         domainGroupResult = {},
         saveReportData = {},
     } = props.history.location.state
@@ -69,7 +69,8 @@ export const CreatePageData = (props: any) => {
         if (func_suite_dic && JSON.stringify(func_suite_dic) !== '{}') {
             funcArr = fillData(func_suite_dic)
         }
-        let resLen: any = perfArr.length > funcArr.length ? perfArr : funcArr
+        let resLen: any = []
+        resLen = perfArr.concat(funcArr)
         resLen.map((item: any, i: number) => queryCompareResultFn(item)
             .then(res => {
                 if (res.code === 200) {
@@ -108,13 +109,9 @@ export const CreatePageData = (props: any) => {
     /*
        *** 默认和自定义模版的切换
    */
+ 
     const switchReport = useMemo(() => {
-        if (saveReportData.is_default) {
-            return true
-        } else {
-
-            return false
-        }
+        return saveReportData.is_default
     }, [saveReportData])
 
     useEffect(() => {
@@ -235,7 +232,8 @@ export const CreatePageData = (props: any) => {
                             }
                         }
                     }
-                } else {
+                } 
+                if (obj.func_item && !!obj.func_item.length) {
                     if (!!func_data_result.length) {
                         for (let res = obj.func_item, m = 0; m < res.length; m++) { // 自定义domain分组
                             if (res[m].is_group) { // 是否有组
@@ -690,14 +688,16 @@ export const EditPageData = (props: any) => {
                 })
             }
             let test_env = JSON.parse(data[0].test_env)
-            let env = test_env?.compare_groups
-            let newArr: any = []
-            for (let i = 0; i < env.length; i++) {
-                newArr.push(env[i])
+            if (test_env) {
+                let env = test_env?.compare_groups
+                let newArr: any = []
+                for (let i = 0; i < env.length; i++) {
+                    newArr.push(env[i])
+                }
+                newArr.splice(test_env?.base_index, 0, test_env?.base_group)
+                setAllGroupData(newArr)
+                setBaselineGroupIndex(test_env?.base_index === undefined ? 0 : test_env?.base_index)
             }
-            newArr.splice(test_env?.base_index, 0, test_env?.base_group)
-            setAllGroupData(newArr)
-            setBaselineGroupIndex(test_env?.base_index === undefined ? 0 : test_env?.base_index)
             setLoading(false)
         } else {
             requestCodeMessage(code, msg)

@@ -24,6 +24,7 @@ const Report = (props: any) => {
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
+    const [domainGroupResult, setDomainGroupResult] = useState({})
     const [compareGroupData, setCompareGroupData] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
@@ -60,6 +61,7 @@ const Report = (props: any) => {
                 setCompareGroupData(local.state.compareGroupData)
                 setAllGroupData(local.state.allGroupData)
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
+                setDomainGroupResult(local.state.domainGroupResult)
             }
         }
     }, [form_id, local])
@@ -91,7 +93,6 @@ const Report = (props: any) => {
         if (res.code !== 200) {
             message.error(res.msg)
         }
-        console.log('testDataParam',testDataParam)
         const { perf_suite_dic, func_suite_dic } = testDataParam
         let perfArr: any = []
         let funcArr: any = []
@@ -196,7 +197,7 @@ const Report = (props: any) => {
                 testDataParam: _.cloneDeep(testDataParam),
                 compareResult: _.cloneDeep(compareResult),
                 compareGroupData,
-                domainGroupResult: local.state.domainGroupResult,
+                domainGroupResult,
                 saveReportData: reportData
             }
         })
