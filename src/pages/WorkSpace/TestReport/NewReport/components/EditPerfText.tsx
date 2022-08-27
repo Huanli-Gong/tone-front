@@ -54,10 +54,24 @@ export const PerfTextArea = ({
         })
        
     }
+    const handleEleGroup = (item:any,field:any,data:any) => {
+        let ret = item.list.map((i: any) => {
+            if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
+                i[field] = title
+            }
+            return {
+                ...i,
+            }
+        })
+        return {
+            ...item,
+            list: ret,
+        }
+   }
     const handleBlur = () => {
         setDataSource(dataSource.map((ele: any) => {
             if (ele.is_group) {
-                let list = ele.list.map((l: any) => handleEle(l, field, suite))
+                let list = ele.list.map((l: any) => handleEleGroup(l, field, suite))
                 return {
                     ...ele,
                     list,
@@ -71,7 +85,7 @@ export const PerfTextArea = ({
             }
         }))
     }
-
+    
     const handleChange = (title: any) => {
         if (_.isNull(title) || _.isUndefined(title)) return '未填写'
         return title

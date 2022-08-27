@@ -22,12 +22,12 @@ export default (props: any) => {
     groupAll.splice(baselineGroupIndex === -1 ? 0 : baselineGroupIndex, 1)
     const allGroupData = groupAll.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length) // 去掉空组但基线组除外
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
-    const [copySuitData, setCopySuitData] = useState<any>({}) // 复制得全量数据
+    // const [copySuitData, setCopySuitData] = useState<any>({}) 
     const [duplicateData, setDuplicateData] = useState<any>([]) // 复制得全量数据
-    const [oneLevelData, setOneLevelData] = useState<any>([])
     const [oneLevelFunc, setOneLevelFunc] = useState<any>([])
     const [oneLevelPref, setOneLevelPref] = useState<any>([])
-    const [confData, setConfData] = useState<any>({})
+    const [confDataFunc, setConfDataFunc] = useState<any>([])
+    const [confDataPref, setConfDataPref] = useState<any>([])
     const [loading, setLoading] = useState(true)
     const [duplicateLoading, setDuplicateLoading] = useState(false)
     const [tab, setTab] = useState('functional')
@@ -70,14 +70,13 @@ export default (props: any) => {
             allPersRowKeys.current = [...arrKey2]
             let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
             if (tabValue) setTab('performance')
-            let obj = tabValue ? obj2 : obj1
             setSelectedFuncRowKeys([...arrKey1])
             setSelectedPerfRowKeys([...arrKey2])
-            setOneLevelData(tabValue ? Object.values(obj2) : Object.values(obj1))
             setOneLevelFunc(Object.values(obj1))
             setOneLevelPref(Object.values(obj2))
             setSuitData(data)
-            setConfData(obj)
+            setConfDataFunc(obj1)
+            setConfDataPref(obj2)
             setLoading(false)
         } else {
             requestCodeMessage(code, msg)
@@ -153,38 +152,40 @@ export default (props: any) => {
     useEffect(() => {
         let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
         let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
-        if(tab === 'functional'){
+        if (tab === 'functional') {
             setOneLevelFunc(Object.values(obj1))
-        }else{
+        } else {
             setOneLevelPref(Object.values(obj2))
         }
-    },[ suitData, tab ])
+    }, [suitData, tab])
+
     const onExpand = async (expanded: boolean, record: any) => {
         const { test_job_id, suite_id } = record
         if (expanded) {
             const data = await queryConfList({ test_job_id, suite_id })
             if (data.code === 200) {
                 const { conf_dic } = data.data
-                confData[suite_id].conf_dic = conf_dic
-                setConfData({
-                    ...confData,
-                })
-                let selectedKeys: any = []
-                selectedKeys = [...selectedKeys, ...Object.keys(conf_dic)]
-                setSelectedFuncRowKeys([ ...selectedFuncRowKeys, ...selectedKeys ])
-                setSelectedPerfRowKeys([ ...selectedPerfRowKeys, ...selectedKeys ])
+                if (tab === 'functional') {
+                    confDataFunc[suite_id].conf_dic = conf_dic
+                    setConfDataFunc({ ...confDataFunc })
+                } else {
+                    confDataPref[suite_id].conf_dic = conf_dic
+                    setConfDataPref({ ...confDataPref })
+                }
+                setSelectedFuncRowKeys([...selectedFuncRowKeys, ...Object.keys(conf_dic)])
+                setSelectedPerfRowKeys([...selectedPerfRowKeys, ...Object.keys(conf_dic)])
             }
         }
     }
 
     useEffect(() => {
+        const confData = tab === 'functional' ? confDataFunc : confDataPref
         if (confData) {
             let id: any = Object.keys(confData).map((keys: any) => String(keys))
             let result = []
             result = Object.values(confData).map((item: any, index: number) => {
-                if (item.conf_dic) {
-                    item.conf_list = Object.values(item.conf_dic)
-                    item.conf_list = item.conf_list.map((value: any, index: number) => {
+                if (item.conf_dic && JSON.stringify(item.conf_dic) !== '{}') {
+                    item.conf_list = Object.values(item.conf_dic).map((value: any, index: number) => {
                         return (
                             {
                                 key: value.conf_id,
@@ -196,15 +197,15 @@ export default (props: any) => {
                             }
                         )
                     })
-                } 
+                }
                 return item
             })
             setOneLevelFunc(result)
             setOneLevelPref(result)
-            let newObj = {}
-            let name = tab === 'functional' ? 'func_suite_dic' : 'perf_suite_dic'
-            newObj[name] = confData
-            setCopySuitData(newObj)
+            // let newObj = {}
+            // let name = tab === 'functional' ? 'func_suite_dic' : 'perf_suite_dic'
+            // newObj[name] = confData
+            // setCopySuitData(newObj)
             const arrVal = Object.values(confData)
             let selectedKeys: any = []
             let allObjKey: any = []
@@ -220,8 +221,8 @@ export default (props: any) => {
             setAllObjKeyFun(allObjKey)
             setAllObjKeyPerf(allObjKey)
         }
-    }, [confData])
-    
+    }, [tab, confDataFunc, confDataPref])
+
     const handleStepChange = async (current: number) => {
         setDuplicateLoading(true)
         let suite_data = tab === 'functional' ? _.cloneDeep(oneLevelFunc) : _.cloneDeep(oneLevelPref)
@@ -229,7 +230,7 @@ export default (props: any) => {
             let group_jobs: any = []
             const groupAll = _.cloneDeep(props.allGroupData)
             // let baseIndex = baselineGroupIndex === -1 ? 0 : baselineGroupIndex
-            groupAll.map((item:any) => {
+            groupAll.map((item: any) => {
                 group_jobs.push({
                     group_name: item.product_version,
                     test_job_id: [].concat(item.members.map((i: any) => i.id))
@@ -240,7 +241,7 @@ export default (props: any) => {
             let suite_list: any = []
             selectdRows.forEach((item: any) => {
                 let is_all = item.conf_dic ? 0 : 1
-                let conf_list =  item.conf_dic ? Object.keys(item.conf_dic).filter((i: any) => rowKeys.includes(String(i))) : []
+                let conf_list = item.conf_dic ? Object.keys(item.conf_dic).filter((i: any) => rowKeys.includes(String(i))) : []
                 if (item.test_job_id.length > 1) {
                     suite_list.push({
                         suite_id: item.suite_id,
@@ -256,7 +257,42 @@ export default (props: any) => {
             }
             const { data, code, msg } = await queryDuplicate(params)
             if (code === 200) {
-                setSelSuiteData(data.duplicate_data)
+                if (JSON.stringify(data) === '{}') {
+                    setSelSuiteData([])
+                } else {
+                    let arr = data.duplicate_data
+                    let brr: any = []
+                    arr = arr.map((item: any) => {
+                        let suite_list = item.suite_list.map((i: any) => {
+                            let conf_list = i.conf_list.map((conf: any, num: number) => {
+                                let job_list = conf.job_list.map((child: any, idx: number) => {
+                                    return {
+                                        ...child,
+                                        isSelect: idx === 0
+                                    }
+                                })
+                                brr.push({
+                                    conf_id: conf.conf_id,
+                                    job_id: conf.job_list[0].job_id
+                                })
+                                return {
+                                    ...conf,
+                                    job_list
+                                }
+                            })
+                            return {
+                                ...i,
+                                conf_list
+                            }
+                        })
+                        return {
+                            ...item,
+                            suite_list,
+                        }
+                    })
+                    setSelSuiteData(arr)
+                    setDuplicateData(brr)
+                }
                 setDuplicateLoading(false)
             } else {
                 requestCodeMessage(code, msg)
@@ -266,7 +302,7 @@ export default (props: any) => {
         setDuplicateLoading(false)
         setCurrentStep(current)
     }
-    
+
     const handleOk = (sureOkFn: any) => {
         // let data = JSON.stringify(copySuitData) === '{}' ? suitData : copySuitData
         let func_suite = suitData.func_suite_dic || {}
@@ -302,20 +338,20 @@ export default (props: any) => {
                 // 一级
                 arrKeys = [...arrKeys, record.suite_id + '', ...childKeys]
                 arrKeys = Array.from(new Set(arrKeys.map((keys: any) => String(keys))))
-            }else{
+            } else {
                 arrKeys = [...arrKeys, record.conf_id + '']
                 arrKeys = Array.from(new Set(arrKeys.map((keys: any) => String(keys))))
             }
-           
+
         } else {
             if (!record.level) {
                 // 一级
                 arrKeys = arrKeys.filter((keys: any) => !childKeys.includes(keys))
                 arrKeys = arrKeys.filter((keys: any) => String(keys) !== String(record.suite_id))
-            }else{
+            } else {
                 arrKeys = arrKeys.filter((keys: any) => String(keys) !== String(record.conf_id))
-            }   
-            
+            }
+
         }
         tab === 'functional' ? setSelectedFuncRowKeys(arrKeys) : setSelectedPerfRowKeys(arrKeys)
     }
@@ -345,7 +381,7 @@ export default (props: any) => {
             key: 'Test Conf',
         }
     ]
-    
+
 
     let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
     let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
@@ -366,29 +402,29 @@ export default (props: any) => {
     const colCallback = (key: any) => {
         setExpandRepeatTableKey(key)
     }
-    const handleChangeDefaultJob = (itemSuit: any) => {
-        let duplicate_data: any = []
-        itemSuit.forEach((item: any) => {
-            duplicate_data.push({
-                conf_id: item.conf_id,
-                job_id: item.job_list.filter((child: any) => child.isSelect)
-            })
-        });
-       
-        duplicate_data = duplicate_data.filter((item:any) => !!item.job_id.length)
-        duplicate_data = duplicate_data.map((item:any) => {
+    const handleChangeDefaultJob = (itemSuit: any, current: any) => {
+        let arr = duplicateData.slice(0)
+
+        const selectd = itemSuit[current].job_list
+        arr = arr.map((item: any) => {
+            if (item.conf_id === itemSuit[current].conf_id) {
+                let job_id = selectd.map((child: any) => {
+                    return child.job_id === item.job_id
+                        ? selectd.filter((i: any) => i.job_id !== child.job_id)[0].job_id
+                        : item.job_id
+                })
+                return {
+                    ...item,
+                    job_id: job_id[0]
+                }
+            }
             return {
                 ...item,
-                job_id: item.job_id[0].job_id
             }
         })
-        let arr = [ ...duplicateData ,...duplicate_data]
-        const strings = arr.map((item) => JSON.stringify(item));
-        const removeDupList = [...new Set(strings)]; 
-        const result = removeDupList.map((item) => JSON.parse(item)); 
-        setDuplicateData(result)
+        setDuplicateData(arr)
     }
-    
+
     const selectRepeatData = () => {
         let currentGroupIndex = Number(tab.replace('group', ''))
         const flag = isNaN(currentGroupIndex)
@@ -406,7 +442,7 @@ export default (props: any) => {
                 expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
             >
                 {
-                    selSuiteData[cId].suite_list.map((item: any,idx:number) => {
+                    selSuiteData[cId].suite_list.map((item: any, idx: number) => {
                         return (
                             <Panel header={_.get(item, 'suite_name')} key={idx} className={styles.Panel}>
                                 <ExpandTable
@@ -437,11 +473,11 @@ export default (props: any) => {
                     onExpand: (_, record: any) => {
                         onExpand(_, record)
                     },
-                    indentSize:20,
+                    indentSize: 20,
                     expandedRowRender(record) {
-                        return <Table 
+                        return <Table
                             className={styles.ConfColum}
-                            columns={ConfColumns} 
+                            columns={ConfColumns}
                             dataSource={record.conf_list}
                             pagination={false}
                             rowKey={(record: any) => record.conf_id + ''}
@@ -482,7 +518,7 @@ export default (props: any) => {
     const allGroupReact = () => {
         const num = /^group[0-9]+$/.test(tab) ? tab.replace('group', '') : 0
         return (
-            selSuiteData &&  <>
+            !!selSuiteData.length && <>
                 <Tabs
                     defaultActiveKey={tab}
                     onTabClick={handleTabClick}

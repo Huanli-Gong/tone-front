@@ -133,10 +133,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
         dataSource?.map((item: any) => {
             if (item.is_group) {
                 item.list.map((child: any) => {
-                    ExpandObj.push(child.list)
+                    ExpandObj = ExpandObj.concat(child.list)
                 })
             } else {
-                ExpandObj.push(item.list)
+                ExpandObj = ExpandObj.concat(item.list)
             }
         })
         setExpandKeys(

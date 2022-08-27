@@ -89,7 +89,7 @@ const Performance = (props: any) => {
     useEffect(() => {
         const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
         btn ? setPerData(data) : setPerData({
-            ...child, list: child.list.map((item: any) => {
+            ...child, list: child.list?.map((item: any) => {
                 return {
                     ...item,
                     chartType: '1'

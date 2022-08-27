@@ -147,8 +147,10 @@ export default (props: any) => {
         })
         allConf[currentIndex].job_list = arr
         setAllConf(allConf)
+        // let num = currentTab.slice(currentTab.length - 1)
+        // let cur = num === 0 ? currentIndex : refAllJob.length + currentIndex
         setSelectedRowKeys([e.target.value])
-        handleChangeDefaultJob(allConf)
+        handleChangeDefaultJob(allConf,currentIndex)
         setPopoverVisible(false)
     }
     const rowSelection = {
@@ -179,6 +181,7 @@ export default (props: any) => {
             </Scrollbars>
         );
     }
+
     const handleSelectJob = (e: any, all: any, num: number, selJob: number, confId: any) => {
         e.stopPropagation();
         setCurrentJobIndex(confId)
