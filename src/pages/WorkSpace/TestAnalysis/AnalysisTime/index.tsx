@@ -15,13 +15,13 @@ const AnalysisTime: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
     const { query } = useLocation() as any
     const { route } = props
-
+    const tabName = BUILD_APP_ENV === 'openanolis' ? 'aliyun' : 'aligroup'
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
     writeDocumentTitle(routeIntlName)
     const { height: layoutHeight } = useClientSize()
     const [testType, setTestType] = useState(query.test_type || 'performance')
     // const [ testType, setTestType ] = useState( query.test_type || 'functional' )
-    const [provider, setProvider] = useState(query.provider_env || 'aliyun')
+    const [provider, setProvider] = useState(query.provider_env || tabName)
     const [showType, setShowType] = useState(query.show_type || 'pass_rate')
     const [instance, setInstance] = useState<any>(null)
 
