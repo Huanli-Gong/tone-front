@@ -1,4 +1,5 @@
 import React from 'react';
+import produce from 'immer'
 
 const deleteSuite = (item, row) => {
     let ret = item.list.reduce((pre, suite) => {

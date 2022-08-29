@@ -262,7 +262,7 @@ export default (props: any) => {
                 } else {
                     let arr = data.duplicate_data
                     let brr: any = []
-                    arr = arr.map((item: any) => {
+                    arr = arr.map((item: any, groupIndex:number) => {
                         let suite_list = item.suite_list.map((i: any) => {
                             let conf_list = i.conf_list.map((conf: any, num: number) => {
                                 let job_list = conf.job_list.map((child: any, idx: number) => {
@@ -273,7 +273,8 @@ export default (props: any) => {
                                 })
                                 brr.push({
                                     conf_id: conf.conf_id,
-                                    job_id: conf.job_list[0].job_id
+                                    job_id: conf.job_list[0].job_id,
+                                    key: groupIndex
                                 })
                                 return {
                                     ...conf,
@@ -402,12 +403,12 @@ export default (props: any) => {
     const colCallback = (key: any) => {
         setExpandRepeatTableKey(key)
     }
-    const handleChangeDefaultJob = (itemSuit: any, current: any) => {
+    const handleChangeDefaultJob = (itemSuit: any, current: any, groupIndex: number | string) => {
         let arr = duplicateData.slice(0)
         const selectd = itemSuit[current].job_list
         arr = arr.map((item: any) => {
-            if (item.conf_id === itemSuit[current].conf_id) {
-                let job_id = selectd.filter((item:any) => item.isSelect)[0].job_id
+            if (item.conf_id === itemSuit[current].conf_id && item.key == groupIndex) {
+                let job_id = selectd.filter((item:any) => item.isSelect)[0].job_id || ''
                 return {
                     ...item,
                     job_id

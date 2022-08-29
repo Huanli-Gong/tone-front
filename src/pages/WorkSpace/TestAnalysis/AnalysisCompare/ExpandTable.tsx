@@ -147,10 +147,9 @@ export default (props: any) => {
         })
         allConf[currentIndex].job_list = arr
         setAllConf(allConf)
-        // let num = currentTab.slice(currentTab.length - 1)
-        // let cur = num === 0 ? currentIndex : refAllJob.length + currentIndex
+        let num = currentTab.slice(currentTab.length - 1)
         setSelectedRowKeys([e.target.value])
-        handleChangeDefaultJob(allConf,currentIndex)
+        handleChangeDefaultJob(allConf,currentIndex,num)
         setPopoverVisible(false)
     }
     const rowSelection = {
