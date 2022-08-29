@@ -312,9 +312,6 @@ const Performance = (props: any) => {
                                                 name={suite.test_env}
                                                 field="test_env"
                                                 suite={suite}
-                                                dataSource={dataSource}
-                                                setDataSource={setDataSource}
-                                                btn={btnState}
                                             />
                                         </TestContent>
                                     </SigleWrapper>
@@ -327,9 +324,6 @@ const Performance = (props: any) => {
                                                 name={suite.test_description}
                                                 field="test_description"
                                                 suite={suite}
-                                                dataSource={dataSource}
-                                                setDataSource={setDataSource}
-                                                btn={btnState}
                                             />
                                         </TestContent>
                                     </SigleWrapper>
@@ -342,9 +336,6 @@ const Performance = (props: any) => {
                                                 name={suite.test_conclusion}
                                                 field="test_conclusion"
                                                 suite={suite}
-                                                dataSource={dataSource}
-                                                setDataSource={setDataSource}
-                                                btn={btnState}
                                             />
                                         </TestContent>
                                     </SigleWrapper>

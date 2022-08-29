@@ -57,3 +57,10 @@ export async function compareChart(data:any) {
         method : 'post',
     })
 }
+
+export async function saveReportDesc(data:any) {
+    return request('/api/report/test/report/item_suite/', {
+        data,
+        method: 'post'
+    })
+}

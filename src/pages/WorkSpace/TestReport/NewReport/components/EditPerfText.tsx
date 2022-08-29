@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Input } from 'antd';
+import { Typography, Input, notification, message } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import _ from 'lodash';
+import { saveReportDesc } from '../../services';
 const { TextArea } = Input;
 
 const TextAreaWarrper = styled(TextArea)`
@@ -11,8 +13,6 @@ export const PerfTextArea = ({
         name,
         field,
         suite,
-        dataSource,
-        setDataSource,
         style,
         space = '0px',
         fontStyle={
@@ -22,74 +22,53 @@ export const PerfTextArea = ({
             whiteSpace: 'pre-wrap',
         },
         defaultHolder,
-        btn = false,
     }:
     {
         name: string,
         field: string,
         suite: any,
-        dataSource: any,
-        setDataSource: any,
         style?: any,
         space?: string,
         fontStyle?:any,
         defaultHolder?: string,
-        btn: Boolean,
     }) => {
-
+    const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
 
     useEffect(() => {
         setTitle(name)
     }, [name])
 
-    const handleEle = (item:any,field:any,data:any) => {
-         return item.list.map((i:any) => {
-            if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
-                i[field] = title
-            }
-            return {
-                ...i,
-            }
-        })
-       
-    }
-    const handleEleGroup = (item:any,field:any,data:any) => {
-        let ret = item.list.map((i: any) => {
-            if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
-                i[field] = title
-            }
-            return {
-                ...i,
-            }
-        })
-        return {
-            ...item,
-            list: ret,
+    const openNotification = (name:string) => {
+        notification['success'] ({
+            message: `${name}保存成功`,
+            placement:'bottomRight'
+        });
+    };
+
+    const handleBlur = async() => {
+        const { item_suite_id, suite_name } = suite
+        let obj:any = {
+            'test_env':'',
+            'test_description':'',
+            'test_conclusion':'',
+            item_suite_id,
         }
-   }
-    const handleBlur = () => {
-        setDataSource(dataSource.map((ele: any) => {
-            if (ele.is_group) {
-                let list = ele.list.map((l: any) => handleEleGroup(l, field, suite))
-                return {
-                    ...ele,
-                    list,
-                }
-            } else {
-                let list = handleEle(ele, field, suite)
-                return {
-                    ...ele,
-                    list,
-                }
-            }
-        }))
+        obj[field] = title
+        const { code, msg } = await saveReportDesc({ ...obj })
+        if(code === 200){
+            openNotification(suite_name)
+            setBtn(false)
+        }else{
+            message.error(msg)
+        }
     }
-    
+
     const handleChange = (title: any) => {
         if (_.isNull(title) || _.isUndefined(title)) return '未填写'
         return title
     }
+
     return (
         <>
             {
@@ -113,6 +92,7 @@ export const PerfTextArea = ({
                     :
                     <div style={{ width: '100%', ...style }}>
                         <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                        <EditOutlined style={{ paddingLeft:10 }} onClick={()=> setBtn(true)}/>
                     </div>
             }
         </>
@@ -192,6 +172,7 @@ export const GroupItemText = ({
                         onChange={evt => setTitle(evt.target.value)}
                         onBlur={handleBlur}
                     />
+
                     :
                     <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
             }

@@ -253,6 +253,7 @@ export default (props: any) => {
             })
             const params = {
                 group_jobs,
+                base_index:baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
                 suite_list
             }
             const { data, code, msg } = await queryDuplicate(params)
