@@ -26,14 +26,14 @@ export const PerfTextArea = ({
     }:
     {
         name: string,
-        field:string,
-        suite:any,
-        dataSource:any,
-        setDataSource:any,
-        style?:any,
-        space?:string,
+        field: string,
+        suite: any,
+        dataSource: any,
+        setDataSource: any,
+        style?: any,
+        space?: string,
         fontStyle?:any,
-        defaultHolder?:string,
+        defaultHolder?: string,
         btn: Boolean,
     }) => {
 
@@ -48,22 +48,36 @@ export const PerfTextArea = ({
             if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
                 i[field] = title
             }
-            return { 
-                ...i, 
+            return {
+                ...i,
             }
         })
        
     }
+    const handleEleGroup = (item:any,field:any,data:any) => {
+        let ret = item.list.map((i: any) => {
+            if (i.suite_id == data.suite_id && i.rowKey == data.rowKey) {
+                i[field] = title
+            }
+            return {
+                ...i,
+            }
+        })
+        return {
+            ...item,
+            list: ret,
+        }
+   }
     const handleBlur = () => {
-        setDataSource(dataSource.map((ele:any) => {
-            if(ele.is_group){
-                let list = ele.list.map((l: any) => handleEle(l,field,suite))
+        setDataSource(dataSource.map((ele: any) => {
+            if (ele.is_group) {
+                let list = ele.list.map((l: any) => handleEleGroup(l, field, suite))
                 return {
                     ...ele,
                     list,
                 }
-            }else{
-                let list = handleEle(ele,field,suite)
+            } else {
+                let list = handleEle(ele, field, suite)
                 return {
                     ...ele,
                     list,
@@ -72,36 +86,36 @@ export const PerfTextArea = ({
         }))
     }
     
-    const handleChange = (title:any) => {
-        if(_.isNull(title) || _.isUndefined(title)) return '未填写'
+    const handleChange = (title: any) => {
+        if (_.isNull(title) || _.isUndefined(title)) return '未填写'
         return title
     }
     return (
         <>
             {
-               btn ?  
-               <>
-                    {
-                        <div style={{ marginBottom: space }}>
-                            <TextAreaWarrper
-                                autoComplete="off"
-                                size="small"
-                                placeholder={defaultHolder}
-                                style={{ padding:'10px', ...fontStyle }}
-                                value={title}
-                                onChange={evt => setTitle(evt.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        </div>
-                   }
-                   
-                </>
-                :  
-                <div style={{ width:'100%', ...style }}>
-                    <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                </div>
+                btn ?
+                    <>
+                        {
+                            <div style={{ marginBottom: space }}>
+                                <TextAreaWarrper
+                                    autoComplete="off"
+                                    size="small"
+                                    placeholder={defaultHolder}
+                                    style={{ padding: '10px', ...fontStyle }}
+                                    value={title}
+                                    onChange={evt => setTitle(evt.target.value)}
+                                    onBlur={handleBlur}
+                                />
+                            </div>
+                        }
+
+                    </>
+                    :
+                    <div style={{ width: '100%', ...style }}>
+                        <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                    </div>
             }
-        </>    
+        </>
     )
 }
 
@@ -123,35 +137,35 @@ export const GroupItemText = ({
     
 }) => {
     const [title, setTitle] = useState('')
-    
+
     useEffect(() => {
         setTitle(name)
     }, [name])
 
     const handleBlur = () => {
-        setDataSource(dataSource.map((ele:any) => {
-            if(ele.is_group){
-                if(ele.rowKey == rowKey){
+        setDataSource(dataSource.map((ele: any) => {
+            if (ele.is_group) {
+                if (ele.rowKey == rowKey) {
                     ele.name = title
                 }
                 let list = ele.list.map((l: any) => {
-                    if(l.rowKey == rowKey){
+                    if (l.rowKey == rowKey) {
                         l.name = title
                     }
-                    return { 
-                        ...l, 
+                    return {
+                        ...l,
                     }
                 })
                 return {
                     ...ele,
                     list
                 }
-            }else{
-                if(ele.rowKey == rowKey){
+            } else {
+                if (ele.rowKey == rowKey) {
                     ele.name = title
                 }
-                return { 
-                    ...ele, 
+                return {
+                    ...ele,
                 }
             }
         }))
@@ -161,26 +175,26 @@ export const GroupItemText = ({
         fontFamily: 'PingFangSC-Medium',
         color: 'rgba(0,0,0,0.85)'
     }
-    const handleChange = (title:any) => {
-        if(_.isNull(title) || _.isUndefined(title)) return '未填写'
+    const handleChange = (title: any) => {
+        if (_.isNull(title) || _.isUndefined(title)) return '未填写'
         return title
     }
     return (
         <>
             {
-            btn ?  
-                <Input
-                    autoComplete="off"
-                    size="small"
-                    placeholder={defaultHolder}
-                    style={{ padding:'6px 8px 6px 8px',width:'93%', ...fontStyle }}
-                    value={title}
-                    onChange={evt => setTitle(evt.target.value)}
-                    onBlur={handleBlur}
-                />
-                :  
-                <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                btn ?
+                    <Input
+                        autoComplete="off"
+                        size="small"
+                        placeholder={defaultHolder}
+                        style={{ padding: '6px 8px 6px 8px', width: '93%', ...fontStyle }}
+                        value={title}
+                        onChange={evt => setTitle(evt.target.value)}
+                        onBlur={handleBlur}
+                    />
+                    :
+                    <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
             }
-        </>    
+        </>
     )
 }

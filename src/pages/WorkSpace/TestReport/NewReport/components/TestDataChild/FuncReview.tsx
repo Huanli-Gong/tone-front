@@ -3,7 +3,6 @@ import { ReportContext } from '../../Provider';
 import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col } from 'antd';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
@@ -12,6 +11,7 @@ import { GroupItemText } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { deleteSuite, deleteConf } from './DelMethod.js';
+import { JumpResult } from '@/utils/hooks';
 import {
     TestItemText,
     TestSuite,
@@ -36,9 +36,8 @@ import _ from 'lodash';
 const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
-    const { child, name, id, subObj, onDelete, dataSource, setDataSource } = props
-    const ws_id = location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
-    const { btnState, allGroupData, baselineGroupIndex, groupLen } = useContext(ReportContext)
+    const { child, name, id, onDelete, dataSource, setDataSource } = props
+    const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
     const [filterName, setFilterName] = useState('All')
     const [arrowStyle, setArrowStyle] = useState('')
@@ -46,16 +45,15 @@ const FuncDataIndex: React.FC<any> = (props) => {
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [funcData, setFuncData] = useState<any>({})
-    // let group = allGroupData?.length
 
     useEffect(() => {
         setFuncData(child)
     }, [child])
 
-    const baseIndex = useMemo(()=>{
-        if(baselineGroupIndex === -1) return 0
+    const baseIndex = useMemo(() => {
+        if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
-    },[ baselineGroupIndex ])
+    }, [baselineGroupIndex])
 
     // 筛选操作
     const handleConditions = (value: any) => {
@@ -131,16 +129,26 @@ const FuncDataIndex: React.FC<any> = (props) => {
     useEffect(() => {
         setBtnName(btn ? '收起所有' : '展开所有')
         setExpandKeys([])
+        let ExpandObj:any = []
+        dataSource?.map((item: any) => {
+            if (item.is_group) {
+                item.list.map((child: any) => {
+                    ExpandObj = ExpandObj.concat(child.list)
+                })
+            } else {
+                ExpandObj = ExpandObj.concat(item.list)
+            }
+        })
         setExpandKeys(
             btn ?
-                subObj?.reduce(
+                ExpandObj?.reduce(
                     (p: any, c: any) => p.concat(c.conf_list.map((item: any) => item.conf_id))
                     , [])
                 :
                 []
         )
-    }, [btn])
-   
+    }, [btn,dataSource])
+
     const handleDelete = (name: string, row: any, rowKey: any) => {
         if (name == 'suite') {
             setDataSource(dataSource.map((item: any) => {
@@ -217,19 +225,18 @@ const FuncDataIndex: React.FC<any> = (props) => {
         else
             setExpandKeys(expandKeys.concat(id))
     }
-
     // 单个展开
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
-        let subCaseList = _.cloneDeep(sub_case_list)
+        let subCaseList =  _.cloneDeep(sub_case_list) 
         return (
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                        item.compare_data.splice(baseIndex, 0, item.result)
-                        // const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
-                        // len.forEach((i) => item.compare_data.push('-'))
+                        if(isOldReport){
+                            item.compare_data.splice(baseIndex, 0, item.result)
+                        }
                         return (
                             <TestSubCase key={idx}>
                                 <DelBtnEmpty />
@@ -237,19 +244,19 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
-                                    !!item.compare_data.length ?
-                                        item.compare_data.map((cur: any,idx:number) => {
-                                            return (
-                                                <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
-                                                    <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
-                                                </SubCaseText>
-                                            )
-                                        })
-                                        :
-                                        <SubCaseText gLen={groupLen} btnState={btnState}>
-                                            <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
-                                        </SubCaseText>
-
+                                        !!item.compare_data.length ?
+                                            item.compare_data.map((cur: any, idx: number) => {
+                                                return (
+                                                    <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
+                                                        <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
+                                                    </SubCaseText>
+                                                )
+                                            })
+                                            :
+                                            <SubCaseText gLen={groupLen} btnState={btnState}>
+                                                <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
+                                            </SubCaseText>
+                                        
                                 }
                             </TestSubCase>
                         )
@@ -258,6 +265,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </>
         )
     }
+    
     let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData.list.map((suite: any, idx: number) => (
             <TestSuite key={idx}>
@@ -284,7 +292,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     {
                                         i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
                                             对比结果
-                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
                                                 {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                             </span>
                                             <DiffTootip />
@@ -299,43 +307,45 @@ const FuncDataIndex: React.FC<any> = (props) => {
                     {
                         suite.conf_list.map((conf: any, cid: number) => {
                             const expand = expandKeys.includes(conf.conf_id)
-                            const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
-                            let conf_data = conf.conf_compare_data || conf.compare_conf_list
                             let metricList: any = []
-                            for (let i = 0; i < allGroupData.length; i++) {
-                                if (i === baseIndex)
-                                    metricList.push({
-                                        all_case,
-                                        success_case,
-                                        fail_case,
-                                        obj_id,
-                                    })
-                                !!conf_data.length ?
-                                    conf_data?.map((item: any, idx: number) => {
-                                        if (item !== null) {
-                                            const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
-                                            idx === i && metricList.push({
-                                                all_case,
-                                                success_case,
-                                                fail_case,
-                                                obj_id
-                                            })
-                                        } else {
-                                            idx === i && metricList.push({
-                                                all_case: '-',
-                                                success_case: '-',
-                                                fail_case: '-'
-                                            })
-                                        }
-                                    })
-                                    :
-                                    (allGroupData.length > 1) && (i - 1) && metricList.push({
-                                        all_case: '-',
-                                        success_case: '-',
-                                        fail_case: '-'
-                                    })
-
+                            if(isOldReport){
+                                const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
+                                let conf_data = conf.conf_compare_data || conf.compare_conf_list
+                                for (let i = 0; i < allGroupData.length; i++) {
+                                    if (i === baseIndex)
+                                        metricList.push({
+                                            all_case,
+                                            success_case,
+                                            fail_case,
+                                            obj_id,
+                                        })
+                                    !!conf_data.length ?
+                                        conf_data.map((item: any, idx: number) => {
+                                            if (item) {
+                                                const { all_case, success_case, fail_case, obj_id } = item || item.conf_source
+                                                idx === i && metricList.push({
+                                                    all_case,
+                                                    success_case,
+                                                    fail_case,
+                                                    obj_id
+                                                })
+                                            } else {
+                                                idx === i && metricList.push({
+                                                    all_case: '-',
+                                                    success_case: '-',
+                                                    fail_case: '-'
+                                                })
+                                            }
+                                        })
+                                        :
+                                        (allGroupData.length > 1) && (i - 1) && metricList.push({
+                                            all_case: '-',
+                                            success_case: '-',
+                                            fail_case: '-'
+                                        })
+                                }
                             }
+                            let dataList = isOldReport ? metricList : (conf.conf_compare_data || conf.compare_conf_list)
                             return (
                                 <div key={cid}>
                                     <TestCase expand={expand}>
@@ -350,7 +360,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             </EllipsisPulic>
                                         </CaseTitle>
                                         {
-                                            metricList?.map((item: any,idx: number) => {
+                                            dataList?.map((item: any, idx: number) => {
                                                 return (
                                                     <CaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                         <Space size={16}>
@@ -358,10 +368,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                         </Space>
-                                                        {item !== null &&
-                                                            <a style={{ cursor: 'pointer', paddingLeft: 10 }} href={`/ws/${ws_id}/test_result/${item.obj_id}`} target="_blank">
-                                                                {item.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                                                            </a>
+                                                        {item &&
+                                                            <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }}/>
                                                         }
                                                     </CaseText>
                                                 )

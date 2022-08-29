@@ -1,8 +1,9 @@
 import React, { useContext, memo } from 'react';
 import { SettingTextArea } from './EditPublic';
 import { ReportContext } from '../Provider';
-import _ from 'lodash';
+import _ from 'lodash'; 
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
+import { TestEnv } from '@/components/ReportAnalysis/TestEnv';
 import {
     ModuleWrapper,
     EditTitle,
@@ -16,11 +17,11 @@ const ReportTestEnv = () => {
     const {
         btnState,
         saveReportData,
-        obj,
-        setObj,
-        envData,
+        obj, 
+        setObj, 
+        envData, 
         compareGroupData,
-        baselineGroupIndex,
+        baselineGroupIndex, 
         environmentResult,
         routeName,
         btnConfirm,
@@ -28,19 +29,19 @@ const ReportTestEnv = () => {
         domainResult,
     } = useContext(ReportContext)
 
-
+    
     const handleChangeVal = (val: any, text: string) => {
-        if (environmentResult && JSON.stringify(environmentResult) !== '{}') {
-            if (_.isUndefined(compareGroupData)) {
+        if(environmentResult && JSON.stringify(environmentResult) !== '{}'){
+            if(_.isUndefined(compareGroupData)){
                 obj.test_env = {
                     text: val
                 }
-            } else {
-                let env = _.cloneDeep(environmentResult)
+            }else{
+                let env = _.cloneDeep(environmentResult) 
                 env[text] = val
-                env.base_group = compareGroupData.base_group
+                env.base_group = compareGroupData.base_group 
                 env.compare_groups = compareGroupData.compare_groups
-                if (routeName !== 'Report') env.base_index = baselineGroupIndex
+                if( routeName !== 'Report') env.base_index = baselineGroupIndex
                 obj.test_env = env
             }
             setObj({
@@ -48,8 +49,10 @@ const ReportTestEnv = () => {
             })
         }
     }
+
     // 获取最多行展示
     const len = Array.from(Array(environmentResult?.count)).map(val => ({}))
+    
     return (
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env" className="position_mark">
             <SubTitle><span className="line"></span>测试环境</SubTitle>

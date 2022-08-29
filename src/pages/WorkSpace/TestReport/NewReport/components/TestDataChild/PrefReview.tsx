@@ -17,6 +17,7 @@ import { filterResult } from '@/components/Report/index'
 import ChartsIndex from '../PerfCharts';
 import ChartTypeChild from './ChartTypeChild'
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { JumpResult } from '@/utils/hooks';
 import _ from 'lodash';
 import {
     TestGroupItem,
@@ -47,7 +48,7 @@ const { Option } = Select;
 
 const Performance = (props: any) => {
     const { child, name, id, onDelete, dataSource, setDataSource } = props
-    const { btnState, allGroupData, baselineGroupIndex, ws_id, domainResult, environmentResult, groupLen } = useContext(ReportContext)
+    const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const [btnName, setBtnName] = useState<string>('')
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
@@ -85,24 +86,21 @@ const Performance = (props: any) => {
         }
         return dataArr;
     }
-
     useEffect(() => {
-        let dataArr = _.cloneDeep(child)
-        setPerData(
-            btn ? handleDataArr(dataArr, baseIndex) : {
-                ...child, list: child.list.map((item: any) => {
-                    return {
-                        ...item,
-                        chartType: '1'
-                    }
-                })
-            }
-        )
+        const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
+        btn ? setPerData(data) : setPerData({
+            ...child, list: child.list?.map((item: any) => {
+                return {
+                    ...item,
+                    chartType: '1'
+                }
+            })
+        })
     }, [child, btn])
     // 筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
-        let dataSource = handleDataArr(_.cloneDeep(child), baseIndex)
+        let dataSource = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : _.cloneDeep(child)
         if (value === 'all') {
             setPerData(dataSource)
         } else {
@@ -262,27 +260,19 @@ const Performance = (props: any) => {
 
     const renderShare = (conf: any) => {
         let objList: any = []
-        let obj = conf?.conf_source || conf
+        let objConf = conf?.conf_source || conf
         allGroupData?.map((c: any, i: number) => {
             objList.push((conf.conf_compare_data || conf.compare_conf_list)[i])
         })
-        objList.splice(baseIndex, 0, obj)
+        objList.splice(baseIndex, 0, objConf)
+        let obj = conf.conf_compare_data || conf.compare_conf_list
+        let arr = isOldReport ? objList : obj
         return (
-            objList.map((item: any, idx: number) => (
+            arr.map((item: any, idx: number) => (
                 _.isUndefined(item) ? <></>
-                    : <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
-                        {
-                            item?.obj_id ?
-                                <a style={{ cursor: 'pointer' }}
-                                    href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
-                                    target="_blank"
-                                >
-                                    <IconLink style={{ width: 9, height: 9 }} />
-                                </a>
-                                :
-                                <>&nbsp;</>
-                        }
-                    </PrefDataText>
+                :<PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                    <JumpResult ws_id={wsId} job_id={item?.obj_id || item}/>
+                </PrefDataText>
             ))
         )
     }

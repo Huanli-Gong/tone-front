@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useCallback } from 'react'
-
+import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { useIntl } from 'umi'
 import { Tooltip } from 'antd'
 
@@ -83,6 +83,12 @@ type ListProps = {
     id: string
 }
 
+type ResultProps = {
+    ws_id: string | number,
+    job_id: string | number,
+    style?: React.CSSProperties;
+}
+
 export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='topLeft' >{name}</Tooltip>
 export const textRender = (name:any) => {
     return <Tooltip title={name} placement='topLeft'>{name}</Tooltip>
@@ -108,4 +114,12 @@ export const getTextByJs = (obj:any) => {
         }
     })
     return str;
+}
+
+export const JumpResult : React.FC<ResultProps> = ({ ws_id, job_id, style  }) => {
+    return (
+        <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">
+            {job_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
+        </a>
+    )
 }

@@ -12,6 +12,9 @@ export const queryProductList = ( params : any ) => {
 export const querySuiteList = ( data : any ) => {
     return request(`/api/job/result/compare/suite/` ,  {method : 'post', data })
 }
+export const queryConfList = ( data : any ) => {
+    return request(`/api/job/result/compare/conf/` ,  {method : 'post', data })
+}
 export const queryCompareResultList = ( data : any ) => {
     return request(`/api/job/result/compare/list/` ,  {method : 'post', data })
 }
@@ -33,6 +36,8 @@ export const queryDomainGroup =  ( data : any ) => {
 export const queryProduct =  ( params : any ) => {
     return request(`/api/sys/product/`,  { params })
 }
-
+export const queryDuplicate = ( data : any ) => {
+    return request(`/api/job/result/compare/duplicate/`, { method : 'post', data })
+}
 
 

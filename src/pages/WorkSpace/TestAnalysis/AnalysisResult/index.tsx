@@ -12,6 +12,7 @@ import PerformanceTest from './components/PerformanceTest';
 import FunctionalTest from './components/FunctionalTest';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
+import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import _ from 'lodash';
 import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
 import { useClientSize } from '@/utils/hooks';
@@ -19,11 +20,11 @@ import { useClientSize } from '@/utils/hooks';
 const Report = (props: any) => {
     const { ws_id, form_id } = props.match.params
     const local = props.history.location
-    // const id = local.query.form_id
     const access = useAccess();
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
     const [paramEenvironment, setParamEenvironment] = useState({})
+    const [domainGroupResult, setDomainGroupResult] = useState({})
     const [compareGroupData, setCompareGroupData] = useState({})
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
@@ -32,12 +33,10 @@ const Report = (props: any) => {
     const [suiteLen, setSuiteLen] = useState(1)
     const [shareId, setShareId] = useState<Number>(0)
     const [scrollLeft, setScrollLeft] = useState(0)
-    // const windowHeight = () => setLayoutHeight(innerHeight)
     const saveReportDraw: any = useRef(null)
 
     const scrollDom = document.querySelector('.ant-layout-has-sider .ant-layout')
     const { top } = useScroll(scrollDom as any)
-    const group = allGroupData?.length
 
     const { height: layoutHeight } = useClientSize()
     // 请求对比数据
@@ -62,9 +61,12 @@ const Report = (props: any) => {
                 setCompareGroupData(local.state.compareGroupData)
                 setAllGroupData(local.state.allGroupData)
                 setBaselineGroupIndex(local.state.baselineGroupIndex)
+                setDomainGroupResult(local.state.domainGroupResult)
             }
         }
     }, [form_id, local])
+
+    const group = allGroupData?.length
 
     const backTop = () => (document.querySelector('.ant-layout-has-sider .ant-layout') as any).scrollTop = 0
 
@@ -91,38 +93,27 @@ const Report = (props: any) => {
         if (res.code !== 200) {
             message.error(res.msg)
         }
-
         const { perf_suite_dic, func_suite_dic } = testDataParam
         let perfArr: any = []
         let funcArr: any = []
         if (perf_suite_dic && JSON.stringify(perf_suite_dic) !== '{}') {
-            Object.keys(perf_suite_dic).map((key: any) => {
-                perfArr.push({
-                    async_request: '1',
-                    suite_id: key,
-                    suite_info: perf_suite_dic[key]
-                })
-            })
+            perfArr = fillData(perf_suite_dic)
         }
         if (func_suite_dic && JSON.stringify(func_suite_dic) !== '{}') {
-            Object.keys(func_suite_dic).map((key: any) => {
-                funcArr.push({
-                    async_request: '1',
-                    suite_id: key,
-                    suite_info: func_suite_dic[key]
-                })
-            })
+            funcArr = fillData(func_suite_dic)
         }
-
-        let resLen: any = perfArr.length > funcArr.length ? perfArr : funcArr
+        let resLen: any = []
+        resLen = perfArr.concat(funcArr)
         setSuiteLen(resLen.length)
-        resLen.map((item: any, i: number) => queryCompareResultFn({ func_suite_dic: funcArr[i], perf_suite_dic: perfArr[i] })
+        resLen.map((item: any, i: number) => queryCompareResultFn(item)
             .then(res => {
-                if (res.data.func_data_result) {
-                    compareResult.func_data_result = compareResult.func_data_result.concat(res.data.func_data_result)
-                }
-                if (res.data.perf_data_result) {
-                    compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data.perf_data_result)
+                if (res.code === 200) {
+                    if (JSON.stringify(res.data) !== '{}' && res.data.test_type === 'functional') {
+                        compareResult.func_data_result = compareResult.func_data_result.concat(res.data)
+                    }
+                    if (JSON.stringify(res.data) !== '{}' && res.data.test_type === 'performance') {
+                        compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
+                    }
                 }
                 setCompareResult({
                     ...compareResult
@@ -140,7 +131,7 @@ const Report = (props: any) => {
         const { func_data_result, perf_data_result } = compareResult
         let perf = perf_data_result.length
         let func = func_data_result.length
-        return func > perf ? func : perf
+        return perf + func
     }, [compareResult])
 
     useEffect(() => {
@@ -149,14 +140,21 @@ const Report = (props: any) => {
         }
     }, [testDataParam, paramEenvironment])
 
-    const handleReportId = async() => {
+    const handleReportId = async () => {
+        let arr = allGroupData.map((item:any) => {
+            let members = item.members.map((i:any) => i.id)
+            return {
+                ...item,
+                members
+            }
+        })
         let form_data: any = {
-            allGroupData,
+            allGroupData:arr,
             baselineGroupIndex,
             testDataParam,
             envDataParam: paramEenvironment
         }
-        const { data } =  await compareForm({ form_data })
+        const { data } = await compareForm({ form_data })
         setShareId(data)
     }
 
@@ -167,25 +165,25 @@ const Report = (props: any) => {
     },[allGroupData, baselineGroupIndex])
     
     const handleShare = useCallback(
-         () => {
-            if(shareId){
+        () => {
+            if (shareId) {
                 const clipboard = new Clipboard('.test_result_copy_link', {
                     text: function (trigger) {
                         return location.origin + `/share/analysis_result/${shareId}`
                     }
                 });
-               
+
                 clipboard.on('success', function (e: any) {
                     message.success('复制分享链接成功')
                     e.clearSelection();
                 });
-                
+
                 (document.querySelector('.test_result_copy_link') as any).click()
                 clipboard.destroy()
             }
         }, [shareId]
     )
-    
+
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
     }
@@ -193,28 +191,28 @@ const Report = (props: any) => {
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,
             state: {
-                wsId: ws_id,
                 environmentResult,
                 baselineGroupIndex,
                 allGroupData,
+                testDataParam: _.cloneDeep(testDataParam),
                 compareResult: _.cloneDeep(compareResult),
                 compareGroupData,
-                domainGroupResult: local.state.domainGroupResult,
+                domainGroupResult,
                 saveReportData: reportData
             }
         })
     }
 
-    const slidingLeft = (e:any) => {
-        const scrollWidth =  e.srcElement.scrollLeft || 0;
-            setScrollLeft(scrollWidth)
+    const slidingLeft = (e: any) => {
+        const scrollWidth = e.srcElement.scrollLeft || 0;
+        setScrollLeft(scrollWidth)
     }
-        useEffect(()=>{
-        window.addEventListener('scroll',slidingLeft,true)
+    useEffect(() => {
+        window.addEventListener('scroll', slidingLeft, true)
         return () => {
-            window.removeEventListener('scroll',slidingLeft,true)
+            window.removeEventListener('scroll', slidingLeft, true)
         }
-    },[])
+    }, [])
 
     useEffect(() => {
         if (JSON.stringify(environmentResult) !== '{}') {
@@ -235,8 +233,8 @@ const Report = (props: any) => {
                 environmentResult,
                 compareResult,
                 envData,
-                ws_id,
                 group,
+                wsId: ws_id
             }}
         >
             <div
@@ -260,13 +258,13 @@ const Report = (props: any) => {
                 }
                 <AnalysisWarpper style={{ width: group > 3 ? group * 390 : 1200 }}>
                     <Col span={24}>
-                        <ResultTitle style={{ maxWidth : document.body.clientWidth - 40 + scrollLeft }}>
+                        <ResultTitle style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
                             <TypographyText>对比分析结果</TypographyText>
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
-                                { !form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
-                                        <IconLink style={{ marginRight: 5 }} />分享
-                                    </span>
+                                {!form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
+                                    <IconLink style={{ marginRight: 5 }} />分享
+                                </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
                                     {!form_id && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
@@ -280,8 +278,8 @@ const Report = (props: any) => {
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
                                 <SubTitle><span className="line"></span>测试数据</SubTitle>
-                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft}/>
-                                <FunctionalTest scrollLeft={scrollLeft}/>
+                                <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} />
+                                <FunctionalTest scrollLeft={scrollLeft} />
                             </ModuleWrapper>
                         </ResultContent>
                     </Col>

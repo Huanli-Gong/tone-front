@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { Row, Space, Typography, Spin, Tooltip } from 'antd'
+import { Row, Space, Typography, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/GaryBaseIcon.svg';
-import TypeChart from '../components/TestDataChild/TypeChart';
-import NoTypeChart from './TestDataChild/NoChartReview';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import { compareChart } from '../../services';
+import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services';
+import RenderConfChart from './RenderConfChart';
+import RenderMetricChart from './RenderMetricChart';
+
 const FullRow = styled(Row)`
     width:100%;
 `
@@ -50,9 +51,6 @@ const SliderTitle = styled(Typography.Text)`
 interface ConfNameProp {
     is_active?: number
 }
-interface ConfRowProp {
-    is_active: boolean
-}
 
 const ConfName = styled(Typography.Text) <ConfNameProp>`
     cursor:pointer;
@@ -65,104 +63,52 @@ const ModalContent = styled.div`
     width:calc( 100% - 340px );
     .ant-typography { margin-bottom:0;}
 `
-const ConfMetricRow = styled.div<ConfRowProp>`
-    height:376px;
-    width:100%;
-    display: flex;
-    overflow-x:auto;
-    overflow-y:hidden;
-    flex-wrap: nowrap;
-    flex-shrink: 0;
-    background: ${({ is_active }) => is_active ? 'rgba(59,160,255,0.05)' : ''};
-`
-const ConfChart = (props: any) => {
-    const { callBackColor, legend, envData, loading, chartData, is_active, chartType } = props
-    if (chartType === '1') {
-        return (
-            <ConfMetricRow is_active={is_active}>
-                {
-                    chartData.metric_list.length === 0 ?
-                        <NoTypeChart chartType={chartType} data={['']} is_active={is_active} />
-                        :
-                        chartData.metric_list.map((metric: any, idx: any) => (
-                            <Spin spinning={loading} key={idx}>
-                                <TypeChart
-                                    callBackColor={callBackColor}
-                                    name={legend}
-                                    envData={envData}
-                                    chartType={chartType}
-                                    data={metric}
-                                    is_active={is_active} />
-                            </Spin>
-                        ))
-                }
-            </ConfMetricRow>
-        )
-    } else {
-        return (
-            <ConfMetricRow is_active={is_active}>
-                {
-                    JSON.stringify(chartData) === '{}' ?
-                        <NoTypeChart chartType={chartType} data={['']} is_active={is_active} />
-                        :
-                        <TypeChart
-                            callBackColor={callBackColor}
-                            name={legend}
-                            envData={envData}
-                            chartType={chartType}
-                            data={chartData}
-                            is_active={is_active} />
-                }
-            </ConfMetricRow>
-        )
-    }
-}
-
 interface JumpChartProp {
     conf_name: string
     test_conf_id?: number
 }
 
 const ChartModal = (props: any) => {
-    const { chartType, suite_id, conf_list, suite_name, envData } = props
+    const { chartType, suite_id, conf_list, group_jobs, suite_name, envData, base_index } = props
     const [legend, setLegend] = useState<string>('')
     const [current, setCurrent] = useState<any>(null)
     const [loading, setLoading] = useState(false)
-    const [chartConf, setChartConf] = useState<any>(null)
     const [chartMetric, setChartMetric] = useState<any>(null)
     const [color, setColor] = useState<any>([])
     const queryChart = async (newObj: any) => {
         setLoading(true)
-        const res = await compareChart(newObj)
+        const res = await queryCompareResultList(newObj)
         if (res.code === 200) {
             setLoading(false)
-            if (chartType === '1' || chartType === '3') 
-                setChartConf(res.data)
-            else
-                setChartMetric(res.data)
+            setChartMetric(res.data)
         }
     }
     useEffect(() => {
         let obj: any = {}
-        obj.show_type = 1
-        obj.base_suite_obj = {
-            suite_id,
-            suite_name,
-            conf_dic: {}
-        },
-        conf_list?.map((conf: any, index: number) => {
-            obj.base_suite_obj.conf_dic[conf.conf_id] = {
-                conf_name: conf.conf_name,
-                is_job: conf.is_job || conf.conf_source.is_job,
-                obj_id: conf.obj_id || conf.conf_source.obj_id,
-                compare_objs: conf.conf_compare_data || conf.compare_conf_list
-            }
+        obj.suite_id = suite_id
+        obj.suite_name = suite_name
+        obj.is_all = 0
+        obj.async_request = 1
+        obj.base_index = base_index
+        let jobList:any = []
+        let conf_info: any = []
+        conf_list?.forEach((conf: any, index: number) => {
+            let arr = conf.conf_compare_data || conf.compare_conf_list
+            arr.forEach((item:any) => {
+                jobList.push({ job_list: [item]})
+            });
+            conf_info.push({
+                conf_id: conf.conf_id,
+                conf_name: conf.conf_name
+            })
         })
-        if(chartType === '2'){
-            obj.show_type = 2
+        obj.group_jobs = group_jobs || jobList
+        obj.conf_info = conf_info
+        obj.show_type = 2
+        if (chartType === '2') {
+            queryChart(obj)
         }
-        queryChart(obj)
-    }, [ chartType ])
+    }, [chartType])
 
     const handleJumpChart = ({ conf_name }: JumpChartProp, idx: number) => {
         const id = `${conf_name}-${idx}`
@@ -179,34 +125,33 @@ const ChartModal = (props: any) => {
         setColor(arr)
     }
     const legData = useMemo(() => {
-        // let color = ['#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB']
         let le: any = []
-        le.push({
+        let obj = {
             name: `${envData?.base_group.tag}`,
             inner: <Space align="start" style={{ cursor: 'pointer' }}>
-                <Dot color={color[0]} />
-                { !!envData.compare_groups.length && 
+                <Dot color={color[base_index]} />
+                {!!envData.compare_groups.length &&
                     <Tooltip title="基准组">
-                        <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} /> 
+                        <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
                     </Tooltip>
                 }
                 <Typography.Text strong>{envData?.base_group.tag}</Typography.Text>
             </Space>
-        })
-
+        }
         for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
-            // if (compare.length > 3) color.push('#FAD337', '#4DCB73', '#3BA0FF', '#36CBCB')
+            let key = k === base_index ? k + 1 : k 
             le.push({
                 name: `${compare[k].tag}`,
                 inner: <Space align="start" style={{ cursor: 'pointer' }}>
-                    <Dot color={color[k + 1]} />
+                    <Dot color={color[key]} />
                     <Typography.Text strong>{compare[k].tag}</Typography.Text>
                 </Space>
-
             })
         }
+        le.splice(base_index, 0, obj)
         return le
     }, [envData, color])
+
     return (
         <Wrapper>
             <ModalHeader>
@@ -235,7 +180,7 @@ const ChartModal = (props: any) => {
                                     conf_list.map(
                                         (conf: any, idx: number) => (
                                             <span key={idx}>
-                                                <ConfName><EllipsisPulic width={330} title={conf.conf_name}/></ConfName>
+                                                <ConfName><EllipsisPulic width={330} title={conf.conf_name} /></ConfName>
                                             </span>
                                         )
                                     )
@@ -243,38 +188,15 @@ const ChartModal = (props: any) => {
                             </Space>
                         </ModalSlider>
                         <ModalContent>
-                            {
-                                chartMetric &&
-                                <>
-                                    {
-                                        JSON.stringify(chartMetric.metric_dic) === '{}'
-                                        ? <NoTypeChart chartType={chartType} data={['']} />
-                                        : chartMetric.metric_dic && Object.keys(chartMetric.metric_dic).map((key: any, idx: number) => (
-                                            <div
-                                                key={idx}
-                                                id={`${key}-${idx}`}
-                                                style={{ width: '100%', overflow: 'hidden' }}
-                                            >
-                                                <div style={current === `${key}-${idx}` ? { background: 'rgba(59,160,255,0.05)' } : {}}>
-                                                    <Typography.Title level={5} style={current === `${key}-${idx}` ? { color: '#1890FF' } : {}}>
-                                                        {key}
-                                                    </Typography.Title>
-                                                </div>
-                                                <Spin spinning={loading}>
-                                                    <TypeChart
-                                                        // setLegend={setLegend}
-                                                        callBackColor={handleChartColor}
-                                                        name={legend}
-                                                        key={idx}
-                                                        envData={envData}
-                                                        data={chartMetric.metric_dic[key]}
-                                                        chartType={chartType} />
-                                                </Spin>
-                                            </div>
-                                        ))
-                                    }
-                                </>
-                            }
+                            <RenderMetricChart
+                                current={current}
+                                handleChartColor={handleChartColor}
+                                legend={legend}
+                                envData={envData}
+                                loading={loading}
+                                chartMetric={chartMetric}
+                                chartType={chartType}
+                            />
                         </ModalContent>
                     </ModalBody>
                     :
@@ -291,7 +213,7 @@ const ChartModal = (props: any) => {
                                             key={idx}
                                         >
                                             <ConfName is_active={current === `${conf.conf_name}-${idx}` ? 1 : 0}>
-                                                <EllipsisPulic width={330} title={conf.conf_name}/>
+                                                <EllipsisPulic width={330} title={conf.conf_name} />
                                             </ConfName>
                                         </span>
                                     ))
@@ -299,35 +221,15 @@ const ChartModal = (props: any) => {
                             </Space>
                         </ModalSlider>
                         <ModalContent>
-                            {
-                                chartConf && chartConf.conf_list.map(
-                                    (conf: any, idx: number) => (
-                                        <div
-                                            key={idx}
-                                            id={`${conf.conf_name}-${idx}`}
-                                            style={{ width: '100%', overflow: 'hidden' }}
-                                        >
-                                            <div style={current === `${conf.conf_name}-${idx}` ? { background: 'rgba(59,160,255,0.05)' } : {}}>
-                                                <Typography.Title level={5} style={current === `${conf.conf_name}-${idx}` ? { color: '#1890FF' } : {}}>
-                                                    {conf.conf_name}
-                                                </Typography.Title>
-                                            </div>
-                                            {
-                                                <ConfChart
-                                                    callBackColor={handleChartColor}
-                                                    legend={legend}
-                                                    envData={envData}
-                                                    loading={loading}
-                                                    chartData={conf}
-                                                    is_active={current === `${conf.conf_name}-${idx}` ? true : false}
-                                                    chartType={chartType}
-                                                />
-
-                                            }
-                                        </div>
-                                    )
-                                )
-                            }
+                            <RenderConfChart
+                                current={current}
+                                handleChartColor={handleChartColor}
+                                legend={legend}
+                                envData={envData}
+                                loading={loading}
+                                chartConf={conf_list}
+                                chartType={chartType}
+                            />
                         </ModalContent>
                     </ModalBody>
             }
@@ -335,4 +237,4 @@ const ChartModal = (props: any) => {
     )
 }
 
-export default React.memo(ChartModal)
+export default React.memo(ChartModal);

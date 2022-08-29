@@ -14,7 +14,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = () => {
-    const { obj, setObj, domainResult, btnState, routeName } = useContext(ReportContext)
+    const { obj, setObj, domainResult, btnState, routeName, isOldReport } = useContext(ReportContext)
 
     const data = useMemo(() => {
         if (Array.isArray(domainResult.func_item)) {
@@ -22,26 +22,26 @@ const ReportTestFunc: React.FC<any> = () => {
             return data
         }
     }, [domainResult])
-
+    
     const [dataSource, setDataSource] = useState<any>([])
-    const [subObj, setSubObj] = useState<Array<{}>>([])
+    // const [subObj, setSubObj] = useState<Array<{}>>([])
 
     useEffect(() => {
         setDataSource(data)
     }, [data])
 
-    useEffect(() => {
-        dataSource?.map((item: any) => {
-            if (item.is_group) {
-                item.list.map((child: any) => {
-                    setSubObj(child.list)
-                })
-            } else {
-                setSubObj(item.list)
-            }
-        })
-    }, [dataSource])
-
+    // useEffect(() => {
+    //     dataSource?.map((item: any) => {
+    //         if (item.is_group) {
+    //             item.list.map((child: any) => {
+    //                 setSubObj(child.list)
+    //             })
+    //         } else {
+    //             setSubObj(item.list)
+    //         }
+    //     })
+    // }, [dataSource])
+    
     /* 
         ** 删除测试项 测试组
     */
@@ -69,18 +69,13 @@ const ReportTestFunc: React.FC<any> = () => {
         }
     }
 
-    const transField = (conf: any, key: string) => {
-        const { conf_source } = conf
-        return conf[key] ? conf[key] : conf_source ? conf_source[key] : ''
-    }
 
     const simplify = (child: any) => {
         let suite_list: any = []
         child.list.map((suite: any, suiteId: number) => {
             let conf_list: any = []
             suite.conf_list.map((conf: any, index: number) => {
-                let baseJobList = []
-                baseJobList.push(conf.obj_id || conf.conf_source.obj_id || '')
+                let baseJobList = isOldReport ? [conf?.obj_id || conf.conf_source?.obj_id] : []
                 let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => i.obj_id || '')
                 conf_list.push({
                     conf_id: conf.conf_id,
@@ -168,7 +163,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                                     child={child}
                                                                     name="group"
                                                                     id={child.rowKey}
-                                                                    subObj={subObj}
+                                                                    // subObj={subObj}
                                                                     dataSource={dataSource}
                                                                     setDataSource={setDataSource}
                                                                     onDelete={handleDelete}
@@ -183,7 +178,7 @@ const ReportTestFunc: React.FC<any> = () => {
                                                 child={item}
                                                 name="item"
                                                 id={item.rowKey}
-                                                subObj={subObj}
+                                                // subObj={subObj}
                                                 dataSource={dataSource}
                                                 setDataSource={setDataSource}
                                                 onDelete={handleDelete}

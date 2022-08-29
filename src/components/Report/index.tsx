@@ -13,6 +13,14 @@ const filterResult = (arr: any, value: any) => {
     return false
 }
 
+const conversion = (item: any) => {
+    if (JSON.stringify(item) === '{}') {
+        return '-'
+    }
+    return `${item.test_value}±${item.cv_value}`
+}
+
 export {
-    filterResult
+    filterResult,
+    conversion
 }

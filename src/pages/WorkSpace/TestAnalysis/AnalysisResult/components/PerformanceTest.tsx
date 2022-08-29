@@ -1,20 +1,19 @@
 import React, { useContext, useState, useRef, useEffect, memo, useMemo } from 'react';
 import { Space, Empty, Row, Col, Select, Button, Typography, Tooltip } from 'antd';
 import { ReportContext } from '../Provider';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 import ChartsIndex from '@/pages/WorkSpace/TestReport/NewReport/components/PerfCharts';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
-import { filterResult } from '@/components/Report/index'
+import { filterResult, conversion } from '@/components/Report/index'
 import _ from 'lodash';
 import ChartTypeChild from '../../../TestReport/NewReport/components/TestDataChild/ChartTypeChild'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { useScroll } from 'ahooks'
 import styled from 'styled-components'
-
+import { JumpResult } from '@/utils/hooks';
 import {
     TestDataTitle,
     Summary,
@@ -74,7 +73,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
                 <Summary style={{ border: 'none', paddingLeft: 18, paddingRight: 15 }}>
                     <Group>
                         <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
-                        <Identify envData={envData} group={groupLen} isData={true}/>
+                        <Identify envData={envData} group={groupLen} isData={true} />
                     </Group>
                 </Summary>
             </GroupBar>
@@ -84,25 +83,25 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     }
 }
 
-const handleDataArr = (dataArr:any,baseIndex:number) => {
-    if (Array.isArray(dataArr) && !!dataArr.length) {
-        dataArr.forEach((per:any)=>(
-            per.conf_list.forEach((conf:any,i:number)=>(
-                conf.metric_list.forEach((metric:any,idx:number)=>
-                    (
-                        metric.compare_data.splice(baseIndex,0,{
-                            cv_value: metric.cv_value,
-                            test_value: metric.test_value,
-                        })
-                    )
-                )
-            ))
-        ))
-    }
-    return dataArr;
-}
+// const handleDataArr = (dataArr: any, baseIndex: number) => {
+//     if (Array.isArray(dataArr) && !!dataArr.length) {
+//         dataArr.forEach((per: any) => (
+//             per.conf_list.forEach((conf: any, i: number) => (
+//                 conf.metric_list.forEach((metric: any, idx: number) =>
+//                 (
+//                     metric.compare_data.splice(baseIndex, 0, {
+//                         cv_value: metric.cv_value,
+//                         test_value: metric.test_value,
+//                     })
+//                 )
+//                 )
+//             ))
+//         ))
+//     }
+//     return dataArr;
+// }
 const ReportTestPref: React.FC<any> = (props) => {
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, ws_id, group } = useContext(ReportContext)
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
@@ -113,22 +112,22 @@ const ReportTestPref: React.FC<any> = (props) => {
     const groupRowRef = useRef<any>(null)
     const { perf_data_result } = compareResult
     // 当没有定义基准组时baseIndex的值
-    const baseIndex = useMemo(()=>{
-        if(baselineGroupIndex === -1) return 0
+    const baseIndex = useMemo(() => {
+        if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
-    },[ baselineGroupIndex ])
+    }, [baselineGroupIndex])
     // 只在列表中调换基准组位置
     useEffect(() => {
         let dataArr = _.cloneDeep(perf_data_result)
         setDataSource(
-            btn ? handleDataArr(dataArr,baseIndex) : perf_data_result.map((item: any) => {
+            btn ? dataArr : dataArr.map((item: any) => {
                 return {
                     ...item,
                     chartType: '1'
                 }
             })
         )
-    }, [perf_data_result,btn])
+    }, [perf_data_result, btn])
 
     // 图表、列表模式切换
     const switchMode = () => {
@@ -146,17 +145,17 @@ const ReportTestPref: React.FC<any> = (props) => {
             <TestItemFunc>
                 <Space>
                     <Button onClick={switchMode}>{btnName}</Button>
-                    { btn && <Space>
-                                <Typography.Text>筛选: </Typography.Text>
-                                <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                                    <Option value="all">全部</Option>
-                                    <Option value="invalid">无效</Option>
-                                    <Option value="volatility">波动大（包括上升、下降）</Option>
-                                    <Option value="increase">上升</Option>
-                                    <Option value="decline">下降</Option>
-                                    <Option value="normal">正常</Option>
-                                </Select>
-                            </Space>
+                    {btn && <Space>
+                        <Typography.Text>筛选: </Typography.Text>
+                        <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
+                            <Option value="all">全部</Option>
+                            <Option value="invalid">无效</Option>
+                            <Option value="volatility">波动大（包括上升、下降）</Option>
+                            <Option value="increase">上升</Option>
+                            <Option value="decline">下降</Option>
+                            <Option value="normal">正常</Option>
+                        </Select>
+                    </Space>
                     }
                 </Space>
             </TestItemFunc>
@@ -205,15 +204,16 @@ const ReportTestPref: React.FC<any> = (props) => {
             })
         )
     }
+    
     //筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
-        let dataSource = handleDataArr(_.cloneDeep(perf_data_result),baseIndex)
+        let dataSource = _.cloneDeep(perf_data_result)
         if (value === 'all') {
             setDataSource(dataSource)
         } else {
             setDataSource(dataSource.map((item: any) => {
-                let conf_list =  item.conf_list.map((conf:any) => {
+                let conf_list = item.conf_list.map((conf: any) => {
                     return {
                         ...conf,
                         metric_list: conf.metric_list.filter((metric: any) => filterResult(metric.compare_data, value))
@@ -221,27 +221,17 @@ const ReportTestPref: React.FC<any> = (props) => {
                 })
                 return {
                     ...item,
-                    conf_list
+                    conf_list,
                 }
             }))
         }
     }
     const renderShare = (conf: any) => {
-        let objList: any = []
-        let obj = conf?.conf_source || conf
-        allGroupData?.map((c: any, i: number) => {
-            objList.push((conf.conf_compare_data || conf.compare_conf_list)[i])
-        })
-        objList.splice(baseIndex, 0, obj)
+        let obj = conf.conf_compare_data || conf.compare_conf_list || []
         return (
-            objList.map((item: any,i:number) => (
-                item !== undefined && <PrefDataText gLen={group} key={i}>
-                    <a style={{ cursor: 'pointer' }}
-                        href={`/ws/${ws_id}/test_result/${item?.obj_id}`}
-                        target="_blank"
-                    >
-                        {item?.obj_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-                    </a>
+            obj.map((item: any, idx: number) => (
+                <PrefDataText gLen={group} key={idx}>
+                    <JumpResult ws_id={wsId} job_id={item.obj_id || item}/>
                 </PrefDataText>
             ))
         )
@@ -252,7 +242,7 @@ const ReportTestPref: React.FC<any> = (props) => {
             <Summary ref={groupRowRef}>
                 <Group style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                     <PerfGroupTitle gLen={group}>对比组名称</PerfGroupTitle>
-                    <Identify envData={envData} group={group} isData={true}/>
+                    <Identify envData={envData} group={group} isData={true} />
                 </Group>
             </Summary>
             <GroupBarWrapper
@@ -261,7 +251,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                 envData={envData}
                 groupLen={group}
             />
-            <Row style={{ maxWidth : document.body.clientWidth - 40 + scrollLeft }}>
+            <Row style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
                 <Col span={12}>
                     <TestDataTitle id="perf_item">性能测试</TestDataTitle>
                 </Col>
@@ -283,7 +273,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                         {
                                             btn ?
                                                 (item.conf_list && item.conf_list.length) ? item.conf_list.map((conf: any, cid: number) => (
-                                                    <div key={cid}>
+                                                    !!conf.metric_list.length && <div key={cid}>
                                                         <TestConf>
                                                             <ConfTitle gLen={group}>Test Conf / 指标 </ConfTitle>
                                                             {
@@ -298,7 +288,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                     <Col span={12}>
                                                                                         <RightResult>
                                                                                             对比结果/跟踪结果
-                                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor:'pointer' }}>
                                                                                                 {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                                                                             </span>
                                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
@@ -318,7 +308,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         </TestConf>
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
-                                                                <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name}/></PrefDataTitle>
+                                                                <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
                                                                 {renderShare(conf)}
                                                             </PrefData>
                                                             {
@@ -353,20 +343,16 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                             <Col span={item && item.compare_result ? 12 : 20}>
                                                                                                 <Row justify="start">
                                                                                                     <EllipsisPulic
-                                                                                                        title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
+                                                                                                        title={conversion(item)}
                                                                                                     >
                                                                                                         <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
-                                                                                                            {
-                                                                                                                !item || JSON.stringify(item) === '{}'
-                                                                                                                    ? '-'
-                                                                                                                    : item.test_value && `${item.test_value}±${item.cv_value}`
-                                                                                                            }
+                                                                                                            {conversion(item)}
                                                                                                         </Typography.Text>
                                                                                                     </EllipsisPulic>
                                                                                                 </Row>
                                                                                             </Col>
                                                                                             {
-                                                                                                item && item.compare_result && 
+                                                                                                item && item.compare_result &&
                                                                                                 <Col span={12}>
                                                                                                     <Row justify="end">
                                                                                                         <RightResult>
@@ -379,7 +365,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                                         </RightResult>
                                                                                                     </Row>
                                                                                                 </Col>
-                                                                                        }
+                                                                                            }
                                                                                         </Row>
                                                                                     </MetricText>
                                                                                 ))
@@ -391,7 +377,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         </div>
                                                     </div>
                                                 )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                                : <ChartsIndex {...item} envData={environmentResult} />
+                                                : <ChartsIndex {...item} envData={environmentResult} base_index={baseIndex} />
                                         }
                                     </TestConfWarpper>
                                 </TestSuite>
