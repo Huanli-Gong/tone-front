@@ -101,7 +101,7 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
             })
             upSeries.push({ ...upArea, data: upAreaData })
             downSeries.push({ ...downArea, data: downAreaData })
-            chartData.push({ ...data, data: lineData })
+            chartData.push({ ...data, data: lineData, connectNulls: true })
         })
 
         xAxis = Array.from(new Set(xAxis))
