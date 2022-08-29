@@ -404,18 +404,13 @@ export default (props: any) => {
     }
     const handleChangeDefaultJob = (itemSuit: any, current: any) => {
         let arr = duplicateData.slice(0)
-
         const selectd = itemSuit[current].job_list
         arr = arr.map((item: any) => {
             if (item.conf_id === itemSuit[current].conf_id) {
-                let job_id = selectd.map((child: any) => {
-                    return child.job_id === item.job_id
-                        ? selectd.filter((i: any) => i.job_id !== child.job_id)[0].job_id
-                        : item.job_id
-                })
+                let job_id = selectd.filter((item:any) => item.isSelect)[0].job_id
                 return {
                     ...item,
-                    job_id: job_id[0]
+                    job_id
                 }
             }
             return {
