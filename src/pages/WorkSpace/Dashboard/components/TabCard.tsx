@@ -2,8 +2,8 @@ import React from 'react'
 import { useParams } from 'umi'
 import moment from 'moment'
 import type { Moment } from 'moment'
-import { Col, Row, Space, Typography, Tooltip, Badge } from 'antd'
-import { InfoCircleOutlined, DownSquareOutlined, CloseOutlined, CheckOutlined, UpSquareOutlined } from '@ant-design/icons'
+import { Col, Row, Space, Typography, Tooltip, Badge, Popover, Button, Select } from 'antd'
+import { InfoCircleOutlined, DownSquareOutlined, CloseOutlined, CheckOutlined, UpSquareOutlined, FilterOutlined } from '@ant-design/icons'
 import { JobListStateTag } from '@/pages/WorkSpace/TestResult/Details/components'
 import styled from 'styled-components'
 import cls from 'classnames'
@@ -288,17 +288,38 @@ const filterIssue = (state: string) => new Map([
 const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time }) => {
     const { ws_id } = useParams() as any
     const [tab, setTab] = React.useState(null)
+    const [visible, setVisible] = React.useState(false);
+    const [jobState, setJobState] = React.useState('');
+    const defaultState = ['complete', 'pass', 'running', 'fail', 'pending', 'stop', 'skip']
+     
+    const handleSelect = (val:any) => {
+        setJobState(val)
+    }
+    
+    const handleClose = () => {
+        setJobState('')
+        setVisible(false);
+    }
+
+    const handleVisibleChange = (newVisible: boolean) => {
+        setVisible(newVisible);
+    };
 
     const expandedRow = React.useMemo(() => {
         if (!tab) return []
         const idx = list.findIndex((x) => x.project_id === tab)
         if (~idx) {
             const { today_query } = list[idx]
-            if (today_query && today_query.length > 0) return today_query
+            if (today_query && today_query.length > 0) {
+                if(jobState){
+                    return today_query.filter((item:any) => item.today_query_state === jobState)
+                } 
+                return today_query
+            }
             return []
         }
         return []
-    }, [tab, list])
+    }, [tab, list, jobState])
 
     React.useEffect(() => {
         setTab(null)
@@ -331,7 +352,7 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                                     }
                                 >
                                     {
-                                        x.project_state === 'pending' 
+                                        x.project_state === 'pending'
                                             ? <CardProcessing status="processing" />
                                             :
                                             <CardBodyData state={x.project_state}>
@@ -356,7 +377,37 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                 <CardExpandedRow>
                     <ListRow
                         title={`${getCurrentTimeStr(time)} Job名称`}
-                        state={"状态"}
+                        state={
+                            <Popover
+                                content={
+                                    <Row justify='end'>
+                                        <Space>
+                                            {/* <Button type="primary" onClick={handleFilter}>确认</Button> */}
+                                            <Button onClick={handleClose}>重置</Button>
+                                        </Space>
+                                    </Row>
+                                }
+                                title={
+                                    <>
+                                        状态：<Select style={{ width: 150 }} placeholder="请选择状态" onSelect={handleSelect}>
+                                            {
+                                                defaultState.map((item) => (
+                                                    <Select.Option value={item}>{item}</Select.Option>
+                                                ))
+                                            }
+                                        </Select>
+                                    </>
+                                }
+                                trigger="click"
+                                visible={visible}
+                                onVisibleChange={handleVisibleChange}
+                            >
+                                <Space style={{ color: 'rgba(0,0,0,.5)' }}>
+                                    状态
+                                    <FilterOutlined />
+                                </Space>
+                            </Popover>
+                        }
                         result={"结果(成功/失败)"}
                         start_time="开始时间"
                     />
