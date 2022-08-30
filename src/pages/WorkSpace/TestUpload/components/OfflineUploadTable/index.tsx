@@ -105,6 +105,7 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.product" />,
       dataIndex: 'product_name',
+      width:200,
       ellipsis: {
         showTitle: false
       },
@@ -114,6 +115,7 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.project" />,
       dataIndex: 'project_name',
+      width:180,
       ellipsis: {
         showTitle: false
       },
@@ -123,18 +125,21 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.state" />,
       dataIndex: 'state',
+      width:130,
       onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 100 }, }),
       render: (text: any, record: any) => <StateFlag title={text} content={record.state_desc} />,
     },
     {
       title: <FormattedMessage id="upload.list.table.testType" />,
       dataIndex: 'test_type',
+      width:130,
       onCell: () => ({ style: { minWidth: 100 } }),
       render: (text: any) => <span>{test_type_enum.filter((item: any) => item.value == text).map((item: any) => item.name)}</span>,
     },
     {
       title: <FormattedMessage id="upload.list.table.baseline" />,
       dataIndex: 'baseline_name',
+      width:180,
       ellipsis: {
         showTitle: false
       },
@@ -144,12 +149,17 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.uploader" />,
       dataIndex: 'uploader',
+      width:120,
+      ellipsis: {
+        showTitle: false
+      },
       onCell: () => ({ style: { minWidth: 100 } }),
       render: (text: any) => <span>{text || '-'}</span>,
     },
     {
       title: <FormattedMessage id="upload.list.table.date" />,
       dataIndex: 'gmt_created',
+      width:170,
       ellipsis: {
         showTitle: false
       },
@@ -158,6 +168,7 @@ export default forwardRef((props: any, ref: any) => {
     },
     {
       title: <FormattedMessage id="Table.columns.operation" />,
+      width:170,
       ellipsis: {
         showTitle: false
       },

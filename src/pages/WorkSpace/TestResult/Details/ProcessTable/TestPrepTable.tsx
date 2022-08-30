@@ -121,6 +121,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'mode',
             title: '运行模式',
+            width: 170,
             ellipsis: {
                 showTitle: false
             },

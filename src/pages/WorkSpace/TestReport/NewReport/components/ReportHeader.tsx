@@ -1,6 +1,6 @@
 import React,{ useContext , memo } from 'react';
 import { Row, Space } from 'antd';
-import { SettingTextArea } from './EditPublic';
+import { SettingTextArea, SettingRegUpdate } from './EditPublic';
 import styled from 'styled-components';
 import { ReportContext } from '../Provider';
 import {  ModuleWrapper } from '../ReportUI';
@@ -10,14 +10,12 @@ const CreateMsg = styled.span`
 `
 const ReportHeader = () => {
     const { btnState, obj, setObj, saveReportData, btnConfirm } = useContext(ReportContext)
-    
     const handleChangeVal = (val: any, text: string) => {
         obj[text] = val
         setObj({
             ...obj,
         })
     }
-
     return(
         <ModuleWrapper>
             <SettingTextArea 
@@ -38,14 +36,25 @@ const ReportHeader = () => {
                 }}
                 onOk={(val: any) => handleChangeVal(val, 'name')}
             />
-            <SettingTextArea 
-                name={saveReportData?.description} 
-                btn={btnState} 
-                defaultHolder="请输入报告描述"
-                btnConfirm={btnConfirm}
-                style={{ marginBottom:8 }}
-                onOk={(val: any) => handleChangeVal(val, 'description')}
-            />
+            {
+                saveReportData?.id ?
+                <SettingRegUpdate
+                    saveData={saveReportData}
+                    field='description'
+                    style={{ marginBottom:8 }}
+                    defaultHolder="请输入报告描述"
+                />
+                : 
+                <SettingTextArea 
+                    name={saveReportData?.description} 
+                    btn={btnState} 
+                    defaultHolder="请输入报告描述"
+                    btnConfirm={btnConfirm}
+                    style={{ marginBottom:8 }}
+                    onOk={(val: any) => handleChangeVal(val, 'description')}
+                />
+            }
+            
             { !btnState && <Row>
                 <Space>
                     <CreateMsg>创建人&nbsp;{saveReportData?.creator_name}</CreateMsg>

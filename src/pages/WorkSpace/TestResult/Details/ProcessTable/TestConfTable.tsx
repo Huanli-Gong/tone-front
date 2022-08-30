@@ -43,11 +43,13 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
+            width: 160,
             ...tooltipTd(),
         },
         {
             dataIndex: 'server',
             title: ['business_business'].includes(testType) ? '机器' : '测试机器',
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -62,6 +64,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             title: '环境准备',
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -173,6 +176,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 rowKey='id'
                 size="small"
                 pagination={false}
+                scroll={{ x: '100%' }}
             />
             <CommonPagination
                 total={total}

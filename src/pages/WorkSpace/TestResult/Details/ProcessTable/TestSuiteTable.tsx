@@ -31,6 +31,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
         {
             dataIndex: 'test_suite_name',
             title: 'Test Suite',
+            width: 160,
             ellipsis: {
                 showTitle: false
             },
