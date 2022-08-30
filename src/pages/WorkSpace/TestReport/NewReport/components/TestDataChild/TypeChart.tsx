@@ -61,9 +61,9 @@ const TypeChart = (props: any) => {
                     obj.dataZoom_end = (5 / data.length) * 100;
                 } 
                 for (let i = 0; i < data.length; i++) {
-                    metricData.push({
-                        value: data[i].test_value,
-                    })
+                    // metricData.push({
+                    //     value: data[i].test_value,
+                    // })
                     obj.xAxisData.push(data[i].conf_name)
                     obj.subText.push(data[i].direction)
                     len = data[i].compare_data.length

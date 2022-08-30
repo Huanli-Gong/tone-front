@@ -5,7 +5,7 @@ import TypeChart from './TestDataChild/TypeChart';
 
 const RenderMetricChart: React.FC<any> = (props) => {
     const { current, handleChartColor, legend, envData, loading, chartMetric, chartType  } = props
-
+    
     const data = useMemo(() => {
         return chartMetric &&
         <>

@@ -453,7 +453,7 @@ const Performance = (props: any) => {
                                     </div>
                                 )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 :
-                                <ChartsIndex {...suite} envData={environmentResult} />
+                                <ChartsIndex {...suite} envData={environmentResult} base_index={baselineGroupIndex}/>
                         }
                     </TestConfWarpper>
                 </TestSuite >
