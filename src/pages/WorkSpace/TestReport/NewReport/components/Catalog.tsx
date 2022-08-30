@@ -276,6 +276,7 @@ const TemplateCatalog = (props: any) => {
         setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
         document.querySelector(`#${tree_name}`)?.scrollIntoView()
     }
+
     return (
         <Catalog collapsed={collapsed}>
             {/* 目录 icon 展开 */}
@@ -296,7 +297,7 @@ const TemplateCatalog = (props: any) => {
                     <Space direction="vertical" style={{ width:'100%' }} className="spaceWarpper">
                         {
                             leftArr.map((item:any,idx:number) => (
-                                <div className='markSpace' key={idx}>
+                                <div className='markSpace' key={idx + Math.random()}>
                                     <span 
                                         onClick={() => handleCatalogItemClick(item)} 
                                         id={`left_${item}`} 
