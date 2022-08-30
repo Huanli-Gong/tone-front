@@ -10,7 +10,7 @@ import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import TestItem from './Term'
 import { useProvider } from '../Provider'
 
-const TestGroup: React.FC<any> = ({ dataItem, conf, source, ...rest }) => {
+const TestGroup: React.FC<Record<string, any>> = ({ dataItem, conf, source, ...rest }) => {
     const { handleFieldChange, hanldeRemoveField, handleGroupAddTestItem, contrl } = useProvider()
     const title = useRef<any>()
     const titleWidth = useRefWidth(title)
@@ -30,10 +30,11 @@ const TestGroup: React.FC<any> = ({ dataItem, conf, source, ...rest }) => {
                         }
                     >
                         <EditSpan
+                            {...source}
+                            key={source.rowkey}
                             icon={<GroupIcon />}
                             title={source.name}
                             width={titleWidth - 80}
-                            rowkey={`${dataItem}-${source.rowkey}`}
                             onOk={(val: any) => handleFieldChange(val, 'name', source.rowkey, dataItem)}
                         />
                         <span onClick={() => hanldeRemoveField(source.rowkey, dataItem)} >
@@ -45,9 +46,9 @@ const TestGroup: React.FC<any> = ({ dataItem, conf, source, ...rest }) => {
             <Col span={24} style={{ padding: 16 }}>
                 {
                     source.list.map(
-                        (i: any, index: any) => (
+                        (i: any) => (
                             <TestItem
-                                key={index}
+                                key={i.rowkey}
                                 source={i}
                                 {...rest}
                                 conf={conf}

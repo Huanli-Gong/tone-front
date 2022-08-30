@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo, memo } from 'react'
 import { history, Access, useAccess } from 'umi'
 
-import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Button, Spin, Input, Tooltip, Divider } from 'antd'
-import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Button, Spin, Input, Divider } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import { useClientSize } from '@/utils/hooks'
 import SuiteSelectDrawer from './components/SuiteSelectDrawer'
 import { createReportTemplate, queryReportTemplateDetails, updateReportTemplate } from './services'
@@ -16,7 +16,7 @@ import {
     ProjectTitle, TemplateBar, ReportBody,
     ReportBodyContainer, ReportIssue, ReportTemplate
 } from './styled'
-
+import { v4 as uuidv4 } from 'uuid';
 import TestGroup from './components/Group'
 import TestItem from './components/Term'
 
@@ -31,88 +31,89 @@ const defaultConf = {
     test_data: false,
 }
 
-const RenderTestBody: React.FC<any> = memo(
-    ({ testType }) => {
-        const { dataSource, setDataSource, contrl } = useProvider()
+const RenderTestBody: React.FC<any> = ({ testType }) => {
+    const { dataSource, setDataSource, contrl } = useProvider()
 
-        let bodyProps: any = { name: '性能测试数据', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
-        if (testType !== 'performance')
-            bodyProps = { name: '功能测试数据', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
+    let bodyProps: any = { name: '性能测试数据', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
+    if (testType !== 'performance')
+        bodyProps = { name: '功能测试数据', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
 
-        const handleAddTestItem = (name: string) => {
-            setDataSource(
-                produce(dataSource, (draftState: any) => {
-                    const rowkey: any = `${dataSource[name].length}`
-                    draftState[name] = dataSource[name].concat({
-                        name: `测试项${rowkey - 0 + 1}`,
-                        rowkey,
-                        list: [{
-                            test_suite_id: null,
-                            suite_show_name: "suite",
-                            case_source: [],
-                            rowkey: `${rowkey}-1`
-                        }]
-                    })
+    const handleAddTestItem = (name: string) => {
+        setDataSource(
+            produce(dataSource, (draftState: any) => {
+                draftState[name] = dataSource[name].concat({
+                    name: `测试项${dataSource[name].length - 0 + 1}`,
+                    rowkey: uuidv4(),
+                    list: [{
+                        test_suite_id: null,
+                        suite_show_name: "suite",
+                        case_source: [],
+                        rowkey: uuidv4()
+                    }]
                 })
-            )
-        }
+            })
+        )
+    }
 
-        const handleAddTestGroup = (name: string) => {
-            setDataSource(
-                produce(dataSource, (draftState: any) => {
-                    const rowkey: any = `${dataSource[name].length}`
-                    draftState[name] = dataSource[name].concat({
-                        name: `测试组${rowkey - 0 + 1}`,
-                        list: [],
-                        is_group: true,
-                        rowkey
-                    })
+    const handleAddTestGroup = (name: string) => {
+        setDataSource(
+            produce(dataSource, (draftState: any) => {
+                draftState[name] = dataSource[name].concat({
+                    name: `测试组${dataSource[name].length - 0 + 1}`,
+                    list: [],
+                    is_group: true,
+                    rowkey: uuidv4()
                 })
-            )
-        }
+            })
+        )
+    }
 
-        const handeleCheckboxChange = (name: string, val: boolean | string) => {
-            setDataSource(
-                produce(dataSource, (draftState: any) => {
-                    draftState[name] = val
-                })
-            )
-        }
+    const handeleCheckboxChange = (name: string, val: boolean | string) => {
+        setDataSource(
+            produce(dataSource, (draftState: any) => {
+                draftState[name] = val
+            })
+        )
+    }
 
-        const handleConfItemChange = (val: any, name: string, field: string) => {
-            setDataSource(
-                produce(
-                    dataSource,
-                    (draftState: any) => {
-                        const params = {
-                            ...dataSource[field],
-                        }
-                        params[name] = val
-                        draftState[field] = params
+    const handleConfItemChange = (val: any, name: string, field: string) => {
+        setDataSource(
+            produce(
+                dataSource,
+                (draftState: any) => {
+                    const params = {
+                        ...dataSource[field],
                     }
-                )
+                    params[name] = val
+                    draftState[field] = params
+                }
             )
-        }
+        )
+    }
 
-        return (
-            <Card id={bodyProps.dataItem} style={{ marginTop: 20 }} bodyStyle={{ padding: '12px 20px' }}>
-                <Row >
-                    <Checkbox
-                        checked={dataSource[bodyProps.testRadioName]}
-                        disabled={!contrl}
-                        onChange={({ target }: any) => handeleCheckboxChange(bodyProps.testRadioName, target.checked)}
-                    >
-                        <Typography.Text strong style={{ fontSize: 16 }}>{bodyProps.name}</Typography.Text>
-                    </Checkbox>
-                </Row>
-                {
-                    dataSource[bodyProps.testRadioName] &&
-                    <Row style={{ paddingLeft: 24 }}>
-                        {
-                            bodyProps.name !== '功能测试数据' &&
-                            <Col
-                                span={24}
-                                style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
+    return (
+        <Card id={bodyProps.dataItem} style={{ marginTop: 20 }} bodyStyle={{ padding: '12px 20px' }}>
+            <Row >
+                <Checkbox
+                    checked={dataSource[bodyProps.testRadioName]}
+                    disabled={!contrl}
+                    onChange={({ target }: any) => handeleCheckboxChange(bodyProps.testRadioName, target.checked)}
+                >
+                    <Typography.Text strong style={{ fontSize: 16 }}>{bodyProps.name}</Typography.Text>
+                </Checkbox>
+            </Row>
+            {
+                dataSource[bodyProps.testRadioName] &&
+                <Row style={{ paddingLeft: 24 }}>
+                    {
+                        bodyProps.name !== '功能测试数据' &&
+                        <Col
+                            span={24}
+                            style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
+                        >
+                            <Space
+                                direction="vertical"
+                                style={{ width: "100%" }}
                             >
                                 <Space
                                     direction="vertical"
@@ -120,31 +121,16 @@ const RenderTestBody: React.FC<any> = memo(
                                 >
                                     <Space>
                                         <Typography.Text>基础信息</Typography.Text>
-                                        {/* <Tooltip
-                                            placement="bottomLeft"
-                                            color="#fff"
-                                            overlayInnerStyle={{ width: 415, color: '#000' }}
-                                            arrowPointAtCenter
-                                            title={
-                                                <>
-                                                    【测试工具】将会自动从Testsuite中获取<br />
-                                                    【测试环境】【测试说明】【测试结论】需生成报告后手动填写
-                                                </>
-                                            }
-                                        >
-                                            <QuestionCircleOutlined />
-                                        </Tooltip> */}
                                     </Space>
                                     <Space
-                                        direction="horizontal"
                                         style={{ width: "100%" }}
                                     >
                                         {
                                             [
                                                 // ["测试工具", "need_test_suite_description"],
-                                                ["环境要求", "need_test_env", "test_env_desc"],
-                                                ["测试说明", "need_test_description", "test_description_desc"],
-                                                ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
+                                                ["环境要求", "need_test_env"],
+                                                ["测试说明", "need_test_description"],
+                                                ["测试结论", "need_test_conclusion"],
                                             ].map((item: any) => {
                                                 const [title, name, text] = item
                                                 return (
@@ -173,45 +159,45 @@ const RenderTestBody: React.FC<any> = memo(
                                         </Col>
                                     </Row>
                                 </Space>
-                            </Col>
-                        }
-                        <Col span={24}>
-                            {
-                                dataSource[bodyProps.dataItem].map(
-                                    (item: any, idx: number) => (
-                                        item.is_group ?
-                                            <TestGroup key={idx}  {...bodyProps} source={item} /> :
-                                            <TestItem key={idx}  {...bodyProps} source={item} />
-                                    )
+                            </Space>
+                        </Col>
+                    }
+                    <Col span={24}>
+                        {
+                            dataSource[bodyProps.dataItem].map(
+                                (item: any) => (
+                                    item.is_group ?
+                                        <TestGroup key={item.rowkey}  {...bodyProps} source={item} /> :
+                                        <TestItem key={item.rowkey}  {...bodyProps} source={item} />
                                 )
-                            }
-                        </Col>
-                        <Divider style={{ margin: '12px 0' }} />
-                        <Col span={24}>
-                            <span onClick={() => handleAddTestItem(bodyProps.dataItem)}>
-                                <Typography.Link >
-                                    <Space>
-                                        <PlusOutlined />
-                                        测试项
-                                    </Space>
-                                </Typography.Link>
-                            </span>
-                            <Divider type="vertical" />
-                            <span onClick={() => handleAddTestGroup(bodyProps.dataItem)}>
-                                <Typography.Link >
-                                    <Space>
-                                        <PlusOutlined />
-                                        测试组
-                                    </Space>
-                                </Typography.Link>
-                            </span>
-                        </Col>
-                    </Row>
-                }
-            </Card>
-        )
-    }
-)
+                            )
+                        }
+                    </Col>
+                    <Divider style={{ margin: '12px 0' }} />
+                    <Col span={24}>
+                        <span onClick={() => handleAddTestItem(bodyProps.dataItem)}>
+                            <Typography.Link >
+                                <Space>
+                                    <PlusOutlined />
+                                    测试项
+                                </Space>
+                            </Typography.Link>
+                        </span>
+                        <Divider type="vertical" />
+                        <span onClick={() => handleAddTestGroup(bodyProps.dataItem)}>
+                            <Typography.Link >
+                                <Space>
+                                    <PlusOutlined />
+                                    测试组
+                                </Space>
+                            </Typography.Link>
+                        </span>
+                    </Col>
+                </Row>
+            }
+        </Card>
+    )
+}
 
 const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
     const { dataSource, setDataSource, contrl } = useProvider()
@@ -232,39 +218,31 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
     }
 
     return (
-        <Checkbox
-            disabled={!contrl}
-            onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
-            checked={dataSource[field][name]}
+        <Space
+            direction="vertical"
+            style={{ width: "100%" }}
         >
-            {title}
-        </Checkbox>
-        // <Space
-        //     direction="vertical"
-        //     style={{ width: "100%" }}
-        // >
-        //     <Checkbox
-        //         disabled={!contrl}
-        //         onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
-        //         checked={dataSource[field][name]}
-        //     >
-        //         {title}
-        //     </Checkbox>
-        //     {
-        //         text &&
-        //         <Input.TextArea
-        //             allowClear
-        //             placeholder={`请输入${title}`}
-        //             value={dataSource[field][text]}
-        //             autoSize={{ minRows: 3, maxRows: 3 }}
-        //             disabled={!dataSource[field][name]}
-        //             onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
-        //                 console.log(field)
-        //                 handleConfItemChange(target.value, text, field)
-        //             }}
-        //         />
-        //     }
-        // </Space>
+            <Checkbox
+                disabled={!contrl}
+                onChange={({ target }) => handleConfItemChange(target.checked, name, field)}
+                checked={dataSource[field][name]}
+            >
+                {title}
+            </Checkbox>
+            {
+                text &&
+                <Input.TextArea
+                    allowClear
+                    placeholder={`请输入${title}`}
+                    value={dataSource[field][text]}
+                    autoSize={{ minRows: 3, maxRows: 3 }}
+                    disabled={!dataSource[field][name]}
+                    onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        handleConfItemChange(target.value, text, field)
+                    }}
+                />
+            }
+        </Space>
     )
 }
 
@@ -316,7 +294,7 @@ const TemplatePage = (props: any) => {
     const { route } = props
     const { ws_id, temp_id } = props.match.params
     const access = useAccess()
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [isPreview, setIsPreview] = React.useState(false)
     const { height: windowHeight } = useClientSize()
     const suiteSelectRef = useRef<any>()
@@ -357,18 +335,16 @@ const TemplatePage = (props: any) => {
     const perfKeys = useMemo(() => getTreeKeys(dataSource.perf_item), [dataSource])
     const funcKeys = useMemo(() => getTreeKeys(dataSource.func_item), [dataSource])
 
-    const refreshRowkey = (data: any, parentRowkey: any = null) => {
-        const rowkey = parentRowkey ? `${parentRowkey}-` : ''
-
-        return data.map((item: any, index: number) => {
+    const refreshRowkey = (data: any) => {
+        return data.map((item: any) => {
             if (item.list) {
                 return {
                     ...item,
-                    rowkey: `${rowkey}${index}`,
-                    list: refreshRowkey(item.list, `${rowkey}${index}`)
+                    rowkey: uuidv4(),
+                    list: refreshRowkey(item.list)
                 }
             }
-            return { ...item, rowkey: `${rowkey}${index}` }
+            return { ...item, rowkey: uuidv4() }
         })
     }
 
@@ -462,26 +438,29 @@ const TemplatePage = (props: any) => {
         )
     }
 
-    const queryItemData = (cur: any) => ({
-        name: `测试项${cur.rowkey - 0 + 1}-${cur.list.length + 1}`,
-        rowkey: `${cur.rowkey}-${cur.list.length}`,
-        list: [{
-            test_suite_id: null,
-            suite_show_name: "suite",
-            case_source: [],
-            rowkey: `${cur.rowkey}-${cur.list.length}-0`
-        }]
-    })
+    const queryItemData = (cur: any, idx: number) => {
+        const len = cur.list.length
+        return {
+            name: `测试项${idx + 1}-${len + 1}`,
+            rowkey: uuidv4(),
+            list: [{
+                test_suite_id: null,
+                suite_show_name: "suite",
+                case_source: [],
+                rowkey: uuidv4()
+            }]
+        }
+    }
 
     const filterGroupList = (data: any, rowkey: string) => {
-        return data.reduce((pre: any, cur: any) => {
+        return data.reduce((pre: any, cur: any, idx: number) => {
             if (cur.rowkey === rowkey) {
                 if (cur.is_group)
                     return pre.concat({
                         ...cur,
-                        list: cur.list.concat(queryItemData(cur))
+                        list: cur.list.concat(queryItemData(cur, idx))
                     })
-                return pre.concat(queryItemData(cur))
+                return pre.concat(queryItemData(cur, idx))
             }
             if (cur.is_group) {
                 return pre.concat({
@@ -586,6 +565,8 @@ const TemplatePage = (props: any) => {
 
     const compare = (data: any) => {
         checkName(data)
+        /* 
+           // 清空空项逻辑 
         const result = data.reduce((pre: any, cur: any) => {
             if ('test_suite_id' in cur)
                 return cur.case_source.length === 0 ? pre : pre.concat(cur)
@@ -594,15 +575,24 @@ const TemplatePage = (props: any) => {
                 return list.length > 0 ? pre.concat({ ...cur, list }) : pre
             }
             return pre
+        }, []) */
+
+        // 空项不清空逻辑
+        const result = data.reduce((pre: any, cur: any) => {
+            const { list } = cur
+            if ('test_suite_id' in cur)
+                return cur.case_source.length === 0 ? pre : pre.concat(cur)
+            if (list && list.length > 0) {
+                return pre.concat({ ...cur, list: compare(list) })
+            }
+            return pre.concat(cur)
         }, [])
         return result
     }
 
     const hanldeSaveOk = async () => {
         if (loading) return
-        setLoading(true)
         const { perf_item, func_item, name } = dataSource
-        setLoading(false)
         // if (!need_perf_data && !need_func_data)
         //     return message.warning('未添加测试数据！')
         if (!name)
@@ -659,6 +649,8 @@ const TemplatePage = (props: any) => {
             observer.disconnect();
         }
     }, [])
+
+    // console.log(dataSource)
 
     return (
         <ReportTemplateContext.Provider

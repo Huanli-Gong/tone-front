@@ -126,6 +126,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^16.8.4",
     "@types/react-helmet": "^5.0.13",
+    "@types/uuid": "^8.3.4",
     "@umijs/fabric": "^2.0.5",
     "@umijs/plugin-blocks": "^2.0.5",
     "@umijs/plugin-esbuild": "^1.0.0-beta.2",
@@ -145,7 +146,8 @@
     "prettier": "^2.0.1",
     "pro-download": "1.0.1",
     "puppeteer-core": "^2.1.1",
-    "stylelint": "^14.0.1"
+    "stylelint": "^14.0.1",
+    "uuid": "^8.3.2"
   },
   "engines": {
     "node": ">=10.0.0"

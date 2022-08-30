@@ -3,10 +3,10 @@ import { Space, Input, Button, Row } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import produce from 'immer'
 
-const EditSpan: React.FC<any> = (props: any) => {
+const EditSpan: React.FC<Record<string, any>> = (props) => {
     const { onOk, title, style, icon, width, rowkey } = props
 
-    const getEditState = () => {
+    /* const getEditState = () => {
         const templateEdit = sessionStorage.getItem('template_edit')
         return templateEdit ? JSON.parse(templateEdit) : {}
     }
@@ -15,10 +15,13 @@ const EditSpan: React.FC<any> = (props: any) => {
 
     const [context, setContext] = useState(getEditState()[rowkey]?.text || title)
 
-    const [state, setState] = useState(getEditState()[rowkey])
+    const [state, setState] = useState(getEditState()[rowkey]) */
+
+    const [state, setState] = React.useState(false)
+    const [context, setContext] = React.useState(title)
 
     const handleEdit = () => {
-        const state = getEditState()
+        /* const state = getEditState()
         setEditState(
             produce(
                 state,
@@ -28,12 +31,12 @@ const EditSpan: React.FC<any> = (props: any) => {
                     }
                 }
             )
-        )
+        ) */
         setState(true)
     }
 
     const removeKey = () => {
-        const state = getEditState()
+        /* const state = getEditState()
         setEditState(
             produce(
                 state,
@@ -41,7 +44,7 @@ const EditSpan: React.FC<any> = (props: any) => {
                     delete draftState[rowkey]
                 }
             )
-        )
+        ) */
         setState(false)
         setContext(title)
     }
@@ -51,7 +54,7 @@ const EditSpan: React.FC<any> = (props: any) => {
     }
 
     const hanldeContextChange = ({ target }: any) => {
-        const state = getEditState()
+        /* const state = getEditState()
         setEditState(
             produce(
                 state,
@@ -61,13 +64,14 @@ const EditSpan: React.FC<any> = (props: any) => {
                     }
                 }
             )
-        )
+        ) */
         setContext(target.value)
     }
 
     const handleSave = () => {
-        const state = getEditState()
-        onOk(state[rowkey] ? state[rowkey].text : title)
+        /* const state = getEditState()
+        onOk(state[rowkey] ? state[rowkey].text : title) */
+        onOk(title)
         removeKey()
     }
 
@@ -107,4 +111,4 @@ const EditSpan: React.FC<any> = (props: any) => {
     )
 }
 
-export default memo(EditSpan)
+export default EditSpan

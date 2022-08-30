@@ -4,6 +4,7 @@ import { Tree, Typography } from 'antd'
 import { UnorderedListOutlined, CaretLeftOutlined, CaretRightOutlined } from '@ant-design/icons'
 import styled, { keyframes } from 'styled-components'
 import produce from 'immer'
+import { v4 as uuidv4 } from 'uuid';
 
 const CatalogTag = styled.div`
     position:absolute;
@@ -62,9 +63,9 @@ const CatalogContainer = styled.div<CatalogProps>`
     z-index:999;
     height:100%;
     animation: ${({ tigger }) => {
-        if ( tigger === true ) return toLeft
-        if ( tigger === false ) return toRight
-        return 
+        if (tigger === true) return toLeft
+        if (tigger === false) return toRight
+        return
     }} linear .2s forwards;
 `
 
@@ -126,11 +127,11 @@ const filterItem = (data: any, name: string) => {
 }
 
 const Catalog = (props: any, ref: any) => {
-    const { onClick, dataSource, onSourceChange  } = props
-    const [tigger, setTigger] = useState<null|boolean>( null )
+    const { onClick, dataSource, onSourceChange } = props
+    const [tigger, setTigger] = useState<null | boolean>(null)
 
-    const DEFAULT_EXPANDED_KEYS = ['0-0','1-1','2-2']
-    const [ expandedKeys , setExpandedKeys ] = useState<any>(DEFAULT_EXPANDED_KEYS)
+    const DEFAULT_EXPANDED_KEYS = ['0-0', '1-1', '2-2']
+    const [expandedKeys, setExpandedKeys] = useState<any>(DEFAULT_EXPANDED_KEYS)
 
     const treeData = useMemo(() => {
         const {
@@ -154,11 +155,11 @@ const Catalog = (props: any, ref: any) => {
             children: []
         }
 
-        if (need_test_background) 
+        if (need_test_background)
             summary.children.push({ allowDrop: false, title: '测试背景', name: 'need_test_background' })
-        if (is_default && need_test_method) 
+        if (is_default && need_test_method)
             summary.children.push({ allowDrop: false, title: '测试方法', name: 'need_test_method' })
-        if (need_test_conclusion) 
+        if (need_test_conclusion)
             summary.children.push({ allowDrop: false, title: '测试结论', name: 'need_test_conclusion' })
 
         // need_test_method && summary.children.push({ title: '测试方法' })
@@ -172,7 +173,7 @@ const Catalog = (props: any, ref: any) => {
             name: 'need_test_env',
             children: []
         }
-        if (need_test_env) 
+        if (need_test_env)
             testEnv.children.push({ title: '测试环境', name: 'need_test_env' })
 
         data.push(testEnv)
@@ -186,7 +187,7 @@ const Catalog = (props: any, ref: any) => {
         if (need_perf_data) {
             testData.children.push({
                 title: '性能测试',
-                is_group : true,
+                is_group: true,
                 name: 'perf_item',
                 allowDrop: true,
                 children: perf_item.map((item: any) => filterItem(item, 'perf_item'))
@@ -198,7 +199,7 @@ const Catalog = (props: any, ref: any) => {
                 title: '功能测试',
                 name: 'func_item',
                 allowDrop: true,
-                is_group : true,
+                is_group: true,
                 children: func_item.map((item: any) => filterItem(item, 'func_item'))
             })
         }
@@ -253,19 +254,19 @@ const Catalog = (props: any, ref: any) => {
         return pre.concat(cur)
     }
 
-    const refreshRowkey = ( i : any , rowkey : string ) => {
-        if ( i.is_group ) {
+    const refreshRowkey = (i: any) => {
+        if (i.is_group) {
             return {
-                name : i.title,
-                rowkey : `${ rowkey }`,
-                is_group : i.is_group,
-                list : i.children.map(( x : any , idx : number ) => refreshRowkey( x , `${ rowkey }-${ idx }` ))
+                name: i.title,
+                rowkey: uuidv4(),
+                is_group: i.is_group,
+                list: i.children.map((x: any) => refreshRowkey(x))
             }
         }
         return {
-            name : i.title,
-            rowkey : `${ rowkey }`,
-            list : i.list
+            name: i.title,
+            rowkey: uuidv4(),
+            list: i.list
         }
     }
 
@@ -284,21 +285,22 @@ const Catalog = (props: any, ref: any) => {
                                 let delDate = ctx.children.reduce(
                                     (pre: any, cur: any) => delNode(pre, cur, dragNode), []
                                 )
-                                let newData = []
-                                if ( ctx.key === node.key ) 
-                                    newData = [ dragNode , ...delDate ]
-                                else 
+                                let newData: any = []
+                                if (ctx.key === node.key)
+                                    newData = [dragNode, ...delDate]
+                                else
                                     newData = delDate.reduce(
                                         (pre: any, cur: any) => filterDropSrouce(pre, cur, node, dragNode), []
                                     )
 
-                                const refreshData = newData.map(( i : any , index : number ) => refreshRowkey( i , `${ index }`))
-                         
+                                const refreshData = newData.map((i: any, index: number) => refreshRowkey(i))
+
+                                console.log(refreshData)
                                 onSourceChange(
                                     produce(
                                         dataSource,
-                                        ( draftState : any ) => {
-                                            draftState[ node.name ] = refreshData
+                                        (draftState: any) => {
+                                            draftState[node.name] = refreshData
                                         }
                                     )
                                 )
@@ -310,13 +312,13 @@ const Catalog = (props: any, ref: any) => {
         }
     }
 
-    const handleSelectTree = ( _ : any , evt : any ) => {
+    const handleSelectTree = (_: any, evt: any) => {
         const { node } = evt
-        const { rowkey , name } = node 
+        const { rowkey, name } = node
 
-        const id = rowkey ? `${ name }-${ rowkey }` : `${ name }`
-        document.querySelector( `#${ id }` )?.scrollIntoView()
-        document.querySelector( `#view-${id}` )?.scrollIntoView()
+        const id = rowkey ? `${name}-${rowkey}` : `${name}`
+        document.querySelector(`#${id}`)?.scrollIntoView()
+        document.querySelector(`#view-${id}`)?.scrollIntoView()
     }
 
     return (
@@ -338,10 +340,10 @@ const Catalog = (props: any, ref: any) => {
                     draggable
                     blockNode
                     expandedKeys={expandedKeys}
-                    onExpand={(expandedKeys, {expanded: bool, node}) => {
-                        setExpandedKeys( expandedKeys )
+                    onExpand={(expandedKeys, { expanded: bool, node }) => {
+                        setExpandedKeys(expandedKeys)
                     }}
-                    onSelect={ handleSelectTree }
+                    onSelect={handleSelectTree}
                 />
             </TreeWrapper>
         </CatalogContainer>

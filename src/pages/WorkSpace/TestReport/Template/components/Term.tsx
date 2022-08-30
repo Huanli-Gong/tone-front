@@ -9,7 +9,7 @@ import { CloseOutlined, MinusCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as TermIcon } from '@/assets/svg/TestReport/TestItem.svg'
 import { useProvider } from '../Provider'
 
-const TestTerm: React.FC<any> = ({ source, dataItem }) => {
+const TestTerm: React.FC<Record<string, any>> = ({ source, dataItem }) => {
     const { handleFieldChange, hanldeRemoveField, handleRemoveSuiteField, hanldeChangeSuiteName, suiteSelectRef, contrl } = useProvider()
     const title = useRef<any>()
 
@@ -29,9 +29,10 @@ const TestTerm: React.FC<any> = ({ source, dataItem }) => {
                         }
                     >
                         <EditSpan
+                            {...source}
                             icon={<TermIcon style={{ transform: 'translate(0px, 2px)' }} />}
+                            key={source.rowkey}
                             title={source.name}
-                            rowkey={`${dataItem}-${source.rowkey}`}
                             width={titleWidth - 80}
                             onOk={(val: any) => handleFieldChange(val, 'name', source.rowkey, dataItem)}
                         />
@@ -56,13 +57,14 @@ const TestTerm: React.FC<any> = ({ source, dataItem }) => {
                 <Row>
                     {
                         source.list.map(
-                            (item: any, index: any) => (
-                                <Suite span={24} key={index} >
+                            (item: any) => (
+                                <Suite span={24} key={item.rowkey} >
                                     <SuiteTitle justify="space-between" >
                                         <Access accessible={contrl} fallback={<span>{item.suite_show_name}</span>}>
                                             <EditSpan
+                                                {...item}
                                                 title={item.suite_show_name}
-                                                rowkey={`${dataItem}-${source.rowkey}-${index}`}
+                                                key={item.rowkey}
                                                 width={titleWidth - 100}
                                                 onOk={(val: any) => hanldeChangeSuiteName(item.test_suite_id, dataItem, source.rowkey, val)}
                                             />
@@ -73,7 +75,7 @@ const TestTerm: React.FC<any> = ({ source, dataItem }) => {
                                     </SuiteTitle>
                                     <Row>
                                         {
-                                            item.case_source.map(
+                                            item.case_source?.map(
                                                 (i: any, idx: any) => (
                                                     <Case
                                                         key={idx}
@@ -104,4 +106,4 @@ const TestTerm: React.FC<any> = ({ source, dataItem }) => {
     )
 }
 
-export default memo(TestTerm)
+export default TestTerm
