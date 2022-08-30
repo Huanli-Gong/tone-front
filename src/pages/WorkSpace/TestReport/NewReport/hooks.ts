@@ -589,7 +589,7 @@ export const CreatePageData = (props: any) => {
     return {
         environmentResult,
         allGroupData: allGroupList,
-        baselineGroupIndex,
+        baselineGroupIndex:  baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
         compareResult,
         compareGroupData,
         domainGroupResult,

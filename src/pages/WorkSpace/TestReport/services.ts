@@ -64,3 +64,10 @@ export async function saveReportDesc(data:any) {
         method: 'post'
     })
 }
+
+export async function editReportInfo(data:any) {
+    return request('/api/report/test/report/update_desc/', {
+        data,
+        method: 'post'
+    })
+}

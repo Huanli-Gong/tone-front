@@ -9,6 +9,7 @@ export default ({ data = [], testType, provider_name }: any) => {
         {
             title: 'Test Suite',
             dataIndex: 'test_suite_name',
+            width: 160,
             ellipsis: {
                 showTitle: false
             },
@@ -28,6 +29,7 @@ export default ({ data = [], testType, provider_name }: any) => {
         columns = columns.concat([{
             title: '运行模式',
             dataIndex: 'run_mode',
+            width: 160,
             ellipsis: {
                 showTitle: false
             },
@@ -41,6 +43,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            width: 100,
             render: (_: any) => (
                 _ ? '是' : '否'
             )
@@ -70,6 +73,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            width: 100,
             render: (_: any) => (_ || '-')
         },
         {
@@ -78,6 +82,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            width: 100,
             render: (_: any) => ('-')
         },
         {
@@ -86,6 +91,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            width: 100,
             render: (_: any) => (_ || '-')
         }
     ]);
@@ -101,6 +107,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                 rowKey="test_suite_id"
                 size="small"
                 pagination={false}
+                scroll={{ x: '100%' }}
                 expandable={{
                     expandedRowRender: (record: any) => (
                         <SuiteCaseExpandTable data={record.cases} testType={testType} provider_name={provider_name} />

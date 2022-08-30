@@ -79,6 +79,7 @@ const TestPlanManage = (props: any) => {
     const columns = [{
         dataIndex: 'name',
         title: '计划名称',
+        width:200,
         ellipsis: {
             showTitle: false
         },
@@ -86,12 +87,20 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'cron_info',
         title: '触发规则',
+        width:120,
+        ellipsis: {
+            showTitle: false
+        },
         render(_: any) {
             return _ || '-'
         }
     }, {
         dataIndex: 'enable',
         title: '启用',
+        width:120,
+        ellipsis: {
+            showTitle: false
+        },
         render: (_: any) => (
             _ ? '是' : '否'
             // <Badge status="processing" text="是" /> :
@@ -106,6 +115,10 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'creator_name',
         title: '创建人',
+        width:120,
+        ellipsis: {
+            showTitle: false
+        },
         ...getUserFilter({ name: 'creator_name', data: pageParams, setDate: setPageParams })
     }, {
         dataIndex: 'gmt_created',
@@ -176,6 +189,7 @@ const TestPlanManage = (props: any) => {
                                     dataSource={data.data}
                                     size={'small'}
                                     pagination={false}
+                                    scroll={{ x: '100%' }}
                                 />
                                 <CommonPagination
                                     pageSize={data.page_size}

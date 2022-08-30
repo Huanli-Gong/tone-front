@@ -55,7 +55,7 @@ const CaseTable: React.FC<any> = ({
             {
                 title: 'Test Suite',
                 dataIndex: 'conf_name',
-                width: 250,
+                width: 228,
                 ...tooltipTd(),
             },
             {
@@ -171,6 +171,7 @@ const CaseTable: React.FC<any> = ({
             {
                 title: '操作',
                 width: 145, //175,
+                // fixed: 'right',
                 render: (_: any) => (
                     <Access accessible={access.WsTourist()}>
                         <Access accessible={access.WsMemberOperateSelf(creator)}

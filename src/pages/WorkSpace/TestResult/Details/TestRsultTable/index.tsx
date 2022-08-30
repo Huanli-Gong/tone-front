@@ -94,7 +94,7 @@ const TestResultTable: React.FC<any> = (props) => {
         {
             title: 'Test Suite',
             dataIndex: 'suite_name',
-            width: 280,
+            width: 260,
             ...tooltipTd(),
         },
         ['functional', 'performance'].includes(testType) &&
@@ -220,6 +220,7 @@ const TestResultTable: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false
             },
+            // fixed: 'right',
             render: (_: any) => (
                 <Access accessible={access.WsTourist()}>
                     <Access

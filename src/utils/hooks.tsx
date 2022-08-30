@@ -44,7 +44,7 @@ export const useDetectZoom = () => {
 }
 
 export const useClientSize = () => {
-    const [ layout , setLayout ] = useState({ height : innerHeight , width : innerWidth })
+    const [layout, setLayout] = useState({ height: innerHeight, width: innerWidth })
     const onResize = useCallback(
         () => {
             setLayout({
@@ -90,7 +90,7 @@ type ResultProps = {
 }
 
 export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='topLeft' >{name}</Tooltip>
-export const textRender = (name:any) => {
+export const textRender = (name: any) => {
     return <Tooltip title={name} placement='topLeft'>{name}</Tooltip>
 }
 
@@ -103,23 +103,26 @@ export const enumer = (name: any) => {
     return list[name];
 }
 
-export const getTextByJs = (obj:any) => {
+export const getTextByJs = (obj: any) => {
     let str = "";
     let len = Object.keys(obj).length
-    Object.keys(obj).map((k:any,i:number) => {
-        if(i === len - 1){
+    Object.keys(obj).map((k: any, i: number) => {
+        if (i === len - 1) {
             str += `${k}=${obj[k]}`
-        }else{
+        } else {
             str += `${k}=${obj[k]}\n`
         }
     })
     return str;
 }
 
-export const JumpResult : React.FC<ResultProps> = ({ ws_id, job_id, style  }) => {
-    return (
-        <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">
-            {job_id ? <IconLink style={{ width: 9, height: 9 }} /> : <></>}
-        </a>
-    )
+export const JumpResult: React.FC<ResultProps> = ({ ws_id, job_id, style }) => {
+    if (job_id) {
+        return (
+            <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">
+                {<IconLink style={{ width: 9, height: 9 }} />}
+            </a>
+        )
+    }
+    return <>-</>
 }

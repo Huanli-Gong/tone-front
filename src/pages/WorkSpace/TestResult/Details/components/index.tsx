@@ -121,7 +121,7 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
                 <Row style={{ width }} justify="start" align="middle">
                     <Tooltip placement="topLeft" title={title}>
                         <span 
-                            style={{ width: width - 40, overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap' }}
+                            style={{ maxWidth:54, overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap' }}
                         >
                             {title || '-'}
                         </span>

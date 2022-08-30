@@ -20,6 +20,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            width: 150,
             dataIndex: 'run_mode',
         }, {
             title: '机器',
@@ -32,6 +33,10 @@ export default ({ data = [], testType, provider_name }: any) => {
         }, {
             title: 'Repeat',
             dataIndex: 'repeat',
+            width: 100,
+            ellipsis: {
+                showTitle: false
+            },
         }, {
             title: '变量',
             ellipsis: {
@@ -52,6 +57,10 @@ export default ({ data = [], testType, provider_name }: any) => {
         }, {
             title: '重启',
             dataIndex: 'need_reboot',
+            width: 100,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => (_ ? '是' : '否')
         }, {
             title: '脚本',
@@ -79,10 +88,18 @@ export default ({ data = [], testType, provider_name }: any) => {
         },
         {
             title: '监控',
+            width: 100,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: any) => ('-')
         }, {
             title: '执行优先级',
             dataIndex: 'priority',
+            width: 100,
+            ellipsis: {
+                showTitle: false
+            },
         }
     ].filter(Boolean);
 
@@ -93,6 +110,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             rowKey="test_case_id"
             pagination={false}
             size="small"
+            scroll={{ x: '100%' }}
         />
     )
 }

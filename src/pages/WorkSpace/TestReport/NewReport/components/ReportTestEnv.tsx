@@ -1,5 +1,5 @@
 import React, { useContext, memo } from 'react';
-import { SettingTextArea } from './EditPublic';
+import { SettingTextArea, SettingRegUpdate } from './EditPublic';
 import { ReportContext } from '../Provider';
 import _ from 'lodash'; 
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
@@ -56,13 +56,23 @@ const ReportTestEnv = () => {
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env" className="position_mark">
             <SubTitle><span className="line"></span>测试环境</SubTitle>
             <EditTitle>环境描述</EditTitle>
-            <SettingTextArea
-                name={saveReportData?.test_env?.text || domainResult?.env_description_desc}
-                btnConfirm={btnConfirm}
-                defaultHolder="请输入环境描述"
-                btn={btnState}
-                onOk={(val: any) => handleChangeVal(val, 'text')}
-            />
+            {
+                saveReportData?.id ?
+                <SettingRegUpdate
+                    saveData={saveReportData}
+                    field='text'
+                    defaultHolder="请输入环境描述"
+                />
+                :
+                <SettingTextArea
+                    name={saveReportData?.test_env?.text || domainResult?.env_description_desc}
+                    btnConfirm={btnConfirm}
+                    defaultHolder="请输入环境描述"
+                    btn={btnState}
+                    onOk={(val: any) => handleChangeVal(val, 'text')}
+                />
+            }
+            
             <EditTitle style={{ margin: '17px 0 14px 0' }}>机器环境</EditTitle>
             <EnvGroup>
                 <EnvGroupL>对比组名称</EnvGroupL>

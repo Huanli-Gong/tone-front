@@ -44,7 +44,7 @@ const CommonTable: React.FC<UserTable> = ({
                 pagination={false}
                 rowSelection={rowSelection}
                 expandable={expandable}
-                scroll={{ x: scrollType }}
+                scroll={{ x: '100%' }}
                 components={components}
                 onRow={(record, index) => {
                     return {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
 import { queryJobList, queryProductList, queryProduct } from './services'
@@ -9,11 +9,12 @@ import CommonPagination from '@/components/CommonPagination';
 import SelectRadio from '@/components/Public/SelectRadio';
 import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash'
-import { Table,message, Select, Divider, Space,Button, DatePicker, Row, Col } from 'antd';
+import { Table, Select, Divider, Space,Button, DatePicker, Row, Col } from 'antd';
 import SearchInput from '@/components/Public/SearchInput'
 import {resizeDocumentHeight} from './CommonMethod'
 import SelectUser from '@/components/Public/SelectUser'
 import { requestCodeMessage } from '@/utils/utils';
+import ResizeTable from '@/components/ResizeTable'
 const { Option } = Select;
 const { RangePicker } = DatePicker
 const defaultResult = {
@@ -25,6 +26,7 @@ const defaultResult = {
                 running_job: 0,
                 stop_job: 0,
                 success_job: 0,
+                total:0,
             }
 const defaultList = [{ id: 1, name: '功能' }, { id: 0, name: '性能' }]
 const styleObj = {
@@ -174,7 +176,9 @@ export default ( props : any ) => {
             title: 'JobID',
             dataIndex: 'id',
             width: 100,
-            ellipsis: true,
+            ellipsis: {
+                shwoTitle: false,
+            },
             filterDropdown: ({ confirm }: any) => <SearchInput
 				confirm={confirm}
 				autoFocus={autoFocus}
@@ -226,8 +230,11 @@ export default ( props : any ) => {
         },
         {
             title: '测试类型',
-            // width:100,
+            width:100,
             dataIndex: 'test_type',
+            ellipsis: {
+                shwoTitle: false,
+            },
             render: (_: any, row: any) => row.test_type,
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
@@ -242,10 +249,12 @@ export default ( props : any ) => {
         },
         {
             title: '创建人',
-            // width:80,
+            width:80,
+            ellipsis: {
+                shwoTitle: false,
+            },
             dataIndex: 'creator_name',
-
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} mode="" confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creators')} page_size={9999} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} mode="" confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val)} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -256,7 +265,10 @@ export default ( props : any ) => {
         },
         {
             title: '测试时间',
-            // width:180,
+            width:180,
+            ellipsis: {
+                shwoTitle: false,
+            },
             dataIndex: 'start_time',
             filterDropdown: ({ confirm }: any) => <RangePicker
                 size="middle"
@@ -270,7 +282,6 @@ export default ( props : any ) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creation_time ? '#1890ff' : undefined }} />,
-            ellipsis: true,
             render: (record: any) => {
                 return record || '-'
             }
@@ -405,14 +416,15 @@ export default ( props : any ) => {
                 <Divider className={styles.line} />
             </div>
             <Scrollbars style={scroll} className={styles.scroll}>
-            <Table
-                rowSelection={rowSelection}
+            <ResizeTable
+                rowSelection={rowSelection as any}
                 rowKey='id'
-                columns={columns}
+                columns={columns as any}
                 loading={loading}
                 dataSource={tableData}
                 pagination={false}
                 size="small"
+                scroll={{ x: '100%' }}
             />
             </Scrollbars>
             <CommonPagination

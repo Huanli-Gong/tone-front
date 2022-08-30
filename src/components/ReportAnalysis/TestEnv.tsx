@@ -23,7 +23,7 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                         const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                         return server.server_info.concat(len).map((item: any, idx: number) => (
                             i === idx && <MachineGroupR style={style} gLen={group} key={idx}>
-                                <span>{item[name] || '-'}</span>
+                                <span>{item?.[name] || '-'}</span>
                             </MachineGroupR>
                         ))
                     })
@@ -57,7 +57,7 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                         <RenderItem i={i} name='ether' /> */}
                         <MachineGroupL>GCC</MachineGroupL>
                         {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
+                            envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
                                     i === idx && <MachineGroupR gLen={group} key={idx}>
@@ -65,8 +65,8 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                                             placement="bottomLeft"
                                             autoAdjustOverflow={false}
                                             overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                            title={item.gcc}>
-                                            <span className="enviroment_child">{item.gcc || '-'}</span>
+                                            title={item?.gcc || '-'}>
+                                            <span className="enviroment_child">{item?.gcc || '-'}</span>
                                         </Tooltip>
                                     </MachineGroupR>
                                 ))
