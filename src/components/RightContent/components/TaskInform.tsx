@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { List, Typography, Empty, Spin, message } from 'antd';
-import { useModel } from 'umi';
+import { useModel, useIntl, FormattedMessage } from 'umi';
 import { singleTagRead, queryTaskMsg } from '@/services/Workspace'
 import styles from './index.less';
 import { useEffect } from 'react';
@@ -60,7 +60,9 @@ const TaskInform = (props: any) => {
                                 return (
                                     <div className={styles.list_content} key={index}>
                                         <Typography.Text ellipsis={true} style={{ width: '99%' }}>
-                                            <Typography.Text className={styles.list_titles}>[Job] 测试完成</Typography.Text>
+                                            <Typography.Text className={styles.list_titles}>
+                                                <FormattedMessage id="right.content.job.complete" />
+                                            </Typography.Text>
                                             <Typography.Text className={styles.list_main}><span style={{ cursor: 'pointer' }} onClick={() => handleJump(item)}>{obj.job_name}</span></Typography.Text>
                                         </Typography.Text>
                                         <Typography.Text className={styles.list_time}><span>{item.gmt_created}</span></Typography.Text>
@@ -70,7 +72,9 @@ const TaskInform = (props: any) => {
                                 return (
                                     <div className={styles.list_content} key={index}>
                                         <Typography.Text ellipsis={true} style={{ width: '99%' }}>
-                                            <Typography.Text className={styles.list_titles}>[计划] 测试完成</Typography.Text>
+                                            <Typography.Text className={styles.list_titles}>
+                                                <FormattedMessage id="right.content.plan.complete" />
+                                            </Typography.Text>
                                             <Typography.Text className={styles.list_main}><span style={{ cursor: 'pointer' }} onClick={() => handleJump(item)}>{obj.job_name}</span></Typography.Text>
                                         </Typography.Text>
                                         <Typography.Text className={styles.list_time}><span>{item.gmt_created}</span></Typography.Text>
@@ -80,14 +84,16 @@ const TaskInform = (props: any) => {
                                 return (
                                     <div className={styles.list_content} key={index}>
                                         <Typography.Text ellipsis={true} style={{ width: '99%' }}>
-                                            <Typography.Text className={styles.list_titles}>[故障] 测试机器故障</Typography.Text>
+                                            <Typography.Text className={styles.list_titles}>
+                                                <FormattedMessage id="right.content.machine.broken" />
+                                            </Typography.Text>
                                             <Typography.Text className={styles.list_main}>
                                                 <span style={{ cursor: 'pointer', color: '#E53333' }} onClick={() => handleJump(item)}>{obj.sn}/{obj.ip}</span>
-                                                <span>上的任务在测试准备阶段失败, 机器可能已经</span>
-                                                <span style={{ color: '#E53333' }}>故障</span>
-                                                <span>，请及时处理 ！影响的Job:</span>
+                                                <span><FormattedMessage id="right.content.broken.span1" /></span>
+                                                <span style={{ color: '#E53333' }}><FormattedMessage id="right.content.broken.span2" /></span>
+                                                <span><FormattedMessage id="right.content.broken.span3" /></span>
                                                 <span>{obj.impact_job}</span>
-                                                <span>影响的Suite有:</span>
+                                                <span><FormattedMessage id="right.content.broken.span4" /></span>
                                                 <span>{obj.impact_suite}</span>
                                             </Typography.Text>
                                         </Typography.Text>
@@ -98,8 +104,12 @@ const TaskInform = (props: any) => {
                                 return (
                                     <div className={styles.list_content} key={index}>
                                         <Typography.Text ellipsis={true} style={{ width: '99%' }}>
-                                            <Typography.Text className={styles.list_titles}>[公告] 系统公告</Typography.Text>
-                                            <Typography.Text className={styles.list_main}>暂无</Typography.Text>
+                                            <Typography.Text className={styles.list_titles}>
+                                                <FormattedMessage id="right.content.system.announcement" />
+                                            </Typography.Text>
+                                            <Typography.Text className={styles.list_main}>
+                                                <FormattedMessage id="right.content.nothing" />
+                                            </Typography.Text>
                                         </Typography.Text>
                                         <Typography.Text className={styles.list_time}><span>{item.gmt_created}</span></Typography.Text>
                                     </div>
@@ -107,12 +117,12 @@ const TaskInform = (props: any) => {
                             }
                         })
                         : <div style={{ height: 'auto' }}>
-                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无通知" />
+                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="right.content.no.notice" />} />
                         </div>
                 }
             </div>
             <div className={styles.task_footer} onClick={lookAll}>
-                查看全部
+                <FormattedMessage id="right.content.view.all" />
             </div>
         </Spin>
     )

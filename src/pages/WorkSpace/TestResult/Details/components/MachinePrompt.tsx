@@ -1,8 +1,7 @@
 import React from 'react';
 import { Col, Row, Typography } from 'antd';
-import { useParams } from 'umi';
+import { useParams, useIntl, FormattedMessage } from 'umi';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { getServerType } from '@/utils/utils';
 
 const RenderMachinePrompt = (props: any) => {
     const { aliyun_is_instance_release, cluster_msg, server_occupied, provider_name } = props;
@@ -20,7 +19,9 @@ const RenderMachinePrompt = (props: any) => {
                 <Row style={{ marginBottom: 16 }}>
                     <Col span={24}>
                         <ExclamationCircleOutlined style={{ color: '#FAAD14', padding: '16px 18px 0 26px' }} />
-                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>{getServerType(2)}实例已释放</Typography.Text>
+                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>
+                            <FormattedMessage id="aliyunServer"/>实例已释放
+                        </Typography.Text>
                         {/* <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>云上机器实例已释放</Typography.Text> */}
                         <Row style={{ padding: '4px 0 0 60px' }}>
                             <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>{aliyun_is_instance_release}</Typography.Text>

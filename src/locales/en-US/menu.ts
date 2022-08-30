@@ -11,7 +11,7 @@ export default {
   'menu.nofoundpage.404': '404页面',
   'menu.server.500': '500页面',
 
-  "menu.home": '首页',
+  "menu.home": 'Home',
   'menu.workspace': '工作台',
   'menu.setting': '基础配置',
   'menu.basicConfig': '基础配置',

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Empty, Typography, Spin, message } from 'antd';
-import { useModel } from 'umi';
+import { useModel, useIntl, FormattedMessage } from 'umi';
 import { singleSystemRead, queryApplyMsg } from '@/services/Workspace'
 import { handleMsgType, jumpPage, NoticeItem } from './utils'
 import styles from './index.less';
@@ -77,12 +77,13 @@ const SystemInform = (props: any) => {
                             )
                         })
                         : <div style={{ height: 'auto' }}>
-                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无通知" />
+                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="right.content.no.notice" />} />
                         </div>
                 }
             </div>
             <div className={styles.task_footer} onClick={lookAll}>
-                查看全部
+                {/* 查看全部 */}
+                <FormattedMessage id="right.content.view.all" />
             </div>
         </Spin>
     )

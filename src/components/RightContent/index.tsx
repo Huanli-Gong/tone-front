@@ -1,6 +1,6 @@
 import { Row, Dropdown, Menu, Tabs, Badge, message, Button, Space } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
-import { useModel, history, useAccess, Access } from 'umi';
+import { useModel, history, useAccess, Access, useIntl, FormattedMessage } from 'umi';
 import SelectLang from './SelectLang'
 import styles from './index.less';
 import { ReactComponent as MessageIcon } from '@/assets/svg/Nav/icon_notice.svg'
@@ -157,12 +157,20 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                                             onClick={handleAllRead}
                                             disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
                                         >
-                                            全部已读
+                                            {/* 全部已读 */}
+                                            <FormattedMessage id="right.content.all.read" />
                                         </Button>}>
-                                    <Tabs.TabPane key="1" tab={<Badge dot={msgNum.task_msg_state}>任务通知</Badge>}>
+                                    <Tabs.TabPane key="1" tab={
+                                        <Badge dot={msgNum.task_msg_state}><FormattedMessage id="right.content.task.notification" /></Badge>
+                                    }>
                                         <TaskInform tab={tab} />
                                     </Tabs.TabPane>
-                                    <Tabs.TabPane key="2" tab={<Badge count={msgNum.apply_msg_unread_num} size="small" offset={[msgNum.apply_msg_unread_num < 10 ? 6 : 12, 0]}>系统通知</Badge>}>
+                                    <Tabs.TabPane key="2" tab={
+                                        <Badge count={msgNum.apply_msg_unread_num} size="small" offset={[msgNum.apply_msg_unread_num < 10 ? 6 : 12, 0]}>
+                                            {/* 系统通知 */}
+                                            <FormattedMessage id="right.content.system.notification" />
+                                        </Badge>
+                                    }>
                                         <SystemInform tab={tab} />
                                     </Tabs.TabPane>
                                 </Tabs>
@@ -185,7 +193,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                 </Dropdown>
             </Access>
             {/* <AvatarDropdown /> */}
-            {/* <SelectLang /> */}
+            <SelectLang />
             {
                 BUILD_APP_ENV ?
                     <Access
@@ -193,8 +201,12 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => window.location.href = login_url}>登录</Button>
-                                    <Button type="primary" onClick={() => window.location.href = register_url}>注册</Button>
+                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>
+                                        <FormattedMessage id="right.content.login" />
+                                    </Button>
+                                    <Button type="primary" onClick={() => location.replace(register_url)}>
+                                        <FormattedMessage id="right.content.register" />
+                                    </Button>
                                 </Space> :
                                 <Space>
                                     <Button
@@ -203,7 +215,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                                         size="small"
                                         onClick={() => history.push(`/login?redirect_url=${window.location.pathname}`)}
                                     >
-                                        登录
+                                        <FormattedMessage id="right.content.login" />
                                     </Button>
                                 </Space>
                         }

@@ -6,19 +6,20 @@ class SelectLang extends React.Component {
   changLang = () => {
     const locale = getLocale();
     if (!locale || locale === 'zh-CN') {
-      setLocale('en-US');
+      setLocale('en-US', false);
     } else {
-      setLocale('zh-CN');
+      setLocale('zh-CN', false);
     }
   };
 
   render() {
     return (
       <Typography.Text
-        style={{ cursor: 'pointer', color: '#FFF' }}
-      // onClick={this.changLang}
+        style={{ cursor: 'pointer', color: '#FFF', width: 19 }}
       >
-        <FormattedMessage id="navbar.lang" />
+        <span onClick={this.changLang}>
+          <FormattedMessage id="navbar.lang" />
+        </span>
       </Typography.Text>
     )
   }
