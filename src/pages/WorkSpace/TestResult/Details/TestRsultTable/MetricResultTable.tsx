@@ -2,13 +2,14 @@ import React, { useEffect } from 'react'
 import { Tooltip } from 'antd'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
-import { useRequest, useAccess, Access, useParams } from 'umi'
+import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
 import qs from 'querystring'
 import styles from './index.less'
 import { targetJump } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
 
 export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId }: any) => {
+    const { formatMessage } = useIntl()
     const { id: job_id, ws_id } = useParams() as any
 
     const { data = [], run, loading } = useRequest(
@@ -29,9 +30,10 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             run()
     }, [compare_result])
 
+    const strLocals = formatMessage({id: 'ws.result.details.threshold'})
     const columns:any = [{
         // title : 'Metric',
-        title: '指标',
+        title: <FormattedMessage id="ws.result.details.metric" />,
         dataIndex: 'metric',
         width: 200,
         ellipsis: {
@@ -49,7 +51,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
         title:(
             <QusetionIconTootip
                 placement="bottomLeft"
-                title='测试结果'
+                title={<FormattedMessage id="ws.result.details.test.result" />}
                 desc='测试结果详情请查看日志文件'
             />
         ),
@@ -59,11 +61,11 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             <ResultTdPopver
                 {...row}
                 rowkey={`${test_case_id}${test_case_id}${index}`}
-                title="对比结果"
+                title={formatMessage({id: 'ws.result.details.compared.results'})}
             />
         )
     }, {
-        title: <QusetionIconTootip title="基线" desc="AVG ± CV" />,
+        title: <QusetionIconTootip title={<FormattedMessage id="ws.result.details.baseline_value" />} desc="AVG ± CV" />,
         dataIndex: 'baseline_value',
         width: 120,
         render: (_: any, row: any) => {
@@ -89,7 +91,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             )
         }
     }, {
-        title: '对比结果',
+        title: <FormattedMessage id="ws.result.details.compared.results" />,
         dataIndex: 'compare_result',
         width: 120,
         render: (_: any, row: any) => (
@@ -98,7 +100,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
                 '-'
         )
     }, {
-        title: <QusetionIconTootip title="阈值" desc="AVG 阈值 / CV 阈值" />,
+        title: <QusetionIconTootip title={strLocals} desc={`AVG ${strLocals} / CV ${strLocals}`} />,
         dataIndex: 'threshold',
         width: 120,
         render: (_: any) => (
@@ -106,7 +108,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
         )
         // render : ( _ : any , row : any) => <span>{ `${ row.test_value } / ${ row.cv_value }` }</span>
     }, {
-        title: '跟踪结果',
+        title: <FormattedMessage id="ws.result.details.track_result" />,
         width: 120,
         render: (_: any, row: any) => compareResultSpan(row.track_result, row.result)
     },]

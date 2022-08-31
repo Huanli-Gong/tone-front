@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useRequest, useModel, Access, useAccess, useParams } from 'umi'
+import { useRequest, useModel, Access, useAccess, useParams, useIntl, FormattedMessage  } from 'umi'
 import { queryTestResult } from '../service'
 import { Space, Row, Button, Menu, Dropdown } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
@@ -12,35 +12,37 @@ import { uniqBy } from 'lodash'
 import { ReactComponent as StopCircle } from '@/assets/svg/TestResult/suite/skip.svg'
 import { ReactComponent as SuccessCircle } from '@/assets/svg/TestResult/suite/success.svg'
 import { ReactComponent as ErrorCircle } from '@/assets/svg/TestResult/suite/fail.svg'
-// import { test_type_enum } from '@/utils/utils'
 import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ResizeTable from '@/components/ResizeTable'
-const funcStates = [
-    { key: 'count', name: '全部', value: '', color: '#649FF6' },
-    { key: 'success', name: '通过', value: 'success', color: '#81BF84' },
-    { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
-    { key: 'warn', name: '警告', value: 'warn', color: '#dcc506' },
-    { key: 'skip', name: '跳过', value: 'skip', color: '#DDDDDD' },
-]
-const perfStates = [
-    { key: 'count', name: '全部', value: '', color: '#649FF6' },
-    { key: 'increase', name: '上升', value: 'increase', color: '#81BF84' },
-    { key: 'decline', name: '下降', value: 'decline', color: '#C84C5A' },
-    { key: 'normal', name: '正常', value: 'normal', color: '#DDDDDD' },
-    { key: 'invalid', name: '无效', value: 'invalid', color: '#DDDDDD' },
-    { key: 'na', name: 'NA', value: 'na', color: '#DDDDDD' },
-]
-const businessBusinessStates = [
-    { key: 'count', name: '总计', value: '', color: '#649FF6' },
-    { key: 'success', name: '成功', value: 'success', color: '#81BF84' },
-    { key: 'fail', name: '失败', value: 'fail', color: '#C84C5A' },
-]
+
 // 结果详情 - 测试列表
 
 const TestResultTable: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
+    const funcStates = [
+        { key: 'count',  name: formatMessage({id: `ws.result.details.count`}), value: '', color: '#649FF6' },
+        { key: 'success',name: formatMessage({id: `ws.result.details.success`}), value: 'success', color: '#81BF84' },
+        { key: 'fail', name: formatMessage({id: `ws.result.details.fail`}), value: 'fail', color: '#C84C5A' },
+        { key: 'warn', name: formatMessage({id: `ws.result.details.warn`}), value: 'warn', color: '#dcc506' },
+        { key: 'skip', name: formatMessage({id: `ws.result.details.skip`}), value: 'skip', color: '#DDDDDD' },
+    ]
+    const perfStates = [
+        { key: 'count',  name: formatMessage({id: `ws.result.details.count`}), value: '', color: '#649FF6' },
+        { key: 'increase',name: formatMessage({id: `ws.result.details.increase`}), value: 'increase', color: '#81BF84' },
+        { key: 'decline', name: formatMessage({id: `ws.result.details.decline`}), value: 'decline', color: '#C84C5A' },
+        { key: 'normal',  name: formatMessage({id: `ws.result.details.normal`}), value: 'normal', color: '#DDDDDD' },
+        { key: 'invalid', name: formatMessage({id: `ws.result.details.invalid`}), value: 'invalid', color: '#DDDDDD' },
+        { key: 'na', name: formatMessage({id: `ws.result.details.na`}), value: 'na', color: '#DDDDDD' },
+    ]
+    const businessBusinessStates = [
+        { key: 'count',  name: formatMessage({id: `ws.result.details.business.count`}), value: '', color: '#649FF6' },
+        { key: 'success',name: formatMessage({id: `ws.result.details.business.success`}), value: 'success', color: '#81BF84' },
+        { key: 'fail',   name: formatMessage({id: `ws.result.details.business.fail`}), value: 'fail', color: '#C84C5A' },
+    ]
+
     const { id: job_id, ws_id } = useParams() as any
     const { caseResult = {}, test_type = '功能', provider_name: serverProvider = '', creator } = props
     const defaultParams = { state: '', job_id }
@@ -99,7 +101,7 @@ const TestResultTable: React.FC<any> = (props) => {
         },
         ['functional', 'performance'].includes(testType) &&
         {
-            title: '测试类型',
+            title: <FormattedMessage id="ws.result.details.test_type" />,
             dataIndex: 'test_type',
             width: 100,
             ellipsis: {
@@ -109,7 +111,7 @@ const TestResultTable: React.FC<any> = (props) => {
         },
         ['business_functional', 'business_performance', 'business_business'].includes(testType) &&
         {
-            title: '业务名称',
+            title: <FormattedMessage id="ws.result.details.business_name" />,
             dataIndex: 'business_name',
             width: 160,
             ellipsis: {
@@ -118,13 +120,13 @@ const TestResultTable: React.FC<any> = (props) => {
             render: (text: any) => <PopoverEllipsis title={text} />,
         },
         {
-            title: '机器',
+            title: <FormattedMessage id="ws.result.details.the.server" />,
             width: 130,
             render: () => ('-')
         },
         ['functional', 'business_functional', 'business_business'].includes(testType) &&
         {
-            title: '结果',
+            title: <FormattedMessage id="ws.result.details.result" />,
             dataIndex: 'result',
             width: 50,
             render: (_: any) => {
@@ -140,7 +142,7 @@ const TestResultTable: React.FC<any> = (props) => {
             }
         },
         {
-            title: ['functional', 'business_functional'].includes(testType) ? '总计/通过/失败/警告/跳过' : (testType === 'business_business' ? '总计/成功/失败' : 'Metric总计/上升/下降/正常/无效/NA'),
+            title: ['functional', 'business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.functional" />: (testType === 'business_business' ? <FormattedMessage id="ws.result.details.business_business" /> : <FormattedMessage id="ws.result.details.performance" />),
             width: 255,
             render: (_: any) => {
                 return (
@@ -170,33 +172,33 @@ const TestResultTable: React.FC<any> = (props) => {
         },
         (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline) &&
         {
-            title: '对比基线',
+            title: <FormattedMessage id="ws.result.details.baseline" />,
             dataIndex: 'baseline',
             width: 80,
             ...tooltipTd(),
         },
         (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline_job_id) &&
         {
-            title: '基线Job',
+            title: <FormattedMessage id="ws.result.details.baseline_job_id" />,
             dataIndex: 'baseline_job_id',
             width: 80,
             ...tooltipTd(),
         },
         {
-            title: '开始时间',
+            title: <FormattedMessage id="ws.result.details.start_time" />,
             dataIndex: 'start_time',
             width: 175,
             ...tooltipTd(),
         },
         {
-            title: '结束时间',
+            title: <FormattedMessage id="ws.result.details.end_time" />,
             dataIndex: 'end_time',
             width: 175,
             ...tooltipTd(),
         },
         access.WsTourist() &&
         {
-            title: '备注',
+            title: <FormattedMessage id="ws.result.details.test_summary" />,
             dataIndex: 'note',
             width: 80,
             ellipsis: {
@@ -215,26 +217,25 @@ const TestResultTable: React.FC<any> = (props) => {
         },
         ['performance', 'business_performance'].includes(testType) &&
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation" />,
             width: 145,
             ellipsis: {
                 showTitle: false
             },
-            // fixed: 'right',
             render: (_: any) => (
                 <Access accessible={access.WsTourist()}>
                     <Access
                         accessible={access.WsMemberOperateSelf(creator)}
                         fallback={
                             <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>对比基线</span>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>加入基线</span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
                             </Space>
                         }
                     >
                         <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
                         </Space>
                     </Access>
                 </Access>
@@ -363,9 +364,9 @@ const TestResultTable: React.FC<any> = (props) => {
         }
         setSuiteCaseSelectKeys(uniqBy(suiteData, 'suite_id'))
     }
-    const childName = ['functional', 'business_functional', 'business_business'].includes(testType) ? 'Case' : '指标'
-    const expandBtnText = openAllRows ? '收起所有Conf' : '展开所有Conf'
-    const expandIndexBtnText = indexExpandFlag ? `收起所有${childName}` : `展开所有${childName}`
+    const childName = ['functional', 'business_functional', 'business_business'].includes(testType) ? 'Case' : 'index'
+    const expandBtnText = openAllRows ? formatMessage({id: `ws.result.details.folded.conf`}): formatMessage({id: `ws.result.details.expand.conf`})
+    const expandIndexBtnText = indexExpandFlag ? formatMessage({id: `ws.result.details.folded.${childName}`}): formatMessage({id: `ws.result.details.expand.${childName}`})
 
     return (
         <>
@@ -395,7 +396,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                 </Menu>
                             }
                         >
-                            {openAllRows ? '收起所有' : '展开所有'}
+                            {openAllRows ? formatMessage({id: `ws.result.details.folded.all`}) : formatMessage({id: `ws.result.details.expand.all`})}
                         </Dropdown.Button>
                         {
                             ['performance', 'business_performance'].includes(testType) &&
@@ -404,14 +405,14 @@ const TestResultTable: React.FC<any> = (props) => {
                                     accessible={access.WsMemberOperateSelf(creator)}
                                     fallback={
                                         <Space>
-                                            <Button onClick={() => AccessTootip()}>批量对比基线</Button>
-                                            <Button onClick={() => AccessTootip()}>批量加入基线</Button>
+                                            <Button onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.batch.baseline" /></Button>
+                                            <Button onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.batch.join.baseline" /></Button>
                                         </Space>
                                     }
                                 >
                                     <Space>
-                                        <Button onClick={() => handleBatchContrastBaseline()}>批量对比基线</Button>
-                                        <Button onClick={() => handleBatchJoinBaseline()}>批量加入基线</Button>
+                                        <Button onClick={() => handleBatchContrastBaseline()}><FormattedMessage id="ws.result.details.batch.baseline" /></Button>
+                                        <Button onClick={() => handleBatchJoinBaseline()}><FormattedMessage id="ws.result.details.batch.join.baseline" /></Button>
                                     </Space>
                                 </Access>
                             </Access>

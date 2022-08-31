@@ -1,24 +1,37 @@
-import React , { useEffect , useRef } from 'react'
+import React , { useEffect , useRef, useState } from 'react'
 import * as echarts from 'echarts'
+import { getLocale, useIntl, FormattedMessage } from 'umi'
 import { matchTestType } from '@/utils/utils'
 
-const switchState = ( state : string, testType: string ) => {
-    if ( state === 'increase' ) return { color : '#81BF84', name : '上升' , legend : '#389E0D' }
-    if ( state === 'decline' )  return { color : '#C84C5A', name : '下降' , legend : '#C84C5A' }
-    if ( state === 'normal' )   return { color : '#6A737D', name : '正常' , legend : '#000000' }
-    if ( state === 'invalid' )  return { color : '#6A737D', name : '无效' , legend : '#000000' }
-    if ( state === 'na' )       return { color : '#6A737D', name : 'NA'   , legend : '#000000' }
-
-    if ( state === 'success' )  return { color : '#81BF84', name : testType === 'business_business' ? '成功' : '通过' , legend : '#389E0D' }
-    if ( state === 'fail' )     return { color : '#C84C5A', name : '失败' , legend : '#C84C5A' }
-    if ( state === 'warn' )     return { color : '#DCC506', name : '警告' , legend : '#DCC506' }
-    if ( state === 'skip' )     return { color : '#6A737D', name : '跳过' , legend : '#000000' }
-    return 
-}
-
 export default ({ data = {}, test_type = '', plan = false } : any ) => {
+    const { formatMessage } = useIntl()
+    const switchState = ( state : string, testType: string ) => {
+        if ( state === 'increase' ) return { color : '#81BF84', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#389E0D' }
+        if ( state === 'decline' )  return { color : '#C84C5A', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#C84C5A' }
+        if ( state === 'normal' )   return { color : '#6A737D', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#000000' }
+        if ( state === 'invalid' )  return { color : '#6A737D', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#000000' }
+        if ( state === 'na' )       return { color : '#6A737D', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#000000' }
+
+        if ( state === 'success' )  return { color : '#81BF84', name : testType === 'business_business' ? formatMessage({id: `ws.result.details.business.${state}`}): formatMessage({id: `ws.result.details.${state}`}), legend : '#389E0D' }
+        if ( state === 'fail' )     return { color : '#C84C5A', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#C84C5A' }
+        if ( state === 'warn' )     return { color : '#DCC506', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#DCC506' }
+        if ( state === 'skip' )     return { color : '#6A737D', name : formatMessage({id: `ws.result.details.${state}`}), legend : '#000000' }
+        return 
+    }
+
     const chart : any = useRef( null )
     const testType = matchTestType(test_type)
+    // 用于语言国际化时时检测
+    const [localeState, setLocaleState] = useState<any>('')
+    useEffect(()=> {
+        const timer = setInterval(()=> {
+          const str = getLocale()
+          if (str!== localeState) setLocaleState(str)
+        }, 200)
+        return () => {
+          timer && clearInterval(timer)
+        }
+    }, [])
 
     useEffect(() => {
         if ( JSON.stringify( data ) !== '{}' ) {
@@ -94,7 +107,7 @@ export default ({ data = {}, test_type = '', plan = false } : any ) => {
                 }],
             })
         }
-    }, [data, chart])
+    }, [data, chart, localeState])
 
     return (
         <div style={{ width: 'calc(100% - 0px)' }}

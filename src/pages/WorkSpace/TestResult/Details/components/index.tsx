@@ -3,11 +3,12 @@ import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb, Typography
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Clipboard from 'clipboard'
-import { history, useParams } from 'umi'
+import { history, useParams, useIntl, FormattedMessage  } from 'umi'
 import styled from 'styled-components'
 import { AccessTootip } from '@/utils/utils';
 
 export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
+    const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     return (
         <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
@@ -332,11 +333,12 @@ export const ResultTdPopver: React.FC<any> = (
         rowkey
     }
 ) => {
+    const { formatMessage } = useIntl()
     const id = `copyColumnTd${rowkey || ''}`
     useEffect(() => {
         const clipboard = new Clipboard('#' + id)
         clipboard.on('success', function (e) {
-            message.success('复制成功')
+            message.success(formatMessage({id: 'request.copy.success'}) )
             e.clearSelection();
         })
         return () => {
@@ -381,7 +383,7 @@ CV:  ${cv}`
                         style={{ color: '#1890FF', cursor: 'pointer' }}
                         data-clipboard-text={copyText}
                     >
-                        复制
+                        <FormattedMessage id="operation.copy" />
                     </span>
                 </Row>
             }

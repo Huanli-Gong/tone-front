@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react'
 
 import { Modal, Row, Col, Form, Checkbox } from 'antd'
 import styled from 'styled-components'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage  } from 'umi'
 import { stringify } from 'querystring'
 import { reRunCheckedText } from '../../index'
 import { targetJump } from '@/utils/utils'
@@ -20,6 +20,7 @@ const Content = styled(Modal)`
 `
 
 const ReRunModal = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams<any>()
 
     const [visible, setVisible] = useState(false)
@@ -71,8 +72,8 @@ const ReRunModal = (props: any, ref: any) => {
             visible={visible}
             width={487}
             title="导入配置"
-            okText="确认"
-            cancelText="取消"
+            okText={<FormattedMessage id="operation.confirm"/>}
+            cancelText={<FormattedMessage id="operation.cancel"/>}
             onOk={hanldeOk}
             onCancel={hanldeCancle}
             maskClosable={false}
@@ -98,7 +99,7 @@ const ReRunModal = (props: any, ref: any) => {
                         <Checkbox>同时导入通知配置</Checkbox>
                     </Form.Item>
                     <Form.Item valuePropName="checked" name="inheriting_machine">
-                        <Checkbox disabled={!reRunChecked}>{reRunCheckedText}</Checkbox>
+                        <Checkbox disabled={!reRunChecked}>{formatMessage({ id: reRunCheckedText })}</Checkbox>
                     </Form.Item>
                 </Form>
             </Row>

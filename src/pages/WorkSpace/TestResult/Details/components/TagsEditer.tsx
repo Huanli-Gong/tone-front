@@ -2,7 +2,7 @@ import React, { useState , useEffect , useRef } from 'react'
 import { Button, Select, Space, Tag , Row } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
-import { useRequest, Access, useAccess } from 'umi'
+import { useRequest, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { EditOutlined, PlusOutlined} from '@ant-design/icons'
 import { updateJobTags } from '../service'
 
@@ -67,7 +67,7 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
     const editBtn = {
         paddingTop: 5
     }
-    
+
     return (
         <>
             {/* <Typography.Text className={ styles.test_summary_item }>
@@ -129,8 +129,8 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                     }
                     </Select>
                     <Space>
-                        <Button onClick={ handleCancel } size="small"  >取消</Button>
-                        <Button onClick={ handleOk } size="small" type="primary">确定</Button>
+                        <Button onClick={ handleCancel } size="small"  ><FormattedMessage id="operation.cancel"/></Button>
+                        <Button onClick={ handleOk } size="small" type="primary"><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 </Row>
             }

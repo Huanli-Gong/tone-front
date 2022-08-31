@@ -1,6 +1,7 @@
 import { Tabs } from 'antd'
 import React from 'react'
 import { isUrl } from '@/utils/utils'
+import { useIntl, FormattedMessage } from 'umi'
 
 import TestResult from './InfoResultTable'
 import ResultFile from './InfoResultFile'
@@ -17,6 +18,7 @@ const CustomTabs = styled(Tabs)`
 `
 
 const ResultInfo: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { testType = 'functional' } = props
     const { result_data = {} } = props
     const { ci_detail, result } = result_data
@@ -43,16 +45,16 @@ const ResultInfo: React.FC<any> = (props) => {
     return (
         <div style={{ paddingLeft: 20, paddingRight: 20, background: '#FBFBFB' }}>
             <CustomTabs defaultActiveKey="1" onTabClick={(t: any) => setTab(t)} activeKey={tab}>
-                <Tabs.TabPane tab="测试结果" key="1" />
+                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testResult" />} key="1" />
                 {
                     ['performance', 'business_performance'].includes(testType) &&
-                    <Tabs.TabPane tab="数据监控" key="2" />
+                    <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.monitor" />} key="2" />
                 }
-                <Tabs.TabPane tab="日志文件" key="3" />
-                <Tabs.TabPane tab="版本信息" key="4" />
+                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.log" />} key="3" />
+                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.versionInfo" />} key="4" />
                 {
                     ['business_business'].includes(testType) &&
-                    <Tabs.TabPane tab="执行详情" key="5" />
+                    <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.executionDetails" />} key="5" />
                 }
             </CustomTabs>
             {

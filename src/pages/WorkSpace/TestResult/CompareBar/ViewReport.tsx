@@ -7,7 +7,7 @@ import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
-import { history, useModel, Access, useAccess, useParams } from 'umi'
+import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 
 const styleObj = {
@@ -16,6 +16,7 @@ const styleObj = {
 }
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { initialState } = useModel('@@initialState');
     const { dreType, jobInfo, origin, buttonStyle = {}, title } = props
@@ -67,7 +68,7 @@ export default (props: any) => {
     const columns: TableColumnProps<any>[] = [
         {
             dataIndex: 'name',
-            title: '报告名称',
+            title: <FormattedMessage id="ws.test.list.report.name" />,
             width: 165,
             ellipsis: {
                 showTitle: false,
@@ -87,7 +88,7 @@ export default (props: any) => {
                     setJobRefAllReport(refAllJobCopy)
                     setParams({ ...params, name: val })
                 }}
-                placeholder="支持搜索报告名称"
+                placeholder={formatMessage({id: 'ws.test.list.report.name.placeholder'})}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -113,7 +114,7 @@ export default (props: any) => {
         {
             dataIndex: 'creator_name',
             width: 100,
-            title: '创建人',
+            title: <FormattedMessage id="ws.test.list.creators" />,
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator_name')} page_size={20} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -125,7 +126,7 @@ export default (props: any) => {
         },
         {
             dataIndex: 'gmt_created',
-            title: '保存时间',
+            title: <FormattedMessage id="ws.test.list.gmt_created" />,
             width: 200,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }
@@ -176,16 +177,20 @@ export default (props: any) => {
     const isFlag = _.get(jobInfo, 'report_li') && jobInfo.report_li.length
     return (
         <div className={styles.conf_item_box} key={isFlag}>
-            <Popover placement={dreType} title="查看报告" content={getContent(jobRefReport)} trigger="click" overlayClassName={styles.popover_job} visible={visible}>
+            <Popover placement={dreType} 
+                title={<FormattedMessage id="ws.test.list.view.report" />}
+                content={getContent(jobRefReport)} 
+                trigger="click" 
+                overlayClassName={styles.popover_job} visible={visible}>
                 {
                     origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
-                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}>{title || '查看报告'}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
+                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}>{title || <FormattedMessage id="ws.test.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
                         </span>
                     </Typography.Text> :
                         <Button type="primary"
                             onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
                             style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
-                            {title || '查看报告'}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
+                            {title || <FormattedMessage id="ws.test.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
                         </Button>
                 }
             </Popover>

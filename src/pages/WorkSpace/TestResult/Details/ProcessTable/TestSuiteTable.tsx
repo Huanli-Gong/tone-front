@@ -7,10 +7,12 @@ import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
 import _ from 'lodash';
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
-import { useRequest, useAccess, Access, useModel } from 'umi';
+import { useRequest, useAccess, Access, useModel, useIntl, FormattedMessage } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ResizeTable from '@/components/ResizeTable'
+
 export default ({ job_id, refresh = false, testType, provider_name }: any) => {
+    const { formatMessage } = useIntl()
     const { initialState } = useModel('@@initialState');
     const access = useAccess()
     const [skipBtn, setSkipBtn] = useState<Boolean>(false)
@@ -39,7 +41,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
     ];
     if (['business_business'].includes(testType)) {
         columns = columns.concat([{
-            title: '业务名称',
+            title: <FormattedMessage id="ws.result.details.business_name"/>,
             dataIndex: 'business_name',
             width: 160,
             ellipsis: {
@@ -51,39 +53,40 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     columns = columns.concat([
         {
-            title: '环境准备',
+            title: <FormattedMessage id="ws.result.details.env.preparation"/>,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => {
+                const strLocals = formatMessage({id: 'ws.result.details.env.preparation.details'})
                 return (
                     <ConfPopoverTable
                         {..._}
-                        title={`${_.test_suite_name}环境准备详情`}
+                        title={`${_.test_suite_name}${strLocals}`}
                     />
                 )
             }
         },
         {
             dataIndex: 'state',
-            title: '状态',
+            title: <FormattedMessage id="ws.result.details.state"/>,
             render: (_: any) => evnPrepareState(_)
         },
         {
             dataIndex: 'start_time',
-            title: '开始时间',
+            title: <FormattedMessage id="ws.result.details.start_time"/>,
             ellipsis: {
                 showTitle: false
             },
         },
         {
             dataIndex: 'end_time',
-            title: '结束时间',
+            title: <FormattedMessage id="ws.result.details.end_time"/>,
             ellipsis: {
                 showTitle: false
             },
         }, {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -95,6 +98,8 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                 }
                 const pointerStyle = { color: '#1890FF', cursor: 'pointer', marginLeft: 12 };
                 const disablePointer = { color: 'rgba(0,0,0,.25)', marginLeft: 12 };
+                const stopLocals = formatMessage({id: 'ws.result.details.stop.suite'})
+                const skipLocals = formatMessage({id: 'ws.result.details.skip.suite'})
 
                 if (state === 'running')
                     return (
@@ -104,20 +109,20 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                                     accessible={access.WsMemberOperateSelf(_.creator)}
                                     fallback={
                                         <span>
-                                            <span style={style} onClick={() => AccessTootip()}>停止Suite</span>
+                                            <span style={style} onClick={() => AccessTootip()}>{stopLocals}</span>
                                             {
                                                 skipBtn && suiteId === _.id
-                                                    ? <span style={disablePointer} >跳过suite</span>
-                                                    : <span style={pointerStyle} onClick={() => AccessTootip()}>跳过suite</span>
+                                                    ? <span style={disablePointer} >{skipLocals}</span>
+                                                    : <span style={pointerStyle} onClick={() => AccessTootip()}>{skipLocals}</span>
                                             }
                                         </span>
                                     }
                                 >
-                                    <span style={style} onClick={() => handleStopSuite(_)}>停止Suite</span>
+                                    <span style={style} onClick={() => handleStopSuite(_)}>{stopLocals}</span>
                                     {
                                         skipBtn && suiteId === _.id
-                                            ? <span style={disablePointer} >跳过suite</span>
-                                            : <span style={pointerStyle} onClick={() => handleSkipSuite(_)}>跳过suite</span>
+                                            ? <span style={disablePointer} >{skipLocals}</span>
+                                            : <span style={pointerStyle} onClick={() => handleSkipSuite(_)}>{skipLocals}</span>
                                     }
                                 </Access>
                             </Access>
@@ -126,27 +131,27 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
                 else if (state === 'pending')
                     return (
                         <div>
-                            <span style={style}>停止Suite</span>
+                            <span style={style}>{stopLocals}</span>
                             <Access accessible={access.WsTourist()}>
                                 <Access
                                     accessible={access.WsMemberOperateSelf(_.creator)}
                                     fallback={
                                         skipBtn && suiteId === _.id
-                                            ? <span style={disablePointer} >跳过suite</span>
-                                            : <span style={pointerStyle} onClick={() => AccessTootip()}>跳过suite</span>
+                                            ? <span style={disablePointer} >{skipLocals}</span>
+                                            : <span style={pointerStyle} onClick={() => AccessTootip()}>{skipLocals}</span>
                                     }
                                 >
                                     {
                                         skipBtn && suiteId === _.id
-                                            ? <span style={disablePointer} >跳过suite</span>
-                                            : <span style={pointerStyle} onClick={() => handleSkipSuite(_)}>跳过suite</span>
+                                            ? <span style={disablePointer} >{skipLocals}</span>
+                                            : <span style={pointerStyle} onClick={() => handleSkipSuite(_)}>{skipLocals}</span>
                                     }
                                 </Access>
                             </Access>
                         </div>
                     )
                 else
-                    return <span style={style}>停止Suite</span>
+                    return <span style={style}>{stopLocals}</span>
             }
         }
     ]);
@@ -167,7 +172,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
             return
         }
         run()
-        message.success('操作成功')
+        message.success(formatMessage({id: 'operation.success'}) )
     }
 
     const [expandedKeys, setExpandedKeys] = useState<any>([])
@@ -185,7 +190,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
         if (code === 200) {
             setSuiteId(_.id)
             setSkipBtn(true)
-            message.success('操作成功')
+            message.success(formatMessage({id: 'operation.success'}) )
             run()
         } else {
             setSkipBtn(false)
@@ -196,14 +201,14 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
 
     return (
         <Card
-            title="测试用例"
+            title={<FormattedMessage id="ws.result.details.test.case"/>}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}
             extra={
                 expandedKeys.length === data.length ?
-                    <Button onClick={() => setExpandedKeys([])}>全部收起</Button> :
-                    <Button onClick={() => setExpandedKeys(data.map((item: any) => item.id))}>全部展开</Button>
+                    <Button onClick={() => setExpandedKeys([])}><FormattedMessage id="ws.result.details.put.away.all"/></Button> :
+                    <Button onClick={() => setExpandedKeys(data.map((item: any) => item.id))}><FormattedMessage id="ws.result.details.expanded.all"/></Button>
             }
         >
             <ResizeTable

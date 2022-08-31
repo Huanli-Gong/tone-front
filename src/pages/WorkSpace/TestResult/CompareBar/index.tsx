@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Space, Popconfirm, Button, message, Popover } from 'antd';
-import { history, Access, useAccess } from 'umi'
+import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -12,6 +12,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { selectedChange, wsId, allSelectRowData } = props
     const access = useAccess()
     const scrollbarsRef: any = useRef(null)
@@ -240,7 +241,7 @@ export default (props: any) => {
                     return
                 }
                 if (result[0].code === 1358) {
-                    message.error('请添加对比组数据')
+                    message.error(message.error(formatMessage({id: 'ws.result.list.please.add.comparison.group'}) ))
                     return
                 }
                 if (result[1].code !== 200) {
@@ -249,11 +250,11 @@ export default (props: any) => {
             })
 
             .catch((e) => {
-                message.error('请求失败')
+                message.error(message.error(formatMessage({id: 'request.failed'}) ))
                 console.log(e)
             })
     }
-    
+
     const getDisabled = () => {
         let disabled = false
         if (_.isArray(allSelectRowData)) {
@@ -270,19 +271,19 @@ export default (props: any) => {
 
     return (
         <div className={styles.job_compare} style={{ display: allSelectRowData.length ? 'block' : 'none' }}>
-            <div className={styles.title}>对比栏<span>（{allSelectRowData.length}）</span>  <Popover
-                content={
-                    <div>
-                        {"合并规则：取所有Job的并集数据；"}
-                        <div>{"如果有重复的，排序靠前的Job优先。"}</div>
-                    </div>
-                }
-                placement="right"
-            >
-                <QuestionCircleOutlined
-                    className={styles.question_icon}
-                />
-            </Popover></div>
+            <div className={styles.title}><FormattedMessage id="ws.test.list.compare.bar" /><span>（{allSelectRowData.length}）</span>  <Popover
+                        content={
+                            <div>
+                                {<FormattedMessage id="ws.test.list.combining.rule" />}
+                                <div>{<FormattedMessage id="ws.test.list.top.ranked" />}</div>
+                            </div>
+                        }
+                        placement="right"
+                    >
+                        <QuestionCircleOutlined
+                            className={styles.question_icon}
+                        />
+                    </Popover></div>
             <div className={styles.job_group} id='job_group'>
                 <Scrollbars style={scroll} ref={scrollbarsRef}>
                     <ul id='box'>
@@ -291,7 +292,10 @@ export default (props: any) => {
                                 {
                                     firstRowData.map((obj: any) => {
                                         return (
-                                            <Popconfirm title="你确定要删除吗" okText="删除" cancelText="取消" onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
+                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />} 
+                                                okText={<FormattedMessage id="operation.delete" />} 
+                                                cancelText={<FormattedMessage id="operation.cancel" />} 
+                                                onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
                                                 <span className={styles.job_item_span}><span>{obj.id}</span><CloseOutlined className={styles.delete} /></span>
                                             </Popconfirm>
                                         )
@@ -302,7 +306,10 @@ export default (props: any) => {
                                 {
                                     secondRowData.map((obj: any) => {
                                         return (
-                                            <Popconfirm title="你确定要删除吗" okText="删除" cancelText="取消" onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
+                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />} 
+                                                okText={<FormattedMessage id="operation.delete" />} 
+                                                cancelText={<FormattedMessage id="operation.cancel" />}
+                                                onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
                                                 <span className={styles.job_item_span}>{obj.id}<CloseOutlined className={styles.delete} /></span>
                                             </Popconfirm>
                                         )
@@ -315,14 +322,16 @@ export default (props: any) => {
                 <div className={styles.operate}>
                     <Space>
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0, marginLeft: 16, marginRight: 8 }} />
-                        <Button onClick={handleCancle}>取消</Button>
+                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
                         <Access accessible={access.IsWsSetting()}>
-                            <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}>生成报告</Button>
+                            <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}><FormattedMessage id="ws.test.list.create.report" /></Button>
                         </Access>
-                        <Button type="primary" onClick={_.partial(handleNext, 'test_analysis/compare')}>对比分析</Button>
+                        <Button type="primary" onClick={_.partial(handleNext,'test_analysis/compare')}>
+                            <FormattedMessage id="ws.test.list.compare.analysis" />
+                        </Button>
                     </Space>
                 </div>
-                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id={wsId} allGroup={[getBaselineGroup()]} />
+                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id = {wsId} allGroup = {[getBaselineGroup()]}/>
             </div>
         </div>
     )

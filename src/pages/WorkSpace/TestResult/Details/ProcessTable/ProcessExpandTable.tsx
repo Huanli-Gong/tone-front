@@ -1,22 +1,23 @@
 import { Table } from 'antd'
 import React from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import { copyTooltipColumn , tooltipTd , evnPrepareState } from '../components'
 import styles from './index.less'
 import ResizeTable from '@/components/ResizeTable'
 import { ReactComponent as ColumnStateLine } from '@/assets/svg/TestResult/line.svg'
 
 export default ({ items , mode } : any ) => {
-
+    const { formatMessage } = useIntl()
     const columns : any = [{
         dataIndex : 'mode',
-        title : '运行模式',
+        title : <FormattedMessage id="ws.result.details.mode"/>,
         ellipsis: {
             showTitle: false
         },
     },
     {
         dataIndex : 'ip',
-        title : '测试机器',
+        title : <FormattedMessage id="ws.result.details.test.server"/>,
         align : 'center',
         ellipsis: {
             showTitle: false
@@ -25,19 +26,19 @@ export default ({ items , mode } : any ) => {
     },
     {
         dataIndex : 'stage',
-        title : '步骤',
+        title : <FormattedMessage id="ws.result.details.stage"/>,
         ellipsis: {
             showTitle: false
         },
     },
     {
         dataIndex : 'state',
-        title : '状态',
+        title : <FormattedMessage id="ws.result.details.state"/>,
         render : evnPrepareState
     },
     {
         dataIndex : 'result',
-        title : '输出结果',
+        title : <FormattedMessage id="ws.result.details.output.results"/>,
         ...copyTooltipColumn( 'Nothing to do' ),
     },
     {
@@ -47,14 +48,14 @@ export default ({ items , mode } : any ) => {
     },
     {
         dataIndex : 'gmt_created',
-        title : '开始时间',
+        title : <FormattedMessage id="ws.result.details.start_time"/>,
         ellipsis: {
             showTitle: false
         },
     },
     {
         dataIndex : 'gmt_modified',
-        title : '完成时间',
+        title : <FormattedMessage id="ws.result.details.finish_time"/>,
         ellipsis: {
             showTitle: false
         },
