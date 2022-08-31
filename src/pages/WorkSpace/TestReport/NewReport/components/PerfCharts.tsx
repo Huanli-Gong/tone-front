@@ -92,7 +92,6 @@ const ChartModal = (props: any) => {
         obj.base_index = base_index
         let jobList:any = []
         let conf_info: any = []
-        console.log('conf_list',conf_list)
         let arr:any = []
         conf_list?.forEach((conf: any, index: number) => {
             arr = conf.conf_compare_data || conf.compare_conf_list
@@ -105,7 +104,6 @@ const ChartModal = (props: any) => {
             jobList.push({ job_list: [].concat(item.obj_id) })
             
         });
-        console.log('group_jobs',group_jobs,jobList)
         obj.group_jobs =  jobList
         obj.conf_info = conf_info
         obj.show_type = 2
