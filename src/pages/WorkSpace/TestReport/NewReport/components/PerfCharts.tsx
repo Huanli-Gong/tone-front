@@ -92,17 +92,19 @@ const ChartModal = (props: any) => {
         obj.base_index = base_index
         let jobList:any = []
         let conf_info: any = []
+        let arr:any = []
         conf_list?.forEach((conf: any, index: number) => {
-            let arr = conf.conf_compare_data || conf.compare_conf_list
-            arr.forEach((item:any) => {
-                jobList.push({ job_list: [item]})
-            });
+            arr = conf.conf_compare_data || conf.compare_conf_list
             conf_info.push({
                 conf_id: conf.conf_id,
                 conf_name: conf.conf_name
             })
         })
-        obj.group_jobs = group_jobs || jobList
+        arr.forEach((item:any) => {
+            jobList.push({ job_list: [].concat(item.obj_id) })
+            
+        });
+        obj.group_jobs =  jobList
         obj.conf_info = conf_info
         obj.show_type = 2
         if (chartType === '2') {
