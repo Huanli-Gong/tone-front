@@ -499,8 +499,8 @@ export const CreatePageData = (props: any) => {
             let compare: any = {
                 tag,
                 is_job,
-                func_data: { funcAll: '-', success: '-', fail: '-' },
-                perf_data: { perfAll: '-', decline: '-', increase: '-' }
+                func_data: {},
+                perf_data: {}
             }
             if (func_data_result && !!func_data_result.length) {
                 const funcCount = countCase(func_data_result, 'compare_count', { all_case: 0, success_case: 0, fail_case: 0 }, idx)
@@ -510,10 +510,16 @@ export const CreatePageData = (props: any) => {
                     fail: funcCount?.fail_case,
                 }
             }
+            
             if (perf_data_result && !!perf_data_result.length) {
+                let perfAll = perf_data_result.reduce((pre: any, cur: any) => {
+                    const { all } = cur.base_count
+                    return pre += all
+                }, 0)
+
                 const perfCount = countCase(perf_data_result, 'compare_count', { all: 0, decline: 0, increase: 0 }, idx)
                 compare.perf_data = {
-                    perfAll: perfCount.all,
+                    perfAll,
                     decline: perfCount.decline,
                     increase: perfCount.increase,
                 }
@@ -525,32 +531,24 @@ export const CreatePageData = (props: any) => {
         let base_group: any = {
             tag: environmentResult.base_group.tag,
             is_job: 1,
+            func_data: {},
+            perf_data: {}
         }
 
         if (func_data_result && !!func_data_result.length) {
             base_group = {
                 ...base_group,
-                ...func_data_result.reduce((pre: any, cur: any) => {
-                    const { all_case, success_case, fail_case } = cur.base_count
-                    return {
-                        funcAll: pre.funcAll += all_case,
-                        success: pre.success += success_case,
-                        fail: pre.fail += fail_case
-                    }
-                }, { funcAll: 0, success: 0, fail: 0 })
-            }
-        }
-        if (perf_data_result && !!perf_data_result.length) {
-            base_group = {
-                ...base_group,
-                ...perf_data_result.reduce((pre: any, cur: any) => {
-                    const { all, decline, increase } = cur.base_count
-                    return {
-                        perfAll: pre.perfAll += all,
-                        decline: pre.decline += decline,
-                        increase: pre.increase += increase
-                    }
-                }, { perfAll: 0, decline: 0, increase: 0 })
+                func_data:{
+                    ...func_data_result.reduce((pre: any, cur: any) => {
+                        const { all_case, success_case, fail_case } = cur.base_count
+                        return {
+                            funcAll: pre.funcAll += all_case,
+                            success: pre.success += success_case,
+                            fail: pre.fail += fail_case
+                        }
+                    }, { funcAll: 0, success: 0, fail: 0 })
+                }
+                
             }
         }
         newObj.custom = '-',
@@ -571,14 +569,10 @@ export const CreatePageData = (props: any) => {
 
     useMemo(() => {
         const deep = _.cloneDeep(environmentResult)
-        let groupArr: any = window.sessionStorage.getItem('compareData')
-        const groupLen = JSON.parse(groupArr)
-        if (Array.isArray(groupLen) && groupLen.length > 1) {
-            deep.base_group.is_base = true
-        }
         let compare = deep.compare_groups
         let base = deep.base_group
         compare.splice(baselineGroupIndex, 0, base)
+        compare[baselineGroupIndex].is_base = true
         setEnvData(compare)
     }, [environmentResult])
 
