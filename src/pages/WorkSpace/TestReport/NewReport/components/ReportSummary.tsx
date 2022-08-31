@@ -1,4 +1,4 @@
-import React, { useContext, memo } from 'react';
+import React, { useContext, memo, useMemo } from 'react';
 import { ReportContext } from '../Provider';
 import { Space, Tooltip, Typography } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
@@ -21,17 +21,81 @@ import {
 } from '../ReportUI'
 
 const ReportSummary = () => {
-    const { logoData, envData, domainResult, groupLen } = useContext(ReportContext)
+    const { logoData, envData, domainResult, groupLen, baselineGroupIndex } = useContext(ReportContext)
     const conversionNum = (val: any) => {
         if (val == 0) {
             return 0;
-        } else if (isNaN(val) || isUndefined(val)){
+        } else if (isNaN(val) || isUndefined(val)) {
             return '-';
         } else {
             return val;
         }
     }
     // const statisticalWidth = `${String(base_group.all).length * 20}px`  动态计算测试数据的宽度
+    const RenderPerfItem: React.FC<any> = () => (
+        Array.isArray(logoData) && !!logoData.length ?
+            <Result>
+                <PerfResultTitle gLen={groupLen}>性能测试</PerfResultTitle>
+                {
+                    logoData.map((item: any, idx: number) => {
+                        const { perfAll, increase, decline } = item.perf_data || item
+                        return (
+                            <PerfResultData gLen={groupLen} key={idx}>
+                                <div style={{ display: 'flex', margin: '18px 0' }}>
+                                    <Statistical>
+                                        <i className="logo">总计</i><br />
+                                        <b className="all">{conversionNum(perfAll)}</b>
+                                    </Statistical>
+                                    <Statistical>
+                                        <i className="logo">上升</i><br />
+                                        <b className="up">{conversionNum(increase)}</b>
+                                    </Statistical>
+                                    <Statistical >
+                                        <i className="logo">下降</i><br />
+                                        <b className="down">{conversionNum(decline)}</b>
+                                    </Statistical>
+                                </div>
+                            </PerfResultData>
+                        )
+                    })
+                }
+            </Result>
+            : <></>
+    )
+    const RenderFuncItem: React.FC<any> = () => (
+        Array.isArray(logoData) && !!logoData.length ?
+            <Result>
+                <FuncResultTitle gLen={groupLen}>功能测试</FuncResultTitle>
+                {
+                    logoData.map((item: any, idx: number) => {
+                        const { funcAll, success, fail } = item.func_data || item
+                        return (
+                            <FuncResultData gLen={groupLen} key={idx}>
+                                <div style={{ display: 'flex', margin: '18px 0' }}>
+                                    <Statistical >
+                                        <i className="logo">总计</i><br />
+                                        <b className="all">{conversionNum(funcAll)}</b>
+                                    </Statistical>
+                                    <Statistical >
+                                        <i className="logo">通过</i><br />
+                                        <b className="up">{conversionNum(success)}</b>
+                                    </Statistical>
+                                    <Statistical>
+                                        <i className="logo">失败</i><br />
+                                        <b className="down">{conversionNum(fail)}</b>
+                                    </Statistical>
+                                </div>
+                            </FuncResultData>
+                        )
+                    })
+                }
+            </Result>
+            : <></>
+    )
+    // const FuncFlag = useMemo(()=> {
+    //     return JSON.stringify(logoData[baselineGroupIndex].func_data) !== '{}' 
+    // },[ logoData, baselineGroupIndex])
+
     return (
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_summary" className="position_mark">
             <SubTitle><span className="line"></span>Summary</SubTitle>
@@ -43,15 +107,15 @@ const ReportSummary = () => {
                             return (
                                 <GroupData gLen={groupLen} key={idx}>
                                     <Space>
-                                        {  item.is_job ? 
-                                         item.is_base && <Tooltip title="基准组">
-                                            <BaseIcon style={{ marginRight: 4, marginTop: 17 }} />
-                                        </Tooltip> : 
-                                        item.is_base && <Tooltip title="基线组">
-                                            <BaseLine style={{ marginRight: 4, marginTop: 17 }} />
-                                            <Typography.Text>（测试基线）</Typography.Text>
-                                        </Tooltip>
-                                        
+                                        {item.is_job ?
+                                            item.is_base && <Tooltip title="基准组">
+                                                <BaseIcon style={{ marginRight: 4, marginTop: 17 }} />
+                                            </Tooltip> :
+                                            item.is_base && <Tooltip title="基线组">
+                                                <BaseLine style={{ marginRight: 4, marginTop: 17 }} />
+                                                <Typography.Text>（测试基线）</Typography.Text>
+                                            </Tooltip>
+
                                         }
                                     </Space>
                                     <EllipsisPulic title={item.tag} />
@@ -60,122 +124,10 @@ const ReportSummary = () => {
                         })
                     }
                 </Group>
-                {
-                    domainResult.is_default && 
-                    <Result>
-                        <PerfResultTitle gLen={groupLen}>性能测试</PerfResultTitle>
-                        {
-                            Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { perfAll, increase, decline } = item.perf_data || item
-                                return (
-                                    <PerfResultData gLen={groupLen} key={idx}>
-                                        <div style={{ display: 'flex', margin: '18px 0' }}>
-                                            <Statistical>
-                                                <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(perfAll)}</b>
-                                            </Statistical>
-                                            <Statistical>
-                                                <i className="logo">上升</i><br />
-                                                <b className="up">{conversionNum(increase)}</b>
-                                            </Statistical>
-                                            <Statistical >
-                                                <i className="logo">下降</i><br />
-                                                <b className="down">{conversionNum(decline)}</b>
-                                            </Statistical>
-                                        </div>
-                                    </PerfResultData>
-                                )
-                            })
-                        }
-                    </Result>
-                }
-                {
-                    (!domainResult.is_default && domainResult.need_perf_data) &&
-                    <Result>
-                        <PerfResultTitle gLen={groupLen}>性能测试</PerfResultTitle>
-                        {
-                            Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { perfAll, increase, decline } = item.perf_data || item
-                                return (
-                                    <PerfResultData gLen={groupLen} key={idx}>
-                                        <div style={{ display: 'flex', margin: '18px 0' }}>
-                                            <Statistical>
-                                                <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(perfAll)}</b>
-                                            </Statistical>
-                                            <Statistical>
-                                                <i className="logo">上升</i><br />
-                                                <b className="up">{conversionNum(increase)}</b>
-                                            </Statistical>
-                                            <Statistical >
-                                                <i className="logo">下降</i><br />
-                                                <b className="down">{conversionNum(decline)}</b>
-                                            </Statistical>
-                                        </div>
-                                    </PerfResultData>
-                                )
-                            })
-                        }
-                    </Result>
-                }
-                {
-                    domainResult.is_default &&
-                    <Result>
-                        <FuncResultTitle gLen={groupLen}>功能测试</FuncResultTitle>
-                        {
-                            Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { funcAll, success, fail } = item.func_data || item
-                                return (
-                                    <FuncResultData gLen={groupLen} key={idx}>
-                                        <div style={{ display: 'flex', margin: '18px 0' }}>
-                                            <Statistical >
-                                                <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(funcAll)}</b>
-                                            </Statistical>
-                                            <Statistical >
-                                                <i className="logo">通过</i><br />
-                                                <b className="up">{conversionNum(success)}</b>
-                                            </Statistical>
-                                            <Statistical>
-                                                <i className="logo">失败</i><br />
-                                                <b className="down">{conversionNum(fail)}</b>
-                                            </Statistical>
-                                        </div>
-                                    </FuncResultData>
-                                )
-                            })
-                        }
-                    </Result>
-                }
-                {
-                    (!domainResult.is_default && domainResult.need_func_data) &&
-                    <Result>
-                        <FuncResultTitle gLen={groupLen}>功能测试</FuncResultTitle>
-                        {
-                            Array.isArray(logoData) && logoData.length > 0 && logoData.map((item: any, idx: number) => {
-                                const { funcAll, success, fail } = item.func_data || item
-                                return (
-                                    <FuncResultData gLen={groupLen} key={idx}>
-                                        <div style={{ display: 'flex', margin: '18px 0' }}>
-                                            <Statistical >
-                                                <i className="logo">总计</i><br />
-                                                <b className="all">{conversionNum(funcAll)}</b>
-                                            </Statistical>
-                                            <Statistical >
-                                                <i className="logo">通过</i><br />
-                                                <b className="up">{conversionNum(success)}</b>
-                                            </Statistical>
-                                            <Statistical>
-                                                <i className="logo">失败</i><br />
-                                                <b className="down">{conversionNum(fail)}</b>
-                                            </Statistical>
-                                        </div>
-                                    </FuncResultData>
-                                )
-                            })
-                        }
-                    </Result>
-                }
+                {domainResult.is_default && <RenderPerfItem />}
+                {!domainResult.is_default && domainResult.need_perf_data && <RenderPerfItem />}
+                { domainResult.is_default &&  <RenderFuncItem /> }
+                {(!domainResult.is_default && domainResult.need_func_data) && <RenderFuncItem />}
             </Summary>
         </ModuleWrapper>
     )

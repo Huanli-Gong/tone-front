@@ -10,7 +10,7 @@ const ConfMetricRow = styled.div<ConfRowProp>`
     height:376px;
     width:100%;
     display: flex;
-    overflow-x:auto;
+    overflow-x:scroll;
     overflow-y:hidden;
     flex-wrap: nowrap;
     flex-shrink: 0;
@@ -66,7 +66,7 @@ const RenderConfChart: React.FC<any> = (props) => {
                 <div
                     key={idx}
                     id={`${conf.conf_name}-${idx}`}
-                    style={{ width: '100%', overflow: 'hidden' }}
+                    style={{ width: '100%' }}
                 >
                     <div style={current === `${conf.conf_name}-${idx}` ? { background: 'rgba(59,160,255,0.05)' } : {}}>
                         <Typography.Title level={5} style={current === `${conf.conf_name}-${idx}` ? { color: '#1890FF' } : {}}>
