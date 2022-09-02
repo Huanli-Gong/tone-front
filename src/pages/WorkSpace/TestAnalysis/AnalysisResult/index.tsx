@@ -30,6 +30,7 @@ const Report = (props: any) => {
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
     const [environmentResult, setEnvironmentResult] = useState<any>({})
     const [envData, setEnvData] = useState<Array<{}>>([])
+    const [shareWsId, setShareWsId] = useState(undefined)
     const [suiteLen, setSuiteLen] = useState(1)
     const [shareId, setShareId] = useState<Number>(0)
     const [scrollLeft, setScrollLeft] = useState(0)
@@ -48,6 +49,7 @@ const Report = (props: any) => {
             setParamEenvironment(shareData.envDataParam)
             setAllGroupData(shareData.allGroupData)
             setBaselineGroupIndex(shareData.baselineGroupIndex)
+            setShareWsId(shareData.allGroupData[0]?.members[0]?.ws_id)
         }
     }
 
@@ -114,6 +116,7 @@ const Report = (props: any) => {
                     if (JSON.stringify(res.data) !== '{}' && res.data.test_type === 'performance') {
                         compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
                     }
+
                 }
                 setCompareResult({
                     ...compareResult
@@ -224,7 +227,7 @@ const Report = (props: any) => {
             setEnvData(compare)
         }
     }, [environmentResult])
-
+    
     return (
         <ReportContext.Provider
             value={{
@@ -234,7 +237,7 @@ const Report = (props: any) => {
                 compareResult,
                 envData,
                 group,
-                wsId: ws_id
+                wsId: ws_id || shareWsId
             }}
         >
             <div

@@ -39,12 +39,21 @@ export const PerfTextArea = ({
         setTitle(name)
     }, [name])
 
-    const openNotification = (name:string) => {
+    const openNotification = (name:string,field:string) => {
         notification['success'] ({
-            message: `${name}保存成功`,
+            message: `${name}：${field}保存成功`,
             placement:'bottomRight'
         });
     };
+
+    const changeName = (name: any) => {
+        const list = {
+            test_env: '环境要求',
+            test_description: '测试说明',
+            test_conclusion: '测试结论',
+        }
+        return list[name];
+    }
 
     const handleBlur = async() => {
         const { item_suite_id, suite_name } = suite
@@ -57,7 +66,7 @@ export const PerfTextArea = ({
         obj[field] = title
         const { code, msg } = await saveReportDesc({ ...obj })
         if(code === 200){
-            openNotification(suite_name)
+            openNotification(suite_name,changeName(field))
             setBtn(false)
         }else{
             message.error(msg)
@@ -66,7 +75,7 @@ export const PerfTextArea = ({
 
     const handleChange = (title: any) => {
         if (_.isNull(title) || _.isUndefined(title)) return '未填写'
-        return title
+        return title || '-'
     }
 
     return (

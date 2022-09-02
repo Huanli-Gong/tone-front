@@ -4,6 +4,7 @@ import { ReportContext } from '../Provider';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import FuncIndex from './TestDataChild/FuncReview';
 import { GroupItemText } from './EditPerfText';
+import { simplify, deleteMethod } from './ReportFunction';
 import {
     TestDataTitle,
     TestWrapper,
@@ -24,73 +25,18 @@ const ReportTestFunc: React.FC<any> = () => {
     }, [domainResult])
     
     const [dataSource, setDataSource] = useState<any>([])
-    // const [subObj, setSubObj] = useState<Array<{}>>([])
 
     useEffect(() => {
         setDataSource(data)
     }, [data])
-
-    // useEffect(() => {
-    //     dataSource?.map((item: any) => {
-    //         if (item.is_group) {
-    //             item.list.map((child: any) => {
-    //                 setSubObj(child.list)
-    //             })
-    //         } else {
-    //             setSubObj(item.list)
-    //         }
-    //     })
-    // }, [dataSource])
     
     /* 
         ** 删除测试项 测试组
     */
     const handleDelete = (name: string, domain: any, rowKey: any) => {
-        if (name === 'group') {
-            setDataSource(dataSource.map((i: any, idx: number) => {
-                let ret: any = []
-                if (i.is_group) {
-                    i.list.map((b: any) => {
-                        if (b.rowKey === rowKey) {
-                            ret = i.list.filter((c: any) => c.name !== domain)
-                        }
-                    })
-                    return {
-                        ...i,
-                        list: ret,
-                    }
-                }
-                return {
-                    ...i,
-                }
-            }))
-        } else {
-            setDataSource(dataSource.filter((item: any) => item.name !== domain && item.rowKey !== rowKey))
-        }
+        setDataSource(deleteMethod(dataSource,name,domain,rowKey))
     }
-
-
-    const simplify = (child: any) => {
-        let suite_list: any = []
-        child.list.map((suite: any, suiteId: number) => {
-            let conf_list: any = []
-            suite.conf_list.map((conf: any, index: number) => {
-                let baseJobList = isOldReport ? [conf?.obj_id || conf.conf_source?.obj_id] : []
-                let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => i.obj_id || '')
-                conf_list.push({
-                    conf_id: conf.conf_id,
-                    conf_name: conf.conf_name,
-                    job_list: baseJobList.concat(compareJobList)
-                })
-            })
-            suite_list.push({
-                suite_id: suite.suite_id,
-                suite_name: suite.suite_name,
-                conf_list
-            })
-        })
-        return suite_list;
-    }
+    
     // 保存报告数据整理
     useEffect(() => {
         let new_func_data: any = []
@@ -98,14 +44,14 @@ const ReportTestFunc: React.FC<any> = () => {
             dataSource.map((item: any, idx: number) => {
                 if (item.is_group) {
                     item.list.map((child: any, index: number) => {
-                        let suite_list = simplify(child)
+                        let suite_list = simplify(child, idx, index, 'group',isOldReport)
                         new_func_data.push({
                             name: `${item.name}:${child.name}`,
                             suite_list
                         })
                     })
                 } else {
-                    let suite_list = simplify(item)
+                    let suite_list = simplify(item, idx, 0, 'item', isOldReport)
                     new_func_data.push({
                         name: item.name,
                         suite_list
