@@ -101,7 +101,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
         form.setFieldsValue({ ...values, report_name: reportSelectVal })
         setCheckedList(reportSelectVal)
     }
-    console.log(contrl, 'contrl')
+    
     return (
         <Card
             title="更多配置"

@@ -33,6 +33,7 @@ const TestResultDetails: React.FC = (props: any) => {
     const processTableRef: any = useRef()
     const [collection, setCollection] = useState(false)
     const [fetching, setFetching] = React.useState(false)
+    const [refreshResult, setRefreshResult] = React.useState(false)
     const allReport: any = useRef(null)
     const veiwReportHeight: any = useRef(null)
     const timer: any = useRef(null)
@@ -116,7 +117,12 @@ const TestResultDetails: React.FC = (props: any) => {
         }
         message.success('操作成功')
         refresh()
-        processTableRef.current.refresh()
+        if(tab === 'testResult'){
+            setRefreshResult(true)
+        }
+        if(tab === 'testProgress'){
+            processTableRef.current.refresh()
+        }
         setFetching(false)
     }
 
@@ -351,9 +357,9 @@ const TestResultDetails: React.FC = (props: any) => {
                                         <Access accessible={access.WsTourist()}>
                                             <Access
                                                 accessible={access.WsMemberOperateSelf(data.creator)}
-                                                fallback={testProgressTab && <Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>停止Job</Button>}
+                                                fallback={<Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>停止Job</Button>}
                                             >
-                                                {testProgressTab && <Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
+                                                {<Button onClick={handleStopJob} style={{ marginRight: 8 }}>停止Job</Button>}
                                             </Access>
                                         </Access>
                                     </div>
@@ -372,6 +378,7 @@ const TestResultDetails: React.FC = (props: any) => {
                                         caseResult={data.case_result}
                                         provider_name={transProvider(data.provider_name)}
                                         ws_id={ws_id}
+                                        refreshResult={refreshResult}
                                     />
                                 </Tabs.TabPane>
                                 <Tabs.TabPane tab="执行过程" key="testProgress" disabled={data.created_from === 'offline'} >

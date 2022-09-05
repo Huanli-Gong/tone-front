@@ -42,7 +42,7 @@ const businessBusinessStates = [
 
 const TestResultTable: React.FC<any> = (props) => {
     const { id: job_id, ws_id } = useParams() as any
-    const { caseResult = {}, test_type = '功能', provider_name: serverProvider = '', creator } = props
+    const { caseResult = {}, test_type = '功能', provider_name: serverProvider = '', creator, refreshResult } = props
     const defaultParams = { state: '', job_id }
     const initialData: any[] = []
     const testType = matchTestType(test_type)
@@ -66,10 +66,14 @@ const TestResultTable: React.FC<any> = (props) => {
         (p) => queryTestResult(p),
         {
             formatResult: response => {
-                if (response.code === 200)
-                    if (response.data)
+                if (response.code === 200){
+                    if(params[0].state.length == 0){
+                        setFilterData(response.data || [])
+                    }
+                    if (response.data){
                         return response.data
-                    else return initialData
+                    } else return initialData
+                }
                 else {
                     requestCodeMessage(response.code, response.msg)
                     return initialData
@@ -79,16 +83,13 @@ const TestResultTable: React.FC<any> = (props) => {
             defaultParams: [defaultParams]
         }
     )
-    const queryDefaultTestData = async() => {
-        const { data } = await queryTestResult({ state: '', job_id  })
-        setFilterData(data)
-    }
-    useEffect(()=> {
-        queryDefaultTestData()
-    },[])
-
+   
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
+
+    useEffect(()=> {
+        if(refreshResult) refresh();
+    },[ refreshResult ])
 
     const columns = [
         {
