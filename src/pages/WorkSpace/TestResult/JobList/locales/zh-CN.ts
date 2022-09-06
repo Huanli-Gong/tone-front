@@ -54,6 +54,11 @@ const text =  {
   'gmt_created': '保存时间',
   'view.report': '查看报告',
   'please.add.comparison.group': '请添加对比组数据',
+
+  'reRun.Modal.title': '导入配置',
+  'reRun.checked.suite': '同时导入测试用例',
+  'reRun.checked.notice': '同时导入通知配置',
+  'reRun.checked.inheriting_machine': '使用原Job使用的机器',
 };
 
 export default Object.keys(text).reduce((p, key) => {

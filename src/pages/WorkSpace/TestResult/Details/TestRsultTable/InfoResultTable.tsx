@@ -135,10 +135,10 @@ export default (props: any) => {
 
     const columns = [{
         dataIndex: 'sub_case_name',
-        title: 'TestCase',
+        title: 'Test Case',
         width: 400,
         ...tooltipTd(),
-        ...getColumnSearchProps('sub_case_name', 'TestCase'),
+        ...getColumnSearchProps('sub_case_name', 'Test Case'),
     }, {
         dataIndex: 'result',
         title: (
@@ -185,13 +185,13 @@ export default (props: any) => {
                                 }
                             }
                         >
-                            {context}
+                            {context || '-'}
                         </Typography.Link>
                     </Tooltip >
                 )
             return (
                 <Tooltip placement="topLeft" title={context}>
-                    <Typography>{context}</Typography>
+                    <Typography>{context || '-'}</Typography>
                 </Tooltip>
             )
         }
@@ -272,7 +272,7 @@ export default (props: any) => {
                     rowKey="id"
                     size="small"
                     loading={loading}
-                    className={styles.result_info_table_head}
+                    className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
                     // pagination={ true }
                     columns={columns}
                     rowClassName={styles.result_info_table_row}

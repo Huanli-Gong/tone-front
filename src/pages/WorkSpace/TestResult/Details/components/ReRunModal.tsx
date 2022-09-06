@@ -71,7 +71,7 @@ const ReRunModal = (props: any, ref: any) => {
         <Content
             visible={visible}
             width={487}
-            title="导入配置"
+            title={<FormattedMessage id="ws.result.list.reRun.Modal.title"/>}
             okText={<FormattedMessage id="operation.confirm"/>}
             cancelText={<FormattedMessage id="operation.cancel"/>}
             onOk={hanldeOk}
@@ -80,7 +80,9 @@ const ReRunModal = (props: any, ref: any) => {
             afterClose={afterClose}
         >
             <Row style={{ backgroundColor: '#fff', height: 66, marginBottom: 10, paddingLeft: 20 }} align="middle" >
-                <Col span={4} style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 600 }}>Job名称</Col>
+                <Col span={4} style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 600 }}>
+                   <FormattedMessage id="ws.result.list.name"/>
+                </Col>
                 <Col span={18}>{source?.name}</Col>
             </Row>
             <Row style={{ backgroundColor: '#fff', height: 93, paddingLeft: 20 }} align="middle">
@@ -92,14 +94,14 @@ const ReRunModal = (props: any, ref: any) => {
                                 setReRunChecked(checked)
                                 if (!checked) form.setFieldsValue({ inheriting_machine: false })
                             }}>
-                            同时导入测试用例
+                            <FormattedMessage id="ws.result.list.reRun.checked.suite"/>
                         </Checkbox>
                     </Form.Item>
                     <Form.Item valuePropName="checked" name="notice">
-                        <Checkbox>同时导入通知配置</Checkbox>
+                        <Checkbox><FormattedMessage id="ws.result.list.reRun.checked.notice"/></Checkbox>
                     </Form.Item>
                     <Form.Item valuePropName="checked" name="inheriting_machine">
-                        <Checkbox disabled={!reRunChecked}>{formatMessage({ id: reRunCheckedText })}</Checkbox>
+                        <Checkbox disabled={!reRunChecked}><FormattedMessage id={`ws.result.list.${reRunCheckedText}`} /></Checkbox>
                     </Form.Item>
                 </Form>
             </Row>

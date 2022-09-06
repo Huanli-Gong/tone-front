@@ -52,7 +52,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             <QusetionIconTootip
                 placement="bottomLeft"
                 title={<FormattedMessage id="ws.result.details.test.result" />}
-                desc='测试结果详情请查看日志文件'
+                desc={<FormattedMessage id="ws.result.details.test.result.view.log.file" />}
             />
         ),
         dataIndex: 'test_value',
@@ -110,18 +110,18 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
     }, {
         title: <FormattedMessage id="ws.result.details.track_result" />,
         width: 120,
-        render: (_: any, row: any) => compareResultSpan(row.track_result, row.result)
+        render: (_: any, row: any) => compareResultSpan(row.track_result, row.result, formatMessage)
     },]
 
     return (
         <ResizeTable
-            style={{ marginBottom: 20 }}
+            // style={{ marginBottom: 20 }}
             rowKey="id"
             loading={loading}
             pagination={false}
             size="small"
-            scroll={{ x: '100%' }}
-            className={styles.result_info_table_head}
+            // scroll={{ x: '100%' }}
+            className={`${styles.result_info_table_head} ${data?.length ? '': styles.result_info_table_head_line}`}
             rowClassName={styles.result_info_table_row}
             dataSource={data}
             columns={columns}

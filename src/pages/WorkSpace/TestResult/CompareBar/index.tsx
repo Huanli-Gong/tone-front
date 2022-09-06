@@ -271,11 +271,11 @@ export default (props: any) => {
 
     return (
         <div className={styles.job_compare} style={{ display: allSelectRowData.length ? 'block' : 'none' }}>
-            <div className={styles.title}><FormattedMessage id="ws.test.list.compare.bar" /><span>（{allSelectRowData.length}）</span>  <Popover
+            <div className={styles.title}><FormattedMessage id="ws.result.list.compare.bar" /><span>（{allSelectRowData.length}）</span>  <Popover
                         content={
                             <div>
-                                {<FormattedMessage id="ws.test.list.combining.rule" />}
-                                <div>{<FormattedMessage id="ws.test.list.top.ranked" />}</div>
+                                {<FormattedMessage id="ws.result.list.combining.rule" />}
+                                <div>{<FormattedMessage id="ws.result.list.top.ranked" />}</div>
                             </div>
                         }
                         placement="right"
@@ -324,10 +324,10 @@ export default (props: any) => {
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0, marginLeft: 16, marginRight: 8 }} />
                         <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
                         <Access accessible={access.IsWsSetting()}>
-                            <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}><FormattedMessage id="ws.test.list.create.report" /></Button>
+                            <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}><FormattedMessage id="ws.result.list.create.report" /></Button>
                         </Access>
                         <Button type="primary" onClick={_.partial(handleNext,'test_analysis/compare')}>
-                            <FormattedMessage id="ws.test.list.compare.analysis" />
+                            <FormattedMessage id="ws.result.list.compare.analysis" />
                         </Button>
                     </Space>
                 </div>

@@ -105,7 +105,7 @@ const FilterItem: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const selectWidth = wrapperWdith - 120 - 70 - 80
 
     return (
-        <div ref={wrapperRef}>
+        <div ref={wrapperRef} style={{ whiteSpace: 'nowrap' }}>
             <Typography.Text style={{ marginRight: 8, width: 70 }}>
                 {title}
             </Typography.Text>
@@ -120,6 +120,7 @@ const FilterItem: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     value={name}
                                     options={leftSelectOption}
                                     onChange={evt => hanldeOptionChange(evt, index)}
+                                    dropdownMatchSelectWidth={false}
                                 />
                                 <div style={{ width: selectWidth }}>
                                     {

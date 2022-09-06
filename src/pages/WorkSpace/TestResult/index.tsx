@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Radio, Tag, Tooltip, Layout, Space, Typography, Popconfirm, message, Tabs, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Checkbox, Spin } from 'antd';
-import { useAccess, Access } from 'umi'
+import { useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { DownOutlined, UpOutlined, PlusCircleTwoTone, MinusCircleTwoTone, StarOutlined, StarFilled, SearchOutlined, CloseOutlined } from '@ant-design/icons'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
@@ -136,7 +136,7 @@ let flag = false
 /**
  * 测试结果列表页
  */
-export const reRunCheckedText = '使用原Job使用的机器'
+export const reRunCheckedText = 'reRun.checked.inheriting_machine'
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { location: { query } } = props
@@ -325,7 +325,7 @@ export default (props: any) => {
             setSelectedRowKeys(selectedKeys);
             setSelectRowData(selectRows);
             // setDataSourceFlag(true)
-            message.success('操作成功！')
+            // message.success('操作成功！')
             setLoading(true)
             getPageData()
         }
@@ -1644,7 +1644,7 @@ export default (props: any) => {
                                 <Checkbox>同时导入通知配置</Checkbox>
                             </Form.Item>
                             <Form.Item valuePropName="checked" name="inheriting_machine">
-                                <Checkbox disabled={!reRunChecked}>{reRunCheckedText}</Checkbox>
+                                <Checkbox disabled={!reRunChecked}><FormattedMessage id={`ws.result.list.${reRunCheckedText}`} /></Checkbox>
                             </Form.Item>
                         </Form>
                     </Row>

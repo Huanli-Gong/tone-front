@@ -78,6 +78,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            render: (_: any) => <>{_ || '-'}</>,
         },
         {
             dataIndex: 'end_time',
@@ -85,6 +86,7 @@ export default ({ job_id, refresh = false, testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
+            render: (_: any) => <>{_ || '-'}</>,
         }, {
             title: <FormattedMessage id="Table.columns.operation"/>,
             ellipsis: {

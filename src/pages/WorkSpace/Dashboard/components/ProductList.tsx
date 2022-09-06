@@ -2,7 +2,7 @@ import React from 'react'
 import { Row, Space, Typography, DatePicker, Radio, Empty, Button } from 'antd'
 import moment from 'moment'
 import type { Moment } from 'moment'
-import { useParams, history } from 'umi'
+import { useParams, history, useIntl, FormattedMessage } from 'umi'
 import TabCardItem from './TabCard'
 import { ReactComponent as ProductIcon } from '@/assets/img/icon_shell.svg'
 import styled from 'styled-components'
@@ -38,13 +38,13 @@ const tabCard = ({ project_list = [], time, product_id }: TabCardProps) => {
         return (
             <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={`产品中还没有项目`}
+                description={<FormattedMessage id="ws.dashboard.empty.project_list" />}
             >
                 <Button
                     onClick={() => history.push(`/ws/${ws_id}/product?current=${product_id}`)}
                     type="primary"
                 >
-                    立刻创建
+                    <FormattedMessage id="ws.dashboard.product.create" />
                 </Button>
             </Empty>
         )
@@ -74,12 +74,12 @@ const ProductList: React.FC<IProps<DateType>> = ({ product_list = [], setTime, t
     return (
         <div>
             <Row justify="space-between" align="middle" style={{ marginTop: 20 }}>
-                <Typography.Text strong>产品列表({product_list.length})</Typography.Text>
+                <Typography.Text strong><FormattedMessage id="ws.dashboard.product_list" />({product_list.length})</Typography.Text>
                 <Space>
                     <Radio.Group value={time} onChange={handleSizeChange}>
-                        <Radio.Button value="24h">近24h</Radio.Button>
-                        <Radio.Button value="48h">近48h</Radio.Button>
-                        <Radio.Button value="oneWeek">近一周</Radio.Button>
+                        <Radio.Button value="24h"><FormattedMessage id="ws.dashboard.24h" /></Radio.Button>
+                        <Radio.Button value="48h"><FormattedMessage id="ws.dashboard.48h" /></Radio.Button>
+                        <Radio.Button value="oneWeek"><FormattedMessage id="ws.dashboard.oneWeek" /></Radio.Button>
                     </Radio.Group>
                     <DatePicker allowClear={false} value={moment.isMoment(time) ? time : undefined} onChange={onChange} />
                 </Space>
@@ -101,7 +101,7 @@ const ProductList: React.FC<IProps<DateType>> = ({ product_list = [], setTime, t
                                     <ProductIcon />
                                     <Typography.Text strong>{l.product_name}</Typography.Text>
                                 </SpaceRow>
-                                <Typography.Text style={{ color: 'rgba(0,0,0,0.25)' }}>创建于{moment(l.product_create).fromNow()}</Typography.Text>
+                                <Typography.Text style={{ color: 'rgba(0,0,0,0.25)' }}><FormattedMessage id="ws.dashboard.product_create.time" />{` ${moment(l.product_create).fromNow()}`}</Typography.Text>
                             </Row>
                             <div style={{ marginTop: 20 }}>
                                 {

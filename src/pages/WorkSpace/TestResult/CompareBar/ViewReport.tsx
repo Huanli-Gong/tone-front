@@ -68,7 +68,7 @@ export default (props: any) => {
     const columns: TableColumnProps<any>[] = [
         {
             dataIndex: 'name',
-            title: <FormattedMessage id="ws.test.list.report.name" />,
+            title: <FormattedMessage id="ws.result.list.report.name" />,
             width: 165,
             ellipsis: {
                 showTitle: false,
@@ -88,7 +88,7 @@ export default (props: any) => {
                     setJobRefAllReport(refAllJobCopy)
                     setParams({ ...params, name: val })
                 }}
-                placeholder={formatMessage({id: 'ws.test.list.report.name.placeholder'})}
+                placeholder={formatMessage({id: 'ws.result.list.report.name.placeholder'})}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -114,7 +114,7 @@ export default (props: any) => {
         {
             dataIndex: 'creator_name',
             width: 100,
-            title: <FormattedMessage id="ws.test.list.creators" />,
+            title: <FormattedMessage id="ws.result.list.creators" />,
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator_name')} page_size={20} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -126,7 +126,7 @@ export default (props: any) => {
         },
         {
             dataIndex: 'gmt_created',
-            title: <FormattedMessage id="ws.test.list.gmt_created" />,
+            title: <FormattedMessage id="ws.result.list.gmt_created" />,
             width: 200,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }
@@ -178,20 +178,22 @@ export default (props: any) => {
     return (
         <div className={styles.conf_item_box} key={isFlag}>
             <Popover placement={dreType} 
-                title={<FormattedMessage id="ws.test.list.view.report" />}
+                title={<FormattedMessage id="ws.result.list.view.report" />}
                 content={getContent(jobRefReport)} 
                 trigger="click" 
                 overlayClassName={styles.popover_job} visible={visible}>
                 {
                     origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
-                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}>{title || <FormattedMessage id="ws.test.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
+                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
+                            {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px',marginTop: '2px' }} />
                         </span>
-                    </Typography.Text> :
-                        <Button type="primary"
-                            onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
-                            style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
-                            {title || <FormattedMessage id="ws.test.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none' }} />
-                        </Button>
+                    </Typography.Text>
+                    :
+                    <Button type="primary"
+                        onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
+                        style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
+                        {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px',marginTop: '2px' }} />
+                    </Button>
                 }
             </Popover>
         </div>

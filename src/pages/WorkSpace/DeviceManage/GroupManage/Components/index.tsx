@@ -1,7 +1,7 @@
 import React from 'react'
 import { Badge , Tag , Select , Drawer , Space , Button , Form , Popover } from 'antd'
 import { queryMember } from '@/services/Workspace'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 
 export const getMembers = async ( keyword : string = '' , callback ? : any ) => {
@@ -111,40 +111,43 @@ export const tagRender = ( { label, closable, onClose , value } : any ) => (
     </Tag>
 )
 
-export const TagSelect = (
-    { 
+export const TagSelect = (props: any) => {
+    const { formatMessage } = useIntl()
+    const { 
         tags , 
         rules , 
         initialValue , 
-        label = '标签' , 
+        label = formatMessage({id: 'ws.result.details.tag'}), 
         name = 'tags' , 
-        placeholder = '请选择标签' , 
+        placeholder = formatMessage({id: 'ws.result.details.select.tag'}), 
         disabled = false 
-    } : any 
-) => (
-    <Form.Item 
-        name={ name } 
-        label={ label }
-        rules={ rules }
-        initialValue={ initialValue && initialValue.map( ( item : any ) => item.id ) }
-    >
-        <Select 
-            placeholder={ placeholder }
-            mode="multiple"
-            disabled={ disabled }
-            tagRender={ tagRender }
-            allowClear
-            getPopupContainer={ node => node.parentNode } 
+    } = props
+
+    return (
+        <Form.Item 
+            name={ name } 
+            label={ label }
+            rules={ rules }
+            initialValue={ initialValue && initialValue.map( ( item : any ) => item.id ) }
         >
-            {
-                tags.map(
-                    ( item:any ) => (
-                        <Select.Option key={ item.id } value={ item.id }>
-                            <Tag color={ item.tag_color } >{ item.name }</Tag>
-                        </Select.Option>
+            <Select 
+                placeholder={ placeholder }
+                mode="multiple"
+                disabled={ disabled }
+                tagRender={ tagRender }
+                allowClear
+                getPopupContainer={ node => node.parentNode } 
+            >
+                {
+                    tags.map(
+                        ( item:any ) => (
+                            <Select.Option key={ item.id } value={ item.id }>
+                                <Tag color={ item.tag_color } >{ item.name }</Tag>
+                            </Select.Option>
+                        )
                     )
-                )
-            }
-        </Select>
-    </Form.Item>
-)
+                }
+            </Select>
+        </Form.Item>
+    )
+}

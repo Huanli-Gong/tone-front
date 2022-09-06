@@ -8,7 +8,7 @@ import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/Bu
 import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import MonitorList from '@/pages/WorkSpace/TestJob/components/JobForms/MonitorList'
 import { getTextByJs } from '@/utils/hooks'
-import { useRequest, useIntl, FormattedMessage } from 'umi'
+import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 
 /**
  * 环境配置
@@ -17,6 +17,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
     if  (JSON.stringify(contrl) === '{}' ) return <></>
 
     const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
@@ -137,7 +138,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 style={{ width: '100%' }}
                 name="env"
                 form={form}
-                className={`${styles.job_test_form} ${styles.label_style_form}`}
+                className={`${styles.job_test_form} ${styles[locale ? 'label_style_form_en' : 'label_style_form']}`}
                 initialValues={{
                     rpm_info: [{ rpm: '', pos: 'before' }],
                     script_info: [{ script: '', pos: 'before' }],
@@ -148,7 +149,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 }}
             >
                 <Row>
-                    <Col span={ 10 }>
+                    <Col span={ 15 }>
                         {
                             'reclone' in contrl &&
                             <Form.Item
@@ -248,7 +249,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                         validator(rule, value) {
                                             if (value) {
                                                 const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                                return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'ws.result.details.env_info.validate'}) );
+                                                return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'format.key.value'}) );
                                             }
                                             else
                                                 return Promise.resolve()
@@ -256,7 +257,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                     })
                                 ]}
                             >
-                                <Input.TextArea disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.env_info.validate'})} />
+                                <Input.TextArea disabled={disabled} placeholder={formatMessage({id: 'format.key.value'})} />
                             </Form.Item>
                         }
                         {

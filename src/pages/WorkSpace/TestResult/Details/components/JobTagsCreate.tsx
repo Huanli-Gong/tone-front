@@ -1,9 +1,12 @@
 import { Modal, Spin, Form, Input, message } from 'antd'
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
+import { useIntl, FormattedMessage  } from 'umi'
 import ColorPicker from '../../../TagManage/components/ColorPicker';
 import { addTag } from '../service'
+
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
@@ -13,7 +16,7 @@ export default forwardRef(
             () => ({
                 show: () => {
                     setVisible(true)
-                    setMsg('仅允许包含字母、数字、下划线、中划线、点，最长32个字符')
+                    setMsg(formatMessage({ id: "please.enter.message"}))
                     form.setFieldsValue({ tag_color: 'rgb(255,157,78,1)' })
                 }
             }),
@@ -38,9 +41,9 @@ export default forwardRef(
                     if (code === 200) {
                         props.onOk()
                         handleCancel()
-                        message.success('操作成功!')
+                        message.success(formatMessage({id: 'operation.success'}) )
                     } else if (code === 1302) {
-                        setMsg('标签名称已存在')
+                        setMsg(formatMessage({id: 'ws.result.details.tag_name.already.exists'}) )
                     } else {
                         setPadding(false)
                         message.error(msg)
@@ -53,14 +56,14 @@ export default forwardRef(
         return (
             <Modal
                 width={460}
-                title="新建标签"
+                title={<FormattedMessage id="ws.result.details.new.tag" />}
                 visible={visible}
                 centered={true}
                 onCancel={handleCancel}
                 maskClosable={false}
                 onOk={handleOk}
-                okText="确认"
-                cancelText="取消"
+                okText={<FormattedMessage id="operation.confirm" />}
+                cancelText={<FormattedMessage id="operation.cancel" />}
             >
                 <Spin spinning={false}>
                     <Form
@@ -70,19 +73,19 @@ export default forwardRef(
                     >
                         <Form.Item
                             name="tag_color"
-                            label="标签颜色"
+                            label={<FormattedMessage id="ws.result.details.tag_color" />}
                         >
                             <ColorPicker />
                         </Form.Item>
                         <Form.Item
                             name="name"
-                            label="标签名称"
+                            label={<FormattedMessage id="ws.result.details.tag_name" />}
                             help = {msg}
                             rules={
                                 [{
                                     required: true,
                                     max: 32,
-                                    message: '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
+                                    message: formatMessage({ id: "please.enter.message"}),
                                     pattern: /^[A-Za-z0-9\._-]*$/g
                                 }]
                             }
@@ -91,9 +94,9 @@ export default forwardRef(
                         </Form.Item>
                         <Form.Item
                             name="description"
-                            label="备注"
+                            label={<FormattedMessage id="ws.result.details.test_summary" />}
                         >
-                            <Input.TextArea rows={4} placeholder="请输入备注信息" />
+                            <Input.TextArea rows={4} placeholder={formatMessage({ id: "ws.result.details.please.enter.remarks"}) } />
                         </Form.Item>
                     </Form>
                 </Spin>

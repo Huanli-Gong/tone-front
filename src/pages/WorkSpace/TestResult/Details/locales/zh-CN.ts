@@ -4,7 +4,8 @@ const text =  {
   'test.result': '测试结果',
   'result.details': '结果详情',
   'provider_name': '机器类型',
-  'test_type': '测试类型',  
+  'test_type': '测试类型',
+  'job_state': 'Job状态', 
   'job_type': 'Job类型',
   'creator_name': '创建人',
   'gmt_created': '创建时间',
@@ -167,7 +168,7 @@ const text =  {
   'install_publish': '安装已发布',
   'install_un': '安装未发布',
   'install_build': 'Build内核',
-  'env_info.validate': '格式：key=value，多个回车换行',
+  // 'env_info.validate': '格式：key=value，多个用空格或换行分割',
   'rpm.add': '+ 添加RPM包',
   'please.enter.rpm': '请输入rpm包链接, 有多个用逗号或换行分割',
   'script.add': '+ 添加执行脚本',
@@ -190,6 +191,8 @@ const text =  {
   'ding_notice': '钉钉通知',
   //------------------
   'cleanup.placeholder': '请输入Job的清理脚本',
+  'tag': '标签',
+  'select.tag': '请选择标签',
   'notice_subject.placeholder': '[T-One] 你的测试已完成{date}',
   'email.message': '请输入正确的邮箱地址',
   'email.placeholder': '默认通知Job创建人，多个邮箱用空格或英文逗号分隔',
@@ -201,6 +204,27 @@ const text =  {
   'report_template.placeholder': '请选择报告模板',
   'callback_api': '回调接口',
   'callback_api.placeholder': '请输入回调接口的URL',
+
+  'new.tag': '新建标签',
+  'tag_color': '标签颜色',
+  'tag_name': '标签名称',
+  'tag_name.already.exists': '标签名称已存在',
+
+  'test.machine.failure': '测试机器故障，请及时处理！',
+  'failed.server': '故障机器',
+  'channel_type': '控制通道',
+  'use_state': '使用状态',
+  'real_state': '实际状态',
+  'not.assigned.server': '未分配到测试机器',
+  'running,please.wait': '正在运行中，请耐心等待',
+
+  'scheduling.tab': '调度标签',
+  'other.information': '其它信息',
+  'configuration.name': '配置名称',
+  'gmt_modified': '修改时间',
+  'server.instance.name': '机器实例名称：{data}',
+  'server.configuration.name': '机器配置名称：{data}',
+  'cluster.name': '集群名称',
 };
 
 export default Object.keys(text).reduce((p, key) => {

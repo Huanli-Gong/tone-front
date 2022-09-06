@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Popover, Space, Table, Typography, Input, Button, Select } from 'antd'
 import { CaretDownOutlined, SearchOutlined } from '@ant-design/icons'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import Highlighter from 'react-highlight-words'
 import { queryMember } from '@/services/Workspace';
 
 import styles from './index.less'
 
 const ViewReports = (props: any) => {
+    const { formatMessage } = useIntl()
     const { report_li } = props
     if (report_li.length === 0) return <></>
     const { ws_id }: any = useParams()
@@ -75,7 +76,7 @@ const ViewReports = (props: any) => {
                         showArrow={false}
                         autoFocus={true}
                         value={selectedKeys[0]}
-                        placeholder={`搜索${name}`}
+                        placeholder={`${formatMessage({id: 'operation.search'})}${name}`}
                     >
                         {
                             userList.map((item: any) => (
@@ -91,10 +92,10 @@ const ViewReports = (props: any) => {
                             size="small"
                             style={{ width: 90 }}
                         >
-                            搜索
+                            <FormattedMessage id="operation.search" />
                         </Button>
                         <Button onClick={() => handleUserReset(clearFilters)} size="small" style={{ width: 90 }}>
-                            重置
+                            <FormattedMessage id="operation.reset" />
                         </Button>
                     </Space>
                 </Space>
@@ -125,7 +126,7 @@ const ViewReports = (props: any) => {
             <div style={{ padding: 8 }}>
                 <Input
                     ref={searchInput}
-                    placeholder={`搜索 ${name}`}
+                    placeholder={`${formatMessage({id: 'operation.search'})} ${name}`}
                     value={selectedKeys[0]}
                     onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                     onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -139,10 +140,10 @@ const ViewReports = (props: any) => {
                         size="small"
                         style={{ width: 90 }}
                     >
-                        搜索
+                        <FormattedMessage id="operation.search" />
                     </Button>
                     <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-                        重置
+                        <FormattedMessage id="operation.reset" />
                     </Button>
                 </Space>
             </div>
@@ -169,20 +170,20 @@ const ViewReports = (props: any) => {
     const columns: any = [
         {
             dataIndex: 'name',
-            title: '报告名称',
+            title: formatMessage({id: 'ws.dashboard.report.name'}),
             width: 165,
             ellipsis: true,
-            ...getColumnSearchProps('name', '报告名称'),
+            ...getColumnSearchProps('name', formatMessage({id: 'ws.dashboard.report.name'})),
         },
         {
             dataIndex: 'creator_name',
             width: 100,
-            title: '创建人',
-            ...getUserSearchProps('creator_name', '创建人')
+            title: formatMessage({id: 'ws.dashboard.report.creator_name'}),
+            ...getUserSearchProps('creator_name', formatMessage({id: 'ws.dashboard.report.creator_name'}))
         },
         {
             dataIndex: 'gmt_created',
-            title: '保存时间',
+            title: formatMessage({id: 'ws.dashboard.report.gmt_created'}),
             width: 200,
         }
     ]
@@ -194,7 +195,7 @@ const ViewReports = (props: any) => {
             visible={visible}
             onVisibleChange={show => setVisible(show)}
             overlayClassName={styles.popover_job}
-            title="查看报告"
+            title={<FormattedMessage id="ws.dashboard.view.report" />}
             content={
                 <Table
                     size="small"
@@ -210,7 +211,9 @@ const ViewReports = (props: any) => {
                 />
             }
         >
-            <Typography.Link style={{ cursor: 'pointer' }}>查看报告<CaretDownOutlined /></Typography.Link>
+            <Typography.Link style={{ cursor: 'pointer' }}>
+                <FormattedMessage id="ws.dashboard.view.report" /><CaretDownOutlined />
+            </Typography.Link>
         </Popover>
     )
 }

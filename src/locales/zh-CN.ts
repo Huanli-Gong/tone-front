@@ -13,8 +13,11 @@ export default {
   'delete.prompt': '确定要删除吗？',
   'Table.columns.result': '结果',
   'Table.columns.date': '日期',
-  'Table.columns.startTime': '开始时间',
-  'Table.columns.endTime': '结束时间',
+  'common.startTime': '开始时间',
+  'common.endTime': '结束时间',
+  'common.createTime': '创建时间',
+  'common.finishTime': '完成时间',
+
   'Table.columns.operation': '操作',
   'operation.new': '新增',
   'operation.add': '添加',
@@ -67,6 +70,8 @@ export default {
   'please.select': '请选择',
   'please.enter': '请输入',
   'please.enter.message': '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
+  'format.key.value': '格式：key=value，多个用空格或换行分割',
+  'no.data': '暂无数据',
   'DEF_COMMON_FORMATE': ' ',
 
   ...globalHeader,

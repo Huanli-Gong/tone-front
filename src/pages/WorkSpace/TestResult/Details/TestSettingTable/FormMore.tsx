@@ -6,7 +6,7 @@ import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import _ from 'lodash'
-import { useParams, useIntl, FormattedMessage } from "umi"
+import { useParams, useIntl, FormattedMessage, getLocale } from "umi"
 
 const { Option } = Select;
 
@@ -15,6 +15,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     if (JSON.stringify(contrl) === '{}') return <></>
 
     const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const [form] = Form.useForm()
     const [tags, setTags] = useState<Array<any>>([])
     const [checkedList, setCheckedList] = React.useState<any>();
@@ -121,10 +122,10 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                 name="more"
                 form={form}
 
-                className={`${styles.job_test_form} ${styles.label_style_form}`}
+                className={`${styles.job_test_form} ${styles[locale ? 'label_style_form_en' : 'label_style_form']}`}
             >
                 <Row>
-                    <Col span={10}>
+                    <Col span={15}>
                         {
                             'cleanup' in contrl &&
                             <Form.Item
@@ -151,7 +152,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                                 // label="通知主题"
                                 label={contrl.notice_subject.alias || <FormattedMessage id={`ws.result.details.${contrl.notice_subject.name}`}/> }
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.notice_subject.placeholder'})} />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.notice_subject.placeholder'}, { date: '{date}'})} />
                             </Form.Item>
                         }
                         {
@@ -187,7 +188,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                                     onChange={onReportChange}
                                     autoComplete="off"
                                     disabled={disabled}
-                                    placeholder={formatMessage({id: 'ws.result.details.report.placeholder'})} />
+                                    placeholder={formatMessage({id: 'ws.result.details.report.placeholder'}, {job_name: '{job_name}', report_seq_id: '{report_seq_id}'})} />
                                 <Popover
                                     content={
                                         <div>

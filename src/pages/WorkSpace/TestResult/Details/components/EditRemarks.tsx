@@ -54,7 +54,7 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     if (code === 200) {
                         props.onOk()
                         handleClose()
-                        message.success('操作成功!')
+                        message.success(formatMessage({id: 'operation.success'}) )
                         return
                     }
                     setPadding(false)

@@ -8,7 +8,7 @@ import ServerLink from '@/components/MachineWebLink/index';
 import { queryProcessPrepareList } from '../service'
 import { useRequest, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, matchMode } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
 //测试准备 ==== Table
@@ -124,7 +124,9 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ || '-'
+            render: (_: any) => {
+                return <FormattedMessage id={matchMode(_)} defaultMessage={_ || '-'} />
+            },
         },
         {
             dataIndex: 'server',

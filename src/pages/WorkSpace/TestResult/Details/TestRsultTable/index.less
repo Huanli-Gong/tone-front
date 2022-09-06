@@ -4,12 +4,16 @@
 
 .result_expand_table {
     :global( .ant-table-expanded-row > td ) {
-        background: #ffffff; 
+        background: rgb(251, 251, 251);
         padding: 0 !important;
     }
 
     :global(.ant-table-row-expand-icon-cell) {
         padding: 0 !important;
+    }
+    :global(.ant-table .ant-table-expanded-row-fixed) {
+        margin: unset;
+        padding: unset;
     }
 }
 
@@ -21,6 +25,13 @@
     :global {
         .ant-table.ant-table-small.ant-table-empty {
             margin: 0!important;
+        }
+    }
+}
+.result_info_table_head_line {
+    :global {
+        tbody > tr:nth-last-child(1) > td {
+            border-bottom: none;
         }
     }
 }
@@ -73,6 +84,15 @@
     :global {
         .expandedRowClassNameCls>td {
             overflow: hidden;
+            border-bottom: none;
+        }
+        .expandedRowClassNameCls > td > div {
+            width: 100% !important;
         }
     }
+}
+
+/* 去掉二级表格最底部下划线 */
+.resultCaseTableCls > div > div > div > div > div > table > tbody > tr:nth-last-child(2) > td {
+    border-bottom: none;
 }

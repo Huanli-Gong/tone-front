@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert } from 'antd'
 import styles from './index.less'
-import { useRequest, history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
+import { useRequest, history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection } from '@/pages/WorkSpace/TestResult/services'
@@ -19,11 +19,14 @@ import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { useClientSize } from '@/utils/hooks';
-import { requestCodeMessage, AccessTootip, aligroupServer, aliyunServer } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, aligroupServer, aliyunServer, matchTestType } from '@/utils/utils';
 import _, { isNull } from 'lodash'
 
 const TestResultDetails: React.FC = (props: any) => {
     const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
+    const widthStyle = locale ? 120: 58
+
     const { ws_id, id: job_id } = useParams() as any
 
     const access = useAccess()
@@ -86,7 +89,7 @@ const TestResultDetails: React.FC = (props: any) => {
     }
 
     const handleEditTagsOk = () => {
-        message.success('操作成功')
+        message.success(formatMessage({id: 'operation.success'}) )
         refresh()
     }
 
@@ -115,27 +118,32 @@ const TestResultDetails: React.FC = (props: any) => {
             setFetching(false)
             return
         }
-        message.success('操作成功')
+        message.success(formatMessage({id: 'operation.success'}) )
         refresh()
         processTableRef.current.refresh()
         setFetching(false)
     }
 
-    const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => (
-        <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
-            <Typography.Text className={styles.test_summary_item}>{name}</Typography.Text>
-            {
-                isLink ?
-                    <Typography.Text
-                        className={styles.test_summary_item_right}
-                        style={{ cursor: 'pointer', color: '#1890FF' }}
-                    >
-                        <span onClick={onClick}>{dataIndex || '-'}</span>
-                    </Typography.Text> :
-                    <Typography.Text className={styles.test_summary_item_right}>{dataIndex || '-'}</Typography.Text>
-            }
-        </Col>
-    )
+    
+    const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => {
+        return (
+            <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
+                <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>{name}</Typography.Text>
+                {
+                    isLink ?
+                        <Typography.Text
+                            className={styles.test_summary_item_right}
+                            style={{ cursor: 'pointer', color: '#1890FF', width: `calc(100% - ${widthStyle}px - 16px)` }}
+                        >
+                            <span onClick={onClick}>{dataIndex || '-'}</span>
+                        </Typography.Text> :
+                        <Typography.Text className={styles.test_summary_item_right}
+                        style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}
+                        >{dataIndex || '-'}</Typography.Text>
+                }
+            </Col>
+        )
+    }
 
     const EditNoteBtn: React.FC<any> = (props: any) => {
         const { creator_id } = props;
@@ -157,7 +165,7 @@ const TestResultDetails: React.FC = (props: any) => {
     }
 
     let TextStyle: any = {
-        width: 'calc(100% - 104px)',
+        // width: 'calc(100% - 104px)',
         wordBreak: 'break-all',
         whiteSpace: 'pre-wrap',
         overflow: 'hidden',
@@ -228,7 +236,7 @@ const TestResultDetails: React.FC = (props: any) => {
                                 </Access>
                                 <Row className={styles.test_result_name} align="middle">
                                     {`#${data.id} ${data.name}`}
-                                    {data.created_from === 'offline' && <span className={styles.offline_flag}><FormattedMessage id="ws.test.result.offline"/></span>}
+                                    {data.created_from === 'offline' && <span className={styles.offline_flag}><FormattedMessage id="ws.result.list.offline"/></span>}
                                 </Row>
                                 <Row >
                                     <Col span={17} >
@@ -241,7 +249,9 @@ const TestResultDetails: React.FC = (props: any) => {
                                                     </Tag>
                                                 </Tooltip>}
                                                 {data.test_type && <Tooltip title={formatMessage({id: 'ws.result.details.test_type'})} placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.test_type}</Tag>
+                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>
+                                                        <FormattedMessage id={`${matchTestType(data.test_type)}.test`} defaultMessage={data.test_type} />
+                                                    </Tag>
                                                 </Tooltip>}
                                                 {data.job_type && <Tooltip title={formatMessage({id: 'ws.result.details.job_type'})} placement="bottom">
                                                     <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.job_type}</Tag>
@@ -272,11 +282,10 @@ const TestResultDetails: React.FC = (props: any) => {
                                         <Row className={styles.test_summary_row} >
                                             <RenderDesItem name={formatMessage({id: 'ws.result.details.project_name'})} dataIndex={data.project_name} />
                                             <RenderDesItem name={!isNull(data.baseline_job_id)? formatMessage({id: 'ws.result.details.baseline_job'}): formatMessage({id: 'ws.result.details.baseline_test'})} dataIndex={conversion(data)} />
-                                            {/* <RenderDesItem name="产品版本" dataIndex={data.product_version} /> */}
                                             <Col span={8} >
                                                 <Row>
-                                                    <Typography.Text className={styles.test_summary_item}><FormattedMessage id="ws.result.details.produce.version"/></Typography.Text>
-                                                    <Typography.Text className={styles.test_summary_item_right_unellipsis}>{data.product_version || '-'}</Typography.Text>
+                                                    <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}><FormattedMessage id="ws.result.details.produce.version"/></Typography.Text>
+                                                    <Typography.Text className={styles.test_summary_item_right_unellipsis} style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}>{data.product_version || '-'}</Typography.Text>
                                                 </Row>
                                             </Col>
                                         </Row>
@@ -291,8 +300,8 @@ const TestResultDetails: React.FC = (props: any) => {
                                                 />
                                             </Row>
                                         }
-                                        <Row className={styles.test_summary_row} >
-                                            <Typography.Text className={styles.test_summary_item}><FormattedMessage id="ws.result.details.job.tag"/></Typography.Text>
+                                        <Row className={styles.test_summary_row}>
+                                            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}><FormattedMessage id="ws.result.details.job.tag"/></Typography.Text>
                                             <TagsEditer
                                                 onOk={handleEditTagsOk}
                                                 ws_id={ws_id}
@@ -303,13 +312,13 @@ const TestResultDetails: React.FC = (props: any) => {
                                             />
                                         </Row>
                                         <Row style={{ position: 'relative' }}>
-                                            <Typography.Text className={styles.test_summary_item}>
+                                            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>
                                                 <FormattedMessage id="ws.result.details.test_summary"/>
                                             </Typography.Text>
                                             <Access accessible={access.WsTourist()}>
                                                 <EditNoteBtn note={data.note} creator_id={data.creator} />
                                             </Access>
-                                            <div style={TextStyle}>
+                                            <div style={{...TextStyle, width: `calc(100% - ${widthStyle}px - 60px)` }}>
                                                 <Tooltip
                                                     title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>}
                                                     placement="topLeft"

@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from "react"
 import { Tooltip, Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
-import { useAccess, Access, useParams, useRequest, useIntl, FormattedMessage } from 'umi'
-import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils'
+import { useAccess, Access, useParams, useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
+import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
@@ -24,7 +24,7 @@ import styles from "../index.less"
 const Offline = styled.div`
     background: #1890FF;
     color: #fff;
-    width: 20px;
+    padding: 0px 4px;
     height: 20px;
     margin-right: 6px;
     font-size: 12px;
@@ -53,15 +53,14 @@ const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
 const ListTable: React.FC<IProps> = (props) => {
     const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const { pageQuery, setPageQuery, radioValue = 1, countRefresh } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
-
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
     const [selectRowData, setSelectRowData] = React.useState<any[]>([])
-
     const rerunRef = React.useRef(null) as any
-
+    
     const { data, refresh, loading, mutate } = useRequest(
         () => queryTestResultList(transQuery(pageQuery)),
         {
@@ -135,7 +134,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: 'JobID',
+            title: 'Job ID',
             dataIndex: 'id',
             fixed: 'left',
             width: 80,
@@ -154,11 +153,8 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             render: (_: any, row: any) => {
                 return (
-                    <Typography.Text ellipsis>
-                        {
-                            row.created_from === 'offline' &&
-                            <Offline><FormattedMessage id="ws.result.list.offline"/></Offline>
-                        }
+                    <span>
+                        {row.created_from === 'offline' && <Offline><FormattedMessage id="ws.result.list.offline"/></Offline>}
                         <Tooltip placement="topLeft" title={_}>
                             <Typography.Text
                                 className="result_job_hover_span"
@@ -170,7 +166,7 @@ const ListTable: React.FC<IProps> = (props) => {
                                 {_}
                             </Typography.Text>
                         </Tooltip>
-                    </Typography.Text>
+                    </span>
                 )
             }
         },
@@ -182,9 +178,13 @@ const ListTable: React.FC<IProps> = (props) => {
         },
         {
             title: <FormattedMessage id="ws.result.list.test_type"/>,
-            width: 80,
+            width: locale ? 140 : 80,
             dataIndex: 'test_type',
             ellipsis: true,
+            render: (_: any, row: any) => {
+                const strLocale = matchTestType(_)
+                return <span><FormattedMessage id={`${strLocale}.test`} defaultMessage={_} /></span>
+            }
         },
         {
             title: (
@@ -192,7 +192,7 @@ const ListTable: React.FC<IProps> = (props) => {
                     placement="bottomLeft"
                     title={formatMessage({id: 'ws.result.list.test_type.Tootip'})  }
                     desc={
-                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 15 }}>
+                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 4, marginBottom:4, paddingLeft:0 }}>
                             <li><FormattedMessage id="ws.result.list.test_type.desc1"/></li>
                             <li><FormattedMessage id="ws.result.list.test_type.desc2"/></li>
                         </ul>
@@ -276,7 +276,7 @@ const ListTable: React.FC<IProps> = (props) => {
         },
         {
             title: <FormattedMessage id="Table.columns.operation"/>,
-            width: 160,
+            width: locale ? 170 : 170,
             fixed: 'right',
             render: (_: any) => {
                 const disableStyle = { color: '#ccc', cursor: 'no-drop' }
@@ -314,7 +314,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 )
             }
         }
-    ].filter(Boolean), [access, ws_id])
+    ].filter(Boolean), [access, ws_id, locale])
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {

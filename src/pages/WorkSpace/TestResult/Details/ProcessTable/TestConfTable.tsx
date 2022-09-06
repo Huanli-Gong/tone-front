@@ -5,13 +5,14 @@ import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
-import { useAccess, Access, useModel, useIntl, FormattedMessage } from 'umi'
+import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
 
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
     const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const PAGE_DEFAULT_PARAMS: any = {
         page_num: 1,
         page_size: 10,
@@ -41,7 +42,8 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         queryTestListTableData()
     }, [pageParams])
 
-    const columns = [
+
+    const columns = React.useMemo(() => [
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
@@ -50,7 +52,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             dataIndex: 'server',
-            title: ['business_business'].includes(testType) ? '机器' : '测试机器',
+            title: ['business_business'].includes(testType) ? <FormattedMessage id="ws.result.details.the.server"/> : <FormattedMessage id="ws.result.details.test.server"/>,
             width: 80,
             ellipsis: {
                 showTitle: false
@@ -66,7 +68,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             title: <FormattedMessage id="ws.result.details.env.preparation"/>,
-            width: 80,
+            width: locale ? 200: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -90,7 +92,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             dataIndex: 'tid',
             title: 'TID',
             width: 120,
-            ...copyTooltipColumn(),
+            ...copyTooltipColumn('-', formatMessage),
         },
         {
             dataIndex: 'result',
@@ -123,14 +125,14 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                         // return <PermissionTootip>
                         //     <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
                         // </PermissionTootip>
-                        return  <Button type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
+                        return  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
                 }
                 // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
-                return <Button type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
+                return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
             }
         }, {
             title: <FormattedMessage id="Table.columns.operation"/>,
-            width: 70,
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -140,18 +142,18 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                         accessible={access.WsMemberOperateSelf(_.creator)} 
                         fallback={
                             <span>
-                                { _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
-                                { _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.skip"/></Button> }
+                                { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
+                                { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.skip"/></Button> }
                             </span>
                         }
                     >
-                        { _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
-                        { _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} ><FormattedMessage id="ws.result.details.skip"/></Button> }
+                        { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
+                        { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} ><FormattedMessage id="ws.result.details.skip"/></Button> }
                     </Access>
                 </Access>
             )
         },
-    ]
+    ], [testType, locale])
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
@@ -180,9 +182,10 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 rowKey='id'
                 size="small"
                 pagination={false}
-                scroll={{ x: '100%' }}
+                scroll={{ x: 1350 }}
             />
             <CommonPagination
+                style={{ marginTop: 8, marginBottom: 0}}
                 total={total}
                 currentPage={pageParams.page_num}
                 pageSize={pageParams.page_size}

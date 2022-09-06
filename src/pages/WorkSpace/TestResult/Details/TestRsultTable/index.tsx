@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useRequest, useModel, Access, useAccess, useParams, useIntl, FormattedMessage  } from 'umi'
+import { useRequest, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale  } from 'umi'
 import { queryTestResult } from '../service'
 import { Space, Row, Button, Menu, Dropdown } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
@@ -22,6 +22,8 @@ import ResizeTable from '@/components/ResizeTable'
 
 const TestResultTable: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
+
     const funcStates = [
         { key: 'count',  name: formatMessage({id: `ws.result.details.count`}), value: '', color: '#649FF6' },
         { key: 'success',name: formatMessage({id: `ws.result.details.success`}), value: 'success', color: '#81BF84' },
@@ -92,7 +94,9 @@ const TestResultTable: React.FC<any> = (props) => {
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
-    const columns = [
+    // 判断第一条数据中的属性
+    const { baseline, baseline_job_id } = dataSource[0] || {}
+    const columns = React.useMemo(() => [
         {
             title: 'Test Suite',
             dataIndex: 'suite_name',
@@ -107,7 +111,10 @@ const TestResultTable: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <span>{text || '-'}</span>,
+            render: (_: any, row: any) => {
+                const strLocale = matchTestType(_)
+                return <span><FormattedMessage id={`${strLocale}.test`} defaultMessage={_} /></span>
+            },
         },
         ['business_functional', 'business_performance', 'business_business'].includes(testType) &&
         {
@@ -128,7 +135,7 @@ const TestResultTable: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="ws.result.details.result" />,
             dataIndex: 'result',
-            width: 50,
+            width: 80,
             render: (_: any) => {
                 if (_ === 'NA')
                     return <StopCircle style={{ width: 16, height: 16, verticalAlign: 'text-bottom' }} />
@@ -143,7 +150,7 @@ const TestResultTable: React.FC<any> = (props) => {
         },
         {
             title: ['functional', 'business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.functional" />: (testType === 'business_business' ? <FormattedMessage id="ws.result.details.business_business" /> : <FormattedMessage id="ws.result.details.performance" />),
-            width: 255,
+            width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
             render: (_: any) => {
                 return (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
@@ -170,14 +177,14 @@ const TestResultTable: React.FC<any> = (props) => {
                 )
             }
         },
-        (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline) &&
+        (['performance', 'business_performance'].includes(testType) && baseline) &&
         {
             title: <FormattedMessage id="ws.result.details.baseline" />,
             dataIndex: 'baseline',
             width: 80,
             ...tooltipTd(),
         },
-        (['performance', 'business_performance'].includes(testType) && !!dataSource.length && dataSource[0].baseline_job_id) &&
+        (['performance', 'business_performance'].includes(testType) && baseline_job_id) &&
         {
             title: <FormattedMessage id="ws.result.details.baseline_job_id" />,
             dataIndex: 'baseline_job_id',
@@ -187,27 +194,27 @@ const TestResultTable: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="ws.result.details.start_time" />,
             dataIndex: 'start_time',
-            width: 175,
+            width: 160,
             ...tooltipTd(),
         },
         {
             title: <FormattedMessage id="ws.result.details.end_time" />,
             dataIndex: 'end_time',
-            width: 175,
+            width: 160,
             ...tooltipTd(),
         },
         access.WsTourist() &&
         {
             title: <FormattedMessage id="ws.result.details.test_summary" />,
             dataIndex: 'note',
-            width: 80,
+            width: 120,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any, row: any) => (
                 <EllipsisEditColumn
                     title={_}
-                    width={80}
+                    width={120}
                     access={access.WsMemberOperateSelf(creator)}
                     onEdit={
                         () => editRemarkDrawer.current.show({ ...row, suite_name: row.suite_name, editor_obj: 'test_job_suite' })
@@ -218,30 +225,34 @@ const TestResultTable: React.FC<any> = (props) => {
         ['performance', 'business_performance'].includes(testType) &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            width: 145,
+            width: locale ? 180 : 145,
+            fixed: 'right',
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => (
-                <Access accessible={access.WsTourist()}>
-                    <Access
-                        accessible={access.WsMemberOperateSelf(creator)}
-                        fallback={
+            render: (_: any) => {
+                const btnStyle: any = { color: '#1890FF', cursor: 'pointer', whiteSpace: 'nowrap' }
+                return (
+                    <Access accessible={access.WsTourist()}>
+                        <Access
+                            accessible={access.WsMemberOperateSelf(creator)}
+                            fallback={
+                                <Space>
+                                    <span style={btnStyle} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                    <span style={btnStyle} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                                </Space>
+                            }
+                        >
                             <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                                <span style={btnStyle} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                <span style={btnStyle} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
                             </Space>
-                        }
-                    >
-                        <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
-                        </Space>
+                        </Access>
                     </Access>
-                </Access>
-            )
+                )
+            }
         }
-    ].filter(Boolean)
+    ].filter(Boolean), [testType, access, locale, baseline, baseline_job_id])
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, job_id })

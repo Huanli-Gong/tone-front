@@ -98,7 +98,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             return
         }
         onOk()
-        message.success('操作成功')
+        message.success(formatMessage({id: 'operation.success'}) )
         handleClose()
     }
 
@@ -263,7 +263,9 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     >
                                         <span className={styles.join_base_line}>
                                             <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
-                                            <FormattedMessage id="ws.result.details.create.baseline" />
+                                            <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                <FormattedMessage id="ws.result.details.create.baseline" />
+                                            </span>
                                         </span>
                                     </div>
                                 }

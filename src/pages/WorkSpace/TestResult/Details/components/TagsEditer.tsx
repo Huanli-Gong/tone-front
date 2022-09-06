@@ -23,6 +23,7 @@ export const tagRender = ( { label, closable, onClose , value } : any ) => (
 )
 
 export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } : any ) => {
+    
     const [ state , setState ] = useState( false )
     const [ keys , setKeys ] = useState([])
     const access = useAccess();
@@ -65,7 +66,8 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
     }
 
     const editBtn = {
-        paddingTop: 5
+        paddingTop: 5,
+        paddingRight: 8
     }
 
     return (
@@ -76,7 +78,7 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
             {
             !state ?
             <Row align="middle">
-                <Space>
+                <>
                     <Access accessible={access.WsTourist()}>
                         <Access 
                             accessible={access.WsMemberOperateSelf(creator_id)}
@@ -94,7 +96,7 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                         :
                         <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
                     }
-                </Space>
+                </>
             </Row> :
             <Row >
                 <Select 
@@ -106,13 +108,15 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                     tagRender={ tagRender }
                     onChange={ handleSelectChange }
                     allowClear
-                    getPopupContainer={ node => node.parentNode } 
+                    getPopupContainer={ node => node.parentNode }
                     dropdownRender={menu => (
                         <div>
                             {menu}
                             { accessLabel && 
-                                <div style={{ display: 'flex', flexWrap: 'nowrap' }} onClick={newLabel}>
-                                    <span className={ styles.test_summary_job }><PlusOutlined style={{ marginRight:6 }}/>新建标签</span>
+                                <div style={{ maxHeight: 300, overflow: 'auto', padding: '10px', borderTop: '1px solid #eee', marginBottom: '-4px' }} onClick={newLabel}>
+                                    <span className={ styles.test_summary_job }><PlusOutlined style={{ marginRight:8, color: '#1890ff' }}/>
+                                        <FormattedMessage id="ws.result.details.new.tag" />
+                                    </span>
                                 </div>
                             }
                         </div>

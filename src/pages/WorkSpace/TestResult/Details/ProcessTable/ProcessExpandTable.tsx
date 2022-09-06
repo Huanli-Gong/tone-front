@@ -39,7 +39,7 @@ export default ({ items , mode } : any ) => {
     {
         dataIndex : 'result',
         title : <FormattedMessage id="ws.result.details.output.results"/>,
-        ...copyTooltipColumn( 'Nothing to do' ),
+        ...copyTooltipColumn('Nothing to do', formatMessage),
     },
     {
         dataIndex : 'tid',

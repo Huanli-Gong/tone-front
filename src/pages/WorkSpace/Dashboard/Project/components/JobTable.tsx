@@ -8,7 +8,7 @@ import { message, Space, Typography, Tooltip, Popconfirm, Row, Spin } from 'antd
 import ViewReports from './ViewReports'
 import { queryTestResultList } from '@/pages/WorkSpace/TestResult/services'
 import styled from 'styled-components'
-import { useParams, Access, useAccess } from 'umi'
+import { useParams, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import RerunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
@@ -41,6 +41,7 @@ const ColumnCircleText = styled.span`
 `
 
 const JobTable = (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id, project_id }: any = useParams()
     const DEFAULT_TABLE_PARAMS = { page_num: 1, page_size: 10, ws_id, project_id }
 
@@ -75,20 +76,20 @@ const JobTable = (props: any) => {
         }
         const { page_num, page_size } = pageParams
         await getProjectJobs({ ws_id, project_id, page_num, page_size })
-        message.success('操作成功！')
+        message.success(formatMessage({id: 'operation.success'}) )
     }
 
     const handleTestReRun = (_: any) => rerunModal.current.show(_)
 
     let columns: any = [
         {
-            title: 'JobID',
+            title: <FormattedMessage id="ws.dashboard.job.id" />,
             dataIndex: 'id',
             fixed: 'left',
             width: 80,
             render: (_: any) => <span onClick={() => window.open(`/ws/${ws_id}/test_result/${_}`)} style={{ cursor: 'pointer' }}>{_}</span>
         }, {
-            title: 'Job名称',
+            title: <FormattedMessage id="ws.dashboard.job.name" />,
             dataIndex: 'name',
             width: 200,
             ellipsis: {
@@ -100,16 +101,16 @@ const JobTable = (props: any) => {
                 </Tooltip>
             )
         }, {
-            title: '状态',
+            title: <FormattedMessage id="ws.dashboard.job.state" />,
             width: 120,
             dataIndex: 'state',
             render: (_: any, row: any) => <JobListStateTag {...row} />
         }, {
-            title: '测试类型',
+            title: <FormattedMessage id="ws.dashboard.job.test_type" />, //'测试类型',
             width: 100,
             dataIndex: 'test_type',
         }, {
-            title: '总计/成功/失败',
+            title: <FormattedMessage id="ws.dashboard.job.test_result" />, //'总计/成功/失败',
             dataIndex: 'test_result',
             width: 160,
             render: (_: any) => {
@@ -133,7 +134,7 @@ const JobTable = (props: any) => {
                 }
             }
         }, {
-            title: '所属项目',
+            title: <FormattedMessage id="ws.dashboard.job.project_name" />, //'所属项目',
             width: 120,
             dataIndex: 'project_name',
             ellipsis: {
@@ -141,43 +142,43 @@ const JobTable = (props: any) => {
             },
             render: (_: any) => _ && <Tooltip title={_}>{_}</Tooltip>
         }, {
-            title: '创建人',
+            title: <FormattedMessage id="ws.dashboard.job.creator_name" />, //'创建人',
             width: 80,
             ellipsis: true,
             dataIndex: 'creator_name'
         }, {
-            title: '开始时间',
+            title: <FormattedMessage id="ws.dashboard.job.start_time" />, //'开始时间',
             width: 180,
             dataIndex: 'start_time',
             ellipsis: true,
         }, {
-            title: '完成时间',
+            title: <FormattedMessage id="ws.dashboard.job.end_time" />, //'完成时间',
             width: 180,
             ellipsis: true,
             dataIndex: 'end_time'
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation" />,
             width: 160,
             fixed: 'right',
             render: (_: any) => {
                 return (
                     <Space>
                         <Access accessible={access.WsTourist()}>
-                            <Access
+                            <Access 
                                 accessible={access.WsMemberOperateSelf(_.creator)}
                                 fallback={
                                     <Space>
                                         {_.created_from === 'offline' ?
-                                            <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
+                                            <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}><FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
                                             :
                                             <span onClick={() => AccessTootip()}>
-                                                <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                                <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} ><FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
                                             </span>
                                         }
                                         <span onClick={() => AccessTootip()}>
                                             <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }}>
-                                                删除
+                                                <FormattedMessage id="operation.delete" />
                                             </Typography.Text>
                                         </span>
                                     </Space>
@@ -186,25 +187,25 @@ const JobTable = (props: any) => {
                                 <Space>
                                     {/** case.离线任务上传后，不能重跑。 */}
                                     {_.created_from === 'offline' ?
-                                        <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}>重跑</Typography.Text>
+                                        <Typography.Text style={{ color: '#ccc', cursor: 'no-drop' }}><FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
                                         :
                                         <span onClick={() => handleTestReRun(_)}>
-                                            <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} >重跑</Typography.Text>
+                                            <Typography.Text style={{ color: '#1890FF', cursor: 'pointer' }} ><FormattedMessage id="ws.dashboard.operation.rerun" /></Typography.Text>
                                         </span>
                                     }
                                     <Popconfirm
-                                        title="确定要删除吗？"
+                                        title={<FormattedMessage id="Drawer.delete.title" />}
                                         onConfirm={() => handleDelete(_)}
-                                        okText="确认"
-                                        cancelText="取消"
+                                        okText={<FormattedMessage id="Drawer.btn.confirm" />}
+                                        cancelText={<FormattedMessage id="Drawer.btn.cancel" />}
                                     >
                                         <Typography.Text
                                             style={{ color: '#1890FF', cursor: 'pointer' }}
                                         >
-                                            删除
+                                            <FormattedMessage id="operation.delete" />
                                         </Typography.Text>
                                     </Popconfirm>
-
+                                    
                                 </Space>
                             </Access>
                         </Access>
