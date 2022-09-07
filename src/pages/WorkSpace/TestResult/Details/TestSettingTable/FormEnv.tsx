@@ -8,7 +8,7 @@ import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/Bu
 import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import MonitorList from '@/pages/WorkSpace/TestJob/components/JobForms/MonitorList'
 import { getTextByJs } from '@/utils/hooks'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 
 /**
  * 环境配置
@@ -16,6 +16,8 @@ import { useRequest } from 'umi'
 export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }: any) => {
     if  (JSON.stringify(contrl) === '{}' ) return <></>
 
+    const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
@@ -119,7 +121,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
 
     return (
         <Card
-            title="环境准备配置"
+            title={<FormattedMessage id="ws.result.details.env.prepare.config"/>}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}
@@ -136,7 +138,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 style={{ width: '100%' }}
                 name="env"
                 form={form}
-                className={`${styles.job_test_form} ${styles.label_style_form}`}
+                className={`${styles.job_test_form} ${styles[locale ? 'label_style_form_en' : 'label_style_form']}`}
                 initialValues={{
                     rpm_info: [{ rpm: '', pos: 'before' }],
                     script_info: [{ script: '', pos: 'before' }],
@@ -147,28 +149,30 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 }}
             >
                 <Row>
-                    <Col span={ 10 }>
+                    <Col span={ 15 }>
                         {
                             'reclone' in contrl &&
                             <Form.Item
-                                label={contrl.reclone.alias || contrl.reclone.show_name}
+                                label={contrl.reclone.alias || <FormattedMessage id={`ws.result.details.${contrl.reclone.name}`}/> }
                                 name="reclone_contrl"
                                 initialValue={false}
                             >
                                 <Radio.Group disabled={disabled} onChange={({ target }) => setReset(target.value)}>
-                                    <Radio value={true}>是</Radio>
-                                    <Radio value={false}>否</Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
                         {
                             reset &&
                             <Form.Item label=" ">
-                                <Form.Item label="物理机">
+                                <Form.Item label={<FormattedMessage id="ws.result.details.physical"/>}>
                                     <Row gutter={10}>
                                         <Col span={12}>
                                             <Form.Item name="os" noStyle>
-                                                <Select getPopupContainer={node => node.parentNode} placeholder="请选择iclone os镜像" disabled={disabled}>
+                                                <Select getPopupContainer={node => node.parentNode} 
+                                                    placeholder={<FormattedMessage id="ws.result.details.physical.placeholder"/>}
+                                                    disabled={disabled}>
                                                     <Select.Option value="AliOS7U2-4.9-x86-64">AliOS7U2-4.9-x86-64</Select.Option>
                                                     <Select.Option value="AliOS7U2-aarch64">AliOS7U2-aarch64</Select.Option>
                                                     <Select.Option value="AliOS7U2-x86-64">AliOS7U2-x86-64</Select.Option>
@@ -177,7 +181,9 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                         </Col>
                                         <Col span={12}>
                                             <Form.Item name="app_name" noStyle>
-                                                <Select getPopupContainer={node => node.parentNode} placeholder="请选择iclone应用模板" disabled={disabled}>
+                                                <Select getPopupContainer={node => node.parentNode} 
+                                                    placeholder={<FormattedMessage id="ws.result.details.app_name.placeholder"/>}
+                                                    disabled={disabled}>
                                                     <Select.Option value="baseos_server">baseos_server</Select.Option>
                                                     <Select.Option value="app_server">app_server</Select.Option>
                                                 </Select>
@@ -185,19 +191,21 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                         </Col>
                                     </Row>
                                 </Form.Item>
-                                <Form.Item name="vm" label="虚拟机">
-                                    <Select getPopupContainer={node => node.parentNode} placeholder="请选择vm配置" disabled={disabled}></Select>
+                                <Form.Item name="vm" label={<FormattedMessage id="ws.result.details.vm"/>}>
+                                    <Select getPopupContainer={node => node.parentNode} 
+                                        placeholder={<FormattedMessage id="ws.result.details.vm.placeholder"/>}
+                                        disabled={disabled}></Select>
                                 </Form.Item>
                             </Form.Item>
                         }
                         {
                             'kernel_install' in contrl &&
-                            <Form.Item label={contrl.kernel_install.alias || contrl.kernel_install.show_name} >
+                            <Form.Item label={contrl.kernel_install.alias || <FormattedMessage id={`ws.result.details.${contrl.kernel_install.name}`}/> }>
                                 <Radio.Group value={kernel} disabled={disabled} onChange={handleKernalInstallChange}>
-                                    <Radio value="no">不安装</Radio>
-                                    <Radio value="install_push">安装已发布</Radio>
-                                    <Radio value="install_un_push">安装未发布</Radio>
-                                    <Radio value="install_build_kernel">Build内核</Radio>
+                                    <Radio value="no"><FormattedMessage id="ws.result.details.install_no"/></Radio>
+                                    <Radio value="install_push"><FormattedMessage id="ws.result.details.install_publish"/></Radio>
+                                    <Radio value="install_un_push"><FormattedMessage id="ws.result.details.install_un"/></Radio>
+                                    <Radio value="install_build_kernel"><FormattedMessage id="ws.result.details.install_build"/></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
@@ -221,12 +229,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                         {
                             'reboot' in contrl &&
                             <Form.Item
-                                label={contrl.reboot.alias || contrl.reboot.show_name}
+                                label={contrl.reboot.alias || <FormattedMessage id={`ws.result.details.${contrl.reboot.name}`}/> }
                                 name="need_reboot"
                             >
                                 <Radio.Group disabled={disabled} onChange={handleRebootChange}>
-                                    <Radio value={true}>是</Radio>
-                                    <Radio value={false}>否</Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
@@ -235,13 +243,13 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                             <Form.Item
                                 name="env_info"
                                 // label="全局变量"
-                                label={contrl.global_variable.alias || contrl.global_variable.show_name}
+                                label={contrl.global_variable.alias || <FormattedMessage id={`ws.result.details.${contrl.global_variable.name}`}/> }
                                 rules={[
                                     () => ({
                                         validator(rule, value) {
                                             if (value) {
                                                 const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                                return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
+                                                return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'format.key.value'}) );
                                             }
                                             else
                                                 return Promise.resolve()
@@ -249,19 +257,19 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                     })
                                 ]}
                             >
-                                <Input.TextArea disabled={disabled} placeholder="格式：key=value，多个用空格或换行分割" />
+                                <Input.TextArea disabled={disabled} placeholder={formatMessage({id: 'format.key.value'})} />
                             </Form.Item>
                         }
                         {
                             'rpm' in contrl &&
                             <FormList
                                 // label="安装RPM"
-                                label={contrl.rpm.alias || contrl.rpm.show_name}
+                                label={contrl.rpm.alias || <FormattedMessage id={`ws.result.details.${contrl.rpm.name}`}/> }
                                 listName="rpm_info"
                                 textName="rpm"
                                 radioName="pos"
-                                buttonText="+ 添加RPM包"
-                                placeholder={'请输入rpm包链接, 有多个用逗号或换行分割'}
+                                buttonText={formatMessage({id: 'ws.result.details.rpm.add'})}
+                                placeholder={formatMessage({id: 'ws.result.details.please.enter.rpm'})}
                                 buttonShow={reboot}
                                 disabled={disabled}
                             />
@@ -270,12 +278,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                             'script' in contrl &&
                             <FormList
                                 // label="执行脚本"
-                                label={contrl.script.alias || contrl.script.show_name}
+                                label={contrl.script.alias || <FormattedMessage id={`ws.result.details.${contrl.script.name}`}/> }
                                 listName="script_info"
                                 textName="script"
                                 radioName="pos"
-                                buttonText="+ 添加执行脚本"
-                                placeholder={'请输入脚本内容'}
+                                buttonText={formatMessage({id: 'ws.result.details.script.add'})}
+                                placeholder={formatMessage({id: 'ws.result.details.please.enter.script'})}
                                 buttonShow={reboot}
                                 disabled={disabled}
                             />
@@ -284,7 +292,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                             'monitor' in contrl &&
                             <Form.Item
                                 // label="监控配置"
-                                label={contrl.monitor.alias || contrl.monitor.show_name}
+                                label={contrl.monitor.alias || <FormattedMessage id={`ws.result.details.${contrl.monitor.name}.config`}/> }
                                 name="moniter_contrl"
                                 initialValue={false}
                             >
@@ -292,8 +300,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                     disabled={disabled}
                                     onChange={({ target }) => setMonitor(target.value)}
                                 >
-                                    <Radio value={true}>是</Radio>
-                                    <Radio value={false}>否</Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }

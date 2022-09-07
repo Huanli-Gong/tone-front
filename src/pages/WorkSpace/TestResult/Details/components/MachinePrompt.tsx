@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Row, Typography } from 'antd';
-import { useParams, useIntl, FormattedMessage } from 'umi';
+import { useParams, useIntl, FormattedMessage  } from 'umi'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const RenderMachinePrompt = (props: any) => {
@@ -20,7 +20,7 @@ const RenderMachinePrompt = (props: any) => {
                     <Col span={24}>
                         <ExclamationCircleOutlined style={{ color: '#FAAD14', padding: '16px 18px 0 26px' }} />
                         <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>
-                            <FormattedMessage id="aliyunServer"/>实例已释放
+                            <FormattedMessage id="aliyunServer"/> <FormattedMessage id="ws.result.details.instance.released"/>
                         </Typography.Text>
                         {/* <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>云上机器实例已释放</Typography.Text> */}
                         <Row style={{ padding: '4px 0 0 60px' }}>
@@ -37,7 +37,7 @@ const RenderMachinePrompt = (props: any) => {
                 <Row style={{ marginBottom: 16 }}>
                     <Col span={24}>
                         <ExclamationCircleOutlined style={{ color: '#FAAD14', padding: '16px 18px 0 26px' }} />
-                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>集群机器配置错误</Typography.Text>
+                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="ws.result.details.machine.config.error"/></Typography.Text>
                         <Row style={{ padding: '4px 0 0 60px' }}>
                             <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>
                                 <a href={provider_name === "cluster" ? `/ws/${ws_id}/device/cloud` : `/ws/${ws_id}/device/group`} target='_blank'>{cluster_msg}</a>
@@ -54,9 +54,9 @@ const RenderMachinePrompt = (props: any) => {
                 <Row style={{ marginBottom: 16 }}>
                     <Col span={24}>
                         <ExclamationCircleOutlined style={{ color: '#FAAD14', padding: '16px 18px 0 26px' }} />
-                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>机器被Job占用</Typography.Text>
+                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="ws.result.details.machine.occupied.by.job"/></Typography.Text>
                         <Row style={{ padding: '4px 0 0 60px' }}>
-                            <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>占用Job</Typography.Text>
+                            <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}><FormattedMessage id="ws.result.details.occupy.job"/></Typography.Text>
                             {
                                 server_occupied.map((item: any) => (
                                     <span style={{ marginRight: 20 }} onClick={() => setTimeout(function () { window.location.href = `/ws/${ws_id}/test_result/${item.job_id}` })}>

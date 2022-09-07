@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import { parse } from 'querystring';
+import { useIntl, getLocale } from 'umi'
 import { listRender, enumer, textRender } from './hooks';
 import _ from 'lodash';
 
@@ -346,7 +347,22 @@ export const matchTestType = (params: string) => {
     case '业务接入测试':
       return 'business_business';
     default:
-      return '';
+      return params || '';
+  }
+};
+
+/**
+ * @module 测试结果-结果详情页
+ * @returns Mode
+ */
+ export const matchMode = (params: string) => {
+  switch (params) {
+    case '单机':
+      return 'standalone';
+    case '集群':
+      return 'cluster';
+    default:
+      return params || '';
   }
 };
 
@@ -404,7 +420,8 @@ export const deepObject = (data: any) => {
 };
 
 export const AccessTootip = () => {
-  return message.error('没有操作权限');
+  const info = getLocale() === 'en-US' ? 'No operation permission' : '没有操作权限'
+  return message.error(info);
 };
 
 // ----------------- start 由环境决定的文案 ------------------
@@ -463,30 +480,30 @@ const list_cn = {
   'aliyun.cluster': '云上集群',
 }
 const list_en = {
-  'fixed_pool': 'fixed_pool',
-  'elastic_pool': 'elastic_pool',
-  'aligroup': '内网',
-  'aliyun': '云上',
+  'fixed_pool': 'Reserved Machine Pool',
+  'elastic_pool': 'Elastic Machine Pool',
+  'aligroup': 'Reserved',
+  'aliyun': 'Elastic',
   // 机器
-  'fixed_pool.server': 'fixed_pool.server',
-  'elastic_pool.server': 'elastic_pool.server',
-  'aligroup.server': 'aligroup.server',
-  'aliyun.server': 'aliyun.server',
+  'fixed_pool.server': 'Machine from Reserved Machine Pool',
+  'elastic_pool.server': 'Machine from Elastic Machine Pool',
+  'aligroup.server': 'Reserved Machine',
+  'aliyun.server': 'Elastic Machine',
   // 基线
-  'fixed_pool.baseline': 'fixed_pool.baseline',
-  'elastic_pool.baseline': 'elastic_pool.baseline',
-  'aligroup.baseline': 'aligroup.baseline',
-  'aliyun.baseline': 'aliyun.baseline',
+  'fixed_pool.baseline': 'Reserved Machine Baseline',
+  'elastic_pool.baseline': 'Elastic Machin Baseline',
+  'aligroup.baseline': 'Reserved Machine Baseline',
+  'aliyun.baseline': 'Elastic Machine Baseline',
   // 单机 | 集群
-  'fixed_pool.standalone': 'fixed_pool.standalone',
-  'elastic_pool.standalone': 'elastic_pool.standalone',
-  'aligroup.standalone': 'aligroup.standalone',
-  'aliyun.standalone': 'aliyun.standalone',
+  'fixed_pool.standalone': 'Standalone',
+  'elastic_pool.standalone': 'Standalone',
+  'aligroup.standalone': 'Standalone',
+  'aliyun.standalone': 'Standalone',
   //
-  'fixed_pool.cluster': 'fixed_pool.cluster',
-  'elastic_pool.cluster': 'elastic_pool.cluster',
-  'aligroup.cluster': 'aligroup.cluster',
-  'aliyun.cluster': 'aliyun.cluster',
+  'fixed_pool.cluster': 'Cluster',
+  'elastic_pool.cluster': 'Cluster',
+  'aligroup.cluster': 'Cluster',
+  'aliyun.cluster': 'Cluster',
 }
 // ----------------- cn ------------------
 export const aligroupServer = isOpenSource ? list_cn['fixed_pool'] : list_cn['aligroup'];

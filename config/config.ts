@@ -33,7 +33,7 @@ export default defineConfig({
         default: 'zh-CN',
         // default true, when it is true, will use `navigator.language` overwrite default
         antd: true,
-        baseNavigator: true,
+        baseNavigator: false,
     },
     dynamicImport: BUILD_APP_ENV !== 'openanolis' && {
         loading: '@/components/PageLoading/index',

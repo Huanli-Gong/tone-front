@@ -6,7 +6,7 @@ import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import _ from 'lodash'
-import { useParams } from "umi"
+import { useParams, useIntl, FormattedMessage, getLocale } from "umi"
 
 const { Option } = Select;
 
@@ -14,6 +14,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     const { ws_id } = useParams() as any
     if (JSON.stringify(contrl) === '{}') return <></>
 
+    const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const [form] = Form.useForm()
     const [tags, setTags] = useState<Array<any>>([])
     const [checkedList, setCheckedList] = React.useState<any>();
@@ -101,10 +103,10 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
         form.setFieldsValue({ ...values, report_name: reportSelectVal })
         setCheckedList(reportSelectVal)
     }
-    console.log(contrl, 'contrl')
+    // console.log(contrl, 'contrl')
     return (
         <Card
-            title="更多配置"
+            title={<FormattedMessage id="ws.result.details.more.configurations"/>}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none' }}
         >
@@ -120,18 +122,18 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                 name="more"
                 form={form}
 
-                className={`${styles.job_test_form} ${styles.label_style_form}`}
+                className={`${styles.job_test_form} ${styles[locale ? 'label_style_form_en' : 'label_style_form']}`}
             >
                 <Row>
-                    <Col span={10}>
+                    <Col span={15}>
                         {
                             'cleanup' in contrl &&
                             <Form.Item
                                 name="cleanup_info"
                                 // label="清理脚本"
-                                label={contrl.cleanup.alias || contrl.cleanup.show_name}
+                                label={contrl.cleanup.alias || <FormattedMessage id={`ws.result.details.${contrl.cleanup.name}`}/> }
                             >
-                                <Input.TextArea disabled={disabled} placeholder="请输入Job的清理脚本" />
+                                <Input.TextArea disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.cleanup.placeholder'})} />
                             </Form.Item>
                         }
                         {
@@ -139,7 +141,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <TagSelect
                                 tags={tags}
                                 // label="Job标签"
-                                label={contrl.job_tag.alias || contrl.job_tag.show_name}
+                                label={contrl.job_tag.alias || <FormattedMessage id={`ws.result.details.${contrl.job_tag.name}`}/> }
                                 disabled={disabled}
                             />
                         }
@@ -148,9 +150,9 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="notice_subject"
                                 // label="通知主题"
-                                label={contrl.notice_subject.alias || contrl.notice_subject.show_name}
+                                label={contrl.notice_subject.alias || <FormattedMessage id={`ws.result.details.${contrl.notice_subject.name}`}/> }
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder="[T-One] 你的测试已完成{date}" />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.notice_subject.placeholder'}, { date: '{date}'})} />
                             </Form.Item>
                         }
                         {
@@ -158,13 +160,13 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="email"
                                 // label="邮件通知"
-                                label={contrl.email_notice.alias || contrl.email_notice.show_name}
+                                label={contrl.email_notice.alias || <FormattedMessage id={`ws.result.details.${contrl.email_notice.name}`}/> }
                                 rules={[{
                                     pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                    message: '请输入正确的邮箱地址'
+                                    message: formatMessage({id: 'ws.result.details.email.message'})
                                 }]}
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder="默认通知Job创建人，多个邮箱用空格或英文逗号分隔" />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.email.placeholder'})} />
                             </Form.Item>
                         }
                         {
@@ -172,24 +174,25 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="ding_token"
                                 // label="钉钉通知"
-                                label={contrl.ding_notice.alias || contrl.ding_notice.show_name}
+                                label={contrl.ding_notice.alias || <FormattedMessage id={`ws.result.details.${contrl.ding_notice.name}`}/> }
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder="请输入钉钉token，多个token用空格或英文逗号分隔" />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.ding_notice.placeholder'})} />
                             </Form.Item>
                         }
                         {
                             'report' in contrl &&
-                            <Form.Item label="测试报告" name="report_name">
+                            <Form.Item label={<FormattedMessage id="ws.result.details.report"/>}
+                                name="report_name">
                                 <Input
                                     value={checkedList || undefined}
                                     onChange={onReportChange}
                                     autoComplete="off"
                                     disabled={disabled}
-                                    placeholder="请输入报告名称，例如：{job_name}_report-{report_seq_id}" />
+                                    placeholder={formatMessage({id: 'ws.result.details.report.placeholder'}, {job_name: '{job_name}', report_seq_id: '{report_seq_id}'})} />
                                 <Popover
                                     content={
                                         <div>
-                                            {"报告名称可用占位符："}
+                                            {formatMessage({id: 'ws.result.details.report.Popover'})}
                                             <p>{"{date} {job_name} {job_id} {product_version}"}</p>
                                         </div>
                                     }
@@ -204,12 +207,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             checkedList && 'report' in contrl &&
                             <Form.Item
                                 name="report_template_id"
-                                label="报告模板"
+                                label={<FormattedMessage id="ws.result.details.report_template"/>}
                             >
                                 <Select
                                     showSearch
                                     disabled={disabled}
-                                    placeholder="请选择报告模板"
+                                    placeholder={formatMessage({id: 'ws.result.details.report_template.placeholder'})}
                                     defaultValue={defaultTemplate.name}
                                     optionFilterProp="children"
                                     filterOption={(input, option) =>
@@ -227,12 +230,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             'callback_api' in contrl &&
                             <Form.Item
                                 name="callback_api"
-                                label="回调接口"
+                                label={<FormattedMessage id="ws.result.details.callback_api"/>}
                             >
                                 <Input
                                     autoComplete="off"
                                     disabled={disabled}
-                                    placeholder="请输入回调接口的URL" />
+                                    placeholder={formatMessage({id: 'ws.result.details.callback_api.placeholder'})} />
                             </Form.Item>
                         }
 

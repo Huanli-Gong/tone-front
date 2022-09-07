@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import moment from 'moment'
 import type { Moment } from 'moment'
 import { Col, Row, Space, Typography, Tooltip, Badge, Popover, Button, Select } from 'antd'
@@ -10,19 +10,21 @@ import cls from 'classnames'
 
 type DateType = Moment | string | undefined | null
 
-const timeMap = new Map([
-    ['24h', '近24h'],
-    ['48h', '近48h'],
-    ['oneWeek', '近一周'],
-])
-
 const getStatusColor = (status: string) => new Map([
     ['fail', '#F5222D'],
     ['success', '#39C15B'],
     ['pending', '#1890FF']
 ]).get(status) || '#D0D0D0'
 
-const getCurrentTimeStr = (time: string) => moment.isMoment(time) ? time.format('YYYY-MM-DD') : timeMap.get(time)
+const getCurrentTimeStr = (time: string) => {
+    const { formatMessage } = useIntl()
+    const timeMap = new Map([
+        ['24h', formatMessage({id: 'ws.dashboard.24h'})],
+        ['48h', formatMessage({id: 'ws.dashboard.48h'})],
+        ['oneWeek', formatMessage({id: 'ws.dashboard.oneWeek'})],
+    ])
+    return moment.isMoment(time) ? time.format('YYYY-MM-DD') : timeMap.get(time)
+}
 
 type JobDataItemProps = {
     hasIcon?: boolean;
@@ -160,6 +162,7 @@ const BageLine = styled.div<BageLineProps>`
 `
 
 const JobData: React.FC<JobDataProps> = (props) => {
+    const { formatMessage } = useIntl()
     const { time, ...rest } = props
     const { fail_num, complete_num, project_total_job, today_job_all, today_job_fail, today_job_success } = rest
 
@@ -168,13 +171,13 @@ const JobData: React.FC<JobDataProps> = (props) => {
             <JobDataItem
                 hasIcon
                 {...rest}
-                time={`${getCurrentTimeStr(time)} Job`}
+                time={`${getCurrentTimeStr(time)} Jobs`}
                 all={today_job_all}
                 success={today_job_success}
                 fail={today_job_fail}
             />
             <JobDataItem
-                time="所有Job"
+                time={formatMessage({id: 'ws.dashboard.all.job'})}
                 all={project_total_job}
                 success={complete_num}
                 fail={fail_num}
@@ -279,13 +282,17 @@ const CardExpandedContainer = styled.div`
     box-shadow:  0 6px 16px 0 rgba(0,0,0,0.08), 0 9px 28px 8px rgba(0,0,0,0.05);
 `
 
-const filterIssue = (state: string) => new Map([
-    ['fail', '有job失败'],
-    ['success', '所有job均成功'],
-    ['pending', '有job(创建于所选时间段)当前状态还在运行中，或者pending状态'],
-]).get(state) ?? '没有job'
+const filterIssue = (state: string) => {
+    const { formatMessage } = useIntl()
+    return new Map([
+        ['fail', formatMessage({id: 'ws.dashboard.fail.reason'})],
+        ['success', formatMessage({id: 'ws.dashboard.success.reason'})],
+        ['pending', formatMessage({id: 'ws.dashboard.pending.reason'})],
+    ]).get(state) ?? formatMessage({id: 'ws.dashboard.no.job'})
+}
 
 const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time }) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const [tab, setTab] = React.useState(null)
     const [visible, setVisible] = React.useState(false);
@@ -312,6 +319,8 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
             const { today_query } = list[idx]
             if (today_query && today_query.length > 0) {
                 if(jobState){
+                    // 前后端“成功”时的字符串不一致,所以单独判断
+                    if (jobState === 'complete') { return today_query.filter((item:any) => item.today_query_state === 'success') }
                     return today_query.filter((item:any) => item.today_query_state === jobState)
                 } 
                 return today_query
@@ -376,23 +385,22 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
             <CardExpandedContainer style={{ display: tab ? 'block' : 'none' }}>
                 <CardExpandedRow>
                     <ListRow
-                        title={`${getCurrentTimeStr(time)} Job名称`}
+                        title={`${getCurrentTimeStr(time)} ${formatMessage({id: 'ws.dashboard.job.name'})}`}
                         state={
                             <Popover
-                                content={
-                                    <Row justify='end'>
-                                        <Space>
-                                            {/* <Button type="primary" onClick={handleFilter}>确认</Button> */}
-                                            <Button onClick={handleClose}>重置</Button>
-                                        </Space>
-                                    </Row>
-                                }
+                                overlayClassName={'self_popover_no_content'}
                                 title={
                                     <>
-                                        状态：<Select style={{ width: 150 }} placeholder="请选择状态" onSelect={handleSelect}>
+                                        <FormattedMessage id="ws.dashboard.job.state"/>：
+                                        <Select style={{ width: 150 }} 
+                                            placeholder={<FormattedMessage id="ws.dashboard.please.select.state"/>} 
+                                            onSelect={handleSelect}
+                                            allowClear
+                                            onClear={handleClose}
+                                        >
                                             {
                                                 defaultState.map((item) => (
-                                                    <Select.Option value={item}>{item}</Select.Option>
+                                                    <Select.Option value={item}>{item.replace(/^[a-z]/, (L)=>L.toUpperCase())}</Select.Option>
                                                 ))
                                             }
                                         </Select>
@@ -403,15 +411,15 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                                 onVisibleChange={handleVisibleChange}
                             >
                                 <Space style={{ color: 'rgba(0,0,0,.5)' }}>
-                                    状态
-                                    <FilterOutlined />
+                                    <FormattedMessage id="ws.dashboard.job.state"/>
+                                    <FilterOutlined style={{ color: jobState ? '#1890ff': undefined }}/>
                                 </Space>
                             </Popover>
                         }
-                        result={"结果(成功/失败)"}
-                        start_time="开始时间"
+                        result={formatMessage({id: 'ws.dashboard.job.result'})}
+                        start_time={formatMessage({id: 'ws.dashboard.job.start_time'})}
                     />
-                    {
+                    {expandedRow?.length ?
                         expandedRow.map((y: any) => (
                             <ListRow
                                 key={y.today_job_id}
@@ -432,6 +440,8 @@ const TabCardItem: React.FC<{ list: any[] } & TabCardProps> = ({ list = [], time
                                 start_time={y.today_query_job_start_time}
                             />
                         ))
+                        :
+                        <div style={{textAlign: 'center', marginTop:15, color:'#00000073'}}><FormattedMessage id="no.data"/></div>
                     }
                 </CardExpandedRow>
             </CardExpandedContainer>

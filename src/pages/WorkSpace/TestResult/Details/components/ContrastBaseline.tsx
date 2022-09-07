@@ -2,10 +2,11 @@ import { queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { requestCodeMessage } from '@/utils/utils'
 import { Drawer, Form, Select, Space, Button, Row } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
-import { useRequest, useParams } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { contrastBaseline } from '../service'
 
 const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { server_provider, onOk } = props
     const [visible, setVisible] = useState(false)
@@ -67,21 +68,27 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
             maskClosable={false}
             keyboard={false}
             visible={visible}
-            title="对比基线"
+            title={<FormattedMessage id="ws.result.details.baseline" />}
             onClose={handleClose}
             width="376"
             footer={
                 <Row justify="end" >
                     <Space align="end">
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} disabled={pedding}>确定</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk} disabled={pedding}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </Row>
             }
         >
             <Form form={form} requiredMark={false} layout="vertical">
-                <Form.Item label="对比基线" name="baseline_id" rules={[{ required: true, message: '未选择对比基线' }]}>
-                    <Select placeholder="选择对比基线">
+                <Form.Item label={<FormattedMessage id="ws.result.details.baseline" />}
+                    name="baseline_id" 
+                    rules={[{ 
+                        required: true, 
+                        message: formatMessage({id: `ws.result.details.baseline.message`})
+                    }]}>
+                    <Select placeholder={formatMessage({id: `ws.result.details.baseline.placeholder`})}
+                        >
                         {
                             baselineList.map(
                                 (item: any) => (

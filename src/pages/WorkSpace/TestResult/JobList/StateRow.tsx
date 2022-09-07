@@ -1,7 +1,7 @@
 import { Row, Space, Typography, Radio, Input, RadioChangeEvent } from "antd"
 import React from "react"
 import styled from "styled-components"
-import { useAccess, useLocation, useParams } from "umi"
+import { useAccess, useLocation, useParams, useIntl, FormattedMessage } from "umi"
 import { DownOutlined, UpOutlined } from '@ant-design/icons'
 
 const activeCss = `
@@ -22,6 +22,7 @@ type IProps = {
 }
 
 const StateRow: React.FC<IProps> = (props) => {
+    const { formatMessage } = useIntl()
     const { pageQuery, setPageQuery, stateCount, onSelectionChange, onFilterChange } = props
 
     const { ws_id } = useParams() as any
@@ -45,7 +46,7 @@ const StateRow: React.FC<IProps> = (props) => {
     }, [keyType])
 
     const jobStateKeys = [
-        { name: '全部', key: 'all_job', val: '', },
+        { name: formatMessage({ id: 'all' }), key: 'all_job', val: '', },
         { name: 'Pending', key: 'pending_job', val: 'pending' },
         { name: 'Running', key: 'running_job', val: 'running' },
         { name: 'Complete', key: 'success_job', val: 'success' },
@@ -72,13 +73,13 @@ const StateRow: React.FC<IProps> = (props) => {
 
             <Space>
                 <Space>
-                    <Typography.Text >选择作用：</Typography.Text>
+                    <Typography.Text><FormattedMessage id="ws.result.list.selection.function"/>：</Typography.Text>
                     <Radio.Group
                         onChange={({ target }: RadioChangeEvent) => setKeyType(target.value)}
                         value={keyType}
                     >
-                        <Radio value={1}>报告和分析</Radio>
-                        {access.WsMemberOperateSelf() && <Radio value={2}>批量删除</Radio>}
+                        <Radio value={1}><FormattedMessage id="ws.result.list.report.and.analysis"/></Radio>
+                        {access.WsMemberOperateSelf() && <Radio value={2}><FormattedMessage id="ws.result.list.batch.delete"/></Radio>}
                     </Radio.Group>
                 </Space>
                 <Input.Search
@@ -92,8 +93,8 @@ const StateRow: React.FC<IProps> = (props) => {
                 <div onClick={() => setFilter(!filter)} style={{ cursor: 'pointer' }}>
                     {
                         filter ?
-                            <Space>收起过滤<UpOutlined /></Space> :
-                            <Space>展开过滤<DownOutlined /></Space>
+                            <Space><FormattedMessage id="ws.result.list.collapse.filter"/><UpOutlined /></Space> :
+                            <Space><FormattedMessage id="ws.result.list.expand.filter"/><DownOutlined /></Space>
                     }
                 </div>
             </Space>

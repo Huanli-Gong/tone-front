@@ -7,7 +7,7 @@ import { renderChart, filterChartSource } from './utils'
 import { requestCodeMessage } from '@/utils/utils';
 import JobTable from './components/JobTable'
 import moment from 'moment';
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 interface ContainerProps {
     height?: number;
 }
@@ -87,6 +87,7 @@ type IProps = {
     [k: string]: any
 }
 const ProjectDashboard: React.FC<IProps> = (props) => {
+    const { formatMessage } = useIntl()
     const { ws_id, project_id } = useParams() as any
     const { height: layoutHeight } = useClientSize()
 
@@ -155,6 +156,8 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
     }, [])
     let startDate: any = moment().subtract(30, "days").format('YYYY-MM-DD')
     let endDate: any = moment().format('YYYY-MM-DD')
+    const todayText = formatMessage({id: 'ws.dashboard.today'})
+    const monthText = formatMessage({id: 'ws.dashboard.one.month'})
     return (
         <Container height={layoutHeight - 50}>
             <InfoBanner >
@@ -172,19 +175,19 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
                 </Row>
             </InfoBanner>
             <TableContainer>
-                <TableTitle>列表详情</TableTitle>
+                <TableTitle><FormattedMessage id="ws.dashboard.list.details" /></TableTitle>
                 <JobTable />
             </TableContainer>
             <ChartWrapper>
                 <ChartTitle align="middle">
                     <Col span={24}>
-                        <Typography.Text>趋势图</Typography.Text>
+                        <Typography.Text><FormattedMessage id="ws.dashboard.trend.chart" /></Typography.Text>
                         <RangeTime>
                             <RangePicker
                                 defaultValue={[moment(startDate), moment(endDate)]}
                                 ranges={{
-                                    '今天': [moment(), moment()],
-                                    '一个月': [moment().startOf('month'), moment().endOf('month')],
+                                    [todayText]: [moment(), moment()],
+                                    [monthText]: [moment().startOf('month'), moment().endOf('month')],
                                 }}
                                 format="YYYY-MM-DD"
                                 onChange={(d:any, t:any) => getChartData(t)}
@@ -192,7 +195,9 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
                         </RangeTime>
                     </Col>
                     <Col span={24}>
-                        <Typography.Text type="secondary">Job成功/失败</Typography.Text>
+                        <Typography.Text type="secondary">
+                            <FormattedMessage id="ws.dashboard.job.success.failure" />
+                        </Typography.Text>
                     </Col>
                 </ChartTitle>
                 <Spin spinning={jobChartLoading}>
@@ -201,7 +206,9 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
             </ChartWrapper>
             <ChartWrapper>
                 <ChartTitle align="middle">
-                    <Typography.Text type="secondary">用例失败</Typography.Text>
+                    <Typography.Text type="secondary">
+                        <FormattedMessage id="ws.dashboard.case.failed" />
+                    </Typography.Text>
                 </ChartTitle>
                 <Spin spinning={caseChartLoading}>
                     <ChartContent ref={suiteChart} />

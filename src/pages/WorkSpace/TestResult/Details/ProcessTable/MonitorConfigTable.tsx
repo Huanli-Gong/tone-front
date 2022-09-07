@@ -1,14 +1,15 @@
-import { Card, Row, Table, Tooltip } from 'antd'
+import { Card, Table, Tooltip } from 'antd'
 import React, { useEffect } from 'react'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
-import { useRequest, useAccess } from 'umi';
+import { useRequest, useAccess, useIntl, FormattedMessage } from 'umi';
 import ResizeTable from '@/components/ResizeTable'
 import ServerLink from '@/components/MachineWebLink/index';
 
 export default ({ job_id , refresh = false, provider_name } : any ) => {
+    const { formatMessage } = useIntl()
     const access = useAccess()
     const { data , loading , run } = useRequest(
         () => queryMonitorList({ job_id }),
@@ -42,12 +43,12 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
         },
         {
             dataIndex : 'state',
-            title : '状态',
+            title : <FormattedMessage id="ws.result.details.state"/>,
             render: evnPrepareState
         },
         {
             dataIndex: 'monitor_link',
-            title: '链接',
+            title: <FormattedMessage id="ws.result.details.monitor_link"/>,
             ellipsis: {
                 shwoTitle: false,
             },
@@ -67,12 +68,12 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
         },
         {
             dataIndex: 'remark',
-            title: '失败信息',
+            title: <FormattedMessage id="ws.result.details.failed.info"/>,
             ...tooltipTd(),
         },
         {
             dataIndex: 'gmt_created',
-            title : '开始时间',
+            title : <FormattedMessage id="ws.result.details.start_time"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -82,13 +83,13 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
 
     if(data && !data.monitor_control) return <></>
     /* 
-        *** 后端字段调整
+     *** 后端字段调整
     */
     let dataCopy = data && Array.isArray(data.result_list) ? data.result_list : []
 
     return (
         <Card
-            title="监控"
+            title={<FormattedMessage id="ws.result.details.monitor"/>}
             bodyStyle={{ paddingTop : 0 }}
             headStyle={{ borderBottom : 'none' }}
             style={{ marginBottom : 10 , borderTop : 'none' }}

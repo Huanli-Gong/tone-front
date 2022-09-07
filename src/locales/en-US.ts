@@ -13,8 +13,11 @@ export default {
   'delete.prompt': 'Are you sure you want to delete it?',
   'Table.columns.result': 'Result',
   'Table.columns.date': 'Date',
-  'Table.columns.startTime': 'Start Time',
-  'Table.columns.endTime': 'End Time',
+  'common.startTime': 'Start Time',
+  'common.endTime': 'End Time',
+  'common.createTime': 'Create Time', // 有疑惑: Creation Time
+  'common.finishTime': 'End Time',
+
   'Table.columns.operation': 'Operation',
   'operation.new': 'New',
   'operation.add': 'Add',
@@ -28,7 +31,7 @@ export default {
   'operation.reset': 'Reset',
   'operation.confirm': 'Confirm',
   'operation.cancel': 'Cancel',
-  'operation.ok': 'Ok',
+  'operation.ok': 'Confirm',
   'operation.update': 'Update',
   'operation.rerun': 'Rerun',
   'operation.run': 'Run',
@@ -52,7 +55,7 @@ export default {
   'operation.close': 'Close',
   'operation.confirm.delete': 'Determine to delete',
   'operation.select.all': 'Select all',  
-	'operation.filter': 'Filtered',
+	'operation.filter': 'Filter',
   'operation.pass': 'Pass',  
   'operation.refuse': 'Refuse', 
 
@@ -67,6 +70,8 @@ export default {
   'please.select': 'Please.select',
   'please.enter': 'Please.enter',
 	'please.enter.message': 'The value can contain a maximum of 32 characters, including letters, digits, underscores (_), hyphens (-), and dots (.)',
+  'format.key.value': 'Format: key = value, multiple separated by spaces or newlines',
+  'no.data': 'No Data',
   'DEF_COMMON_FORMATE': ' ',
 
   ...globalHeader,

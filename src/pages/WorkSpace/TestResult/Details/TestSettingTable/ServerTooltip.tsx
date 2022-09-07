@@ -1,6 +1,6 @@
 import { Row, Col, Space, Typography, Tag, Tooltip } from "antd"
 import React from "react"
-import { useParams } from "umi"
+import { useParams, useIntl, FormattedMessage } from "umi"
 import { cloudList as queryCloudServer, queryClusterMachine } from "@/pages/WorkSpace/DeviceManage/CloudManage/service"
 import styled from 'styled-components'
 import { queryClusterServer } from "@/pages/WorkSpace/TestJob/components/SuiteSelectDrawer/services"
@@ -26,12 +26,12 @@ const Container = styled.div`
     padding: 20px;
 `
 
-export const dataSetMethod = (dict: any) => {
+export const dataSetMethod = (dict: any, formatMessage?: any) => {
     const obj = {
-        cloud: '普通云盘',
-        cloud_efficiency: '高效云盘',
-        cloud_ssd: 'SSD云盘',
-        cloud_essd: 'ESSD云盘',
+        cloud: formatMessage({ id: 'common.cloud'}),
+        cloud_efficiency: formatMessage({ id: 'common.cloud_efficiency'}),
+        cloud_ssd: formatMessage({ id: 'common.cloud_ssd'}),
+        cloud_essd: formatMessage({ id: 'common.cloud_essd'}),
     }
     return obj[dict]
 }
@@ -62,49 +62,50 @@ const SpaceVertical: React.FC<any> = (props) => <Space direction="vertical" styl
 
 const ServerDetail: React.FC<any> = (props) => {
     const { $type } = props
+    const { formatMessage } = useIntl()
     return (
         <Container>
             <Wrapper direction="vertical" size={20}>
                 <SpaceVertical>
-                    <Typography.Text strong>硬件</Typography.Text>
+                    <Typography.Text strong><FormattedMessage id="common.hardware"/></Typography.Text>
                     <SpaceVertical>
                         {
                             $type !== 0 &&
                             <>
-                                <TRow label={"实例ID:"}>{props?.instance_id}</TRow>
-                                <TRow label={"IP地址:"}>{props?.private_ip}</TRow>
+                                <TRow label={`${formatMessage({id: 'common.instance.ID'})}:`}>{props?.instance_id}</TRow>
+                                <TRow label={`${formatMessage({id: 'common.private_ip'})}:`}>{props?.private_ip}</TRow>
                             </>
                         }
                         <TRow label={"Region/Zone:"}>{props?.region_zone}</TRow>
-                        <TRow label={"规格:"}>{props?.instance_type}</TRow>
-                        <TRow label={"带宽:"}>{props?.bandwidth}</TRow>
+                        <TRow label={`${formatMessage({id: 'common.instance_type'})}:`}>{props?.instance_type}</TRow>
+                        <TRow label={`${formatMessage({id: 'common.bandwidth'})}:`}>{props?.bandwidth}</TRow>
                         {
                             props?.manufacturer !== 'aliyun_eci' &&
                             <>
-                                <TRow label={"系统盘:"}>{dataSetMethod(props?.system_disk_category)}/{props?.system_disk_size}G</TRow>
-                                <TRow label={"数据盘:"}>{dataSetMethod(props?.storage_type)}/{props?.storage_size}G/{props?.storage_number}个</TRow>
+                                <TRow label={`${formatMessage({id: 'common.system_disk'})}:`}>{dataSetMethod(props?.system_disk_category, formatMessage)}/{props?.system_disk_size}G</TRow>
+                                <TRow label={`${formatMessage({id: 'common.storage_type'})}:`}>{dataSetMethod(props?.storage_type, formatMessage)}/{props?.storage_size}G/{props?.storage_number}个</TRow>
                             </>
                         }
                     </SpaceVertical>
                 </SpaceVertical>
 
                 <SpaceVertical>
-                    <Typography.Text strong>软件</Typography.Text>
-                    <TRow label={"镜像:"}>{props?.image_name}</TRow>
+                    <Typography.Text strong><FormattedMessage id="common.soft"/></Typography.Text>
+                    <TRow label={`${formatMessage({id: 'common.image_name'})}:`}>{props?.image_name}</TRow>
                 </SpaceVertical>
 
                 {
                     $type !== 0 &&
                     <>
                         <SpaceVertical>
-                            <Typography.Text strong>使用状态</Typography.Text>
-                            <TRow label={"机器状态:"}>{props?.real_state}</TRow>
+                            <Typography.Text strong><FormattedMessage id="ws.result.details.use_state"/></Typography.Text>
+                            <TRow label={`${formatMessage({id: 'common.server.state'})}:`}>{props?.real_state}</TRow>
                         </SpaceVertical>
 
                         <SpaceVertical>
-                            <Typography.Text strong>控制通道</Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="common.channel_type"/></Typography.Text>
                             <TRow label={"Channel:"}>{props?.image_name}</TRow>
-                            <TRow label={"状态:"}>{props?.image_name}</TRow>
+                            <TRow label={`${formatMessage({id: 'ws.result.details.state'})}:`}>{props?.image_name}</TRow>
                             {/* <Col span={18}>{channelState?.toString()}</Col> */}
                         </SpaceVertical>
                     </>
@@ -112,7 +113,7 @@ const ServerDetail: React.FC<any> = (props) => {
                 {
                     JSON.stringify(props?.extra_param) !== '{}' &&
                     <SpaceVertical>
-                        <Typography.Text strong>扩展字段</Typography.Text>
+                        <Typography.Text strong><FormattedMessage id="common.extended.field"/></Typography.Text>
                         {
                             props?.extra_param?.map(
                                 (item: any) => (
@@ -134,12 +135,13 @@ const ServerDetail: React.FC<any> = (props) => {
 
 const ElseTag: React.FC<any> = (props) => {
     const { tag_list } = props
+    const { formatMessage } = useIntl()
     return (
         <Wrapper direction="vertical" size={20}>
             {
                 (tag_list && !!tag_list.length) &&
                 <SpaceVertical>
-                    <Typography.Text strong>调度标签</Typography.Text>
+                    <Typography.Text strong><FormattedMessage id="ws.result.details.scheduling.tab"/></Typography.Text>
                     <Row>
                         {
 
@@ -154,12 +156,12 @@ const ElseTag: React.FC<any> = (props) => {
             }
 
             <SpaceVertical>
-                <Typography.Text strong>其它信息</Typography.Text>
-                <TRow label="配置名称:">{props?.name}</TRow>
+                <Typography.Text strong><FormattedMessage id="ws.result.details.other.information"/></Typography.Text>
+                <TRow label={`${formatMessage({id: 'ws.result.details.configuration.name'})}:`}>{props?.name}</TRow>
                 <TRow label="Owner:">{props?.owner_name}</TRow>
-                <TRow label="创建时间:">{props?.gmt_created}</TRow>
-                <TRow label="修改时间:">{props?.gmt_modified}</TRow>
-                <TRow label="备注:">{props?.description}</TRow>
+                <TRow label={`${formatMessage({id: 'ws.result.details.gmt_created'})}:`}>{props?.gmt_created}</TRow>
+                <TRow label={`${formatMessage({id: 'ws.result.details.gmt_modified'})}:`}>{props?.gmt_modified}</TRow>
+                <TRow label={`${formatMessage({id: 'ws.result.details.test_summary'})}:`}>{props?.description}</TRow>
             </SpaceVertical>
         </Wrapper>
     )
@@ -196,6 +198,7 @@ const TermTitle = styled.div`
 `
 
 const ClusterServer: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { id, name, is_instance } = props
     const [source, setSource] = React.useState([])
 
@@ -213,17 +216,17 @@ const ClusterServer: React.FC<any> = (props) => {
     return (
         <ClusterContainer>
             <CLusterTitle >
-                集群名称：{name}
+                <FormattedMessage id="ws.result.details.cluster.name"/>：{name}
             </CLusterTitle>
             <Wrapper direction="vertical" style={{ padding: 20 }}>
                 {/* <ElseTag {...props} /> */}
                 <SpaceVertical style={{ padding: "0 20px", width: "100%" }}>
-                    <LTRow label="配置名称:">{props?.name}</LTRow>
+                    <LTRow label={`${formatMessage({id: 'ws.result.details.configuration.name'})}:`}>{props?.name}</LTRow>
                     <LTRow label="Owner:">{props?.owner_name}</LTRow>
-                    <LTRow label="创建时间:">{props?.gmt_created}</LTRow>
-                    <LTRow label="修改时间:">{props?.gmt_modified}</LTRow>
-                    <LTRow label="备注:">{props?.description}</LTRow>
-                    <LTRow label="调度标签:">
+                    <LTRow label={`${formatMessage({id: 'ws.result.details.gmt_created'})}:`}>{props?.gmt_created}</LTRow>
+                    <LTRow label={`${formatMessage({id: 'ws.result.details.gmt_modified'})}:`}>{props?.gmt_modified}</LTRow>
+                    <LTRow label={`${formatMessage({id: 'ws.result.details.test_summary'})}:`}>{props?.description}</LTRow>
+                    <LTRow label={`${formatMessage({id: 'ws.result.details.scheduling.tab'})}:`}>
                         {
                             (props.tag_list && !!props.tag_list.length) ?
                                 props?.tag_list.map(
@@ -236,7 +239,10 @@ const ClusterServer: React.FC<any> = (props) => {
                 </SpaceVertical>
                 {
                     source.map((item: any) => {
-                        const title = `机器${item.is_instance ? "实例" : "配置"}名称：${item.name}`
+                        const title = item.is_instance ? 
+                            formatMessage({id: 'ws.result.details.server.instance.name'}, { data: item.name})
+                            : formatMessage({id: 'ws.result.details.server.configuration.name'}, { data: item.name})
+
                         return (
                             <CLusterTerm key={item.server_id}>
                                 <TermTitle>
@@ -266,7 +272,7 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
     const { ws_id } = useParams() as any
     const [source, setSource] = React.useState([])
     const [visible, setVisible] = React.useState(false)
-
+    const { formatMessage } = useIntl()
     const $isNumber = Object.prototype.toString.call(is_instance) === "[object Number]"
 
     const handleVisible = async ($visible: boolean) => {
@@ -324,6 +330,9 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
                 {basicText}
             </Tooltip>
         )
+    else if (['随机'].includes(server_ip)) {
+        return <Tooltip title={formatMessage({id: 'common.random'})}><FormattedMessage id="common.random"/></Tooltip>
+    }
     return <Tooltip title={basicText}>{basicText}</Tooltip>
 }
 

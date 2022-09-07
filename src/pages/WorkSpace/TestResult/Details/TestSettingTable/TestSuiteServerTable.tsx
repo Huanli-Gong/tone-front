@@ -4,7 +4,10 @@ import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SuiteCaseExpandTable from './SuiteCaseExpandTable'
 import ResizeTable from '@/components/ResizeTable'
+import { useIntl, FormattedMessage } from 'umi'
+
 export default ({ data = [], testType, provider_name }: any) => {
+    const { formatMessage } = useIntl()
     let columns: any = [
         {
             title: 'Test Suite',
@@ -17,7 +20,7 @@ export default ({ data = [], testType, provider_name }: any) => {
     ];
     if (['business_business'].includes(testType)) {
         columns = columns.concat([{
-            title: '业务名称',
+            title: <FormattedMessage id="ws.result.details.business_name"/>,
             dataIndex: 'business_name',
             width: 160,
             ellipsis: {
@@ -27,7 +30,7 @@ export default ({ data = [], testType, provider_name }: any) => {
         }])
     } else {
         columns = columns.concat([{
-            title: '运行模式',
+            title: <FormattedMessage id="ws.result.details.mode"/>,
             dataIndex: 'run_mode',
             width: 160,
             ellipsis: {
@@ -38,34 +41,38 @@ export default ({ data = [], testType, provider_name }: any) => {
 
     columns = columns.concat([
         {
-            title: '重启',
+            title: <FormattedMessage id="ws.result.details.restart"/>,
             dataIndex: 'need_reboot',
             ellipsis: {
                 showTitle: false
             },
             width: 100,
             render: (_: any) => (
-                _ ? '是' : '否'
+                _ ? <FormattedMessage id="operation.yes"/>: <FormattedMessage id="operation.no"/>
             )
         },
         {
-            title: '脚本',
+            title: <FormattedMessage id="ws.result.details.setup_info"/>,
             dataIndex: 'setup_info',
             ellipsis: {
                 showTitle: false
             },
             width: 150,
-            render: (_: any, row: any) => (
-                <>
-                    {(_ || row.cleanup_info) ?
-                        <Tooltip placement="topLeft" title={
-                            <span>[重启前]: {_ || '-'},  [重启后]: {row.cleanup_info || '-'}</span>}
-                        >
-                            <span>[重启前]: {_ || '-'},  [重启后]: {row.cleanup_info || '-'}</span>
-                        </Tooltip> : '-'
-                    }
-                </>
-            )
+            render: (_: any, row: any) => {
+                const before = formatMessage({id: 'ws.result.details.restart.before'})
+                const after = formatMessage({id: 'ws.result.details.restart.after'})
+                return (
+                    <>
+                        {(_ || row.cleanup_info) ?
+                            <Tooltip placement="topLeft" title={
+                                <span>[{before}]: {_ || '-'},  [{after}]: {row.cleanup_info || '-'}</span>}
+                            >
+                                <span>[{before}]: {_ || '-'},  [{after}]: {row.cleanup_info || '-'}</span>
+                            </Tooltip> : '-'
+                        }
+                    </>
+                )
+            }
         },
         {
             title: 'Console',
@@ -77,7 +84,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             render: (_: any) => (_ || '-')
         },
         {
-            title: '监控',
+            title: <FormattedMessage id="ws.result.details.monitor"/>,
             // dataIndex : 'monitor_info',
             ellipsis: {
                 showTitle: false
@@ -86,7 +93,7 @@ export default ({ data = [], testType, provider_name }: any) => {
             render: (_: any) => ('-')
         },
         {
-            title: '执行优先级',
+            title: <FormattedMessage id="ws.result.details.priority"/>,
             dataIndex: 'priority',
             ellipsis: {
                 showTitle: false
@@ -98,7 +105,7 @@ export default ({ data = [], testType, provider_name }: any) => {
 
     return (
         <Card
-            title="测试用例及机器配置"
+            title={<FormattedMessage id="ws.result.details.test.cases.and.config"/>}
             style={{ marginBottom: 10 }}
         >
             <ResizeTable

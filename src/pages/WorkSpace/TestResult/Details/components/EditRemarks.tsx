@@ -2,11 +2,12 @@ import { requestCodeMessage } from '@/utils/utils'
 import { Drawer, Space, Button, Form, Row, Col, Input, Typography, message } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import { updateNode } from '../service'
-import { useParams } from "umi"
+import { useParams, useIntl, FormattedMessage } from "umi"
 
 //编辑备注
 
 const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
 
     const [visible, setVisible] = useState(false)
@@ -53,7 +54,7 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     if (code === 200) {
                         props.onOk()
                         handleClose()
-                        message.success('操作成功!')
+                        message.success(formatMessage({id: 'operation.success'}) )
                         return
                     }
                     setPadding(false)
@@ -78,15 +79,15 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             maskClosable={false}
             keyboard={false}
             width="376"
-            title="编辑备注"
+            title={<FormattedMessage id="ws.result.details.edit.remarks"/>}
             visible={visible}
             onClose={handleClose}
             bodyStyle={{ padding: 0 }}
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} >更新</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.update"/></Button>
                     </Space>
                 </div>
             }
@@ -105,8 +106,11 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 /*hideRequiredMark*/
                 style={{ background: '#fff', padding: 20, height: 'calc( 100% - 94px )' }}
             >
-                <Form.Item label="备注" name="note">
-                    <Input.TextArea rows={8} placeholder="请输入备注信息" />
+                <Form.Item label={<FormattedMessage id="ws.result.details.test_summary"/>}
+                    name="note">
+                    <Input.TextArea rows={8} 
+                        placeholder={formatMessage({id: 'ws.result.details.please.enter.remarks'})}
+                    />
                 </Form.Item>
             </Form>
         </Drawer>

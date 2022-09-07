@@ -6,7 +6,7 @@ import moment from "moment"
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from "clipboard"
 import { stringify } from "querystring"
-import { useLocation } from "umi"
+import { useLocation, useIntl, FormattedMessage } from "umi"
 import { transQuery } from "../utils"
 
 const TimerPick: React.FC = (props) => (
@@ -59,6 +59,7 @@ const transTime = (str: string) => {
 }
 
 const FilterForm: React.FC<IProps> = (props) => {
+    const { formatMessage } = useIntl()
     const { onChange, pageQuery } = props
 
     const { query } = useLocation() as any
@@ -118,7 +119,7 @@ const FilterForm: React.FC<IProps> = (props) => {
             text: () => text
         })
         cp.on("success", () => {
-            message.success("已复制到剪切板！")
+            message.success(formatMessage({ id: 'ws.result.details.copied'}) )
         })
         dom.click()
         cp.destroy()
@@ -173,8 +174,15 @@ const FilterForm: React.FC<IProps> = (props) => {
                 <Col span={12}>
                     <FilterItem
                         ref={domRef}
-                        title="选择条件"
-                        columns={columns}
+                        title={formatMessage({ id: 'ws.result.list.select.condition'})}
+                        columns={
+                            columns.map((item: any)=>
+                              ({
+                                ...item,
+                                placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}`}),
+                              })
+                            )
+                        }
                         defaultValue={l.length ? l : LEFT_FILTER}
                         onChange={handleLeftChange}
                     />
@@ -182,15 +190,15 @@ const FilterForm: React.FC<IProps> = (props) => {
                 <Col span={12}>
                     <FilterItem
                         ref={timeRef}
-                        title="选择时间"
+                        title={formatMessage({ id: 'ws.result.list.select.time'})}
                         columns={[
                             {
-                                label: '开始时间',
+                                label: <FormattedMessage id="ws.result.list.start_time" />,
                                 name: 'creation_time',
                                 render: <TimerPick />
                             },
                             {
-                                label: '完成时间',
+                                label: <FormattedMessage id="ws.result.list.completion_time" />,
                                 name: 'completion_time',
                                 render: <TimerPick />
                             }
@@ -204,12 +212,12 @@ const FilterForm: React.FC<IProps> = (props) => {
             <Row style={{ marginTop: 12, marginBottom: 12 }}>
                 <Col span={12}>
                     <Space style={{ paddingLeft: 65 }}>
-                        <Button type="primary" onClick={() => onChange && onChange(values)}>过滤</Button>
-                        <Button onClick={reset}>重置</Button>
+                        <Button type="primary" onClick={() => onChange && onChange(values)}><FormattedMessage id="operation.filter"/></Button>
+                        <Button onClick={reset}><FormattedMessage id="operation.reset"/></Button>
                         <Typography.Link onClick={copy}>
                             <Space size={4}>
                                 <CopyLink />
-                                <Typography.Text>分享</Typography.Text>
+                                <Typography.Text><FormattedMessage id="operation.share"/></Typography.Text>
                             </Space>
                         </Typography.Link>
                     </Space>
