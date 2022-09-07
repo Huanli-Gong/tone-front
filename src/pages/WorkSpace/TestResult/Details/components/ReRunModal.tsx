@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react'
 
 import { Modal, Row, Col, Form, Checkbox } from 'antd'
 import styled from 'styled-components'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage  } from 'umi'
 import { stringify } from 'querystring'
 import { reRunCheckedText } from '../../index'
 import { targetJump } from '@/utils/utils'
@@ -20,6 +20,7 @@ const Content = styled(Modal)`
 `
 
 const ReRunModal = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams<any>()
 
     const [visible, setVisible] = useState(false)
@@ -70,16 +71,18 @@ const ReRunModal = (props: any, ref: any) => {
         <Content
             visible={visible}
             width={487}
-            title="导入配置"
-            okText="确认"
-            cancelText="取消"
+            title={<FormattedMessage id="ws.result.list.reRun.Modal.title"/>}
+            okText={<FormattedMessage id="operation.confirm"/>}
+            cancelText={<FormattedMessage id="operation.cancel"/>}
             onOk={hanldeOk}
             onCancel={hanldeCancle}
             maskClosable={false}
             afterClose={afterClose}
         >
             <Row style={{ backgroundColor: '#fff', height: 66, marginBottom: 10, paddingLeft: 20 }} align="middle" >
-                <Col span={4} style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 600 }}>Job名称</Col>
+                <Col span={4} style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 600 }}>
+                   <FormattedMessage id="ws.result.list.name"/>
+                </Col>
                 <Col span={18}>{source?.name}</Col>
             </Row>
             <Row style={{ backgroundColor: '#fff', height: 93, paddingLeft: 20 }} align="middle">
@@ -91,14 +94,14 @@ const ReRunModal = (props: any, ref: any) => {
                                 setReRunChecked(checked)
                                 if (!checked) form.setFieldsValue({ inheriting_machine: false })
                             }}>
-                            同时导入测试用例
+                            <FormattedMessage id="ws.result.list.reRun.checked.suite"/>
                         </Checkbox>
                     </Form.Item>
                     <Form.Item valuePropName="checked" name="notice">
-                        <Checkbox>同时导入通知配置</Checkbox>
+                        <Checkbox><FormattedMessage id="ws.result.list.reRun.checked.notice"/></Checkbox>
                     </Form.Item>
                     <Form.Item valuePropName="checked" name="inheriting_machine">
-                        <Checkbox disabled={!reRunChecked}>{reRunCheckedText}</Checkbox>
+                        <Checkbox disabled={!reRunChecked}><FormattedMessage id={`ws.result.list.${reRunCheckedText}`} /></Checkbox>
                     </Form.Item>
                 </Form>
             </Row>

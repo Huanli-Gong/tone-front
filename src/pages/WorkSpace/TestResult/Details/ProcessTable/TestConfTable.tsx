@@ -5,11 +5,14 @@ import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
-import { useAccess, Access, useModel } from 'umi'
+import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
+
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
+    const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const PAGE_DEFAULT_PARAMS: any = {
         page_num: 1,
         page_size: 10,
@@ -39,7 +42,8 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         queryTestListTableData()
     }, [pageParams])
 
-    const columns = [
+
+    const columns = React.useMemo(() => [
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
@@ -48,7 +52,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             dataIndex: 'server',
-            title: ['business_business'].includes(testType) ? '机器' : '测试机器',
+            title: ['business_business'].includes(testType) ? <FormattedMessage id="ws.result.details.the.server"/> : <FormattedMessage id="ws.result.details.test.server"/>,
             width: 80,
             ellipsis: {
                 showTitle: false
@@ -60,26 +64,27 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                     provider={provider_name} 
                 />
             )
-                
+            
         },
         {
-            title: '环境准备',
-            width: 80,
+            title: <FormattedMessage id="ws.result.details.env.preparation"/>,
+            width: locale ? 200: 80,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => {
+                const strLocals = formatMessage({id: 'ws.result.details.env.preparation.details'})
                 return (
                     <ConfPopoverTable
                         {..._}
-                        title={`${test_suite_name}/${_.name || _.test_case_name}环境准备详情`}
+                        title={`${test_suite_name}/${_.name || _.test_case_name}${strLocals}`}
                     />
                 )
             }
         },
         {
             dataIndex: 'state',
-            title: '状态',
+            title: <FormattedMessage id="ws.result.details.state"/>,
             width: 80,
             render: evnPrepareState
         },
@@ -87,46 +92,47 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             dataIndex: 'tid',
             title: 'TID',
             width: 120,
-            ...copyTooltipColumn(),
+            ...copyTooltipColumn('-', formatMessage),
         },
         {
             dataIndex: 'result',
-            title: '输出结果',
+            title: <FormattedMessage id="ws.result.details.output.results"/>,
             width: 150,
             ...tooltipTd('Nothing to do'),
         },
         {
             dataIndex: 'start_time',
             width: 160,
-            title: '开始时间',
+            title: <FormattedMessage id="ws.result.details.start_time"/>,
             ...tooltipTd('-'),
         },
         {
             dataIndex: 'end_time',
             width: 160,
-            title: '结束时间',
+            title: <FormattedMessage id="ws.result.details.end_time"/>,
             ...tooltipTd('-'),
         }, {
-            title: '查看日志',
+            title: <FormattedMessage id="ws.result.details.view.log"/>,
             width: 80,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => {
+                const strLocals = formatMessage({id: 'ws.result.details.log'})
                 // success,fail,stop 可看日志
                 if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
                     if (_.log_file)
                         // return <PermissionTootip>
                         //     <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
                         // </PermissionTootip>
-                        return  <Button type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
+                        return  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
                 }
                 // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
-                return <Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button>
+                return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
             }
         }, {
-            title: '操作',
-            width: 70,
+            title: <FormattedMessage id="Table.columns.operation"/>,
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -136,18 +142,18 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                         accessible={access.WsMemberOperateSelf(_.creator)} 
                         fallback={
                             <span>
-                                { _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} >中止</Button> }
-                                { _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} >跳过</Button> }
+                                { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
+                                { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.skip"/></Button> }
                             </span>
                         }
                     >
-                        { _.state === 'running' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} >中止</Button> }
-                        { _.state === 'pending' && <Button type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} >跳过</Button> }
+                        { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
+                        { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} ><FormattedMessage id="ws.result.details.skip"/></Button> }
                     </Access>
                 </Access>
             )
         },
-    ]
+    ], [testType, locale])
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
@@ -163,7 +169,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             requestCodeMessage(code, msg)
             return
         }
-        message.success('操作成功')
+        message.success(formatMessage({id: 'operation.success'}))
         queryTestListTableData()
     }
 
@@ -176,9 +182,10 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 rowKey='id'
                 size="small"
                 pagination={false}
-                scroll={{ x: '100%' }}
+                scroll={{ x: 1350 }}
             />
             <CommonPagination
+                style={{ marginTop: 8, marginBottom: 0}}
                 total={total}
                 currentPage={pageParams.page_num}
                 pageSize={pageParams.page_size}

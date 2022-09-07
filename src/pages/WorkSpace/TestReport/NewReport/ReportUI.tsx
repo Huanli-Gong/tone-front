@@ -519,6 +519,9 @@ export const ConfData = styled.div<GroupRowProps>`
     font-size:12px;
     color: rgba(0,0,0,0.45);
     width : ${({ gLen, btnState }) => setTestNumWdith(gLen, btnState)};
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     &:last-child {
         border-right:none;
     }

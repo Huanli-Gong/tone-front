@@ -108,7 +108,7 @@ const Report = (props: any) => {
                                         <Access
                                             accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5,creator_id.length)))}
                                             fallback={
-                                                <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} />编辑</span>
+                                                <span onClick={()=> AccessTootip()}><IconEdit style={{ marginRight: 4 }} />编辑</span>
                                             }
                                         >
                                             <span style={{ cursor: 'pointer' }} onClick={()=> setBtnState(true)}><IconEdit style={{ marginRight: 4 }} />编辑</span>
@@ -202,20 +202,11 @@ const Report = (props: any) => {
                                 <ReportHeader />
                                 <ReportBasicInfo />
                                 <div style={{ width: 1200 }}>
-                                    {
-                                        domainResult?.is_default ?
-                                        <>
-                                            <ReportSummary /> 
-                                            <ReportTestEnv /> 
-                                            <ReportTestPref />
-                                        </>
-                                        :
-                                        <>
-                                            { domainResult?.need_test_summary && <ReportSummary /> }
-                                            { domainResult?.need_test_env && <ReportTestEnv /> }
-                                            <ReportTestPref />
-                                        </>
-                                    }
+                                    { domainResult?.is_default && <ReportSummary /> }
+                                    { domainResult?.is_default && <ReportTestEnv /> }
+                                    { !domainResult?.is_default && domainResult?.need_test_summary && <ReportSummary /> }
+                                    { !domainResult?.is_default && domainResult?.need_test_env && <ReportTestEnv /> }
+                                    <ReportTestPref />
                                 </div>
                             </Col>
                         </ReportWarpper>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Space, Typography, Table, Spin } from 'antd';
 import { ExclamationCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less';
 import { queryMachineData } from '../service';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
+
 const RenderMachineItem = (props: any) => {
     const [flag, setFlag] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)
@@ -29,13 +31,10 @@ const RenderMachineItem = (props: any) => {
         {
             title: 'IP',
             render: (_: any, row: any) => {
-                if(row.device_type){
-                    return(
-                        <span>{row.ip || '-'}</span>
-                    )
-                }else{
-                    return <span>{row.pub_ip}</span>
+                if (row.device_type) {
+                    return <span>{row.ip || '-'}</span>
                 }
+                return <span>{row.pub_ip || '-'}</span>
             },
         },
         {
@@ -43,22 +42,22 @@ const RenderMachineItem = (props: any) => {
             dataIndex: 'sn',
         },
         {
-            title: '机器类型',
+            title: <FormattedMessage id="ws.result.details.provider_name" />,
             dataIndex: 'device_type',
-            render:(_:any) => <>{_ || '-'}</>
+            render: (_: any) => <>{_ || '-'}</>
         },
         {
-            title: '控制通道',
+            title: <FormattedMessage id="ws.result.details.channel_type" />,
             dataIndex: 'channel_type',
-            render:(_:any) => <>{_ || '-'}</>
+            render: (_: any) => <>{_ || '-'}</>
         },
         {
-            title: '使用状态',
+            title: <FormattedMessage id="ws.result.details.use_state" />,
             dataIndex: 'state',
             render: StateBadge,
         },
         {
-            title: '实际状态',
+            title: <FormattedMessage id="ws.result.details.real_state" />,
             dataIndex: 'real_state',
             render: StateBadge,
         }
@@ -69,24 +68,21 @@ const RenderMachineItem = (props: any) => {
                 <Row style={{ marginBottom: 16 }}>
                     <Col span={22}>
                         <ExclamationCircleOutlined style={{ color: '#FAAD14', padding: '16px 18px 0 26px' }} />
-                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}>测试机器故障，请及时处理！</Typography.Text>
+                        <Typography.Text style={{ paddingTop: 16, fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="ws.result.details.test.machine.failure" /></Typography.Text>
                         <Row style={{ padding: '4px 0 0 60px' }}>
-                            <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}>故障机器</Typography.Text>
+                            <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}><FormattedMessage id="ws.result.details.failed.server" /></Typography.Text>
                             {
-                                Array.isArray(dataSource) && dataSource.map((item:any)=>{
-                                    if(item.device_type){
-                                        return (
-                                            <span style={{ marginRight: 20 }}>
-                                                {item.ip}/{item.sn}
-                                            </span>
-                                        )
-                                    }else{
-                                        return(
-                                            <span style={{ marginRight: 20 }}>
-                                                {item.pub_ip}/{item.sn}
-                                            </span>
-                                        )
-                                    }
+                                Array.isArray(dataSource) && dataSource.map((item: any, index: number) => {
+                                    const {ip , sn , pub_ip , device_type } = item
+                                    const $ip = device_type ? ip : pub_ip
+
+                                    const l = $ip && sn ? $ip + "/" + sn : $ip || sn
+
+                                    return (
+                                        <span style={{ marginRight: 20 }} key={index}>
+                                            {l}
+                                        </span>
+                                    )
                                 })
                             }
                         </Row>
@@ -94,7 +90,7 @@ const RenderMachineItem = (props: any) => {
                     <Col span={2} style={{ textAlign: 'right', paddingRight: 18 }}>
                         <div style={{ paddingTop: 38, cursor: 'pointer' }} onClick={handleChange}>
                             <Space>
-                                <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: '#1890FF' }}>{flag ? '展开' : '收起'}详情</Typography.Text>
+                                <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: '#1890FF' }}>{flag ? <FormattedMessage id="operation.expand" /> : <FormattedMessage id="operation.collapse" />}</Typography.Text>
                                 {flag ? <DownOutlined style={{ color: '#1890FF' }} /> : <UpOutlined style={{ color: '#1890FF' }} />}
                             </Space>
                         </div>
@@ -115,7 +111,7 @@ const RenderMachineItem = (props: any) => {
                 }
             </div>
         </Spin>
-        : <></>
+            : <></>
     )
 }
 export default RenderMachineItem;

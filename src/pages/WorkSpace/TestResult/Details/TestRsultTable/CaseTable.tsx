@@ -1,6 +1,6 @@
 import { Table, Space, Row } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
-import { useRequest, Access, useAccess, useParams } from 'umi'
+import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
@@ -23,6 +23,8 @@ const CaseTable: React.FC<any> = ({
     suite_id, testType, suite_name, server_provider, provider_name, creator,
     suiteSelect = [], onCaseSelect, state = '', openAllRows = false, isExpandAll = false, setIndexExpandFlag
 }) => {
+    const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const { id: job_id, ws_id } = useParams() as any
     const background = `url(${treeSvg}) center center / 38.6px 32px `
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
@@ -50,6 +52,7 @@ const CaseTable: React.FC<any> = ({
     const editRemarkDrawer: any = useRef(null)
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
+
     const columns = React.useMemo(() => {
         return [
             {
@@ -59,13 +62,13 @@ const CaseTable: React.FC<any> = ({
                 ...tooltipTd(),
             },
             {
-                title: '测试类型',
+                title: <FormattedMessage id="ws.result.details.test_type" />,
                 dataIndex: 'test_type',
                 width: 100,
                 render: (text: any) => <span>{text || '-'}</span>,
             },
             {
-                title: '机器',
+                title: <FormattedMessage id="ws.result.details.the.server" />,
                 dataIndex: 'server_ip',
                 width: 130,
                 ellipsis: {
@@ -78,12 +81,11 @@ const CaseTable: React.FC<any> = ({
                         provider={provider_name} 
                     />
                 )
-                
             },
             ['functional', 'business_functional', 'business_business'].includes(testType) &&
             {
-                title: '结果',
-                width: 50,
+                title: <FormattedMessage id="ws.result.details.result" />,
+                width: 80,
                 render: (_: any) => {
                     const r = _.result_data.result
                     if (r === 'success') return <SuccessSVG style={{ width: 16, height: 16 }} />
@@ -94,7 +96,7 @@ const CaseTable: React.FC<any> = ({
                 }
             },
             { // title : '总计/通过/失败/跳过',
-                width: 255,
+                width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255: 302,
                 render: (_: any) => (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
                         (
@@ -120,42 +122,42 @@ const CaseTable: React.FC<any> = ({
             },
             (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline) &&
             {
-                title: '对比基线',
+                title: <FormattedMessage id="ws.result.details.baseline" />,
                 dataIndex: 'baseline',
                 width: 80,
                 ...tooltipTd(),
             },
             (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline_job_id) &&
             {
-                title: '基线Job',
+                title: <FormattedMessage id="ws.result.details.baseline_job_id" />,
                 dataIndex: 'baseline_job_id',
                 width: 80,
                 ...tooltipTd(),
             },
             {
-                title: '开始时间',
+                title: <FormattedMessage id="ws.result.details.start_time" />,
                 dataIndex: 'start_time',
-                width: 175,
+                width: 160,
                 ...tooltipTd(),
             },
             {
-                title: '结束时间',
+                title: <FormattedMessage id="ws.result.details.end_time" />,
                 dataIndex: 'end_time',
-                width: 175,
+                width: 160,
                 ...tooltipTd(),
             },
             access.WsTourist() &&
             {
-                title: '备注',
+                title: <FormattedMessage id="ws.result.details.note" />,
                 dataIndex: 'note',
-                width: 80,
+                width: 120,
                 ellipsis: {
                     showTitle: false,
                 },
                 render: (_: any, row: any) => (
                     <EllipsisEditColumn
                         title={_}
-                        width={80}
+                        width={120}
                         access={access.WsMemberOperateSelf(creator)}
                         onEdit={
                             () => editRemarkDrawer.current.show({
@@ -169,29 +171,31 @@ const CaseTable: React.FC<any> = ({
             },
             ['performance', 'business_performance'].includes(testType) &&
             {
-                title: '操作',
-                width: 145, //175,
-                // fixed: 'right',
-                render: (_: any) => (
+                title: <FormattedMessage id="Table.columns.operation" />,
+                width: locale ? 180 : 145,
+                fixed: 'right',
+                render: (_: any) => {
+                     
+                    return (
                     <Access accessible={access.WsTourist()}>
                         <Access accessible={access.WsMemberOperateSelf(creator)}
                             fallback={
                                 <Space>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>对比基线</span>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>加入基线</span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
                                 </Space>
                             }
                         >
                             <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}>对比基线</span>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}>加入基线</span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
                             </Space>
                         </Access>
                     </Access>
-                )
+                )}
             }
         ].filter(Boolean)
-    }, [testType, access, creator, data])
+    }, [testType, access, creator, data, locale])
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })

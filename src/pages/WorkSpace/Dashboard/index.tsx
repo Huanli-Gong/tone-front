@@ -3,7 +3,7 @@ import moment from 'moment'
 import type { Moment } from 'moment'
 import React,{ useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import { queryWorkspaceProductData } from './services'
 
 import { ReactComponent as Icondroduct } from '@/assets/svg/dashboard/icon_droduct.svg'
@@ -47,6 +47,7 @@ const getField = (name: string) => new Map([
 ]).get(name)
 
 const WorkpsaceDashboard = (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const [time, setTime] = React.useState<Moment | string | undefined>('24h')
     const [ loading, setLoading ] = useState<boolean>(true)
@@ -89,25 +90,29 @@ const WorkpsaceDashboard = (props: any) => {
                     <Col span={6}>
                         <WhiteBlock height={96} justify="center" align="middle">
                             <Icondroduct />
-                            <CommonStatic groupSeparator="" title={'总产品/总项目'} value={data?.total_product} suffix={`/ ${data?.total_project || 0}`} />
+                            <CommonStatic groupSeparator="" title={<FormattedMessage id="ws.dashboard.total_product" />} 
+                                value={data?.total_product} suffix={`/ ${data?.total_project || 0}`} />
                         </WhiteBlock>
                     </Col>
                     <Col span={6}>
                         <WhiteBlock height={96} justify="center" align="middle">
                             <Iconjob />
-                            <CommonStatic groupSeparator="" title={'Job总数'} value={data?.total_job} />
+                            <CommonStatic groupSeparator="" title={<FormattedMessage id="ws.dashboard.total_job" />}
+                                value={data?.total_job} />
                         </WhiteBlock>
                     </Col>
                     <Col span={6}>
                         <WhiteBlock height={96} justify="center" align="middle">
                             <IconTestconf />
-                            <CommonStatic groupSeparator="" title={'TestConf总数'} value={data?.total_conf} />
+                            <CommonStatic groupSeparator="" title={<FormattedMessage id="ws.dashboard.total_conf" />}
+                                value={data?.total_conf} />
                         </WhiteBlock>
                     </Col>
                     <Col span={6}>
                         <WhiteBlock height={96} justify="center" align="middle">
                             <Iconip />
-                            <CommonStatic groupSeparator="" title={'机器正在使用数'} value={data?.server_use_num} />
+                            <CommonStatic groupSeparator="" title={<FormattedMessage id="ws.dashboard.server_use_num" />}
+                                value={data?.server_use_num} />
                         </WhiteBlock>
                     </Col>
                 </Row>

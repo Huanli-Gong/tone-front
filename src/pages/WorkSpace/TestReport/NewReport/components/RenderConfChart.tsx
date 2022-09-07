@@ -7,7 +7,7 @@ interface ConfRowProp {
     is_active: boolean
 }
 const ConfMetricRow = styled.div<ConfRowProp>`
-    height:376px;
+    height:340px;
     width:100%;
     display: flex;
     overflow-x:scroll;
@@ -15,7 +15,22 @@ const ConfMetricRow = styled.div<ConfRowProp>`
     flex-wrap: nowrap;
     flex-shrink: 0;
     background: ${({ is_active }) => is_active ? 'rgba(59,160,255,0.05)' : ''};
+    margin-bottom:10px;
+    &::-webkit-scrollbar { 
+        /* 隐藏默认的滚动条 */
+        -webkit-appearance: none;
+    }
+    &::-webkit-scrollbar:horizontal{
+        /* 设置水平滚动条厚度 */
+        height: 3px;
+    }
+    &::-webkit-scrollbar-thumb { 
+        border-radius: 8px; 
+        border: 2px solid rgba(255,255,255,.4); 
+        background-color: rgba(0, 0, 0, .5);
+    }
 `
+
 const ConfChart = (props: any) => {
     const { callBackColor, legend, envData, loading, chartData, time, is_active, chartType } = props
     if (chartType === '1') {

@@ -129,7 +129,7 @@ const TypeChart = (props: any) => {
             grid: {
                 left: 40,
                 right: 8,
-                bottom: '30%'
+                bottom: chartType === '1' ? '15%' : '30%'
             },
             animation: false,
             xAxis: {
@@ -281,7 +281,7 @@ const TypeChart = (props: any) => {
     }, [ ChartList ])
 
     return (
-        <div ref={chart} style={{ width: chartType !== '1' ? '100%' : 268, height: 376, display: 'inline-block', flexShrink: 0 }} />
+        <div ref={chart} style={{ width: chartType !== '1' ? '100%' : 268, height: 340, display: 'inline-block', flexShrink: 0 }} />
     )
 }
 export default React.memo(TypeChart);

@@ -2,7 +2,7 @@ import React, { useState , useEffect , useRef } from 'react'
 import { Button, Select, Space, Tag , Row } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
-import { useRequest, Access, useAccess } from 'umi'
+import { useRequest, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { EditOutlined, PlusOutlined} from '@ant-design/icons'
 import { updateJobTags } from '../service'
 
@@ -23,6 +23,7 @@ export const tagRender = ( { label, closable, onClose , value } : any ) => (
 )
 
 export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } : any ) => {
+    
     const [ state , setState ] = useState( false )
     const [ keys , setKeys ] = useState([])
     const access = useAccess();
@@ -65,9 +66,10 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
     }
 
     const editBtn = {
-        paddingTop: 5
+        paddingTop: 5,
+        paddingRight: 8
     }
-    
+
     return (
         <>
             {/* <Typography.Text className={ styles.test_summary_item }>
@@ -76,7 +78,7 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
             {
             !state ?
             <Row align="middle">
-                <Space>
+                <>
                     <Access accessible={access.WsTourist()}>
                         <Access 
                             accessible={access.WsMemberOperateSelf(creator_id)}
@@ -94,7 +96,7 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                         :
                         <span style={{ color:'rgba(0,0,0,0.85)'}}>-</span>
                     }
-                </Space>
+                </>
             </Row> :
             <Row >
                 <Select 
@@ -106,13 +108,15 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                     tagRender={ tagRender }
                     onChange={ handleSelectChange }
                     allowClear
-                    getPopupContainer={ node => node.parentNode } 
+                    getPopupContainer={ node => node.parentNode }
                     dropdownRender={menu => (
                         <div>
                             {menu}
                             { accessLabel && 
-                                <div style={{ display: 'flex', flexWrap: 'nowrap' }} onClick={newLabel}>
-                                    <span className={ styles.test_summary_job }><PlusOutlined style={{ marginRight:6 }}/>新建标签</span>
+                                <div style={{ maxHeight: 300, overflow: 'auto', padding: '10px', borderTop: '1px solid #eee', marginBottom: '-4px' }} onClick={newLabel}>
+                                    <span className={ styles.test_summary_job }><PlusOutlined style={{ marginRight:8, color: '#1890ff' }}/>
+                                        <FormattedMessage id="ws.result.details.new.tag" />
+                                    </span>
                                 </div>
                             }
                         </div>
@@ -129,8 +133,8 @@ export default ({ tags = [] , onOk , ws_id , job_id, creator_id, accessLabel } :
                     }
                     </Select>
                     <Space>
-                        <Button onClick={ handleCancel } size="small"  >取消</Button>
-                        <Button onClick={ handleOk } size="small" type="primary">确定</Button>
+                        <Button onClick={ handleCancel } size="small"  ><FormattedMessage id="operation.cancel"/></Button>
+                        <Button onClick={ handleOk } size="small" type="primary"><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 </Row>
             }

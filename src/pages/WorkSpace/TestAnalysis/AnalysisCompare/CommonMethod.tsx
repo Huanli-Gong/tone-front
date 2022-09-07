@@ -72,9 +72,9 @@ const getRegroupData = (suite: any) => {
             return {
                 suite_id: item.suite_id,
                 is_all: item.is_all,
-                conf_list: Object.keys(item.conf_dic).map((i:any) => Number(i))
+                conf_list: Object.keys(item.conf_dic).map((i: any) => Number(i))
             }
-        } 
+        }
         return {
             suite_id: item.suite_id,
             is_all: item.is_all,
@@ -107,8 +107,8 @@ const getSelectedDataFn = (
     data: any,
     allGroupData: any,
     baseIndex: number,
-    selectedKeys: any ,
-    duplicate: any 
+    selectedKeys: any,
+    duplicate: any
 ) => {
     // 二级
     const suite = _.cloneDeep(data)
@@ -130,13 +130,17 @@ const getSelectedDataFn = (
             let result: any = []
             const conf_dic = Object.keys(obj.conf_dic)
             conf_dic.forEach(keys => {
-                if (!selectedKeys.includes(keys)) {
+                if (!selectedKeys.includes(+keys)) {
                     delete obj.conf_dic[keys]
                 }
-                result.push(obj.conf_dic[keys])
+                obj.conf_dic[keys] && result.push(obj.conf_dic[keys])
             })
-            obj.is_all = 0
-            obj.conf_info = result
+            if (!!result.length) {
+                obj.is_all = 0
+                obj.conf_info = result
+            } else {
+                delete suite[obj.suite_id]
+            }
         } else {
             if (selectedKeys.includes(String(obj.suite_id))) {
                 obj.is_all = 1

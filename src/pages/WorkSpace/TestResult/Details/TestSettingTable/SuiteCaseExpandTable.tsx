@@ -4,8 +4,11 @@ import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ServerTooltip } from './ServerTooltip'
 import ResizeTable from '@/components/ResizeTable'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import { useIntl, FormattedMessage } from 'umi'
+
 //测试用例及机器配置 expand table
 export default ({ data = [], testType, provider_name }: any) => {
+    const { formatMessage } = useIntl()
     const columns: any = [
         {
             title: 'Test Conf',
@@ -16,14 +19,14 @@ export default ({ data = [], testType, provider_name }: any) => {
             width: 200,
             render: (_: any) => <Tooltip title={_}>{_}</Tooltip>
         }, {
-            title: '运行模式',
+            title: <FormattedMessage id="ws.result.details.mode"/>,
             ellipsis: {
                 showTitle: false
             },
             width: 150,
             dataIndex: 'run_mode',
         }, {
-            title: '机器',
+            title: <FormattedMessage id="ws.result.details.the.server"/>,
             dataIndex: 'server_ip',
             ellipsis: {
                 showTitle: false
@@ -38,7 +41,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                 showTitle: false
             },
         }, {
-            title: '变量',
+            title: <FormattedMessage id="ws.result.details.variable"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -55,22 +58,25 @@ export default ({ data = [], testType, provider_name }: any) => {
                 )
             }
         }, {
-            title: '重启',
+            title: <FormattedMessage id="ws.result.details.restart"/>,
             dataIndex: 'need_reboot',
             width: 100,
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => (_ ? '是' : '否')
+            render: (_: any) => (_ ? <FormattedMessage id="operation.yes"/>: <FormattedMessage id="operation.no"/>)
         }, {
-            title: '脚本',
+            title: <FormattedMessage id="ws.result.details.setup_info"/>,
             dataIndex: 'setup_info',
             ellipsis: {
                 showTitle: false
             },
             width: 150,
             render: (_: any, row: any) => {
-                const node = <span>[重启前]: {_ || '-'},  [重启后]: {row.cleanup_info || '-'}</span>
+                const before = formatMessage({id: 'ws.result.details.restart.before'})
+                const after = formatMessage({id: 'ws.result.details.restart.after'})
+                
+                const node = <span>[{before}]: {_ || '-'},  [{after}]: {row.cleanup_info || '-'}</span>
                 return (_ || row.cleanup_info) ?
                     <Tooltip placement="topLeft" title={node} >
                         {node}
@@ -87,14 +93,14 @@ export default ({ data = [], testType, provider_name }: any) => {
             render: (text: any) => <PopoverEllipsis title={text} />,
         },
         {
-            title: '监控',
+            title: <FormattedMessage id="ws.result.details.monitor"/>,
             width: 100,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => ('-')
         }, {
-            title: '执行优先级',
+            title: <FormattedMessage id="ws.result.details.priority"/>,
             dataIndex: 'priority',
             width: 100,
             ellipsis: {

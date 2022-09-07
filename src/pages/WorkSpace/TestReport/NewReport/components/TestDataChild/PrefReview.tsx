@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
-import { GroupItemText } from '../EditPerfText';
-import { PerfTextArea } from '../EditPerfText';
-import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
+import { PerfTextArea, GroupItemText } from '../EditPerfText';
+// import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
-import CodeViewer from '@/components/CodeViewer';
+// import CodeViewer from '@/components/CodeViewer';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import { deleteSuite, deleteConf } from './DelMethod.js';
+import { reportDelete, handleDataArr } from '../ReportFunction';
 import { filterResult } from '@/components/Report/index'
 // import ChartsIndex from '../../../../AnalysisResult/components/ChartIndex';
 import ChartsIndex from '../PerfCharts';
@@ -47,45 +46,23 @@ import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMeth
 const { Option } = Select;
 
 const Performance = (props: any) => {
-    const { child, name, id, onDelete, dataSource, setDataSource } = props
+    const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
-    const [btnName, setBtnName] = useState<string>('')
+   
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
-    const [btn, setBtn] = useState<boolean>(domainResult.perf_conf?.show_type === 'list')
-    // let group = allGroupData?.length
-    const switchMode = () => {
-        setBtn(!btn)
-        // setChartType('1')
-    }
-    useEffect(() => {
-        setBtnName(btn ? '图表模式' : '列表模式')
-    }, [btn])
+    
+
+    
+    
 
     const baseIndex = useMemo(() => {
         if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
     }, [baselineGroupIndex])
 
-    const handleDataArr = (dataArr: any, baseIndex: number) => {
-        if (Array.isArray(dataArr.list) && !!dataArr.list.length) {
-            dataArr.list.forEach((per: any) => (
-                per.conf_list.forEach((conf: any, i: number) => (
-                    conf.metric_list.forEach((metric: any, idx: number) =>
-                    (
-                        metric.compare_data.splice(baseIndex, 0, {
-                            cv_value: metric.cv_value,
-                            test_value: metric.test_value,
-                        })
-                    )
-                    )
-                ))
-            ))
-        }
-        return dataArr;
-    }
     useEffect(() => {
         const data = isOldReport ? handleDataArr(_.cloneDeep(child), baseIndex) : child
         btn ? setPerData(data) : setPerData({
@@ -97,6 +74,7 @@ const Performance = (props: any) => {
             })
         })
     }, [child, btn])
+
     // 筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
@@ -144,38 +122,15 @@ const Performance = (props: any) => {
     }
 
     const handleDelete = (name: string, row: any, rowKey: any) => {
-        if (name == 'suite') {
-            setDataSource(dataSource.map((item: any) => {
-                if (item.is_group) {
-                    let list = item.list.map((l: any) => deleteSuite(l, row))
-                    return {
-                        ...item,
-                        list,
-                    }
-                } else {
-                    return deleteSuite(item, row)
-                }
-            }))
-        } else {
-            setDataSource(dataSource.map((item: any) => {
-                if (item.is_group) {
-                    let list = item.list.map((l: any) => deleteConf(l, row))
-                    return {
-                        ...item,
-                        list,
-                    }
-                } else {
-                    return deleteConf(item, row)
-                }
-            }))
-        }
+        setDataSource(reportDelete(dataSource, name, row, rowKey))
     }
+
     // 右侧功能按钮
     const ItemFunc: React.FC<any> = () => {
         return (
             <TestItemFunc>
                 <Space>
-                    <Button onClick={switchMode}>{btnName}</Button>
+                    
                     {
                         btn && <Space>
                             <Typography.Text>筛选: </Typography.Text>
@@ -270,12 +225,13 @@ const Performance = (props: any) => {
         return (
             arr.map((item: any, idx: number) => (
                 _.isUndefined(item) ? <></>
-                :<PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
-                    <JumpResult ws_id={wsId} job_id={item?.obj_id || item}/>
-                </PrefDataText>
+                    : <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                        <JumpResult ws_id={wsId} job_id={item?.obj_id || item} />
+                    </PrefDataText>
             ))
         )
     }
+
     // suite遍历
     const RenderSuite = () => {
         return (
@@ -353,8 +309,14 @@ const Performance = (props: any) => {
                                                     <ConfData gLen={groupLen} key={i} btnState={btnState}>
                                                         {
                                                             i !== baselineGroupIndex ?
-                                                                <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', justifyContent: 'space-between' }}>
-                                                                    <span style={{ display: 'inline-block', color: 'rgba(0,0,0,0.45)' }}>结果</span>
+                                                                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                                                                    <EllipsisPulic title={cont.product_version || cont.tag}>
+                                                                        <Typography.Text
+                                                                            style={{ color: 'rgba(0,0,0,0.45)' }}
+                                                                        >
+                                                                            {cont.product_version || cont.tag}
+                                                                        </Typography.Text>
+                                                                    </EllipsisPulic>
                                                                     <RightResult>
                                                                         对比结果/跟踪结果
                                                                         <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
@@ -362,13 +324,20 @@ const Performance = (props: any) => {
                                                                         </span>
                                                                         <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                             title={
-                                                                                <span style={{ color: 'rgba(0,0,0,0.65)' }}>性能测试与BaseGroup差值比例越大差异化越大。<br />规则如下：<br />下降&gt;上升&gt;波动不大&gt;无效</span>
-                                                                            }>
+                                                                                <span style={{ color: 'rgba(0,0,0,0.65)' }}>
+                                                                                    性能测试与BaseGroup差值比例越大差异化越大。<br />规则如下：<br />下降&gt;上升&gt;波动不大&gt;无效
+                                                                                </span>
+                                                                            }
+                                                                        >
                                                                             <QuestionCircleOutlined />
                                                                         </Tooltip>
                                                                     </RightResult>
                                                                 </div>
-                                                                : <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{allGroupData.length > 1 ? '基准' : '结果'}</Typography.Text>
+                                                                :
+                                                                <EllipsisPulic title={cont.product_version || cont.tag}>
+                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{cont.product_version || cont.tag}</Typography.Text>
+                                                                </EllipsisPulic>
+
                                                         }
                                                     </ConfData>
                                                 ))
@@ -401,7 +370,9 @@ const Performance = (props: any) => {
                                                                 </Col>
                                                                 <Col span={8}>
                                                                     <Row justify="end">
-                                                                        <RightResult>({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})</RightResult>
+                                                                        <RightResult>
+                                                                            ({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})
+                                                                        </RightResult>
                                                                     </Row>
                                                                 </Col>
                                                             </Row>
@@ -453,7 +424,7 @@ const Performance = (props: any) => {
                                     </div>
                                 )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 :
-                                <ChartsIndex {...suite} envData={environmentResult} base_index={baselineGroupIndex}/>
+                                <ChartsIndex {...suite} envData={environmentResult} base_index={baselineGroupIndex} />
                         }
                     </TestConfWarpper>
                 </TestSuite >

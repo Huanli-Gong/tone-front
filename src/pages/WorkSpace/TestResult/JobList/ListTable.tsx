@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from "react"
 import { Tooltip, Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
-import { useAccess, Access, useParams, useRequest } from 'umi'
-import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils'
+import { useAccess, Access, useParams, useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
+import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
@@ -24,7 +24,7 @@ import styles from "../index.less"
 const Offline = styled.div`
     background: #1890FF;
     color: #fff;
-    width: 20px;
+    padding: 0px 4px;
     height: 20px;
     margin-right: 6px;
     font-size: 12px;
@@ -52,15 +52,15 @@ type IProps = {
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
 const ListTable: React.FC<IProps> = (props) => {
+    const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US';
     const { pageQuery, setPageQuery, radioValue = 1, countRefresh } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
-
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
     const [selectRowData, setSelectRowData] = React.useState<any[]>([])
-
     const rerunRef = React.useRef(null) as any
-
+    
     const { data, refresh, loading, mutate } = useRequest(
         () => queryTestResultList(transQuery(pageQuery)),
         {
@@ -109,7 +109,7 @@ const ListTable: React.FC<IProps> = (props) => {
         const selectRows = selectRowData.filter((obj: any) => obj && Number(obj.id) !== Number(id))
         setSelectedRowKeys(selectedKeys);
         setSelectRowData(selectRows);
-        message.success('操作成功！')
+        message.success(formatMessage({id: 'operation.success'}) )
         refresh()
         countRefresh()
     }
@@ -134,7 +134,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: 'JobID',
+            title: 'Job ID',
             dataIndex: 'id',
             fixed: 'left',
             width: 80,
@@ -145,7 +145,7 @@ const ListTable: React.FC<IProps> = (props) => {
             render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
         },
         {
-            title: 'Job名称',
+            title: <FormattedMessage id="ws.result.list.name"/>,
             dataIndex: 'name',
             width: 200,
             ellipsis: {
@@ -153,11 +153,8 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             render: (_: any, row: any) => {
                 return (
-                    <Typography.Text ellipsis>
-                        {
-                            row.created_from === 'offline' &&
-                            <Offline >离</Offline>
-                        }
+                    <span>
+                        {row.created_from === 'offline' && <Offline><FormattedMessage id="ws.result.list.offline"/></Offline>}
                         <Tooltip placement="topLeft" title={_}>
                             <Typography.Text
                                 className="result_job_hover_span"
@@ -169,31 +166,35 @@ const ListTable: React.FC<IProps> = (props) => {
                                 {_}
                             </Typography.Text>
                         </Tooltip>
-                    </Typography.Text>
+                    </span>
                 )
             }
         },
         {
-            title: '状态',
+            title: <FormattedMessage id="ws.result.list.state"/>,
             dataIndex: 'state',
             width: 120,
             render: (_: any, row: any) => <JobListStateTag {...row} />
         },
         {
-            title: '测试类型',
-            width: 80,
+            title: <FormattedMessage id="ws.result.list.test_type"/>,
+            width: locale ? 140 : 80,
             dataIndex: 'test_type',
             ellipsis: true,
+            render: (_: any, row: any) => {
+                const strLocale = matchTestType(_)
+                return <span><FormattedMessage id={`${strLocale}.test`} defaultMessage={_} /></span>
+            }
         },
         {
             title: (
                 <QusetionIconTootip
                     placement="bottomLeft"
-                    title={'总计/成功/失败'}
+                    title={formatMessage({id: 'ws.result.list.test_type.Tootip'})  }
                     desc={
-                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 15 }}>
-                            <li>功能测试：测试结果中TestConf结果状态统计。</li>
-                            <li>性能测试：执行结果中TestConf执行状态统计。</li>
+                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 4, marginBottom:4, paddingLeft:0 }}>
+                            <li><FormattedMessage id="ws.result.list.test_type.desc1"/></li>
+                            <li><FormattedMessage id="ws.result.list.test_type.desc2"/></li>
                         </ul>
                     }
                 />
@@ -222,7 +223,7 @@ const ListTable: React.FC<IProps> = (props) => {
             }
         },
         {
-            title: '所属项目',
+            title: <FormattedMessage id="ws.result.list.project_id"/>,
             width: 120,
             dataIndex: 'project_name',
             ellipsis: {
@@ -235,7 +236,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: '创建人',
+            title: <FormattedMessage id="ws.result.list.creators"/>,
             width: 80,
             ellipsis: {
                 showTitle: false,
@@ -248,7 +249,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: '开始时间',
+            title: <FormattedMessage id="ws.result.list.start_time"/>,
             width: 180,
             dataIndex: 'start_time',
             ellipsis: {
@@ -261,7 +262,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 </Tooltip>
             )
         }, {
-            title: '完成时间',
+            title: <FormattedMessage id="ws.result.list.completion_time"/>,
             width: 180,
             ellipsis: {
                 showTitle: false,
@@ -274,8 +275,8 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: '操作',
-            width: 160,
+            title: <FormattedMessage id="Table.columns.operation"/>,
+            width: locale ? 170 : 170,
             fixed: 'right',
             render: (_: any) => {
                 const disableStyle = { color: '#ccc', cursor: 'no-drop' }
@@ -286,24 +287,24 @@ const ListTable: React.FC<IProps> = (props) => {
                             <span
                                 onClick={_.created_from === 'offline' ? undefined : () => rerunRef.current?.show(_)}
                             >
-                                <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
+                                <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}><FormattedMessage id="operation.rerun"/></Typography.Text>
                             </span>
                         </Access>
                         <Access accessible={access.WsTourist()}>
                             <Access
                                 accessible={access.WsMemberOperateSelf(_.creator)}
                                 fallback={
-                                    <span onClick={() => AccessTootip()}><Typography.Text style={commonStyle}>删除</Typography.Text></span>
+                                    <span onClick={() => AccessTootip()}><Typography.Text style={commonStyle}><FormattedMessage id="operation.delete"/></Typography.Text></span>
                                 }
                             >
                                 <Popconfirm
-                                    title="确定要删除吗？"
+                                    title={<FormattedMessage id="delete.prompt"/>}
                                     onConfirm={() => handleDelete(_)}
-                                    okText="确认"
-                                    cancelText="取消"
+                                    okText={<FormattedMessage id="operation.ok"/>}
+                                    cancelText={<FormattedMessage id="operation.cancel"/>}
                                 >
                                     <Typography.Text style={commonStyle}>
-                                        删除
+                                        <FormattedMessage id="operation.delete"/>
                                     </Typography.Text>
                                 </Popconfirm>
                             </Access>
@@ -313,7 +314,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 )
             }
         }
-    ].filter(Boolean), [access, ws_id])
+    ].filter(Boolean), [access, ws_id, locale])
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
@@ -335,11 +336,6 @@ const ListTable: React.FC<IProps> = (props) => {
         setSelectRowData(arrData);
     }
 
-    // useEffect(()=> {
-    //     if(radioValue === 2){
-    //         refresh()
-    //     }
-    // }, [ radioValue ])
     const allSelectFn = (allData: any) => {
         const arr = lodash.isArray(allData) ? allData : []
         const keysArr: any = []
@@ -383,7 +379,7 @@ const ListTable: React.FC<IProps> = (props) => {
             return
         }
         handleResetSelectedKeys()
-        message.success('操作成功！')
+        message.success(formatMessage({id: 'operation.success'}) )
         countRefresh()
         refresh()
     }
@@ -452,23 +448,17 @@ const ListTable: React.FC<IProps> = (props) => {
                 <SelectionRow >
                     <Row justify="space-between" style={{ height: 56, paddingLeft: 24, paddingRight: 24 }} align="middle">
                         <Space>
-                            <span>已选择</span>
-                            <Typography.Link>{`${selectRowData.length}`}</Typography.Link>
-                            <span>项</span>
+                            <span>{formatMessage({id: 'selected.item'}, {data: selectRowData.length})}</span>
                         </Space>
                         <Space>
-                            <Button onClick={handleResetSelectedKeys}>取消</Button>
-                            <Popconfirm
-                                title={<div style={{ color:'red' }}>确定要删除吗？</div>}
-                                okText="确定"
-								cancelText="取消"
-								onConfirm={() => handleMoreDeleOk()}
+                            <Button onClick={handleResetSelectedKeys}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button
+                                type="primary"
+                                onClick={handleMoreDeleOk}
+                                disabled={!selectedRowKeys.length}
                             >
-                                <Button type="primary" disabled={!selectedRowKeys.length}>
-                                    批量删除
-                                </Button>
-                            </Popconfirm>
-                            
+                                <FormattedMessage id="ws.result.list.batch.delete"/>
+                            </Button>
                         </Space>
                     </Row>
                 </SelectionRow>

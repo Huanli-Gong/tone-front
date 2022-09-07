@@ -1,22 +1,24 @@
 import { Popover, Table } from 'antd'
 import React from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import { evnPrepareState , tooltipTd } from '../components/index'
 import styles from './index.less'
 
 export default ( { title = '' , need_reboot , setup_info , cleanup_info , step } : any ) => {
+    const { formatMessage } = useIntl()
     const columns = [
         {
-            title : '步骤',
+            title : <FormattedMessage id="ws.result.details.stage"/>,
             dataIndex : 'stage',
             ...tooltipTd(),
         },
         {
-            title : '状态',
+            title : <FormattedMessage id="ws.result.details.state"/>,
             dataIndex : 'state',
             render : evnPrepareState
         },
         {
-            title : '输出结果',
+            title : <FormattedMessage id="ws.result.details.output.results"/>,
             dataIndex : 'result',
             ...tooltipTd(),
         },
@@ -27,17 +29,17 @@ export default ( { title = '' , need_reboot , setup_info , cleanup_info , step }
         },
         {
             dataIndex : 'start_time',
-            title : '开始时间',
+            title : <FormattedMessage id="ws.result.details.start_time"/>,
             ...tooltipTd(),
         },
         {
             dataIndex : 'end_time',
-            title : '结束时间',
+            title : <FormattedMessage id="ws.result.details.end_time"/>,
             ...tooltipTd(),
         }
     ]
-    let needReboot = need_reboot ? '重启机器' : ''
-    let hasScript = setup_info || cleanup_info ? '执行脚本' : '' 
+    let needReboot = need_reboot ? formatMessage({id:'ws.result.details.restart.server'}) : ''
+    let hasScript = setup_info || cleanup_info ? formatMessage({id:'ws.result.details.execute.script'}): '' 
 
     if ( needReboot || hasScript ) 
         return (

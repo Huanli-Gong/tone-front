@@ -1,8 +1,9 @@
 import { Row, Spin , Empty } from 'antd'
 import React from 'react'
-import { useParams, useRequest } from 'umi'
+import { useParams, useRequest, useIntl, FormattedMessage } from 'umi'
 import { queryCaseResultVersionInfo } from '../service'
 export default ({ test_case_id , suite_id } : any ) => {
+    const { formatMessage } = useIntl()
     const { id: job_id } = useParams() as any
     const initialData : any = {
         kernel_version : '',
@@ -35,7 +36,7 @@ export default ({ test_case_id , suite_id } : any ) => {
                     {
                         data.kernel_version && 
                         <>
-                            <b style={{ marginRight : 16 }}>已安装内核&nbsp;</b><span>{ data.kernel_version }</span>
+                            <b style={{ marginRight : 16 }}><FormattedMessage id="ws.result.details.installed.kernel" />&nbsp;</b><span>{ data.kernel_version }</span>
                         </>
                     }
                 </Row>
@@ -43,7 +44,7 @@ export default ({ test_case_id , suite_id } : any ) => {
                     data.rpm_info.map(
                         ( item : any , index : number ) => (
                             <Row key={ index }>
-                                <b style={{ marginRight : 16 }}>已安装RPM</b>
+                                <b style={{ marginRight : 16 }}><FormattedMessage id="ws.result.details.installed.rpm" /></b>
                                 <span>{ item.rpm }</span>
                             </Row>
                         )

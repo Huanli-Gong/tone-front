@@ -1,8 +1,10 @@
 import { Modal, Row , Form , Input } from 'antd'
 import React, { useState , useImperativeHandle , forwardRef } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 
 export default forwardRef(
     ( props : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const [ visible , setVisible ] = useState( false )
         const [ padding , setPadding ] = useState( false )
     
@@ -36,19 +38,19 @@ export default forwardRef(
         return (
             <Modal 
                 width={ 487 }
-                title="新建基线"
+                title={<FormattedMessage id="ws.result.details.create.baseline" />}
                 visible={ visible }
                 onCancel={ handleCancel }
                 onOk={ handleOk }
-                okText="确认"
-                cancelText="取消"
+                okText={<FormattedMessage id="operation.confirm" />}
+                cancelText={<FormattedMessage id="operation.cancel" />}
             >
                 <Row>
-                    <b>测试环境</b>
+                    <b><FormattedMessage id="ws.result.details.test.env" /></b>
                     <span></span>
                 </Row>
                 <Row>
-                    <b>基线类型</b>
+                    <b><FormattedMessage id="ws.result.details.baseline.type" /></b>
                     <span></span>
                 </Row>
                 <div style={{ width : '100%' , height : 10 , background : '#F5F5F5' }} />
@@ -57,11 +59,17 @@ export default forwardRef(
                     layout="vertical"
                     /*hideRequiredMark*/
                 >
-                    <Form.Item label="基线名称">
-                        <Input autoComplete="off" placeholder="请输入基线名称" />
+                    <Form.Item label={<FormattedMessage id="ws.result.details.baseline.name" />}
+                        >
+                        <Input autoComplete="off" 
+                            placeholder={formatMessage({id: 'ws.result.details.baseline.name.placeholder'})}
+                         />
                     </Form.Item>
-                    <Form.Item label="基线描述(选填)">
-                        <Input.TextArea rows={ 3 } autoComplete="off" placeholder="请输入基线描述" />
+                    <Form.Item label={<FormattedMessage id="ws.result.details.baseline.desc" />}
+                        >
+                        <Input.TextArea rows={ 3 } autoComplete="off" 
+                            placeholder={formatMessage({id: 'ws.result.details.baseline.desc.placeholder'})}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

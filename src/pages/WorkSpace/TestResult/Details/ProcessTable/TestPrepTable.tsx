@@ -6,14 +6,14 @@ import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryProcessPrepareList } from '../service'
-import { useRequest, useAccess } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, matchMode } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
 //测试准备 ==== Table
 export default ({ job_id, refresh = false, provider_name }: any) => {
-    const access = useAccess();
+    const { formatMessage } = useIntl()
     // 表格展开的行
     const [expandedKeys, setExpandedKeys] = useState<any>([])
 
@@ -109,7 +109,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
     useEffect(() => {
         const clipboard = new Clipboard('.test_result_tooptip_btn')
         clipboard.on('success', function (e) {
-            message.success('复制成功')
+            message.success(formatMessage({id:'ws.result.details.copy.success'}))
             e.clearSelection();
         })
         return () => {
@@ -120,16 +120,17 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
     const columns = [
         {
             dataIndex: 'mode',
-            title: '运行模式',
-            width: 170,
+            title: <FormattedMessage id="ws.result.details.mode"/>,
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ || '-'
+            render: (_: any) => {
+                return <FormattedMessage id={matchMode(_)} defaultMessage={_ || '-'} />
+            },
         },
         {
             dataIndex: 'server',
-            title: '测试机器',
+            title: <FormattedMessage id="ws.result.details.test.server"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -147,7 +148,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         },
         {
             dataIndex: 'stage',
-            title: '步骤',
+            title: <FormattedMessage id="ws.result.details.stage"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -155,7 +156,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         },
         {
             dataIndex: 'state',
-            title: '状态',
+            title: <FormattedMessage id="ws.result.details.state"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -163,7 +164,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         },
         {
             dataIndex: 'result',
-            title: '输出结果',
+            title: <FormattedMessage id="ws.result.details.output.results"/>,
             ...tooltipTd('Nothing to do'),
         },
         {
@@ -173,12 +174,12 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         },
         {
             dataIndex: 'gmt_created',
-            title: '开始时间',
+            title: <FormattedMessage id="ws.result.details.start_time"/>,
             ...tooltipTd(),
         },
         {
             dataIndex: 'gmt_modified',
-            title: '完成时间',
+            title: <FormattedMessage id="ws.result.details.finish_time"/>,
             ...tooltipTd(),
         },
     ]
@@ -187,7 +188,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {},
         {
             dataIndex: 'server',
-            title: '测试机器',
+            title: <FormattedMessage id="ws.result.details.test.server"/>,
             width: 160,
             render: (_: any, row: any) => (
                 _ ?
@@ -204,7 +205,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
 
     return (
         <Card
-            title="测试准备"
+            title={<FormattedMessage id="ws.result.details.test.preparation"/>}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none', borderTop: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}

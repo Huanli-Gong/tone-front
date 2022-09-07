@@ -2,7 +2,7 @@ import { Space, Table, Tooltip, Input, Button, Typography, message } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
 import React, { useRef, useEffect, useState } from 'react'
-import { useRequest, Access, useAccess, useParams } from 'umi'
+import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryCaseResult } from '../service'
 import EditRemarks from '../components/EditRemarks'
 import JoinBaseline from '../components/JoinBaseline'
@@ -17,6 +17,7 @@ import styles from './index.less'
 import { targetJump, AccessTootip } from '@/utils/utils'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id, id: job_id } = useParams() as any
     const access = useAccess()
     const {
@@ -53,7 +54,7 @@ export default (props: any) => {
             <div style={{ padding: 8 }}>
                 <Input
                     ref={searchInput}
-                    placeholder={`搜索 ${name}`}
+                    placeholder={`${formatMessage({ id: 'operation.search'})} ${name}`}
                     value={selectedKeys[0]}
                     onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                     onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -67,10 +68,10 @@ export default (props: any) => {
                         size="small"
                         style={{ width: 90 }}
                     >
-                        搜索
+                        <FormattedMessage id="operation.search" />
                     </Button>
                     <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-                        重置
+                        <FormattedMessage id="operation.reset" />
                     </Button>
                 </Space>
             </div>
@@ -134,17 +135,17 @@ export default (props: any) => {
 
     const columns = [{
         dataIndex: 'sub_case_name',
-        title: 'TestCase',
+        title: 'Test Case',
         width: 400,
         ...tooltipTd(),
-        ...getColumnSearchProps('sub_case_name', 'TestCase'),
+        ...getColumnSearchProps('sub_case_name', 'Test Case'),
     }, {
         dataIndex: 'result',
         title: (
             <QusetionIconTootip
                 placement="bottomLeft"
-                title='测试结果'
-                desc='测试结果详情请查看日志文件'
+                title={formatMessage({ id: 'ws.result.details.test.result'})}
+                desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file'})}
             />
         ),
         render: (_: any) => {
@@ -160,15 +161,16 @@ export default (props: any) => {
         title: (
             <QusetionIconTootip
                 placement="bottomLeft"
-                title='基线说明'
-                desc='在这里可以记录对问题的一些官方的比较正式的分析说明，基线说明和基线关联'
+                title={formatMessage({ id: 'ws.result.details.baseline.description'})}
+                desc={formatMessage({ id: 'ws.result.details.baseline.description.ps'})}
             />
         ),
         ellipsis: true,
         render: (_: any, row: any) => {
             let context = row.description
+            const localeStr = formatMessage({ id: 'ws.result.details.match.baseline'})
             if (row.match_baseline && row.result === 'Fail')
-                context = _ ? `${_}(匹配基线)` : '匹配基线'
+                context = _ ? `${_}(${localeStr})` : localeStr
             if (access.IsWsSetting())
                 return (
                     <Tooltip placement="topLeft" title={context}>
@@ -183,19 +185,19 @@ export default (props: any) => {
                                 }
                             }
                         >
-                            {context}
+                            {context || '-'}
                         </Typography.Link>
                     </Tooltip >
                 )
             return (
                 <Tooltip placement="topLeft" title={context}>
-                    <Typography>{context}</Typography>
+                    <Typography>{context || '-'}</Typography>
                 </Tooltip>
             )
         }
     }, {
         dataIndex: 'bug',
-        title: ['business_functional'].includes(testType) ? 'Aone记录' : '缺陷记录',
+        title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" />: <FormattedMessage id="ws.result.details.bug" />,
         ellipsis: true,
         render: (_: any, row: any) => {
             let context = row.bug
@@ -221,13 +223,13 @@ export default (props: any) => {
         title:  (
             <QusetionIconTootip
                 placement="bottomLeft"
-                title='结果备注'
-                desc='在这里可以记录对此次结果的说明，和对基线问题一些修正意见，结果备注和当前结果关联'
+                title={formatMessage({ id: 'ws.result.details.result.remarks'})}
+                desc={formatMessage({ id: 'ws.result.details.result.remarks.ps'})}
             />
         ),
         ...tooltipTd()
     }, {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation" />,
         render: (_: any) => {
             let flag = _.result === 'Fail' && !_.bug
             return (
@@ -236,14 +238,14 @@ export default (props: any) => {
                         accessible={access.WsMemberOperateSelf(creator)}
                         fallback={
                             <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>编辑</span>
-                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>加入基线</span>}
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
+                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
                             </Space>
                         }
                     >
                         <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}>编辑</span>
-                            {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}>加入基线</span>}
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
+                            {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
                         </Space>
                     </Access>
                 </Access>
@@ -270,7 +272,7 @@ export default (props: any) => {
                     rowKey="id"
                     size="small"
                     loading={loading}
-                    className={styles.result_info_table_head}
+                    className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
                     // pagination={ true }
                     columns={columns}
                     rowClassName={styles.result_info_table_row}

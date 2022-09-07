@@ -1,7 +1,7 @@
 import React from "react"
 import { Space, Tabs } from "antd"
 import styled from "styled-components"
-import { useAccess, useParams, useRequest, useLocation } from "umi"
+import { useAccess, useParams, useRequest, useLocation, useIntl, FormattedMessage } from "umi"
 import { queryTestResultList } from "../services"
 import StateRow from "./StateRow"
 import ListTable from "./ListTable"
@@ -65,6 +65,7 @@ type IProps = {
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
 const BaseTab: React.FC<IProps> = (props) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { query } = useLocation() as any
 
@@ -86,9 +87,9 @@ const BaseTab: React.FC<IProps> = (props) => {
     )
 
     const defaultTabKeys = [
-        { tab: '全部Job', key: 'all' },
-        access.IsWsSetting() && { tab: '我创建的Job', key: 'my' },
-        access.IsWsSetting() && { tab: '我的收藏', key: 'collection' }
+        { tab: formatMessage({ id: 'ws.result.list.all.job'}), key: 'all' },
+        access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.my.job'}), key: 'my' },
+        access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.collection'}), key: 'collection' }
     ].filter(Boolean)
 
     const hanldeTabClick = (tabKey: string) => {
@@ -132,7 +133,14 @@ const BaseTab: React.FC<IProps> = (props) => {
                                     {
                                         filter &&
                                         <FilterRow
-                                            columns={columns}
+                                            columns={
+                                                columns.map((item: any)=>
+                                                    ({
+                                                        ...item,
+                                                        placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}`}),
+                                                    })
+                                                )
+                                            }
                                             pageQuery={pageQuery}
                                             onChange={(vals) => setPageQuery((p: any) => ({ tab, ws_id, state: p.state, ...vals, ...DEFAULT_PAGE_QUERY }))}
                                         />

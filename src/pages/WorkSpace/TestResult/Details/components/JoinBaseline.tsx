@@ -1,6 +1,6 @@
 import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Checkbox, Divider, Popover } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef, useEffect } from 'react'
-import { useRequest, useParams } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncsDetail } from '../service'
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
@@ -11,6 +11,7 @@ import { createBaseline } from '@/pages/WorkSpace/Baseline/services'
 import { requestCodeMessage } from '@/utils/utils'
 
 const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { test_type, server_provider, onOk, accessible } = props
 
@@ -97,7 +98,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             return
         }
         onOk()
-        message.success('操作成功')
+        message.success(formatMessage({id: 'operation.success'}) )
         handleClose()
     }
 
@@ -208,14 +209,14 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             maskClosable={false}
             keyboard={false}
             width="376"
-            title="加入基线"
+            title={<FormattedMessage id="ws.result.details.join.baseline"/>}
             visible={visible}
             onClose={handleClose}
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} disabled={padding}>确定</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={handleOk} disabled={padding}><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 </div>
             }
@@ -227,14 +228,19 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 /*hideRequiredMark*/
                 >
                     {test_type === 'functional' &&
-                        <Form.Item label="缺陷记录" name="bug" rules={[{
-                            required: true,
-                        }]}>
-                            <Input placeholder="请输入缺陷记录" autoComplete="off" />
+                        <Form.Item label={<FormattedMessage id="ws.result.details.bug"/>}
+                            name="bug" 
+                            rules={[{
+                                required: true,
+                            }]}
+                        >
+                            <Input placeholder={formatMessage({id: 'ws.result.details.bug.placeholder'})}
+                                autoComplete="off" />
                         </Form.Item>
                     }
                     {test_type === 'performance' &&
-                        <Form.Item label="选择基线" name="baseline_id">
+                        <Form.Item label={<FormattedMessage id="ws.result.details.baseline_id"/>}
+                            name="baseline_id">
                             <Select
                                 mode="multiple"
                                 className={styles.pers_select}
@@ -247,7 +253,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                 filterOption={
                                     (input, option: any) => option.value.indexOf(input) >= 0
                                 }
-                                placeholder="请选择基线"
+                                placeholder={formatMessage({id: 'ws.result.details.baseline_id.placeholder'})}
                                 dropdownStyle={{ padding: 0, margin: 0 }}
                                 notFoundContent={
                                     funcsSelectVal && accessible &&
@@ -257,7 +263,9 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     >
                                         <span className={styles.join_base_line}>
                                             <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
-                                            新建基线
+                                            <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                <FormattedMessage id="ws.result.details.create.baseline" />
+                                            </span>
                                         </span>
                                     </div>
                                 }
@@ -280,9 +288,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                         </Form.Item>
                     }
                     {test_type === 'functional' &&
-                        <Form.Item label="选择基线" name="baseline_name_list" >
+                        <Form.Item label={<FormattedMessage id="ws.result.details.baseline_id"/>}
+                            name="baseline_name_list" >
                             <Select
-                                placeholder="请选择基线"
+                                placeholder={formatMessage({id: 'ws.result.details.baseline_id.placeholder'})}
                                 mode="multiple"
                                 className={styles.select_baseline}
                                 allowClear
@@ -307,7 +316,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                         >
                                             <span className={styles.join_base_line}>
                                                 <PlusOutlined style={{ marginRight: 8, color: '#1890FF' }} />
-                                                新建基线
+                                                <FormattedMessage id="ws.result.details.create.baseline" />
                                             </span>
                                         </div>
                                         }
@@ -318,14 +327,17 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     }
                     {test_type === 'functional' &&
                         <>
-                            <Form.Item label="影响结果" name="impact_result" initialValue={true}>
+                            <Form.Item label={<FormattedMessage id="ws.result.details.impact_result"/>}
+                                name="impact_result"
+                                initialValue={true}>
                                 <Radio.Group>
-                                    <Radio value={true}>是</Radio>
-                                    <Radio value={false}>否</Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                                 </Radio.Group>
                             </Form.Item>
-                            <Form.Item label="问题描述" name="description">
-                                <Input.TextArea rows={4} placeholder="请输入问题描述信息" />
+                            <Form.Item label={<FormattedMessage id="ws.result.details.description"/>}
+                                name="description">
+                                <Input.TextArea rows={4} placeholder={formatMessage({id: 'ws.result.details.description.placeholder'})} />
                             </Form.Item>
                             {/* <Form.Item label="备注" name="note">
                                 <Input.TextArea rows={4} placeholder="请输入备注信息" />

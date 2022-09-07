@@ -55,4 +55,23 @@ export default {
   'aliyunServer.standalone': aliyunServer_standalone,
   'aligroupServer.cluster': aligroupServer_cluster,
   'aliyunServer.cluster': aliyunServer_cluster,
+
+  'common.random': '随机',
+  'common.hardware': '硬件',
+  'common.instance.ID': '实例ID',
+  'common.private_ip': 'IP地址',
+  'common.instance_type': '规格',
+  'common.bandwidth': '带宽',
+  'common.system_disk': '系统盘',
+  'common.storage_type': '数据盘',
+  'common.soft': '软件',
+  'common.image_name': '镜像',
+  'common.server.state': '机器状态',
+  'common.channel_type': '控制通道',
+  'common.extended.field': '扩展字段',
+
+  'common.cloud': '普通云盘',
+  'common.cloud_efficiency': '高效云盘',
+  'common.cloud_ssd': 'SSD云盘',
+  'common.cloud_essd': 'ESSD云盘',
 };
