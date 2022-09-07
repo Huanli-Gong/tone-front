@@ -33,8 +33,6 @@ export default (props: any) => {
     const [tab, setTab] = useState('functional')
     const [selectedFuncRowKeys, setSelectedFuncRowKeys] = useState<any>([])
     const [selectedPerfRowKeys, setSelectedPerfRowKeys] = useState<any>([])
-    const [allObjKeyFun, setAllObjKeyFun] = useState<any>([])
-    const [allObjKeyPerf, setAllObjKeyPerf] = useState<any>([])
     const [currentStep, setCurrentStep] = useState(0)
     const [expandRepeatTableKey, setExpandRepeatTableKey] = useState<string[]>([])
     const [selSuiteData, setSelSuiteData] = useState<any>([])
@@ -70,8 +68,8 @@ export default (props: any) => {
             allPersRowKeys.current = [...arrKey2]
             let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
             if (tabValue) setTab('performance')
-            setSelectedFuncRowKeys([...arrKey1])
-            setSelectedPerfRowKeys([...arrKey2])
+            setSelectedFuncRowKeys([...arrKey1 ])
+            setSelectedPerfRowKeys([...arrKey2 ])
             setOneLevelFunc(Object.values(obj1))
             setOneLevelPref(Object.values(obj2))
             setSuitData(data)
@@ -172,8 +170,8 @@ export default (props: any) => {
                     confDataPref[suite_id].conf_dic = conf_dic
                     setConfDataPref({ ...confDataPref })
                 }
-                setSelectedFuncRowKeys([...selectedFuncRowKeys, ...Object.keys(conf_dic)])
-                setSelectedPerfRowKeys([...selectedPerfRowKeys, ...Object.keys(conf_dic)])
+                setSelectedFuncRowKeys([...selectedFuncRowKeys, ...Object.keys(conf_dic).map((k: any) => Number(k))])
+                setSelectedPerfRowKeys([...selectedPerfRowKeys, ...Object.keys(conf_dic).map((k: any) => Number(k))])
             }
         }
     }
@@ -183,14 +181,17 @@ export default (props: any) => {
         if (confData) {
             let id: any = Object.keys(confData).map((keys: any) => String(keys))
             let result = []
+            let selectedKeys: any = []
             result = Object.values(confData).map((item: any, index: number) => {
                 if (item.conf_dic && JSON.stringify(item.conf_dic) !== '{}') {
+                    selectedKeys = [ ...Object.keys(item.conf_dic).map((i:any) => + i)]
                     item.conf_list = Object.values(item.conf_dic).map((value: any, index: number) => {
                         return (
                             {
                                 key: value.conf_id,
-                                suite_id: id,
+                                suite_id: item.suite_id,
                                 conf_id: value.conf_id,
+                                conf_list: selectedKeys,
                                 conf_name: value.conf_name,
                                 title: 'Test conf',
                                 level: 2,
@@ -202,24 +203,8 @@ export default (props: any) => {
             })
             setOneLevelFunc(result)
             setOneLevelPref(result)
-            // let newObj = {}
-            // let name = tab === 'functional' ? 'func_suite_dic' : 'perf_suite_dic'
-            // newObj[name] = confData
-            // setCopySuitData(newObj)
-            const arrVal = Object.values(confData)
-            let selectedKeys: any = []
-            let allObjKey: any = []
-            arrVal.forEach((obj: any) => {
-                const objConf = obj.conf_dic || {}
-                selectedKeys = [...selectedKeys, ...Object.keys(objConf)]
-                const id = obj.suite_id
-                allObjKey[id] = Object.keys(objConf).map((keys: any) => String(keys))
-            })
-            selectedKeys = selectedKeys.map((keys: any) => String(keys))
             allFunRowKeys.current = [...id, ...selectedKeys]
             allPersRowKeys.current = [...id, ...selectedKeys]
-            setAllObjKeyFun(allObjKey)
-            setAllObjKeyPerf(allObjKey)
         }
     }, [tab, confDataFunc, confDataPref])
 
@@ -229,7 +214,6 @@ export default (props: any) => {
         if (current === 1) {
             let group_jobs: any = []
             const groupAll = _.cloneDeep(props.allGroupData)
-            // let baseIndex = baselineGroupIndex === -1 ? 0 : baselineGroupIndex
             groupAll.map((item: any) => {
                 group_jobs.push({
                     group_name: item.product_version,
@@ -240,8 +224,9 @@ export default (props: any) => {
             let selectdRows = suite_data.filter((i: any) => rowKeys.includes(String(i.suite_id)))
             let suite_list: any = []
             selectdRows.forEach((item: any) => {
-                let is_all = item.conf_dic ? 0 : 1
-                let conf_list = item.conf_dic ? Object.keys(item.conf_dic).filter((i: any) => rowKeys.includes(String(i))) : []
+                let conf_list = item.conf_dic ? Object.keys(item.conf_dic).filter((i: any) => rowKeys.includes(+i)) : []
+                conf_list = item.conf_dic && Object.keys(item.conf_dic).length === conf_list.length ? [] : conf_list
+                let is_all = !!conf_list.length ? 0 : 1
                 if (item.test_job_id.length > 1) {
                     suite_list.push({
                         suite_id: item.suite_id,
@@ -333,28 +318,33 @@ export default (props: any) => {
     const selectedChange = (record: any, selected: any) => {
         // 去掉未选组的job 开始
         let arrKeys = tab === 'functional' ? _.cloneDeep(selectedFuncRowKeys) : _.cloneDeep(selectedPerfRowKeys)
-        const objKeys = tab === 'functional' ? allObjKeyFun : allObjKeyPerf
-        let childKeys: any = !record.level ? objKeys[record.suite_id + ''] : objKeys[record.level_id + '']
         if (selected) {
             if (!record.level) {
-                // 一级
-                arrKeys = [...arrKeys, record.suite_id + '', ...childKeys]
-                arrKeys = Array.from(new Set(arrKeys.map((keys: any) => String(keys))))
+                let conf_list = []
+                if(record.conf_list){
+                    conf_list = record.conf_list.map((i:any) => i.conf_id)
+                }
+                arrKeys = [...arrKeys, record.suite_id + '', ...conf_list ]
             } else {
-                arrKeys = [...arrKeys, record.conf_id + '']
-                arrKeys = Array.from(new Set(arrKeys.map((keys: any) => String(keys))))
+                arrKeys = [...arrKeys, record.conf_id, record.suite_id + '' ]
             }
-
         } else {
             if (!record.level) {
-                // 一级
-                arrKeys = arrKeys.filter((keys: any) => !childKeys.includes(keys))
-                arrKeys = arrKeys.filter((keys: any) => String(keys) !== String(record.suite_id))
+                if(record.conf_list){
+                    let conf_list = record.conf_list.map((i:any) => i.conf_id)
+                    arrKeys = arrKeys.filter((keys: any) => !conf_list.includes(keys))
+                }
+                arrKeys = arrKeys.filter((keys: any) => String(record.suite_id) !== keys )
             } else {
-                arrKeys = arrKeys.filter((keys: any) => String(keys) !== String(record.conf_id))
+                arrKeys = arrKeys.filter((keys: any) => keys !== record.conf_id)
+                let conf_list = record.conf_list.splice(0)
+                conf_list = conf_list.filter((i:number) => i !== record.conf_id)
+                if(conf_list.length === 0){
+                    arrKeys = arrKeys.filter((keys: any) => keys !== String(record.suite_id))
+                }
             }
-
         }
+        arrKeys = Array.from(new Set(arrKeys))
         tab === 'functional' ? setSelectedFuncRowKeys(arrKeys) : setSelectedPerfRowKeys(arrKeys)
     }
 
@@ -368,6 +358,10 @@ export default (props: any) => {
             if (selected) tab === 'functional' ? setSelectedFuncRowKeys(allFunRowKeys.current) : setSelectedPerfRowKeys(allPersRowKeys.current)
         },
     };
+    const confRowSelection = {
+        ...rowSelection,
+        hideSelectAll: true,
+    }
 
     const columns = [
         {
@@ -477,8 +471,8 @@ export default (props: any) => {
                             columns={ConfColumns}
                             dataSource={record.conf_list}
                             pagination={false}
-                            rowKey={(record: any) => record.conf_id + ''}
-                            rowSelection={rowSelection}
+                            rowKey={(record: any) => +record.conf_id}
+                            rowSelection={confRowSelection}
                         />
                     },
                     // defaultExpandedRowKeys:selectedPerfRowKeys,

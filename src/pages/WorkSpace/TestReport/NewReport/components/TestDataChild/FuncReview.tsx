@@ -10,7 +10,7 @@ import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
 import { GroupItemText } from '../EditPerfText';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
-import { deleteSuite, deleteConf } from './DelMethod.js';
+import { reportDelete } from '../ReportFunction';
 import { JumpResult } from '@/utils/hooks';
 import {
     TestItemText,
@@ -126,10 +126,11 @@ const FuncDataIndex: React.FC<any> = (props) => {
         }
         setFuncData(obj)
     }
+    
     useEffect(() => {
         setBtnName(btn ? '收起所有' : '展开所有')
         setExpandKeys([])
-        let ExpandObj:any = []
+        let ExpandObj: any = []
         dataSource?.map((item: any) => {
             if (item.is_group) {
                 item.list.map((child: any) => {
@@ -147,35 +148,12 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 :
                 []
         )
-    }, [btn,dataSource])
+    }, [btn, dataSource])
 
     const handleDelete = (name: string, row: any, rowKey: any) => {
-        if (name == 'suite') {
-            setDataSource(dataSource.map((item: any) => {
-                if (item.is_group) {
-                    let list = item.list.map((l: any) => deleteSuite(l, row))
-                    return {
-                        ...item,
-                        list,
-                    }
-                } else {
-                    return deleteSuite(item, row)
-                }
-            }))
-        } else {
-            setDataSource(dataSource.map((item: any) => {
-                if (item.is_group) {
-                    let list = item.list.map((l: any) => deleteConf(l, row))
-                    return {
-                        ...item,
-                        list,
-                    }
-                } else {
-                    return deleteConf(item, row)
-                }
-            }))
-        }
+        setDataSource(reportDelete(dataSource, name, row, rowKey))
     }
+
     // 右侧功能按钮
     const ItemFunc: React.FC<any> = () => {
         return (
@@ -196,6 +174,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </TestItemFunc>
         )
     }
+
     const DelBtn: React.FC<any> = (props: any) => {
         const { conf, cid } = props;
         return (
@@ -214,6 +193,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </Popconfirm>
         )
     }
+
     const DelBtnEmpty: React.FC<any> = (props: any) => {
         return btnState && <PrefDataDel empty={true} />
     }
@@ -225,16 +205,17 @@ const FuncDataIndex: React.FC<any> = (props) => {
         else
             setExpandKeys(expandKeys.concat(id))
     }
+    
     // 单个展开
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
         const expand = expandKeys.includes(conf_id)
-        let subCaseList =  _.cloneDeep(sub_case_list) 
+        let subCaseList = _.cloneDeep(sub_case_list)
         return (
             <>
                 {
                     expand && subCaseList?.map((item: any, idx: number) => {
-                        if(isOldReport){
+                        if (isOldReport) {
                             item.compare_data.splice(baseIndex, 0, item.result)
                         }
                         return (
@@ -244,19 +225,19 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                     <Typography.Text><EllipsisPulic title={item.sub_case_name} /></Typography.Text>
                                 </SubCaseTitle>
                                 {
-                                        !!item.compare_data.length ?
-                                            item.compare_data.map((cur: any, idx: number) => {
-                                                return (
-                                                    <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
-                                                        <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
-                                                    </SubCaseText>
-                                                )
-                                            })
-                                            :
-                                            <SubCaseText gLen={groupLen} btnState={btnState}>
-                                                <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
-                                            </SubCaseText>
-                                        
+                                    !!item.compare_data.length ?
+                                        item.compare_data.map((cur: any, idx: number) => {
+                                            return (
+                                                <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
+                                                    <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
+                                                </SubCaseText>
+                                            )
+                                        })
+                                        :
+                                        <SubCaseText gLen={groupLen} btnState={btnState}>
+                                            <Typography.Text style={{ color: handleCaseColor(item.result) }}>{item.result || '-'}</Typography.Text>
+                                        </SubCaseText>
+
                                 }
                             </TestSubCase>
                         )
@@ -265,7 +246,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
             </>
         )
     }
-    
+
     let functionTable = Array.isArray(funcData.list) && !!funcData.list.length ?
         funcData.list.map((suite: any, idx: number) => (
             <TestSuite key={idx}>
@@ -308,7 +289,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                         suite.conf_list.map((conf: any, cid: number) => {
                             const expand = expandKeys.includes(conf.conf_id)
                             let metricList: any = []
-                            if(isOldReport){
+                            if (isOldReport) {
                                 const { all_case, success_case, fail_case, obj_id } = conf.conf_source || conf
                                 let conf_data = conf.conf_compare_data || conf.compare_conf_list
                                 for (let i = 0; i < allGroupData.length; i++) {
@@ -369,7 +350,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                         </Space>
                                                         {item &&
-                                                            <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }}/>
+                                                            <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
                                                         }
                                                     </CaseText>
                                                 )
