@@ -1,5 +1,6 @@
 import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber, Row, Col } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
+import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
 import { QusetionIconTootip, getHasMuiltip } from '../untils'
@@ -65,6 +66,7 @@ const FieldsInput = styled.div`
 `
 
 const SuiteDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { contrl, checked, server_type, test_type, run_mode, onDataSourceChange, testSuiteData, onOk } = props
 
     const [serverType, setServerType] = useState('pool') //pool custom
@@ -349,7 +351,7 @@ const SuiteDrawer = (props: any, ref: any) => {
         const { custom_channel, custom_ip, server_object_id, server_tag_id } = values
         let ip = null
         if (!isCustom()) {
-            if (isRandom()) ip = '随机'
+            if (isRandom()) ip = '随机' // formatMessage({id: 'select.suite.random'})
             if (isObjectId()) ip = filterIp(server_object_id)
             if (isTagId()) ip = filterTags(server_tag_id)
         }
@@ -530,7 +532,7 @@ const SuiteDrawer = (props: any, ref: any) => {
             keyboard={false}
             title={
                 <div>
-                    <div>{`${batch ? '批量' : ''}配置Test ${settingType === 'suite' ? 'Suite' : 'Conf'}`}</div>
+                    <div>{`${batch ? formatMessage({id:'select.suite.batch.config'}): formatMessage({id:'select.suite.config'})} ${settingType === 'suite' ? 'Suite' : 'Conf'}`}</div>
                     {
                         !batch &&
                         <NameContent>
@@ -548,10 +550,10 @@ const SuiteDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', padding: '0 8px' }} >
                     <Button onClick={handleClose} style={{ marginRight: 8 }}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                     <Button onClick={hanldeOk} type="primary">
-                        确定
+                        <FormattedMessage id="operation.ok"/>
                     </Button>
                 </div>
             }
@@ -579,7 +581,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                             ((settingType === 'suite' && suiteHasMultip) || caseHasMultip) && (
                                 <div style={{ padding: '0 20px 8px' }}>
                                     <Alert
-                                        message="显示多个数值，输入新值覆盖所有，不输入则保留原值"
+                                        message={<FormattedMessage id="select.suite.vertical.message"/>}
                                         type="warning"
                                         showIcon
                                         style={{ fontSize: 12, padding: '5px 10px' }}
@@ -607,7 +609,9 @@ const SuiteDrawer = (props: any, ref: any) => {
 
                         {
                             (contrl.includes('variable') && checked && settingType === 'case') &&
-                            <Form.Item label="变量" className={'drawer_padding'}>
+                            <Form.Item 
+                                label={<FormattedMessage id="select.suite.variable"/>}
+                                className={'drawer_padding'}>
                                 <Form.List
                                     name="env_info"
                                 >
@@ -627,8 +631,8 @@ const SuiteDrawer = (props: any, ref: any) => {
                                                           title={
                                                             (evn[index]?.name || evn[index]?.des) ?
                                                             <Space direction="vertical">
-                                                                {!!evn[index]?.name && <RowItem label="变量名：" value={evn[index]?.name} width={180}/>}
-                                                                {!!evn[index]?.des && <RowItem label="变量说明：" value={evn[index]?.des} width={165}/>}
+                                                                {!!evn[index]?.name && <RowItem label={formatMessage({id: 'select.suite.variable.name'})} value={evn[index]?.name} width={180}/>}
+                                                                {!!evn[index]?.des && <RowItem label={formatMessage({id: 'select.suite.variable.desc'})} value={evn[index]?.des} width={165}/>}
                                                             </Space>
                                                             :
                                                             null
@@ -646,7 +650,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                                                             name={[field.name, 'val']}
                                                             fieldKey={[field.fieldKey, 'val']}
                                                         >
-                                                            <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || "值"} />
+                                                            <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || formatMessage({id: 'select.suite.value'}) } />
                                                         </Form.Item>
                                                     </Space>
                                                 )
@@ -660,13 +664,13 @@ const SuiteDrawer = (props: any, ref: any) => {
                         {
                             (contrl.includes('reboot') && checked) && (
                                 <Form.Item
+                                    label={<FormattedMessage id="select.suite.need_reboot"/>}
                                     name="need_reboot"
-                                    label="执行前重启"
                                     className={'drawer_padding'}
                                 >
                                     <Radio.Group>
-                                        <Radio value={true}>是</Radio>
-                                        <Radio value={false}>否</Radio>
+                                        <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                                        <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             )
@@ -677,25 +681,25 @@ const SuiteDrawer = (props: any, ref: any) => {
                             <>
                                 <Form.Item
                                     name="setup_info"
-                                    label="执行前脚本"
+                                    label={<FormattedMessage id="select.suite.setup_info"/>}
                                     className={'drawer_padding'}
                                 >
                                     <Input.TextArea
                                         rows={4}
                                         placeholder={
-                                            multipInfo.setup_info ? '已配置多种脚本，请谨慎操作' : '请输入'
+                                            multipInfo.setup_info ? formatMessage({id: 'select.suite.setup_info.placeholder'}) : formatMessage({id: 'select.suite.please.enter'})
                                         }
                                     />
                                 </Form.Item>
                                 <Form.Item
                                     name="cleanup_info"
-                                    label="执行后脚本"
+                                    label={<FormattedMessage id="select.suite.cleanup_info"/>}
                                     className={'drawer_padding'}
                                 >
                                     <Input.TextArea
                                         rows={4}
                                         placeholder={
-                                            multipInfo.cleanup_info ? '已配置多种脚本，请谨慎操作' : '请输入'
+                                            multipInfo.cleanup_info ? formatMessage({id: 'select.suite.cleanup_info.placeholder'}) : formatMessage({id: 'select.suite.please.enter'})
                                         }
                                     />
                                 </Form.Item>
@@ -709,12 +713,12 @@ const SuiteDrawer = (props: any, ref: any) => {
 
                         <Form.Item
                             name="priority"
-                            label={<QusetionIconTootip title="执行优先级" desc="执行优先级范围1-20,数值越大优先级级越高" />}
+                            label={<QusetionIconTootip title={formatMessage({id: 'select.suite.priority'})} desc={formatMessage({id: 'select.suite.priority.desc'})} />}
                             className={'drawer_padding'}
                         >
                             <InputNumber
                                 style={{ width: '100%' }} min={0} step={1} max={20}
-                                placeholder={caseFrom?.priority?.length > 1 ? '多个数值' : '请输入'}
+                                placeholder={caseFrom?.priority?.length > 1 ? formatMessage({id: 'select.suite.multiple.values'}): formatMessage({id: 'select.suite.please.enter'})}
                             />
                         </Form.Item>
                     </Form>

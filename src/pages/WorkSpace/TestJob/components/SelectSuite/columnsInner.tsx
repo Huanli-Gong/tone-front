@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, Tooltip } from 'antd'
 import { MinusCircleOutlined } from '@ant-design/icons'
 import { noop, isNull } from 'lodash'
+import { FormattedMessage, getLocale } from 'umi'
 import styles from './style.less'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -16,6 +17,7 @@ interface ColumnsProp {
     dataSource: any,
     run_mode: string,
     width: number
+    formatMessage: any,
 }
 
 export default (props: ColumnsProp) => {
@@ -27,8 +29,10 @@ export default (props: ColumnsProp) => {
         onDataSourceChange = noop,
         dataSource,
         run_mode = '',
-        width
+        width,
+        formatMessage,
     } = props
+    
     const onRemove = (key: string) => {
         const list = dataSource.filter(
             (item: any) => {
@@ -64,19 +68,18 @@ export default (props: ColumnsProp) => {
     }
 
     const ip = {
-        title: '机器',
+        title: <FormattedMessage id="select.suite.the.server" />,
         ellipsis: {
             shwoTitle: false,
         },
         width: 150,
         render: (_: any, row: any) => {
+            const random = formatMessage({id: "select.suite.random" })
             const { server_tag_id } = row
             if (server_tag_id && server_tag_id.length > 0) {
-                const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : '随机'
+                const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : random
                 return (
-                    <Tooltip placement="topLeft" title={tagList} >
-                        {tagList}
-                    </Tooltip >
+                    <Tooltip placement="topLeft" title={tagList}>{tagList}</Tooltip>
                 )
             }
 
@@ -87,48 +90,44 @@ export default (props: ColumnsProp) => {
                     </Tooltip>
                 )
             }
-
-            return (
-                <Tooltip placement="topLeft" title={row.ip || '随机'}>
-                    {row.ip || '随机'}
-                </Tooltip>
-            )
+            const tempIp = !['随机'].includes(row.ip) ? row.ip : random
+            return <Tooltip placement="topLeft" title={tempIp}>{tempIp}</Tooltip>
         },
     }
 
     const repeat = {
-        title: 'repeat',
+        title: 'Repeat',
         dataIndex: 'repeat',
         width: 80,
     }
 
     const reboot = {
-        title: '重启',
+        title: <FormattedMessage id="select.suite.restart"/>,
         dataIndex: 'reboot',
         // className: styles.action,
-        render: (_: any, row: any) => row.need_reboot ? '是' : '否',
+        render: (_: any, row: any) => row.need_reboot ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
         width: 80,
     }
 
     const script = {
-        title: '脚本',
+        title: <FormattedMessage id="select.suite.script"/>,
         width: 100,
         dataIndex: 'script',
         // className: styles.var,
         render: (_: any, row: any) => row.setup_info || row.cleanup_info ?
-            <PopoverEllipsis title={`[重启前]:${row.setup_info || '-'}，[重启后]:${row.cleanup_info || '-'}`} width={'150px'}></PopoverEllipsis>
+            <PopoverEllipsis title={`${formatMessage({id: 'select.suite.before.restart'})}:${row.setup_info || '-'}，${formatMessage({id: 'select.suite.after.restart'})}:${row.cleanup_info || '-'}`} width={'150px'}></PopoverEllipsis>
             : '-'
     }
 
     const monitor = {
-        title: '监控',
+        title: <FormattedMessage id="select.suite.monitor"/>,
         dataIndex: 'monitor',
-        render: (_: any, row: any) => row.console === undefined ? '-' : row.console ? '是' : '否',
+        render: (_: any, row: any) => row.console === undefined ? '-' : row.console ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
         width: 100,
     }
 
     const variable = {
-        title: '变量',
+        title: <FormattedMessage id="select.suite.variable"/>,
         dataIndex: 'variable',
         width: 150,
         render: (_: number, row: any) => {
@@ -145,15 +144,15 @@ export default (props: ColumnsProp) => {
     }
 
     const priority = {
-        title: '执行优先级',
+        title: <FormattedMessage id="select.suite.priority"/>,
         dataIndex: 'priority',
-        width: 150,
+        width: 80,
     }
 
     const option = {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation"/>,
         dataIndex: 'title',
-        width: 65,
+        width: 100,
         fixed: 'right',
         render: (_: any, row: any, index: number) => (
             !disabled &&
@@ -163,7 +162,7 @@ export default (props: ColumnsProp) => {
                     style={{ padding: 0, height: 'auto' }}
                     onClick={() => openCase(index, row)}
                 >
-                    配置
+                    <FormattedMessage id="select.suite.config"/>
                 </Button>
                 <MinusCircleOutlined
                     className={styles.remove}
@@ -178,7 +177,6 @@ export default (props: ColumnsProp) => {
             ...name,
             fixed: 'left',
         }, ip, repeat]
-
         if ('reboot' in contrl) columns.push(reboot)
         if ('script' in contrl) columns.push(script)
         if ('monitor' in contrl) columns.push(monitor)
@@ -189,6 +187,7 @@ export default (props: ColumnsProp) => {
             ...option,
             fixed: 'right',
         })
+
         const resultColumnsWidth = columns.reduce((pre: any, cur: any) => pre += cur.width, 0)
         const checkedWidth = width - 8
         if (resultColumnsWidth < checkedWidth) {
@@ -222,7 +221,6 @@ export default (props: ColumnsProp) => {
                 return pre.concat({ ...cur, width: elseColumnWidth })
             }, [])
         }
-
         return newColumns
     }
 }
