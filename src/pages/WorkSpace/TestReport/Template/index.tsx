@@ -724,8 +724,11 @@ const TemplatePage = (props: any) => {
                                 <ProjectTitle id="test_data">
                                     测试数据
                                 </ProjectTitle>
-                                <RenderTestBody testType="performance" />
-                                <RenderTestBody testType="functional" />
+                                {
+                                    ["performance", "functional"].map((i) => (
+                                        <RenderTestBody key={i} testType={i} />
+                                    ))
+                                }
                             </div>
                         </ReportBody>
                     </ReportBodyContainer>
