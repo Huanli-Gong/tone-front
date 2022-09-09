@@ -171,7 +171,7 @@ const ReportTestPref: React.FC<any> = (props) => {
         setNum(i)
         setArrowStyle(suite.suite_id)
 
-        const compareTerms = ['decline', 'increase', 'normal', 'invalid']
+        const compareTerms = ['decline', 'increase', 'normal', 'invalid', 'na']
         const endList = suite.conf_list
             .reduce((pre: any[], cur: any) => {
                 return pre.concat({
