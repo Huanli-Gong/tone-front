@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useRef, memo, useMemo } from 'react';
 import { Popconfirm, Empty, Row, Button } from 'antd';
+import { useIntl, FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
 import ReportTestFunc from './ReportTestFunc';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
@@ -51,12 +52,12 @@ const GroupBarWrapper: React.FC<any> = (props) => {
                 width={width}
                 y={top - testOffset - floatRow.offsetTop}
             >
-                <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
-                    <Group>
-                        <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
-                        <Identify envData={envData} group={groupLen} isData={true} />
-                    </Group>
-                </Summary>
+                 <Summary style={{ border: 'none', paddingLeft: 34, paddingRight: 31 }}>
+                        <Group>
+                            <PerfGroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name"/></PerfGroupTitle>
+                            <Identify envData={envData} group={groupLen} isData={true}/>
+                        </Group>
+                    </Summary>
             </GroupBar>
         )
     } else {
@@ -65,6 +66,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 }
 
 const ReportTestPref = () => {
+    const { formatMessage } = useIntl()
     const { btnState, obj, setObj, envData, domainResult, groupLen, isOldReport } = useContext(ReportContext)
     const testDataRef = useRef(null)
     const groupRowRef = useRef<any>(null)
@@ -85,7 +87,7 @@ const ReportTestPref = () => {
     }
 
     useEffect(() => {
-        setBtnName(btn ? '图表模式' : '列表模式')
+        setBtnName(btn ? formatMessage({id: 'report.chart.btn'}): formatMessage({id: 'report.table.btn'}))
     }, [btn])
 
     useEffect(() => {
@@ -127,7 +129,7 @@ const ReportTestPref = () => {
     }, [dataSource])
 
     return (
-        <ModuleWrapper
+        <ModuleWrapper 
             style={{
                 width: groupLen > 3 ? groupLen * 390 : 1200,
                 position: 'relative'
@@ -136,11 +138,11 @@ const ReportTestPref = () => {
             id="test_data"
             className="position_mark"
         >
-            <SubTitle><span className="line"></span>测试数据</SubTitle>
+            <SubTitle><span className="line"></span><FormattedMessage id="report.test.data"/></SubTitle>
             <Summary ref={groupRowRef} style={{ paddingLeft: 34, paddingRight: 31 }}>
                 <Group>
-                    <PerfGroupTitle gLen={groupLen}>对比组名称</PerfGroupTitle>
-                    <Identify envData={envData} group={groupLen} isData={true} />
+                    <PerfGroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name"/></PerfGroupTitle>
+                    <Identify envData={envData} group={groupLen} isData={true}/>
                 </Group>
             </Summary>
             <GroupBarWrapper
@@ -153,13 +155,13 @@ const ReportTestPref = () => {
                 (domainResult.is_default || (!domainResult.is_default && domainResult.need_perf_data)) &&
                 <>
                     <Row justify='space-between'>
-                        <TestDataTitle>性能测试</TestDataTitle>
+                        <TestDataTitle><FormattedMessage id="performance.test"/></TestDataTitle>
                         <Button onClick={switchMode} style={{ marginTop: 12 }}>{btnName}</Button>
                     </Row>
                     <TestWrapper id="perf_item" className="position_mark">
                         {
                             Array.isArray(dataSource) && !!dataSource.length ?
-                                dataSource.map((item: any, idx: number) => (
+                                dataSource?.map((item: any, idx: number) => (
                                     <div key={idx}>
                                         {
                                             item.is_group ?
@@ -176,10 +178,10 @@ const ReportTestPref = () => {
                                                             />
                                                         </TestItemText>
                                                         <Popconfirm
-                                                            title='确认要删除吗！'
+                                                            title={<FormattedMessage id="delete.prompt" />}
                                                             onConfirm={() => handleDelete('item', item.name, item.rowKey)}
-                                                            cancelText="取消"
-                                                            okText="删除"
+                                                            cancelText={<FormattedMessage id="operation.cancel" />}
+                                                            okText={<FormattedMessage id="operation.delete" />}
                                                         >
                                                             {btnState && <CloseBtn />}
                                                         </Popconfirm>

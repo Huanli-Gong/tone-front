@@ -1,4 +1,5 @@
 import React, { useContext, memo, useMemo } from 'react';
+import { useIntl, FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
 import { Space, Tooltip, Typography } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
@@ -21,6 +22,7 @@ import {
 } from '../ReportUI'
 
 const ReportSummary = () => {
+    const { formatMessage } = useIntl()
     const { logoData, envData, domainResult, groupLen, baselineGroupIndex } = useContext(ReportContext)
     const conversionNum = (val: any) => {
         if (val == 0) {
@@ -35,7 +37,7 @@ const ReportSummary = () => {
     const RenderPerfItem: React.FC<any> = () => (
         Array.isArray(logoData) && !!logoData.length ?
             <Result>
-                <PerfResultTitle gLen={groupLen}>性能测试</PerfResultTitle>
+                <PerfResultTitle gLen={groupLen}><FormattedMessage id="performance.test"/></PerfResultTitle>
                 {
                     logoData.map((item: any, idx: number) => {
                         const { perfAll, increase, decline } = item.perf_data || item
@@ -43,15 +45,15 @@ const ReportSummary = () => {
                             <PerfResultData gLen={groupLen} key={idx}>
                                 <div style={{ display: 'flex', margin: '18px 0' }}>
                                     <Statistical>
-                                        <i className="logo">总计</i><br />
+                                        <i className="logo"><FormattedMessage id="report.all"/></i><br />
                                         <b className="all">{conversionNum(perfAll)}</b>
                                     </Statistical>
                                     <Statistical>
-                                        <i className="logo">上升</i><br />
+                                        <i className="logo"><FormattedMessage id="report.increase"/></i><br />
                                         <b className="up">{conversionNum(increase)}</b>
                                     </Statistical>
                                     <Statistical >
-                                        <i className="logo">下降</i><br />
+                                        <i className="logo"><FormattedMessage id="report.decline"/></i><br />
                                         <b className="down">{conversionNum(decline)}</b>
                                     </Statistical>
                                 </div>
@@ -65,7 +67,7 @@ const ReportSummary = () => {
     const RenderFuncItem: React.FC<any> = () => (
         Array.isArray(logoData) && !!logoData.length ?
             <Result>
-                <FuncResultTitle gLen={groupLen}>功能测试</FuncResultTitle>
+                <FuncResultTitle gLen={groupLen}><FormattedMessage id="functional.test"/></FuncResultTitle>
                 {
                     logoData.map((item: any, idx: number) => {
                         const { funcAll, success, fail } = item.func_data || item
@@ -73,15 +75,15 @@ const ReportSummary = () => {
                             <FuncResultData gLen={groupLen} key={idx}>
                                 <div style={{ display: 'flex', margin: '18px 0' }}>
                                     <Statistical >
-                                        <i className="logo">总计</i><br />
+                                        <i className="logo"><FormattedMessage id="report.all"/></i><br />
                                         <b className="all">{conversionNum(funcAll)}</b>
                                     </Statistical>
                                     <Statistical >
-                                        <i className="logo">通过</i><br />
+                                        <i className="logo"><FormattedMessage id="report.success"/></i><br />
                                         <b className="up">{conversionNum(success)}</b>
                                     </Statistical>
                                     <Statistical>
-                                        <i className="logo">失败</i><br />
+                                        <i className="logo"><FormattedMessage id="report.fail"/></i><br />
                                         <b className="down">{conversionNum(fail)}</b>
                                     </Statistical>
                                 </div>
@@ -95,7 +97,7 @@ const ReportSummary = () => {
 
     const PerfFlag = useMemo(() => {
         let baseIndex = baselineGroupIndex === 0 ? 1 : 0
-        return JSON.stringify(logoData[baseIndex].pref_data) !== '{}'
+        return JSON.stringify(logoData[baseIndex]?.pref_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
     const FuncFlag = useMemo(() => {
@@ -107,19 +109,19 @@ const ReportSummary = () => {
             <SubTitle><span className="line"></span>Summary</SubTitle>
             <Summary>
                 <Group>
-                    <GroupTitle gLen={groupLen}>对比组名称</GroupTitle>
+                    <GroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name"/></GroupTitle>
                     {
                         Array.isArray(envData) && !!envData.length && envData.map((item: any, idx: number) => {
                             return (
                                 <GroupData gLen={groupLen} key={idx}>
                                     <Space>
                                         {item.is_job ?
-                                            item.is_base && <Tooltip title="基准组">
+                                            item.is_base && <Tooltip title={formatMessage({id: 'report.benchmark.group'}) }>
                                                 <BaseIcon style={{ marginRight: 4, marginTop: 17 }} />
                                             </Tooltip> :
-                                            item.is_base && <Tooltip title="基线组">
+                                            item.is_base && <Tooltip title={formatMessage({id: 'report.baseline.group'}) }>
                                                 <BaseLine style={{ marginRight: 4, marginTop: 17 }} />
-                                                <Typography.Text>（测试基线）</Typography.Text>
+                                                <Typography.Text><FormattedMessage id="report.test.baseline"/></Typography.Text>
                                             </Tooltip>
 
                                         }

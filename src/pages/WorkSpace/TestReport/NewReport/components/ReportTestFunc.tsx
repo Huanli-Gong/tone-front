@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { Empty, Popconfirm } from 'antd';
+import { useIntl, FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
 import { ReactComponent as TestGroupIcon } from '@/assets/svg/Report/TestGroup.svg';
 import FuncIndex from './TestDataChild/FuncReview';
@@ -15,6 +16,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = () => {
+    const { formatMessage } = useIntl()
     const { obj, setObj, domainResult, btnState, routeName, isOldReport } = useContext(ReportContext)
 
     const data = useMemo(() => {
@@ -23,20 +25,20 @@ const ReportTestFunc: React.FC<any> = () => {
             return data
         }
     }, [domainResult])
-    
+
     const [dataSource, setDataSource] = useState<any>([])
 
     useEffect(() => {
         setDataSource(data)
     }, [data])
-    
+
     /* 
         ** 删除测试项 测试组
     */
     const handleDelete = (name: string, domain: any, rowKey: any) => {
         setDataSource(deleteMethod(dataSource,name,domain,rowKey))
     }
-    
+
     // 保存报告数据整理
     useEffect(() => {
         let new_func_data: any = []
@@ -67,7 +69,7 @@ const ReportTestFunc: React.FC<any> = () => {
 
     return (
         <>
-            <TestDataTitle>功能测试</TestDataTitle>
+            <TestDataTitle><FormattedMessage id="functional.test"/></TestDataTitle>
             <TestWrapper id="func_item" className="position_mark">
                 {/* 有组有项 */}
                 {
@@ -92,10 +94,10 @@ const ReportTestFunc: React.FC<any> = () => {
                                                     {
                                                         btnState &&
                                                         <Popconfirm
-                                                            title='确认要删除吗！'
+                                                            title={<FormattedMessage id="delete.prompt" />}
                                                             onConfirm={() => handleDelete('item', item.name, item.rowKey)}
-                                                            cancelText="取消"
-                                                            okText="删除"
+                                                            cancelText={<FormattedMessage id="operation.cancel" />}
+                                                            okText={<FormattedMessage id="operation.delete" />}
                                                         >
                                                             <CloseBtn />
                                                         </Popconfirm>

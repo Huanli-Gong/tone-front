@@ -128,7 +128,6 @@ const text =  {
   'test.server': 'Server',
   'stage': 'Steps',
   'output.results': 'Output',
-  'copy.success': 'Copy success',
 
   'test.case': 'Case',
   'put.away.all': 'Collapse All',

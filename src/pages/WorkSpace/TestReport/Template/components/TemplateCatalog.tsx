@@ -1,6 +1,6 @@
 import React, { memo, useState, useMemo } from 'react'
 import { ReactComponent as CatalogCollapsed } from '@/assets/svg/TestReport/collapsed.svg'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { Typography, Space, Tree, Row } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import produce from 'immer'
@@ -12,10 +12,10 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 const TemplateCatalog = (props: any) => {
+    const { formatMessage } = useIntl()
     const { dataSource, collapsed, contrl, setDataSource, setCollapsed, prefix = "" } = props
     const [count, setCount] = useState<any>(0)
     const [roundHeight, setRoundHeight] = useState<Number>(3)
-
     const containerDom = prefix ? "#report-body-container-preview" : "#report-body-container"
     /* 
             dragOverGapTop 拖拽上
@@ -55,7 +55,7 @@ const TemplateCatalog = (props: any) => {
         return pre.concat(cur)
     }
 
-    const treeDataRefreshRowkey = (i: any) => {
+    const treeDataRefreshRowkey = (i: any, rowkey: string) => {
         if (i.is_group) {
             return {
                 name: i.title,
@@ -102,7 +102,7 @@ const TemplateCatalog = (props: any) => {
 
         return dataArray.map(
             (i: any) => {
-                const name = i === 'perf_item' ? '性能测试' : '功能测试'
+                const name = i === 'perf_item' ? formatMessage({id: 'performance.test'}) : formatMessage({id: 'functional.test'})
                 const show = i === 'perf_item' ? 'need_perf_data' : 'need_func_data'
                 if (dataSource && dataSource[i] && dataSource[show]) {
                     const treeData = dataSource[i].map(
@@ -257,12 +257,12 @@ const TemplateCatalog = (props: any) => {
             <CatalogExpand onClick={() => setCollapsed(!collapsed)} >
                 <CatalogCollapsed />
                 <CatalogExpandInnerIcon>
-                    {collapsed ? <RightOutlined title="展开" /> : <LeftOutlined title="收起" />}
+                    {collapsed ? <RightOutlined title={formatMessage({id: 'operation.expand'})} /> : <LeftOutlined title={formatMessage({id: 'operation.collapse'})} />}
                 </CatalogExpandInnerIcon>
             </CatalogExpand>
             {/* 内容部分 */}
             <CatalogBody>
-                <CatalogTitle><Typography.Text strong>目录</Typography.Text></CatalogTitle>
+                <CatalogTitle><Typography.Text strong><FormattedMessage id="report.catalogue"/></Typography.Text></CatalogTitle>
                 <Row style={{ position: 'relative', paddingLeft: 13, borderLeft: '1px solid #e5e5e5' }} id="left-catalog-wrapper">
                     {
                         roundHeight > 0 &&
@@ -274,12 +274,12 @@ const TemplateCatalog = (props: any) => {
                     <Space direction="vertical" style={{ width: '100%' }}>
                         {
                             [
-                                ["need_test_background", "测试背景"],
-                                ["need_test_method", "测试方法"],
-                                ["need_test_conclusion", "测试结论"],
+                                ["need_test_background", formatMessage({id: 'report.test.background'}) ],
+                                ["need_test_method", formatMessage({id: 'report.test.method'}) ],
+                                ["need_test_conclusion", formatMessage({id: 'report.test.conclusion'}) ],
                                 ["need_test_summary", "Summary"],
-                                ["need_test_env", "测试环境", "need_env_description"],
-                                ["test_data", "测试数据", "need_func_data"]
+                                ["need_test_env", formatMessage({id: 'report.test.env'}), "need_env_description"],
+                                ["test_data", formatMessage({id: 'report.test.data'}), "need_func_data"]
                             ].map((n: any, i: any) => {
                                 const [field, title, field_2] = n
                                 if (!dataSource) return

@@ -152,7 +152,7 @@ const TestJob: React.FC<any> = (props) => {
             },
         })
         clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'ws.test.job.copy.success'}) )
+            message.success(formatMessage({id: 'request.copy.success'}) )
             e.clearSelection();
         })
         return () => {

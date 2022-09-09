@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
 import { ReportContext } from '../../Provider';
 import { Button, Space, Select, Typography, Popconfirm, Empty, Row, Col } from 'antd';
+import { useIntl, FormattedMessage } from 'umi';
 import { ReactComponent as DelDefault } from '@/assets/svg/Report/delDefault.svg';
 import { ReactComponent as DelHover } from '@/assets/svg/Report/delHover.svg';
+import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg';
 import { ReactComponent as IconArrowBlue } from '@/assets/svg/icon_arrow_blue.svg';
 import { ReactComponent as TestItemIcon } from '@/assets/svg/Report/TestItem.svg';
@@ -36,6 +38,7 @@ import _ from 'lodash';
 const { Option } = Select;
 
 const FuncDataIndex: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { child, name, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, groupLen, wsId, isOldReport } = useContext(ReportContext)
     const [expandKeys, setExpandKeys] = useState<any>([])
@@ -128,7 +131,9 @@ const FuncDataIndex: React.FC<any> = (props) => {
     }
     
     useEffect(() => {
-        setBtnName(btn ? '收起所有' : '展开所有')
+        const expand = formatMessage({id: 'report.btn.expand.all' })
+        const collapse = formatMessage({id: 'report.btn.collapse.all' })
+        setBtnName(btn? expand : collapse)
         setExpandKeys([])
         let ExpandObj: any = []
         dataSource?.map((item: any) => {
@@ -149,7 +154,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 []
         )
     }, [btn, dataSource])
-
+   
     const handleDelete = (name: string, row: any, rowKey: any) => {
         setDataSource(reportDelete(dataSource, name, row, rowKey))
     }
@@ -161,13 +166,13 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 <Space>
                     <Button onClick={OpenSubCase}>{btnName}</Button>
                     <Space>
-                        <Typography.Text>筛选: </Typography.Text>
+                        <Typography.Text><FormattedMessage id="report.filter"/>: </Typography.Text>
                         <Select defaultValue="All" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="All">全部</Option>
-                            <Option value="Pass">成功</Option>
-                            <Option value="Fail">失败</Option>
-                            <Option value="Warn">警告</Option>
-                            <Option value="Skip">跳过</Option>
+                            <Option value="All"><FormattedMessage id="report.all.s"/></Option>
+                            <Option value="Pass"><FormattedMessage id="report.pass"/></Option>
+                            <Option value="Fail"><FormattedMessage id="report.fail"/></Option>
+                            <Option value="Warn"><FormattedMessage id="ws.result.details.warn"/></Option>
+                            <Option value="Skip"><FormattedMessage id="report.skip"/></Option>
                         </Select>
                     </Space>
                 </Space>
@@ -179,10 +184,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
         const { conf, cid } = props;
         return (
             <Popconfirm
-                title='确认要删除吗!'
+                title={<FormattedMessage id="delete.prompt"/>}
                 onConfirm={() => handleDelete('conf', conf, cid)}
-                cancelText="取消"
-                okText="删除"
+                cancelText={<FormattedMessage id="operation.cancel"/>}
+                okText={<FormattedMessage id="operation.delete"/>}
             >
                 {
                     btnState && <PrefDataDel empty={false}>
@@ -205,7 +210,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
         else
             setExpandKeys(expandKeys.concat(id))
     }
-    
+
     // 单个展开
     const ExpandSubcases = (props: any) => {
         const { sub_case_list, conf_id } = props
@@ -253,10 +258,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 <SuiteName>
                     {suite.suite_name}
                     <Popconfirm
-                        title='确认要删除吗！'
+                        title={<FormattedMessage id="delete.prompt"/>}
                         onConfirm={() => handleDelete('suite', suite, idx)}
-                        cancelText="取消"
-                        okText="删除"
+                        cancelText={<FormattedMessage id="operation.cancel"/>}
+                        okText={<FormattedMessage id="operation.delete"/>}
                     >
                         {btnState && <CloseBtn />}
                     </Popconfirm>
@@ -268,12 +273,12 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             <ConfData gLen={groupLen} btnState={btnState} key={i}>
                                 <Row>
                                     <Col span={12}>
-                                        总计/通过/失败
+                                        <FormattedMessage id="report.total/pass/fail"/>
                                     </Col>
                                     {
                                         i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
-                                            对比结果
-                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
+                                            <FormattedMessage id="report.comparison.results"/>
+                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                 {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                             </span>
                                             <DiffTootip />
@@ -386,10 +391,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 {
                     btnState &&
                     <Popconfirm
-                        title='确认要删除吗！'
+                        title={<FormattedMessage id="delete.prompt"/>}
                         onConfirm={() => onDelete(name, funcData.name, funcData.rowKey)}
-                        cancelText="取消"
-                        okText="删除"
+                        cancelText={<FormattedMessage id="operation.cancel"/>}
+                        okText={<FormattedMessage id="operation.delete"/>}
                     >
                         <CloseBtn />
                     </Popconfirm>

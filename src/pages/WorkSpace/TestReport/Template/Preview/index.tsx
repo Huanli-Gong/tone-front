@@ -12,7 +12,7 @@ import TestEnv from './components/TestEnv'
 import FunctionalTest from './components/FunctionalTest'
 import PerformanceTest from './components/Performance'
 import { queryReportTemplateDetails } from '../services'
-import { history, useParams } from 'umi'
+import { history, useParams, useIntl, FormattedMessage } from 'umi'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
 import lodash from 'lodash'
 import produce from 'immer'
@@ -58,7 +58,7 @@ const SettingRow: React.FC<any> = ({ show, title, id, desc }) => (
             <Space direction="vertical">
                 <Typography.Text strong><span className="line"></span>{title}</Typography.Text>
                 <span style={{ whiteSpace:'pre-wrap'}}>
-                    {desc || "此处内容需生成报告后手动填写"}
+                    {desc || <FormattedMessage id="report.content.needs.to.generate"/>}
                 </span>
             </Space>
         </CustomRow> :
@@ -79,6 +79,7 @@ const GroupTableRow = styled(FullRow)`
 const { document }: any = window
 
 const TemplatePreview = (props: any) => {
+    const { formatMessage } = useIntl()
     const { route, dataSet, setIsPreview } = props
     const isCreatePreview = ["TemplateCreate", "TemplateEdit"].includes(route.name)
     const { ws_id, temp_id } = useParams<any>()
@@ -204,8 +205,8 @@ const TemplatePreview = (props: any) => {
                         <Space>
                             <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20 }} /></span>
                             <Space size={0}>
-                                <Typography.Title level={4} >报告模板预览</Typography.Title>
-                                <span style={{ color: 'rgba(0,0,0,0.45)' }}>（以3个对比组为例）</span>
+                                <Typography.Title level={4}><FormattedMessage id="report.template.preview"/></Typography.Title>
+                                <span style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="report.take.3.control.groups"/></span>
                             </Space>
                         </Space>
                     </Row>
@@ -228,24 +229,9 @@ const TemplatePreview = (props: any) => {
                             </Description>
                         </CustomRow>
 
-                        {
-                            [
-                                ["测试背景", "need_test_background", "background_desc"],
-                                ["测试方法", "need_test_method", "test_method_desc"],
-                                ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
-                            ].map((item: any) => {
-                                const [title, field, desc] = item
-                                return (
-                                    <SettingRow
-                                        key={field}
-                                        title={title}
-                                        id={field}
-                                        show={dataSource[field]}
-                                        desc={dataSource[desc]}
-                                    />
-                                )
-                            })
-                        }
+                        <SettingRow title={formatMessage({id: 'report.test.background'})} id={'need_test_background'} show={dataSource?.need_test_background} />
+                        <SettingRow title={formatMessage({id: 'report.test.method'})} id={'need_test_method'} show={dataSource?.need_test_method} />
+                        <SettingRow title={formatMessage({id: 'report.test.conclusion'})} id={'need_test_conclusion'} show={dataSource?.need_test_conclusion} />
 
                         {
                             dataSource.need_test_summary &&
@@ -253,37 +239,37 @@ const TemplatePreview = (props: any) => {
                         }
 
                         <TestEnv
-                            env_description_desc={dataSource?.env_description_desc}
+                         env_description_desc={dataSource?.env_description_desc}
                             need_test_env={dataSource?.need_test_env}
                             need_env_description={dataSource?.need_env_description}
                         />
 
                         <CustomRow >
-                            <div id={'preview_test_data'} style={{ marginBottom: 8 }}><Typography.Text strong>测试数据</Typography.Text></div>
+                            <div id={'preview_test_data'} style={{ marginBottom: 8 }}><Typography.Text strong><FormattedMessage id="report.test.data"/></Typography.Text></div>
                             <GroupTableRow ref={groupRowRef} >
-                                <div><Typography.Text strong>对比组</Typography.Text></div>
+                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text></div>
                                 <div>
                                     <Space>
                                         <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                                        <Typography.Text strong>基准组</Typography.Text>
+                                        <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
                                     </Space>
                                 </div>
-                                <div><Typography.Text strong>对比组1</Typography.Text></div>
-                                <div><Typography.Text strong>对比组2</Typography.Text></div>
+                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text></div>
+                                <div><Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text></div>
                             </GroupTableRow>
                             {
                                 fixedRow.show &&
                                 <div style={{ width: fixedRow.width, background: '#fff', position: 'fixed', top: 50, height: 50, border: '1px solid rgba(0,0,0,0.10)', zIndex: 5, }}>
                                     <GroupTableRow style={{ border: 'none', paddingLeft: 32, paddingRight: 32 }} >
-                                        <div><Typography.Text strong>对比组</Typography.Text></div>
+                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text></div>
                                         <div>
                                             <Space>
                                                 <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                                                <Typography.Text strong>基准组</Typography.Text>
+                                                <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
                                             </Space>
                                         </div>
-                                        <div><Typography.Text strong>对比组1</Typography.Text></div>
-                                        <div><Typography.Text strong>对比组2</Typography.Text></div>
+                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text></div>
+                                        <div><Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text></div>
                                     </GroupTableRow>
                                 </div>
                             }
@@ -296,7 +282,7 @@ const TemplatePreview = (props: any) => {
                                         style={{ marginBottom: 8 }}
                                     >
                                         <Typography.Text strong>
-                                            性能测试
+                                            <FormattedMessage id="performance.test"/>
                                         </Typography.Text>
                                     </div>
                                     <PerformanceTest
@@ -316,7 +302,7 @@ const TemplatePreview = (props: any) => {
                                         style={{ marginBottom: 8 }}
                                     >
                                         <Typography.Text strong>
-                                            功能测试
+                                            <FormattedMessage id="functional.test"/>
                                         </Typography.Text>
                                     </div>
                                     <FunctionalTest

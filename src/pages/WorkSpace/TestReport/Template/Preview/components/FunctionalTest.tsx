@@ -1,5 +1,6 @@
 import React, { memo, useRef } from 'react'
 import { Row, Space, Typography, Select, Button } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import { CaretRightOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as IconArrow } from '@/assets/svg/icon_arrow.svg'
@@ -177,15 +178,15 @@ const TermItem: React.FC<any> = ({ name, list, rowkey, field }) => {
                     <Typography.Text strong style={{ width: titleWidth - 410, display: 'inline-block' }}>{name}</Typography.Text>
                 </Space>
                 <Space >
-                    <Typography.Text>筛选：</Typography.Text>
+                    <Typography.Text><FormattedMessage id="report.filter"/>：</Typography.Text>
                     <Select value={''} style={{ width: 200 }}>
-                        <Select.Option value="">全部</Select.Option>
+                        <Select.Option value=""><FormattedMessage id="report.all.s"/></Select.Option>
                     </Select>
                     <Button onClick={handleOpenAll} disabled={true}>
                         {/* {
                             expandedKeys.length === allCaseKeys.length ? '收起所有' : '展开所有'
                         } */}
-                        展开所有
+                        <FormattedMessage id="report.btn.collapse.all"/>
                     </Button>
                 </Space>
             </TermTitle>
@@ -200,20 +201,20 @@ const TermItem: React.FC<any> = ({ name, list, rowkey, field }) => {
                                 <CaseConfHeader >
                                     <Row>Conf</Row>
                                     <Row>
-                                        总计/通过/失败
+                                        <FormattedMessage id="report.total/pass/fail"/>
                                     </Row>
                                     <Row justify="space-between" >
-                                        <FontText >总计/通过/失败</FontText>
+                                        <FontText><FormattedMessage id="report.total/pass/fail"/></FontText>
                                         <Space style={{ color:'rgba(0,0,0,0.45)'}}>
-                                            <FontText>对比结果</FontText>
+                                            <FontText><FormattedMessage id="report.comparison.results"/></FontText>
                                             <IconArrow />
                                             <QuestionCircleOutlined style={{ color:'rgba(0,0,0,0.45)'}}/>
                                         </Space>
                                     </Row>
                                     <Row justify="space-between">
-                                        <FontText>总计/通过/失败</FontText>
+                                        <FontText><FormattedMessage id="report.total/pass/fail"/></FontText>
                                         <Space>
-                                            <FontText>对比结果</FontText>
+                                            <FontText><FormattedMessage id="report.comparison.results"/></FontText>
                                             <IconArrow />
                                             <QuestionCircleOutlined style={{ color:'rgba(0,0,0,0.45)'}}/>
                                         </Space>

@@ -1,5 +1,6 @@
 import React, { forwardRef, memo, useImperativeHandle, useMemo, useState } from 'react'
 import { Tree, Typography } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 
 import { UnorderedListOutlined, CaretLeftOutlined, CaretRightOutlined } from '@ant-design/icons'
 import styled, { keyframes } from 'styled-components'
@@ -65,7 +66,7 @@ const CatalogContainer = styled.div<CatalogProps>`
     animation: ${({ tigger }) => {
         if (tigger === true) return toLeft
         if (tigger === false) return toRight
-        return
+        return 
     }} linear .2s forwards;
 `
 
@@ -127,11 +128,12 @@ const filterItem = (data: any, name: string) => {
 }
 
 const Catalog = (props: any, ref: any) => {
-    const { onClick, dataSource, onSourceChange } = props
+    const { formatMessage } = useIntl()
+    const { onClick, dataSource, onSourceChange  } = props
     const [tigger, setTigger] = useState<null | boolean>(null)
 
     const DEFAULT_EXPANDED_KEYS = ['0-0', '1-1', '2-2']
-    const [expandedKeys, setExpandedKeys] = useState<any>(DEFAULT_EXPANDED_KEYS)
+    const [ expandedKeys , setExpandedKeys ] = useState<any>(DEFAULT_EXPANDED_KEYS)
 
     const treeData = useMemo(() => {
         const {
@@ -149,18 +151,18 @@ const Catalog = (props: any, ref: any) => {
         let data: any = []
 
         const summary: any = {
-            title: '概述',
+            title: formatMessage({id: 'report.summary'}),
             allowDrop: false,
             name: 'summary',
             children: []
         }
 
-        if (need_test_background)
-            summary.children.push({ allowDrop: false, title: '测试背景', name: 'need_test_background' })
-        if (is_default && need_test_method)
-            summary.children.push({ allowDrop: false, title: '测试方法', name: 'need_test_method' })
-        if (need_test_conclusion)
-            summary.children.push({ allowDrop: false, title: '测试结论', name: 'need_test_conclusion' })
+        if (need_test_background) 
+            summary.children.push({ allowDrop: false, title: formatMessage({id: 'report.test.background'}), name: 'need_test_background' })
+        if (is_default && need_test_method) 
+            summary.children.push({ allowDrop: false, title: formatMessage({id: 'report.test.method'}), name: 'need_test_method' })
+        if (need_test_conclusion) 
+            summary.children.push({ allowDrop: false, title: formatMessage({id: 'report.test.conclusion'}), name: 'need_test_conclusion' })
 
         // need_test_method && summary.children.push({ title: '测试方法' })
         // need_test_summary && summary.children.push({ title: 'Summary' })
@@ -168,26 +170,26 @@ const Catalog = (props: any, ref: any) => {
         data.push(summary)
 
         const testEnv: any = {
-            title: '测试环境',
+            title: formatMessage({id: 'report.test.env'}),
             allowDrop: false,
             name: 'need_test_env',
             children: []
         }
-        if (need_test_env)
-            testEnv.children.push({ title: '测试环境', name: 'need_test_env' })
+        if (need_test_env) 
+            testEnv.children.push({ title: formatMessage({id: 'report.test.env'}), name: 'need_test_env' })
 
         data.push(testEnv)
 
         const testData: any = {
-            title: '测试数据',
+            title: formatMessage({id: 'report.test.data'}),
             name: 'need_test_data',
             children: []
         }
 
         if (need_perf_data) {
             testData.children.push({
-                title: '性能测试',
-                is_group: true,
+                title: formatMessage({id: 'performance.test'}),
+                is_group : true,
                 name: 'perf_item',
                 allowDrop: true,
                 children: perf_item.map((item: any) => filterItem(item, 'perf_item'))
@@ -196,10 +198,10 @@ const Catalog = (props: any, ref: any) => {
 
         if (need_func_data) {
             testData.children.push({
-                title: '功能测试',
+                title: formatMessage({id: 'functional.test'}),
                 name: 'func_item',
                 allowDrop: true,
-                is_group: true,
+                is_group : true,
                 children: func_item.map((item: any) => filterItem(item, 'func_item'))
             })
         }
@@ -257,16 +259,16 @@ const Catalog = (props: any, ref: any) => {
     const refreshRowkey = (i: any) => {
         if (i.is_group) {
             return {
-                name: i.title,
+                name : i.title,
                 rowkey: uuidv4(),
-                is_group: i.is_group,
+                is_group : i.is_group,
                 list: i.children.map((x: any) => refreshRowkey(x))
             }
         }
         return {
-            name: i.title,
+            name : i.title,
             rowkey: uuidv4(),
-            list: i.list
+            list : i.list
         }
     }
 
@@ -295,11 +297,10 @@ const Catalog = (props: any, ref: any) => {
 
                                 const refreshData = newData.map((i: any, index: number) => refreshRowkey(i))
 
-                                console.log(refreshData)
                                 onSourceChange(
                                     produce(
                                         dataSource,
-                                        (draftState: any) => {
+                                        ( draftState: any) => {
                                             draftState[node.name] = refreshData
                                         }
                                     )
@@ -312,21 +313,20 @@ const Catalog = (props: any, ref: any) => {
         }
     }
 
-    const handleSelectTree = (_: any, evt: any) => {
+    const handleSelectTree = ( _ : any , evt : any ) => {
         const { node } = evt
-        const { rowkey, name } = node
+        const { rowkey , name } = node 
 
-        const id = rowkey ? `${name}-${rowkey}` : `${name}`
-        document.querySelector(`#${id}`)?.scrollIntoView()
-        document.querySelector(`#view-${id}`)?.scrollIntoView()
+        const id = rowkey ? `${ name }-${ rowkey }` : `${ name }`
+        document.querySelector( `#${ id }` )?.scrollIntoView()
+        document.querySelector( `#view-${id}` )?.scrollIntoView()
     }
 
     return (
         <CatalogContainer tigger={tigger}>
             <CatalogTag onClick={onClick} >
                 <UnorderedListOutlined />
-                <Typography.Text>目</Typography.Text>
-                <Typography.Text>录</Typography.Text>
+                <Typography.Text><FormattedMessage id="report.catalogue"/></Typography.Text>
                 {
                     tigger ?
                         <CaretRightOutlined /> :

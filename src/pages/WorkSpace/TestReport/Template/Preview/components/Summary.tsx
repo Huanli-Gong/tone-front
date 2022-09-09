@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
-import { Typography, Row, Space } from 'antd'
+import { Typography, Row , Space } from 'antd'
 import styled from 'styled-components'
+import { useIntl, FormattedMessage } from 'umi'
 import { PreviewTableTr, FullRow, CustomRow } from '../styled'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
 
@@ -56,49 +57,49 @@ const GroupRow = styled(FullRow)`
 
 const PerfCount = () => (
     <SummaryCount>
-        <div><Typography.Text>总计</Typography.Text><Typography.Text>-</Typography.Text></div>
-        <div><Typography.Text>上升</Typography.Text><Typography.Text>-</Typography.Text></div>
-        <div><Typography.Text>下降</Typography.Text><Typography.Text>-</Typography.Text></div>
+        <div><Typography.Text><FormattedMessage id="report.all"/></Typography.Text><Typography.Text>-</Typography.Text></div>
+        <div><Typography.Text><FormattedMessage id="report.increase"/></Typography.Text><Typography.Text>-</Typography.Text></div>
+        <div><Typography.Text><FormattedMessage id="report.decline"/></Typography.Text><Typography.Text>-</Typography.Text></div>
     </SummaryCount>
 )
 
 const FuncCount = () => (
     <SummaryCount>
-        <div><Typography.Text>总计</Typography.Text><Typography.Text>-</Typography.Text></div>
-        <div><Typography.Text>通过</Typography.Text><Typography.Text>-</Typography.Text></div>
-        <div><Typography.Text>失败</Typography.Text><Typography.Text>-</Typography.Text></div>
+        <div><Typography.Text><FormattedMessage id="report.all"/></Typography.Text><Typography.Text>-</Typography.Text></div>
+        <div><Typography.Text><FormattedMessage id="report.success"/></Typography.Text><Typography.Text>-</Typography.Text></div>
+        <div><Typography.Text><FormattedMessage id="report.fail"/></Typography.Text><Typography.Text>-</Typography.Text></div>
     </SummaryCount>
 )
 
 const GroupTableRow = () => (
     <GroupRow>
         <PreviewTableTr>
-            <Typography.Text strong>对比组</Typography.Text>
+            <Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text>
         </PreviewTableTr>
         <PreviewTableTr>
             <Space align="center">
-                <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                <Typography.Text strong>基准组</Typography.Text>
+                <BaseGroupIcon style={{ transform: 'translateY(2px)'}}/>
+                <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
             </Space>
         </PreviewTableTr>
-        <PreviewTableTr><Typography.Text strong>对比组1</Typography.Text></PreviewTableTr>
-        <PreviewTableTr><Typography.Text strong>对比组2</Typography.Text></PreviewTableTr>
+        <PreviewTableTr><Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text></PreviewTableTr>
+        <PreviewTableTr><Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text></PreviewTableTr>
     </GroupRow>
 )
 
 const Summary = (props: any) => {
     return (
-        <CustomRow id={'preview_need_test_summary'}>
+        <CustomRow id={'need_test_summary'}>
             <div><Typography.Title level={5} >Summary</Typography.Title></div>
             <GroupTableRow />
             <SummaryTest>
-                <PreviewTableTr><Typography.Text strong >性能测试</Typography.Text></PreviewTableTr>
+                <PreviewTableTr><Typography.Text strong ><FormattedMessage id="performance.test"/></Typography.Text></PreviewTableTr>
                 <PreviewTableTr style={{ padding: 0 }}><PerfCount /></PreviewTableTr>
                 <PreviewTableTr style={{ padding: 0 }}><PerfCount /></PreviewTableTr>
                 <PreviewTableTr style={{ padding: 0 }}><PerfCount /></PreviewTableTr>
             </SummaryTest>
             <SummaryTest>
-                <PreviewTableTr><Typography.Text strong >功能测试</Typography.Text></PreviewTableTr>
+                <PreviewTableTr><Typography.Text strong ><FormattedMessage id="functional.test"/></Typography.Text></PreviewTableTr>
                 <PreviewTableTr style={{ padding: 0 }}><FuncCount /></PreviewTableTr>
                 <PreviewTableTr style={{ padding: 0 }}><FuncCount /></PreviewTableTr>
                 <PreviewTableTr style={{ padding: 0 }}><FuncCount /></PreviewTableTr>

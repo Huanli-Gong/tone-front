@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
+import { useIntl, FormattedMessage } from 'umi';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
@@ -46,6 +47,7 @@ import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMeth
 const { Option } = Select;
 
 const Performance = (props: any) => {
+    const { formatMessage } = useIntl()
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
    
@@ -53,11 +55,6 @@ const Performance = (props: any) => {
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
-    
-
-    
-    
-
     const baseIndex = useMemo(() => {
         if (baselineGroupIndex === -1) return 0
         return baselineGroupIndex
@@ -106,10 +103,10 @@ const Performance = (props: any) => {
         const { conf, cid } = props;
         return (
             <Popconfirm
-                title='确认要删除吗!'
+                title={<FormattedMessage id="delete.prompt" />}
                 onConfirm={() => handleDelete('conf', conf, cid)}
-                cancelText="取消"
-                okText="删除"
+                cancelText={<FormattedMessage id="operation.cancel" />}
+                okText={<FormattedMessage id="operation.delete" />}
             >
                 {
                     btnState && <PrefDataDel empty={true}>
@@ -130,17 +127,17 @@ const Performance = (props: any) => {
         return (
             <TestItemFunc>
                 <Space>
-                    
+
                     {
                         btn && <Space>
-                            <Typography.Text>筛选: </Typography.Text>
+                            <Typography.Text><FormattedMessage id="report.filter"/>: </Typography.Text>
                             <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                                <Option value="all">全部</Option>
-                                <Option value="invalid">无效</Option>
-                                <Option value="volatility">波动大（包括上升、下降）</Option>
-                                <Option value="increase">上升</Option>
-                                <Option value="decline">下降</Option>
-                                <Option value="normal">正常</Option>
+                                <Option value="all"><FormattedMessage id="report.all.s"/></Option>
+                                <Option value="invalid"><FormattedMessage id="report.invalid"/></Option>
+                                <Option value="volatility"><FormattedMessage id="report.volatility"/></Option>
+                                <Option value="increase"><FormattedMessage id="report.increase"/></Option>
+                                <Option value="decline"><FormattedMessage id="report.decline"/></Option>
+                                <Option value="normal"><FormattedMessage id="report.normal"/></Option>
                             </Select>
                         </Space>
                     }
@@ -240,10 +237,10 @@ const Performance = (props: any) => {
                     <SuiteName>
                         {suite.suite_name}
                         <Popconfirm
-                            title='确认要删除吗！'
+                            title={<FormattedMessage id="delete.prompt"/>}
                             onConfirm={() => handleDelete('suite', suite, id)}
-                            cancelText="取消"
-                            okText="删除"
+                            cancelText={<FormattedMessage id="operation.cancel"/>}
+                            okText={<FormattedMessage id="operation.delete"/>}
                         >
                             {btnState && <CloseBtn />}
                         </Popconfirm>
@@ -254,7 +251,7 @@ const Performance = (props: any) => {
                             <Configuration>
                                 {/* {domainResult.perf_conf.need_test_suite_description &&
                                     <SigleWrapper>
-                                        <TestTitle>测试工具</TestTitle>
+                                        <TestTitle><FormattedMessage id="report.test.tools"/></TestTitle>
                                         <TestContent>
                                             <CodeViewer code={suite.tool || suite.test_suite_description} />
                                         </TestContent>
@@ -262,7 +259,7 @@ const Performance = (props: any) => {
                                 } */}
                                 {domainResult.perf_conf.need_test_env &&
                                     <SigleWrapper>
-                                        <TestTitle>环境要求</TestTitle>
+                                        <TestTitle><FormattedMessage id="report.test.env"/></TestTitle>
                                         <TestContent>
                                             <PerfTextArea
                                                 name={suite.test_env}
@@ -274,7 +271,7 @@ const Performance = (props: any) => {
                                 }
                                 {domainResult.perf_conf.need_test_description &&
                                     <SigleWrapper>
-                                        <TestTitle>测试说明</TestTitle>
+                                        <TestTitle><FormattedMessage id="report.test.description"/></TestTitle>
                                         <TestContent>
                                             <PerfTextArea
                                                 name={suite.test_description}
@@ -286,7 +283,7 @@ const Performance = (props: any) => {
                                 }
                                 {domainResult.perf_conf.need_test_conclusion &&
                                     <SigleWrapper>
-                                        <TestTitle>测试结论</TestTitle>
+                                        <TestTitle><FormattedMessage id="report.test.conclusion"/></TestTitle>
                                         <TestContent>
                                             <PerfTextArea
                                                 name={suite.test_conclusion}
@@ -303,7 +300,7 @@ const Performance = (props: any) => {
                                 (suite.conf_list && !!suite.conf_list.length) ? suite.conf_list.map((conf: any, cid: number) => (
                                     <div key={cid}>
                                         <TestConf>
-                                            <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}>Test Conf / 指标 </ConfTitle>
+                                            <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}><FormattedMessage id="report.conf/metric"/></ConfTitle>
                                             {
                                                 allGroupData?.map((cont: any, i: number) => (
                                                     <ConfData gLen={groupLen} key={i} btnState={btnState}>
@@ -318,17 +315,18 @@ const Performance = (props: any) => {
                                                                         </Typography.Text>
                                                                     </EllipsisPulic>
                                                                     <RightResult>
-                                                                        对比结果/跟踪结果
+                                                                        <FormattedMessage id="report.comparison/tracking.results"/>
                                                                         <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                                             {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                                                         </span>
                                                                         <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                             title={
                                                                                 <span style={{ color: 'rgba(0,0,0,0.65)' }}>
-                                                                                    性能测试与BaseGroup差值比例越大差异化越大。<br />规则如下：<br />下降&gt;上升&gt;波动不大&gt;无效
+                                                                                    <FormattedMessage id="report.performance.test.and.baseGroup"/><br />
+                                                                                    <FormattedMessage id="report.rules.as.follows"/>：<br />
+                                                                                    <FormattedMessage id="report.decline"/>&gt;<FormattedMessage id="report.increase"/>&gt;<FormattedMessage id="report.little.fluctuation"/>&gt;<FormattedMessage id="report.invalid"/>
                                                                                 </span>
-                                                                            }
-                                                                        >
+                                                                            }>
                                                                             <QuestionCircleOutlined />
                                                                         </Tooltip>
                                                                     </RightResult>
@@ -446,10 +444,10 @@ const Performance = (props: any) => {
                     />
                 </TestItemText>
                 <Popconfirm
-                    title='确认要删除吗！'
+                    title={<FormattedMessage id="delete.prompt"/>}
                     onConfirm={() => onDelete(name, perData.name, perData.rowKey)}
-                    cancelText="取消"
-                    okText="删除"
+                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                    okText={<FormattedMessage id="operation.delete"/>}
                 >
                     {btnState && <CloseBtn />}
                 </Popconfirm>

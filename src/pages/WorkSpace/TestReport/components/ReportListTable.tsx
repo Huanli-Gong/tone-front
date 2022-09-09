@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin, DatePicker, Row, Col } from 'antd'
 import { OptBtn, TableContainer, ClsResizeTable } from './styled'
-import { useRequest, history, Access, useAccess } from 'umi'
+import { useRequest, history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -16,6 +16,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 
 const { RangePicker } = DatePicker
 const ReportListTable = (props: any) => {
+    const { formatMessage } = useIntl()
     const access = useAccess()
     const { ws_id, tab, tableHeght } = props
     const [autoFocus, setFocus] = useState(true)
@@ -47,7 +48,7 @@ const ReportListTable = (props: any) => {
         try {
             const { code, msg } = await delReportList({ report_id: id })
             if (code === 200) {
-                message.success('删除成功')
+                message.success(formatMessage({id: 'request.delete.success'}) )
                 const num = data.total % data.page_size
                 if (Math.ceil(data.total / data.page_size) === data.page_num && num === 1) // 删除的是最后一页的最后一条且最后一页只有一条
                 {
@@ -63,7 +64,7 @@ const ReportListTable = (props: any) => {
             }
         } catch (e) {
             console.log(e)
-            message.error('删除失败')
+            message.error(formatMessage({id: 'request.delete.failed'}) )
         }
     }
     const styleObj = {
@@ -105,7 +106,7 @@ const ReportListTable = (props: any) => {
 
     const columns: any = [{
         dataIndex: 'name',
-        title: '报告名称',
+        title: <FormattedMessage id="report.columns.name" />,
         width: 200,
         ellipsis: {
             shwoTitle: false,
@@ -117,7 +118,7 @@ const ReportListTable = (props: any) => {
             styleObj={styleObj}
             onConfirm={(val: any) => { updateFetchParams({ name: val }) }}
             currentData={{ tab }}
-            placeholder="支持报告名称"
+            placeholder={formatMessage({id: 'report.columns.name.placeholder'}) }
         />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
@@ -140,7 +141,7 @@ const ReportListTable = (props: any) => {
         }
     },
     {
-        title: '所属项目',
+        title: <FormattedMessage id="report.columns.project" />,
         ellipsis: {
             shwoTitle: false,
         },
@@ -160,7 +161,7 @@ const ReportListTable = (props: any) => {
             shwoTitle: false,
         },
         width: 150,
-        title: '产品版本',
+        title: <FormattedMessage id="report.columns.product_version" />,
         filterDropdown: ({ confirm }: any) => <SelectProductVersion autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleVersiontFilter(val, 'product_version')} page_size={9999} ws_id={ws_id} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
@@ -172,7 +173,7 @@ const ReportListTable = (props: any) => {
     }, {
         dataIndex: 'creator',
         width: 150,
-        title: '创建人',
+        title: <FormattedMessage id="report.columns.creator" />,
         filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator')} page_size={9999} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
@@ -184,7 +185,7 @@ const ReportListTable = (props: any) => {
     }, {
         dataIndex: 'description',
         width: 200,
-        title: '描述',
+        title: <FormattedMessage id="report.columns.description" />,
         ellipsis: {
             shwoTitle: false,
         },
@@ -192,7 +193,7 @@ const ReportListTable = (props: any) => {
     }, {
         dataIndex: 'gmt_modified',
         width: 200,
-        title: '保存时间',
+        title: <FormattedMessage id="report.columns.gmt_modified" />,
         filterDropdown: ({ confirm }: any) => <RangePicker
             size="middle"
             showTime={{ format: 'HH:mm:ss' }}
@@ -212,7 +213,7 @@ const ReportListTable = (props: any) => {
 
     },
     access.WsTourist() && {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation" />,
         width: 200,
         fixed: 'right',
         render(row: any) {
@@ -222,20 +223,20 @@ const ReportListTable = (props: any) => {
                     accessible={access.WsMemberOperateSelf(row.creator_id)}
                     fallback={
                         <Space>
-                            <OptBtn onClick={() => AccessTootip()}>编辑</OptBtn>
-                            <OptBtn onClick={() => AccessTootip()}>删除</OptBtn>
+                            <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></OptBtn>
+                            <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptBtn>
                         </Space>
                     }
                 >
                     <Space>
-                        <OptBtn onClick={() => window.open(`/ws/${ws_id}/test_report/${id}/edit`)}>编辑</OptBtn>
+                        <OptBtn onClick={() => window.open(`/ws/${ws_id}/test_report/${id}/edit`)}><FormattedMessage id="operation.edit" /></OptBtn>
                         <Popconfirm
-                            title="确认删除该报告吗？"
-                            okText="确认"
-                            cancelText="取消"
+                            title={<FormattedMessage id="report.report.delete.prompt" />}
+                            okText={<FormattedMessage id="operation.confirm" />}
+                            cancelText={<FormattedMessage id="operation.cancel" />}
                             onConfirm={_.partial(handleReportDel, id || '')}
                         >
-                            <OptBtn>删除</OptBtn>
+                            <OptBtn><FormattedMessage id="operation.delete" /></OptBtn>
                         </Popconfirm>
                     </Space>
                 </Access>
