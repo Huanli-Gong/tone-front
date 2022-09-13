@@ -200,3 +200,8 @@ export const agentDeploy = async (data: any) => {
     return request('/api/server/toneagent_deploy/', { method: 'post', data })
 }
 // -------------end 机器部署开发--------------
+
+// 内网机器同步状态
+export const stateRefresh = async (data: any) => {
+    return request('/api/server/sync_state/', { method: 'post', data })
+}

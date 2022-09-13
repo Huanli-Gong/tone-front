@@ -123,11 +123,19 @@ export default () => {
         },
         pollingInterval: 5000,
     })
+    
+    const dataSet = ["workspace", "group", "benchmark", "baseline"]
 
     const getWorkspaceData = async () => {
-        const { data, code, msg } = await querySysData()
-        if (code !== 200) return requestCodeMessage(code, msg)
-        setWorkspace(data)
+        setLoading(true)
+        let arr = {};
+        for await (const i of dataSet) {
+            const { data, code, msg } = await querySysData({ data_type: i })
+            if (code !== 200) return requestCodeMessage(code, msg)
+            arr = { ...arr, ...data }
+        }
+        setWorkspace(arr)
+        setLoading(false)
     }
 
     useEffect(() => {

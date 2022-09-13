@@ -12,7 +12,7 @@ import SelectTags from '@/components/Public/SelectTags';
 import Log from '@/components/Public/Log';
 import AloneMachine from './AloneMachine'
 import { StateBadge } from '../../GroupManage/Components'
-import { cloudList, delCloud } from '../service';
+import { cloudList, delCloud, stateRefresh } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
@@ -136,7 +136,7 @@ export default (props: any) => {
                 title: 'IP',
                 dataIndex: 'private_ip', // private_ip
                 width: params.type == '0' ? 0 : 140,
-                ...inputFilterCommonFields(BUILD_APP_ENV ? "pub_ip" : "private_ip"),
+                ...inputFilterCommonFields(BUILD_APP_ENV ? "private_ip" : "pub_ip"),
                 ellipsis: {
                     showTitle: false
                 },
@@ -380,7 +380,7 @@ export default (props: any) => {
                 fixed: 'right',
                 valueType: 'option',
                 dataIndex: 'id',
-                width: params.type == '0' ? 160 : 240,
+                width: params.type == '0' ? 160 : 270,
                 ellipsis: {
                     showTitle: false
                 },
@@ -391,6 +391,7 @@ export default (props: any) => {
                             accessible={access.WsMemberOperateSelf(row.owner)}
                             fallback={
                                 <Space>
+                                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button>
                                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} >编辑</Button>
                                     {
                                         String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>部署</Button>
@@ -403,6 +404,7 @@ export default (props: any) => {
                             }
                         >
                             <Space>
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button>
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
                                 {
                                     String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>
@@ -481,6 +483,16 @@ export default (props: any) => {
             setDeleteDefault(true)
         }
     }
+
+    const handleRefresh = async(row:any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider:'aliyun' })
+        if (code === 200) {
+            message.success('同步机器状态成功')
+            getList()
+        }
+        else requestCodeMessage(code, msg)
+    }
+
     const handleDetail = () => {
         window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
