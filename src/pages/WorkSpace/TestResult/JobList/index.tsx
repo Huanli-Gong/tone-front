@@ -1,12 +1,13 @@
 import React from "react"
 import { Space, Tabs } from "antd"
 import styled from "styled-components"
-import { useAccess, useParams, useRequest, useLocation, useIntl, FormattedMessage } from "umi"
+import { useAccess, useParams, useLocation, useIntl } from "umi"
 import { queryTestResultList } from "../services"
 import StateRow from "./StateRow"
 import ListTable from "./ListTable"
 import FilterRow from "./Filters"
 import { columns } from "./Filters/columns"
+import { useRequest } from "ahooks"
 
 const activeCss = `
     color: #1890FF;
@@ -76,20 +77,22 @@ const BaseTab: React.FC<IProps> = (props) => {
     const [selectionType, setSelectionType] = React.useState()
     const [filter, setFilter] = React.useState(false)
 
-    const { data, refresh } = useRequest(
-        () => queryTestResultList({ query_count: 1, tab, ws_id }),
-        {
-            refreshDeps: [tab],
-            formatResult(response) {
-                return response
-            },
-        }
-    )
+    const [source, setSource] = React.useState()
+
+    const fetchTestJobCount = async () => {
+        const { code, msg, ...rest } = await queryTestResultList({ query_count: 1, tab, ws_id })
+        if (code !== 200) return
+        setSource(rest)
+    }
+
+    React.useEffect(() => {
+        fetchTestJobCount()
+    }, [tab, ws_id])
 
     const defaultTabKeys = [
-        { tab: formatMessage({ id: 'ws.result.list.all.job'}), key: 'all' },
-        access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.my.job'}), key: 'my' },
-        access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.collection'}), key: 'collection' }
+        { tab: formatMessage({ id: 'ws.result.list.all.job' }), key: 'all' },
+        access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.my.job' }), key: 'my' },
+        access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.collection' }), key: 'collection' }
     ].filter(Boolean)
 
     const hanldeTabClick = (tabKey: string) => {
@@ -98,7 +101,7 @@ const BaseTab: React.FC<IProps> = (props) => {
     }
 
     return (
-        <>
+        <React.Fragment>
             <TabsStyled
                 onTabClick={hanldeTabClick}
                 activeKey={tab}
@@ -116,15 +119,15 @@ const BaseTab: React.FC<IProps> = (props) => {
                                                 currentActive={tab === $tab.key}
                                             >
                                                 {
-                                                    data ?
-                                                        data[`${$tab.key === 'all' ? 'ws' : $tab.key}_job`] : 0
+                                                    source ?
+                                                        source[`${$tab.key === 'all' ? 'ws' : $tab.key}_job`] : 0
                                                 }
                                             </TabPaneTitleCount>
                                         </TabPaneTitle>
                                     }
                                 >
                                     <StateRow
-                                        stateCount={data}
+                                        stateCount={source}
                                         pageQuery={pageQuery}
                                         setPageQuery={setPageQuery}
                                         onSelectionChange={setSelectionType}
@@ -134,11 +137,11 @@ const BaseTab: React.FC<IProps> = (props) => {
                                         filter &&
                                         <FilterRow
                                             columns={
-                                                columns.map((item: any)=>
-                                                    ({
-                                                        ...item,
-                                                        placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}`}),
-                                                    })
+                                                columns.map((item: any) =>
+                                                ({
+                                                    ...item,
+                                                    placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}` }),
+                                                })
                                                 )
                                             }
                                             pageQuery={pageQuery}
@@ -154,11 +157,11 @@ const BaseTab: React.FC<IProps> = (props) => {
             </TabsStyled>
             <ListTable
                 pageQuery={pageQuery}
-                countRefresh={refresh}
+                countRefresh={fetchTestJobCount}
                 setPageQuery={setPageQuery}
                 radioValue={selectionType}
             />
-        </>
+        </React.Fragment>
     )
 }
 
