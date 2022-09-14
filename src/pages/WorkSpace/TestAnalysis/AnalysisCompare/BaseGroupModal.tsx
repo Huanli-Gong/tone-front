@@ -571,10 +571,10 @@ export default (props: any) => {
                 {
                     currentStep === 0 && <Space>
                         <Button onClick={handleClose}>取消</Button>
-                        <Access accessible={access.IsWsSetting()}>
+                        {/* <Access accessible={access.IsWsSetting()}>
                             <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
                         </Access>
-                        <Button disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button>
+                        <Button disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button> */}
                         <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)} loading={duplicateLoading}>下一步</Button>
                     </Space>
                 }
@@ -584,9 +584,9 @@ export default (props: any) => {
                         <Button onClick={_.partial(handleStepChange, 0)} style={{ float: 'left' }}>上一步</Button>
                         <Space>
                             <Button onClick={handleClose}>取消</Button>
-                            <Access accessible={access.IsWsSetting()}>
+                            {/* <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
-                            </Access>
+                            </Access> */}
                             <Button type="primary" disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button>
                         </Space>
                     </div>

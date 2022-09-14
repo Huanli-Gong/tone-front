@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Spin, Tag, Tooltip, Row } from 'antd'
 import { history } from 'umi'
 import { switchServerType, switchTestType } from '@/utils/utils'
-import { FrownOutlined } from '@ant-design/icons'
+// import { FrownOutlined } from '@ant-design/icons'
 import { useHeaderContext } from '../Provider'
 
 import styles from './JobType.less'
@@ -19,8 +19,12 @@ const TootipOver: React.FC<any> = ({ children }: any) => {
 }
 
 const JobTypeModal: React.FC<Record<string, any>> = (props) => {
-    const { ws_id, jobTypes, typeFetchLoading } = useHeaderContext()
+    const { ws_id, jobTypes, typesRun, typeFetchLoading } = useHeaderContext()
     const { onOk = () => { }, getData } = props
+
+    useEffect(()=> {
+        typesRun();
+    },[])
 
     const dataSourceCopy = getData(jobTypes)
 

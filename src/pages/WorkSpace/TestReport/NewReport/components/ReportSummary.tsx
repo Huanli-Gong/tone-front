@@ -94,8 +94,11 @@ const ReportSummary = () => {
     )
 
     const PerfFlag = useMemo(() => {
-        let baseIndex = baselineGroupIndex === 0 ? 1 : 0
-        return JSON.stringify(logoData[baseIndex].pref_data) !== '{}'
+        let baseIndex = 0
+        if(logoData.length > 1){
+            baseIndex = baselineGroupIndex === 0 ? 1 : 0
+        }
+        return JSON.stringify(logoData[baseIndex].perf_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
     const FuncFlag = useMemo(() => {
