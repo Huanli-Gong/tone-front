@@ -35,7 +35,7 @@ const ChartTypeChild = (props:any) => {
         <>
             {!btn && <Space style={{ position: 'absolute', right: 12 }}>
                 <Typography.Text><FormattedMessage id="report.view"/>：</Typography.Text>
-                <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
+                <Select value={chartType} style={{ width: 395 }} onChange={hanldeChangeChartType}>
                     <Select.Option value="1"><FormattedMessage id="report.type1"/></Select.Option>
                     <Select.Option value="2"><FormattedMessage id="report.type2"/></Select.Option>
                     <Select.Option value="3"><FormattedMessage id="report.type3"/></Select.Option>

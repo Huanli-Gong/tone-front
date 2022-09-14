@@ -29,6 +29,7 @@ export default (props: any) => {
     const [paddingBottomVal, setPaddingBottomVal] = useState(166)
     const typePath = /^\/help_doc/.test(props.match.path) ? 'help_doc' : 'notice'
     const access = useAccess();
+    const PAGE_DEFAULT_PARAMS: any = { page_size: 1000, doc_type: typePath }
 
     const { loading, data: helpData } = useRequest(
         (data: any) => queryHelpDocList(data),
@@ -41,7 +42,7 @@ export default (props: any) => {
                 }
             },
             initialData: [],
-            defaultParams: [{ page_size: 1000, doc_type: typePath }]
+            defaultParams: [PAGE_DEFAULT_PARAMS]
         }
     )
 
@@ -50,12 +51,12 @@ export default (props: any) => {
         const flag = helpData.some((item: any) => Number(item.id) === Number(help_id))
         if (!flag) {
             id = (helpData.length && helpData[0]['id']) || ''
-
         }
         debounced(id)
         setHelpId(id)
         setHelps(helpData || [])
-    }, [helpData])
+    }, [helpData,help_id])
+
     useEffect(() => {
         odivContenteditable = document.querySelector('div[contenteditable = "false"]')
         odivContenteditable && odivContenteditable.addEventListener('click', handleClickImage, true)

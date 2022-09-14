@@ -260,10 +260,10 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
         <div style={{ textAlign: 'right', }}>
           <Space>
             <Button onClick={handleClose} disabled={loading}>
-              <FormattedMessage id="Drawer.btn.close" />
+              <FormattedMessage id="operation.cancel" />
             </Button>
             <Button onClick={handleOk} type="primary" disabled={submitDisable || loading}>
-              <FormattedMessage id="Drawer.btn.confirm" />
+              <FormattedMessage id="operation.confirm" />
             </Button>
           </Space>
         </div>

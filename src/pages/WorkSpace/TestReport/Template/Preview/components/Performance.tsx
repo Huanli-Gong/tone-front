@@ -2,7 +2,7 @@ import React, { memo, useState, useRef } from 'react'
 import { Row, Typography, Space, Button, Select } from 'antd'
 import styled from 'styled-components'
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import ChartModal from './Chart'
 import { useRefWidth } from '../../hooks'
 import { ReactComponent as GroupIcon } from '@/assets/svg/TestReport/TestGroup.svg'
@@ -105,7 +105,9 @@ const ToolsIssue = styled(FullRow)`
     border-left:1px solid rgba(0,0,0,.1);
 `
 
-const IssueRow = styled(FullRow)`
+const IssueRow = styled(FullRow).attrs({
+    enLocale: getLocale() === 'en-US'
+})`
     height:38px;
     &>div{ 
         height:38px;line-height:38px;
@@ -114,12 +116,12 @@ const IssueRow = styled(FullRow)`
         border-bottom:1px solid rgba(0,0,0,0.1);
     }
     &>div:first-child{
-        width:75px;
+        width: ${props => props.enLocale? 132: 75}px;
         color:rgba(0,0,0,.85);
     }
     &>div:last-child{
         color:rgba(0,0,0,.65);
-        width:calc(100% - 75px);
+        width:calc(100% - ${props => props.enLocale? 132: 75}px);
     }
 `
 
@@ -275,7 +277,7 @@ const TermItem: React.FC<any> = memo(
                     <Typography.Text strong>
                         <Space align="start">
                             <TermIcon style={{ transform: 'translate(0px, 2px)' }} />
-                            <Typography.Text strong style={{ width: titleWidth - 410, display: 'inline-block' }}>
+                            <Typography.Text strong style={{ width: titleWidth - 410 - 30, display: 'inline-block' }}>
                                 {name}
                             </Typography.Text>
                         </Space>
@@ -302,14 +304,14 @@ const TermItem: React.FC<any> = memo(
                                 return (
                                     <Suite key={index}>
                                         <SuiteTitle justify="space-between" style={{ paddingTop: 8, paddingBottom: 8 }}>
-                                            <Typography.Text strong style={{ width: titleWidth - (!modalType ? 410 : 60) }}>
+                                            <Typography.Text strong style={{ width: titleWidth - (!modalType ? 410 + 165 : 60) }}>
                                                 {suite.suite_show_name}
                                             </Typography.Text>
                                             {
                                                 !modalType &&
                                                 <Space style={{ height: 32 }}>
                                                     <Typography.Text><FormattedMessage id="report.view"/>：</Typography.Text>
-                                                    <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
+                                                    <Select value={chartType} style={{ width: 395 }} onChange={hanldeChangeChartType}>
                                                         <Select.Option value={1}><FormattedMessage id="report.type1"/></Select.Option>
                                                         <Select.Option value={2}><FormattedMessage id="report.type2"/></Select.Option>
                                                         <Select.Option value={3}><FormattedMessage id="report.type3"/></Select.Option>

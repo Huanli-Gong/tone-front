@@ -7,6 +7,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { DiffTootip } from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/DiffTootip';
 import { toShowNum, handleCaseColor } from '@/components/AnalysisMethods/index';
 import { JumpResult } from '@/utils/hooks';
+import { useIntl, FormattedMessage } from 'umi'
 const { Option } = Select
 import {
     TestDataTitle,
@@ -29,6 +30,7 @@ import {
 import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { allGroupData, compareResult, baselineGroupIndex, group, wsId } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
@@ -137,7 +139,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
         setBtn(!btn)
     }
     useEffect(() => {
-        setBtnName(btn ? '收起所有' : '展开所有')
+        setBtnName(btn ? formatMessage({id:'analysis.folded.all'}): formatMessage({id:'analysis.expand.all'}))
         setExpandKeys([])
         setExpandKeys(
             btn ?
@@ -160,7 +162,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
             data.map((item: any) => {
                 let conf_list: any = []
                 item.conf_list.map((conf: any) => {
-                    let sub_case_list = conf.sub_case_list.filter((i: any) => i.result == value)
+                    let sub_case_list = conf.sub_case_list.filter((i: any) => i.compare_data.includes(value))
                     conf_list.push({
                         ...conf,
                         sub_case_list
@@ -181,12 +183,12 @@ const ReportTestFunc: React.FC<any> = (props) => {
                 <Space>
                     <Button onClick={OpenSubCase}>{btnName}</Button>
                     <Space>
-                        <Typography.Text>筛选: </Typography.Text>
+                        <Typography.Text><FormattedMessage id="analysis.filter"/>: </Typography.Text>
                         <Select defaultValue="All" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="All">全部</Option>
-                            <Option value="Pass">成功</Option>
-                            <Option value="Fail">失败</Option>
-                            <Option value="Skip">跳过</Option>
+                            <Option value="All"><FormattedMessage id="analysis.all"/></Option>
+                            <Option value="Pass"><FormattedMessage id="analysis.pass"/></Option>
+                            <Option value="Fail"><FormattedMessage id="analysis.fail"/></Option>
+                            <Option value="Skip"><FormattedMessage id="analysis.skip"/></Option>
                         </Select>
                     </Space>
                 </Space>
@@ -197,7 +199,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
         <>
             <Row style={{ maxWidth : document.body.clientWidth - 40 + scrollLeft }}>
                 <Col span={12}>
-                    <TestDataTitle id="func_item">功能测试</TestDataTitle>
+                    <TestDataTitle id="func_item"><FormattedMessage id="functional.test"/></TestDataTitle>
                 </Col>
                 <Col span={12}>
                     <ItemFunc />
@@ -212,31 +214,35 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                     <TestSuite>
                                         <SuiteName>{item.suite_name}</SuiteName>
                                         <TestConf>
-                                            <ConfTitle gLen={group} >Conf</ConfTitle>
-                                            {
-                                                allGroupData?.map((cont: any, i: number) => (
-                                                    <ConfData gLen={group} key={i}>
-                                                        <Row>
-                                                            <Col span={12}>
-                                                                总计/通过/失败
-                                                            </Col>
-                                                            {
-                                                                i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
-                                                                    对比结果
-                                                                    <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor:'pointer' }}>
-                                                                        {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow title="差异化排序" />}
-                                                                    </span>
-                                                                    <DiffTootip />
-                                                                </Col>
-                                                            }
-                                                        </Row>
-                                                    </ConfData>
-                                                ))
+                                            {(item.conf_list && item.conf_list.length) ?
+                                                <>
+                                                    <ConfTitle gLen={group}>Conf</ConfTitle>
+                                                    {allGroupData?.map((cont: any, i: number) => (
+                                                            <ConfData gLen={group} key={i}>
+                                                                <Row>
+                                                                    <Col span={12}>
+                                                                        <FormattedMessage id="analysis.total/pass/fail"/>
+                                                                    </Col>
+                                                                    {
+                                                                        i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
+                                                                            <FormattedMessage id="analysis.comparison.results"/> 
+                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor:'pointer' }}>
+                                                                                {arrowStyle == item.suite_id && num == i ? 
+                                                                                    <IconArrowBlue /> : <IconArrow title={formatMessage({id:'analysis.differentiated.sorting'})} />}
+                                                                            </span>
+                                                                            <DiffTootip />
+                                                                        </Col>
+                                                                    }
+                                                                </Row>
+                                                            </ConfData>
+                                                        ))
+                                                    }
+                                                </> : null
                                             }
                                         </TestConf>
                                         <TestConfWarpper>
-                                            {
-                                                (item.conf_list && item.conf_list.length) ? item.conf_list.map((conf: any, cid: number) => {
+                                            {(item.conf_list && item.conf_list.length) ? 
+                                                item.conf_list.map((conf: any, cid: number) => {
                                                     const expand = expandKeys.includes(conf.conf_id)
                                                     let conf_data = conf.conf_compare_data || conf.compare_conf_list
                                                     return (
@@ -272,7 +278,9 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                             />
                                                         </div>
                                                     )
-                                                }) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                                                }) 
+                                                : 
+                                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                             }
                                         </TestConfWarpper>
                                     </TestSuite>

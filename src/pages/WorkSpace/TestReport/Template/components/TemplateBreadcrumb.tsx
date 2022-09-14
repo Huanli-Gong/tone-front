@@ -21,7 +21,7 @@ const TemplateBreadcrumb = (props: any) => {
                 {
                     route.name === 'TemplateCreate' ?
                         <Breadcrumb.Item>
-                            <FormattedMessage id={`menu.Workspace.TestReport.TemplateCreate`} />
+                            <FormattedMessage id="menu.Workspace.TestReport.TemplateCreate" />
                         </Breadcrumb.Item> :
                         <Breadcrumb.Item>
                             <span>

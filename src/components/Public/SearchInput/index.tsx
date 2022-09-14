@@ -1,7 +1,9 @@
 import React,{ useState, useRef, useEffect } from 'react';
 import {Space, Button, Input,Divider} from 'antd';
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 
 const filterRadio: React.FC<any> = ({confirm,onConfirm,autoFocus,placeholder, styleObj, currentData}) => {
+	const { formatMessage } = useIntl()
 	const [val,setVal] = useState<any>()
 	const input:any = useRef(null);
 	useEffect(() => {
@@ -18,7 +20,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,autoFocus,placeholder, st
 		<div>
         <Search
 		  ref={input}
-          placeholder={placeholder || `请输入`}
+          placeholder={placeholder || formatMessage({id: 'please.enter'}) }
 		  value={val}
 		  onChange={(e:any) => setVal(e.target.value)}
 		  onSearch={(val:any) => {
@@ -44,7 +46,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,autoFocus,placeholder, st
 				size="small"
 				style={{ width: (styleObj && styleObj.button_width) || 75 }}
 			>
-				搜索
+				<FormattedMessage id="operation.search" />
 			</Button>
 			<Button 
 				type="text"
@@ -56,7 +58,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,autoFocus,placeholder, st
 				size="small" 
 				style={{ width: (styleObj && styleObj.button_width) || 75,border:'none' }}
 			>
-				重置
+				<FormattedMessage id="operation.reset" />
 			</Button>
         </Space>
       </div>

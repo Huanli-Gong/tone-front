@@ -72,7 +72,7 @@ const EditSpan: React.FC<Record<string, any>> = (props) => {
     const handleSave = () => {
         /* const state = getEditState()
         onOk(state[rowkey] ? state[rowkey].text : title) */
-        onOk(title)
+        onOk(context)
         removeKey()
     }
 

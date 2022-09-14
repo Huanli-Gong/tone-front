@@ -32,7 +32,7 @@ const text =  {
   'install_un_push': 'Install Not Released',
   'install_build_kernel': 'Build Kernel',
 
-  'env_info.placeholder': 'Format: key = value, multiple separated by English comma or newline',
+  'env_info.placeholder': 'Format: key = value, multiple spaces or line breaks',
   'env_info.li1': 'To define multiple global variables, use spaces and newline segmentation',
   'env_info.li2': 'Must be a combination of letters, numbers and underscores',
   'env_info.li3': 'Support double equal sign in value',

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Row, Col, Form, Select, DatePicker, Card, Button, Empty, Tooltip, message, Descriptions, Spin } from 'antd'
 import moment from 'moment'
-import { useRequest, useLocation, useParams } from 'umi'
+import { useRequest, useLocation, useParams, useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import AnalysisTable from './Table'
 
@@ -64,6 +64,7 @@ const SuiteConfMetric = (props: any) => {
 }
 
 const TabPaneCard: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { query }: any = useLocation()
     const { provider, testType, showType, onChange } = props
@@ -108,7 +109,7 @@ const TabPaneCard: React.FC<any> = (props) => {
         if (form.getFieldValue('project_id')) {
             selectMetricRef.current.show()
         } else {
-            message.error('请先选择项目!!!')
+            message.error(formatMessage({id:'analysis.selected.error'}))
         }
     }
 
@@ -223,10 +224,11 @@ const TabPaneCard: React.FC<any> = (props) => {
                         onFieldsChange={handleFormChange}
                         className={styles.formInlineStyles}
                     >
-                        <Form.Item label="项目" name="project_id" >
+                        <Form.Item label={<FormattedMessage id="analysis.project"/>}
+                            name="project_id" >
                             <Select
                                 style={{ width: 300 }}
-                                placeholder="请选择项目"
+                                placeholder={formatMessage({id:'analysis.project.placeholder'})}
                                 onChange={handleProductChange}
                                 showSearch
                                 filterOption={(input, option: any) =>
@@ -240,19 +242,19 @@ const TabPaneCard: React.FC<any> = (props) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="标签" >
+                        <Form.Item label={<FormattedMessage id="analysis.tag"/>}>
                             <TootipTipRow>
                                 <Form.Item name="tag" initialValue="">
                                     <Select
                                         style={{ width: 300 }}
                                         allowClear
-                                        placeholder="不按标签区分"
+                                        placeholder={formatMessage({id:'analysis.tag.placeholder'})}
                                         showSearch
                                         filterOption={(input, option: any) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
                                     >
-                                        <Select.Option value="">不区分</Select.Option>
+                                        <Select.Option value=""><FormattedMessage id="analysis.indistinguishable"/></Select.Option>
                                         {
                                             tagList.map((i: any) => (
                                                 <Select.Option
@@ -271,7 +273,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                                         color="#fff"
                                         placement="top"
                                         arrowPointAtCenter
-                                        title={'仅分析含有所选标签的Job数据，不区分标签。'}
+                                        title={formatMessage({id:'analysis.only.the.job.data'})}
                                     >
                                         <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }} />
                                     </Tooltip>
@@ -279,7 +281,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                             </TootipTipRow>
                         </Form.Item>
                         <Form.Item
-                            label="日期"
+                            label={<FormattedMessage id="analysis.date"/>}
                             name="time"
                             initialValue={[moment().subtract(29, 'days'), moment().startOf('day')]}
                         >
@@ -287,10 +289,10 @@ const TabPaneCard: React.FC<any> = (props) => {
                             <DatePicker.RangePicker
                                 style={{ width: 240 }}
                                 ranges={{
-                                    '近7天': [moment().subtract(6, 'days'), moment().startOf('day')],
-                                    '近30天': [moment().subtract(29, 'days'), moment().startOf('day')],
-                                    '近60天': [moment().subtract(59, 'days'), moment().startOf('day')],
-                                    '近90天': [moment().subtract(89, 'days'), moment().startOf('day')],
+                                    [formatMessage({id:'analysis.7days'})]: [moment().subtract(6, 'days'), moment().startOf('day')],
+                                    [formatMessage({id:'analysis.30days'})]: [moment().subtract(29, 'days'), moment().startOf('day')],
+                                    [formatMessage({id:'analysis.60days'})]: [moment().subtract(59, 'days'), moment().startOf('day')],
+                                    [formatMessage({id:'analysis.90days'})]: [moment().subtract(89, 'days'), moment().startOf('day')],
                                 }}
                             />
                         </Form.Item>
@@ -308,7 +310,9 @@ const TabPaneCard: React.FC<any> = (props) => {
                         }
                         {
                             testType !== 'functional' &&
-                            <span className={styles.select_left_title}>指标：</span>
+                            <span className={styles.select_left_title}>
+                                <FormattedMessage id="analysis.metric"/>：
+                            </span>
                         }
                         {
                             metricData &&
@@ -327,7 +331,9 @@ const TabPaneCard: React.FC<any> = (props) => {
                                 </span>
                             </Tooltip>
                         }
-                        <Button style={{ padding: 0, marginLeft: 8 }} type="link" onClick={handleSelectMertric}>选择</Button>
+                        <Button style={{ padding: 0, marginLeft: 8 }} type="link" onClick={handleSelectMertric}>
+                            <FormattedMessage id="analysis.select"/>
+                        </Button>
                     </Row>
                 </Col>
             </Row>

@@ -2,16 +2,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Layout, Tabs, Row, Radio, message, Col } from 'antd';
 import styles from './index.less'
-import { useLocation, useParams } from 'umi';
+import { useLocation, useParams, useIntl, FormattedMessage  } from 'umi';
 import TabPaneCard from './components/TabPaneCard'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from 'clipboard'
 import { stringify } from 'querystring';
 import { aligroupServer, aliyunServer } from '@/utils/utils';
 
-const tabData = [{ key: 'performance', tab: '性能分析' }, { key: 'functional', tab: '功能分析' }]
-
 const AnalysisTime: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { query } = useLocation() as any
     const { route } = props
@@ -45,7 +44,12 @@ const AnalysisTime: React.FC<any> = (props) => {
         setShowType(target.value)
         clearModalProvider()
     }
-    
+
+    const tabData = [
+        { key: 'performance', tab: formatMessage({id: 'analysis.performance'}) }, 
+        { key: 'functional', tab: formatMessage({id: 'analysis.functional'}) },
+    ]
+
     const copy = () => {
         const dom = document.createElement("a")
         dom.style.width = "0px";
@@ -62,7 +66,8 @@ const AnalysisTime: React.FC<any> = (props) => {
             text: () => text
         })
         cp.on("success", () => {
-            message.success("已复制到剪切板！")
+
+            message.success(formatMessage({id: 'analysis.copy.to.clipboard'}) )
         })
         dom.click()
         cp.destroy()
@@ -88,16 +93,16 @@ const AnalysisTime: React.FC<any> = (props) => {
                                 {
                                     testType === 'performance' ?
                                         <Radio.Group value={provider} style={{ marginRight: 20 }} onChange={handleProviderChange}>
-                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="aligroup">
-                                                {aligroupServer}
+                                            <Radio.Button style={{ textAlign: 'center' }} value="aligroup">
+                                                {formatMessage({id: 'aligroupServer'})}
                                             </Radio.Button>
-                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="aliyun">
-                                                {aliyunServer}
+                                            <Radio.Button style={{ textAlign: 'center' }} value="aliyun">
+                                                {formatMessage({id: 'aliyunServer'})}
                                             </Radio.Button>
                                         </Radio.Group> :
                                         <Radio.Group value={showType} style={{ marginRight: 20 }} onChange={handleShowTypeChange}>
-                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="pass_rate">通过率</Radio.Button>
-                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="result_trend">结果趋势</Radio.Button>
+                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="pass_rate"><FormattedMessage id="analysis.pass_rate"/></Radio.Button>
+                                            <Radio.Button style={{ width: 120, textAlign: 'center' }} value="result_trend"><FormattedMessage id="analysis.result_trend"/></Radio.Button>
                                         </Radio.Group>
                                 }
                             </Row>

@@ -1,11 +1,12 @@
-import React, { memo, useEffect } from "react"
+import React from "react"
 import { Tooltip, Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
-import { useAccess, Access, useParams, useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useAccess, Access, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
 import lodash from 'lodash'
+import { useRequest } from "ahooks"
 import CommonPagination from '@/components/CommonPagination';
 import {
     queryTestResultList,
@@ -60,16 +61,21 @@ const ListTable: React.FC<IProps> = (props) => {
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
     const [selectRowData, setSelectRowData] = React.useState<any[]>([])
     const rerunRef = React.useRef(null) as any
-    
-    const { data, refresh, loading, mutate } = useRequest(
-        () => queryTestResultList(transQuery(pageQuery)),
-        {
-            formatResult(response) {
-                return response
-            },
-            refreshDeps: [pageQuery]
-        }
-    )
+
+    const [loading, setLoading] = React.useState(true)
+    const [source, setSource] = React.useState(undefined)
+
+    const queryTestList = async () => {
+        setLoading(true)
+        const { code, msg, ...rest } = await queryTestResultList(transQuery(pageQuery))
+        setLoading(false)
+        if (code !== 200) return
+        setSource(rest)
+    }
+
+    React.useEffect(() => {
+        queryTestList()
+    }, [pageQuery])
 
     /* 重置 */
     React.useEffect(() => {
@@ -85,20 +91,16 @@ const ListTable: React.FC<IProps> = (props) => {
 
         if (code !== 200) return requestCodeMessage(code, msg)
 
-        mutate((source: any) => {
-            const { data } = source
-
-            return {
-                ...source,
-                data: data.map((i: any) => {
-                    if (id !== i.id) return i
-                    return {
-                        ...i,
-                        collection: !collection
-                    }
-                })
-            }
-        })
+        setSource((p: any) => ({
+            ...p,
+            data: p.data.map((i: any) => {
+                if (id !== i.id) return i
+                return {
+                    ...i,
+                    collection: !collection
+                }
+            })
+        }))
         countRefresh()
     }
 
@@ -109,8 +111,8 @@ const ListTable: React.FC<IProps> = (props) => {
         const selectRows = selectRowData.filter((obj: any) => obj && Number(obj.id) !== Number(id))
         setSelectedRowKeys(selectedKeys);
         setSelectRowData(selectRows);
-        message.success(formatMessage({id: 'operation.success'}) )
-        refresh()
+        message.success(formatMessage({ id: 'operation.success' }))
+        queryTestList()
         countRefresh()
     }
 
@@ -145,7 +147,7 @@ const ListTable: React.FC<IProps> = (props) => {
             render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
         },
         {
-            title: <FormattedMessage id="ws.result.list.name"/>,
+            title: <FormattedMessage id="ws.result.list.name" />,
             dataIndex: 'name',
             width: 200,
             ellipsis: {
@@ -154,7 +156,7 @@ const ListTable: React.FC<IProps> = (props) => {
             render: (_: any, row: any) => {
                 return (
                     <span>
-                        {row.created_from === 'offline' && <Offline><FormattedMessage id="ws.result.list.offline"/></Offline>}
+                        {row.created_from === 'offline' && <Offline><FormattedMessage id="ws.result.list.offline" /></Offline>}
                         <Tooltip placement="topLeft" title={_}>
                             <Typography.Text
                                 className="result_job_hover_span"
@@ -171,13 +173,13 @@ const ListTable: React.FC<IProps> = (props) => {
             }
         },
         {
-            title: <FormattedMessage id="ws.result.list.state"/>,
+            title: <FormattedMessage id="ws.result.list.state" />,
             dataIndex: 'state',
             width: 120,
             render: (_: any, row: any) => <JobListStateTag {...row} />
         },
         {
-            title: <FormattedMessage id="ws.result.list.test_type"/>,
+            title: <FormattedMessage id="ws.result.list.test_type" />,
             width: locale ? 140 : 80,
             dataIndex: 'test_type',
             ellipsis: true,
@@ -190,11 +192,11 @@ const ListTable: React.FC<IProps> = (props) => {
             title: (
                 <QusetionIconTootip
                     placement="bottomLeft"
-                    title={formatMessage({id: 'ws.result.list.test_type.Tootip'})  }
+                    title={formatMessage({ id: 'ws.result.list.test_type.Tootip' })}
                     desc={
-                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 4, marginBottom:4, paddingLeft:0 }}>
-                            <li><FormattedMessage id="ws.result.list.test_type.desc1"/></li>
-                            <li><FormattedMessage id="ws.result.list.test_type.desc2"/></li>
+                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 4, marginBottom: 4, paddingLeft: 0 }}>
+                            <li><FormattedMessage id="ws.result.list.test_type.desc1" /></li>
+                            <li><FormattedMessage id="ws.result.list.test_type.desc2" /></li>
                         </ul>
                     }
                 />
@@ -223,7 +225,7 @@ const ListTable: React.FC<IProps> = (props) => {
             }
         },
         {
-            title: <FormattedMessage id="ws.result.list.project_id"/>,
+            title: <FormattedMessage id="ws.result.list.project_id" />,
             width: 120,
             dataIndex: 'project_name',
             ellipsis: {
@@ -236,7 +238,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: <FormattedMessage id="ws.result.list.creators"/>,
+            title: <FormattedMessage id="ws.result.list.creators" />,
             width: 80,
             ellipsis: {
                 showTitle: false,
@@ -249,7 +251,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: <FormattedMessage id="ws.result.list.start_time"/>,
+            title: <FormattedMessage id="ws.result.list.start_time" />,
             width: 180,
             dataIndex: 'start_time',
             ellipsis: {
@@ -262,7 +264,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 </Tooltip>
             )
         }, {
-            title: <FormattedMessage id="ws.result.list.completion_time"/>,
+            title: <FormattedMessage id="ws.result.list.completion_time" />,
             width: 180,
             ellipsis: {
                 showTitle: false,
@@ -275,7 +277,7 @@ const ListTable: React.FC<IProps> = (props) => {
             )
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 170 : 170,
             fixed: 'right',
             render: (_: any) => {
@@ -287,24 +289,24 @@ const ListTable: React.FC<IProps> = (props) => {
                             <span
                                 onClick={_.created_from === 'offline' ? undefined : () => rerunRef.current?.show(_)}
                             >
-                                <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}><FormattedMessage id="operation.rerun"/></Typography.Text>
+                                <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}><FormattedMessage id="operation.rerun" /></Typography.Text>
                             </span>
                         </Access>
                         <Access accessible={access.WsTourist()}>
                             <Access
                                 accessible={access.WsMemberOperateSelf(_.creator)}
                                 fallback={
-                                    <span onClick={() => AccessTootip()}><Typography.Text style={commonStyle}><FormattedMessage id="operation.delete"/></Typography.Text></span>
+                                    <span onClick={() => AccessTootip()}><Typography.Text style={commonStyle}><FormattedMessage id="operation.delete" /></Typography.Text></span>
                                 }
                             >
                                 <Popconfirm
-                                    title={<FormattedMessage id="delete.prompt"/>}
+                                    title={<FormattedMessage id="delete.prompt" />}
                                     onConfirm={() => handleDelete(_)}
-                                    okText={<FormattedMessage id="operation.ok"/>}
-                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                    okText={<FormattedMessage id="operation.ok" />}
+                                    cancelText={<FormattedMessage id="operation.cancel" />}
                                 >
                                     <Typography.Text style={commonStyle}>
-                                        <FormattedMessage id="operation.delete"/>
+                                        <FormattedMessage id="operation.delete" />
                                     </Typography.Text>
                                 </Popconfirm>
                             </Access>
@@ -314,7 +316,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 )
             }
         }
-    ].filter(Boolean), [access, ws_id, locale])
+    ].filter(Boolean), [access, ws_id, locale, source, queryTestList, countRefresh])
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
@@ -379,7 +381,7 @@ const ListTable: React.FC<IProps> = (props) => {
             return
         }
         handleResetSelectedKeys()
-        message.success(formatMessage({id: 'operation.success'}) )
+        message.success(formatMessage({ id: 'operation.success' }))
         countRefresh()
         refresh()
     }
@@ -393,7 +395,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const sortStartTime = (sorter: any) => {
         switch (sorter.order) {
             case 'descend':
-                mutate((res: any) => ({
+                setSource((res: any) => ({
                     ...res,
                     data: res?.data.sort(function (a: any, b: any) {
                         return a.start_time < b.start_time ? 1 : -1
@@ -401,7 +403,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 }))
                 break;
             case 'ascend':
-                mutate((res: any) => ({
+                setSource((res: any) => ({
                     ...res,
                     data: res?.data.sort(function (a: any, b: any) {
                         return a.start_time > b.start_time ? 1 : -1
@@ -419,7 +421,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 size="small"
                 rowKey="id"
                 loading={loading}
-                dataSource={data?.data}
+                dataSource={source?.data}
                 columns={columns}
                 pagination={false}
                 rowClassName={styles.result_table_row}
@@ -434,7 +436,7 @@ const ListTable: React.FC<IProps> = (props) => {
             {
                 !loading &&
                 <CommonPagination
-                    total={data?.total}
+                    total={source?.total}
                     largePage={true}
                     currentPage={pageQuery?.page_num}
                     pageSize={pageQuery?.page_size}
@@ -448,16 +450,16 @@ const ListTable: React.FC<IProps> = (props) => {
                 <SelectionRow >
                     <Row justify="space-between" style={{ height: 56, paddingLeft: 24, paddingRight: 24 }} align="middle">
                         <Space>
-                            <span>{formatMessage({id: 'selected.item'}, {data: selectRowData.length})}</span>
+                            <span>{formatMessage({ id: 'selected.item' }, { data: selectRowData.length })}</span>
                         </Space>
                         <Space>
-                            <Button onClick={handleResetSelectedKeys}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleResetSelectedKeys}><FormattedMessage id="operation.cancel" /></Button>
                             <Button
                                 type="primary"
                                 onClick={handleMoreDeleOk}
                                 disabled={!selectedRowKeys.length}
                             >
-                                <FormattedMessage id="ws.result.list.batch.delete"/>
+                                <FormattedMessage id="ws.result.list.batch.delete" />
                             </Button>
                         </Space>
                     </Row>
@@ -479,4 +481,4 @@ const ListTable: React.FC<IProps> = (props) => {
     )
 }
 
-export default memo(ListTable)
+export default ListTable

@@ -14,6 +14,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     const { formatMessage } = useIntl()
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
+    const { baseline, project, baseline_job } = contrl
     const [jobList, setJobList] = useState<any>([])
     const defaultParams = {
         page_num: 1,
@@ -38,15 +39,8 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     useEffect(() => {
         if ('baseline' in contrl) getBaselineList()
         if ('project' in contrl) getProjectList()
-        if ('baseline_job' in contrl) {
-            let params = defaultParams
-            if (JSON.stringify(template) !== '{}') {
-                const { baseline_job_id } = template
-                params = {...params , search: baseline_job_id}
-            }
-            getJobList(params)
-        }
-    }, [contrl, disabled, template])
+        if ('baseline_job' in contrl)  getJobList(defaultParams)
+    }, [baseline, project, baseline_job, disabled])
 
     useImperativeHandle(
         onRef,
@@ -60,7 +54,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
             }
         }),
     )
-    
+
     useEffect(() => {
         if (projectListDataRef) projectListDataRef.current = projectList
         if (baselineListDataRef) baselineListDataRef.current = baselineList
@@ -134,7 +128,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                         message: formatMessage({id: 'job.form.job_name.limit.message'})
                     }]}
                 >
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},) } disabled={disabled} />
+                    <Input autoComplete="off" title={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},)} placeholder={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},) } disabled={disabled} />
                 </Form.Item>
             }
             {

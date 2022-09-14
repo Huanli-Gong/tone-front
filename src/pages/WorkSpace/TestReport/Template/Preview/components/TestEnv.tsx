@@ -32,7 +32,7 @@ const EnvTableRow: React.FC<any> = ({ title }) => (
 )
 
 const GroupTableRow = () => (
-    <FullRow style={{ marginBottom: 8, borderBottom: '1px solid rgba(0,0,0,0.10)' }}>
+    <FullRow style={{ marginBottom: 8, borderBottom: '1px solid rgba(0,0,0,0.10)' }} height={48}>
         <PreviewTableTr><Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text></PreviewTableTr>
         <PreviewTableTr>
             <Space>

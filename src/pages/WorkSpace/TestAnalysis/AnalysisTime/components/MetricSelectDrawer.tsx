@@ -1,13 +1,14 @@
 import React, { forwardRef, useImperativeHandle, useState, useCallback, useMemo, useEffect } from 'react'
 import { Modal, Row, Space, Button, Col, Spin, Select, Table } from 'antd'
 
-import { useRequest, useLocation, useParams } from 'umi'
+import { useRequest, useLocation, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryTestSuiteCases, queryPerfomanceMetrics, queryFunctionalSubcases } from '../services'
 import _ from 'lodash'
 import styles from './index.less'
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const { ws_id } = useParams() as any
         const { query }: any = useLocation()
         const { test_type, projectId, onOk, showType } = props
@@ -173,8 +174,8 @@ export default forwardRef(
                 onCancel={handleClose}
                 footer={
                     <Space>
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} disabled={!canSubmit}>确定</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={handleOk} disabled={!canSubmit}><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 }
             >
@@ -288,7 +289,7 @@ export default forwardRef(
                                 test_type === 'performance' &&
                                 <Table
                                     dataSource={metricList}
-                                    columns={[{ dataIndex: '', title: '指标' }]}
+                                    columns={[{ dataIndex: '', title: formatMessage({id: 'analysis.metric'})  }]}
                                     rowKey={record => record}
                                     size="small"
                                     scroll={{ y: 320 }}

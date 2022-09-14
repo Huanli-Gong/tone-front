@@ -2,7 +2,7 @@ import React from 'react'
 import { Row, Space, Typography, DatePicker, Radio, Empty, Button } from 'antd'
 import moment from 'moment'
 import type { Moment } from 'moment'
-import { useParams, history, useIntl, FormattedMessage } from 'umi'
+import { useParams, history, useIntl, FormattedMessage, getLocale } from 'umi'
 import TabCardItem from './TabCard'
 import { ReactComponent as ProductIcon } from '@/assets/img/icon_shell.svg'
 import styled from 'styled-components'
@@ -63,6 +63,8 @@ type IProps<T> = {
 }
 
 const ProductList: React.FC<IProps<DateType>> = ({ product_list = [], setTime, time }) => {
+    moment.locale(getLocale())
+
     const onChange = (time: DateType) => {
         setTime(time as any)
     }

@@ -51,6 +51,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
         () => queryJobTypeList({ ws_id: wsId, enable: "True" }),
         {
             initialData: [],
+            manual: true,
             debounceInterval: 300,
             formatResult: (r) => {
                 let result = []

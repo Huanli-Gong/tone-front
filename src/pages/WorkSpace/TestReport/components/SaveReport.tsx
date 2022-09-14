@@ -201,7 +201,7 @@ export default forwardRef(
                             <Form.Item
                                 label={<FormattedMessage id="report.columns.name" />}
                                 name="name"
-                                rules={[{ required: true }]}
+                                rules={[{ required: true, message: formatMessage({ id: 'report.please.enter.name'}) }]}
                             >
                                 <Input autoComplete="auto" placeholder={formatMessage({ id: 'report.please.enter.name'}) } />
                             </Form.Item>
@@ -214,7 +214,7 @@ export default forwardRef(
                             <Form.Item
                                 label={<FormattedMessage id="report.columns.product_version" />}
                                 name="productVersion"
-                                rules={[{ required: true }]}>
+                                rules={[{ required: true, message: formatMessage({ id: 'report.select.productVersion'}) }]}>
                                 {getSelectFn('productVersion')}
                             </Form.Item>
                             <Form.Item

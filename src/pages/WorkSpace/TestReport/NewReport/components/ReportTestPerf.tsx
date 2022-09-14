@@ -87,7 +87,7 @@ const ReportTestPref = () => {
     }
 
     useEffect(() => {
-        setBtnName(btn ? formatMessage({id: 'report.chart.btn'}): formatMessage({id: 'report.table.btn'}))
+        setBtnName(btn ? 'chart': 'table')
     }, [btn])
 
     useEffect(() => {
@@ -156,7 +156,9 @@ const ReportTestPref = () => {
                 <>
                     <Row justify='space-between'>
                         <TestDataTitle><FormattedMessage id="performance.test"/></TestDataTitle>
-                        <Button onClick={switchMode} style={{ marginTop: 12 }}>{btnName}</Button>
+                        <Button onClick={switchMode} style={{ marginTop: 12 }}>
+                            {btnName === 'chart' ? <FormattedMessage id="report.chart.btn" /> : <FormattedMessage id="report.table.btn" />}
+                        </Button>
                     </Row>
                     <TestWrapper id="perf_item" className="position_mark">
                         {

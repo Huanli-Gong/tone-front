@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, memo, useMemo } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, getLocale } from 'umi';
 import { ReportContext } from '../../Provider';
 import { Typography, Space, Button, Select, Popconfirm, Tooltip, Empty, Row, Col } from 'antd';
 import { PerfTextArea, GroupItemText } from '../EditPerfText';
@@ -48,6 +48,7 @@ const { Option } = Select;
 
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
+     
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
    
@@ -124,17 +125,19 @@ const Performance = (props: any) => {
 
     // 右侧功能按钮
     const ItemFunc: React.FC<any> = () => {
+        const enLocale = getLocale() === 'en-US'
         return (
             <TestItemFunc>
                 <Space>
-
                     {
                         btn && <Space>
                             <Typography.Text><FormattedMessage id="report.filter"/>: </Typography.Text>
-                            <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
+                            <Select defaultValue="all" style={{ width: enLocale ? 336 : 200 }} value={filterName} onSelect={handleConditions}
+                                getPopupContainer={node => node.parentNode}
+                            >
                                 <Option value="all"><FormattedMessage id="report.all.s"/></Option>
                                 <Option value="invalid"><FormattedMessage id="report.invalid"/></Option>
-                                <Option value="volatility"><FormattedMessage id="report.volatility"/></Option>
+                                <Option value="volatility" title={formatMessage({id: 'report.volatility'}) }><FormattedMessage id="report.volatility"/></Option>
                                 <Option value="increase"><FormattedMessage id="report.increase"/></Option>
                                 <Option value="decline"><FormattedMessage id="report.decline"/></Option>
                                 <Option value="normal"><FormattedMessage id="report.normal"/></Option>
@@ -164,8 +167,10 @@ const Performance = (props: any) => {
                     metric.sortNum = 2
                 } else if (result?.compare_result == 'invalid') {
                     metric.sortNum = 3
-                } else {
+                } else if (result?.compare_result == 'na') {
                     metric.sortNum = 4
+                }else {
+                    metric.sortNum = 5
                 }
 
                 metric_list.push({
