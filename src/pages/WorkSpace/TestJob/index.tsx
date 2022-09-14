@@ -40,7 +40,7 @@ interface PropsTypes {
 const TestJob: React.FC<any> = (props) => {
     const { name } = props.route
     const { height: layoutHeight, width: layoutWidth } = useClientSize()
-    const hasNav = name === 'JobTypePreview' || name === 'TemplatePreview' || name === 'TemplateEdit'
+    const hasNav = ["TemplatePreview", "TemplateEdit", "JobTypePreview"].includes(name)
 
     const { initialState, setInitialState } = useModel('@@initialState')
     const { ws_id, jt_id } = props.match.params
@@ -104,11 +104,13 @@ const TestJob: React.FC<any> = (props) => {
             job_type_id = data.job_type_id
         }
 
-        if (name === 'TestTemplate' || name === 'TemplatePreview' || name === 'TemplateEdit' || name === 'TestJob') {
+
+        if (["TestTemplate", "TemplatePreview", "TemplateEdit", "TestJob"].includes(name)) {
             let template_id: any = null
             if (name === 'TestJob' && query.template_id)
                 template_id = query.template_id
-            if (name === 'TestTemplate' || name === 'TemplatePreview' || name === 'TemplateEdit')
+
+            if (["TestTemplate", "TemplatePreview", "TemplateEdit"].includes(name))
                 template_id = jt_id
 
             if (template_id) {
@@ -419,7 +421,7 @@ const TestJob: React.FC<any> = (props) => {
             setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
             history.push(`/ws/${ws_id}/test_result`)
         }
-        if( code === 1380) {
+        if (code === 1380) {
             setEnvErrorFlag(true)
             requestCodeMessage(code, msg)
         }
@@ -631,7 +633,7 @@ const TestJob: React.FC<any> = (props) => {
     )
 
     const layoutCss = useMemo(() => {
-        const defaultCss = { minHeight: layoutHeight, overflow: 'auto' }
+        const defaultCss = { minHeight: layoutHeight, overflow: 'auto', background: "#f5f5f5" }
         return hasNav ? { ...defaultCss, paddingTop: 50 } : defaultCss
     }, [layoutHeight, hasNav])
 
@@ -857,7 +859,7 @@ const TestJob: React.FC<any> = (props) => {
         setProjectId(id)
     }
     return (
-        <Layout style={layoutCss} >
+        <div style={layoutCss} >
             {
                 hasNav &&
                 <Row align="middle" className={styles.page_preview_nav} justify="space-between">
@@ -905,8 +907,8 @@ const TestJob: React.FC<any> = (props) => {
                                 !modifyTemplate &&
                                 <>
                                     <Button className="copy_link">复制链接</Button>
-                                    <Access accessible={access.WsMemberOperateSelf(state.creator)}
-                                        fallback={<Button onClick={()=> AccessTootip()}>修改配置</Button>}
+                                    <Access accessible={access.WsMemberOperateSelf(state?.creator)}
+                                        fallback={<Button onClick={() => AccessTootip()}>修改配置</Button>}
                                     >
                                         <Button onClick={handleModifySetting}>修改配置</Button>
                                     </Access>
@@ -1144,7 +1146,7 @@ const TestJob: React.FC<any> = (props) => {
                 }
                 <SaveTemplate ref={saveTemplateDrawer} onOk={handleSaveTemplateOk} />
             </Spin>
-        </Layout>
+        </div >
     )
 }
 
