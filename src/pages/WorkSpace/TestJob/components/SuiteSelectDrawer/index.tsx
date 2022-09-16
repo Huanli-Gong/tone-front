@@ -157,6 +157,11 @@ const SuiteDrawer = (props: any, ref: any) => {
         const { server_object_id, server_tag_id, ip, is_instance , customer_server } = params
         let flag = location.search.indexOf('inheriting_machine') !== -1
         
+        if(lodash.isNull(ip)){
+            setServerObjectType('ip')
+            return
+        }
+
         if ( customer_server && JSON.stringify( customer_server ) !== '{}') {
             const { custom_ip , custom_channel } = customer_server 
             if (custom_ip && custom_channel) {
@@ -165,6 +170,7 @@ const SuiteDrawer = (props: any, ref: any) => {
             }
             return
         }
+
         if( flag && ip ){
             if (server_type === 'aliyun' && run_mode === 'standalone'){
                 if (is_instance === 0) setServerObjectType('setting')
