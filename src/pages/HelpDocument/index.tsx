@@ -41,7 +41,7 @@ export default (props: any) => {
                 }
             },
             initialData: [],
-            defaultParams: [{ page_size: 1000, doc_type: typePath }]
+            defaultParams: [{ doc_type: typePath }]
         }
     )
 
@@ -67,7 +67,7 @@ export default (props: any) => {
     const { height: layoutHeight } = useClientSize()
 
     const wsHelpDoc = async (title: any, index: any) => {
-        const { data = [], code, msg } = await queryHelpDocList({ page_size: 1000, doc_type: typePath })
+        const { data = [], code, msg } = await queryHelpDocList({ doc_type: typePath })
         if (code === 200) {
             if (title === 'del') {
                 let id = ''

@@ -1,23 +1,29 @@
 import { queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { requestCodeMessage } from '@/utils/utils'
 import { Drawer, Form, Select, Space, Button, Row } from 'antd'
-import React, { forwardRef, useImperativeHandle, useState } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { contrastBaseline } from '../service'
 
 const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
-    const { server_provider, onOk } = props
+    const { server_provider, test_type, onOk } = props
     const [visible, setVisible] = useState(false)
     const [pedding, setPedding] = useState(false)
     const [form] = Form.useForm()
     const [drawerData, setDrawerData] = useState<any>()
 
-    const { data: baselineList } = useRequest(
-        () => queryBaselineList({ ws_id, test_type: 'performance', server_provider }),
-        { initialData: [] }
+    const { data: baselineList, run } = useRequest(
+        () => queryBaselineList({ ws_id, test_type, server_provider }),
+        { initialData: [], manual: true }
     )
+    
+    useEffect(() => {
+        if(test_type === 'performance'){
+            run()
+        } ;
+    },[ test_type ])
 
     useImperativeHandle(ref, () => ({
         show: (_: any) => {
