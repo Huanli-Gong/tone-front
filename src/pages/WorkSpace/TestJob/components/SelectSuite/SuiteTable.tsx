@@ -3,6 +3,7 @@ import { Button, Table, Card, Switch, Space, Checkbox, Row } from 'antd';
 
 import SettingDrawer from '@/pages/WorkSpace/TestJob/components/SuiteSelectDrawer'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from './style.less';
 
 import columnsOutterFn from './columnsOutter'
@@ -16,11 +17,11 @@ export default (props: any) => {
 		dataSource, onDataSourceChange, width, disabled, run_mode,
 		contrl, control, server_type, test_type
 	} = props
+	const { formatMessage } = useIntl()
+	const locale = getLocale() === 'en-US'
 
 	const settingDrawerRef: any = useRef(null)
-
 	const [hasCases, setHasCases] = useState(true)
-
 	const [columnsOutter, setColumnsOutter] = useState<any>([])
 	const [columnsInner, setColumnsInner] = useState<any>([])
 	const [checked, setChecked] = useState<boolean>(false)
@@ -64,8 +65,10 @@ export default (props: any) => {
 				dataSource,
 				run_mode,
 				width,
+				formatMessage,
 			})
 		)
+
 		setColumnsInner(
 			columnsInnerFn({
 				onDataSourceChange,
@@ -76,6 +79,7 @@ export default (props: any) => {
 				checked,
 				run_mode,
 				width: width - 14,
+				formatMessage,
 			})
 		)
 	}
@@ -90,7 +94,7 @@ export default (props: any) => {
 
 	useEffect(() => {
 		handleColumnsChange()
-	}, [checked])
+	}, [checked, locale])
 
 	const rowSelectionSuite = {
 		selectedRowKeys: selectedSuiteKeys,
@@ -105,7 +109,7 @@ export default (props: any) => {
 	};
 
 
-	const setSelectedCaseKeysFn = (obj: any) => {
+	const setSelectedCaseKeysFn = (obj:any) => {
 		let selectedCaseObjCopy = _.cloneDeep(selectedCaseObj) || {}
 		selectedCaseObjCopy = { ...selectedCaseObjCopy, ...obj }
 		setSelectedCaseObj(selectedCaseObjCopy)
@@ -232,12 +236,16 @@ export default (props: any) => {
 	return (
 		<div style={run_mode === 'standalone' ? { marginBottom: 10, position: 'relative' } : { position: 'relative' }}>
 			<Row justify="space-between" align="middle">
-				<span className={styles.title}>{run_mode === 'standalone' ? "单机测试" : '集群测试'}</span>
+				<span className={styles.title}>
+					{run_mode === 'standalone'? <FormattedMessage id="select.suite.standalone" /> : <FormattedMessage id="select.suite.cluster"/>}
+				</span>
 				{
 					(dataSource.length > 0 && !disabled) &&
 					<Space style={{ height: '32px' }}>
-						<span className={styles.title}>高级配置</span>
-						<Switch size="small" onChange={onChange} checked={checked} />
+						<span className={styles.title}>
+						  <FormattedMessage id="select.suite.advanced.config" />
+						</span>
+						<Switch size="small" onChange={onChange} />
 					</Space>
 				}
 			</Row>
@@ -251,14 +259,14 @@ export default (props: any) => {
 							onChange={onSelectSuite}
 							disabled={!checked}
 						>
-							全选Suite
+							<FormattedMessage id="select.suite.selectAll.suites" />
 						</Checkbox>
 						<Checkbox
 							indeterminate={indeterminateCase}
 							checked={caseAll}
 							onChange={onSelectCase}
 						>
-							全选Conf
+							<FormattedMessage id="select.suite.selectAll.conf" />
 						</Checkbox>
 					</Space>
 					<Tooltip
@@ -267,13 +275,13 @@ export default (props: any) => {
 								onClick={() => setHasCases(true)}
 								style={{ cursor: 'pointer' }}
 							>
-								请选择Suite/Conf
+								<FormattedMessage id="select.suite.select.suite/conf" />
 							</span>
 						}
 						visible={!hasCases}
 					>
 						<Button size="small" type="primary" onClick={handleBatchSetting} onMouseLeave={handleLeaveSettingBtn}>
-							批量配置
+						  <FormattedMessage id="select.suite.batch.config" />
 						</Button>
 					</Tooltip>
 				</Row>
@@ -320,9 +328,9 @@ export default (props: any) => {
 				run_mode={run_mode}
 				contrl={control}
 				checked={checked}
-				onDataSourceChange={onDataSourceChange}
-				testSuiteData={dataSource}
-				onOk={hanldeSettingOk}
+				onDataSourceChange={ onDataSourceChange }
+				testSuiteData={ dataSource }
+				onOk={ hanldeSettingOk }
 			/>
 		</div>
 	)

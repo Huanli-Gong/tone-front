@@ -1,8 +1,10 @@
 import React , { forwardRef, useImperativeHandle , useEffect } from 'react'
 import { Form , Input, Radio } from 'antd'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 
 export default forwardRef(({ disabled , template , onEnabelChange } : any , ref : any ) => {
+    const { formatMessage } = useIntl()
     const [ form ] = Form.useForm()
 
     useImperativeHandle( ref , () => ({
@@ -35,23 +37,29 @@ export default forwardRef(({ disabled , template , onEnabelChange } : any , ref 
             initialValues={{ enable : true }}
         >
             <Form.Item 
-                label="模板名称" 
+                label={<FormattedMessage id="ws.test.job.template.name" /> }
                 name="template_name"
                 rules={[{
                     required : true ,
                     pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
-                    message : "仅允许包含字母、数字、下划线、中划线、点，最长64个字符" 
+                    message: formatMessage({id: 'ws.test.job.template.message'}),
                 }]}
             >
-                <Input autoComplete="off" disabled={ disabled } placeholder="仅允许包含字母、数字、下划线、中划线、点，最长64个字符"/>
+                <Input autoComplete="off" disabled={ disabled }
+                    placeholder={formatMessage({id: 'ws.test.job.template.message'}) }/>
             </Form.Item>
-            <Form.Item label="描述" name="description">
-                <Input.TextArea rows={2} disabled={ disabled } autoComplete="off" placeholder="请输入模板描述"/>
+            <Form.Item 
+                label={<FormattedMessage id="ws.test.job.description" /> }
+                name="description">
+                <Input.TextArea rows={2} disabled={ disabled } autoComplete="off" 
+                    placeholder={formatMessage({id: 'ws.test.job.description.placeholder'}) }/>
             </Form.Item>
-            <Form.Item label="启用" name="enable">
+            <Form.Item
+                label={<FormattedMessage id="ws.test.job.enable" /> }
+                name="enable">
                 <Radio.Group disabled={ disabled } onChange={ ({ target }) => onEnabelChange( target.value )}>
-                    <Radio value={ true }>是</Radio>
-                    <Radio value={ false }>否</Radio>
+                    <Radio value={ true }><FormattedMessage id="operation.yes" /></Radio>
+                    <Radio value={ false }><FormattedMessage id="operation.no" /></Radio>
                 </Radio.Group>
             </Form.Item>
         </Form>

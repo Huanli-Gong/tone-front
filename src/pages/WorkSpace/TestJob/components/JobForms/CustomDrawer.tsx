@@ -2,8 +2,10 @@
 
 import React , { useState , useImperativeHandle , forwardRef , memo , useCallback, useMemo } from 'react'
 import { Space , Button , Form , Drawer , Input } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 
 const CustomDrawer = ( props : any , ref : any ) => {
+    const { formatMessage } = useIntl()
     const { onOk } = props
 
     const [ visible , setVisible ] = useState( false )
@@ -13,7 +15,7 @@ const CustomDrawer = ( props : any , ref : any ) => {
     const [ form ] = Form.useForm()
 
     const title = useMemo(() => {
-        return source ? '新增' : '编辑'
+        return source ? formatMessage({id: 'operation.new'}) : formatMessage({id: 'operation.edit'})
     } , [ source ])
 
     useImperativeHandle( ref , () => ({
@@ -56,8 +58,8 @@ const CustomDrawer = ( props : any , ref : any ) => {
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={ handleClose }>取消</Button>
-                        <Button type="primary" onClick={ handleOk } >确定</Button>
+                        <Button onClick={ handleClose }><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={ handleOk }><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }

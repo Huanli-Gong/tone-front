@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
 
-import { history, useRequest, useModel, useAccess, Access } from 'umi'
-import { requestCodeMessage, switchServerType, switchBusinessType, switchTestType, AccessTootip } from '@/utils/utils'
+import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage } from 'umi'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import styles from './index.less'
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
 
@@ -38,6 +39,7 @@ interface PropsTypes {
 }
 
 const TestJob: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { name } = props.route
     const { height: layoutHeight, width: layoutWidth } = useClientSize()
     const hasNav = name === 'JobTypePreview' || name === 'TemplatePreview' || name === 'TemplateEdit'
@@ -133,7 +135,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const filterItems = (t: any) => {
         const basic = {}, env = {}, suite = {}, more = {}
-        t.forEach((i: any) => {
+        t?.forEach((i: any) => {
             if (i.config_index === 1) basic[i.name] = i
             if (i.config_index === 2) env[i.name] = i
             if (i.config_index === 3) suite[i.name] = i
@@ -150,7 +152,7 @@ const TestJob: React.FC<any> = (props) => {
             },
         })
         clipboard.on('success', function (e) {
-            message.success('复制成功')
+            message.success(formatMessage({id: 'ws.test.job.copy.success'}) )
             e.clearSelection();
         })
         return () => {
@@ -406,12 +408,12 @@ const TestJob: React.FC<any> = (props) => {
         }
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning('监控机器不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
         }
 
         if (!data.test_config) {
             setFetching(false)
-            return message.warning('用例不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
         }
         const test_config = handleServerChannel(data.test_config)
         let { code, msg } = await createWsJobTest({ ...data, test_config })
@@ -467,8 +469,8 @@ const TestJob: React.FC<any> = (props) => {
             if (code !== 200) return
         }
         const data = isYamlFormat ? await transformDate(resultData) : await transformDate()
-        if (isMonitorEmpty(data)) return message.warning('监控机器不能为空')
-        if (!data.test_config) return message.warning('用例不能为空')
+        if (isMonitorEmpty(data)) return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+        if (!data.test_config) return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
         name === 'TestJob' || name === 'TestExport' ?
             saveTemplateDrawer.current.show() :
             handleSaveTemplateOk({})
@@ -480,11 +482,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning('监控机器不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
         }
         if (!data.test_config) {
             setFetching(false)
-            return message.warning('用例不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
         }
         data = {
             workspace: ws_id,
@@ -495,7 +497,7 @@ const TestJob: React.FC<any> = (props) => {
         const { code, msg } = await saveTestTemplate({ ...data, test_config, ...vals })
 
         if (code === 200) {
-            message.success('操作成功！')
+            message.success(formatMessage({id: 'ws.test.job.operation.success'}) )
             saveTemplateDrawer.current.hide()
             templatePopoverRefresh()
             setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
@@ -525,11 +527,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning('监控机器不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
         }
         if (!data.test_config) {
             setFetching(false)
-            message.warning('用例不能为空')
+            message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
             return
         }
         if (!data.baseline) {
@@ -556,7 +558,7 @@ const TestJob: React.FC<any> = (props) => {
             setModifyTemplate(false)
             setDisabled(true)
             setTemplateEnable(data.enable)
-            message.success('操作成功！')
+            message.success(formatMessage({id: 'operation.success'}) )
             if (name !== 'TemplatePreview')
                 history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
         }
@@ -573,11 +575,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning('监控机器不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
         }
         if (!data.test_config) {
             setFetching(false)
-            return message.warning('用例不能为空')
+            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
         }
         if (!data.baseline) {
             data.baseline = null
@@ -592,7 +594,7 @@ const TestJob: React.FC<any> = (props) => {
         })
 
         if (code === 200) {
-            message.success('保存成功')
+            message.success(formatMessage({id: 'request.save.success'}) )
             history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
         }
         else requestCodeMessage(code, msg)
@@ -818,7 +820,7 @@ const TestJob: React.FC<any> = (props) => {
     useEffect(() => {
         const clipboard = new Clipboard('#copy_dom_id')
         clipboard.on('success', function (e) {
-            message.success('复制成功')
+            message.success(formatMessage({id: 'request.copy.success'}) )
             e.clearSelection();
         })
         return () => {
@@ -848,16 +850,26 @@ const TestJob: React.FC<any> = (props) => {
     }
     const AuthPop = (
         <Space>
-            <Typography.Text>无权限，请参考</Typography.Text>
-            <a href="/help_doc/2" target="_blank">帮助文档</a>
+            <Typography.Text><FormattedMessage id="ws.test.job.no.permission, please.refer" /></Typography.Text>
+            <a href="/help_doc/2" target="_blank">
+                <FormattedMessage id="ws.test.job.help.docs" />
+            </a>
         </Space>
     )
 
     const queryProjectId = (id: any) => {
         setProjectId(id)
     }
+
+    const renderButton = (
+        <>
+            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button> }
+            <Button type="primary" onClick={handleSaveTemplateModify}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
+        </>
+    )
+
     return (
-        <Layout style={layoutCss} >
+        <Layout style={layoutCss}>
             {
                 hasNav &&
                 <Row align="middle" className={styles.page_preview_nav} justify="space-between">
@@ -873,9 +885,9 @@ const TestJob: React.FC<any> = (props) => {
                         >
                             <ArrowLeftOutlined style={{ fontSize: 20 }} />
                         </div>
-                        {name === 'JobTypePreview' && <Typography.Title level={4} >Job类型预览</Typography.Title>}
-                        {name === 'TemplatePreview' && <Typography.Title level={4} >模板预览</Typography.Title>}
-                        {name === 'TemplateEdit' && <Typography.Title level={4} >模板编辑</Typography.Title>}
+                        {name === 'JobTypePreview' && <Typography.Title level={4} ><FormattedMessage id="ws.test.job.JobTypePreview" /></Typography.Title>}
+                        {name === 'TemplatePreview' && <Typography.Title level={4} ><FormattedMessage id="ws.test.job.TemplatePreview" /></Typography.Title>}
+                        {name === 'TemplateEdit' && <Typography.Title level={4} ><FormattedMessage id="ws.test.job.TemplateEdit" /></Typography.Title>}
                     </Space>
                     {
                         name === 'TemplatePreview' &&
@@ -892,23 +904,19 @@ const TestJob: React.FC<any> = (props) => {
                                             }
                                         }
                                     >
-                                        取 消
+                                        <FormattedMessage id="operation.cancel" />
                                     </Button>
-                                    {
-                                        templateEnabel &&
-                                        <Button onClick={handleSaveCreateSubmit}>保存并新建job</Button>
-                                    }
-                                    <Button type="primary" onClick={handleSaveTemplateModify} >保存修改</Button>
+                                    {renderButton}
                                 </>
                             }
                             {
                                 !modifyTemplate &&
                                 <>
-                                    <Button className="copy_link">复制链接</Button>
+                                    <Button className="copy_link"><FormattedMessage id="ws.test.job.copy.link" /></Button>
                                     <Access accessible={access.WsMemberOperateSelf(state.creator)}
-                                        fallback={<Button onClick={()=> AccessTootip()}>修改配置</Button>}
+                                        fallback={<Button onClick={()=> AccessTootip()}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>}
                                     >
-                                        <Button onClick={handleModifySetting}>修改配置</Button>
+                                        <Button onClick={handleModifySetting}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>
                                     </Access>
                                 </>
                             }
@@ -917,18 +925,15 @@ const TestJob: React.FC<any> = (props) => {
                     {
                         name === 'TemplateEdit' &&
                         <Space>
-                            {
-                                templateEnabel &&
-                                <Button onClick={handleSaveCreateSubmit}>保存并新建job</Button>
-                            }
-                            <Button type="primary" onClick={handleSaveTemplateModify} >保存修改</Button>
+                            {renderButton}
                         </Space>
                     }
                 </Row>
             }
+
             <Spin spinning={loading}>
                 <div className={styles.page_header}
-                    style={(name === 'TestJob' || name === 'TestExport') ? { paddingBottom: 80 } : {}}
+                    style={['TestJob', 'TestExport'].includes(name) ? { paddingBottom: 80 } : {}}
                 >
 
                     <div style={{ height: 250, minWidth: 1080, background: '#fff', position: 'absolute', left: 0, top: 0, width: '100%' }} />
@@ -950,7 +955,7 @@ const TestJob: React.FC<any> = (props) => {
                                                         autoComplete="off"
                                                         prefix={<SearchOutlined />}
                                                         className={styles.job_search_inp}
-                                                        placeholder="搜索模板"
+                                                        placeholder={formatMessage({id: 'ws.test.job.search.placeholder.template'})}
                                                         onChange={handleChangeTemplateName}
                                                     />
                                                 }
@@ -962,16 +967,15 @@ const TestJob: React.FC<any> = (props) => {
                                                                 {
                                                                     templateList.map(
                                                                         (item: any) => (
-                                                                            <div
-                                                                                className={styles.template_item}
+                                                                            <div className={styles.template_item}
                                                                                 key={item.id}
                                                                                 onClick={(): any => {
-                                                                                    if (!item.job_type) return message.error('问题模板，请及时删除')
+                                                                                    if (!item.job_type) return message.error(formatMessage({id: 'ws.test.job.please.delete'}) )
                                                                                     history.push(`/ws/${ws_id}/test_job/${item.job_type_id}?template_id=${item.id}`)
                                                                                     setTemplateBtnVisible(false)
                                                                                 }}
                                                                             >
-                                                                                {item.name}
+                                                                                <EllipsisPulic title={item.name} />
                                                                             </div>
                                                                         )
                                                                     )
@@ -981,21 +985,23 @@ const TestJob: React.FC<any> = (props) => {
                                                         {
                                                             Array.isArray(templateList) && templateList.length === 0 &&
                                                             <div style={{ lineHeight: '80px', textAlign: 'center', color: 'rgba(0,0,0,.35)' }}>
-                                                                暂无模板
+                                                                <FormattedMessage id="ws.test.job.no.template" />
                                                             </div>
                                                         }
                                                     </Menu>
                                                 }
                                             >
-                                                <Button type="default" >用模板新建</Button>
+                                                <Button type="default"><FormattedMessage id="ws.test.job.use.template.create" /></Button>
                                             </Popover>
                                         }
                                     </Access>
                                 </Row>
                                 <div className={styles.page_tags}>
-                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{switchServerType(detail.server_type)}</Tag>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        {detail.test_type === 'business' ? switchBusinessType(detail.business_type) : switchTestType(detail.test_type)}
+                                        <FormattedMessage id={`header.${detail.server_type}`} defaultMessage=""/>
+                                    </Tag>
+                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
+                                        {detail.test_type === 'business' ? <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others"/>: <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage=""/>}
                                     </Tag>
                                 </div>
                                 <div className={styles.page_dec}>{detail.description}</div>
@@ -1006,14 +1012,16 @@ const TestJob: React.FC<any> = (props) => {
                         <Spin spinning={isloading} style={{ width: '100%' }}>
                             <Row className={styles.page_body} justify="center" >
                                 <div ref={bodyRef} style={{ width: 1000 }} />
-                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange} ><YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? '切换表单模式' : '切换yaml模式'} </div>}
+                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange}>
+                                    <YamlFormat style={{ marginRight: 5 }} />{isYamlFormat? <FormattedMessage id="ws.test.job.switch.form.mode" />: <FormattedMessage id="ws.test.job.switch.yaml.mode" />} 
+                                </div>}
                                 <div style={isYamlFormat ? { width: 1240, display: 'none' } : { width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>
-                                        {name === 'TestJob' && <Row className={styles.page_body_title}>新建Job</Row>}
-                                        {name === 'TestExport' && <Row className={styles.page_body_title}>导入配置</Row>}
+                                        {name === 'TestJob' && <Row className={styles.page_body_title}><FormattedMessage id="ws.test.job.create.job" /></Row>}
+                                        {name === 'TestExport' && <Row className={styles.page_body_title}><FormattedMessage id="ws.test.job.import.config" /></Row>}
                                         {
                                             (name === 'TemplatePreview' || name === 'TemplateEdit' || name === 'TestTemplate') &&
-                                            <Row className={styles.page_body_title}>测试模板</Row>
+                                            <Row className={styles.page_body_title}><FormattedMessage id="ws.test.job.test.template" /></Row>
                                         }
                                     </Col>
 
@@ -1023,7 +1031,7 @@ const TestJob: React.FC<any> = (props) => {
                                             (name === 'TemplatePreview' || name === 'TemplateEdit' || name === 'TestTemplate') &&
                                             <Row className={styles.form_row}>
                                                 <div className={styles.page_body_nav}>
-                                                    <span>模板信息</span>
+                                                    <span><FormattedMessage id="ws.test.job.templateForm" /></span>
                                                 </div>
                                                 <TemplateForm
                                                     onEnabelChange={setTemplateEnable}
@@ -1037,7 +1045,7 @@ const TestJob: React.FC<any> = (props) => {
                                             JSON.stringify(items.basic) !== '{}' &&
                                             <Row className={styles.form_row}>
                                                 <div className={styles.page_body_nav}>
-                                                    <span>基础配置</span>
+                                                    <span><FormattedMessage id="ws.test.job.basicForm" /></span>
                                                 </div>
                                                 <BasciForm
                                                     onRef={basicForm}
@@ -1054,7 +1062,7 @@ const TestJob: React.FC<any> = (props) => {
                                             JSON.stringify(items.env) !== '{}' &&
                                             <Row className={styles.form_row}>
                                                 <div className={styles.page_body_nav}>
-                                                    <span>环境准备</span>
+                                                    <span><FormattedMessage id="ws.test.job.envForm" /></span>
                                                 </div>
                                                 <EnvForm
                                                     onRef={envForm}
@@ -1069,7 +1077,9 @@ const TestJob: React.FC<any> = (props) => {
                                             detail.test_type &&
                                             <Row className={styles.form_row}>
                                                 <div className={styles.page_body_nav}>
-                                                    <span><b style={{ fontWeight: 'normal', color: '#ff4d4f' }}>*&nbsp;</b>用例和机器</span>
+                                                    <span><b style={{ fontWeight: 'normal', color: '#ff4d4f' }}>*&nbsp;</b>
+                                                        <FormattedMessage id="ws.test.job.suiteTable" />
+                                                    </span>
                                                 </div>
                                                 <Col offset={3} span={21}>
                                                     <SelectSuite
@@ -1088,7 +1098,7 @@ const TestJob: React.FC<any> = (props) => {
                                             JSON.stringify(items.more) !== '{}' &&
                                             <Row className={styles.form_row}>
                                                 <div className={styles.page_body_nav}>
-                                                    <span>更多配置</span>
+                                                    <span><FormattedMessage id="ws.test.job.moreForm" /></span>
                                                 </div>
                                                 <MoreForm
                                                     {...modalProps}
@@ -1104,9 +1114,15 @@ const TestJob: React.FC<any> = (props) => {
 
                                 </div>
                                 {isYamlFormat && <div className={styles.yaml_container} ><Col span={24} className={styles.yaml_operate} >
-                                    <span className={styles.yaml_copy_link} onClick={handleTestYaml}><YamlTest className={styles.operate_icon} />验证</span>
-                                    <span className={styles.yaml_copy_link} id='copy_dom_id' data-clipboard-text={jobInfo.replace('---', '')} style={{ marginLeft: 10 }}> <YamlCopy className={styles.operate_icon} />复制</span>
-                                    <span className={styles.yaml_copy_link} onClick={handleDownload} style={{ marginLeft: 10 }}><YamlDownload className={styles.operate_icon} />下载</span>
+                                    <span className={styles.yaml_copy_link} onClick={handleTestYaml}><YamlTest className={styles.operate_icon} />
+                                        <FormattedMessage id="ws.test.job.yaml.test" />
+                                    </span>
+                                    <span className={styles.yaml_copy_link} id='copy_dom_id' data-clipboard-text={jobInfo.replace('---', '')} style={{ marginLeft: 10 }}> <YamlCopy className={styles.operate_icon} />
+                                        <FormattedMessage id="ws.test.job.copy" />
+                                    </span>
+                                    <span className={styles.yaml_copy_link} onClick={handleDownload} style={{ marginLeft: 10 }}><YamlDownload className={styles.operate_icon} />
+                                        <FormattedMessage id="ws.test.job.download" />
+                                    </span>
                                     <CloseOutlined onClick={handleClose} style={{ float: 'right', color: '#fff' }} />
                                 </Col>
                                     <CodeEditer
@@ -1126,18 +1142,18 @@ const TestJob: React.FC<any> = (props) => {
                     <Row justify="end" className={styles.options_bar}>
                         <Space>
                             <Popconfirm
-                                title="重置后将清空所有配置，确认重置吗？"
+                                title={<FormattedMessage id="ws.test.job.reset.confirm.info" />}
                                 onConfirm={_.partial(handleReset, true)}
-                                okText="确认"
-                                cancelText="取消"
+                                okText={<FormattedMessage id="operation.confirm" />}
+                                cancelText={<FormattedMessage id="operation.cancel" />}
                             >
-                                <Button >重 置</Button>
+                                <Button><FormattedMessage id="ws.test.job.reset" /></Button>
                             </Popconfirm>
                             <Access accessible={access.IsWsSetting()}>
-                                <Button onClick={handleOpenTemplate}>存为模板</Button>
+                                <Button onClick={handleOpenTemplate}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
                             </Access>
                             <Access accessible={access.IsWsSetting()}>
-                                <Button type="primary" onClick={handleSubmit} >提交测试</Button>
+                                <Button type="primary" onClick={handleSubmit} ><FormattedMessage id="ws.test.job.submit.test" /></Button>
                             </Access>
                         </Space>
                     </Row>
