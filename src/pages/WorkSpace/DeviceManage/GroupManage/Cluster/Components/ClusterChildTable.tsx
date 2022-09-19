@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 import { Space, Button, message, Typography, Popconfirm, Tooltip } from 'antd'
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
-import { updateTestServer, deleteClusterServer, queryClusterServer, editGroupMachine } from '../../services'
+import { updateTestServer, deleteClusterServer, queryClusterServer, editGroupMachine, stateRefresh } from '../../services'
 import DeviceDetail from '../../Components/DeviceDetail'
 import { StateBadge } from '../../Components'
 import ClusterEditServer from './ClusterEditServer'
@@ -37,6 +37,15 @@ export default (props: any) => {
             editServerRef.current.show(record)
         }, []
     )
+
+    const handleRefresh = async(row:any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider:'aligroup' })
+        if (code === 200) {
+            message.success('同步状态成功')
+            setRefrush(!refrush)
+        }
+        else requestCodeMessage(code, msg)
+    }
 
     const handleOpenLogDrawer = useCallback(
         (id) => {
@@ -217,6 +226,7 @@ export default (props: any) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
                                 { !BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button> }
@@ -224,6 +234,7 @@ export default (props: any) => {
                         }
                     >
                         <Space>
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>
                             <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
                             <Popconfirm
                                 title="确定要删除吗？"

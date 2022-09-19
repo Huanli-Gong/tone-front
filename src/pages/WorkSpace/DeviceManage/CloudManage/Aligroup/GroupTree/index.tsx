@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 import { Button, Space, Popconfirm, message } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
-import { queryClusterMachine, delGroupMachine, editGroupMachine } from '../../service';
+import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh } from '../../service';
 import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
@@ -217,12 +217,14 @@ const GroupTree: React.FC<any> = (props) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
+                                { instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button> }
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>编辑</Button>
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>删除</Button>
                             </Space>
                         }
                     >
                         <Space>
+                            {instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button>}
                             <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
                             <Popconfirm
                                 title={<div style={{ color: 'red' }}>确认要删除吗？</div>}
@@ -246,6 +248,15 @@ const GroupTree: React.FC<any> = (props) => {
         ].filter(Boolean)
         setColumns(dataSource)
     }, [data])
+
+    const handleRefresh = async(row:any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider:'aliyun' })
+        if (code === 200) {
+            message.success('同步机器状态成功')
+            getList()
+        }
+        else requestCodeMessage(code, msg)
+    }
 
     const editMachine = (row: any) => {
         aloneMachine.current && aloneMachine.current.editMachine({ ...row, cluster_id })
