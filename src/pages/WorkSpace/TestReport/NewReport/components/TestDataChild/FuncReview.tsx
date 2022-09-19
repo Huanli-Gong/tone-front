@@ -66,7 +66,9 @@ const FuncDataIndex: React.FC<any> = (props) => {
             data.list.map((item: any) => {
                 let conf_list: any = []
                 item.conf_list.map((conf: any) => {
-                    let sub_case_list = conf.sub_case_list.filter((i: any) => i.result == value)
+                    let sub_case_list = isOldReport 
+                    ? conf.sub_case_list.filter((i: any) => i.result == value)
+                    : conf.sub_case_list.filter((i: any) => i.compare_data.includes(value))
                     conf_list.push({
                         ...conf,
                         sub_case_list
