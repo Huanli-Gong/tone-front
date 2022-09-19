@@ -72,20 +72,17 @@ const TemplateListDrawer = (props: any, ref: any) => {
         handleClose()
     }
 
-    const hanldeTemplateListChange = (arr: any) => {
-        if (search.length === 0) {
-            arr = [...new Set(arr)]
-        } else {
-            arr = [...new Set([...templates, ...arr])]
+    const handleSingleTemp = (e:any) => {
+        let val = e.target.value
+        let temp = templates.slice(0)
+            if(e.target.checked){
+            temp = temp.concat(val)
+        }else{
+            temp = temp.filter((item:any) => item !== val)
         }
-
-        if (arr.length >= 10) {
-            message.warning('模版最多添加10个')
-            return
-        }
-        setTemplates(arr)
+        setTemplates([...new Set([...temp])])
     }
-    
+
     const handleReplace = (i: any) => {
         onOk({
             ...i,
@@ -124,13 +121,14 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 <Spin spinning={loading} >
                     {
                         typeof rowkey !== 'number' ?
-                            <Checkbox.Group style={{ width: '100%' }} value={templates} onChange={hanldeTemplateListChange}>
+                            <Checkbox.Group style={{ width: '100%' }} value={templates} disabled={templates.length >= 10}>
                                 {
                                     list.map((i: any) => (
                                         <Checkbox
                                             style={{ width: '100%', marginLeft: 0 }}
                                             key={i.id}
                                             value={i.id}
+                                            onChange={handleSingleTemp}
                                         >
                                             <Tooltip title={i.name} >
                                                 <Typography.Text ellipsis>

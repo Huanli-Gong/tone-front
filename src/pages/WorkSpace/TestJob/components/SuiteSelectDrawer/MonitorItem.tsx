@@ -1,19 +1,21 @@
 import { Form, Radio, Select, Button, Space } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import React from 'react'
+import { useIntl, FormattedMessage } from 'umi';
 
 const MonitorItem = (props: any) => {
+    const { formatMessage } = useIntl()
     const { suiteForm } = props
     return (
         <>
             <Form.Item
                 name="console"
-                label="监控配置"
+                label={<FormattedMessage id="select.suite.monitor.console" />}
                 className={"drawer_padding"}
             >
                 <Radio.Group >
-                    <Radio value={true}>是</Radio>
-                    <Radio value={false}>否</Radio>
+                    <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                    <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                 </Radio.Group>
             </Form.Item>
             <Form.List name="monitor_info" >
@@ -30,8 +32,11 @@ const MonitorItem = (props: any) => {
                                         name={[field.name, 'items']}
                                         fieldKey={[field.fieldKey, 'items']}
                                     >
-                                        <Select style={{ width: 140 }} placeholder={suiteForm?.console?.length > 1 ? '多个数值' : '请选择监控项'} >
-                                            <Select.Option value="1" >数据监控</Select.Option>
+                                        <Select style={{ width: 140 }} 
+                                            placeholder={suiteForm?.console?.length > 1 ? 
+                                                formatMessage({id: 'select.suite.multiple.values'}): formatMessage({id: 'select.suite.monitor.item'})
+                                            }>
+                                            <Select.Option value="1"><FormattedMessage id="select.suite.monitor.data" /></Select.Option>
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
@@ -40,8 +45,11 @@ const MonitorItem = (props: any) => {
                                         name={[field.name, 'servers']}
                                         fieldKey={[field.fieldKey, 'servers']}
                                     >
-                                        <Select style={{ width: 140 }} placeholder={suiteForm?.console?.length > 1 ? '多个数值' : '请选择监控机器'} >
-                                            <Select.Option value="1" >机器一</Select.Option>
+                                        <Select style={{ width: 140 }} 
+                                            placeholder={suiteForm?.console?.length > 1 ?
+                                                formatMessage({id: 'select.suite.multiple.values'}): formatMessage({id: 'select.suite.monitor.the.server'})
+                                            }>
+                                            <Select.Option value="1"><FormattedMessage id="select.suite.the.server.one" /></Select.Option>
                                         </Select>
                                     </Form.Item>
                                     {
@@ -66,8 +74,8 @@ const MonitorItem = (props: any) => {
                                     add();
                                 }}
                             >
-                                + 添加一组监控
-                                        </Button>
+                                <FormattedMessage id="select.suite.add.group.monitor" />
+                            </Button>
                         </div>
                     );
                 }}

@@ -5,24 +5,25 @@ import { itemLayout } from './untils'
 import styles from './index.less'
 import Clipboard from 'clipboard'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
+import { useIntl, FormattedMessage } from 'umi'
 
 export default memo(
     ({ disabled = false , needScriptList = true } : any ) => {
-
+        const { formatMessage } = useIntl()
         useEffect(() => {
             const clipboardKernel = new Clipboard('.copy_link_icon_kernel')
             const clipboardDevel = new Clipboard('.copy_link_icon_devel' )
             const clipboardHeaders = new Clipboard('.copy_link_icon_headers' ) 
             clipboardKernel.on('success', function(e) {
-                message.success('复制成功')
+                message.success(formatMessage({id: 'request.copy.success'}) )
                 e.clearSelection();
             })
             clipboardDevel.on('success', function(e) {
-                message.success('复制成功')
+                message.success(formatMessage({id: 'request.copy.success'}) )
                 e.clearSelection();
             })
             clipboardHeaders.on('success', function(e) {
-                message.success('复制成功')
+                message.success(formatMessage({id: 'request.copy.success'}) )
                 e.clearSelection();
             })
             return () => {
@@ -42,7 +43,13 @@ export default memo(
                 <Form.Item className={ styles.kernal_wrapper_styles }>
                     <Row style={{ position : 'relative' }}>
                         <Col span={ 24 }>
-                            <Form.Item rules={[{ required : true , message : '请输入kernel包' }]} { ...itemLayout } label="kernel包" name="kernel">
+                            <Form.Item 
+                                rules={[{ 
+                                    required: true , message: formatMessage({id: 'kernel.form.kernel.package.message'})
+                                }]} 
+                                { ...itemLayout } 
+                                label={<FormattedMessage id="kernel.form.kernel.package"/> }
+                                name="kernel">
                                 <Input className="kernel_copy" autoComplete="off" style={ disabledStyles } readOnly={ disabled }/>
                             </Form.Item>
                         </Col>
@@ -53,7 +60,13 @@ export default memo(
                     </Row>
                     <Row style={{ position : 'relative' }}>
                         <Col span={ 24 }>
-                            <Form.Item rules={[{ required : true , message : '请输入devel包' }]} { ...itemLayout } label="devel包" name="devel" >
+                            <Form.Item 
+                                rules={[{ 
+                                    required : true , 
+                                    message: formatMessage({id: 'kernel.form.devel.package.message'})
+                                }]} { ...itemLayout } 
+                                label={<FormattedMessage id="kernel.form.devel.package" />}
+                                name="devel">
                                 <Input className="devel_copy" autoComplete="off" style={ disabledStyles } readOnly={ disabled }/>
                             </Form.Item>
                         </Col>
@@ -62,9 +75,16 @@ export default memo(
                             <CopyLink data-clipboard-target=".devel_copy" className="copy_link_icon_devel" style={ copyLinkIconStyles } />
                         }
                     </Row>
-                    <Row style={{ position : 'relative' }}>
+                    <Row style={{ position: 'relative' }}>
                         <Col span={ 24 }>
-                            <Form.Item rules={[{ required : true , message : '请输入headers包' }]} { ...itemLayout } label="headers包" name="headers">
+                            <Form.Item 
+                                rules={
+                                    [{ 
+                                    required : true , 
+                                    message : formatMessage({id: 'kernel.form.headers.package.message'})
+                                }]} { ...itemLayout } 
+                                label={<FormattedMessage id="kernel.form.headers.package" />}
+                                name="headers">
                                 <Input className="headers_copy" autoComplete="off" style={ disabledStyles } readOnly={ disabled }/>
                             </Form.Item>
                         </Col>

@@ -118,7 +118,6 @@ const getAllDocs = (data: any, id: any) => {
     })
     return arr
 }
-
 const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightLoading, typePath, isPermier, handleGetDocDetailFn }: any) => {
     const [dataSource, getDataSource] = useState<any>([])
 
@@ -138,6 +137,7 @@ const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightL
         }
     }
     const handleClick = (record: any) => {
+
         // setRightLoading(true)
         try {
             const { key, index } = record

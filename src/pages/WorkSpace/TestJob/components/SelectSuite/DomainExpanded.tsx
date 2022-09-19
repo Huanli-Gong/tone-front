@@ -4,6 +4,7 @@ import { useSize } from "ahooks"
 import { UpOutlined, DownOutlined } from "@ant-design/icons"
 import styled from "styled-components"
 import { ButtonProps } from "antd/es/button"
+import { useIntl, FormattedMessage } from 'umi'
 
 type StyledProps = {
     width?: string;
@@ -12,7 +13,7 @@ type StyledProps = {
 
 const DomainList = styled.div<StyledProps>`
     width: 100%;
-    ${({ expanded }) => !expanded ? "height: 24px; overflow: hidden;" : ""}
+    ${({ expanded }) => !expanded ? "height: 32px; overflow: hidden;" : ""}
 `
 
 type IProps = {
@@ -55,11 +56,9 @@ const DomainExpaned: React.FC<IProps> = (props) => {
     }, [])
 
     return (
-        <Row>
-            <div ref={lyRef} ><Typography.Text strong>领域：</Typography.Text></div>
-            <div
-                style={{ width: `calc(100% - ${lySize.width}px - 50px)` }}
-            >
+        <Row style={{ display: 'flex',flexFlow: 'row nowrap' }}>
+            <div ref={lyRef} ><Typography.Text strong><FormattedMessage id="select.suite.domain" /></Typography.Text></div>
+            <div style={{ flex: 1 }}>
                 <DomainList
                     expanded={expanded}
                     ref={listRef}
@@ -87,7 +86,7 @@ const DomainExpaned: React.FC<IProps> = (props) => {
                                         key={i.id}
                                         {...buttonProps}
                                     >
-                                        {i.name || "全部"}
+                                        {i.name || <FormattedMessage id="all" />}
                                     </Button>
                                 )
                             })
@@ -101,11 +100,11 @@ const DomainExpaned: React.FC<IProps> = (props) => {
                         expanded ?
                             <Space style={{ cursor: "pointer" }} onClick={() => setExpanded(false)}>
                                 <UpOutlined />
-                                <Typography.Link>收起</Typography.Link>
+                                <Typography.Link><FormattedMessage id="operation.collapse" /></Typography.Link>
                             </Space> :
                             <Space style={{ cursor: "pointer" }} onClick={() => setExpanded(true)}>
                                 <DownOutlined />
-                                <Typography.Link>展开</Typography.Link>
+                                <Typography.Link><FormattedMessage id="operation.expand" /></Typography.Link>
                             </Space>
                     }
                 </Typography.Link>

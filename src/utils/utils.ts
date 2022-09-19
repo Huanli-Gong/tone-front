@@ -102,17 +102,20 @@ export const switchTestType = (str: string) => {
 export const switchChineseType = (str: string) => {
   switch (str) {
     case '功能测试':
-      return '功能';
+      return 'functional'; // '功能'
     case '性能测试':
-      return '性能';
+      return 'performance'; // 性能
     case '稳定性测试':
-      return '稳定性';
+      return 'stability'; // '稳定性'
     default:
-      return '';
+      return '-';
   }
 };
 
 export const switchServerType = (str: string) => {
+  if (getLocale() === 'en-US') {
+    return str === 'aligroup' ? aligroupServer_en : aliyunServer_en;
+  }
   return str === 'aligroup' ? aligroupServer : aliyunServer;
   /* switch (str) {
         case 'aligroup': return '内网'
