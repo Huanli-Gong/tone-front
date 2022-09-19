@@ -22,11 +22,11 @@ const ConfMetricRow = styled.div<ConfRowProp>`
     }
     &::-webkit-scrollbar:horizontal{
         /* 设置水平滚动条厚度 */
-        height: 3px;
+        height: 8px;
     }
     &::-webkit-scrollbar-thumb { 
-        border-radius: 8px; 
-        border: 2px solid rgba(255,255,255,.4); 
+        border-radius: 3px; 
+        // border: 2px solid rgba(255,255,255,.4); 
         background-color: rgba(0, 0, 0, .5);
     }
 `
