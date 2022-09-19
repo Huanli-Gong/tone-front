@@ -5,9 +5,11 @@ import styles from './index.less'
 import { itemLayout } from './untils'
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from 'clipboard'
+import { useIntl, FormattedMessage } from 'umi'
 
 export default memo(
-    ({ kernelList = [] , form , disabled = false , needScriptList = true } : any ) => {
+    ({ kernelList = [] , form , disabled = false , needScriptList = true } : any ) => {   
+        const { formatMessage } = useIntl()
         const handleKernelVersionChange = ( version : any ) => {
             const idx = kernelList.findIndex(( i : any ) => i.version === version )
             if ( idx > -1 ) {
@@ -25,15 +27,15 @@ export default memo(
             const clipboardDevel = new Clipboard('.copy_link_icon_devel' )
             const clipboardHeaders = new Clipboard('.copy_link_icon_headers' ) 
             clipboardKernel.on('success', function(e) {
-                message.success('复制成功')
+                message.success(formatMessage({id:'request.copy.success'}))
                 e.clearSelection();
             })
             clipboardDevel.on('success', function(e) {
-                message.success('复制成功')
+                message.success(formatMessage({id:'request.copy.success'}))
                 e.clearSelection();
             })
             clipboardHeaders.on('success', function(e) {
-                message.success('复制成功')
+                message.success(formatMessage({id:'request.copy.success'}))
                 e.clearSelection();
             })
             return () => {
@@ -51,12 +53,15 @@ export default memo(
                 <Form.Item className={ styles.kernal_wrapper_styles }>
                     <Form.Item 
                         { ...itemLayout } 
-                        label="内核版本" 
+                        label={<FormattedMessage id="kernel.form.kernel_version" />}
                         name="kernel_version" 
-                        rules={[{ required : true , message : '请选择内核版本' }]}
+                        rules={[{ 
+                            required : true , 
+                            message: formatMessage({id: 'kernel.form.kernel_version.message'})
+                        }]}
                     >
                         <Select 
-                            placeholder="请选择" 
+                            placeholder={formatMessage({id: 'please.select'})}
                             onChange={ handleKernelVersionChange } 
                             disabled={ disabled }
                             getPopupContainer={ node => node.parentNode } 
@@ -77,7 +82,10 @@ export default memo(
                     </Form.Item>
                     <Row style={{ position : 'relative' }}>
                         <Col span={ 24 }>
-                            <Form.Item { ...itemLayout } label="kernel包" name="kernel">
+                            <Form.Item { ...itemLayout } 
+                                label={<FormattedMessage id="kernel.form.kernel.package" />}
+                                name="kernel"
+                            >
                                 <Input className="kernel_copy" autoComplete="off" style={{ backgroundColor: '#f5f5f5'}}  readOnly={ true }/>
                             </Form.Item>
                         </Col>
@@ -88,7 +96,9 @@ export default memo(
                     </Row>
                     <Row style={{ position : 'relative' }}>
                         <Col span={ 24 }>
-                            <Form.Item { ...itemLayout } label="devel包" name="devel" >
+                            <Form.Item { ...itemLayout } 
+                                label={<FormattedMessage id="kernel.form.devel.package" />}
+                                name="devel">
                                 <Input className="devel_copy" autoComplete="off" style={{ backgroundColor: '#f5f5f5'}}  readOnly={ true }/>
                             </Form.Item>
                         </Col>
@@ -99,7 +109,9 @@ export default memo(
                     </Row>
                     <Row style={{ position : 'relative' }}>
                         <Col span={ 24 }>
-                            <Form.Item { ...itemLayout } label="headers包" name="headers">
+                            <Form.Item { ...itemLayout } 
+                                label={<FormattedMessage id="kernel.form.headers.package" />}
+                                name="headers">
                                 <Input className="headers_copy" autoComplete="off" style={{ backgroundColor: '#f5f5f5'}}  readOnly={ true }/>
                             </Form.Item>
                         </Col>
@@ -108,10 +120,16 @@ export default memo(
                             <CopyLink data-clipboard-target=".headers_copy" className="copy_link_icon_headers" style={ copyLinkIconStyles } />
                         }
                     </Row>
-                    <Form.Item { ...itemLayout } label="hotfix_install" name="hotfix_install" rules={[{ required : true , message : '请选择' }]}>
+                    <Form.Item { ...itemLayout } 
+                        label="hotfix_install" 
+                        name="hotfix_install" 
+                        rules={[{ 
+                            required: true , 
+                            message: formatMessage({id: 'please.select'}),
+                        }]}>
                         <Radio.Group disabled={ disabled }>
-                            <Radio value={ true }>是</Radio>
-                            <Radio value={ false }>否</Radio>
+                            <Radio value={ true }><FormattedMessage id="operation.yes" /></Radio>
+                            <Radio value={ false }><FormattedMessage id="operation.no" /></Radio>
                         </Radio.Group>
                     </Form.Item>
                     {

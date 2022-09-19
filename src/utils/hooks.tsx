@@ -124,5 +124,5 @@ export const JumpResult: React.FC<ResultProps> = ({ ws_id, job_id, style }) => {
             </a>
         )
     }
-    return <>-</>
+    return <></>
 }

@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle } from 'react';
 import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { useRequest, useParams, useAccess, Access } from 'umi'
+import { useRequest, useParams, useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from './service'
 import styles from './style.less';
@@ -17,6 +17,7 @@ const SelectDrawer: React.FC<any> = ({
     treeData = [],
     loading,
 }) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams<any>()
     const { Search } = Input;
     const [show, setShow] = useState<boolean>(false)
@@ -116,7 +117,7 @@ const SelectDrawer: React.FC<any> = ({
                     }]
                     el.priority = 10
                     el.server_object_id = undefined
-                    el.ip = el.ip || '随机'
+                    el.ip = el.ip || '随机'; // 此处的中文不能翻译，不破坏数据，在render的时候去匹配中英文。
                     el.env_info = el.var ? (JSON.parse(el.var).length > 0 ? JSON.parse(el.var) : []) : []
                     return el
                 }
@@ -166,7 +167,7 @@ const SelectDrawer: React.FC<any> = ({
             maskClosable={false}
             keyboard={false}
             className={styles.suite}
-            title="用例列表"
+            title={<FormattedMessage id="select.suite.drawer.title" />}
             width={634}
             forceRender={true}
             destroyOnClose={true}
@@ -183,21 +184,21 @@ const SelectDrawer: React.FC<any> = ({
                             disabled={loading}
                             style={{ float: 'left' }}
                         >
-                            全选
+                            <FormattedMessage id="select.suite.drawer.checkbox" />
                         </Checkbox>
                     }
                     <Button onClick={handleCancel} style={{ marginRight: 8 }}>
-                        取消
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                     <Button onClick={onConfirm} type="primary">
-                        确定
+                        <FormattedMessage id="operation.ok" />
                     </Button>
                 </div>
             }
         >
             <Spin spinning={loading} wrapperClassName={styles.spinWrapper}>
                 <Search
-                    placeholder="请输入"
+                    placeholder={formatMessage({id: 'please.enter' })}
                     onSearch={(value: any) => setName(value.replace(/\s+/g, ""))}
                     style={{ width: 420 }}
                     allowClear
@@ -211,7 +212,7 @@ const SelectDrawer: React.FC<any> = ({
                 {
                     (!!treeData?.length) &&
                     <Tree
-                        style={{ marginTop: 16 }}
+                        style={{ marginTop: 8 }}
                         checkedKeys={selectData}
                         checkable
                         onCheck={onCheck}
@@ -222,7 +223,7 @@ const SelectDrawer: React.FC<any> = ({
                 {
                     (treeData?.length === 0 || hasTree.length === 0) &&
                     <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.no.case" />} />
                         <Access accessible={access.WsMemberOperateSelf()}>
                             <Button
                                 type="primary"
@@ -234,7 +235,7 @@ const SelectDrawer: React.FC<any> = ({
                                     )
                                 }
                             >
-                                添加用例
+                                <FormattedMessage id="select.suite.add.case" />
                             </Button>
                         </Access>
                     </div>

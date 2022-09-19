@@ -1,12 +1,14 @@
 import React,{useEffect, useState,} from 'react'
 import { Form , Button } from 'antd'
 import MonitorConfig from './MonitorConfig'
+import { useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 type monitorInfoType = {
     monitor_type: string,
     server?: string
 }
 export default ({ disabled, template, formComponent }: any) => {
+    const { formatMessage } = useIntl()
     const [typeDisabled, setTypeDisabled] = useState<boolean>(true)
     useEffect(() => {
         
@@ -31,7 +33,7 @@ export default ({ disabled, template, formComponent }: any) => {
     }
     return (
         <>
-            <Form.Item label="监控配置" className={'monitor'}>
+            <Form.Item label={formatMessage({id: 'job.form.monitor.config'})} className={'monitor'}>
                     <Form.List name="monitor_info">
                         {
                             (fields, { add, remove }) => {
@@ -59,7 +61,7 @@ export default ({ disabled, template, formComponent }: any) => {
                                                 onClick={() => add({monitor_type: 'custom_machine',server: ''})}
                                                 style={{ padding: 0 }}
                                             >
-                                                + 添加一组监控
+                                                <FormattedMessage id="job.form.add.group.monitor.btn" />
                                     </Button>
                                         }
                                     </>

@@ -3,7 +3,7 @@ import { Form, Input, Select } from 'antd'
 import styles from './index.less'
 
 import { FormProps } from './index'
-import { useRequest, useParams } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryProjectList, queryBaselineList, queryWsJobTest } from '../../services'
 import { debounce } from 'lodash'
 
@@ -11,8 +11,10 @@ import { debounce } from 'lodash'
  * 基础配置
  */
 export default ({ contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
+    const { formatMessage } = useIntl()
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
+    const { baseline, project, baseline_job } = contrl
     const [jobList, setJobList] = useState<any>([])
     const defaultParams = {
         page_num: 1,
@@ -37,15 +39,8 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     useEffect(() => {
         if ('baseline' in contrl) getBaselineList()
         if ('project' in contrl) getProjectList()
-        if ('baseline_job' in contrl) {
-            let params = defaultParams
-            if (JSON.stringify(template) !== '{}') {
-                const { baseline_job_id } = template
-                params = {...params , search: baseline_job_id}
-            }
-            getJobList(params)
-        }
-    }, [contrl, disabled, template])
+        if ('baseline_job' in contrl)  getJobList(defaultParams)
+    }, [baseline, project, baseline_job, disabled])
 
     useImperativeHandle(
         onRef,
@@ -59,7 +54,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
             }
         }),
     )
-    
+
     useEffect(() => {
         if (projectListDataRef) projectListDataRef.current = projectList
         if (baselineListDataRef) baselineListDataRef.current = baselineList
@@ -124,25 +119,28 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                 'job_name' in contrl &&
                 <Form.Item
                     name="name"
-                    label={contrl.job_name.alias || contrl.job_name.show_name}
+                    label={contrl.job_name.alias || <FormattedMessage id={`job.form.${contrl.job_name.name}`}/> }
                     rules={[{
                         pattern: /^[A-Za-z0-9\{}\._-]+$/g,
-                        message: '允许字母、数字、下划线、中划线、{date}占位符，“.”，不允许中文'
+                        message: formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},)
                     }, {
                         max: 128,
-                        message: "Job名称最长不超出128字符"
+                        message: formatMessage({id: 'job.form.job_name.limit.message'})
                     }]}
                 >
-                    <Input autoComplete="off" placeholder="允许字母、数字、下划线、中划线、{date}占位符，“.”，不允许中文" disabled={disabled} />
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},) } disabled={disabled} />
                 </Form.Item>
             }
             {
                 'project' in contrl &&
                 <Form.Item
                     name="project"
-                    label={contrl.project.alias || contrl.project.show_name}
+                    label={contrl.project.alias || <FormattedMessage id={`job.form.${contrl.project.name}`}/> }
                 >
-                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} placeholder="请选择Project" onSelect={handleSelect}>
+                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled}
+                        placeholder={formatMessage({id: 'job.form.project.placeholder'}) }
+                        onSelect={handleSelect}
+                    >
                         {
                             projectList.map(
                                 (item: any) => (
@@ -162,9 +160,11 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                     'baseline' in contrl &&
                     <Form.Item
                         name="baseline"
-                        label={contrl.baseline.alias || contrl.baseline.show_name}
+                        label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`}/> }
                     >
-                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} placeholder="请选择需要对比的测试基线">
+                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} 
+                            placeholder={formatMessage({id: 'job.form.baseline.placeholder'}) }
+                        >
                             {
                                 baselineList.map(
                                     (item: any) => (
@@ -181,13 +181,13 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                 'baseline_job' in contrl &&
                 <Form.Item
                     name="baseline_job_id"
-                    label={contrl.baseline_job.alias || contrl.baseline_job.show_name}
+                    label={contrl.baseline_job.alias || <FormattedMessage id={`job.form.${contrl.baseline_job.name}`}/> }
                 >
                     <Select
                         allowClear
                         showSearch
                         getPopupContainer={node => node.parentNode}
-                        placeholder="请选择一个Job作为基线"
+                        placeholder={formatMessage({id: 'job.form.baseline_job_id.placeholder'}) }
                         onSearch={handleBaselineJobSelect}
                     >
                         {

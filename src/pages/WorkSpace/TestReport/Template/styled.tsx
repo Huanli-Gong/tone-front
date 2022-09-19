@@ -216,8 +216,12 @@ export const CatalogTitle = styled.div`
 `
 
 export const CatalogDrageSpace = styled.div`
-    margin-top:8px;
+    /* margin-top:8px; */
     padding-left:20px;
+
+    .ant-tree .ant-tree-treenode {
+        padding:0 ;
+    }
 `
 
 export const CatalogExpand = styled.span`
@@ -234,7 +238,7 @@ export const CatalogLine = styled.div`
     margin-right:13px;
 `
 interface CountProp {
-    count:any;
+    count: any;
 }
 const setCount = (c: number) => {
     return c + 3 + 'px'
@@ -303,7 +307,7 @@ export const ReportIssue = styled.div`
 export const Suite = styled(Col)`
     border-radius: 4px;
     border: 1px solid rgba(0,0,0,.06);
-    margin-top: 10px
+    margin-top: 10px;
 `
 
 const MinusCircleAction = `

@@ -6,11 +6,12 @@ import { tagList } from '@/pages/WorkSpace/TagManage/service'
 import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
 import QuestionCircleComponent from '@/components/Public/QuestionCircle'
 import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 
 const { Option } = Select;
 export default ({ contrl, disabled = false, onRef = null, template = {}, isReset, tagsDataRef, reportTemplateDataRef }: FormProps) => {
+    const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const [form] = Form.useForm()
     const [tags, setTags] = useState<Array<any>>([])
@@ -127,8 +128,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     const callbackTips = () => {
         return (
             <>
-                <span>详细信息请查看</span>
-                <span className={styles.create_doc} onClick={() => window.open(`/help_doc/17`)}>回调接口帮助文档</span>
+                <span>
+                    <FormattedMessage id="job.form.callback_api.tips" />
+                </span>
+                <span className={styles.create_doc} onClick={() => window.open(`/help_doc/17`)}>
+                    <FormattedMessage id="job.form.callback_api.help.document" />
+                </span>
             </>
         )
     }
@@ -150,10 +155,11 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'cleanup' in contrl &&
                 <Form.Item
                     name="cleanup_info"
-                    // label="清理脚本"
-                    label={contrl.cleanup.alias || contrl.cleanup.show_name}
+                    label={contrl.cleanup.alias || <FormattedMessage id={`job.form.${contrl.cleanup.name}`}/>}
                 >
-                    <Input.TextArea disabled={disabled} placeholder="请输入Job的清理脚本" />
+                    <Input.TextArea disabled={disabled} 
+                        placeholder={formatMessage({id: 'job.form.cleanup_info.placeholder'}) }
+                    />
                 </Form.Item>
             }
             {
@@ -161,7 +167,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <TagSelect
                     tags={tags}
                     // label="Job标签"
-                    label={contrl.job_tag.alias || contrl.job_tag.show_name}
+                    label={contrl.job_tag.alias || <FormattedMessage id={`job.form.${contrl.job_tag.name}`}/> }
                     disabled={disabled}
                 />
             }
@@ -170,9 +176,11 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <Form.Item
                     name="notice_subject"
                     // label="通知主题"
-                    label={contrl.notice_subject.alias || contrl.notice_subject.show_name}
+                    label={contrl.notice_subject.alias || <FormattedMessage id={`job.form.${contrl.notice_subject.name}`}/> }
                 >
-                    <Input autoComplete="off" disabled={disabled} placeholder="[T-One] 你的测试已完成{date}" />
+                    <Input autoComplete="off" disabled={disabled} 
+                        placeholder={formatMessage({id: 'job.form.notice_subject.placeholder'}, {date: '{date}'},) }
+                    />
                 </Form.Item>
             }
             {
@@ -180,21 +188,21 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <Form.Item
                     name="email"
                     // label="邮件通知"
-                    label={contrl.email_notice.alias || contrl.email_notice.show_name}
+                    label={contrl.email_notice.alias || <FormattedMessage id={`job.form.${contrl.email_notice.name}`}/> }
                     rules={[() => ({
                         validator(rule, value) {
                             const reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                             if (value) {
                                 const valArr = value.split(/,|，|\n|\s/g)
                                 let warry = valArr.filter((str: any) => !reg.test(str))
-                                return warry.length === 0 ? Promise.resolve() : Promise.reject('格式错误：多个邮箱用空格或英文逗号分隔');
+                                return warry.length === 0 ? Promise.resolve() : Promise.reject(formatMessage({id: 'job.form.email.validator'}));
                             }
                             else
                                 return Promise.resolve()
                         },
                     })]}
                 >
-                    <Input autoComplete="off" disabled={disabled} placeholder="默认通知Job创建人，多个邮箱用空格或英文逗号分隔" />
+                    <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'job.form.email.validator'})} />
                 </Form.Item>
             }
             {
@@ -202,22 +210,24 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <Form.Item
                     name="ding_token"
                     // label="钉钉通知"
-                    label={contrl.ding_notice.alias || contrl.ding_notice.show_name}
+                    label={contrl.ding_notice.alias || <FormattedMessage id={`job.form.${contrl.ding_notice.name}`}/> }
                 >
-                    <Input autoComplete="off" disabled={disabled} placeholder="请输入钉钉token，多个token用空格或英文逗号分隔" />
+                    <Input autoComplete="off" disabled={disabled} 
+                        placeholder={formatMessage({id: 'job.form.ding_token.placeholder'})}
+                    />
                 </Form.Item>
             }
             {
                 'report' in contrl &&
-                <Form.Item label="测试报告" name="report_name">
+                <Form.Item label={formatMessage({id: 'job.form.report.label'})} name="report_name">
                     <Input
                         value={checkedList || undefined}
                         onChange={onReportChange}
                         autoComplete="off"
                         disabled={disabled}
-                        placeholder="请输入报告名称，例如：{job_name}_report-{report_seq_id}" />
+                        placeholder={formatMessage({id: 'job.form.report.placeholder'}, {job_name: '{job_name}', report_seq_id: '{report_seq_id}'},)} />
                     <QuestionCircleComponent contextNode={<div>
-                        {"报告名称可用占位符："}
+                        <FormattedMessage id="job.form.report.tips" />
                         <p style={{ marginBottom: 0 }}>{"{date} {job_name} {job_id} {product_version}"}</p>
                     </div>} />
                 </Form.Item>
@@ -226,12 +236,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 checkedList && 'report' in contrl &&
                 <Form.Item
                     name="report_template"
-                    label="报告模板"
+                    label={formatMessage({id: 'job.form.report_template.label'})}
                 >
                     <Select
                         showSearch
                         disabled={disabled}
-                        placeholder="请选择报告模板"
+                        placeholder={formatMessage({id: 'job.form.report_template.placeholder'})}
                         // defaultValue={defaultTemplate.name}
                         optionFilterProp="children"
                         filterOption={
@@ -249,20 +259,20 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'callback_api' in contrl &&
                 <Form.Item
                     name="callback_api"
-                    label="回调接口"
+                    label={formatMessage({id: 'job.form.callback_api.label'})}
                     validateStatus={regCallbackUrl && 'error'}
-                    help={regCallbackUrl && '请输入正确的回调接口URL'}
+                    help={regCallbackUrl && formatMessage({id: 'job.form.callback_api.help'}) }
                 >
                     <Input
                         value={callbackUrl}
                         onChange={handleCallbackURLChange}
                         autoComplete="off"
                         disabled={disabled}
-                        placeholder="请输入回调接口的URL" />
+                        placeholder={formatMessage({id: 'job.form.callback_api.placeholder'})} />
                     <QuestionCircleComponent
                         contextNode={
                             <div>
-                                {"T-one平台会在Job状态发生变化时携带该Job信息并以POST方式主动请求该API。"}
+                                <FormattedMessage id="job.form.callback_api.icons" />
                                 <p style={{ marginBottom: 0 }}>{callbackTips()}</p>
                             </div>
                         }

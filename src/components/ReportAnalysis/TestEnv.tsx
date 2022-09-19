@@ -5,7 +5,7 @@ import {
     MachineGroupL,
     MachineGroupR,
 } from './TestEnvUI';
-
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 interface EnvType {
     len: Array<{}>,
     envData: Array<{}>,
@@ -23,7 +23,11 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                         const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                         return server.server_info.concat(len).map((item: any, idx: number) => (
                             i === idx && <MachineGroupR style={style} gLen={group} key={idx}>
-                                <span>{item?.[name] || '-'}</span>
+                                <EllipsisPulic 
+                                    title={item?.[name] || '-'}
+                                >
+                                        {item?.[name] || '-'}
+                                </EllipsisPulic>
                             </MachineGroupR>
                         ))
                     })
@@ -56,7 +60,8 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                         <MachineGroupL>网卡信息</MachineGroupL>
                         <RenderItem i={i} name='ether' /> */}
                         <MachineGroupL>GCC</MachineGroupL>
-                        {
+                        <RenderItem i={i} name='gcc' />
+                        {/* {
                             envData.map((server: any, index: number) => {
                                 const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
                                 return server.server_info.concat(len).map((item: any, idx: number) => (
@@ -71,7 +76,7 @@ export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, gr
                                     </MachineGroupR>
                                 ))
                             })
-                        }
+                        } */}
                         {/* <MachineGroupL>RPM</MachineGroupL>
                         {
                             Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {

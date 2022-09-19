@@ -31,8 +31,8 @@ const BizUpload = forwardRef((props, ref) => {
       confirm({
         title: formatMessage({id: 'upload.list.Drawer.confirm.title'}),
         content: formatMessage({id: 'upload.list.Drawer.confirm.content'}),
-        cancelText: formatMessage({id: 'Drawer.btn.close'}),
-        okText: formatMessage({id: 'Drawer.btn.confirm'}),
+        cancelText: formatMessage({id: 'operation.cancel'}),
+        okText: formatMessage({id: 'operation.confirm'}),
         icon: <CloseCircleOutlined style={{ color: '#f5222d' }}/>,
       })
       return false

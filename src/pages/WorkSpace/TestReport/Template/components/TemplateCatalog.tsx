@@ -183,15 +183,16 @@ const TemplateCatalog = (props: any) => {
 
     React.useEffect(() => {
         const list = [
-            "need_test_background",
-            "need_test_method",
-            "need_test_conclusion",
-            "need_test_summary",
-            "need_test_env",
-            "test_data"
+            "need_test_background", "need_test_method", "need_test_conclusion",
+            "need_test_summary", "need_test_env", "test_data"
         ].map((i, idx) => [i, eleY(`#${prefix}${i}`), idx])
+        /* .filter((item) => {
+            const [, y] = item
+            return !isNaN(y)
+        }) */
         const cases = catalogSource.reduce((pre, cur, index) => {
-            const { treeData, id } = cur
+            const { treeData, id, show } = cur
+            if (!show) return pre
             /* @ts-ignore */
             return pre.concat([[id, eleY(`#${prefix}${id}`), 6 + index], ...getTreeClasses(treeData, id)])
         }, [])
@@ -205,24 +206,31 @@ const TemplateCatalog = (props: any) => {
         if (dots.length === 0) return
         for (let t = 0; t < dots.length; t++) {
             const [n, y, c] = dots[t]
-            const pf = `#left_${n}`
+            const pf = `#${prefix}left_${n}`
             const $dom = document.querySelector(pf) as HTMLDivElement
-            if (scrollTop < y) {
+
+            if (!isNaN(y) && scrollTop < y) {
                 if (Object.prototype.toString.call(c) === "[object String]") {
-                    const treeNode = document.querySelector(`#left_tree_${c}`) as HTMLDivElement
+                    const treeNode = document.querySelector(`#${prefix}left_tree_${c}`) as HTMLDivElement
                     setRoundHeight($dom?.offsetParent?.offsetTop + treeNode?.offsetTop)
                     setCount(`${c}_${n}`)
                     return
                 }
-                setRoundHeight($dom.offsetTop)
+                setRoundHeight($dom?.offsetTop)
                 setCount(c)
                 return
             }
+            /* if (t + 1 < dots.length) {
+                const next = dots[t + 1]
+                const [, top] = next
+            } */
         }
     }
 
+
     React.useEffect(() => {
         const dom = document.querySelector(containerDom)
+        scrollChange({ target: { scrollTop: 0 } })
         dom?.addEventListener("scroll", scrollChange)
         return () => {
             dom?.removeEventListener("scroll", scrollChange)
@@ -243,8 +251,6 @@ const TemplateCatalog = (props: any) => {
         const target = nativeEvent.target
 
         if (~target.offsetParent.className.indexOf("ant-tree-node-content-wrapper")) {
-            console.log(`${name}_${rowkey}`)
-            // console.log(prefix, id, prefix, document.querySelector(`#${prefix}${id}`))
             setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
             setCount(`${name}_${rowkey}`)
             document.querySelector(`#${prefix}${id}`)?.scrollIntoView()
@@ -279,18 +285,15 @@ const TemplateCatalog = (props: any) => {
                                 ["need_test_conclusion", "测试结论"],
                                 ["need_test_summary", "Summary"],
                                 ["need_test_env", "测试环境", "need_env_description"],
-                                ["test_data", "测试数据", "need_func_data"]
+                                ["test_data", "测试数据"]
                             ].map((n: any, i: any) => {
                                 const [field, title, field_2] = n
-                                if (!dataSource) return
-                                if (dataSource[field] || dataSource[field_2])
+                                if (field === "test_data" || !prefix || (dataSource[field] || dataSource[field_2]))
                                     return (
                                         <span
                                             key={field}
-                                            onClick={
-                                                () => handleCatalogItemClick(field, i)
-                                            }
-                                            id={`left_${field}`}
+                                            onClick={() => handleCatalogItemClick(field, i)}
+                                            id={`${prefix}left_${field}`}
                                             style={{
                                                 color: count === i ? '#1890FF' : '',
                                                 cursor: 'pointer'
@@ -299,7 +302,7 @@ const TemplateCatalog = (props: any) => {
                                             {title}
                                         </span>
                                     )
-                                return
+                                return <></>
                             })
                         }
 
@@ -310,12 +313,12 @@ const TemplateCatalog = (props: any) => {
                                         <CatalogDrageSpace key={index}>
                                             <span
                                                 onClick={(e) => handleCatalogItemClick(item.id, 6 + index)}
-                                                id={`left_${item.id}`}
+                                                id={`${prefix}left_${item.id}`}
                                                 style={{ color: count === 6 + index ? '#1890FF' : '', cursor: 'pointer' }}
                                             >
                                                 {item.name}
                                             </span>
-                                            <CatalogDrageSpace id={`left_tree_${item.id}`} style={{ marginTop: item.treeData.length > 0 ? 8 : 0 }}>
+                                            <CatalogDrageSpace id={`${prefix}left_tree_${item.id}`} style={{ marginTop: item.treeData.length > 0 ? 8 : 0 }}>
                                                 <Tree
                                                     treeData={item.treeData}
                                                     onDrop={onDrop}
@@ -325,7 +328,7 @@ const TemplateCatalog = (props: any) => {
                                                     titleRender={(node: any) => {
                                                         return (
                                                             <Typography.Text
-                                                                id={`left_${node.rowkey}`}
+                                                                id={`${prefix}left_${node.rowkey}`}
                                                                 style={{ color: `${node.name}_${node.rowkey}` === count ? '#1890FF' : '' }}
                                                             >
                                                                 {node.title}
@@ -336,8 +339,8 @@ const TemplateCatalog = (props: any) => {
                                                     onSelect={handleSelectTree}
                                                 />
                                             </CatalogDrageSpace>
-                                        </CatalogDrageSpace>
-                                        : null
+                                        </CatalogDrageSpace> :
+                                        <></>
                                 )
                             )
                         }

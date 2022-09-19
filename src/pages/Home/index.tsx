@@ -458,7 +458,7 @@ export default (): React.ReactNode => {
                             {/* 使用帮助 */}
                             <FormattedMessage id="pages.home.using.help" />
                             <div
-                                onClick={() => history.push(`/help_doc`)}
+                                onClick={() => history.push(`/help_doc/${helpDocAll[0].id}`)}
                                 style={{ marginRight: 0 }}
                                 className={styles.helps_list_more}>
                                 {/* 查看全部 */}

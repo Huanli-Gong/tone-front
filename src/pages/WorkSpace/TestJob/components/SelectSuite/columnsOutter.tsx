@@ -5,7 +5,7 @@ import { MinusCircleOutlined } from '@ant-design/icons'
 import { noop } from 'lodash'
 import styles from './style.less'
 import { Button , Tooltip } from 'antd'
-
+import { useIntl, FormattedMessage } from 'umi'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 
 interface Props {
@@ -17,6 +17,7 @@ interface Props {
     onDataSourceChange : any ,
     run_mode : string,
     width:number
+    formatMessage: any,
 }
 
 export default ({
@@ -27,7 +28,8 @@ export default ({
     dataSource = [],
     onDataSourceChange = noop,
     run_mode = '',
-    width
+    width,
+    formatMessage,
 } : Props) => {
     const onRemoveSuite = ( key : string ) => {
 		onDataSourceChange(
@@ -53,20 +55,20 @@ export default ({
     }
 
     const reboot = {
-        title: '重启',
+        title: formatMessage({id: 'select.suite.restart'}),
         dataIndex: 'reboot',
-        width : 100,
-        render: (_: any, row: any) => row.need_reboot ? '是' : '否',
+        width : 80,
+        render: (_: any, row: any) => row.need_reboot ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
     }
 
     const script = {
-        title: '脚本',
+        title: formatMessage({id: 'select.suite.script'}),
         dataIndex: 'script',
         width : 150,
         render: (_: any, row: any) => (
             row.setup_info || row.cleanup_info ?
                 <PopoverEllipsis 
-                    title={ `[重启前]:${row.setup_info || '-'}，[重启后]:${row.cleanup_info || '-'}` } 
+                    title={ `${formatMessage({id: 'select.suite.before.restart'})}:${row.setup_info || '-'}，${formatMessage({id: 'select.suite.after.restart'})}:${row.cleanup_info || '-'}` } 
                     width={'180px'}
                 />
                 : '-'
@@ -74,24 +76,25 @@ export default ({
     }
 
     const monitor = {
-        title: '监控',
+        title: formatMessage({id: 'select.suite.monitor'}),
         dataIndex: 'monitor',
-        width : 150,
+        width : 80,
         render: (_: any, row: any) => (
-            row.console === undefined ? '-' : row.console ? '是' : '否'
+            row.console === undefined ? '-' : row.console ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>
         ),
     }
 
     const priority = {
-        title: '执行优先级',
-        width : 150,
+        title: formatMessage({id: 'select.suite.priority'}),
+        width : 80,
         dataIndex: 'priority',
     }
 
     const option = {
-        title: '操作',
-        width : 65,
+        title: formatMessage({id: 'Table.columns.operation'}),
+        width : 100,
         dataIndex : 'title',
+        fixed: 'right',
         render: ( _ : any , row : any , index: number ) => (
             <>
                 {
@@ -101,7 +104,7 @@ export default ({
                         style={{ padding: 0, height: 'auto' }} 
                         onClick={() => openSuite(index, row)}
                     >
-                        配置
+                        <FormattedMessage id="select.suite.config"/>
                     </Button>
                 }
                 {

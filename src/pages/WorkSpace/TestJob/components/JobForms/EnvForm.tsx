@@ -11,7 +11,7 @@ import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import { getTextByJs } from '@/utils/hooks'
 import MonitorList from './MonitorList'
 
-import { useRequest, useParams } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 
 /**
@@ -19,6 +19,7 @@ import _ from 'lodash'
  */
 export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = null, template = {} }: FormProps) => {
     const { ws_id }: any = useParams()
+    const { formatMessage } = useIntl()
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
@@ -81,7 +82,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
     const { data: kernelList } = useRequest(
         () => queryKernelList({ enable: 'True' }) // , release : 'True'
     )
-
+    
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
             const {
@@ -177,24 +178,27 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             {
                 'reclone' in contrl &&
                 <Form.Item
-                    label={contrl.reclone.alias || contrl.reclone.show_name}
+                    label={contrl.reclone.alias || <FormattedMessage id={`job.form.${contrl.reclone.name}`}/>  }
                     name="reclone_contrl"
                     initialValue={false}
                 >
                     <Radio.Group disabled={disabled} onChange={({ target }) => setReset(target.value)}>
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                     </Radio.Group>
                 </Form.Item>
             }
             {
                 reset &&
                 <Form.Item label=" ">
-                    <Form.Item label="物理机">
+                    <Form.Item label={<FormattedMessage id="job.form.physical.machine" />}>
                         <Row gutter={10}>
                             <Col span={12}>
                                 <Form.Item name="os" noStyle>
-                                    <Select getPopupContainer={node => node.parentNode} placeholder="请选择iclone os镜像" disabled={disabled}>
+                                    <Select getPopupContainer={node => node.parentNode}
+                                        placeholder={<FormattedMessage id="job.form.iclone.os" />}
+                                        disabled={disabled}
+                                    >
                                         <Select.Option value="AliOS7U2-4.9-x86-64">AliOS7U2-4.9-x86-64</Select.Option>
                                         <Select.Option value="AliOS7U2-aarch64">AliOS7U2-aarch64</Select.Option>
                                         <Select.Option value="AliOS7U2-x86-64">AliOS7U2-x86-64</Select.Option>
@@ -203,7 +207,9 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             </Col>
                             <Col span={12}>
                                 <Form.Item name="app_name" noStyle>
-                                    <Select getPopupContainer={node => node.parentNode} placeholder="请选择iclone应用模板" disabled={disabled}>
+                                    <Select getPopupContainer={node => node.parentNode} 
+                                     placeholder={<FormattedMessage id="job.form.iclone.template" />}
+                                     disabled={disabled}>
                                         <Select.Option value="baseos_server">baseos_server</Select.Option>
                                         <Select.Option value="app_server">app_server</Select.Option>
                                     </Select>
@@ -211,22 +217,24 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             </Col>
                         </Row>
                     </Form.Item>
-                    <Form.Item name="vm" label="虚拟机">
-                        <Select getPopupContainer={node => node.parentNode} placeholder="请选择vm配置" disabled={disabled}></Select>
+                    <Form.Item name="vm" label={<FormattedMessage id="job.form.vm" />}>
+                        <Select getPopupContainer={node => node.parentNode} 
+                            placeholder={<FormattedMessage id="job.form.vm.config" />}
+                            disabled={disabled}></Select>
                     </Form.Item>
                 </Form.Item>
             }
             {
                 'kernel_install' in contrl &&
                 <Form.Item
-                    label={contrl.kernel_install.alias || contrl.kernel_install.show_name}
+                    label={contrl.kernel_install.alias || <FormattedMessage id={`job.form.${contrl.kernel_install.name}`}/> }
                     name="kernel_install"
                 >
                     <Radio.Group value={kernel} disabled={disabled} onChange={handleKernalInstallChange} >
-                        <Radio value="no">不安装</Radio>
-                        <Radio value="install_push">安装已发布</Radio>
-                        <Radio value="install_un_push">安装未发布</Radio>
-                        <Radio value="install_build_kernel">Build内核</Radio>
+                        <Radio value="no"><FormattedMessage id="job.form.uninstall" /></Radio>
+                        <Radio value="install_push"><FormattedMessage id="job.form.install_push" /></Radio>
+                        <Radio value="install_un_push"><FormattedMessage id="job.form.install_un_push" /></Radio>
+                        <Radio value="install_build_kernel"><FormattedMessage id="job.form.install_build_kernel" /></Radio>
                     </Radio.Group>
                 </Form.Item>
             }
@@ -245,55 +253,55 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             }
             {
                 kernel === 'install_build_kernel' &&
-                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} project_id={project_id} />
+                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} project_id={project_id}/>
             }
             {
                 'reboot' in contrl &&
                 <Form.Item
-                    label={contrl.reboot.alias || contrl.reboot.show_name}
+                    label={contrl.reboot.alias || <FormattedMessage id={`job.form.${contrl.reboot.name}`}/> }
                     name="need_reboot"
                 >
                     <Radio.Group disabled={disabled} onChange={handleRebootChange}>
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                     </Radio.Group>
                 </Form.Item>
             }
             {
                 'global_variable' in contrl &&
                 <Form.Item
-                    label={contrl.global_variable.alias || contrl.global_variable.show_name}
+                    label={contrl.global_variable.alias || <FormattedMessage id={`job.form.${contrl.global_variable.name}`}/> }
                 >
-                    <Form.Item
-                        name="env_info"
-                        // label="全局变量"
-                        rules={[
-                            () => ({
-                                validator(rule, value) {
-                                    if (value) {
-                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                        return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
-                                    }
-                                    else
-                                        return Promise.resolve()
-                                },
-                            })
-                        ]}
-                    >
-                        <Input.TextArea
-                            disabled={disabled}
-                            placeholder="格式：key=value，多个用空格或换行分割"
-                        />
-                    </Form.Item>
-                    <QuestionCircleComponent
+                <Form.Item
+                    name="env_info"
+                    // label="全局变量"
+                    rules={[
+                        () => ({
+                            validator(rule, value) {
+                                if (value) {
+                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                    return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'job.form.env_info.placeholder'}) );
+                                }
+                                else
+                                    return Promise.resolve()
+                            },
+                        })
+                    ]}
+                >
+                    <Input.TextArea
+                        disabled={disabled}
+                        placeholder={formatMessage({id: 'job.form.env_info.placeholder'}) }
+                    />
+                </Form.Item>
+                <QuestionCircleComponent
                         style={{ transform: "unset", top: 6 }}
                         contextNode={
                             <ul style={{ listStyle: 'auto', paddingInlineStart: 20, paddingTop: 15 }}>
-                                <li>定义多个全局变量，请使用空格和换行分割</li>
-                                <li>必须是字母、数字和下划线组合</li>
-                                <li>支持 value 中有双等号</li>
-                                <li>可以定义一个数组（使用括号）</li>
-                                <li>value中包含空格，则必须用双引号括起来</li>
+                                <li><FormattedMessage id="job.form.env_info.li1" /></li>
+                                <li><FormattedMessage id="job.form.env_info.li2" /></li>
+                                <li><FormattedMessage id="job.form.env_info.li3" /></li>
+                                <li><FormattedMessage id="job.form.env_info.li4" /></li>
+                                <li><FormattedMessage id="job.form.env_info.li5" /></li>
                             </ul>
                         } />
                 </Form.Item>
@@ -302,12 +310,12 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 'rpm' in contrl &&
                 <FormList
                     // label="安装RPM"
-                    label={contrl.rpm.alias || contrl.rpm.show_name}
+                    label={contrl.rpm.alias || <FormattedMessage id={`job.form.${contrl.rpm.name}`}/> }
                     listName="rpm_info"
                     textName="rpm"
                     radioName="pos"
-                    buttonText="+ 添加RPM包"
-                    placeholder={'请输入rpm包链接，多个用英文逗号或换行分割'}
+                    buttonText={formatMessage({id: 'job.form.rpm.buttonText'}) }
+                    placeholder={formatMessage({id: 'job.form.rpm.placeholder'}) }
                     buttonShow={reboot}
                     disabled={disabled}
                 />
@@ -316,12 +324,12 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 'script' in contrl &&
                 <FormList
                     // label="执行脚本"
-                    label={contrl.script.alias || contrl.script.show_name}
+                    label={contrl.script.alias || <FormattedMessage id={`job.form.${contrl.script.name}`}/>  }
                     listName="script_info"
                     textName="script"
                     radioName="pos"
-                    buttonText="+ 添加执行脚本"
-                    placeholder={'请输入脚本内容'}
+                    buttonText={formatMessage({id: 'job.form.script.buttonText'}) }
+                    placeholder={formatMessage({id: 'job.form.script.placeholder'}) }
                     buttonShow={reboot}
                     disabled={disabled}
                 />
@@ -330,7 +338,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 'monitor' in contrl &&
                 <Form.Item
                     // label="监控配置"
-                    label={contrl.monitor.alias || contrl.monitor.show_name}
+                    label={contrl.monitor.alias || <FormattedMessage id={`job.form.${contrl.monitor.name}.config`}/>  }
                     name="moniter_contrl"
                     initialValue={false}
                 >
@@ -343,14 +351,14 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             }
                         }}
                     >
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                     </Radio.Group>
                 </Form.Item>
             }
             {
                 monitor &&
-                <MonitorList disabled={disabled} formComponent={form} template={template} />
+                <MonitorList disabled={disabled} formComponent={form} template={template}/>
             }
         </Form>
     )

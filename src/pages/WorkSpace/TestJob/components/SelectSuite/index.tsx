@@ -7,7 +7,7 @@ import SelectDrawer from './SelectDrawer'
 import { suiteList } from './service';
 import SuiteTable from './SuiteTable'
 import styles from './style.less';
-import { useParams } from 'umi';
+import { useParams, useIntl, FormattedMessage } from 'umi';
 
 const SelectSuite: React.FC<any> = (
 	{
@@ -23,6 +23,7 @@ const SelectSuite: React.FC<any> = (
 		caseDataRef
 	}
 ) => {
+	const { formatMessage } = useIntl()
 	const { ws_id } = useParams<any>()
 	const outTable = useRef<any>(null)
 	const drawer: any = useRef(null)
@@ -88,11 +89,11 @@ const SelectSuite: React.FC<any> = (
 		data.map((item: any, index: number) => {
 			item.key = index + ''
 			item.title = item.name
-			item.children = item.test_case_list.map((el: any, sq: number) => {
+			item.children = item.test_case_list?.map((el: any, sq: number) => {
 				el.parentId = item.id
 				el.key = index + '-' + sq
 				el.title = el.name
-				el.ip = el.ip || '随机'
+				el.ip = el.ip || '随机'; // 此处的中文不能翻译，不破坏数据，在render的时候去匹配中英文。
 				return el
 			})
 			return item
@@ -159,7 +160,7 @@ const SelectSuite: React.FC<any> = (
 										custom_channel,
 										custom_ip,
 									}
-									
+
 									if (server_tag_id) {
 										if (_.isArray(server_tag_id)) {
 											obj.server_tag_id = _.filter(server_tag_id)
@@ -266,7 +267,7 @@ const SelectSuite: React.FC<any> = (
 		else
 			setTest_config(cluster.concat(data))
 	}
-	
+
 	const TableProps = {
 		disabled,
 		width,
@@ -290,14 +291,16 @@ const SelectSuite: React.FC<any> = (
 						onClick={SuiteSelect}
 						style={{ marginBottom: '12px' }}
 					>
-						选择用例
+						<FormattedMessage id="select.suite.select.case" />
 					</Button>
 					{
 						test_config.length > 0 &&
 						<span style={{ paddingLeft: 8 }}>
 							<Space>
 								<>
-									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>已选Test Suite</Typography.Text>
+									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>
+									  <FormattedMessage id="select.suite.selected" />
+									</Typography.Text>
 									<Badge
 										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
 										count={test_config.length}
@@ -330,7 +333,7 @@ const SelectSuite: React.FC<any> = (
 									</span>
 								))
 							}
-							<Typography.Text style={{ color: 'rgba(0,0,0,0.85)' }}>已被移除!</Typography.Text>
+							<Typography.Text style={{ color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="select.suite.removed" /></Typography.Text>
 						</Col>
 					</Row>
 				</div>
@@ -360,7 +363,7 @@ const SelectSuite: React.FC<any> = (
 			{
 				(standalone.length === 0 && cluster.length === 0) &&
 				<Card bodyStyle={{ width: width || '100%' }}>
-					<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="请先选择用例" />
+					<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.please.select.case" />} />
 				</Card>
 			}
 

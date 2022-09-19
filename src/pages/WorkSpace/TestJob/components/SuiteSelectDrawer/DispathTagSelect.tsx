@@ -1,11 +1,13 @@
 import { Select, Form, Tag } from 'antd'
 import { queryDispatchTags } from './services';
 import React, { useContext, useEffect, useState } from 'react'
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import { DrawerProvider } from './Provider'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import { tagRender } from '../untils'
 
 const DispathTagSelect = (props: any) => {
+    const { formatMessage } = useIntl()
     const { run_mode, server_type, serverObjectType, tagList } = props
 
     const { ws_id } = useParams<any>()
@@ -47,9 +49,16 @@ const DispathTagSelect = (props: any) => {
     }
 
     return (
-        <Form.Item name="server_tag_id" rules={[{ required: true, message: '请选择调度标签' }]}>
+        <Form.Item
+            name="server_tag_id" 
+            rules={[{ 
+                required: true, 
+                message: formatMessage({id: 'select.suite.server_tag_id.message'})
+            }]}
+        >
             <Select
-                placeholder="请选择调度标签"  //
+                title={formatMessage({id: 'select.suite.server_tag_id.message'})}
+                placeholder={<FormattedMessage id="select.suite.server_tag_id.message" />}
                 style={{ width: '100%' }}
                 allowClear
                 filterOption={false}

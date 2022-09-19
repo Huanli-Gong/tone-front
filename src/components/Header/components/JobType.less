@@ -3,9 +3,10 @@
   max-height: 320px;
   overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  // display: flex;
+  // flex-wrap: wrap;
+  // justify-content: flex-start;
+  height: 320px;
   padding: 0 12px 4px 12px;
 
   //自动移滚动条样式
@@ -36,6 +37,7 @@
     cursor: pointer;
     position: relative;
     border-radius: 4px;
+    display: inline-block;
     //margin:0 8px 16px 8px;
     &:hover {
       box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.15);
@@ -49,6 +51,16 @@
       background: #fff url('~@/assets/img/project_default_icon.svg') no-repeat right top / 31px 31px;
       cursor: pointer;
     }
+    .right_default_en {
+      height: 31px;
+      width: 31px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: #fff url('~@/assets/img/project_default_icon_en.svg') no-repeat right top / 31px 31px;
+      cursor: pointer;
+    }
+
     .type_modal_title {
       margin: 16px 16px 9px 16px;
       font-size: 14px;

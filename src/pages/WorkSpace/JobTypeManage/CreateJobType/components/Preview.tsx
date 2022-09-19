@@ -26,7 +26,7 @@ export default forwardRef(
     ({ item_dict = {}, name = '', server_type = '', test_type = '', description = '', onOk }: PreviewProps, ref: any) => {
         const { ws_id }: any = useParams()
         const [visible, setVisible] = useState(false)
-
+        const [projectId, setProjectId] = useState()
         const bodyRef = useRef<any>()
         const { width: windowWidth }: any = useClientSize()
 
@@ -56,6 +56,10 @@ export default forwardRef(
                 }, {}
             )
         }, [item_dict])
+
+        const queryProjectId = (id: any) => {
+            setProjectId(id)
+        }
 
         const handleBack = () => {
             setVisible(false)
@@ -119,7 +123,7 @@ export default forwardRef(
                                         <div className={styles.page_body_nav}>
                                             <span>基础配置</span>
                                         </div>
-                                        <BasicForm disabled={false} contrl={items.basic} />
+                                        <BasicForm disabled={false} contrl={items.basic}  callBackProjectId={queryProjectId}/>
                                     </Row>
                                 }
                                 {
@@ -128,7 +132,7 @@ export default forwardRef(
                                         <div className={styles.page_body_nav}>
                                             <span>环境准备</span>
                                         </div>
-                                        <EnvForm disabled={false} contrl={items.env} />
+                                        <EnvForm disabled={false} contrl={items.env} project_id={projectId}/>
                                     </Row>
                                 }
                                 {

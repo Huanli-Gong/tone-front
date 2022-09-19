@@ -19,6 +19,7 @@ export default {
   'sorry, the page cannot be accessed': 'Sorry, the page cannot be accessed…',
   'page links may have expired or been deleted': 'Page links may have expired or been deleted.',
   'no.use.case': 'No test case.',
+  'select.suite.random': 'Random',
   
 	'system.image': 'Public Image',
   'self.image': 'Custom Image',

@@ -94,11 +94,14 @@ const ReportSummary = () => {
     )
 
     const PerfFlag = useMemo(() => {
-        let baseIndex = baselineGroupIndex === 0 ? 1 : 0
-        return JSON.stringify(logoData[baseIndex].pref_data) !== '{}'
+        let baseIndex = 0
+        if(logoData.length > 1){
+            baseIndex = baselineGroupIndex === 0 ? 1 : 0
+        }
+        return JSON.stringify(logoData[baseIndex].perf_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
-    const FuncFlag = useMemo(() => {
+    const FuncFlag:any = useMemo(() => {
         return JSON.stringify(logoData[baselineGroupIndex].func_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
@@ -130,10 +133,10 @@ const ReportSummary = () => {
                         })
                     }
                 </Group>
-                {domainResult.is_default && PerfFlag && <RenderPerfItem />}
-                {(!domainResult.is_default && domainResult.need_perf_data) && PerfFlag && <RenderPerfItem />}
-                {domainResult.is_default && FuncFlag && <RenderFuncItem />}
-                {(!domainResult.is_default && domainResult.need_func_data) && FuncFlag && <RenderFuncItem />}
+                {(domainResult.is_default && PerfFlag) && <RenderPerfItem />}
+                {((!domainResult.is_default && domainResult.need_perf_data) && PerfFlag) && <RenderPerfItem />}
+                {(domainResult.is_default && FuncFlag) && <RenderFuncItem />}
+                {((!domainResult.is_default && domainResult.need_func_data) && FuncFlag) && <RenderFuncItem />}
             </Summary>
         </ModuleWrapper>
     )

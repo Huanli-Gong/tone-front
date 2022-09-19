@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle } from 'react';
 import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { useRequest, useAccess, Access, useParams } from 'umi'
+import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from '../service';
 import styles from './index.less';
@@ -20,6 +20,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     treeData = [],
     loading,
 }) => {
+    const { formatMessage } = useIntl()
     const { Search } = Input;
     const { ws_id } = useParams<any>()
     const access = useAccess()
@@ -154,7 +155,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                     }]
                     el.priority = 10
                     el.server_object_id = undefined
-                    el.ip = el.ip || '随机'
+                    el.ip = el.ip || '随机'; // 此处的中文不能翻译，不破坏数据，在render的时候去匹配中英文。
                     el.env_info = el.var ? (JSON.parse(el.var).length > 0 ? JSON.parse(el.var) : []) : []
                     return el
                 }
@@ -204,7 +205,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
             maskClosable={false}
             keyboard={false}
             className={styles.suite}
-            title="用例列表"
+            title={<FormattedMessage id="select.suite.drawer.title" />}
             width={634}
             forceRender={true}
             destroyOnClose={true}
@@ -219,10 +220,10 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                         checked={checkAll}
                         style={{ float: 'left' }}
                     >
-                        全选
+                        <FormattedMessage id="select.suite.drawer.checkbox" />
                     </Checkbox>
-                    <Button onClick={onCancel} style={{ marginRight: 8 }}>取消</Button>
-                    <Button onClick={onOk} type="primary">确定</Button>
+                    <Button onClick={onCancel} style={{ marginRight: 8 }}><FormattedMessage id="operation.cancel" /></Button>
+                    <Button onClick={onOk} type="primary"><FormattedMessage id="operation.ok" /></Button>
                 </div>
             }
         >
@@ -230,14 +231,14 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                 <div>
                     <Search
                         onSearch={(value: any) => setName(value.replace(/\s+/g, ""))}
-                        placeholder="请输入"
+                        placeholder={formatMessage({id: 'select.suite.search.placeholder' })}
                         style={{ width: 420, marginBottom: 16 }}
                     />
                     {
                         control.includes('domain') &&
                         <>
                             <div style={{ position: 'relative', display: 'flex' }}>
-                                <div className={styles.nav}>领域：</div>
+                                <div className={styles.nav}><FormattedMessage id="select.suite.domain" />：</div>
                                 <div className={styles.domainList_Tab}>
                                     <Button
                                         className={styles.domain_all}
@@ -245,7 +246,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                                         type={domain === '' ? 'primary' : 'ghost'}
                                         onClick={() => handleDomainChange('')}
                                     >
-                                        全部
+                                        <FormattedMessage id="select.suite.all.btn" />
                                     </Button>
                                     {
                                         domainList.map((item: any, index: number) => {
@@ -271,7 +272,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                                     icon={expand ? <UpOutlined /> : <DownOutlined />}
                                     style={{ position: 'absolute', right: 0 }}
                                 >
-                                    {expand ? '收起' : '展开'}
+                                    {expand ? formatMessage({id: 'operation.collapse'}) : formatMessage({id: 'operation.expand' }) }
                                 </Button>
                             </div>
                             <hr className={styles.dividing_line} />
@@ -283,7 +284,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                     <>
                         <div className={styles.selection_table_thead}>
                             <div style={{ width: 200 }}>Test Suite</div>
-                            <div>业务名称</div>
+                            <div><FormattedMessage id="select.suite.business.name" /></div>
                         </div>
                         <Tree
                             className={styles.selection_table_tbody}
@@ -305,7 +306,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                     </>
                 ) : (
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.no.case" />} />
                         <Access accessible={access.WsMemberOperateSelf()}>
                             <Button
                                 type="primary"
@@ -317,7 +318,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                                     )
                                 }
                             >
-                                添加用例
+                                <FormattedMessage id="select.suite.add.case" />
                             </Button>
                         </Access>
                     </div>
