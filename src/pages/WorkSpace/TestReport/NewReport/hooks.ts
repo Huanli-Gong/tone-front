@@ -109,7 +109,7 @@ export const CreatePageData = (props: any) => {
     /*
        *** 默认和自定义模版的切换
    */
- 
+
     const switchReport = useMemo(() => {
         return saveReportData.is_default
     }, [saveReportData])
@@ -232,7 +232,7 @@ export const CreatePageData = (props: any) => {
                             }
                         }
                     }
-                } 
+                }
                 if (obj.func_item && !!obj.func_item.length) {
                     if (!!func_data_result.length) {
                         for (let res = obj.func_item, m = 0; m < res.length; m++) { // 自定义domain分组
@@ -510,7 +510,7 @@ export const CreatePageData = (props: any) => {
                     fail: funcCount?.fail_case,
                 }
             }
-            
+
             if (perf_data_result && !!perf_data_result.length) {
                 let perfAll = perf_data_result.reduce((pre: any, cur: any) => {
                     const { all } = cur.base_count
@@ -538,7 +538,7 @@ export const CreatePageData = (props: any) => {
         if (func_data_result && !!func_data_result.length) {
             base_group = {
                 ...base_group,
-                func_data:{
+                func_data: {
                     ...func_data_result.reduce((pre: any, cur: any) => {
                         const { all_case, success_case, fail_case } = cur.base_count
                         return {
@@ -548,7 +548,7 @@ export const CreatePageData = (props: any) => {
                         }
                     }, { funcAll: 0, success: 0, fail: 0 })
                 }
-                
+
             }
         }
         newObj.custom = '-',
@@ -572,7 +572,9 @@ export const CreatePageData = (props: any) => {
         let compare = deep.compare_groups
         let base = deep.base_group
         compare.splice(baselineGroupIndex, 0, base)
-        compare[baselineGroupIndex].is_base = true
+        if (baselineGroupIndex !== -1) {
+            compare[baselineGroupIndex].is_base = true
+        }
         setEnvData(compare)
     }, [environmentResult])
 
@@ -583,7 +585,7 @@ export const CreatePageData = (props: any) => {
     return {
         environmentResult,
         allGroupData: allGroupList,
-        baselineGroupIndex:  baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
+        baselineGroupIndex: baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
         compareResult,
         compareGroupData,
         domainGroupResult,

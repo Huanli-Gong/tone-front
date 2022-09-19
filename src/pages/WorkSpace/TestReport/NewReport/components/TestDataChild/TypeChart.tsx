@@ -98,6 +98,8 @@ const TypeChart = (props: any) => {
                             value: item.test_value,
                             compare_value: item.compare_value,
                             compare_result: item.compare_result,
+                            cv_threshold:metric.cv_threshold,
+                            cmp_threshold:metric.cmp_threshold
                         })
                     })
                 })

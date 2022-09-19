@@ -1,5 +1,6 @@
 import React, { useContext, useState, useRef } from 'react'
 import { Form, Select, Input } from 'antd'
+import { useIntl, FormattedMessage } from 'umi';
 import { DrawerProvider } from './Provider'
 import styles from '../SelectSuite/style.less'
 import { checkIpAndSn } from './services';
@@ -15,6 +16,7 @@ type IProps = {
 }
 
 const CustomServer: React.FC<IProps> = (props: any) => {
+    const { formatMessage } = useIntl()
     const { mask, multipInfo, form } = props
     const { setMask, setLoading } = useContext<any>(DrawerProvider)
 
@@ -49,7 +51,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                     className={styles.btn_style}
                     onClick={() => deployClick(data)}
                 >
-                    部署ToneAgent
+                    <FormattedMessage id="select.suite.deploy.toneagent" />
                 </span>
             }
         </span>
@@ -61,11 +63,15 @@ const CustomServer: React.FC<IProps> = (props: any) => {
             <Form.Item
                 name="custom_channel"
                 style={{ width: '100%' }}
-                rules={!mask ? [{ required: true, message: '请选择机器类型' }] : []}
+                rules={!mask ? 
+                    [{ required: true, message: formatMessage({id:'select.suite.custom_channel'}) }] 
+                    : 
+                    []
+                }
             >
                 <AgentSelect
                     style={{ width: '100%' }}
-                    placeholder={multipInfo.selfServer ? '多个数值' : '请选择机器类型(agent)'}
+                    placeholder={multipInfo.selfServer ? formatMessage({id:'select.suite.multiple.values'}): formatMessage({id:'select.suite.agent.select'})}
                     onChange={(value: any) => {
                         setMask(false)
                         value && form.validate
@@ -80,13 +86,13 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                 rules={[
                     {
                         required: true,
-                        message: "请输入IP/SN"
+                        message: formatMessage({id: 'select.suite.custom_ip'})
                     },
                     {
                         async validator(rule, value) {
-                            if (!value) return Promise.resolve("请输入IP/SN")
+                            if (!value) return Promise.resolve(formatMessage({id: 'select.suite.custom_ip'}))
                             const channel_type = form.getFieldValue('custom_channel')
-                            if (!channel_type) return Promise.reject("请选择机器类型")
+                            if (!channel_type) return Promise.reject(formatMessage({id: 'select.suite.custom_channel'}))
                             setLoading(true)
                             // 接口校验
                             const { code, msg } = await checkIpAndSn({ ip: value, channel_type }) || {}
@@ -103,7 +109,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
             >
                 <Input
                     allowClear
-                    placeholder={multipInfo.selfServer ? '多个数值' : `请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`}
+                    placeholder={multipInfo.selfServer ? formatMessage({id:'select.suite.multiple.values'}): `${formatMessage({id:'select.suite.enter.ip'})}${!BUILD_APP_ENV ? "/SN" : ""}`}
                     autoComplete="off"
                 />
             </Form.Item>

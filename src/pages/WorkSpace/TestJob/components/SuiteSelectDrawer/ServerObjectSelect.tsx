@@ -3,9 +3,10 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';
 import { DrawerProvider } from './Provider'
 import { RenderSelectItems } from '../untils'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 
 const ServerObjectSelect = (props: any) => {
+    const { formatMessage } = useIntl()
     const { serverObjectType, run_mode, server_type, serverList } = props
     const { ws_id } = useParams<any>()
     const { setServerList } = useContext<any>(DrawerProvider)
@@ -76,9 +77,9 @@ const ServerObjectSelect = (props: any) => {
     const switchServerMessage = useMemo(
         () => {
             switch (serverObjectType) {
-                case 'server_object_id': return '请选择机器';
-                case 'instance': return '请选择机器实例';
-                case 'setting': return '请选择机器配置';
+                case 'server_object_id': return formatMessage({id: 'select.suite.server_object_id.message'});
+                case 'instance': return formatMessage({id: 'select.suite.instance.message'});
+                case 'setting': return formatMessage({id: 'select.suite.setting.message'});
                 default: return ''
             }
         }, [serverObjectType]
@@ -115,6 +116,7 @@ const ServerObjectSelect = (props: any) => {
                         rules={[{ required: true, message: switchServerMessage }]}
                     >
                         <Select
+                            title={switchServerMessage}
                             allowClear
                             style={{ width: '100%' }}
                             placeholder={switchServerMessage}
