@@ -67,8 +67,8 @@ export default {
   'rejected': 'Rejected',
 	'nothing': 'Nothing',
 
-  'please.select': 'Please.select',
-  'please.enter': 'Please.enter',
+  'please.select': 'Please select',
+  'please.enter': 'Please enter',
 	'please.enter.message': 'The value can contain a maximum of 32 characters, including letters, digits, underscores (_), hyphens (-), and dots (.)',
   'format.key.value': 'Format: key = value, multiple separated by spaces or newlines',
   'no.data': 'No Data',

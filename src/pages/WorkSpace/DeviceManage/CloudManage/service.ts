@@ -182,3 +182,8 @@ export function delGroupMachine ( id:number ) {
         method: 'DELETE'
     })
 }
+
+//云上机器同步状态
+export const stateRefresh = async (data: any) => {
+    return request('/api/server/sync_state/', { method: 'post', data })
+}

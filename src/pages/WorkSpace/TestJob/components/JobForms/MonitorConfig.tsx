@@ -1,10 +1,12 @@
 import React from 'react'
 import { Form, Row, Select, Col, Input, Popover, Descriptions } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { DeleteFormListItem } from '../DeleteFormListItem'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import _ from 'lodash'
 import styles from './index.less'
 export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,form }: any) => {
+    const { formatMessage } = useIntl()
 
     const handleMachineType = (value: string) => {
         setFormsValueFn(index, value)
@@ -24,16 +26,26 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
             <Col span={6}>
                 <Form.Item name={[field.name, "monitor_type"]}>
                     <Select onChange={handleMachineType} defaultValue='case_machine' disabled={disabled}>
-                        <Select.Option value="case_machine" disabled={typeDisabled}>本机</Select.Option>
-                        <Select.Option value="custom_machine">自定义</Select.Option>
+                        <Select.Option value="case_machine" disabled={typeDisabled}>
+                            <FormattedMessage id="job.form.case.machine" />
+                        </Select.Option>
+                        <Select.Option value="custom_machine">
+                            <FormattedMessage id="job.form.custom.machine" />
+                        </Select.Option>
                     </Select>
                 </Form.Item>
             </Col>
 
             <Col span={18} style={{ position: 'relative' }}>
                 {machineType === 'custom_machine' &&
-                    <Form.Item name={[field.name, "server"]} rules={[{ required: true,pattern: /^[A-Za-z0-9\._-]+$/, message: '请输入英文大小写、数字、特殊字符下划线、中划线和点' }]}>
-                        <Input placeholder={`请输入监控机器的IP${!BUILD_APP_ENV ? "/SN" : ""}地址`} allowClear disabled={disabled} />
+                    <Form.Item name={[field.name, "server"]} 
+                    rules={[
+                        { 
+                            required: true,pattern: /^[A-Za-z0-9\._-]+$/, 
+                            message: formatMessage({id: 'job.form.custom.machine.message'}),
+                        }
+                    ]}>
+                        <Input placeholder={`${formatMessage({id: 'job.form.input.machine.ip'})}${!BUILD_APP_ENV ? "/SN" : ""}${formatMessage({id: 'job.form.address'})}`} allowClear disabled={disabled} />
                     </Form.Item>
                 }
                 {
@@ -41,9 +53,14 @@ export default ({ field, index, disabled, remove, setFormsValueFn, typeDisabled,
                     <Popover
                         overlayStyle={{ zIndex: 10000 }}
                         content={
-                            <Descriptions title="监控说明" bordered column={1} size="small" className={styles.monitorDes}>
-                                <Descriptions.Item label="本机" labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>仅对当前Job的所有用例分配到的机器进行数据监控。</Descriptions.Item>
-                                <Descriptions.Item label="自定义" labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>用户可通过手动输入IP{`${!BUILD_APP_ENV ? "/SN" : ""}`}的方式，添加机器进行监控。</Descriptions.Item>
+                            <Descriptions title={<FormattedMessage id="job.form.monitor.instructions" />}
+                                bordered column={1} size="small" className={styles.monitorDes}>
+                                <Descriptions.Item label={<FormattedMessage id="job.form.case.machine" />} labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>
+                                    <FormattedMessage id="job.form.only.monitor.all.use.cases.machine" />
+                                </Descriptions.Item>
+                                <Descriptions.Item label={<FormattedMessage id="job.form.custom.machine" />} labelStyle={{paddingTop: '5px',paddingBottom: '5px'}}>
+                                    <FormattedMessage id="job.form.users.can.enter.IP" />{`${!BUILD_APP_ENV ? "/SN" : ""}`}<FormattedMessage id="job.form.add.machine.monitoring" />
+                                </Descriptions.Item>
                             </Descriptions>
                         }
                     >

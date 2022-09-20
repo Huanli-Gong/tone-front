@@ -167,8 +167,10 @@ const Performance = (props: any) => {
                     metric.sortNum = 2
                 } else if (result?.compare_result == 'invalid') {
                     metric.sortNum = 3
-                } else {
+                } else if (result?.compare_result == 'na') {
                     metric.sortNum = 4
+                }else {
+                    metric.sortNum = 5
                 }
 
                 metric_list.push({

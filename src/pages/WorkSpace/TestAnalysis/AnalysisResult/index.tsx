@@ -226,7 +226,7 @@ const Report = (props: any) => {
             compare.splice(baselineGroupIndex, 0, base)
             setEnvData(compare)
         }
-    }, [environmentResult])
+    }, [environmentResult.compare_groups])
     
     return (
         <ReportContext.Provider

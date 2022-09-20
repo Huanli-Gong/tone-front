@@ -12,7 +12,7 @@ import CommonPagination from '@/components/CommonPagination'
 import OperationLog from '@/components/Public/Log'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import SelectDropSync from '@/components/Public/SelectDropSync';
-import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTestServer, queryServerDel } from '../services'
+import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTestServer, queryServerDel, stateRefresh } from '../services'
 import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
 import { useClientSize } from '@/utils/hooks'
@@ -181,7 +181,14 @@ const Standalone = (props: any, ref: any) => {
         }
     }
 
-
+    const handleRefresh = async(row:any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider:'aligroup' })
+        if (code === 200) {
+            message.success('同步状态成功')
+            getTestServerList()
+        }
+        else requestCodeMessage(code, msg)
+    }
 
     const handleSelectedRowKeys = useCallback(
         (selectedRowKeys) => {
@@ -434,6 +441,7 @@ const Standalone = (props: any, ref: any) => {
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link"
@@ -444,6 +452,7 @@ const Standalone = (props: any, ref: any) => {
                         }
                     >
                         <Space>
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>
                             <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)}>编辑</Button>
                             <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
                             {

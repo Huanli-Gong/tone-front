@@ -1,5 +1,6 @@
 import React from 'react'
 import { Form , Row , Col , Input , Radio , Button } from 'antd'
+import { useIntl, FormattedMessage } from 'umi';
 import { DeleteFormListItem } from './DeleteFormListItem'
 
 export default ( { label , listName , textName , disabled , radioName , buttonShow , buttonText , placeholder } : any ) => {
@@ -38,13 +39,13 @@ export default ( { label , listName , textName , disabled , radioName , buttonSh
                                                 {
                                                     ( !disabled && buttonShow ) && 
                                                     <Form.Item 
-                                                        label="执行时机" 
+                                                        label={<FormattedMessage id="job.form.execution.time" />}
                                                         style={{ marginBottom : fields.length - 1 === index ? 0 : 8 }} 
                                                         name={[ field.name, radioName ]} 
                                                     >
                                                         <Radio.Group disabled={ disabled }>
-                                                            <Radio value="before">重启前</Radio>
-                                                            <Radio value="after">重启后</Radio>
+                                                            <Radio value="before"><FormattedMessage id="job.form.restart.before" /></Radio>
+                                                            <Radio value="after"><FormattedMessage id="job.form.restart.after" /></Radio>
                                                         </Radio.Group>
                                                     </Form.Item>
                                                 }

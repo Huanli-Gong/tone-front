@@ -50,12 +50,12 @@ export default (props: any) => {
         const flag = helpData.some((item: any) => Number(item.id) === Number(help_id))
         if (!flag) {
             id = (helpData.length && helpData[0]['id']) || ''
-
         }
         debounced(id)
         setHelpId(id)
         setHelps(helpData || [])
-    }, [helpData])
+    }, [helpData,help_id])
+
     useEffect(() => {
         odivContenteditable = document.querySelector('div[contenteditable = "false"]')
         odivContenteditable && odivContenteditable.addEventListener('click', handleClickImage, true)

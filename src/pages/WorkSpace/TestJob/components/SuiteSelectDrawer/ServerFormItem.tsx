@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useContext, useEffect } from 'react'
 import { Form, Col, Radio, Row, Select, Input, InputNumber } from 'antd'
+import { useIntl, FormattedMessage } from 'umi';
 import { QusetionIconTootip } from '../untils'
 import ServerObjectSelect from './ServerObjectSelect'
 import DispathTagSelect from './DispathTagSelect'
@@ -12,6 +13,7 @@ import _ from 'lodash'
 
 export default memo(
     (props: any) => {
+        const { formatMessage } = useIntl()
         const { batch, server_type, run_mode, form, serverType, serverObjectType, mask, multipInfo } = props
         const {
             setServerObjectType, setServerType, setMask, settingType, setServerList, setTagList,
@@ -49,15 +51,17 @@ export default memo(
                     <Form.Item
                         label={
                             settingType === 'suite' ?
-                                <QusetionIconTootip title="机器" desc="对选中Suite下所有Conf生效" /> :
-                                '机器'
+                                <QusetionIconTootip 
+                                    title={formatMessage({id: 'select.suite.the.server'})}
+                                    desc={formatMessage({id: 'select.suite.the.server.desc'})} />
+                                : formatMessage({id: 'select.suite.the.server'})
                         }
                         className={'drawer_padding'}
                     >
                         <Radio.Group value={serverType} onChange={handleServerTypeChange} >
-                            <Radio value={'pool'}>机器池</Radio>
+                            <Radio value={'pool'}><FormattedMessage id="select.suite.the.server.pool" /></Radio>
                             {
-                                server_type !== 'aliyun' && run_mode === 'standalone' && <Radio value={'custom'}>自持有机器</Radio>
+                                server_type !== 'aliyun' && run_mode === 'standalone' && <Radio value={'custom'}><FormattedMessage id="select.suite.self.owned.server" /></Radio>
                             }
                         </Radio.Group>
                     </Form.Item>
@@ -65,12 +69,13 @@ export default memo(
 
                 {
                     (mask && batch) &&
-                    <Form.Item className={'drawer_padding'} label="机器" >
+                    <Form.Item className={'drawer_padding'} 
+                        label={<FormattedMessage id="select.suite.the.server" />}>
                         <label className="ant-radio-wrapper" onClick={() => handleHideMask('pool')}>
                             <span className="ant-radio ant-radio-checked">
                                 <span className={`ant-radio-inner ${!multipInfo.serverPool ? styles.serverItemUncheckeds : ''}`} style={{ borderColor: '#d9d9d9' }} />
                             </span>
-                            <span>机器池</span>
+                            <span><FormattedMessage id="select.suite.the.server.pool" /></span>
                         </label>
                         {
                             server_type !== 'aliyun' && run_mode === 'standalone' &&
@@ -78,7 +83,7 @@ export default memo(
                                 <span className="ant-radio ant-radio-checked">
                                     <span className={`ant-radio-inner ${!multipInfo.selfServer ? styles.serverItemUnchecked : ''}`} style={{ borderColor: '#d9d9d9' }} />
                                 </span>
-                                <span>自持有机器</span>
+                                <span><FormattedMessage id="select.suite.self.owned.server" /></span>
                             </label>
                         }
                     </Form.Item>
@@ -97,28 +102,29 @@ export default memo(
                                         style={{ width: '100%' }}
                                         value={serverObjectType}
                                         onChange={handleServerObjectTypeChange}
-                                        placeholder={'多个数值'}
+                                        placeholder={formatMessage({id: 'select.suite.multiple.values'})}
                                     >
-                                        <Select.Option value={'ip'}>随机</Select.Option>
+                                        <Select.Option value={'ip'}><FormattedMessage id="select.suite.random" /></Select.Option>
                                         {
                                             (server_type === 'aliyun' && run_mode === 'standalone') ?
                                                 <>
-                                                    <Select.Option value={'instance'}>指定机器实例</Select.Option>
-                                                    <Select.Option value={'setting'}>指定机器配置</Select.Option>
+                                                    <Select.Option value={'instance'}><FormattedMessage id="select.suite.instance" /></Select.Option>
+                                                    <Select.Option value={'setting'}><FormattedMessage id="select.suite.setting" /></Select.Option>
                                                 </> :
-                                                <Select.Option value={'server_object_id'}>指定</Select.Option>
+                                                <Select.Option value={'server_object_id'}><FormattedMessage id="select.suite.server_object_id" /></Select.Option>
                                         }
-                                        <Select.Option value={'server_tag_id'}>标签</Select.Option>
+                                        <Select.Option value={'server_tag_id'}><FormattedMessage id="select.suite.server_tag_id" /></Select.Option>
                                     </Select>
                                 </Col>
                                 <Col span={14}>
                                     {
                                         ( serverObjectType === 'ip' || !serverObjectType ) &&
                                         <Input
+                                            title={formatMessage({id: 'select.suite.randomly.schedule'})}
                                             style={{ width: '100%' }}
                                             autoComplete="off"
                                             disabled={true}
-                                            placeholder="随机从机器池调度机器"
+                                            placeholder={formatMessage({id: 'select.suite.randomly.schedule'})}
                                         />
                                     }
                                     {
@@ -140,7 +146,7 @@ export default memo(
                     label={
                         <QusetionIconTootip
                             title="Repeat"
-                            desc={`${settingType === 'suite' ? '对选中Suite下所有Conf生效，' : ''}范围1-10000`}
+                            desc={`${settingType === 'suite' ? formatMessage({id: 'select.suite.repeat.tootip1'}): formatMessage({id: 'select.suite.repeat.tootip2'})}`}
                         />
                     }
                     className={'drawer_padding'}
@@ -150,7 +156,7 @@ export default memo(
                         min={1}
                         step={1}
                         max={10000}
-                        placeholder={multipInfo.repeat ? '多个数值' : '请输入'}
+                        placeholder={formatMessage({ id: multipInfo.repeat ? 'select.suite.multiple.values' : 'please.enter' }) }
                     />
                 </Form.Item>
 

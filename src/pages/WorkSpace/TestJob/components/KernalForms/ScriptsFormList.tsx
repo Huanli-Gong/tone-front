@@ -1,8 +1,10 @@
 import React from 'react'
 import { Form , Row , Col , Input , Button, Radio , Divider } from 'antd'
 import { DeleteFormListItem } from '../DeleteFormListItem'
+import { useIntl, FormattedMessage } from 'umi'
 
 export default ({ disabled = false } : any ) => {
+    const { formatMessage } = useIntl()
     return (
         <Form.List name="scripts" >
             {
@@ -15,12 +17,13 @@ export default ({ disabled = false } : any ) => {
                                     <Row key={field.key}>
                                         <Col span={ 24 }>
                                             <Form.Item 
-                                                label="内核脚本" 
+                                                label={<FormattedMessage id="kernel.form.script" /> }
                                                 name={[ field.name, "script" ]} 
                                                 wrapperCol={{ span : 17 }} 
                                                 labelCol={{ span : 6 }} 
                                             >
-                                                <Input.TextArea placeholder="请输入内核脚本内容" disabled={ disabled }/>
+                                                <Input.TextArea placeholder={formatMessage({id:'kernel.form.script.placeholder'})} 
+                                                    disabled={ disabled }/>
                                             </Form.Item>
                                             {
                                                 ( !disabled && index > 0 ) && 
@@ -33,13 +36,13 @@ export default ({ disabled = false } : any ) => {
                                             <Row>
                                                 <Col span={ 18 } offset={ 6 } >
                                                     <Form.Item
-                                                        label="安装时机"
+                                                        label={<FormattedMessage id="kernel.form.pos" /> }
                                                         name={[field.name, "pos"]}
                                                         style={{ marginBottom : 0 }}
                                                     >
                                                         <Radio.Group disabled={ disabled }>
-                                                            <Radio value="before">安装内核前</Radio>
-                                                            <Radio value="after">安装内核后</Radio>
+                                                            <Radio value="before"><FormattedMessage id="kernel.form.pos.before" /></Radio>
+                                                            <Radio value="after"><FormattedMessage id="kernel.form.pos.after" /></Radio>
                                                         </Radio.Group>
                                                     </Form.Item>
                                                 </Col>
@@ -63,7 +66,7 @@ export default ({ disabled = false } : any ) => {
                                     size="small"
                                     style={{ padding : 0 , fontSize : 12 }}
                                 >
-                                    + 添加内核脚本
+                                    <FormattedMessage id="kernel.form.add.kernel" />
                                 </Button>
                             </Form.Item>
                         }
