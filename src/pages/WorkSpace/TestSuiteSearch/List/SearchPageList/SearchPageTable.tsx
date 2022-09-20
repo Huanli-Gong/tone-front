@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Space, Table, Row, Pagination, message, Typography } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
+import { useIntl, FormattedMessage } from 'umi'
 import { matchType } from '@/utils/utils'
 import { querySearchList } from '../../service'
 import styles from './SearchPageTable.less'
 
 // 列表
 const SearchPageList: React.FC<any> = (props: any) => {
+  const { formatMessage } = useIntl()
   const { searchKey = "", tabKey, ws_id, refresh, loadingCallback = () => { } } = props
 
   // 分页数据
@@ -116,9 +118,9 @@ const SearchPageList: React.FC<any> = (props: any) => {
             {matchTextColor(item.suite_name)}
           </span>
           <div className={styles.content_tag}>
-            <span>{matchType(item.run_mode)}</span>
+            <span>{matchType(item.run_mode, formatMessage)}</span>
             <Space>
-              {item.test_type && <div className={styles.type_tag}>{matchType(item.test_type)}</div>}
+              {item.test_type && <div className={styles.type_tag}>{matchType(item.test_type, formatMessage)}</div>}
               {item.domain_name_list && item.domain_name_list.split(',').map((key: any, i: number) => (
                 <div className={styles.type_tag} key={i}>{key}</div>
               ))}
@@ -126,12 +128,12 @@ const SearchPageList: React.FC<any> = (props: any) => {
           </div>
           <div className={styles.content}>
             <Typography.Paragraph ellipsis={{ rows: 2, expandable: false }} style={{ marginBottom: 0 }}>
-              说明：{matchTextColor(item.doc)}
+              <FormattedMessage id="test.suite.explain" />：{matchTextColor(item.doc)}
             </Typography.Paragraph>
           </div>
           <div className={`${styles.content} ${styles.content_remarks}`}>
             <Typography.Paragraph ellipsis={{ rows: 2, expandable: false }} style={{ marginBottom: 0 }}>
-              备注：{matchTextColor(item.description)}
+              <FormattedMessage id="test.suite.remarks" />：{matchTextColor(item.description)}
             </Typography.Paragraph>
           </div>
         </div>
@@ -146,12 +148,12 @@ const SearchPageList: React.FC<any> = (props: any) => {
         onChange={onPageChange}
         onShowSizeChange={onPageChange}
       />
-      {(total !== 0 && pageSize >= total) && <div className={styles.little_data_tips}>～已经到底啦～</div>}
+      {(total !== 0 && pageSize >= total) && <div className={styles.little_data_tips}><FormattedMessage id="test.suite.it.over" /></div>}
       {total === 0 &&
         <div className={styles.no_data_tips}>
           <SearchOutlined style={{ fontSize: 36, color: '#b3b3b3' }} />
-          <p>未能找到相关搜索</p>
-          <div>请尝试搜索其它相关的内容</div>
+          <p><FormattedMessage id="test.suite.failed.to.find" /></p>
+          <div><FormattedMessage id="test.suite.please.try.to.search.content" /></div>
         </div>
       }
       <div className={styles.footer} />

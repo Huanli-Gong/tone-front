@@ -4,7 +4,7 @@ import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import SearchPageList from './SearchPageTable';
 import { querySearchListQuantity } from '../../service';
 import styles from './index.less';
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import { useClientSize } from '@/utils/hooks';
 import { getQuery } from '@/utils/utils';
 
@@ -15,6 +15,7 @@ const { TabPane } = Tabs;
  * @param props
  */
 const TestSuiteSearch: React.FC<any> = (props) => {
+  const { formatMessage } = useIntl()
   const { ws_id ,  } : any = useParams() // keyword
   const { keyword }: any = getQuery('')
   const searchKey = keyword
@@ -86,10 +87,10 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   }
 
   const tabList = [
-    { name: '全部', key: 'all', fieldName: 'total_num' },
+    { name: formatMessage({id: 'test.suite.all'}), key: 'all', fieldName: 'total_num' },
     { name: 'Suite', key: 'suite', fieldName: 'suite_num' },
     { name: 'Conf',  key: 'conf', fieldName: 'conf_num' },
-    { name: '领域', key: 'domain', fieldName: 'domain_num' },
+    { name: formatMessage({id: 'test.suite.domain'}), key: 'domain', fieldName: 'domain_num' },
   ]
   const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3}
   const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3}
@@ -103,9 +104,9 @@ const TestSuiteSearch: React.FC<any> = (props) => {
             <Search className={styles.content_search}
               defaultValue={searchKey}
               prefix={<SearchOutlined style={{ color: '#bfbfbf', marginTop: 4, marginRight: 8 }}/>}
-              placeholder="请输入Test Suite、领域名称相关的检索内容"
+              placeholder={formatMessage({id: 'test.suite.search.placeholder'})}
               allowClear
-              enterButton="检索"
+              enterButton={formatMessage({id: 'test.suite.search'})}
               onSearch={onSearch}
             />
             <div>
