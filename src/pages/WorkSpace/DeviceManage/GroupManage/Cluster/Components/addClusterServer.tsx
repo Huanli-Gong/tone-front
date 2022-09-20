@@ -35,7 +35,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
         }
     }))
 
-    
+
     const getAppGroupList = useCallback(
         async () => {
             setLoading(true)
@@ -51,7 +51,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             setLoading(true)
             setTestServerLoading(true)
             setAppGroup(app_group)
-            const { data } = await queryTestServerNewList({ ws_id, app_group, page_num: 1, page_size: 200 })
+            const { data } = await queryTestServerNewList({ ws_id, app_group, page_num: 1, page_size: 200, state: ['Available', 'Occupied', 'Reserved'] })
             setTestServerList(data)
             setTestServerLoading(false)
             setLoading(false)
@@ -168,24 +168,24 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     {
                         single === '1' ?
                             BUILD_APP_ENV ?
-                                <Form.Item 
+                                <Form.Item
                                     name="ip"
                                     label="机器"
                                     rules={[{ required: true, message: '请选择机器' }]}>
-                                        <Select
-                                            placeholder="请选择机器"
-                                            loading={testServerLoading}
-                                            getPopupContainer={node => node.parentNode}
-                                            showSearch
-                                        >
-                                            {
-                                                testServerList.map(
-                                                    (item: any) => (
-                                                        <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
-                                                    )
+                                    <Select
+                                        placeholder="请选择机器"
+                                        loading={testServerLoading}
+                                        getPopupContainer={node => node.parentNode}
+                                        showSearch
+                                    >
+                                        {
+                                            testServerList.map(
+                                                (item: any) => (
+                                                    <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
                                                 )
-                                            }
-                                        </Select>
+                                            )
+                                        }
+                                    </Select>
                                 </Form.Item>
                                 :
                                 <Form.Item label="机器">
@@ -232,13 +232,13 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                 </Form.Item> :
                             <Row>
                                 <Col span={24}>
-                                    <Form.Item 
-                                        name="channel_type" 
+                                    <Form.Item
+                                        name="channel_type"
                                         initialValue={'toneagent'}
-                                        label="控制通道" 
+                                        label="控制通道"
                                         rules={[{ required: true, message: '请选择控制通道' }]}
                                     >
-                                        <AgentSelect disabled={BUILD_APP_ENV}/>
+                                        <AgentSelect disabled={BUILD_APP_ENV} />
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>
@@ -246,15 +246,15 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                                         name="ip"
                                         validateStatus={ips.errors.length > 0 ? 'error' : ''}
                                         help={ips.errors.length > 0 ? validateMsg : undefined}
-                                        rules={[{ 
-                                            required: true, 
+                                        rules={[{
+                                            required: true,
                                             // pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
-                                            message:`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`
+                                            message: `请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`
                                         }]}>
-                                            <Input allowClear
-                                                onBlur={(e: any) => handleBlurIp(e)}
-                                                autoComplete="off"
-                                                placeholder={`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
+                                        <Input allowClear
+                                            onBlur={(e: any) => handleBlurIp(e)}
+                                            autoComplete="off"
+                                            placeholder={`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
                                     </Form.Item>
                                 </Col>
                                 <Col span={24}>

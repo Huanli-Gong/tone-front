@@ -89,7 +89,7 @@ export default (props:any) => {
                 notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                 filterOption={false}
                 loading={fetching}
-                placeholder="请选择"
+                placeholder="请选择调度标签"
                 onSearch={getServerTagList}
                 style={{ width: '100%' }}
                 showArrow={true}
