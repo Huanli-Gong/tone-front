@@ -91,6 +91,10 @@ const TestResultTable: React.FC<any> = (props) => {
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
+    useEffect(()=> {
+        if(refreshResult) refresh();
+    },[ refreshResult ])
+
     // 判断第一条数据中的属性
     const { baseline, baseline_job_id } = dataSource[0] || {}
     const columns = React.useMemo(() => [
