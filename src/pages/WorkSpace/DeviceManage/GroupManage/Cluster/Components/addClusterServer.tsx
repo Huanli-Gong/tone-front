@@ -54,6 +54,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     if (res.code === 200 && !!res.data.length) {
                         let data = res.data[0]
                         if (data.in_pool) {
+                            setIps({ success: [], errors: [] })
                             setPoolFlag(true)
                         } else {
                             setPoolFlag(false)
@@ -131,7 +132,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
 
     // 失焦校验
     const handleBlurIp = (e: any) => {
-        if (form.getFieldValue('channel_type') && !BUILD_APP_ENV) {
+        if (form.getFieldValue('channel_type') && !BUILD_APP_ENV && !poolFlag) {
             handleIpsCheck()
         }
     }
@@ -194,7 +195,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         label="控制通道"
                         rules={[{ required: true, message: '请选择控制通道' }]}
                     >
-                        <AgentSelect disabled={BUILD_APP_ENV && poolFlag} />
+                        <AgentSelect disabled={(BUILD_APP_ENV) || (!BUILD_APP_ENV && poolFlag)} />
                     </Form.Item>
                     <Form.Item label="使用状态"
                         name="state"
