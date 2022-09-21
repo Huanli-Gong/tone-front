@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Table } from 'antd'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import { queryPlanResultList } from '../services'
 
@@ -13,6 +13,7 @@ const styleObj = {
     button_width: 115
 }
 const ViewTable = (props: any) => {
+    const { formatMessage } = useIntl()
     const { planId, wsId, setSelectedRowFn, selectedRow, } = props
     const selectedPlanId = window.sessionStorage.getItem('selectedPlanId') || '' // 已选的计划Id
     const page_default_params = { plan_id: planId, ws_id: wsId, page_num: 1, page_size: 9999 }
@@ -77,7 +78,7 @@ const ViewTable = (props: any) => {
 
     const columns = [{
         dataIndex: 'name',
-        title: '计划名称',
+        title: <FormattedMessage id="analysis.plan.name" />,
         ellipsis: {
             shwoTitle: false,
         },
@@ -86,7 +87,7 @@ const ViewTable = (props: any) => {
             autoFocus={autoFocus}
             styleObj={styleObj}
             onConfirm={(val: any) => { setParams({ ...params, name: val }); run({ ...params, name: val }) }}
-            placeholder="支持搜索计划名称"
+            placeholder={formatMessage({id: 'analysis.plan.name.placeholder'})}
         />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
@@ -108,12 +109,12 @@ const ViewTable = (props: any) => {
         }
     }, {
         dataIndex: 'start_time',
-        title: '开始时间',
+        title: <FormattedMessage id="analysis.start_time" />,
         width: 280,
         render: (record: any) => record || '_'
     }, {
         dataIndex: 'end_time',
-        title: '完成时间',
+        title: <FormattedMessage id="analysis.end_time" />,
         width: 280,
         render: (record: any) => record || '_'
     }]

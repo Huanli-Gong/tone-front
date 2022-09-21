@@ -86,8 +86,8 @@ export default {
   'Workspace.TemplatePreview': '模板预览',
 
   'Workspace.TestReport': '测试报告',
-  'Workspace.TestReport.TemplateCreate': '新建报告模版',
-  'Workspace.TestReport.Template': '报告模版',
+  'Workspace.TestReport.TemplateCreate': 'New Report Template',
+  'Workspace.TestReport.Template': 'Report Template',
   'Workspace.CreateReport': '生成报告',
   'Workspace.TestReport.ReportTemplatePreview': '报告模版预览',
 

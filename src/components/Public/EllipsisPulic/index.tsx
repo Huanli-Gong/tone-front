@@ -14,10 +14,11 @@ interface EllipsisProps {
     style?: any,
     width?: number,
     color?:string,
+    placement?: any,
 }
 
 const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
-    const { title, children, width, color, style, ...rest } = props
+    const { title, children, width, color, placement='topLeft', style, ...rest } = props
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
 
@@ -38,7 +39,7 @@ const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
 
     return (
         show ?
-            <Tooltip title={title} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+            <Tooltip title={title} placement={placement} overlayStyle={{ wordBreak: 'break-all' }}>
                  {TypographyDiv}
             </Tooltip> : TypographyDiv
     )

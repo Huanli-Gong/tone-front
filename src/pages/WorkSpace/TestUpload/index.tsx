@@ -25,7 +25,7 @@ export default (props: any) => {
       if (res.code === 200) {
         setItemTotal(res.data || 0)
       } else {
-        message.error(res.msg || '请求数据失败')
+        message.error(res.msg || formatMessage({id: 'request.failed'}) )
       }
     } catch (e) {
       console.log(e)

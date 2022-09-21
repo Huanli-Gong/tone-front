@@ -128,7 +128,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                         message: formatMessage({id: 'job.form.job_name.limit.message'})
                     }]}
                 >
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},) } disabled={disabled} />
+                    <Input autoComplete="off" title={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},)} placeholder={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},) } disabled={disabled} />
                 </Form.Item>
             }
             {

@@ -128,7 +128,6 @@ const text =  {
   'test.server': '测试机器',
   'stage': '步骤',
   'output.results': '输出结果',
-  'copy.success': '复制成功',
 
   'test.case': '测试用例',
   'put.away.all': '全部收起',

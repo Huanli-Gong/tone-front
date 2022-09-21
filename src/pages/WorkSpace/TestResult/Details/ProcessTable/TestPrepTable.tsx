@@ -109,7 +109,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
     useEffect(() => {
         const clipboard = new Clipboard('.test_result_tooptip_btn')
         clipboard.on('success', function (e) {
-            message.success(formatMessage({id:'ws.result.details.copy.success'}))
+            message.success(formatMessage({id: 'request.copy.success'}))
             e.clearSelection();
         })
         return () => {

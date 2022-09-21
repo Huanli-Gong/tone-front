@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useEffect, useState, useContext } from 'react'
 import { ReactComponent as CatalogCollapsed } from '@/assets/svg/Report/collapsed.svg'
-
+import { useIntl, FormattedMessage } from 'umi';
 import { Typography, Space, Tree, Row } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import produce from 'immer'
@@ -16,7 +16,9 @@ import {
     LittleRound
 } from '../ReportUI';
 import { ReportContext } from '../Provider';
+
 const TemplateCatalog = (props: any) => {
+    const { formatMessage } = useIntl()
     const { domainResult, collapsed, setDomainResult, setCollapsed } = useContext(ReportContext)
     const [roundHeight, setRoundHeight] = useState<Number>(3)
     /* 
@@ -104,7 +106,7 @@ const TemplateCatalog = (props: any) => {
 
         return dataArray.map(
             (i: any) => {
-                const name = i === 'perf_item' ? '性能测试' : '功能测试'
+                const name = i === 'perf_item' ? formatMessage({id: 'performance.test'}): formatMessage({id: 'functional.test'})
                 const show = i === 'perf_item' ? 'need_perf_data' : 'need_func_data'
                 if (domainResult[i] && domainResult[show]) {
                     const treeData = domainResult[i].map(
@@ -193,12 +195,12 @@ const TemplateCatalog = (props: any) => {
    
     const dictNav = (name:string) => {
         const list = {
-            'need_test_background':'测试背景',
-            'need_test_method':'测试方法',
-            'need_test_conclusion':'测试结论',
-            'need_test_summary':'Summary',
-            'need_test_env':'测试环境',
-            'test_data':'测试数据'
+            'need_test_background': formatMessage({id: 'report.test.background'}),
+            'need_test_method': formatMessage({id: 'report.test.method'}),
+            'need_test_conclusion': formatMessage({id: 'report.test.conclusion'}),
+            'need_test_summary': 'Summary',
+            'need_test_env': formatMessage({id: 'report.test.env'}),
+            'test_data': formatMessage({id: 'report.test.data'}),
         }
         return list[name]
     }
@@ -276,19 +278,20 @@ const TemplateCatalog = (props: any) => {
         setRoundHeight((document.querySelector(`#left_tree_${node.name}`) as any).offsetTop + target.offsetParent.offsetTop)
         document.querySelector(`#${tree_name}`)?.scrollIntoView()
     }
-
     return (
         <Catalog collapsed={collapsed}>
             {/* 目录 icon 展开 */}
             <CatalogExpand onClick={() => setCollapsed(!collapsed)} >
                 <CatalogCollapsed />
                 <CatalogExpandInnerIcon>
-                    {collapsed ? <RightOutlined title="展开"/> : <LeftOutlined title="收起"/>}
+                    {collapsed ? <RightOutlined title={formatMessage({id: 'operation.expand'})}/> : <LeftOutlined title={formatMessage({id: 'operation.collapse'})}/>}
                 </CatalogExpandInnerIcon>
             </CatalogExpand>
             {/* 内容部分 */}
             <CatalogBody>
-                <CatalogTitle><Typography.Text strong>目录</Typography.Text></CatalogTitle>
+                <CatalogTitle>
+                    <Typography.Text strong><FormattedMessage id="report.catalogue"/></Typography.Text>
+                </CatalogTitle>
                 <Row style={{ position: 'relative', paddingLeft: 13, borderLeft: '1px solid #e5e5e5' }} id="left-catalog-wrapper">
                     { roundHeight > 0 &&  <CatalogRound count={roundHeight}>
                         <LittleRound />

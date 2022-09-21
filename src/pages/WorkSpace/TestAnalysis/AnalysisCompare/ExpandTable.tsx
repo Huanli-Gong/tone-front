@@ -6,7 +6,7 @@ import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import styles from './index.less'
 import _ from 'lodash'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import styled from 'styled-components'
 const SelectJob = styled.span`
@@ -18,6 +18,7 @@ const styleObj = {
     button_width: 105
 }
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { itemSuitData, handleChangeDefaultJob, currentTab, setCurrentJobIndex, currentJobIndex } = props
     const tab = Number(currentTab.replace('group', ''))
     const selectedConfData =_.get(itemSuitData, 'conf_list') || {}
@@ -73,7 +74,7 @@ export default (props: any) => {
                     setRefAllJob(refAllJobCopy)
                     setParams({ ...params, job_id: val })
                 }}
-                placeholder="支持搜索JobID"
+                placeholder={formatMessage({id:'analysis.JobID.placeholder'})}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -84,7 +85,7 @@ export default (props: any) => {
             render: (_: any, row: any) => _,
         },
         {
-            title: 'Job名称',
+            title: <FormattedMessage id="analysis.job.name" />,
             dataIndex: 'job_name',
             width: 265,
             ellipsis: {
@@ -110,7 +111,7 @@ export default (props: any) => {
                     setRefAllJob(refAllJobCopy)
                     setParams({ ...params, job_name: val })
                 }}
-                placeholder="支持搜索Job名称"
+                placeholder={formatMessage({id:'analysis.job.name.placeholder'})}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -132,7 +133,7 @@ export default (props: any) => {
             }
         },
         {
-            title: '创建人',
+            title: <FormattedMessage id="analysis.creator_name" />,
             width: 140,
             dataIndex: 'create_user',
             ellipsis: true,
@@ -211,14 +212,14 @@ export default (props: any) => {
                             <Tag color='#f2f4f6' style={{ color: '#515B6A' }}>{selJob}</Tag>
                             <Popover 
                                 placement="right" 
-                                title="选择Job" 
+                                title={<FormattedMessage id="analysis.select.job" />}
                                 content={getContent(refAllJob)} 
                                 trigger="click" 
                                 overlayClassName={styles.popover_job} 
                                 visible={currentJobIndex === row.conf_id && popoverVisible}
                             >
                                 <SelectJob onClick={(e) => handleSelectJob( e, jobList, index, selJob, row.conf_id)}>
-                                    选择Job
+                                    <FormattedMessage id="analysis.select.job" />
                                 </SelectJob>
                             </Popover>
                         </Space>

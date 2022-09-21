@@ -24,10 +24,10 @@ function toFixed(number: any, precision: number) {
     }
 }
 
-const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
-    const { result_data, baseline_data } = dataSource
+const PerfLineOption: any = ({ dataSource, ws_id, provider, formatMessage }: any) => {
+    const { result_data, baseline_data } = dataSource || {}
     let option = {}
-    if (JSON.stringify(result_data) !== '{}') {
+    if (result_data && JSON.stringify(result_data) !== '{}') {
         let chartData: any = []
         let xAxis: any = []
         let legend: any = []
@@ -101,16 +101,16 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
             })
             upSeries.push({ ...upArea, data: upAreaData })
             downSeries.push({ ...downArea, data: downAreaData })
-            chartData.push({ ...data, data: lineData, connectNulls: true })
+            chartData.push({ ...data, data: lineData })
         })
 
         xAxis = Array.from(new Set(xAxis))
 
-        let baselineSerie: any = { type: 'line', name: '基线AVG值', itemStyle: { color: '#2FC25B' } }
+        let baselineSerie: any = { type: 'line', name: formatMessage({id: 'analysis.baseline.avg'}), itemStyle: { color: '#2FC25B' } }
         if (baseline_data.value) {
-            legend.push({ name: '基线AVG值', icon: 'path://M802,720C802.5523071289062,720,803,720.4476928710938,803,721C803,721.5523071289062,802.5523071289062,722,802,722L798,722C797.4476928710938,722,797,721.5523071289062,797,721C797,720.4476928710938,797.4476928710938,720,798,720L802,720ZM810,720C810.5523071289062,720,811,720.4476928710938,811,721C811,721.5523071289062,810.5523071289062,722,810,722L806,722C805.4476928710938,722,805,721.5523071289062,805,721C805,720.4476928710938,805.4476928710938,720,806,720L810,720ZM818,720C818.5523071289062,720,819,720.4476928710938,819,721C819,721.5523071289062,818.5523071289062,722,818,722L814,722C813.4476928710938,722,813,721.5523071289062,813,721C813,720.4476928710938,813.4476928710938,720,814,720L818,720Z' })
+            legend.push({ name: formatMessage({id: 'analysis.baseline.avg'}), icon: 'path://M802,720C802.5523071289062,720,803,720.4476928710938,803,721C803,721.5523071289062,802.5523071289062,722,802,722L798,722C797.4476928710938,722,797,721.5523071289062,797,721C797,720.4476928710938,797.4476928710938,720,798,720L802,720ZM810,720C810.5523071289062,720,811,720.4476928710938,811,721C811,721.5523071289062,810.5523071289062,722,810,722L806,722C805.4476928710938,722,805,721.5523071289062,805,721C805,720.4476928710938,805.4476928710938,720,806,720L810,720ZM818,720C818.5523071289062,720,819,720.4476928710938,819,721C819,721.5523071289062,818.5523071289062,722,818,722L814,722C813.4476928710938,722,813,721.5523071289062,813,721C813,720.4476928710938,813.4476928710938,720,814,720L818,720Z' })
             baselineSerie = {
-                type: 'line', name: '基线AVG值', symbol: 'none', tooltip: { show: false },
+                type: 'line', name: formatMessage({id: 'analysis.baseline.avg'}), symbol: 'none', tooltip: { show: false },
                 lineStyle: { width: 1, color: '#2FC25B', type: 'dashed' }, itemStyle: { color: '#2FC25B' },
                 data: xAxis.map((i: any, index: number) => ({ date: i, value: toFixed(baseline_data.value, 2) })),
                 z: 100
@@ -151,12 +151,12 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                                 ${textTip('commit', item.commit)}
                                 ${textTip('Avg', item.value)}
                                 ${textTip('CV', item.cv_value)}
-                                ${textTip('基线值', baseline_data.value && Number(baseline_data.value).toFixed(2))}
-                                ${textTip('基线CV', baseline_data.cv_value)}
+                                ${textTip(formatMessage({id: 'analysis.baseline.value'}), baseline_data.value && Number(baseline_data.value).toFixed(2))}
+                                ${textTip(formatMessage({id: 'analysis.baseline.cv'}), baseline_data.cv_value)}
                                 ${textTip('commit', item.commit)}
                                 ${serverLinkTip(params.seriesName)}
                                 ${renderProviderText(params, provider)}
-                                ${textTip('标注', item.note)}
+                                ${textTip(formatMessage({id: 'analysis.table.column.note'}), item.note)}
                             </div>`
                                 .trim()
                         )
@@ -193,9 +193,9 @@ const PerfLineOption: any = (dataSource: any, ws_id: any, provider: string) => {
                         const len = (parseInt(value) + "").length
                         if (len > 6) {
                             const q = new Map([
-                                [1, "万"],
-                                [2, "亿"],
-                                [3, "兆"]
+                                [1, formatMessage({id: 'analysis.wan'})],
+                                [2, formatMessage({id: 'analysis.yi'})],
+                                [3, formatMessage({id: 'analysis.zhao'})]
                             ])
 
                             const s = parseInt((len / 4) as any)

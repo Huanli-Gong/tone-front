@@ -44,7 +44,7 @@ export default {
   'menu.Workspace.TestResult.TestResult': '测试结果',
 
   'menu.Workspace.TestReport': '测试报告',
-  'menu.Workspace.TestReport.TemplateCreate': '新建报告模版',
+  'menu.Workspace.TestReport.TemplateCreate': 'New Report Template',
   'menu.Workspace.TestReport.ReportTemplatePreview': '报告模版预览',
   'menu.Workspace.TestReport.TemplateEdit': '编辑报告模版',
   'menu.Workspace.TestReport.Report': '测试报告',

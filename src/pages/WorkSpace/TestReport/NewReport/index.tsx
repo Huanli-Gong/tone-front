@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { Col, Breadcrumb, Button, message, Spin } from 'antd';
 import { ReactComponent as IconEdit } from '@/assets/svg/icon_edit.svg';
 import { ReactComponent as IconWarp } from '@/assets/svg/iconEdit.svg';
@@ -11,7 +11,7 @@ import ReportTestPref from './components/ReportTestPerf';
 import { useClientSize } from '@/utils/hooks'
 import Catalog from './components/Catalog'
 import { editReport, saveReport } from '../services';
-import { history, useAccess, Access, useParams } from 'umi';
+import { history, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { ReportContext } from './Provider';
 import Clipboard from 'clipboard';
@@ -20,6 +20,7 @@ import { ReportTemplate, ReportBodyContainer, ReportWarpper, ReportBread, BreadD
 import { CreatePageData, EditPageData } from './hooks';
 
 const Report = (props: any) => {
+    const { formatMessage } = useIntl()
     const access = useAccess();
     const { ws_id } = props.match.params
     const { report_id } = useParams() as any;
@@ -92,26 +93,30 @@ const Report = (props: any) => {
     const BreadcrumbItem: React.FC<any> = () => (
         <ReportBread>
             <Breadcrumb.Item >
-                <BreadDetailL onClick={() => history.push(`/ws/${ws_id}/test_report`)}>测试报告</BreadDetailL>
+                <BreadDetailL onClick={() => history.push(`/ws/${ws_id}/test_report`)}><FormattedMessage id="report.test.report" /></BreadDetailL>
             </Breadcrumb.Item>
             <Breadcrumb.Item >
                 <BreadDetailR onClick={() => history.go(0)}>{saveReportData?.name || '-'}</BreadDetailR>
                 <Btn btnState={btnState}>
                     {
                         btnState ?
-                            routeName !== 'ShareReport' && <Button type="primary" disabled={btnConfirm} onClick={handleSubmit}>{saveReportData?.id ? '更新' : '保存'}</Button>
+                            routeName !== 'ShareReport' && <Button type="primary" disabled={btnConfirm} onClick={handleSubmit}>
+                                {saveReportData?.id ? <FormattedMessage id="operation.update" />: <FormattedMessage id="operation.save" />}
+                            </Button>
                             : <>
-                                <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link"><IconLink style={{ marginRight: 4 }} />分享</span>
+                                <span style={{ marginRight: 18, cursor: 'pointer' }} className="test_report_copy_link">
+                                    <IconLink style={{ marginRight: 4 }} /><FormattedMessage id="operation.share" />
+                                </span>
                                 {
                                     routeName !== 'ShareReport' && 
                                     <Access accessible={access.WsTourist()}>
                                         <Access
                                             accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5,creator_id.length)))}
                                             fallback={
-                                                <span onClick={()=> AccessTootip()}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                                <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} /><FormattedMessage id="operation.edit" /></span>
                                             }
                                         >
-                                            <span style={{ cursor: 'pointer' }} onClick={()=> setBtnState(true)}><IconEdit style={{ marginRight: 4 }} />编辑</span>
+                                            <span style={{ cursor: 'pointer' }} onClick={()=> setBtnState(true)}><IconEdit style={{ marginRight: 4 }} /><FormattedMessage id="operation.edit" /></span>
                                         </Access>
                                     </Access>
                                 }
@@ -126,7 +131,7 @@ const Report = (props: any) => {
     useEffect(() => {
         const clipboard = new Clipboard('.test_report_copy_link', { text: () => location.origin + `/share/report/${report_id}`})
         clipboard.on('success', function (e) {
-            message.success('报告链接复制成功')
+            message.success(formatMessage({id: 'report.link.copied.successfully'}) )
             e.clearSelection();
         })
         return () => {
@@ -148,7 +153,7 @@ const Report = (props: any) => {
             obj.report_id = saveReportData.id
             const res = await editReport(obj)
             if (res.code === 200) {
-                message.success('更新报告成功')
+                message.success(formatMessage({id: 'report.update.report.succeeded'}) )
                 queryReport();
                 setBtnState(false)
             } else {
@@ -157,7 +162,7 @@ const Report = (props: any) => {
         } else {
             const data = await saveReport(obj)
             if (data.code === 200) {
-                message.success('保存报告成功')
+                message.success(formatMessage({id: 'report.saved.successfully'}) )
                 history.push(`/ws/${ws_id}/test_report?t=list`)
             } else {
                 requestCodeMessage(data.code, data.msg)
@@ -165,7 +170,7 @@ const Report = (props: any) => {
         }
         setBtnConfirm(false)
     }
-    
+
     return (
         <ReportContext.Provider value={{
             btnState,

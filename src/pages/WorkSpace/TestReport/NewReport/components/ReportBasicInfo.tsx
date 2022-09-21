@@ -1,9 +1,11 @@
 import React, { useContext, memo } from 'react';
+import { useIntl, FormattedMessage } from 'umi';
 import { SettingTextArea, SettingRegUpdate } from './EditPublic';
 import { ReportContext } from '../Provider';
 import { ModuleWrapper, SubTitle } from '../ReportUI';
 import _ from 'lodash';
 const ReportBasicInfo = (props: any) => {
+    const { formatMessage } = useIntl()
     const { btnState, obj, setObj, saveReportData, summaryData, btnConfirm, domainResult } = useContext(ReportContext)
     const handleChangeVal = (val: any, text: string) => {
         if (text == 'custom') {
@@ -19,24 +21,24 @@ const ReportBasicInfo = (props: any) => {
             ...obj,
         })
     }
-    
+
     return (
         <>
             {(domainResult?.is_default || (!domainResult?.is_default && domainResult?.need_test_background)) &&
                 <ModuleWrapper id="need_test_background" className="position_mark">
-                    <SubTitle><span className="line"></span>测试背景</SubTitle>
+                    <SubTitle><span className="line"></span><FormattedMessage id="report.test.background"/></SubTitle>
                     {
                         saveReportData?.id ?
                         <SettingRegUpdate
                             saveData={saveReportData}
                             field='test_background'
-                            defaultHolder="请输入测试背景"
+                            defaultHolder={formatMessage({id: 'report.please.enter.background'})}
                         />
                         :
                         <SettingTextArea
                             name={saveReportData?.test_background}
                             btnConfirm={btnConfirm}
-                            defaultHolder="请输入测试背景"
+                            defaultHolder={formatMessage({id: 'report.please.enter.background'})}
                             btn={btnState}
                             onOk={(val: any) => handleChangeVal(val, 'test_background')}
                         />
@@ -45,18 +47,18 @@ const ReportBasicInfo = (props: any) => {
             }
             {(domainResult?.is_default || (!domainResult?.is_default && domainResult?.need_test_method)) &&
                 <ModuleWrapper id="need_test_method" className="position_mark">
-                    <SubTitle><span className="line"></span>测试方法</SubTitle>
+                    <SubTitle><span className="line"></span><FormattedMessage id="report.test.method"/></SubTitle>
                     {
                         saveReportData?.id ?
                         <SettingRegUpdate
                             saveData={saveReportData}
                             field='test_method'
-                            defaultHolder="请输入测试方法"
+                            defaultHolder={formatMessage({id: 'report.please.enter.method'})}
                         />
                         :
                         <SettingTextArea
                             name={saveReportData?.test_method}
-                            defaultHolder="请输入测试方法"
+                            defaultHolder={formatMessage({id: 'report.please.enter.method'})}
                             btn={btnState}
                             btnConfirm={btnConfirm}
                             onOk={(val: any) => handleChangeVal(val, 'test_method')}
@@ -66,19 +68,19 @@ const ReportBasicInfo = (props: any) => {
             }
             {(domainResult?.is_default || (!domainResult?.is_default && domainResult?.need_test_conclusion)) &&
                 <ModuleWrapper id="need_test_conclusion" className="position_mark">
-                    <SubTitle><span className="line"></span>测试结论</SubTitle>
+                    <SubTitle><span className="line"></span><FormattedMessage id="report.test.conclusion"/></SubTitle>
                     {
                         saveReportData?.id ?
                         <SettingRegUpdate
                             saveData={saveReportData}
                             field='custom'
-                            defaultHolder="请输入测试结论"
+                            defaultHolder={formatMessage({id: 'report.please.enter.conclusion'}) }
                         />
                         :
                         <SettingTextArea
                             name={saveReportData?.test_conclusion?.custom}
                             btn={btnState}
-                            defaultHolder="请输入测试结论"
+                            defaultHolder={formatMessage({id: 'report.please.enter.conclusion'}) }
                             btnConfirm={btnConfirm}
                             onOk={(val: any) => handleChangeVal(val, 'custom')}
                         />

@@ -146,17 +146,17 @@ export function getQuery(key: string, url = window.location.href) {
  *  匹配类型
  * @param params
  */
-export const matchType = (params: any) => {
+export const matchType = (params: any, formatMessage?: any) => {
   // test suite搜索页面
   if (params === 0) return '';
-  if (params === 1) return '已添加';
-  if (params === 'performance') return '性能';
+  if (params === 1) return formatMessage({id: 'added' });
+  if (params === 'performance') return formatMessage({id: 'performance' });
   //
-  if (params === 'standalone') return '单机';
-  if (params === 'cluster') return '集群';
+  if (params === 'standalone') return formatMessage({id: 'standalone' });
+  if (params === 'cluster') return formatMessage({id: 'cluster' });
   //
-  if (params === 'functional') return '功能';
-  if (params === 'performance') return '性能';
+  if (params === 'functional') return formatMessage({id: 'functional' });
+  if (params === 'performance') return formatMessage({id: 'performance' });
   return '';
 };
 
@@ -483,8 +483,8 @@ const list_cn = {
   'aliyun.cluster': '云上集群',
 }
 const list_en = {
-  'fixed_pool': 'Reserved Machine Pool',
-  'elastic_pool': 'Elastic Machine Pool',
+  'fixed_pool': 'Reserved Server Pool',
+  'elastic_pool': 'Elastic Server Pool',
   'aligroup': 'Reserved',
   'aliyun': 'Elastic',
   // 机器

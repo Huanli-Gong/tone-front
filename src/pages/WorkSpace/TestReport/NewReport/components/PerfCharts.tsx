@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { Row, Space, Typography, Tooltip } from 'antd'
+import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/Report/GaryBaseIcon.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -69,6 +70,7 @@ interface JumpChartProp {
 }
 
 const ChartModal = (props: any) => {
+    const { formatMessage } = useIntl()
     const { chartType, suite_id, conf_list, group_jobs, suite_name, envData, base_index } = props
     const [legend, setLegend] = useState<string>('')
     const [current, setCurrent] = useState<any>(null)
@@ -132,8 +134,8 @@ const ChartModal = (props: any) => {
             name: `${envData?.base_group.tag}`,
             inner: <Space align="start" style={{ cursor: 'pointer' }}>
                 <Dot color={color[base_index]} />
-                {!!envData.compare_groups.length &&
-                    <Tooltip title="基准组">
+                { !!envData.compare_groups.length && 
+                    <Tooltip title={formatMessage({id: 'report.benchmark.group'})}>
                         <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
                     </Tooltip>
                 }
@@ -159,7 +161,7 @@ const ChartModal = (props: any) => {
             <ModalHeader>
                 <Space align="start">
                     <Space style={{ whiteSpace: 'nowrap', marginRight: 16 }}>
-                        <Typography.Text strong>对比组图例</Typography.Text>
+                        <Typography.Text strong><FormattedMessage id="report.legend.comparison.group"/></Typography.Text>
                     </Space>
                     {
                         legData.map((i: any, idx: number) =>
@@ -176,7 +178,7 @@ const ChartModal = (props: any) => {
                         <ModalSlider>
                             <Space direction="vertical">
                                 <SliderTitle>
-                                    Test Conf列表({conf_list.length})
+                                    {formatMessage({id: 'report.conf.list'}, {data: `(${conf_list.length})`})}
                                 </SliderTitle>
                                 {
                                     conf_list.map(
@@ -206,7 +208,7 @@ const ChartModal = (props: any) => {
                         <ModalSlider>
                             <Space direction="vertical">
                                 <SliderTitle>
-                                    Test Conf列表({conf_list.length})
+                                    {formatMessage({id: 'report.conf.list'}, {data: `(${conf_list.length})`})}
                                 </SliderTitle>
                                 {
                                     conf_list.map((conf: any, idx: any) => (
@@ -239,4 +241,4 @@ const ChartModal = (props: any) => {
     )
 }
 
-export default React.memo(ChartModal);
+export default React.memo(ChartModal)
