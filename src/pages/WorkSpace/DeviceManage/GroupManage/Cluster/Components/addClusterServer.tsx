@@ -55,6 +55,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         let data = res.data[0]
                         if (data.in_pool) {
                             setIps({ success: [], errors: [] })
+                            form.setFieldsValue({ channel_type: data.channel_type })
                             setPoolFlag(true)
                         } else {
                             setPoolFlag(false)
@@ -99,6 +100,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
 
     const handleCancel = () => {
         form.resetFields()
+        setPoolFlag(false)
         setVisible(false)
         setSource(null)
     }
