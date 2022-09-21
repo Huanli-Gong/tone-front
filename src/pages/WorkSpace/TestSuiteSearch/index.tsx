@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Spin, Input, Tabs, Space, Badge } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi'
 import DefaultPageList from './List/DefaultPageList/component/DefaultPageTable';
 import SearchPageList from './List/SearchPageList/SearchPageTable';
 import { queryTotalNum, querySearchListQuantity } from './service';
@@ -15,6 +16,7 @@ const { TabPane } = Tabs;
  * @param props
  */
 const TestSuiteSearch: React.FC<any> = (props) => {
+  const { formatMessage } = useIntl()
   writeDocumentTitle(`Workspace.${props.route.name}`)
   const { ws_id } = props.match.params
   // 滚动区域可视高度
@@ -95,10 +97,10 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   }
 
   const tabList = [
-    { name: '全部', key: 'all', fieldName: 'total_num' },
+    { name: formatMessage({id: 'test.suite.all'}), key: 'all', fieldName: 'total_num' },
     { name: 'Suite', key: 'suite', fieldName: 'suite_num' },
     { name: 'Conf', key: 'conf', fieldName: 'conf_num' },
-    { name: '领域', key: 'domain', fieldName: 'domain_num' },
+    { name: formatMessage({id: 'test.suite.domain'}), key: 'domain', fieldName: 'domain_num' },
   ]
   const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3 }
   const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3 }
@@ -111,9 +113,9 @@ const TestSuiteSearch: React.FC<any> = (props) => {
       <div className={styles.content} style={{ minHeight: (height - 270), ...initialStyle }}>
         <Search className={styles.content_search}
           prefix={<SearchOutlined style={{ color: '#bfbfbf', marginTop: 4, marginRight: 8 }} />}
-          placeholder="请输入Test Suite、领域名称相关的检索内容"
+          placeholder={formatMessage({id: 'test.suite.search.placeholder'})}
           allowClear
-          enterButton="检索"
+          enterButton={formatMessage({id: 'test.suite.search'})}
           onSearch={onSearch}
         />
         {showInitialList ? (
@@ -123,14 +125,14 @@ const TestSuiteSearch: React.FC<any> = (props) => {
                 <span onClick={handleClick('performance')}
                   style={{ color: itemSelected === 'performance' ? '#1890FF' : 'rgba(0, 0, 0, 0.65)', cursor: 'pointer' }}
                 >
-                  性能测试({totalNum.performance_num})
+                  <FormattedMessage id="performance.test"/>({totalNum.performance_num})
                 </span>
               </div>
               <div className={styles.headerInfo}>
                 <span onClick={handleClick('functional')}
                   style={{ color: itemSelected === 'functional' ? '#1890FF' : 'rgba(0, 0, 0, 0.65)', cursor: 'pointer' }}
                 >
-                  功能测试({totalNum.functional_num})
+                  <FormattedMessage id="functional.test"/>({totalNum.functional_num})
                 </span>
               </div>
             </Space>

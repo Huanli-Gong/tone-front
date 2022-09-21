@@ -12,6 +12,7 @@ import styles from './style.less';
 const { Option } = Select;
 
 const DrawerForm = forwardRef((props:any, ref:any) => {
+  const { formatMessage } = useIntl();
   const { ws_id, visible } : any = props
   const access = useAccess();
   const [form] = Form.useForm();
@@ -53,7 +54,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
         }
 
       } else {
-        message.error(res.msg || '请求数据失败');
+        message.error(res.msg || formatMessage({id: 'request.failed'}) );
       }
       setFetching(false);
     } catch(e) {
@@ -68,7 +69,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
       if (res.code === 200) {
         setProjectList(res.data || []);
       } else {
-        message.error(res.msg || '请求数据失败');
+        message.error(res.msg || formatMessage({id: 'request.failed'}) );
       }
     } catch(e) {
       console.log(e)
@@ -89,7 +90,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
           setBaselinePagination(res);
         }
       } else {
-        message.error(res.msg || '请求数据失败');
+        message.error(res.msg || formatMessage({id: 'request.failed'}) );
       }
     } catch(e) {
       console.log(e)
@@ -103,7 +104,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
         const temp = res.data || [];
         setJobTypeList(temp.filter((key: any)=> key.enable));
       } else {
-        message.error(res.msg || '请求数据失败');
+        message.error(res.msg || formatMessage({id: 'request.failed'}) );
       }
     } catch(e) {
       console.log(e)
@@ -170,13 +171,13 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
       const query = { server_type: serverType, test_type: testType, ...values };
       const { code, msg } = await createProject(query);
       if (code === 200) {
-        message.success('创建成功');
+        message.success(formatMessage({id: 'request.create.success'}));
         // step1.初始化状态、关闭对话框
         initialState();
         form.resetFields();
         props.callback({ title: 'ok'});
       } else {
-        message.error(msg || '创建失败');
+        message.error(msg || formatMessage({id: 'request.create.failed'}) );
       }
       setLoading(false);
     }).catch(() => {
@@ -239,13 +240,11 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
     }
   }
 
-  const { formatMessage } = useIntl();
-  const placeholder = formatMessage({ id: "upload.list.Drawer.select.placeholder" });
-  const requiredMessage = formatMessage({ id: 'upload.list.Drawer.select.message'});
+  const requiredMessage = formatMessage({ id: 'please.select' });
   const AuthPop = (
     <Space>
-        <Typography.Text>无权限，请参考</Typography.Text>
-        <a href="/help_doc/2" target="_blank">帮助文档</a>
+        <Typography.Text><FormattedMessage id="upload.list.Drawer.accessible"/></Typography.Text>
+        <a href="/help_doc/2" target="_blank"><FormattedMessage id="upload.list.Drawer.help_doc"/></a>
     </Space>
 )
   return (
@@ -269,7 +268,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
         </div>
       }>
         <div className={styles.contentWarper} ref={ref}>
-            <Alert message="文件上传状态，可在列表中查看。" type="info" showIcon style={{marginBottom:20,padding: '4px 15px'}} />
+            <Alert message={<FormattedMessage id="upload.list.Drawer.upload.Alert" />} type="info" showIcon style={{marginBottom:20,padding: '4px 15px'}} />
             <Spin spinning={loading}>
               <Form form={form}
                 layout="vertical"
@@ -284,7 +283,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                   <Select
                     allowClear
                     style={{ width: '100%' }}
-                    placeholder="请选择产品名称"
+                    placeholder={<FormattedMessage id="upload.list.Drawer.product.placeholder" />}
                     notFoundContent={fetching ? <Spin size="small" /> : null}
                     getPopupContainer={node => node.parentNode}
                     onChange={productOnChange}
@@ -309,7 +308,9 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                     required: true,
                     message: requiredMessage,
                   }]}>
-                  <Select placeholder={'请选择项目'} getPopupContainer={node => node.parentNode}
+                  <Select 
+                    placeholder={<FormattedMessage id="upload.list.Drawer.project.placeholder" />}
+                    getPopupContainer={node => node.parentNode}
                     disabled={!productId || !projectList.length}>
                     {projectList.map((item: any) => (
                       <Option key={item.id} value={item.id}>{item.name}</Option>
@@ -319,12 +320,14 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                 {/** ----------end 选项目------------------------ */}
 
                 {/** ----------start 2.选基线------------------------ */}
-                <Form.Item label="Job类型" name="job_type_id" rules={[{
-                  required: true,
-                  message: requiredMessage,
-                }]}>
+                <Form.Item label={<FormattedMessage id="upload.list.Drawer.job_type" />}
+                  name="job_type_id" 
+                  rules={[{
+                    required: true,
+                    message: requiredMessage,
+                  }]}>
                   <Select allowClear
-                    placeholder={'请选择Job类型'}
+                    placeholder={<FormattedMessage id="upload.list.Drawer.job_type.placeholder" />}
                     getPopupContainer={node => node.parentNode}
                     onChange={jobOnChange}
                     onClear={jobOnClear}
@@ -336,7 +339,8 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                     {jobTypeList.map((item: any) => (
                       <Option key={item.id} value={item.id} style={{display: 'flex',justifyContent: 'space-between'}}>
                         <div style={{display: 'flex',justifyContent: 'space-between'}}>
-                          <span>{item.name}</span><span>{switchTestType(item.test_type)} | {switchServerType(item.server_type)}</span>
+                          <span>{item.name}</span>
+                          <span>{switchTestType(item.test_type, formatMessage)} | {switchServerType(item.server_type, formatMessage)}</span>
                         </div>
                       </Option>
                     ))}
@@ -352,7 +356,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                     }]}>
                       <Select
                         allowClear={true}
-                        placeholder={'请选择基线'}
+                        placeholder={<FormattedMessage id="upload.list.Drawer.baseline.placeholder" />}
                         onPopupScroll={baselinePopupScroll}
                         getPopupContainer={node => node.parentNode}
                         disabled={!jobId || !baselinePagination.data?.length}
@@ -368,7 +372,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                   </Form.Item>
                   : null}
                 {/** ----------end 选基线------------------------ */}
-                <Form.Item label='测试机IP'
+                <Form.Item label={<FormattedMessage id="upload.list.Drawer.ip" />}
                   name="ip"
                   rules={[{
                     required: false,
@@ -377,14 +381,16 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
                     // message: '请输入正确格式的IP'
                   }]}
                 >
-                  <Input placeholder='请输入测试机IP'/>
+                  <Input placeholder={formatMessage({id: 'upload.list.Drawer.ip.placeholder'}) }/>
                 </Form.Item>
 
 
-                <Form.Item label="结果数据" name="file" rules={[{
-                  required: true,
-                  message: formatMessage({id: 'upload.list.Drawer.upload.message'}),
-                }]}
+                <Form.Item label={<FormattedMessage id="upload.list.Drawer.result" />}
+                  name="file" 
+                  rules={[{
+                    required: true,
+                    message: formatMessage({id: 'upload.list.Drawer.upload.message'}),
+                  }]}
                   extra={formatMessage({id: 'upload.list.Drawer.upload.supportText'}) + ': .tar、.tar.gz'}
                 >
                   <BizUpload callback={validateFields} />

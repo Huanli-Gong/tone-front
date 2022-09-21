@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Spin, Tag, List, Table, message } from 'antd';
-import { history } from 'umi';
+import { history, useIntl, FormattedMessage } from 'umi';
 import CodeViewer from '@/components/CodeViewer';
 import ContentContainer from '@/components/Public/ContentHeader';
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { getQuery, matchType } from '@/utils/utils';
 import { ReactComponent as IconArrowOn } from '@/assets/svg/icon_arrow_on.svg'
 import { BreadcrumbMatch } from '../components/Breadcrumb';
@@ -11,6 +12,7 @@ import { queryTestConf, queryTestConfRetrieve, queryTestConfMetric } from '../..
 import styles from './index.less';
 
 const Index: React.FC<any> = (props: any) => {
+  const { formatMessage } = useIntl()
   const { pathname } = new URL(window.location.href)
   const ws_id = pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
   const path = `/ws/${ws_id}/suite_search`
@@ -68,7 +70,7 @@ const Index: React.FC<any> = (props: any) => {
           pageSize: 20,
           total: 0,
         })
-        message.error(res.msg || '请求失败！')
+        message.error(res.msg || formatMessage({id: 'request.failed'}) )
       }
       setLoadingRetrieve(false)
     } catch (e) {
@@ -97,7 +99,7 @@ const Index: React.FC<any> = (props: any) => {
           pageSize: 20,
           total: 0,
         })
-        message.error(res.msg || '请求失败！')
+        message.error(res.msg || formatMessage({id: 'request.failed'}) )
       }
       setLoadingMetric(false)
     } catch (e) {
@@ -144,9 +146,9 @@ const Index: React.FC<any> = (props: any) => {
   // 匹配类型
   const TypeTag = ({ type: param }: any) => {
     switch (param) {
-      case 0: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}>性能测试</Tag>)
-      case 1: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}>功能测试</Tag>)
-      case 2: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}>IO字系统</Tag>)
+      case 0: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="performance.test"/></Tag>)
+      case 1: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="functional.test"/></Tag>)
+      case 2: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="io.test"/></Tag>)
       default: return <></>
     }
   };
@@ -211,29 +213,30 @@ const Index: React.FC<any> = (props: any) => {
             </div>
             <Row className={styles['details-founder-row']}>
               <Col span={4}>
-                <span className={styles['details-description-label']}>创建人</span>
+                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.created"/>
+                </span>
                 {dataSet.creator_name}
               </Col>
               <Col span={4}>
-                <span className={styles['details-description-label']}>运行模式</span>
-                {matchType(dataSet.run_mode)}
+                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.run_mode"/></span>
+                {matchType(dataSet.run_mode, formatMessage)}
               </Col>
-              <Col span={4}>
-                <span className={styles['details-description-label']}>运行次数</span>
+              <Col span={3}>
+                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.run_num"/></span>
                 {dataSet.repeat}
               </Col>
               <Col span={6}>
-                <span className={styles['details-description-label']}>TestSuite</span>
-                <span className={styles['details-description-click-text']} onClick={suiteNameClick}>
-                  {dataSet.suite_name}
-                </span>
+                  <EllipsisPulic title={dataSet.suite_name} placement="top">
+                    <span className={styles['details-description-label']}>TestSuite</span>
+                    <span className={styles['details-description-click-text']} onClick={suiteNameClick}>{dataSet.suite_name}</span>
+                  </EllipsisPulic>
               </Col>
-              <Col span={6}>
-                <span className={styles['details-description-label']}>集成日期</span>
+              <Col span={7}>
+                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.integration"/></span>
                 {dataSet.gmt_created}
               </Col>
             </Row>
-            <span> 说明：</span>
+            <span><FormattedMessage id="test.suite.explain"/>：</span>
             {dataSet.doc && <CodeViewer code={dataSet.doc} />}
             <div style={{ display: 'flex' }}>
               <div className={styles.content_left}>
@@ -243,7 +246,7 @@ const Index: React.FC<any> = (props: any) => {
                     dataSource={dataSourceRetrieve}
                     loading={loadingRetrieve}
                     columns={[{
-                      title: `同级Test Conf(${paginationRetrieve.total})`,
+                      title: <><FormattedMessage id="test.suite.peer"/>({paginationRetrieve.total})</>,
                       dataIndex: 'name',
                       render: (text: string, record: any) => {
                         return <span className={styles['click-a-text']} onClick={() => confNameClick(record)}>{text}</span>
@@ -261,7 +264,7 @@ const Index: React.FC<any> = (props: any) => {
               <div className={styles.content_right}>
                 {dataSet['recently_job'] ? (
                   <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>
-                    <div className={styles.card_head}>最近运行的Job</div>
+                    <div className={styles.card_head}><FormattedMessage id="test.suite.recently.run.job"/></div>
                     <div className={styles.card_content}>
                       {
                         !!dataSet?.recently_job_list.length && dataSet?.recently_job_list.map((item: any, idx: number) => {
@@ -285,7 +288,7 @@ const Index: React.FC<any> = (props: any) => {
                       dataSource={dataSourceMetric}
                       loading={loadingMetric}
                       columns={[{
-                        title: `评价指标(${paginationMetric.total})`,
+                        title: <><FormattedMessage id="test.suite.evaluating.indicator"/>({paginationMetric.total})</>,
                         dataIndex: 'name',
                         render: (text: string) => {
                           return <span style={{ paddingLeft: 10 }}>{text}</span>
