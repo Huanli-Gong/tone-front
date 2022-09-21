@@ -1,9 +1,12 @@
 import { Drawer, Space, Button, Form, AutoComplete } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 import _ from 'lodash'
+
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
@@ -13,7 +16,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "编辑对比组", data: any = {}, name:string = '') => {
+                show: (title: string = formatMessage({id: 'analysis.edit.mark'}), data: any = {}, name:string = '') => {
                     setVisible(true)
                     setTitle(title)
                     let mark = _.get(data,'product_version') || ''
@@ -61,8 +64,8 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={padding} onClick={handleOk}>更新</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                            <Button type="primary" disabled={padding} onClick={handleOk}><FormattedMessage id="operation.update" /></Button>
                         </Space>
                     </div>
                 }
@@ -102,16 +105,16 @@ export default forwardRef(
                     layout="vertical" // 表单布局 ，垂直
                     >
                     <Form.Item
-                        label="对比组"
+                        label={<FormattedMessage id="analysis.comparison.group"/>}
                         name="name"
-                        rules={[{ required: true, message:'对比组名称不能为空' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'analysis.comparison.group.cannot.empty'}) }]}
                     >
                         <AutoComplete
                             allowClear={true}
                             options={options}
                             style={{ width: '98%' }}
                             onSelect={onSelect}
-                            placeholder="请输入对比组名称"
+                            placeholder={formatMessage({id: 'analysis.comparison.group.name.placeholder'})}
                         />
                     </Form.Item>
                 </Form>

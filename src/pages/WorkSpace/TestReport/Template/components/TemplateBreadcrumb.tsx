@@ -15,17 +15,17 @@ const TemplateBreadcrumb = (props: any) => {
             <Breadcrumb>
                 <Breadcrumb.Item>
                     <Link to={`/ws/${ws_id}/test_report?t=template`}>
-                        <FormattedMessage id={`Workspace.TestReport.Template`} />
+                        <FormattedMessage id="report.template" />
                     </Link>
                 </Breadcrumb.Item>
                 {
                     route.name === 'TemplateCreate' ?
                         <Breadcrumb.Item>
-                            <FormattedMessage id={`menu.Workspace.TestReport.${route.name}`} />
+                            <FormattedMessage id="menu.Workspace.TestReport.TemplateCreate" />
                         </Breadcrumb.Item> :
                         <Breadcrumb.Item>
                             <span>
-                                <Typography.Text ellipsis style={{ width: bodyWidth - 83 }}>
+                                <Typography.Text ellipsis style={{ width: bodyWidth - 134 }}>
                                     {dataSource.name}
                                 </Typography.Text>
                             </span>

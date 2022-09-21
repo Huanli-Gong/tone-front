@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef, useState, useMemo } from 'react'
 import { Row, Space, Typography } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import * as echarts from 'echarts'
 import { ReactComponent as GaryBaseIcon } from '@/assets/svg/TestReport/GaryBase.svg'
@@ -227,6 +228,7 @@ const ModalItemTitle = styled.div<{ isActive: boolean }>`
 `
 
 const ChartModal: React.FC<any> = (props: any) => {
+    const { formatMessage } = useIntl()
     const { case_source, chartType, suite_show_name, time, show } = props
 
     const [current, setCurrent] = useState<any>(null)
@@ -244,20 +246,20 @@ const ChartModal: React.FC<any> = (props: any) => {
         <Wrapper show={show}>
             <ModalHeader>
                 <Space>
-                    <Typography.Text strong>对比组图例</Typography.Text>
+                    <Typography.Text strong><FormattedMessage id="report.legend.comparison.group"/></Typography.Text>
                     <Space size={28}>
                         <Space align="center">
                             <Dot color="#3BA0FF" />
                             <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
-                            <Typography.Text strong>基准组</Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
                         </Space>
                         <Space align="center">
                             <Dot color="#36CBCB" />
-                            <Typography.Text strong>对比组1</Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text>
                         </Space>
                         <Space align="center">
                             <Dot color="#36CBCB" />
-                            <Typography.Text strong>对比组2</Typography.Text>
+                            <Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text>
                         </Space>
                     </Space>
                 </Space>
@@ -272,7 +274,7 @@ const ChartModal: React.FC<any> = (props: any) => {
                 <ModalSlider>
                     <Space direction="vertical">
                         <SliderTitle>
-                            Test Conf列表({caseLen})
+                            {formatMessage({id: 'report.conf.list'}, {data: `(${caseLen})`})}
                         </SliderTitle>
                         {
                             case_source.map(

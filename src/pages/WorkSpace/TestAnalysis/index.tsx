@@ -2,7 +2,7 @@ import { Button, Popover, Layout, Modal } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/assets/img/compareHome.png';
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks';
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 import styles from './AnalysisCompare/index.less'
 import Draggable from 'react-draggable';
 import AddJob from './AnalysisCompare/AddJob'
@@ -20,7 +20,7 @@ export default (props: any) => {
     const [disabled, setDisabled] = useState(true)
     const [visibleAddGroupItem, setVisibleAddGroupItem] = useState(false);
     const [bounds, setBounds] = useState<any>({ left: 0, top: 0, bottom: 0, right: 0 })
-    const draggleRef = useRef(null);
+    const draggleRef = useRef<any>(null);
     const { height: layoutHeight } = useClientSize()
 
     const handleAddJobGroup = () => {
@@ -59,10 +59,10 @@ export default (props: any) => {
                             <img alt="icon" src={Icon} style={{width:438,height: 268,transform: 'translateY(-30px)'}}></img>
                         </div>
                         <div style={{ textAlign: 'left', display: 'inline-block', marginLeft: 80 }}>
-                            <div style={{ color: '#000', fontSize: 46, opacity: 0.85, fontWeight: 'bold' }}>对比分析</div>
-                            <div style={{ color: '#000', fontSize: 16, opacity: 0.45, marginTop: 20 }}>提供多种数据对比分析能力，支持job在线聚合对比分析方式</div>
+                            <div style={{ color: '#000', fontSize: 46, opacity: 0.85, fontWeight: 'bold' }}><FormattedMessage id="analysis.title" /></div>
+                            <div style={{ color: '#000', fontSize: 16, opacity: 0.45, marginTop: 20 }}><FormattedMessage id="analysis.subTitle" /></div>
                             <div style={{ marginTop: 16 }}>
-                            <Button type="primary" onClick={handleAddJobGroup}>开始分析</Button>
+                            <Button type="primary" onClick={handleAddJobGroup}><FormattedMessage id="analysis.start" /></Button>
                             </div>
                         </div>
                     </div>

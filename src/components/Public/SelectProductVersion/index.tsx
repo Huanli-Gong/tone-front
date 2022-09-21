@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
+import { useIntl, FormattedMessage } from 'umi'
 import { queryProductList } from './service';
 import styles from './style.less';
 
@@ -36,7 +37,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 				notFoundContent={fetching ? <Spin size="small" /> : null}
 				style={{ width: '100%' }}
 				onChange={(value: number) => setVal(value)}
-				placeholder="请选择产品版本"
+				placeholder={<FormattedMessage id="report.select.productVersion" />}
 				optionFilterProp="children"
 				showArrow={false}
 				autoFocus={true}
@@ -68,7 +69,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 					size="small"
 					style={{ width: 75 }}
 				>
-					搜索
+					<FormattedMessage id="operation.search" />
 				</Button>
 				<Button
 					type="text"
@@ -81,7 +82,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 					size="small"
 					style={{ width: 75, border: 'none' }}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 				</Button>
 			</Space>
 		</div>

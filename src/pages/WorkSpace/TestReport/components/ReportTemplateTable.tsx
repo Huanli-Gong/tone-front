@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState, useRef, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
-import { useRequest, useAccess, Access } from 'umi'
+import { useRequest, useAccess, Access, useIntl, FormattedMessage  } from 'umi'
 import { queryReportTemplateList, delReportTemplateList } from '../services'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
@@ -14,6 +14,7 @@ import _ from 'lodash'
 import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils';
 
 const ReportTemplateTable: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { ws_id, tab } = props
     const access = useAccess()
     const [autoFocus, setFocus] = useState(true)
@@ -51,7 +52,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         try {
             const { code, msg } = await delReportTemplateList({ id })
             if (code === 200) {
-                message.success('删除成功')
+                message.success(formatMessage({id: 'request.delete.success'}) )
                 const num = data.total % data.page_size
                 if (Math.ceil(data.total / data.page_size) === data.page_num && num === 1) // 删除的是最后一页的最后一条且最后一页只有一条
                 {
@@ -67,7 +68,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             }
         } catch (e) {
             console.log(e)
-            message.error('删除失败')
+            message.error(formatMessage({id: 'request.delete.failed'}) )
         }
     }
     const handleAddScript = (currentRow: any) => {
@@ -92,7 +93,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
     let columns: any = [
         {
             dataIndex: 'name',
-            title: '模版名称',
+            title: <FormattedMessage id="report.columns.template" />,
             ellipsis: {
                 shwoTitle: false,
             },
@@ -105,7 +106,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                     styleObj={styleObj}
                     onConfirm={(val: any) => updateFetchParams({ name: val })}
                     currentData={{ tab }}
-                    placeholder="支持报告名称"
+                    placeholder={formatMessage({id: 'report.columns.template.placeholder'}) }
                 />
             ),
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -132,7 +133,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             width: 180,
-            title: '创建者',
+            title: <FormattedMessage id="report.columns.creator_name" />,
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator')} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -148,7 +149,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            title: '修改者',
+            title: <FormattedMessage id="report.columns.update_user_name" />,
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'update_user')} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -164,7 +165,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            title: '描述',
+            title: <FormattedMessage id="report.columns.description" />,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }, {
             dataIndex: 'gmt_created',
@@ -172,7 +173,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            title: '创建时间',
+            title: <FormattedMessage id="report.columns.gmt_created" />,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }, {
             dataIndex: 'gmt_modified',
@@ -180,10 +181,10 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            title: '修改时间',
+            title: <FormattedMessage id="report.columns.gmt_modified.s" />,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         }, {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
             width: 200,
             render(row: any) {
@@ -194,7 +195,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                             style={{ color: '#1890FF', cursor: 'pointer' }}
                             onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}/preview`)}
                         >
-                            预览
+                            <FormattedMessage id="operation.preview" />
                         </span>
                         <Access
                             accessible={access.WsMemberOperateSelf(row.creator)}
@@ -206,11 +207,11 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                                             style={{ color: '#1890FF', cursor: 'pointer' }}
                                             onClick={() => AccessTootip()}
                                         >
-                                            编辑
+                                            <FormattedMessage id="operation.edit" />
                                         </span>
                                     }
-                                    <OptBtn onClick={() => AccessTootip()}>复制</OptBtn>
-                                    { !isDefault && <OptBtn onClick={() => AccessTootip()}>删除</OptBtn>}
+                                    <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.copy" /></OptBtn>
+                                    { !isDefault && <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptBtn>}
                                 </Space>
                             }
                         >
@@ -221,19 +222,19 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                                         style={{ color: '#1890FF', cursor: 'pointer' }}
                                         onClick={() => targetJump(`/ws/${ws_id}/test_report/template/${row.id}`)}
                                     >
-                                        编辑
+                                        <FormattedMessage id="operation.edit" />
                                     </span>
                                 }
-                                <OptBtn onClick={_.partial(handleAddScript, row)}>复制</OptBtn>
+                                <OptBtn onClick={_.partial(handleAddScript, row)}><FormattedMessage id="operation.copy" /></OptBtn>
                                 {
                                     !isDefault &&
                                     <Popconfirm
-                                        title="确认删除该模板吗？"
-                                        okText="确认"
-                                        cancelText="取消"
+                                        title={<FormattedMessage id="report.template.delete.prompt" />}
+                                        okText={<FormattedMessage id="operation.confirm" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
                                         onConfirm={_.partial(handleTemplateDel, _.get(row, 'id') || '')}
                                     >
-                                        <OptBtn>删除</OptBtn>
+                                        <OptBtn><FormattedMessage id="operation.delete" /></OptBtn>
                                     </Popconfirm>
                                 }
                             </Space>

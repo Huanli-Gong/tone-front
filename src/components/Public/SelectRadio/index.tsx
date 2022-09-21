@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Radio, Button, Divider, Space } from 'antd';
 import styles from './style.less';
 import { switchUserRole } from '@/utils/utils';
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 	// console.log(list,confirm, onConfirm, roleType)
@@ -38,7 +39,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 						onConfirm(val)
 					}}
 				>
-					确定
+					<FormattedMessage id="operation.ok" />
 				</Button>
 				<Button
 					size="small"
@@ -49,7 +50,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 						onConfirm(undefined)
 					}}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 				</Button>
 			</div>
 		</div>

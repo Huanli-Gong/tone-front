@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from './services'
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import { message, Layout, Row, Select, Modal, Space, Divider, Button, Tag, Alert, Spin, Tooltip, Popconfirm, Typography } from 'antd';
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
@@ -63,21 +63,35 @@ const transformNoGroupIdFn = (selectedJob: any) => {
     return arr
 }
 const EllipsisRect = (props: any) => {
+    const { formatMessage } = useIntl()
+    const local = getLocale() === 'en-US'
+
     const { text, flag, isBaseGroup } = props
-    const dom = <span className={isBaseGroup ? `${styles.workspace_name} ${styles.base_workspace_name}` : `${styles.workspace_name}`}>
-        {flag ? <Tag color='#0089FF' className={styles.baselineColorFn}>基</Tag> : ''}
-        {text}
-    </span>
+    let tempText = text
+    // 以“对比组”开始，以数字结尾的。
+    if (text.match(/^对比组[0-9]+$/)) {
+        tempText = formatMessage({id: 'analysis.comparison.group'}) + text.slice(3)
+    }
+    const nameStyle = local? styles.workspace_name_en: styles.workspace_name
+    const dom = (
+        <span className={isBaseGroup ? `${nameStyle} ${styles.base_workspace_name}`: `${nameStyle}`}>
+            {flag ? <Tag color='#0089FF' className={styles.baselineColorFn}><FormattedMessage id="analysis.base"/></Tag> : ''}
+            {tempText}
+        </span>
+    )
     return (
         <>
-            {isBaseGroup && <span title='基准组' style={{ paddingRight: 4, transform: 'translateY(-12px)', width: 16, display: 'inline-block' }}><BaseIcon title='基准组' /></span>}
-            <Tooltip title={text} overlayStyle={{ wordBreak: 'break-all' }}>
+            {isBaseGroup && <span title={formatMessage({id: 'analysis.benchmark.group'})} style={{ paddingRight: 4, transform: 'translateY(-12px)', width: 16, display: 'inline-block' }}><BaseIcon title={formatMessage({id: 'analysis.benchmark.group'})} /></span>}
+            <Tooltip title={tempText} overlayStyle={{ wordBreak: 'break-all' }}>
                 {dom}
             </Tooltip >
         </>
     )
 }
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const local = getLocale() === 'en-US'
+
     const { state } = props.location
     let selectedJob: any = _.get(state, 'compareData')
     selectedJob = selectedJob && _.isArray(JSON.parse(selectedJob)) ? JSON.parse(selectedJob) : []
@@ -310,10 +324,11 @@ export default (props: any) => {
     }
 
     const handleEditMark = () => {
+        const localStr = formatMessage({id: 'analysis.edit.mark.name'})
         editGroupMark.current?.show(
-            '编辑组名称', 
+            localStr, 
             _.cloneDeep(currentEditGroup), 
-            groupData[currentEditGroupIndex].members[0].product_version
+            groupData[currentEditGroupIndex].members[0]?.product_version
         )
     }
     const handleDelGroup = () => {
@@ -386,7 +401,8 @@ export default (props: any) => {
         })
         if (num > 1 && baselineGroupIndex === -1) {
             setLabelBlinking(true)
-            return message.warning('请先设置基准组')
+            const localStr = formatMessage({id: 'analysis.please.set.the.benchmark.group'})
+            return message.warning(localStr)
         }
         setVisibleBaseGroup(true)
         // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
@@ -444,7 +460,7 @@ export default (props: any) => {
             })
             .catch((e) => {
                 setLoading(false)
-                message.error('请求失败')
+                message.error(formatMessage({id: 'request.failed'}) )
                 console.log(e)
             })
     }
@@ -494,7 +510,8 @@ export default (props: any) => {
                     return
                 }
                 if (result[1].code === 1358) {
-                    message.error('请添加对比组数据')
+                    const localStr = formatMessage({id: 'analysis.please.add.comparison.group'})
+                    message.error(localStr)
                     return
                 }
                 if (result[0].code !== 200) {
@@ -507,7 +524,7 @@ export default (props: any) => {
             })
             .catch((e) => {
                 setLoading(false)
-                message.error('请求失败')
+                message.error(formatMessage({id: 'request.failed'}) )
                 console.log(e)
             })
     }
@@ -659,8 +676,8 @@ export default (props: any) => {
 
     const contentMark = (
         <div>
-            <p onClick={_.partial(handleEditMark)}>编辑组名称</p>
-            <p onClick={_.partial(showModal)}>移除此组</p>
+            <p onClick={_.partial(handleEditMark)}><FormattedMessage id="analysis.editMark"/></p>
+            <p onClick={_.partial(showModal)}><FormattedMessage id="analysis.deleteMark"/></p>
         </div>
     )
     const handleMouseOver = (e: any) => {
@@ -816,7 +833,7 @@ export default (props: any) => {
                 result.destination.index
             );
             itemObj.forEach((item: any, num) => {
-                if (item.id === baselineGroup.id) {
+                if (item && item.id === baselineGroup.id) {
                     setBaselineGroupIndex(num)
                     setBaselineGroup(item)
                 }
@@ -870,7 +887,7 @@ export default (props: any) => {
                                     <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
                                 </span>
                                 {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
-                                    设为基准组
+                                    <FormattedMessage id="analysis.set.benchmark.group"/>
                                 </span>}
                             </div>
                             <Divider className={styles.line} />
@@ -889,7 +906,7 @@ export default (props: any) => {
                         <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
                     </span>
                     {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
-                        设为基准组
+                        <FormattedMessage id="analysis.set.benchmark.group"/>
                     </span>}
                 </div>
 
@@ -927,17 +944,19 @@ export default (props: any) => {
                                                                 <span>{`#${obj.job_id}`}</span>
                                                                 <span>{obj.creator_name}</span>
                                                                 <Popconfirm
-                                                                    title='你确定要删除该Job吗？'
+                                                                    title={<FormattedMessage id="analysis.delete.job.prompt"/>}
                                                                     onConfirm={_.partial(handleJobDelClick, _, index, num)}
-                                                                    okText="确认"
-                                                                    cancelText="取消"
+                                                                    okText={<FormattedMessage id="operation.confirm"/>}
+                                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
                                                                     arrowPointAtCenter={true}
                                                                     trigger="click"
                                                                     onVisibleChange={_.partial(handleVisibleChange, _, index, num)}
                                                                 >
                                                                     <span
                                                                         style={{ opacity: currentDelJobDom === `${index}${num}` ? 1 : 0 }}
-                                                                        className={styles.compare_job_delete} onClick={_.partial(handleJobDel, index, num)}>删除</span>
+                                                                        className={styles.compare_job_delete} onClick={_.partial(handleJobDel, index, num)}>
+                                                                            <FormattedMessage id="operation.delete"/>
+                                                                    </span>
                                                                 </Popconfirm>
                                                             </div>
                                                         </li>
@@ -964,12 +983,16 @@ export default (props: any) => {
                     {(provided: any, snapshot: any) => (
                         <div ref={provided.innerRef} {...provided.droppableProps} {...provided.dragHandleProps} style={getJobItemStyle(provided.droppableProps.style)}>
                             <div className={styles.group_type}>
-                                <div>自动分组：<span className={styles.cancle_group} onClick={cancleGrouping} style={{ display: groupingButton ? 'inline-block' : 'none' }}>撤销</span>
+                                <div><FormattedMessage id="analysis.auto.group"/>
+                                    <span className={styles.cancle_group} onClick={cancleGrouping} style={{ display: groupingButton ? 'inline-block' : 'none' }}>
+                                       <FormattedMessage id="analysis.revoke"/>
+                                    </span>
                                 </div>
                                 <div className={styles.button}>
-                                    <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} placeholder="请选择自动分组方式">
-                                        <Option value="version">按产品版本</Option>
-                                        <Option value="sn">按机器</Option>
+                                    <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} 
+                                    placeholder={<FormattedMessage id="analysis.select.group.placeholder"/>}>
+                                        <Option value="version"><FormattedMessage id="analysis.product.version"/></Option>
+                                        <Option value="sn"><FormattedMessage id="analysis.by.machine"/></Option>
                                     </Select>
                                 </div>
                             </div>
@@ -985,12 +1008,15 @@ export default (props: any) => {
         return (
             <>
                 <div className={styles.group_type}>
-                    <div>自动分组：<span className={styles.cancle_group} onClick={cancleGrouping} style={{ display: groupingButton ? 'inline-block' : 'none' }}>撤销</span>
+                    <div><FormattedMessage id="analysis.auto.group"/>
+                        <span className={styles.cancle_group} onClick={cancleGrouping} style={{ display: groupingButton ? 'inline-block' : 'none' }}>
+                            <FormattedMessage id="analysis.revoke"/>
+                        </span>
                     </div>
                     <div className={styles.button}>
-                        <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} placeholder="请选择自动分组方式">
-                            <Option value="version">按产品版本</Option>
-                            <Option value="sn">按机器</Option>
+                        <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} placeholder={formatMessage({id: 'analysis.select.group.placeholder'})}>
+                            <Option value="version"><FormattedMessage id="analysis.product.version"/></Option>
+                            <Option value="sn"><FormattedMessage id="analysis.by.machine"/></Option>
                         </Select>
                     </div>
 
@@ -1030,17 +1056,19 @@ export default (props: any) => {
                                                                 <span>{`#${obj.job_id}`}</span>
                                                                 <span>{obj.creator_name}</span>
                                                                 <Popconfirm
-                                                                    title='你确定要删除该Job吗？'
+                                                                    title={<FormattedMessage id="analysis.delete.job.prompt"/>}
                                                                     onConfirm={_.partial(handleNoGroupJobDelClick, _, num)}
-                                                                    okText="确认"
-                                                                    cancelText="取消"
+                                                                    okText={<FormattedMessage id="operation.confirm"/>}
+                                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
                                                                     arrowPointAtCenter={true}
                                                                     trigger="click"
                                                                     onVisibleChange={_.partial(handleVisibleChange)}
                                                                 >
                                                                     <span
                                                                         style={{ opacity: currentDelJobDom === `ongroup${num}` ? 1 : 0 }}
-                                                                        className={styles.compare_job_delete} onClick={_.partial(handleNoGroupJobDel, num)}>删除</span>
+                                                                        className={styles.compare_job_delete} onClick={_.partial(handleNoGroupJobDel, num)}>
+                                                                            <FormattedMessage id="operation.delete"/>
+                                                                    </span>
                                                                 </Popconfirm>
                                                             </div>
                                                         </li>
@@ -1066,6 +1094,11 @@ export default (props: any) => {
         if (originType === 'test_result') return isExpand ? innerWidth - 276 - 20 : innerWidth - 16 - 20
         if (newGroupData.length > 4) return '100%'
         return innerWidth - 40
+    }
+
+    // “对比组”转换国际化方式显示
+    const groupToLocale = (str: string) => {
+        return str?.match(/^对比组[0-9]+$/) ? (formatMessage({id: 'analysis.comparison.group'}) + str.slice(3)) : str
     }
 
     return (
@@ -1100,7 +1133,7 @@ export default (props: any) => {
                                                                 {isExpand ? <CompareCollapse /> : <CompareExpand />}
                                                             </div>
                                                             <div className={styles.first_part}>
-                                                                {`待分组区(${noGroupData.length})`}
+                                                                <FormattedMessage id="analysis.area.to.grouped"/>({noGroupData.length})
                                                             </div>
                                                             <Divider className={styles.line} />
                                                             {noGroupReact()}
@@ -1114,12 +1147,12 @@ export default (props: any) => {
 
                                     <div style={{ marginLeft: originType === 'test_result' ? 0 : 20 }} className={styles.group_content}>
                                         <div className={styles.compare_title}>
-                                            <span className={styles.title_text}>对比分析</span>
-                                            <Text>提供多种数据对比分析能力，支持job在线聚合对比分析方式</Text>
+                                            <span className={styles.title_text}><FormattedMessage id="analysis.title" /></span>
+                                            <Text><FormattedMessage id="analysis.subTitle" /></Text>
                                         </div>
                                         {isAlertClose && <Alert
                                             onClose={handleAlertClose}
-                                            message="合并规则：取所有Job的并集数据；如果有重复的，排序靠前的Job优先。"
+                                            message={<FormattedMessage id="analysis.isAlertClose" />}
                                             type="info"
                                             showIcon
                                             closable
@@ -1153,13 +1186,13 @@ export default (props: any) => {
                                                                                         style={{ cursor: 'pointer' }}
                                                                                         onClick={_.partial(handleAddBaseline, _, groupData[index], index)}
                                                                                         className={styles.create_job_type}>
-                                                                                        添加基线
+                                                                                        <FormattedMessage id="analysis.add.baseline" />
                                                                                     </div> :
                                                                                     <div
                                                                                         style={{ cursor: 'pointer' }}
                                                                                         onClick={_.partial(handleAddGroupItem, groupData[index], index)}
                                                                                         className={styles.create_job_type}>
-                                                                                        添加Job
+                                                                                        <FormattedMessage id="analysis.add.job" />
                                                                                     </div>
                                                                             }
 
@@ -1184,9 +1217,9 @@ export default (props: any) => {
                                                                 // marginTop: isAlertClose ? 86 : 38,
                                                             }
                                                         }>
-                                                        <div className={styles.create_group} style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: 105 }}>
+                                                        <div className={styles.create_group} style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local? 220: 110 }}>
                                                             <div onClick={_.partial(handleAddJobGroup, 'job')} className={styles.popover}>
-                                                                <PlusOutlined style={{ fontSize: 14, marginRight: 8 }} />新建对比组
+                                                                <PlusOutlined style={{ fontSize: 14, marginRight: 8 }} /><FormattedMessage id="analysis.create.comparison.group" />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1203,15 +1236,15 @@ export default (props: any) => {
                 <div className={styles.footer_part}>
                     <div className={styles.bottom}>
                         <Space>
-                            <Button onClick={handleClear}>清空</Button>
-                            <Button type="primary" onClick={handleStartAnalysis} disabled={isSureOk()}>确定</Button>
+                            <Button onClick={handleClear}><FormattedMessage id="operation.clear" /></Button>
+                            <Button type="primary" onClick={handleStartAnalysis} disabled={isSureOk()}><FormattedMessage id="operation.ok" /></Button>
                         </Space>
                     </div>
                 </div>
 
                 <EditMarkDrawer ref={editGroupMark} onOk={handleEditMarkOk} />
                 <Modal
-                    title="删除提示"
+                    title={<FormattedMessage id="delete.prompt" />}
                     visible={visible}
                     width={480}
                     className={styles.baseline_del_modal}
@@ -1220,13 +1253,13 @@ export default (props: any) => {
                     footer={
                         <Row justify="end">
                             <Space>
-                                <Button onClick={handleCancel}>取消</Button>
-                                <Button onClick={handleDelGroup} type="primary" danger>删除</Button>
+                                <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
+                                <Button onClick={handleDelGroup} type="primary" danger><FormattedMessage id="operation.delete" /></Button>
                             </Space>
                         </Row>
                     }
                 >
-                    <span>{`你确定要删除组【${currentEditGroup && currentEditGroup.product_version}】吗？`}</span>
+                    <span><FormattedMessage id="analysis.are.you.sure.delete.group" />{`【${currentEditGroup && groupToLocale(currentEditGroup.product_version)}】`}</span>
                 </Modal>
                 <Modal
                     title={
@@ -1244,7 +1277,7 @@ export default (props: any) => {
                                 setDisabled(true)
                             }}
                         >
-                            {currentEditGroup && currentEditGroup.product_version}
+                            {currentEditGroup && groupToLocale(currentEditGroup.product_version) }
                         </div>
                     }
                     centered={true}
@@ -1275,7 +1308,7 @@ export default (props: any) => {
                                 setDisabled(true)
                             }}
                         >
-                            选择基准组对比的内容
+                            <FormattedMessage id="analysis.select.benchmark.group" />
                         </div>
                     }
                     centered={true}

@@ -483,8 +483,8 @@ const list_cn = {
   'aliyun.cluster': '云上集群',
 }
 const list_en = {
-  'fixed_pool': 'Reserved Machine Pool',
-  'elastic_pool': 'Elastic Machine Pool',
+  'fixed_pool': 'Reserved Server Pool',
+  'elastic_pool': 'Elastic Server Pool',
   'aligroup': 'Reserved',
   'aliyun': 'Elastic',
   // 机器
