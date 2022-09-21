@@ -29,7 +29,6 @@ export default (props: any) => {
     const [paddingBottomVal, setPaddingBottomVal] = useState(166)
     const typePath = /^\/help_doc/.test(props.match.path) ? 'help_doc' : 'notice'
     const access = useAccess();
-    const PAGE_DEFAULT_PARAMS: any = { page_size: 1000, doc_type: typePath }
 
     const { loading, data: helpData } = useRequest(
         (data: any) => queryHelpDocList(data),
@@ -42,7 +41,7 @@ export default (props: any) => {
                 }
             },
             initialData: [],
-            defaultParams: [PAGE_DEFAULT_PARAMS]
+            defaultParams: [{ doc_type: typePath }]
         }
     )
 
@@ -68,7 +67,7 @@ export default (props: any) => {
     const { height: layoutHeight } = useClientSize()
 
     const wsHelpDoc = async (title: any, index: any) => {
-        const { data = [], code, msg } = await queryHelpDocList({ page_size: 1000, doc_type: typePath })
+        const { data = [], code, msg } = await queryHelpDocList({ doc_type: typePath })
         if (code === 200) {
             if (title === 'del') {
                 let id = ''
