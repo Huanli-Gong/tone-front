@@ -1,13 +1,14 @@
 import { Drawer, Space, Button, Spin, Table, Typography, message, Divider, Tabs } from 'antd'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons'
 import React, { forwardRef, useState, useImperativeHandle, useEffect, useRef } from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { querySuiteList } from './services'
 import styles from './index.less'
 import _ from 'lodash'
 import { requestCodeMessage } from '@/utils/utils'
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
         const [title, setTitle] = useState('') // 弹框顶部title
@@ -109,7 +110,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "选择基准组对比的内容", data: any = {}) => {
+                show: (title: string = formatMessage({id: 'analysis.select.benchmark.group'}), data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     setEditer(data)
@@ -296,14 +297,16 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={padding} onClick={handleOk}>确定</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                            <Button type="primary" disabled={padding} onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                         </Space>
                     </div>
                 }
             >
                 <div className={styles.server_provider}>
-                    <Typography.Text className={styles.script_right_name} strong={true}>对比标识名称</Typography.Text>
+                    <Typography.Text className={styles.script_right_name} strong={true}>
+                        <FormattedMessage id="analysis.identification.name" />
+                    </Typography.Text>
                 </div>
                 <div className={styles.server_provider}>
                     <Typography.Text className={styles.script_right_name} strong={true}>{editer && editer.product_version}</Typography.Text>
@@ -321,8 +324,8 @@ export default forwardRef(
                             className={styles.tab_title}
                             activeKey={tab}
                         >
-                            <Tabs.TabPane tab="功能测试" key="functional" />
-                            <Tabs.TabPane tab="性能测试" key="performance" />
+                            <Tabs.TabPane tab={<FormattedMessage id="functional.test" />} key="functional" />
+                            <Tabs.TabPane tab={<FormattedMessage id="performance.test" />} key="performance" />
 
                         </Tabs>
                         <Table

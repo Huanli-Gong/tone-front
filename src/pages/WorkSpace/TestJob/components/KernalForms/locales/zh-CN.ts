@@ -18,7 +18,6 @@ const text =  {
   'pos.after': '安装内核后',
   'add.kernel': '+ 添加内核脚本',
   // message success
-  'copy.success': '复制成功',
 
   // build kernel form
   'code_repo': '代码仓库',

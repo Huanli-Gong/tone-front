@@ -7,17 +7,17 @@ const TextWarp = styled.div`
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-
 interface EllipsisProps {
     title: string,
     children?: React.ReactNode,
     style?: any,
     width?: number,
     color?:string,
+    placement?: any,
 }
 
 const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
-    const { title, children, width, color, style, ...rest } = props
+    const { title, children, width, color, placement='topLeft', style, ...rest } = props
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
 
@@ -32,13 +32,13 @@ const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
     }
     const TypographyDiv = (
         <TextWarp ref={ellipsis} style={{ width, color, ...style }} {...rest}>
-            { children || title || '-' }
+            {children || title || '-'}
         </TextWarp>
     )
 
     return (
         show ?
-            <Tooltip title={title} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+            <Tooltip title={title} placement={placement} overlayStyle={{ wordBreak: 'break-all' }}>
                  {TypographyDiv}
             </Tooltip> : TypographyDiv
     )

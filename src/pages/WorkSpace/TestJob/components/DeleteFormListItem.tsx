@@ -16,7 +16,7 @@ export const DeleteFormListItem : React.FC<any> = ({ remove , field , position, 
             <DeleteOutlined 
                 onClick={ () => {
                     remove( field.name )
-                    deleteCallback()
+                    // deleteCallback()
                 } }
                 style={{ color }}
             />

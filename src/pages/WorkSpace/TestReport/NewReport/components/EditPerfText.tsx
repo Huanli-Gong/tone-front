@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components';
 import _ from 'lodash';
 import { saveReportDesc } from '../../services';
@@ -32,6 +33,7 @@ export const PerfTextArea = ({
         fontStyle?:any,
         defaultHolder?: string,
     }) => {
+    const { formatMessage } = useIntl()
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
 
@@ -39,18 +41,18 @@ export const PerfTextArea = ({
         setTitle(name)
     }, [name])
 
-    const openNotification = (name:string,field:string) => {
+    const openNotification = (name:string, field:string) => {
         notification['success'] ({
-            message: `${name}：${field}保存成功`,
+            message: `${name}：${field}`,
             placement:'bottomRight'
         });
     };
 
     const changeName = (name: any) => {
         const list = {
-            test_env: '环境要求',
-            test_description: '测试说明',
-            test_conclusion: '测试结论',
+            test_env: formatMessage({id: 'report.test_env.save'}),
+            test_description: formatMessage({id: 'report.test_description.save'}),
+            test_conclusion: formatMessage({id: 'report.test_conclusion.save'}),
         }
         return list[name];
     }
@@ -66,43 +68,41 @@ export const PerfTextArea = ({
         obj[field] = title
         const { code, msg } = await saveReportDesc({ ...obj })
         if(code === 200){
-            openNotification(suite_name,changeName(field))
+            openNotification(suite_name, changeName(field))
             setBtn(false)
         }else{
             message.error(msg)
         }
     }
 
-    const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return '未填写'
+    const handleChange = (title:any) => {
+        if(_.isNull(title) || _.isUndefined(title)) return formatMessage({id: 'report.not filled in'})
         return title || '-'
     }
 
     return (
         <>
             {
-                btn ?
-                    <>
-                        {
-                            <div style={{ marginBottom: space }}>
-                                <TextAreaWarrper
-                                    autoComplete="off"
-                                    size="small"
-                                    placeholder={defaultHolder}
-                                    style={{ padding: '10px', ...fontStyle }}
-                                    value={title}
-                                    onChange={evt => setTitle(evt.target.value)}
-                                    onBlur={handleBlur}
-                                />
-                            </div>
-                        }
-
-                    </>
-                    :
-                    <div style={{ width: '100%', ...style }}>
-                        <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        <EditOutlined style={{ paddingLeft:10 }} onClick={()=> setBtn(true)}/>
-                    </div>
+               btn ?
+                <>
+                    {
+                        <div style={{ marginBottom: space }}>
+                            <TextAreaWarrper
+                                autoComplete="off"
+                                size="small"
+                                placeholder={defaultHolder}
+                                style={{ padding:'10px', ...fontStyle }}
+                                value={title}
+                                onChange={evt => setTitle(evt.target.value)}
+                                onBlur={handleBlur}
+                            />
+                        </div>
+                    }
+                </>
+                :
+                <div style={{ width:'100%', ...style }}>
+                    <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                </div>
             }
         </>
     )
@@ -125,6 +125,7 @@ export const GroupItemText = ({
     defaultHolder?:string,
     
 }) => {
+    const { formatMessage } = useIntl()
     const [title, setTitle] = useState('')
 
     useEffect(() => {
@@ -132,7 +133,7 @@ export const GroupItemText = ({
     }, [name])
 
     const handleBlur = () => {
-        setDataSource(dataSource.map((ele: any) => {
+        setDataSource(dataSource.map((ele:any) => {
             if (ele.is_group) {
                 if (ele.rowKey == rowKey) {
                     ele.name = title
@@ -164,26 +165,25 @@ export const GroupItemText = ({
         fontFamily: 'PingFangSC-Medium',
         color: 'rgba(0,0,0,0.85)'
     }
-    const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return '未填写'
+    const handleChange = (title:any) => {
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({id: 'report.not filled in'})
         return title
     }
     return (
         <>
             {
-                btn ?
-                    <Input
-                        autoComplete="off"
-                        size="small"
-                        placeholder={defaultHolder}
-                        style={{ padding: '6px 8px 6px 8px', width: '93%', ...fontStyle }}
-                        value={title}
-                        onChange={evt => setTitle(evt.target.value)}
-                        onBlur={handleBlur}
-                    />
-
-                    :
-                    <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+            btn ?
+                <Input
+                    autoComplete="off"
+                    size="small"
+                    placeholder={defaultHolder}
+                    style={{ padding:'6px 8px 6px 8px',width:'93%', ...fontStyle }}
+                    value={title}
+                    onChange={evt => setTitle(evt.target.value)}
+                    onBlur={handleBlur}
+                />
+                :
+                <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
             }
         </>
     )

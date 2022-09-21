@@ -32,7 +32,7 @@ const text =  {
   'install_un_push': '安装未发布',
   'install_build_kernel': 'Build内核',
 
-  'env_info.placeholder': '格式：key=value，多个用英文逗号或换行分割',
+  'env_info.placeholder': '格式：key=value，多个用空格或换行进行分割',
   'env_info.li1': '定义多个全局变量，请使用空格和换行分割',
   'env_info.li2': '必须是字母、数字和下划线组合',
   'env_info.li3': '支持 value 中有双等号',

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
+import { useIntl, FormattedMessage } from 'umi'
 import { queryBaelineList, queryProductList } from './services'
 import styles from './index.less'
 import CommonPagination from '@/components/CommonPagination';
@@ -8,6 +9,7 @@ import _ from 'lodash'
 import { Table,message, Select, Divider,Space,Button } from 'antd';
 import {resizeDocumentHeight} from './CommonMethod'
 import { requestCodeMessage } from '@/utils/utils';
+
 const { Option } = Select;
 const defaultResult = {
                 all_job: 0,
@@ -20,6 +22,7 @@ const defaultResult = {
                 success_job: 0,
             }
 export default ( props : any ) => {
+    const { formatMessage } = useIntl()
     const {height: layoutHeight} = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const scollMaxHeight = maxHeight - 339 > 430 ? 430 : maxHeight - 339
@@ -104,20 +107,20 @@ export default ( props : any ) => {
 
     const columns = [
         {
-            title: '基线名称',
+            title: <FormattedMessage id="analysis.baseline.name" />,
             dataIndex: 'name',
             width: 80,
         },
         {
-            title: '测试类型',
+            title: <FormattedMessage id="analysis.test_type" />,
             width:100,
             dataIndex: 'test_type',
             render:(record:any) => {
-                return  record === 'performance' ? '性能' : '功能 '
+                return  record === 'performance' ? <FormattedMessage id="header.test_type.performance" />: <FormattedMessage id="header.test_type.functional" />
             }
         },
         {
-            title: '创建人',
+            title: <FormattedMessage id="analysis.creator_name" />,
             width:80,
             dataIndex: 'creator_name',
             render:(record:any) => {
@@ -125,7 +128,7 @@ export default ( props : any ) => {
             }
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="analysis.gmt_created" />,
             width:180,
             dataIndex: 'gmt_created',
             ellipsis: true,
@@ -188,18 +191,19 @@ export default ( props : any ) => {
         },
     };
     // 滚动条参数
-const scroll = {
-    // 最大高度，内容超出该高度会出现滚动条
-    height: maxHeight - 339 > 430 ? 430 : maxHeight - 339,
-}
+    const scroll = {
+        // 最大高度，内容超出该高度会出现滚动条
+        height: maxHeight - 339 > 430 ? 430 : maxHeight - 339,
+    }
+
     return (
         <div className={styles.list_container} id='list_container'>
             <div className={styles.select_product}>
-                <span>产品版本：</span>
+                <span><FormattedMessage id="analysis.version.label" /></span>
                 <Select
                     showSearch
                     style={{ width: 'calc(100% - 70px)' }}
-                    placeholder="请选择产品版本"
+                    placeholder={formatMessage({id: 'analysis.version.placeholder'})}
                     defaultValue={pruductVersion}
                     value={pruductVersion}
                     optionFilterProp="children"
@@ -213,7 +217,7 @@ const scroll = {
                         allVersion.map((item:any) => <Option value={item.value} key={item.label}>{item.value}</Option>)
                     }
                 </Select>
-                <div className={styles.job_text}>基线列表</div>
+                <div className={styles.job_text}><FormattedMessage id="analysis.baseline.table" /></div>
                 <Divider className={styles.line} />
             </div>
             <Scrollbars style={scroll}>
@@ -240,15 +244,17 @@ const scroll = {
             <Divider className={styles.footer_line} />
             <div className={styles.footer}>
                 <span>
-                    <span>已选择</span>
+                    <span><FormattedMessage id="analysis.selected" /></span>
                     <span className={styles.text_num}>{`${selectRowData.length}`}</span>
-                    <span>项</span>
-                    <span className={styles.text_cancle} onClick={handleSelectCancle}>全部取消</span>
+                    <span><FormattedMessage id="analysis.item" /></span>
+                    <span className={styles.text_cancle} onClick={handleSelectCancle}>
+                        <FormattedMessage id="analysis.all.cancel" />
+                    </span>
                 </span>
                 <span>
                     <Space>
-                        <Button onClick={handleCancle}>取消</Button>
-                        <Button type="primary" onClick={handleOk}>确定</Button>
+                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </span>
             </div>

@@ -5,26 +5,35 @@ export default {
   'upload.list.table.product': '产品',
   'upload.list.table.project': '所属项目',
   'upload.list.table.state': '状态',
+  'upload.list.table.state.question': '失败原因',
   'upload.list.table.testType': '测试类型',
   'upload.list.table.baseline': '基线',
   'upload.list.table.file.name': '下载链接',
   'upload.list.table.uploader': '上传者',
   'upload.list.table.date': '上传日期',
+
   // 上传表单
   'upload.list.Drawer.title': '上传数据',
+  'upload.list.Drawer.accessible': '无权限，请参考',
+  'upload.list.Drawer.help_doc': '帮助文档',  
   'upload.list.Drawer.upload.button': '选择文件',
+  'upload.list.Drawer.upload.Alert': '文件上传状态，可在列表中查看。',  
   'upload.list.Drawer.product': '产品名称',
+  'upload.list.Drawer.product.placeholder': '请选择产品名称',
   'upload.list.Drawer.project': '项目名称',
+  'upload.list.Drawer.project.placeholder': '请选择项目',  
+  'upload.list.Drawer.job_type': 'Job类型',
+  'upload.list.Drawer.job_type.placeholder': '请选择Job类型',  
   'upload.list.Drawer.testType': '测试类型',
   'upload.list.Drawer.baseline': '基线',
-
-  'upload.list.Drawer.select.placeholder': '请选择',
-  'upload.list.Drawer.select.message': '请选择',
+  'upload.list.Drawer.baseline.placeholder': '请选择基线',
+  'upload.list.Drawer.ip': '测试机IP',
+  'upload.list.Drawer.ip.placeholder': '请输入测试机IP',
+  'upload.list.Drawer.result': '结果数据',
+   //
   'upload.list.Drawer.upload.message': '请上传文件',
   'upload.list.Drawer.upload.supportText': '支持扩展名',
-  //
   'upload.list.Drawer.valid.type': '只能上传.tar后缀的压缩包文件',
   'upload.list.Drawer.confirm.title': '文件不符合要求',
   'upload.list.Drawer.confirm.content': '请上传小于500M的压缩包文件',
-   
 };

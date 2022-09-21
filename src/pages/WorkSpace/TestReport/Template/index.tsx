@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, useMemo, memo } from 'react'
-import { history, Access, useAccess } from 'umi'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
+import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 
-import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Button, Spin, Input, Divider } from 'antd'
+import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Tooltip, Button, Spin, Input, Divider } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useClientSize } from '@/utils/hooks'
 import SuiteSelectDrawer from './components/SuiteSelectDrawer'
@@ -32,17 +32,19 @@ const defaultConf = {
 }
 
 const RenderTestBody: React.FC<any> = ({ testType }) => {
+    const { formatMessage } = useIntl()
     const { dataSource, setDataSource, contrl } = useProvider()
 
-    let bodyProps: any = { name: '性能测试数据', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
+    let bodyProps: any = { name: 'performance', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
+    
     if (testType !== 'performance')
-        bodyProps = { name: '功能测试数据', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
+        bodyProps = { name: 'functional', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
 
     const handleAddTestItem = (name: string) => {
         setDataSource(
             produce(dataSource, (draftState: any) => {
                 draftState[name] = dataSource[name].concat({
-                    name: `测试项${dataSource[name].length - 0 + 1}`,
+                    name: formatMessage({id: 'report.test.item.num'}, {data: `${dataSource[name].length - 0 + 1}`}),
                     rowkey: uuidv4(),
                     list: [{
                         test_suite_id: null,
@@ -59,7 +61,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
         setDataSource(
             produce(dataSource, (draftState: any) => {
                 draftState[name] = dataSource[name].concat({
-                    name: `测试组${dataSource[name].length - 0 + 1}`,
+                    name: `${formatMessage({id: 'report.test.group'})}${dataSource[name].length - 0 + 1}`,
                     list: [],
                     is_group: true,
                     rowkey: uuidv4()
@@ -99,14 +101,16 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                     disabled={!contrl}
                     onChange={({ target }: any) => handeleCheckboxChange(bodyProps.testRadioName, target.checked)}
                 >
-                    <Typography.Text strong style={{ fontSize: 16 }}>{bodyProps.name}</Typography.Text>
+                    <Typography.Text strong style={{ fontSize: 16 }}>
+                        <FormattedMessage id={`report.${bodyProps.name}.test.data`} />
+                    </Typography.Text>
                 </Checkbox>
             </Row>
             {
                 dataSource[bodyProps.testRadioName] &&
                 <Row style={{ paddingLeft: 24 }}>
                     {
-                        bodyProps.name !== '功能测试数据' &&
+                        bodyProps.name !== 'functional' &&
                         <Col
                             span={24}
                             style={{ background: 'rgba(0,0,0,0.03)', padding: 14, marginTop: 12 }}
@@ -120,7 +124,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                     style={{ width: "100%" }}
                                 >
                                     <Space>
-                                        <Typography.Text>基础信息</Typography.Text>
+                                        <Typography.Text><FormattedMessage id="report.basic.information"/></Typography.Text>
                                     </Space>
                                     <Space
                                         style={{ width: "100%" }}
@@ -128,9 +132,9 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                         {
                                             [
                                                 // ["测试工具", "need_test_suite_description"],
-                                                ["环境要求", "need_test_env"],
-                                                ["测试说明", "need_test_description"],
-                                                ["测试结论", "need_test_conclusion"],
+                                                [formatMessage({ id: 'report.test_env'}), "need_test_env"], 
+                                                [formatMessage({ id: 'report.test.description'}), "need_test_description"],
+                                                [formatMessage({ id: 'report.test.conclusion'}), "need_test_conclusion"],
                                             ].map((item: any) => {
                                                 const [title, name, text] = item
                                                 return (
@@ -145,19 +149,19 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                             })
                                         }
                                     </Space>
-                                    <Row >
-                                        <Col span={2}>数据视图样式</Col>
-                                        <Col span={22}>
+                                    <div style={{display: 'flex'}}>
+                                        <div style={{marginRight: 12}}><FormattedMessage id="report.data.view.style"/></div>
+                                        <div>
                                             <Radio.Group
                                                 disabled={!contrl}
                                                 value={dataSource[bodyProps.conf].show_type}
                                                 onChange={({ target }) => handleConfItemChange(target.value, 'show_type', bodyProps.conf)}
                                             >
-                                                <Radio value={'list'}>列表视图</Radio>
-                                                <Radio value={'chart'}>图表视图</Radio>
+                                                <Radio value={'list'}><FormattedMessage id="report.list.view"/></Radio>
+                                                <Radio value={'chart'}><FormattedMessage id="report.chart.view"/></Radio>
                                             </Radio.Group>
-                                        </Col>
-                                    </Row>
+                                        </div>
+                                    </div>
                                 </Space>
                             </Space>
                         </Col>
@@ -179,7 +183,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                             <Typography.Link >
                                 <Space>
                                     <PlusOutlined />
-                                    测试项
+                                    <FormattedMessage id="report.test.item"/>
                                 </Space>
                             </Typography.Link>
                         </span>
@@ -188,7 +192,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                             <Typography.Link >
                                 <Space>
                                     <PlusOutlined />
-                                    测试组
+                                    <FormattedMessage id="report.test.group"/>
                                 </Space>
                             </Typography.Link>
                         </span>
@@ -200,6 +204,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
 }
 
 const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
+    const { formatMessage } = useIntl()
     const { dataSource, setDataSource, contrl } = useProvider()
 
     const handleConfItemChange = (val: any, name: string, field: string) => {
@@ -233,7 +238,7 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
                 text &&
                 <Input.TextArea
                     allowClear
-                    placeholder={`请输入${title}`}
+                    placeholder={formatMessage({id: 'please.enter'})}
                     value={dataSource[field][text]}
                     autoSize={{ minRows: 3, maxRows: 3 }}
                     disabled={!dataSource[field][name]}
@@ -248,6 +253,7 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
 
 
 const RenderCheckbox: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { name, title, desc } = props
     const { dataSource, setDataSource, contrl } = useProvider()
 
@@ -276,7 +282,7 @@ const RenderCheckbox: React.FC<any> = (props) => {
             {
                 desc &&
                 <Input.TextArea
-                    placeholder={`请输入${title}`}
+                    placeholder={formatMessage({id: 'please.enter'})}
                     allowClear
                     disabled={!dataSource[name]}
                     value={dataSource[desc]}
@@ -291,10 +297,11 @@ const RenderCheckbox: React.FC<any> = (props) => {
 }
 
 const TemplatePage = (props: any) => {
+    const { formatMessage } = useIntl()
     const { route } = props
     const { ws_id, temp_id } = props.match.params
     const access = useAccess()
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [isPreview, setIsPreview] = React.useState(false)
     const { height: windowHeight } = useClientSize()
     const suiteSelectRef = useRef<any>()
@@ -372,9 +379,14 @@ const TemplatePage = (props: any) => {
 
     useEffect(() => {
         if (route.name === 'TemplateEdit') editPageSetData()
-        else
-            document.title = `创建报告模版 - T-One`
-    }, [])
+        else {
+            document.title = `${formatMessage({id: 'report.create.report.template'})} - T-One`
+            setLoading(false)
+        }
+        return () => {
+            setLoading(true)
+        }
+    }, [route.name])
 
     const filterFieldData = (data: any, rowkey: string, name: string, field: any) => {
         return produce(
@@ -441,7 +453,7 @@ const TemplatePage = (props: any) => {
     const queryItemData = (cur: any, idx: number) => {
         const len = cur.list.length
         return {
-            name: `测试项${idx + 1}-${len + 1}`,
+            name: formatMessage({id: 'report.test.item.num'}, {data: `${idx + 1}-${len + 1}`}),
             rowkey: uuidv4(),
             list: [{
                 test_suite_id: null,
@@ -558,7 +570,7 @@ const TemplatePage = (props: any) => {
         for (let x = 0, len = data.length; x < len; x++) {
             const { name } = data[x]
             if (obj[name])
-                throw '同级不能同名，请检查！'
+                throw formatMessage({id: 'report.please.check'})
             obj[name] = name
         }
     }
@@ -596,7 +608,7 @@ const TemplatePage = (props: any) => {
         // if (!need_perf_data && !need_func_data)
         //     return message.warning('未添加测试数据！')
         if (!name)
-            return message.warning('模板名称不可为空')
+            return message.warning(formatMessage({id: 'report.template.cannot.be.empty'}) )
 
         try {
             setLoading(true)
@@ -679,7 +691,7 @@ const TemplatePage = (props: any) => {
                                 <Space direction="vertical" style={{ width: '100%' }}>
                                     <Input
                                         style={{ width: '100%' }}
-                                        placeholder={'请输入报告模板名称'}
+                                        placeholder={formatMessage({id: 'report.name.input'})}
                                         value={dataSource.name}
                                         onChange={({ target }) => hanldeEditIssueInput('name', target.value)}
                                     />
@@ -688,7 +700,7 @@ const TemplatePage = (props: any) => {
                                         style={{ width: '100%' }}
                                         value={dataSource.description}
                                         autoSize={{ minRows: 3, maxRows: 6 }}
-                                        placeholder="请输入报告描述，例如：本测试报告为XXX项目的测试报告，目的在于总结测试阶段的测试以及分析测试结果，描述系统是否符合需求（或达到XXX功能目标）。预期参考人员包括用户、测试人员、、开发人员、项目管理者、其他质量管理人员和需要阅读本报告的高层经理。"
+                                        placeholder={formatMessage({id: 'report.description.textArea'})}
                                     />
                                 </Space>
                             </ReportIssue>
@@ -700,12 +712,12 @@ const TemplatePage = (props: any) => {
                             >
                                 {
                                     [
-                                        ["测试背景", "need_test_background", "background_desc"],
-                                        ["测试方法", "need_test_method", "test_method_desc"],
-                                        ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
+                                        [formatMessage({ id: 'report.test.background'}), "need_test_background", "background_desc"],
+                                        [formatMessage({ id: 'report.test.method'}), "need_test_method", "test_method_desc"],
+                                        [formatMessage({ id: 'report.test.conclusion'}), "need_test_conclusion", "test_conclusion_desc"],
                                         ["Summary", "need_test_summary"],
-                                        ["环境描述", "need_env_description", "env_description_desc"],
-                                        ["机器环境", "need_test_env"],
+                                        [formatMessage({ id: 'report.env.description'}), "need_env_description", "env_description_desc"],
+                                        [formatMessage({ id: 'report.server.env'}), "need_test_env"],
                                     ].map((item: any) => {
                                         const [title, name, desc] = item
                                         return (
@@ -722,7 +734,7 @@ const TemplatePage = (props: any) => {
                             {/* 测试数据 */}
                             <div style={{ padding: 20, background: '#fff', marginTop: 20 }} >
                                 <ProjectTitle id="test_data">
-                                    测试数据
+                                    <FormattedMessage id="report.test.data"/>
                                 </ProjectTitle>
                                 {
                                     ["performance", "functional"].map((i) => (
@@ -735,12 +747,12 @@ const TemplatePage = (props: any) => {
 
                     <TemplateBar justify="end" align="middle">
                         <Space>
-                            <Button onClick={() => setIsPreview(true)}>预览</Button>
+                            <Button onClick={() => setIsPreview(true)}><FormattedMessage id="operation.preview"/></Button>
                             {
                                 !dataSource.is_default &&
                                 <Access accessible={contrl}>
                                     <Button type="primary" onClick={hanldeSaveOk}>
-                                        {route.name === 'TemplateEdit' ? '更新报告模版' : '保存报告模版'}
+                                        {route.name === 'TemplateEdit' ? <FormattedMessage id="report.update.report.template"/>: <FormattedMessage id="report.save.report.template"/>}
                                     </Button>
                                 </Access>
                             }

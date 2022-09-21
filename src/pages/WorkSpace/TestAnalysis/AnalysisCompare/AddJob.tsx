@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryJobList, queryProductList, queryProduct } from './services'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -9,7 +10,7 @@ import CommonPagination from '@/components/CommonPagination';
 import SelectRadio from '@/components/Public/SelectRadio';
 import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash'
-import { Table, Select, Divider, Space,Button, DatePicker, Row, Col } from 'antd';
+import { Table,message, Select, Divider, Space,Button, DatePicker, Row, Col } from 'antd';
 import SearchInput from '@/components/Public/SearchInput'
 import {resizeDocumentHeight} from './CommonMethod'
 import SelectUser from '@/components/Public/SelectUser'
@@ -28,7 +29,6 @@ const defaultResult = {
                 success_job: 0,
                 total:0,
             }
-const defaultList = [{ id: 1, name: '功能' }, { id: 0, name: '性能' }]
 const styleObj = {
     container: 230,
     button_width: 115
@@ -42,8 +42,14 @@ const getSelJobFn = (allGroup:any,allNoGroupData:any) => {
     const allJobId = allJob.map((item:any) => _.get(item, 'id'))
     return allJobId
 }
+
 export default ( props : any ) => {
-    
+    const { formatMessage } = useIntl()
+    const defaultList = [
+        { id: 1, name: formatMessage({id: 'header.test_type.functional'}) },
+        { id: 0, name: formatMessage({id: 'header.test_type.performance'}) },
+    ]
+
     const {height: layoutHeight} = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const scollMaxHeight = maxHeight - 400 > 430 ? 430 : maxHeight - 400
@@ -173,7 +179,7 @@ export default ( props : any ) => {
   
     const columns = [
         {
-            title: 'JobID',
+            title: 'Job ID',
             dataIndex: 'id',
             width: 100,
             ellipsis: {
@@ -183,7 +189,7 @@ export default ( props : any ) => {
 				confirm={confirm}
 				autoFocus={autoFocus}
 				onConfirm={(val: any) => {setParams({...params,job_id:val,page_num: 1})}}
-				placeholder="支持搜索JobID"
+				placeholder={formatMessage({id: 'analysis.JobID.placeholder'})}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -194,7 +200,7 @@ export default ( props : any ) => {
             render: (_:any, row:any) => _,
         },
         {
-            title: 'Job名称',
+            title: <FormattedMessage id="analysis.job.name" />,
             dataIndex: 'name',
             width: 300,
             ellipsis: {
@@ -206,7 +212,7 @@ export default ( props : any ) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => {setParams({...params,name:val,page_num: 1})}}
 				// currentBaseline={{server_provider:ws_id,test_type: key,id: 'name' }}
-				placeholder="支持搜索Job名称"
+				placeholder={formatMessage({id: 'analysis.job.name.placeholder'})}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -229,8 +235,8 @@ export default ( props : any ) => {
 
         },
         {
-            title: '测试类型',
-            width:100,
+            title: <FormattedMessage id="analysis.test_type" />,
+            width: 100,
             dataIndex: 'test_type',
             ellipsis: {
                 shwoTitle: false,
@@ -248,13 +254,13 @@ export default ( props : any ) => {
                 }} />,
         },
         {
-            title: '创建人',
-            width:80,
+            title: <FormattedMessage id="analysis.creator_name" />,
+            width: 80,
             ellipsis: {
                 shwoTitle: false,
             },
             dataIndex: 'creator_name',
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} mode="" confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val)} page_size={9999} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} mode="" confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creators')} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -264,7 +270,7 @@ export default ( props : any ) => {
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         },
         {
-            title: '测试时间',
+            title: <FormattedMessage id="analysis.test_time" />,
             width:180,
             ellipsis: {
                 shwoTitle: false,
@@ -371,11 +377,11 @@ export default ( props : any ) => {
             <div className={styles.select_product}>
                 <Row>
                     <Col span={12} >
-                        <span>产品：</span>
+                        <span><FormattedMessage id="analysis.product.label" /></span>
                         <Select
                             showSearch
                             style={{ width: 'calc(100% - 75px)' }}
-                            placeholder="请选择产品"
+                            placeholder={formatMessage({id: 'analysis.product.placeholder'})}
                             defaultValue={product_id ? pruductName : pruductId}
                             value={product_id ? pruductName : pruductId}
                             optionFilterProp="children"
@@ -391,11 +397,11 @@ export default ( props : any ) => {
                         </Select>
                     </Col>
                     <Col span={12} >
-                        <span>产品版本：</span>
+                        <span><FormattedMessage id="analysis.version.label" /></span>
                         <Select
                             showSearch
-                            style={{ width: 'calc(100% - 75px)' }}
-                            placeholder="请选择产品版本"
+                            style={{ width: `calc(100% - ${getLocale() === 'en-US'? 120: 75}px)` }}
+                            placeholder={formatMessage({id: 'analysis.version.placeholder'})}
                             defaultValue={pruductVersion}
                             value={pruductVersion}
                             optionFilterProp="children"
@@ -412,7 +418,7 @@ export default ( props : any ) => {
                     </Col>
                 </Row>
 
-                <div className={styles.job_text}>Job列表</div>
+                <div className={styles.job_text}><FormattedMessage id="analysis.job.table" /></div>
                 <Divider className={styles.line} />
             </div>
             <Scrollbars style={scroll} className={styles.scroll}>
@@ -440,15 +446,17 @@ export default ( props : any ) => {
             <Divider className={styles.footer_line} />
             <div className={styles.footer}>
                 <span>
-                    <span>已选择</span>
+                    <span><FormattedMessage id="analysis.selected" /></span>
                     <span className={styles.text_num}>{`${selectRowData.length}`}</span>
-                    <span>项</span>
-                    <span className={styles.text_cancle} onClick={handleSelectCancle}>全部取消</span>
+                    <span><FormattedMessage id="analysis.item" /></span>
+                    <span className={styles.text_cancle} onClick={handleSelectCancle}>
+                        <FormattedMessage id="analysis.all.cancel" />
+                    </span>
                 </span>
                 <span>
                     <Space>
-                        <Button onClick={handleCancle}>取消</Button>
-                        <Button type="primary" onClick={handleOk}>确定</Button>
+                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </span>
             </div>

@@ -1,6 +1,6 @@
 import { textTip, commitLinkTip } from './'
 
-const passRateLineOption : any = ( dataSource : any , ws_id : any ) => {
+const passRateLineOption : any = ( dataSource : any , ws_id : any, formatMessage: any) => {
     const source = Object.keys(dataSource).map(key => {
         if (dataSource[key]) {
             return {
@@ -48,7 +48,7 @@ const passRateLineOption : any = ( dataSource : any , ws_id : any ) => {
         },
         series: [{
             type: 'line',
-            name: 'TestConf成功率',
+            name: formatMessage({id: 'analysis.TestConf.pass_rate'}),
             symbol: 'circle',
             encode: {
                 x: 'date',
@@ -80,10 +80,10 @@ const passRateLineOption : any = ( dataSource : any , ws_id : any ) => {
                     ${params.marker} ${item.start_time} <br />
                     ${commitLinkTip('JobID' , item.job_id, ws_id)}
                     ${textTip('commit' , item.commit)}
-                    通过率: ${Number(item.pass_rate).toFixed(2)}%<br />
-                    ${textTip('总数' , item.all_case)}
-                    ${textTip('通过数' , item.pass_case)}
-                    ${textTip('标注' , item.note)}
+                    ${formatMessage({id: 'analysis.pass_rate'})}: ${Number(item.pass_rate).toFixed(2)}%<br />
+                    ${textTip(formatMessage({id: 'analysis.table.total'}), item.all_case)}
+                    ${textTip(formatMessage({id: 'analysis.pass_num'}), item.pass_case)}
+                    ${textTip(formatMessage({id: 'analysis.table.column.note'}), item.note)}
                 </div>`
             }
         }

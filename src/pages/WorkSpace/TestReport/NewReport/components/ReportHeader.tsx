@@ -1,6 +1,7 @@
 import React,{ useContext , memo } from 'react';
 import { Row, Space } from 'antd';
-import { SettingTextArea, SettingRegUpdate } from './EditPublic';
+import { useIntl, FormattedMessage } from 'umi';
+import { SettingTextArea, SettingRegUpdate  } from './EditPublic';
 import styled from 'styled-components';
 import { ReportContext } from '../Provider';
 import {  ModuleWrapper } from '../ReportUI';
@@ -9,6 +10,7 @@ const CreateMsg = styled.span`
     font-size:14px;
 `
 const ReportHeader = () => {
+    const { formatMessage } = useIntl()
     const { btnState, obj, setObj, saveReportData, btnConfirm } = useContext(ReportContext)
     const handleChangeVal = (val: any, text: string) => {
         obj[text] = val
@@ -22,7 +24,7 @@ const ReportHeader = () => {
                 name={saveReportData?.name}
                 btn={btnState}
                 btnConfirm={btnConfirm}
-                defaultHolder="请输入报告名称"
+                defaultHolder={formatMessage({id: 'report.please.enter.name'})}
                 space="14px"
                 style={{ 
                     lineHeight:'40px',
@@ -42,23 +44,29 @@ const ReportHeader = () => {
                     saveData={saveReportData}
                     field='description'
                     style={{ marginBottom:8 }}
-                    defaultHolder="请输入报告描述"
+                    defaultHolder={formatMessage({id: 'report.please.enter.desc'})}
                 />
                 : 
                 <SettingTextArea 
                     name={saveReportData?.description} 
                     btn={btnState} 
-                    defaultHolder="请输入报告描述"
+                    defaultHolder={formatMessage({id: 'report.please.enter.desc'})}
                     btnConfirm={btnConfirm}
                     style={{ marginBottom:8 }}
+                    fontStyle={{
+                        fontSize:14,
+                        color:'rgba(0,0,0,0.85)',
+                        fontFamily:'PingFangSC-Regular' ,
+                        whiteSpace: 'pre-line',
+                    }}
                     onOk={(val: any) => handleChangeVal(val, 'description')}
                 />
             }
             
             { !btnState && <Row>
                 <Space>
-                    <CreateMsg>创建人&nbsp;{saveReportData?.creator_name}</CreateMsg>
-                    <CreateMsg>创建时间&nbsp;{saveReportData?.gmt_created}</CreateMsg>
+                    <CreateMsg><FormattedMessage id="report.columns.creator"/>&nbsp;{saveReportData?.creator_name}</CreateMsg>
+                    <CreateMsg><FormattedMessage id="report.columns.gmt_created"/>&nbsp;{saveReportData?.gmt_created}</CreateMsg>
                 </Space>
             </Row> }
         </ModuleWrapper>

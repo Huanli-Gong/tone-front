@@ -1,5 +1,6 @@
 import React , { useState , useRef, useEffect } from 'react'
 import { Table , message } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { matchType } from '@/utils/utils';
 import { ReactComponent as IconArrowOn } from '@/assets/svg/icon_arrow_on.svg'
 import { ReactComponent as IconSafetyCertificate } from '@/assets/svg/icon_SafetyCertificate.svg';
@@ -10,6 +11,7 @@ import styles from './index.less'
 
 // 子列表
 export default (props: any) => {
+  const { formatMessage } = useIntl()
    const { pathname } = new URL(window.location.href)
     const { ws_id, id, name, test_type } = props
     const [loading, setLoading] = useState(false)
@@ -24,7 +26,7 @@ export default (props: any) => {
           setDataSource(data)
         } else {
           setDataSource([])
-          message.error(res.msg || '请求失败！')
+          message.error(res.msg || formatMessage({id: 'request.failed'}) )
         }
         setLoading(false)
       } catch(e) {
@@ -48,18 +50,19 @@ export default (props: any) => {
         <span>
           {text ? (
             <span className={styles.safety}>
-              <IconSafetyCertificate style={{ marginRight: 4 }}/>认证</span>) : null}
+              <IconSafetyCertificate style={{ marginRight: 4 }}/><FormattedMessage id="test.suite.authentication" />
+            </span>) : null}
         </span>)
     }, {
       dataIndex: 'add_state',
       width : 80,
-      render: (text: any) => (<span className={styles.ellipsis}>{matchType(text)}</span>),
+      render: (text: any) => (<span className={styles.ellipsis}>{matchType(text, formatMessage)}</span>),
     }, {
       align: 'right',
       dataIndex: 'case_count',
       width: 50,
       // onCell: () => ({ style: { maxWidth: 100, textAlign: 'center' } }),
-      render: (text: any) => (<span className={styles.ellipsis}>{text}</span>)
+      render: (text: any) => (<span className={styles.ellipsis}>{text === '已添加'? <FormattedMessage id="added" />: text}</span>)
     },
   ]
 

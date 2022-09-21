@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components';
 import _ from 'lodash';
 import { editReportInfo } from '../../services';
-
 const { TextArea } = Input;
 
 const TextAreaWarrper = styled(TextArea)`
@@ -38,6 +38,7 @@ export const SettingTextArea = ({
         onOk: Function
     }) => {
 
+    const { formatMessage } = useIntl()
     const [title, setTitle] = useState('')
     useEffect(() => {
         if (btnConfirm) {
@@ -50,44 +51,43 @@ export const SettingTextArea = ({
     }, [name])
 
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return '未填写'
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({id: 'report.not filled in'})
         return title
     }
     return (
         <>
             {
-                btn ?
-                    <>
-                        {
-                            isInput ?
-                                <Input
-                                    autoComplete="off"
-                                    size="small"
-                                    placeholder={defaultHolder}
-                                    style={{ padding: '6px 8px 6px 8px', width: '93%', ...fontStyle }}
-                                    value={title}
-                                    onChange={evt => setTitle(evt.target.value)}
-                                />
-                                :
-                                <div style={{ marginBottom: space }}>
-                                    <TextAreaWarrper
-                                        autoComplete="off"
-                                        size="small"
-                                        placeholder={defaultHolder}
-                                        style={{ padding: '10px', ...fontStyle }}
-                                        value={title}
-                                        onChange={evt => setTitle(evt.target.value)}
-                                    />
-                                </div>
-                        }
-
-                    </>
-                    :
-                    isInput ? <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        :
-                        <div style={{ width: '100%', ...style }}>
-                            <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+               btn ?
+               <>
+                   {
+                       isInput ? 
+                       <Input
+                            autoComplete="off"
+                            size="small"
+                            placeholder={defaultHolder}
+                            style={{ padding:'6px 8px 6px 8px',width:'93%', ...fontStyle }}
+                            value={title}
+                            onChange={evt => setTitle(evt.target.value)}
+                        />
+                       :
+                       <div style={{ marginBottom: space }}>
+                            <TextAreaWarrper
+                                autoComplete="off"
+                                size="small"
+                                placeholder={defaultHolder}
+                                style={{ padding:'10px', ...fontStyle }}
+                                value={title}
+                                onChange={evt => setTitle(evt.target.value)}
+                            />
                         </div>
+                   }
+                </>
+                :
+                isInput ? <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                   :
+                <div style={{ width:'100%', ...style }}>
+                    <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                    </div>
             }
         </>
     )
@@ -114,6 +114,7 @@ export const SettingRegUpdate = ({
         fontStyle?: any,
         defaultHolder?: string,
     }) => {
+    const { formatMessage } = useIntl()
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
 
@@ -129,18 +130,18 @@ export const SettingRegUpdate = ({
 
 const openNotification = (name: string) => {
     notification['success']({
-        message: `${name}保存成功`,
+        message: `${name}`,
         placement: 'bottomRight'
     });
 };
 
 const changeName = (name: any) => {
     const list = {
-        description: '报告描述',
-        test_background: '测试背景',
-        test_method: '测试方法',
-        custom: '测试结论',
-        text: '环境描述'
+        description: formatMessage({id: 'report.description.save'}),
+        test_background: formatMessage({id: 'report.test_background.save'}),
+        test_method: formatMessage({id: 'report.test_method.save'}),
+        custom: formatMessage({id: 'report.test_conclusion.save'}),
+        text: formatMessage({id: 'report.text.save'}),
     }
     return list[name];
 }
@@ -176,7 +177,7 @@ const handleBlur = async () => {
 }
 
 const handleChange = (title: any) => {
-    if (_.isNull(title) || _.isUndefined(title)) return '未填写'
+    if (_.isNull(title) || _.isUndefined(title)) return <FormattedMessage id="report.not.filled" />
     return title
 }
 return (

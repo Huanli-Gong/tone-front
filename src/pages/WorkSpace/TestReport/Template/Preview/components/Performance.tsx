@@ -2,6 +2,7 @@ import React, { memo, useState, useRef } from 'react'
 import { Row, Typography, Space, Button, Select } from 'antd'
 import styled from 'styled-components'
 import { QuestionCircleOutlined } from '@ant-design/icons'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import ChartModal from './Chart'
 import { useRefWidth } from '../../hooks'
 import { ReactComponent as GroupIcon } from '@/assets/svg/TestReport/TestGroup.svg'
@@ -104,7 +105,9 @@ const ToolsIssue = styled(FullRow)`
     border-left:1px solid rgba(0,0,0,.1);
 `
 
-const IssueRow = styled(FullRow)`
+const IssueRow = styled(FullRow).attrs({
+    enLocale: getLocale() === 'en-US'
+})`
     height:38px;
     &>div{ 
         height:38px;line-height:38px;
@@ -113,12 +116,12 @@ const IssueRow = styled(FullRow)`
         border-bottom:1px solid rgba(0,0,0,0.1);
     }
     &>div:first-child{
-        width:75px;
+        width: ${props => props.enLocale? 132: 75}px;
         color:rgba(0,0,0,.85);
     }
     &>div:last-child{
         color:rgba(0,0,0,.65);
-        width:calc(100% - 75px);
+        width:calc(100% - ${props => props.enLocale? 132: 75}px);
     }
 `
 
@@ -181,13 +184,13 @@ const CaseTr = styled(FullRow)`
 
 const TableHeaderOptionRow: React.FC<any> = (props) => (
     <SuiteCaseOption {...props} >
-        <Row align="bottom">Test Conf / 指标 </Row>
+        <Row align="bottom"><FormattedMessage id="report.conf/metric"/></Row>
         {
             new Array(3).fill('').map((i: any, idx: number) => (
                 <Row justify="space-between" key={idx}>
-                    <Typography.Text>结果</Typography.Text>
+                    <Typography.Text><FormattedMessage id="report.result"/></Typography.Text>
                     {idx !== 0 && <Space>
-                        <Typography.Text>对比结果/跟踪结果</Typography.Text>
+                        <Typography.Text><FormattedMessage id="report.comparison/tracking.results"/></Typography.Text>
                         <IconArrow />
                         <QuestionCircleOutlined />
                     </Space>}
@@ -228,7 +231,8 @@ interface SuiteConfToolsProps {
         need_test_description: boolean
         need_test_env: boolean
         need_test_suite_description: boolean
-    }
+    },
+    formatMessage: any
 }
 
 const ToolRow: React.FC<any> = ({ data, title, desc }) => (
@@ -236,7 +240,7 @@ const ToolRow: React.FC<any> = ({ data, title, desc }) => (
     <IssueRow>
         <div><Typography.Text strong>{title}</Typography.Text></div>
         <div>
-            {desc || "此处内容需生成报告后手动填写"}
+            {desc || <FormattedMessage id="report.content.needs.to.generate"/>}
         </div>
     </IssueRow>
 )
@@ -245,37 +249,23 @@ const ToolHeaderRow: React.FC<any> = ({ data, title }) => (
     data &&
     <IssueRow>
         <div><Typography.Text strong>{title}</Typography.Text></div>
-        <div>此处内容将会自动从Test Suite中获取</div>
+        <div><FormattedMessage id="report.content.get.from.suite"/></div>
     </IssueRow>
 )
 
-const SuiteConfTools: React.FC<SuiteConfToolsProps> = ({ perf_conf }) => (
+const SuiteConfTools: React.FC<SuiteConfToolsProps> = ({ perf_conf, formatMessage }) => (
     <ToolsIssue>
-        {/* <ToolHeaderRow title={'测试工具'} data={perf_conf.need_test_suite_description} /> */}
-        {
-            [
-                ["环境要求", "need_test_env", "test_env_desc"],
-                ["测试说明", "need_test_description", "test_description_desc"],
-                ["测试结论", "need_test_conclusion", "test_conclusion_desc"],
-            ].map((item: any) => {
-                const [title, field, desc] = item
-                return (
-                    <ToolRow
-                        key={field}
-                        title={title}
-                        data={perf_conf[field]}
-                        desc={perf_conf[desc]}
-                    />
-                )
-            })
-        }
+        <ToolHeaderRow title={formatMessage({id: 'report.test.tools'})} data={perf_conf.need_test_suite_description} />
+        <ToolRow title={formatMessage({id: 'report.test.env'})} data={perf_conf.need_test_env} />
+        <ToolRow title={formatMessage({id: 'report.test.description'})} data={perf_conf.need_test_description} />
+        <ToolRow title={formatMessage({id: 'report.test.conclusion'})} data={perf_conf.need_test_conclusion} />
     </ToolsIssue>
 )
 
 const TermItem: React.FC<any> = memo(
     ({ name, list, perf_conf, rowkey, field, is_default, time }) => {
+        const { formatMessage } = useIntl()
         const [modalType, setModalType] = useState(perf_conf.show_type === 'list')
-
         const title = useRef<any>()
         const titleWidth = useRefWidth(title)
 
@@ -287,20 +277,20 @@ const TermItem: React.FC<any> = memo(
                     <Typography.Text strong>
                         <Space align="start">
                             <TermIcon style={{ transform: 'translate(0px, 2px)' }} />
-                            <Typography.Text strong style={{ width: titleWidth - 410, display: 'inline-block' }}>
+                            <Typography.Text strong style={{ width: titleWidth - 410 - 30, display: 'inline-block' }}>
                                 {name}
                             </Typography.Text>
                         </Space>
                     </Typography.Text>
                     <Space align="start">
                         <Space>
-                            <Typography.Text>筛选：</Typography.Text>
+                            <Typography.Text><FormattedMessage id="report.filter"/>：</Typography.Text>
                             <Select value={''} style={{ width: 200 }}>
-                                <Select.Option value="">全部</Select.Option>
+                                <Select.Option value=""><FormattedMessage id="report.all.s"/></Select.Option>
                             </Select>
                         </Space>
                         <Button onClick={handleChangeModal}>
-                            {!modalType ? '列表视图' : '图表视图'}
+                            {!modalType ? formatMessage({id: 'report.list.view'}): formatMessage({id: 'report.chart.view'})}
                         </Button>
                     </Space>
                 </TermTitle>
@@ -314,24 +304,24 @@ const TermItem: React.FC<any> = memo(
                                 return (
                                     <Suite key={index}>
                                         <SuiteTitle justify="space-between" style={{ paddingTop: 8, paddingBottom: 8 }}>
-                                            <Typography.Text strong style={{ width: titleWidth - (!modalType ? 410 : 60) }}>
+                                            <Typography.Text strong style={{ width: titleWidth - (!modalType ? 410 + 165 : 60) }}>
                                                 {suite.suite_show_name}
                                             </Typography.Text>
                                             {
                                                 !modalType &&
                                                 <Space style={{ height: 32 }}>
-                                                    <Typography.Text>视图：</Typography.Text>
-                                                    <Select value={chartType} style={{ width: 230 }} onChange={hanldeChangeChartType}>
-                                                        <Select.Option value={1}>所有指标拆分展示(type1)</Select.Option>
-                                                        <Select.Option value={2}>多Conf同指标合并(type2)</Select.Option>
-                                                        <Select.Option value={3}>单Conf多指标合并(type3)</Select.Option>
+                                                    <Typography.Text><FormattedMessage id="report.view"/>：</Typography.Text>
+                                                    <Select value={chartType} style={{ width: 395 }} onChange={hanldeChangeChartType}>
+                                                        <Select.Option value={1}><FormattedMessage id="report.type1"/></Select.Option>
+                                                        <Select.Option value={2}><FormattedMessage id="report.type2"/></Select.Option>
+                                                        <Select.Option value={3}><FormattedMessage id="report.type3"/></Select.Option>
                                                     </Select>
                                                 </Space>
                                             }
                                         </SuiteTitle>
                                         <SuiteBody >
                                             {(!is_default && JSON.stringify(perf_conf) !== '{}') &&
-                                                <SuiteConfTools perf_conf={perf_conf} />}
+                                                <SuiteConfTools perf_conf={perf_conf} formatMessage={formatMessage}/>}
                                             <ChartModal
                                                 {...suite}
                                                 show={!modalType}

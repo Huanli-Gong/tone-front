@@ -1,7 +1,7 @@
 import { textTip, commitLinkTip } from './'
 
 
-const customChartOption: any = (dataSource: any, ws_id: any) => {
+const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any) => {
     const baseicData = [
         { value: "Fail", color: "#C84C5A" },
         { value: "Skip", color: "#D9D9D9" },
@@ -159,7 +159,7 @@ const customChartOption: any = (dataSource: any, ws_id: any) => {
                         ${params.marker} ${params.name} <br />
                         ${commitLinkTip('JobID', item.job_id, ws_id)}
                         ${textTip('commit', item.commit)}
-                        ${textTip('标注', item.note)}
+                        ${textTip(formatMessage({id: 'analysis.table.column.note'}), item.note)}
                     </div>`
                 )
             },

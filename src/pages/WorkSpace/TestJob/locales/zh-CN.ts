@@ -51,7 +51,6 @@ const text =  {
   'template_name.rules2': '模板名称不能为空',
   
   // message info
-  'copy.success': '复制成功',
   'machine.cannot.be.empty': '监控机器不能为空',
   'suite.cannot.be.empty': '用例不能为空',
   'operation.success': '操作成功！',

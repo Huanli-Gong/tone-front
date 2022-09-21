@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 import { Spin,Input, Tabs, Space, Badge, BackTop } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import DefaultPageList from './component/DefaultPageTable';
@@ -13,6 +13,7 @@ const { Search } = Input;
  * @param props
  */
 const TestSuiteSearch: React.FC<any> = (props) => {
+  const { formatMessage } = useIntl()
   writeDocumentTitle(`Workspace.${ props.route.name }`)
   const { pathname } = new URL(window.location.href)
   const path = pathname && pathname.substring(0, pathname.lastIndexOf('/'))
@@ -76,9 +77,9 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         <div className={styles.content} style={{minHeight: (height - 270) }}>
             <Search className={styles.content_search}
               prefix={<SearchOutlined style={{ color: '#bfbfbf', marginTop: 4, marginRight: 8 }}/>}
-              placeholder="请输入Test Suite、领域名称相关的检索内容"
+              placeholder={formatMessage({id: 'test.suite.search.placeholder'})}
               allowClear
-              enterButton="检索"
+              enterButton={formatMessage({id: 'test.suite.search'})}
               onSearch={onSearch}
             />
                 <div className={styles.initialPage}>
@@ -87,14 +88,14 @@ const TestSuiteSearch: React.FC<any> = (props) => {
                         <span onClick={handleClick('performance')}
                           style={{ color: itemSelected === 'performance' ? '#1890FF' : 'rgba(0, 0, 0, 0.65)', cursor: 'pointer' }}
                         >
-                          性能测试({totalNum.performance_num})
+                          <FormattedMessage id="performance.test"/>({totalNum.performance_num})
                         </span>
                       </div>
                       <div className={styles.headerInfo}>
                         <span onClick={handleClick('functional')}
                           style={{ color: itemSelected === 'functional' ? '#1890FF' : 'rgba(0, 0, 0, 0.65)', cursor: 'pointer' }}
                         >
-                          功能测试({totalNum.functional_num})
+                          <FormattedMessage id="functional.test"/>({totalNum.functional_num})
                         </span>
                       </div>
                   </Space>

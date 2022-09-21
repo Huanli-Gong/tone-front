@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { member } from './service';
 import styles from './style.less';
 
@@ -73,7 +74,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, m
 					size="small"
 					style={{ width: 75 }}
 				>
-					搜索
+					<FormattedMessage id="operation.search" />
 				</Button>
 				<Button
 					type="text"
@@ -86,7 +87,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, m
 					size="small"
 					style={{ width: 75, border: 'none' }}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 				</Button>
 			</Space>
 		</div>

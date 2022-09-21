@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useImperativeHandle, forwardRef } from 'react'
-import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip } from 'antd'
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
+import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip, AutoComplete } from 'antd'
 
-import { queryTestServerAppGroup, queryTestServerNewList, addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
+import { addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
 import Owner from '@/components/Owner/index';
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils';
@@ -10,61 +10,70 @@ import { AgentSelect } from '@/components/utils';
 const CreateClusterDrawer = (props: any, ref: any) => {
     const { onFinish, ws_id } = props
     const [form] = Form.useForm()
-    const [single, setSingle] = useState('1')
+    const [options, setOptions] = useState<{ value: string }[]>([]);
     const [ips, setIps] = useState({ success: [], errors: [] })
     const [validateMsg, setValidateMsg] = useState<any>('');
-    // const [vals, setVals] = useState([])
-    const [appGroup, setAppGroup] = useState<any>(undefined)
-    const [groupList, setGroupList] = useState([])
-    const [testServerList, setTestServerList] = useState([])
-    // const [selectIpsValue, setSelectIpsValue] = useState('')
     const [loading, setLoading] = useState(true)
-
-    const [testServerLoading, setTestServerLoading] = useState(false)
+    const [poolFlag, setPoolFlag] = useState<boolean>(false)
     const [visible, setVisible] = useState(false)
-
+    const defaultParam = { ws_id, page_num: 1, page_size: 20 }
     const [source, setSource] = useState<any>(null)
+
+    const queryServerList = async (params: any) => {
+        return await queryTestServerList(params)
+    }
 
     useImperativeHandle(ref, () => ({
         show(_: any) {
             setVisible(true)
-            BUILD_APP_ENV ? getTestServerList(undefined) : getAppGroupList()
+            setLoading(true)
+            queryServerList(defaultParam).then((res: any) => {
+                if (res.code === 200) {
+                    let arr: any = []
+                    !!res.data.length && res.data.map((item: any) => {
+                        arr.push({ value: item.ip })
+                    })
+                    setOptions(arr)
+                } else {
+                    requestCodeMessage(res.code, res.msg)
+                }
+                setLoading(false)
+            })
             if (_) {
                 setSource(_)
             }
         }
     }))
 
+    const searchServerList = (val: string) => {
+        let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+        const text = reg.test(val)
+        if (text) {
+            queryServerList({ ...defaultParam, ip: val })
+                .then((res: any) => {
+                    if (res.code === 200 && !!res.data.length) {
+                        let data = res.data[0]
+                        if (data.in_pool) {
+                            setIps({ success: [], errors: [] })
+                            form.setFieldsValue({ channel_type: data.channel_type })
+                            setPoolFlag(true)
+                        } else {
+                            setPoolFlag(false)
+                        }
+                    } else {
+                        setPoolFlag(false)
+                    }
+                })
+        } 
+    }
 
-    const getAppGroupList = useCallback(
-        async () => {
-            setLoading(true)
-            const { data } = await queryTestServerAppGroup({ ws_id })
-            setGroupList(data)
-            setLoading(false)
-        }, []
-    )
+    const onSelect = (val: string) => {
+        searchServerList(val)
+    };
 
-    const getTestServerList = useCallback(
-        async (app_group) => {
-            form.resetFields(['ip'])
-            setLoading(true)
-            setTestServerLoading(true)
-            setAppGroup(app_group)
-            const { data } = await queryTestServerNewList({ ws_id, app_group, page_num: 1, page_size: 200, state: ['Available', 'Occupied', 'Reserved'] })
-            setTestServerList(data)
-            setTestServerLoading(false)
-            setLoading(false)
-        },
-        [appGroup]
-    )
-
-    const setIpStyle = useCallback(
-        (evt) => {
-            form.resetFields(['ip'])
-            setSingle(evt.target.value)
-        }, []
-    )
+    const onSearch = (searchText: string) => {
+        searchServerList(searchText)
+    };
 
     const handleOk = () => {
         form
@@ -91,8 +100,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
 
     const handleCancel = () => {
         form.resetFields()
+        setPoolFlag(false)
         setVisible(false)
-        setAppGroup('')
         setSource(null)
     }
 
@@ -115,8 +124,6 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                 if (data.code === 200) {
                     setIps({ ...data.data })
                     setValidateMsg(<ValidateDisplayMessage data={data} />)
-                    // setVals(data.data.success)
-                    // setSelectIpsValue('')
                 }
             } catch (err) {
                 setLoading(false)
@@ -125,11 +132,9 @@ const CreateClusterDrawer = (props: any, ref: any) => {
         setLoading(false)
     }
 
-    // -----------------------
     // 失焦校验
     const handleBlurIp = (e: any) => {
-        // const ipValue =  e.target.value
-        if (form.getFieldValue('channel_type') && !BUILD_APP_ENV) {
+        if (form.getFieldValue('channel_type') && !BUILD_APP_ENV && !poolFlag) {
             handleIpsCheck()
         }
     }
@@ -159,120 +164,53 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     form={form}
                     className={styles.add_server_form}
                 >
-                    <Form.Item name="is_single" label="是否是单机池" initialValue="1">
-                        <Radio.Group onChange={setIpStyle}>
-                            <Radio value="1">是</Radio>
-                            <Radio value="0">否</Radio>
-                        </Radio.Group>
-                    </Form.Item>
                     {
-                        single === '1' ?
-                            BUILD_APP_ENV ?
-                                <Form.Item
-                                    name="ip"
-                                    label="机器"
-                                    rules={[{ required: true, message: '请选择机器' }]}>
-                                    <Select
-                                        placeholder="请选择机器"
-                                        loading={testServerLoading}
-                                        getPopupContainer={node => node.parentNode}
-                                        showSearch
-                                    >
-                                        {
-                                            testServerList.map(
-                                                (item: any) => (
-                                                    <Select.Option key={item.id} value={item.ip}>{item.ip}</Select.Option>
-                                                )
-                                            )
-                                        }
-                                    </Select>
-                                </Form.Item>
-                                :
-                                <Form.Item label="机器">
-                                    <Form.Item noStyle>
-                                        <Row gutter={10}>
-                                            <Col span={12}>
-                                                <Form.Item noStyle rules={[{ required: true, message: '请选择分组' }]}>
-                                                    <Select
-                                                        placeholder="请选择分组"
-                                                        onChange={getTestServerList}
-                                                        value={appGroup}
-                                                        getPopupContainer={node => node.parentNode}
-                                                    >
-                                                        {
-                                                            Array.isArray(groupList) && groupList.map(
-                                                                (item: any) => (
-                                                                    <Select.Option key={item} value={item}>{item}</Select.Option>
-                                                                )
-                                                            )
-                                                        }
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={12}>
-                                                <Form.Item name="ip" noStyle rules={[{ required: true, message: '请选择机器' }]}>
-                                                    <Select
-                                                        placeholder="请选择机器"
-                                                        loading={testServerLoading}
-                                                        getPopupContainer={node => node.parentNode}
-                                                        showSearch
-                                                    >
-                                                        {
-                                                            testServerList.map(
-                                                                (item: any) => (
-                                                                    <Select.Option key={item.id} value={item.ip || item.sn}>{item.ip || item.sn}</Select.Option>
-                                                                )
-                                                            )
-                                                        }
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                    </Form.Item>
-                                </Form.Item> :
-                            <Row>
-                                <Col span={24}>
-                                    <Form.Item
-                                        name="channel_type"
-                                        initialValue={'toneagent'}
-                                        label="控制通道"
-                                        rules={[{ required: true, message: '请选择控制通道' }]}
-                                    >
-                                        <AgentSelect disabled={BUILD_APP_ENV} />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={24}>
-                                    <Form.Item label="机器"
-                                        name="ip"
-                                        validateStatus={ips.errors.length > 0 ? 'error' : ''}
-                                        help={ips.errors.length > 0 ? validateMsg : undefined}
-                                        rules={[{
-                                            required: true,
-                                            // pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
-                                            message: `请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`
-                                        }]}>
-                                        <Input allowClear
-                                            onBlur={(e: any) => handleBlurIp(e)}
-                                            autoComplete="off"
-                                            placeholder={`请输入IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={24}>
-                                    <Form.Item label="使用状态"
-                                        name="state"
-                                        hasFeedback
-                                        rules={[{ required: true, message: '请选择机器状态!' }]}
-                                        initialValue={'Available'}
-                                    >
-                                        <Select placeholder="请选择机器状态" >
-                                            <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                                            <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
-                                            <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                            </Row>
+                        poolFlag &&
+                        <Row style={{ marginBottom: 10 }}>
+                            <Col>
+                                <span style={{ color: 'red', marginRight: 10 }}>*</span>
+                                机器已存在于单机池，修改【控制通道】、【使用状态】信息请前往单机池管理页面。
+                            </Col>
+                        </Row>
                     }
+                    <Form.Item
+                        name="ip"
+                        label="机器"
+                        validateStatus={ips.errors.length > 0 ? 'error' : ''}
+                        help={ips.errors.length > 0 ? validateMsg : undefined}
+                        rules={[{
+                            required: true,
+                            message:`请输入或选择IP${!BUILD_APP_ENV ? "/SN" : ""}`
+                        }]}>
+                        <AutoComplete
+                            options={options}
+                            style={{ width: '100%' }}
+                            onSelect={onSelect}
+                            onSearch={onSearch}
+                            onBlur={(e: any) => handleBlurIp(e)}
+                            placeholder="输入或选择机器"
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="channel_type"
+                        initialValue={'toneagent'}
+                        label="控制通道"
+                        rules={[{ required: true, message: '请选择控制通道' }]}
+                    >
+                        <AgentSelect disabled={(BUILD_APP_ENV) || (!BUILD_APP_ENV && poolFlag)} />
+                    </Form.Item>
+                    <Form.Item label="使用状态"
+                        name="state"
+                        hasFeedback
+                        rules={[{ required: true, message: '请选择机器状态!' }]}
+                        initialValue={'Available'}
+                    >
+                        <Select placeholder="请选择机器状态" disabled={poolFlag}>
+                            <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
+                            <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
+                            <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
+                        </Select>
+                    </Form.Item>
                     <Form.Item name="private_ip" label="私网IP" >
                         <Input autoComplete="off" placeholder="请输入私网IP" />
                     </Form.Item>
@@ -313,4 +251,5 @@ const CreateClusterDrawer = (props: any, ref: any) => {
 }
 
 export default forwardRef(CreateClusterDrawer)
+
 
