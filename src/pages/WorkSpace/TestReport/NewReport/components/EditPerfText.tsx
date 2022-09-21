@@ -60,9 +60,6 @@ export const PerfTextArea = ({
     const handleBlur = async() => {
         const { item_suite_id, suite_name } = suite
         let obj:any = {
-            'test_env':'',
-            'test_description':'',
-            'test_conclusion':'',
             item_suite_id,
         }
         obj[field] = title
@@ -102,6 +99,7 @@ export const PerfTextArea = ({
                 :
                 <div style={{ width:'100%', ...style }}>
                     <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+                    <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
                 </div>
             }
         </>
