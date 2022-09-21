@@ -3,7 +3,7 @@ import React, { memo, useRef } from 'react'
 import { useRefWidth } from '../hooks'
 import { Term, TermTitle, Suite, SuiteTitle, Case } from '../styled'
 import { Space, Typography, Col, Row, Button } from 'antd'
-import { Access } from 'umi'
+import { Access, useIntl, FormattedMessage } from 'umi'
 import EditSpan from './EditSpan'
 import { CloseOutlined, MinusCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as TermIcon } from '@/assets/svg/TestReport/TestItem.svg'
@@ -50,7 +50,7 @@ const TestTerm: React.FC<Record<string, any>> = ({ source, dataItem }) => {
                             ghost
                             onClick={() => suiteSelectRef.current.show(source, source.rowkey, dataItem)}
                         >
-                            选择用例
+                            <FormattedMessage id="report.select.case"/>
                         </Button>
                     </Row>
                 </Access>
@@ -58,7 +58,7 @@ const TestTerm: React.FC<Record<string, any>> = ({ source, dataItem }) => {
                     {
                         source.list.map(
                             (item: any) => (
-                                <Suite span={24} key={item.rowkey} >
+                                <Suite span={24} key={item.rowkey}>
                                     <SuiteTitle justify="space-between" >
                                         <Access accessible={contrl} fallback={<span>{item.suite_show_name}</span>}>
                                             <EditSpan

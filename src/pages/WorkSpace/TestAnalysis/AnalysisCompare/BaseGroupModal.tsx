@@ -10,10 +10,13 @@ import { ReactComponent as BaseIcon } from '@/assets/svg/BaseIcon.svg'
 import ExpandTable from './ExpandTable'
 import { getSelectedDataFn } from './CommonMethod';
 import { requestCodeMessage } from '@/utils/utils';
-import { Access, useAccess } from 'umi';
+import { Access, useAccess, useIntl, FormattedMessage, getLocale } from 'umi';
 const { Panel } = Collapse;
 const { Step } = Steps;
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const locale = getLocale() === 'en-US'
+
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const access = useAccess()
@@ -389,9 +392,10 @@ export default (props: any) => {
         dataSource = oneLevelPref
     }
     // 滚动条参数
+    const tempHeight = maxHeight - 330 > 430 ? 430 : maxHeight - 330 + 14
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条
-        height: maxHeight - 330 > 430 ? 430 : maxHeight - 330 + 14,
+        height: currentStep === 1 ? (tempHeight - 44) : tempHeight,
         // width: 2000
     }
 
@@ -422,7 +426,7 @@ export default (props: any) => {
         let cId = flag ? 0 : currentGroupIndex
         if (_.isUndefined(selSuiteData) || !selSuiteData.length) {
             return <Empty
-                description="暂无重复数据"
+                description={<FormattedMessage id="analysis.no.duplicate.data"/>}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: '0' }} />
         }
@@ -500,10 +504,16 @@ export default (props: any) => {
                 className={styles.tab_title}
                 activeKey={tab}
             >
-                <Tabs.TabPane tab="功能测试" key="functional" />
-                <Tabs.TabPane tab="性能测试" key="performance" />
+                <Tabs.TabPane tab={<FormattedMessage id="functional.test"/>} key="functional" />
+                <Tabs.TabPane tab={<FormattedMessage id="performance.test"/>} key="performance" />
             </Tabs>
         )
+    }
+
+    // “对比组”转换国际化方式显示
+    const groupToLocale = (str: string) => {
+        const temp =  str?.match(/^对比组[0-9]+$/) ? (formatMessage({id: 'analysis.comparison.group'}) + str.slice(3)) : str
+        return temp
     }
 
     const allGroupReact = () => {
@@ -521,7 +531,7 @@ export default (props: any) => {
                             return <Tabs.TabPane
                                 tab={<>
                                     {baselineGroupIndex === index && <span style={{ marginRight: 5 }}><BaseIcon /></span>}
-                                    {item.group_name}
+                                    {groupToLocale(item.group_name)}
                                 </>}
                                 key={`group${index}`} />
                         })
@@ -538,7 +548,9 @@ export default (props: any) => {
         <div className={styles.compare_suite} id="list_container">
             <div className={styles.server_provider}>
                 <Space>
-                    <Typography.Text className={styles.script_right_name} strong={true}>对比组</Typography.Text>
+                    <Typography.Text className={styles.script_right_name} strong={true}>
+                        <FormattedMessage id="analysis.comparison.group" />
+                    </Typography.Text>
                     <Typography.Text className={styles.script_right_name} >{baselineGroup && baselineGroup.product_version}</Typography.Text>
                 </Space>
             </div>
@@ -550,9 +562,9 @@ export default (props: any) => {
                 }} />
             </div>
 
-            <Steps size="small" current={currentStep} onChange={handleStepChange} className={styles.steps}>
-                <Step title="选择对比数据" />
-                <Step title="选择重复数据" disabled={duplicateLoading} />
+            <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale? styles.steps_en: styles.steps}>
+                <Step title={<FormattedMessage id="analysis.select.comparison.data" />} />
+                <Step title={<FormattedMessage id="analysis.select.duplicate.data" />} disabled={duplicateLoading} />
             </Steps>
 
             <Spin spinning={loading}>
@@ -570,24 +582,24 @@ export default (props: any) => {
                 <Divider style={{ margin: '38px 0 12px 0', width: 'calc(100% + 48px)', transform: 'translateX(-24px)' }} />
                 {
                     currentStep === 0 && <Space>
-                        <Button onClick={handleClose}>取消</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                         {/* <Access accessible={access.IsWsSetting()}>
-                            <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
+                            <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}><FormattedMessage id="analysis.create.report" /></Button>
                         </Access>
-                        <Button disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button> */}
-                        <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)} loading={duplicateLoading}>下一步</Button>
+                        <Button disabled={loading} onClick={_.partial(handleOk, onOk)}><FormattedMessage id="analysis.start.analysis" /></Button> */}
+                        <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)} loading={duplicateLoading}><FormattedMessage id="operation.next" /></Button>
                     </Space>
                 }
                 {
                     currentStep === 1 &&
                     <div>
-                        <Button onClick={_.partial(handleStepChange, 0)} style={{ float: 'left' }}>上一步</Button>
+                        <Button onClick={_.partial(handleStepChange, 0)} style={{ float: 'left' }}><FormattedMessage id="operation.previous" /></Button>
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             {/* <Access accessible={access.IsWsSetting()}>
-                                <Button type="primary" disabled={loading} onClick={_.partial(handleOk, creatReportOk)}>生成报告</Button>
+                                <Button type="primary" disabled={loading} onClick={_.partial(handleOk, creatReportOk)}><FormattedMessage id="analysis.create.report" /></Button>
                             </Access> */}
-                            <Button type="primary" disabled={loading} onClick={_.partial(handleOk, onOk)}>开始分析</Button>
+                            <Button type="primary" disabled={loading} onClick={_.partial(handleOk, onOk)}><FormattedMessage id="analysis.start.analysis" /></Button>
                         </Space>
                     </div>
                 }

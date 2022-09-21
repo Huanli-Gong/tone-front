@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { PreviewTableTr, FullRow, CustomRow } from '../styled'
-import { Typography, Space } from 'antd'
-
+import { Typography , Space } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import { ReactComponent as BaseGroupIcon } from '@/assets/svg/TestReport/BaseIcon.svg'
 
@@ -32,35 +32,35 @@ const EnvTableRow: React.FC<any> = ({ title }) => (
 )
 
 const GroupTableRow = () => (
-    <FullRow style={{ marginBottom: 8, borderBottom: '1px solid rgba(0,0,0,0.10)' }}>
-        <PreviewTableTr><Typography.Text strong>对比组</Typography.Text></PreviewTableTr>
+    <FullRow style={{ marginBottom: 8, borderBottom: '1px solid rgba(0,0,0,0.10)' }} height={48}>
+        <PreviewTableTr><Typography.Text strong><FormattedMessage id="report.comparison.group"/></Typography.Text></PreviewTableTr>
         <PreviewTableTr>
             <Space>
-                <BaseGroupIcon style={{ transform: 'translateY(2px)' }} />
-                <Typography.Text strong>基准组</Typography.Text>
+                <BaseGroupIcon style={{ transform: 'translateY(2px)'}}/>
+                <Typography.Text strong><FormattedMessage id="report.benchmark.group"/></Typography.Text>
             </Space>
         </PreviewTableTr>
-        <PreviewTableTr><Typography.Text strong>对比组1</Typography.Text></PreviewTableTr>
-        <PreviewTableTr><Typography.Text strong>对比组2</Typography.Text></PreviewTableTr>
+        <PreviewTableTr><Typography.Text strong><FormattedMessage id="report.comparison.group1"/></Typography.Text></PreviewTableTr>
+        <PreviewTableTr><Typography.Text strong><FormattedMessage id="report.comparison.group2"/></Typography.Text></PreviewTableTr>
     </FullRow>
 )
 
 const TestEnv = (props: any) => {
+    const { formatMessage } = useIntl()
     const {
         need_test_env,
-        need_env_description,
-        env_description_desc
+        need_env_description
     } = props
 
     if (need_test_env || need_env_description)
         return (
-            <CustomRow id={'preview_need_test_env'}>
-                <div><Typography.Title level={5} >测试环境</Typography.Title></div>
+            <CustomRow id={'need_test_env'}>
+                <div><Typography.Title level={5} ><FormattedMessage id="report.test.env"/></Typography.Title></div>
                 {
                     need_env_description &&
                     <>
-                        <EnvTitle><Typography.Text strong>环境描述</Typography.Text></EnvTitle>
-                        <div><Typography.Text style={{ whiteSpace:'pre-wrap'}}>{env_description_desc || "此处内容需生成报告后手动填写"}</Typography.Text></div>
+                        <EnvTitle><Typography.Text strong><FormattedMessage id="report.env.description"/></Typography.Text></EnvTitle>
+                        <div><Typography.Text ><FormattedMessage id="report.content.needs.to.generate"/></Typography.Text></div>
                     </>
                 }
                 {
@@ -69,10 +69,10 @@ const TestEnv = (props: any) => {
                 {
                     need_test_env &&
                     <>
-                        <EnvTitle><Typography.Text strong>机器环境</Typography.Text></EnvTitle>
+                        <EnvTitle><Typography.Text strong><FormattedMessage id="report.server.env"/></Typography.Text></EnvTitle>
                         <GroupTableRow />
                         <EnvTableHeaderRow title={`IP${!BUILD_APP_ENV ? "/SN" : ""}`} />
-                        <EnvTableRow title={'机型'} />
+                        <EnvTableRow title={formatMessage({id: 'report.model'})} />
                         <EnvTableRow title={'RPM'} />
                         <EnvTableRow title={'GCC'} />
                     </>

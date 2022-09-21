@@ -1,23 +1,26 @@
 import styled from 'styled-components'
 import { Row } from 'antd'
+import { getLocale } from 'umi'
 
 export const PreviewTableTr = styled(Row)`
     align-items:center;
 `
-export const FullRow = styled(Row)`
+export const FullRow = styled(Row).attrs({
+    enLocale: getLocale() === 'en-US'
+})`
     width : 100%;
     border-left:1px solid rgba(0,0,0,0.10);
     background: #FDFEFF;
 
     & ${PreviewTableTr} { 
-        width:calc( (100% - 90px) / 3 );
-        height:40px;
-        border-top:1px solid rgba(0,0,0,0.10);
-        border-right:1px solid rgba(0,0,0,0.10);
+        width:calc( (100% - ${props => props.enLocale ? 110: 90}px) / 3 );
+        height: ${props => props.height || 40}px;
+        border-top: 1px solid rgba(0,0,0,0.10);
+        border-right: 1px solid rgba(0,0,0,0.10);
         padding:0 16px;
     }
     & ${PreviewTableTr}:first-child {
-        width :90px;
+        width: ${props => props.enLocale ? 110: 90}px;
     }
 `
 

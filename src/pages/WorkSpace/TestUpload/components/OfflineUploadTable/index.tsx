@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { message, Space, Popover, Popconfirm } from 'antd';
-import { FormattedMessage, Access, useAccess } from 'umi';
+import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
@@ -11,6 +11,7 @@ import { queryTableData, queryDelete } from '../../services';
 
 
 export default forwardRef((props: any, ref: any) => {
+  const { formatMessage } = useIntl();
   const { ws_id } = props;
   const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
   const [visible, setVisible] = useState(false);
@@ -28,7 +29,7 @@ export default forwardRef((props: any, ref: any) => {
         // 将total回传给父级组件
         props.refreshCallback(total)
       } else {
-        message.error(res.msg || '请求数据失败')
+        message.error(res.msg || formatMessage({id: 'request.failed'}) )
       }
       props.loadingCallback({ loading: false })
     } catch (e) {
@@ -39,11 +40,11 @@ export default forwardRef((props: any, ref: any) => {
   const deleteClick = (record: any) => {
     queryDelete({ pk: record.id }).then((res) => {
       if (res.code === 200) {
-        message.success('删除成功!');
+        message.success( formatMessage({id: 'request.delete.success'}) );
         const { page_num, page_size } = data
         getTableData({ page_num, page_size });
       } else {
-        message.error(res.msg || '删除失败！');
+        message.error(res.msg || formatMessage({id: 'request.delete.failed'}) );
       }
     })
       .catch((e) => {
@@ -79,8 +80,8 @@ export default forwardRef((props: any, ref: any) => {
   }
 
   const Question = ({ content = '' }) => (
-    <Popover placement="top" content={`失败原因：${content}`}>
-      <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.55)' }} />
+    <Popover placement="top" content={<><FormattedMessage id="upload.list.table.state.question" />{content}</>}>
+      <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.55)'}}/>
     </Popover>
   )
 
@@ -105,7 +106,6 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.product" />,
       dataIndex: 'product_name',
-      width:200,
       ellipsis: {
         showTitle: false
       },
@@ -115,7 +115,6 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.project" />,
       dataIndex: 'project_name',
-      width:180,
       ellipsis: {
         showTitle: false
       },
@@ -125,21 +124,18 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.state" />,
       dataIndex: 'state',
-      width:130,
       onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 100 }, }),
       render: (text: any, record: any) => <StateFlag title={text} content={record.state_desc} />,
     },
     {
       title: <FormattedMessage id="upload.list.table.testType" />,
       dataIndex: 'test_type',
-      width:130,
       onCell: () => ({ style: { minWidth: 100 } }),
-      render: (text: any) => <span>{test_type_enum.filter((item: any) => item.value == text).map((item: any) => item.name)}</span>,
+      render: (text: any) => <span>{test_type_enum.filter((item: any) => item.value == text).map((item: any) => formatMessage({id: item.value}) )}</span>,
     },
     {
       title: <FormattedMessage id="upload.list.table.baseline" />,
       dataIndex: 'baseline_name',
-      width:180,
       ellipsis: {
         showTitle: false
       },
@@ -149,17 +145,12 @@ export default forwardRef((props: any, ref: any) => {
     {
       title: <FormattedMessage id="upload.list.table.uploader" />,
       dataIndex: 'uploader',
-      width:120,
-      ellipsis: {
-        showTitle: false
-      },
       onCell: () => ({ style: { minWidth: 100 } }),
       render: (text: any) => <span>{text || '-'}</span>,
     },
     {
       title: <FormattedMessage id="upload.list.table.date" />,
       dataIndex: 'gmt_created',
-      width:170,
       ellipsis: {
         showTitle: false
       },
@@ -168,7 +159,6 @@ export default forwardRef((props: any, ref: any) => {
     },
     {
       title: <FormattedMessage id="Table.columns.operation" />,
-      width:170,
       ellipsis: {
         showTitle: false
       },
@@ -177,19 +167,19 @@ export default forwardRef((props: any, ref: any) => {
         <Space>
           {['file', 'running', 'fail'].includes(record.state) ? (
             <>
-              <span style={{ opacity: 0.25 }}>查看</span>
-              <span style={{ opacity: 0.25 }}>下载</span>
+              <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.view" /></span>
+              <span style={{ opacity: 0.25 }}><FormattedMessage id="operation.download" /></span>
             </>
           ) : (
             <>
-              <a href={record.job_link} target="_blank" rel="noopener noreferrer">查看</a>
+              <a href={record.job_link} target="_blank" rel="noopener noreferrer"><FormattedMessage id="operation.view" /></a>
               <Access accessible={access.WsTourist()}>
                 <Access
                   accessible={access.WsMemberOperateSelf(record.creator)}
                   fallback={
                     <Space>
-                      <a onClick={() => AccessTootip()}>下载</a>
-                      <a onClick={() => AccessTootip()}>删除</a>
+                      <a onClick={() => AccessTootip()}><FormattedMessage id="operation.download" /></a>
+                      <a onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></a>
                     </Space>
                   }
                 >
@@ -198,15 +188,15 @@ export default forwardRef((props: any, ref: any) => {
                       const a = document.createElement('a');
                       a.href = record.file_link;
                       a.click();
-                    }}>下载</a>
+                    }}><FormattedMessage id="operation.download" /></a>
                     <Popconfirm
                       placement="topRight"
-                      title="确定要删除吗？"
+                      title={<FormattedMessage id="delete.prompt" />}
                       onConfirm={() => deleteClick(record)}
-                      okText="确认"
-                      cancelText="取消"
+                      okText={<FormattedMessage id="operation.confirm" />}
+                      cancelText={<FormattedMessage id="operation.cancel" />}
                     >
-                      <a>删除</a>
+                      <a><FormattedMessage id="operation.delete" /></a>
                     </Popconfirm>
                   </Space>
                 </Access>

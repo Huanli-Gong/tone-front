@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo, useRef, useMemo, useCallback } from 'react';
 import { Col, Button, message, Spin } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
-import { history, Access, useAccess } from 'umi';
+import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi';
 import { useScroll } from 'ahooks';
 import { UpOutlined } from '@ant-design/icons';
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport';
@@ -18,6 +18,7 @@ import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent,
 import { useClientSize } from '@/utils/hooks';
 
 const Report = (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id, form_id } = props.match.params
     const local = props.history.location
     const access = useAccess();
@@ -89,7 +90,7 @@ const Report = (props: any) => {
             setEnvironmentResult(res.data)
         }
         if (res.code === 1358) {
-            message.error('请添加对比组数据')
+            message.error(formatMessage({id: 'analysis.please.add.comparison.group'}) )
             return
         }
         if (res.code !== 200) {
@@ -177,7 +178,7 @@ const Report = (props: any) => {
                 });
 
                 clipboard.on('success', function (e: any) {
-                    message.success('复制分享链接成功')
+                    message.success(formatMessage({id: 'analysis.copy.sharing.link.succeeded'}) )
                     e.clearSelection();
                 });
 
@@ -262,15 +263,17 @@ const Report = (props: any) => {
                 <AnalysisWarpper style={{ width: group > 3 ? group * 390 : 1200 }}>
                     <Col span={24}>
                         <ResultTitle style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
-                            <TypographyText>对比分析结果</TypographyText>
+                            <TypographyText><FormattedMessage id="analysis.comparison.result" /></TypographyText>
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
                                 {!form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
-                                    <IconLink style={{ marginRight: 5 }} />分享
+                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="analysis.share" />
                                 </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
-                                    {!form_id && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>生成报告</Button>}
+                                    {!form_id && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>
+                                    <FormattedMessage id="analysis.create.report" />
+                                </Button>}
                                 </Access>
                             </span>
                         </ResultTitle>
@@ -280,7 +283,7 @@ const Report = (props: any) => {
                                 <TestEnv />
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
-                                <SubTitle><span className="line"></span>测试数据</SubTitle>
+                                <SubTitle><span className="line"></span><FormattedMessage id="analysis.test.data" /></SubTitle>
                                 <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} />
                                 <FunctionalTest scrollLeft={scrollLeft} />
                             </ModuleWrapper>

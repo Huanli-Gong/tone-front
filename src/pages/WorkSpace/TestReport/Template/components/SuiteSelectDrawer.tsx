@@ -3,23 +3,26 @@
 import React, { useState, useImperativeHandle, forwardRef, memo, useCallback, useMemo } from 'react'
 import { Space, Button, Drawer, Input, Spin, Tree, Empty } from 'antd'
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-
-import { useParams, useRequest } from 'umi'
+import { useParams, useRequest, useIntl, FormattedMessage } from 'umi'
 import { suiteList } from '@/pages/WorkSpace/TestJob/components/SelectSuite/service'
 import { getDomain } from '@/pages/SystemConf/TestSuite/service'
 import styles from '@/pages/WorkSpace/TestJob/components/SelectSuite/style.less';
 
 const CustomDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams<any>()
     const { onOk, perfKeys, funcKeys } = props
+
     const [visible, setVisible] = useState(false)
     const [source, setSource] = useState<any>(null)
     const [pedding, setPedding] = useState(false)
     const [selectData, setSelectData] = useState<any>([])
+
     const [selectIds, setSelectIds] = useState<any>([])
     const [domain, setDomain] = useState('')
     const [name, setName] = useState('')
     const [expand, setExpand] = useState<boolean>(false)
+
     const [testType, setTestType] = useState('')
     const [expandedKeys, setExpandedKeys] = useState<any>([])
     const { data: domainList } = useRequest(
@@ -175,26 +178,26 @@ const CustomDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} >确定</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={handleOk} ><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 </div>
             }
             visible={visible}
             destroyOnClose={true}
             width={634}  /*自定义*/
-            title={'用例列表'}
+            title={<FormattedMessage id="report.case.list"/>}
             onClose={handleClose}
         >
             <Spin spinning={loading} style={{ width: '100%', height: '100%' }}>
                 <Input.Search
-                    placeholder="请输入"
+                    placeholder={formatMessage({id: 'please.enter'}) }
                     onSearch={(value: any) => onNameChange(value.replace(/\s+/g, ""))}
                     style={{ width: 420 }}
                 />
                 {
                     <div style={{ position: 'relative', paddingTop: '16px', display: 'flex' }}>
-                        <div className={styles.nav}>领域：</div>
+                        <div className={styles.nav}><FormattedMessage id="report.domain"/>：</div>
                         <div style={{ width: 500 }}>
                             <Button
                                 type={domain === '' ? 'primary' : 'ghost'}
@@ -202,7 +205,7 @@ const CustomDrawer = (props: any, ref: any) => {
                                 style={{ marginRight: 8, marginBottom: 8, border: 'none' }}
                                 onClick={() => handleDomainChange('')}
                             >
-                                全部
+                                <FormattedMessage id="report.all.s"/>
                             </Button>
                             {
                                 domainList.map((item: any, index: number) => {
@@ -238,7 +241,7 @@ const CustomDrawer = (props: any, ref: any) => {
                             onClick={() => setExpand(!expand)}
                             icon={expand ? <UpOutlined /> : <DownOutlined />}
                         >
-                            {expand ? '收起' : '展开'}
+                            {expand ? <FormattedMessage id="operation.collapse"/>: <FormattedMessage id="operation.expand"/>}
                         </Button>
                     </div>
                 }
@@ -253,7 +256,7 @@ const CustomDrawer = (props: any, ref: any) => {
                 {
                     data.length === 0 &&
                     <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无用例" />
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="no.use.case"/>} />
                     </div>
                 }
             </Spin>

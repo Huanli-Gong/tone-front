@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Table, Spin, Tag, message } from 'antd';
-import { history } from 'umi';
+import { history, useIntl, FormattedMessage } from 'umi';
 import ContentContainer from '@/components/Public/ContentHeader';
 import { getQuery, matchType } from '@/utils/utils';
 import { ReactComponent as IconArrowOn } from '@/assets/svg/icon_arrow_on.svg'
@@ -11,6 +11,7 @@ import styles from './style.less';
 import CodeViewer from '@/components/CodeViewer';
 
 const SuiteDetails: React.FC<any> = (props: any) => {
+    const { formatMessage } = useIntl()
     const { pathname } = new URL(window.location.href)
     const ws_id = pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
     const path = `/ws/${ws_id}/suite_search`
@@ -43,7 +44,7 @@ const SuiteDetails: React.FC<any> = (props: any) => {
             } else if (res.code === 404) {
                 setNoPage(true)
             } else if (res.code !== 200) {
-                message.error(res.msg || '请求失败！')
+                message.error(res.msg || formatMessage({id: 'request.failed'}) )
                 setDataSet({})
                 setDataSource([])
             }
@@ -73,7 +74,7 @@ const SuiteDetails: React.FC<any> = (props: any) => {
                     pageSize: 20,
                     total: 0,
                 })
-                message.error(res.msg || '请求失败！')
+                message.error(res.msg || formatMessage({id: 'request.failed'}) )
             }
         } catch (e) {
             console.log(e)
@@ -108,8 +109,8 @@ const SuiteDetails: React.FC<any> = (props: any) => {
     // 匹配类型
     const TypeTag = ({ type: param }: any) => {
         switch (param) {
-            case "performance": return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}>性能测试</Tag>)
-            case "functional": return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}>功能测试</Tag>)
+            case "performance": return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="performance.test"/></Tag>)
+            case "functional": return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="functional.test"/></Tag>)
             default: return <></>
         }
     };
@@ -133,9 +134,9 @@ const SuiteDetails: React.FC<any> = (props: any) => {
 
     // 详细信息
     const detailInfo = [
-        { name: '创建人', value: dataSet.owner_name },
-        { name: '运行模式', value: matchType(dataSet.run_mode) },
-        { name: '集成日期', value: dataSet.gmt_created },
+        { name: formatMessage({id: 'test.suite.created'}), value: dataSet.owner_name },
+        { name: formatMessage({id: 'test.suite.run_mode'}), value: matchType(dataSet.run_mode, formatMessage) },
+        { name: formatMessage({id: 'test.suite.integration'}), value: dataSet.gmt_created },
     ]
 
     return (
@@ -159,9 +160,9 @@ const SuiteDetails: React.FC<any> = (props: any) => {
                                                 <Tag color='#F2F4F6' style={{ color: '#515B6A' }}>{item}</Tag>
                                             )}
                                         </div>
-                                        <span>说明：</span>
+                                        <span><FormattedMessage id="test.suite.explain"/>：</span>
                                         {dataSet.doc && <CodeViewer code={dataSet.doc} />}
-                                        <p>备注：{dataSet.description}</p>
+                                        <p><FormattedMessage id="test.suite.remarks"/>：{dataSet.description}</p>
                                     </div>
                                     <div className={styles[`${dataSource.length ? 'no-borderBottom' : 'have-borderBottom'}`]} style={{ marginRight: 20 }}>
                                         <Table size="small"
@@ -187,7 +188,7 @@ const SuiteDetails: React.FC<any> = (props: any) => {
 
                                 <div className={styles.content_right}>
                                     <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>
-                                        <div className={styles.card_head}>详细信息</div>
+                                        <div className={styles.card_head}><FormattedMessage id="test.suite.details.info"/></div>
                                         <div className={styles.card_content}>
                                             {detailInfo.map((item, i) =>
                                                 <div className={styles.card_row} key={i}>
@@ -205,7 +206,7 @@ const SuiteDetails: React.FC<any> = (props: any) => {
                                                 rowKey={record => record.id}
                                                 dataSource={dataSourceMetric}
                                                 columns={[{
-                                                    title: `评价指标(${paginationMetric.total})`,
+                                                    title: <><FormattedMessage id="test.suite.evaluating"/>({paginationMetric.total})</>,
                                                     dataIndex: 'name',
                                                     render: (text: string) => {
                                                         return <span>{text}</span>

@@ -154,7 +154,7 @@ const TestJob: React.FC<any> = (props) => {
             },
         })
         clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'ws.test.job.copy.success'}) )
+            message.success(formatMessage({id: 'request.copy.success'}) )
             e.clearSelection();
         })
         return () => {
@@ -915,8 +915,8 @@ const TestJob: React.FC<any> = (props) => {
                                 !modifyTemplate &&
                                 <>
                                     <Button className="copy_link"><FormattedMessage id="ws.test.job.copy.link" /></Button>
-                                    <Access accessible={access.WsMemberOperateSelf(state.creator)}
-                                        fallback={<Button onClick={()=> AccessTootip()}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>}
+                                    <Access accessible={access.WsMemberOperateSelf(state?.creator)}
+                                        fallback={<Button onClick={() => AccessTootip()}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>}
                                     >
                                         <Button onClick={handleModifySetting}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>
                                     </Access>

@@ -2,6 +2,7 @@ import React , { useState , useRef, useEffect } from 'react'
 import { Table, message } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
 import { ReactComponent as IconSafetyCertificate } from '@/assets/svg/icon_SafetyCertificate.svg';
+import { useIntl, FormattedMessage } from 'umi'
 import { matchType } from '@/utils/utils';
 import ChildTable from './ChildTable';
 import { queryTestSuiteList  } from '../../../service'
@@ -9,6 +10,7 @@ import styles from './index.less'
 
 // 默认列表
 const DefaultPageTable: React.FC<any> = (props: any) => {
+  const { formatMessage } = useIntl()
   const { pathname } = new URL(window.location.href)
   const { type, ws_id } = props
 
@@ -29,7 +31,7 @@ const DefaultPageTable: React.FC<any> = (props: any) => {
           setDataSource(data)
         } else if (res.code !== 200) {
           setDataSource([])
-          message.error(res.msg || '请求失败！')
+          message.error(res.msg || formatMessage({id: 'request.failed'}) )
         }
         setLoading(false)
       } catch(e) {
@@ -79,12 +81,13 @@ const DefaultPageTable: React.FC<any> = (props: any) => {
           <span>
             {text ? (
               <span className={styles.safety}>
-                <IconSafetyCertificate style={{ marginRight: 4 }}/>认证</span>) : null}
+                <IconSafetyCertificate style={{ marginRight: 4 }}/><FormattedMessage id="test.suite.authentication" />
+              </span>) : null}
           </span>)
       }, {
         dataIndex: 'add_state',
         width: 80,
-        render: (text: any) => (<span className={styles.ellipsis}>{matchType(text)}</span>)
+        render: (text: any) => (<span className={styles.ellipsis}>{matchType(text, formatMessage)}</span>)
       }, {
         align: 'right',
         dataIndex: 'case_count',

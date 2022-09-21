@@ -1,5 +1,5 @@
 import React, { memo, useRef } from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { useRefWidth } from '../hooks'
 import { Group, GroupTitle } from '../styled'
 import { Space, Typography, Col, Row, Divider } from 'antd'
@@ -64,7 +64,7 @@ const TestGroup: React.FC<Record<string, any>> = ({ dataItem, conf, source, ...r
                             <Typography.Link >
                                 <Space>
                                     <PlusOutlined />
-                                    测试项
+                                    <FormattedMessage id="report.test.item"/>
                                 </Space>
                             </Typography.Link>
                         </span>

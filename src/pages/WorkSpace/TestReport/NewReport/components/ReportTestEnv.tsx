@@ -1,4 +1,5 @@
 import React, { useContext, memo } from 'react';
+import { useIntl, FormattedMessage } from 'umi';
 import { SettingTextArea, SettingRegUpdate } from './EditPublic';
 import { ReportContext } from '../Provider';
 import _ from 'lodash'; 
@@ -13,8 +14,9 @@ import {
 } from '../ReportUI';
 
 const ReportTestEnv = () => {
-    const {
-        btnState,
+    const { formatMessage } = useIntl()
+    const { 
+        btnState, 
         saveReportData,
         obj, 
         setObj, 
@@ -28,7 +30,6 @@ const ReportTestEnv = () => {
         domainResult,
     } = useContext(ReportContext)
 
-    
     const handleChangeVal = (val: any, text: string) => {
         if(environmentResult && JSON.stringify(environmentResult) !== '{}'){
             if(_.isUndefined(compareGroupData)){
@@ -51,32 +52,30 @@ const ReportTestEnv = () => {
 
     // 获取最多行展示
     const len = Array.from(Array(environmentResult?.count)).map(val => ({}))
-    
     return (
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env" className="position_mark">
-            <SubTitle><span className="line"></span>测试环境</SubTitle>
-            <EditTitle>环境描述</EditTitle>
+            <SubTitle><span className="line"></span><FormattedMessage id="report.test.env"/></SubTitle>
+            <EditTitle><FormattedMessage id="report.env.description"/></EditTitle>
             {
                 saveReportData?.id ?
                 <SettingRegUpdate
                     saveData={saveReportData}
                     field='text'
-                    defaultHolder="请输入环境描述"
+                    defaultHolder={formatMessage({id:'report.please.enter.description'}) }
                 />
                 :
                 <SettingTextArea
                     name={saveReportData?.test_env?.text || domainResult?.env_description_desc}
                     btnConfirm={btnConfirm}
-                    defaultHolder="请输入环境描述"
+                    defaultHolder={formatMessage({id:'report.please.enter.description'}) }
                     btn={btnState}
                     onOk={(val: any) => handleChangeVal(val, 'text')}
                 />
             }
-            
-            <EditTitle style={{ margin: '17px 0 14px 0' }}>机器环境</EditTitle>
+            <EditTitle style={{ margin: '17px 0 14px 0' }}><FormattedMessage id="report.server.env"/></EditTitle>
             <EnvGroup>
-                <EnvGroupL>对比组名称</EnvGroupL>
-                <Identify envData={envData} group={groupLen} />
+                <EnvGroupL><FormattedMessage id="report.comparison.group.name"/></EnvGroupL>
+                <Identify envData={envData} group={groupLen}/>
             </EnvGroup>
             {/* 机器信息 */}
             <TestEnv len={len} envData={envData} environmentResult={environmentResult} group={groupLen} />

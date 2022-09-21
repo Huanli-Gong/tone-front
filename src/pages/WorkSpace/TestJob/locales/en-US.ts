@@ -51,7 +51,6 @@ const text =  {
   'template_name.rules2': 'The template name cannot be empty.',
   
   // message info
-  'copy.success': 'Copy successful!',
   'machine.cannot.be.empty': 'The monitor server cannot be empty',
   'suite.cannot.be.empty': 'The cases cannot be empty',
   'operation.success': 'Operation is successful!',

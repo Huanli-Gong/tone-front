@@ -1,8 +1,9 @@
-import { Drawer, Space, Button, Form, Input, Select, Spin } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle, useEffect } from 'react'
-import { queryReportTemplateList } from '../services'
+import { Drawer, Space, Button, Form, Input, Select, message, Divider, Spin } from 'antd'
+import React, { forwardRef, useState, useImperativeHandle,useEffect } from 'react'
+import { queryReportTemplateList, projectList, productVersionList} from '../services'
 import styled from 'styled-components'
-import _ from 'lodash'
+import _, { result } from 'lodash'
+import { useIntl, FormattedMessage } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 const { Option } = Select;
 const TemplateDrawer = styled(Drawer)`
@@ -20,11 +21,14 @@ const TemplateDrawer = styled(Drawer)`
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const { ws_id, onOk, allGroup } = props
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
+        // const [ queryStatus , setQueryStatus ] = useState(true)
+        // const [nameStatus, setNameStatus] = useState(true)
         const [loading, setLoading] = useState(true)
         const [project, setProject] = useState<any>([])
         const [productVersion, setProductVersion] = useState<any>([])
@@ -99,8 +103,8 @@ export default forwardRef(
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
                     const templateId = values.template
-                    const selTemplate = _.find(template, { id: templateId });
-                    onOk({ ...values, is_default: _.get(selTemplate, 'is_default') }, editer)
+                    const selTemplate = _.find(template, { id:templateId});
+                    onOk({ ...values,is_default: _.get(selTemplate,'is_default') }, editer)
                     handleClose()
                 })
                 .catch(err => {
@@ -131,15 +135,15 @@ export default forwardRef(
             let text = ''
             let optionData = template
             if (type === 'template') {
-                text = '请选择模板'
+                text = formatMessage({ id: 'report.please.select.template'})
             }
             if (type === 'productVersion') {
                 optionData = productVersion.filter((val: any) => val)
-                text = '请选择产品版本'
+                text = formatMessage({ id: 'report.select.productVersion'})
             }
             if (type === 'project') {
                 optionData = project
-                text = '请选择项目'
+                text = formatMessage({ id: 'report.select.project'})
             }
             return (
                 <Select
@@ -167,20 +171,20 @@ export default forwardRef(
                 </Select>
             )
         }
-        
+
         return (
             <>
                 <Spin spinning={loading}>
                     <TemplateDrawer
-                        title="生成报告"
+                        title={<FormattedMessage id="report.generate.report" />}
                         width="375"
                         onClose={handleClose}
                         visible={visible}
                         footer={
                             <div style={{ textAlign: 'right', }} >
                                 <Space>
-                                    <Button onClick={handleClose}>取消</Button>
-                                    <Button type="primary" disabled={padding} onClick={handleOk}>确定</Button>
+                                    <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                                    <Button type="primary" disabled={padding} onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                                 </Space>
                             </div>
                         }
@@ -195,32 +199,35 @@ export default forwardRef(
                             }}
                         >
                             <Form.Item
-                                label="报告名称"
+                                label={<FormattedMessage id="report.columns.name" />}
                                 name="name"
-                                rules={[{ required: true }]}
+                                rules={[{ required: true, message: formatMessage({ id: 'report.please.enter.name'}) }]}
                             >
-                                <Input autoComplete="auto" placeholder="请输入报告名称" />
+                                <Input autoComplete="auto" placeholder={formatMessage({ id: 'report.please.enter.name'}) } />
                             </Form.Item>
                             <Form.Item
-                                label="选择模板"
+                                label={<FormattedMessage id="report.select.template" />}
                                 name="template"
                                 rules={[{ required: true }]}>
                                 {getSelectFn('template')}
                             </Form.Item>
                             <Form.Item
-                                label="产品版本"
+                                label={<FormattedMessage id="report.columns.product_version" />}
                                 name="productVersion"
-                                rules={[{ required: true }]}>
+                                rules={[{ required: true, message: formatMessage({ id: 'report.select.productVersion'}) }]}>
                                 {getSelectFn('productVersion')}
                             </Form.Item>
                             <Form.Item
-                                label="所属项目"
+                                label={<FormattedMessage id="report.columns.project" />}
                                 name="project"
                                 rules={[{ required: true }]}>
                                 {getSelectFn('project')}
                             </Form.Item>
-                            <Form.Item label="描述（选填）" name="description">
-                                <Input.TextArea placeholder="请输入模板描述信息" />
+                            <Form.Item label={<FormattedMessage id="report.description.input" />}
+                                name="description">
+                                <Input.TextArea 
+                                    placeholder={formatMessage({ id:'report.description.placeholder'}) }
+                                />
                             </Form.Item>
                         </Form>
                     </TemplateDrawer>

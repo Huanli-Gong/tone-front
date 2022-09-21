@@ -18,7 +18,6 @@ const text =  {
   'pos.after': 'After Installing the Kernel',
   'add.kernel': '+ Add Kernel Scripts',
   // message success
-  'copy.success': 'Copy successful!',
 
   // build kernel form
   'code_repo': 'Code Repos',

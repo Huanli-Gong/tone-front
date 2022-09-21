@@ -2,7 +2,7 @@ import { Card } from 'antd'
 import React, { memo, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import _ from 'lodash'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 
 import customChartOption from './customChartOption'
 import styled from 'styled-components'
@@ -33,6 +33,7 @@ const CardWrapper = styled(Card)`
 `
 
 const RenderChart = (props: any) => {
+    const { formatMessage } = useIntl()
     const { dataSource: chartDatas, title, provider, testType, showType } = props
     const { ws_id }: any = useParams()
 
@@ -46,7 +47,7 @@ const RenderChart = (props: any) => {
         if (dataSource && JSON.stringify(dataSource) !== '{}') {
             if (testType === 'performance') {
                 if (provider === "aliyun") {
-                    myChart.setOption(AliyunPerfLine(dataSource, ws_id))
+                    myChart.setOption(AliyunPerfLine({ dataSource, ws_id, formatMessage }))
                 }
                 else {
                     myChart.setOption(PerfLineOption(dataSource, ws_id))
@@ -55,11 +56,11 @@ const RenderChart = (props: any) => {
             if (testType === 'functional') {
                 if (showType === 'result_trend')
                     myChart.setOption(
-                        customChartOption(dataSource, ws_id)
+                        customChartOption(dataSource, ws_id, formatMessage)
                     )
                 if (showType === 'pass_rate')
                     myChart.setOption(
-                        passRateLineOption(dataSource, ws_id)
+                        passRateLineOption(dataSource, ws_id, formatMessage)
                     )
             }
             myChart.on("click", 'series.line', (params: any) => {
@@ -92,11 +93,11 @@ const RenderChart = (props: any) => {
             }
             {
                 (testType === 'functional' && showType === 'result_trend') &&
-                <Title>功能结果趋势图</Title>
+                <Title><FormattedMessage id="analysis.chart.title.passRate"/></Title>
             }
             {
                 (testType === 'functional' && showType === 'pass_rate') &&
-                <Title>功能通过率趋势图</Title>
+                <Title><FormattedMessage id="analysis.chart.title.resultTrend"/></Title>
             }
             <div ref={chart} style={{ width: '100%', height: 360 - 48 }} />
         </CardWrapper>

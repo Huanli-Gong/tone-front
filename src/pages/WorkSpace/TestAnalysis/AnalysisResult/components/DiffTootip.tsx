@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tooltip, Row, Col } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash';
 import styled from 'styled-components';
 
@@ -36,20 +37,22 @@ export const DiffTootip : React.FC<any> = () => {
         <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
             title={
                 <TitleFont>
-                    功能测试与基准组结果不一致越多差异化越大。
-                    <br />规则如下：由上到下<br />
+                    <FormattedMessage id="analysis.differentiation.info" />
+                    <br /><FormattedMessage id="analysis.rules.as.follows" /><br />
                     <Content>
                         <Row>
                             <Col span={16}>
                                 <ColDiv>
-                                    <ColSpan>基准组</ColSpan>
+                                    <ColSpan><FormattedMessage id="analysis.benchmark.group" /></ColSpan>
                                 </ColDiv>
                             </Col>
                         </Row>
                         <Row>
                             <Col span={8}>
                                 <TextPublic style={{ paddingLeft: 0, textAlign: 'center' }}>
-                                    <span style={{ paddingTop: 60, display: 'block' }}>由上到下</span>
+                                    <span style={{ paddingTop: 60, display: 'block' }}>
+                                        <FormattedMessage id="analysis.from.top.to.bottom" />
+                                    </span>
                                 </TextPublic>
                             </Col>
                             <Col span={8}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Collapse, Spin, Row, Divider, Space, Button, message } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import CommonPagination from '@/components/CommonPagination';
 import { RenderDataRow } from './'
@@ -29,6 +30,7 @@ const defaultResult = {
 }
 
 const ViewCollapse = (props: any) => {
+    const { formatMessage } = useIntl()
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const { ws_id, onCancel, onOk, currentGroup } = props
@@ -156,15 +158,15 @@ const ViewCollapse = (props: any) => {
                 <Divider className={styles.footer_line} />
                 <div className={styles.footer}>
                     <span>
-                        <span>已选择</span>
+                        <span><FormattedMessage id="analysis.selected" /></span>
                         <span className={styles.text_num}>{`${allSelectedData.current.length}`}</span>
-                        <span>项</span>
-                        <span className={styles.text_cancle} onClick={handleSelectCancle}>全部取消</span>
+                        <span><FormattedMessage id="analysis.item" /></span>
+                        <span className={styles.text_cancle} onClick={handleSelectCancle}><FormattedMessage id="analysis.all.cancel" /></span>
                     </span>
                     <span>
                         <Space>
-                            <Button onClick={handleCancle}>取消</Button>
-                            <Button type="primary" onClick={handleOk}>确定</Button>
+                            <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
+                            <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                         </Space>
                     </span>
                 </div>
