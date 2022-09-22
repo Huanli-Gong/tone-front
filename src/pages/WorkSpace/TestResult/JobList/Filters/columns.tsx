@@ -198,6 +198,10 @@ const ServerSelect: React.FC<any> = (props) => {
             mode="multiple"
             onSelect={onChange}
             options={options}
+            filterOption={(input, option: any) => 
+                option.value?.indexOf(input.trim()) >= 0
+            }
+
         />
     )
 }

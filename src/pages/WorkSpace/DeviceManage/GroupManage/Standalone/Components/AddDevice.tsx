@@ -227,7 +227,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     // 失焦校验
     const handleBlurIps = () => {
         if(selectIpsValue.length > 0){
-            const matchResult: any = selectIpsValue.split(/,|\s/) || []
+            const matchResult: any = selectIpsValue.trim().split(/,|\s/) || []
             const resultIp: any = Array.from(
                 new Set(matchResult.concat(vals))
             )

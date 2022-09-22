@@ -136,7 +136,7 @@ export default (props: any) => {
                 title: 'IP',
                 dataIndex: 'private_ip', // private_ip
                 width: params.type == '0' ? 0 : 140,
-                ...inputFilterCommonFields(BUILD_APP_ENV ? "private_ip" : "pub_ip"),
+                ...inputFilterCommonFields("private_ip"),
                 ellipsis: {
                     showTitle: false
                 },
