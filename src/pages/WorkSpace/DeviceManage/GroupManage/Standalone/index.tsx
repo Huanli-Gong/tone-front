@@ -429,7 +429,7 @@ const Standalone = (props: any, ref: any) => {
         {
             title: '操作',
             fixed: 'right',
-            // width: !BUILD_APP_ENV ? 240 : 190,
+            width: !BUILD_APP_ENV ? 280 : 240,
             // align: 'center',
             ellipsis: {
                 showTitle: false,
@@ -519,7 +519,7 @@ const Standalone = (props: any, ref: any) => {
                     expandedRowKeys: defaultExpandRowKeys,
                     expandIcon: () => false,
                 }}
-                scroll={{ x: 'max-content', y: layoutHeight - 50 - 66 - 30 - 20 }}
+                scroll={{ x: '100%', y: layoutHeight - 50 - 66 - 30 - 20 }}
             />
             <CommonPagination
                 pageSize={urlParmas.page_size}

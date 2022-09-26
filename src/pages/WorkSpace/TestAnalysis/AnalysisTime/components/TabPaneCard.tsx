@@ -109,7 +109,7 @@ const TabPaneCard: React.FC<any> = (props) => {
         if (form.getFieldValue('project_id')) {
             selectMetricRef.current.show()
         } else {
-            message.error(formatMessage({id:'analysis.selected.error'}))
+            message.error(formatMessage({ id: 'analysis.selected.error' }))
         }
     }
 
@@ -224,16 +224,15 @@ const TabPaneCard: React.FC<any> = (props) => {
                         onFieldsChange={handleFormChange}
                         className={styles.formInlineStyles}
                     >
-                        <Form.Item label={<FormattedMessage id="analysis.project"/>}
+                        <Form.Item label={<FormattedMessage id="analysis.project" />}
                             name="project_id" >
                             <Select
-                                style={{ width: 300 }}
-                                placeholder={formatMessage({id:'analysis.project.placeholder'})}
+                                placeholder={formatMessage({ id: 'analysis.project.placeholder' })}
                                 onChange={handleProductChange}
                                 showSearch
-                                filterOption={(input, option: any) =>
-                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                }
+                                filterOption={(input, option: any) => {
+                                    return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }}
                             >
                                 {
                                     projectList.map((i: any) => (
@@ -242,19 +241,21 @@ const TabPaneCard: React.FC<any> = (props) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label={<FormattedMessage id="analysis.tag"/>}>
+                        <Form.Item label={<FormattedMessage id="analysis.tag" />}>
                             <TootipTipRow>
                                 <Form.Item name="tag" initialValue="">
                                     <Select
-                                        style={{ width: 300 }}
                                         allowClear
-                                        placeholder={formatMessage({id:'analysis.tag.placeholder'})}
+                                        placeholder={formatMessage({ id: 'analysis.tag.placeholder' })}
                                         showSearch
-                                        filterOption={(input, option: any) =>
-                                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        }
+                                        style={{ width: 300 }}
+                                        filterOption={(input, option: any) => {
+                                            if (typeof option.children === "string")
+                                                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            return false
+                                        }}
                                     >
-                                        <Select.Option value=""><FormattedMessage id="analysis.indistinguishable"/></Select.Option>
+                                        <Select.Option value=""><FormattedMessage id="analysis.indistinguishable" /></Select.Option>
                                         {
                                             tagList.map((i: any) => (
                                                 <Select.Option
@@ -273,7 +274,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                                         color="#fff"
                                         placement="top"
                                         arrowPointAtCenter
-                                        title={formatMessage({id:'analysis.only.the.job.data'})}
+                                        title={formatMessage({ id: 'analysis.only.the.job.data' })}
                                     >
                                         <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)', marginLeft: 5 }} />
                                     </Tooltip>
@@ -281,18 +282,17 @@ const TabPaneCard: React.FC<any> = (props) => {
                             </TootipTipRow>
                         </Form.Item>
                         <Form.Item
-                            label={<FormattedMessage id="analysis.date"/>}
+                            label={<FormattedMessage id="analysis.date" />}
                             name="time"
                             initialValue={[moment().subtract(29, 'days'), moment().startOf('day')]}
                         >
-                            {/* @ts-ignore */}
                             <DatePicker.RangePicker
-                                style={{ width: 240 }}
+                                /* @ts-ignore */
                                 ranges={{
-                                    [formatMessage({id:'analysis.7days'})]: [moment().subtract(6, 'days'), moment().startOf('day')],
-                                    [formatMessage({id:'analysis.30days'})]: [moment().subtract(29, 'days'), moment().startOf('day')],
-                                    [formatMessage({id:'analysis.60days'})]: [moment().subtract(59, 'days'), moment().startOf('day')],
-                                    [formatMessage({id:'analysis.90days'})]: [moment().subtract(89, 'days'), moment().startOf('day')],
+                                    [formatMessage({ id: 'analysis.7days' })]: [moment().subtract(6, 'days'), moment().startOf('day')],
+                                    [formatMessage({ id: 'analysis.30days' })]: [moment().subtract(29, 'days'), moment().startOf('day')],
+                                    [formatMessage({ id: 'analysis.60days' })]: [moment().subtract(59, 'days'), moment().startOf('day')],
+                                    [formatMessage({ id: 'analysis.90days' })]: [moment().subtract(89, 'days'), moment().startOf('day')],
                                 }}
                             />
                         </Form.Item>
@@ -311,7 +311,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                         {
                             testType !== 'functional' &&
                             <span className={styles.select_left_title}>
-                                <FormattedMessage id="analysis.metric"/>：
+                                <FormattedMessage id="analysis.metric" />：
                             </span>
                         }
                         {
@@ -332,7 +332,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                             </Tooltip>
                         }
                         <Button style={{ padding: 0, marginLeft: 8 }} type="link" onClick={handleSelectMertric}>
-                            <FormattedMessage id="analysis.select"/>
+                            <FormattedMessage id="analysis.select" />
                         </Button>
                     </Row>
                 </Col>
