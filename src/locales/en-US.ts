@@ -7,7 +7,7 @@ import settingDrawer from './en-US/settingDrawer';
 import settings from './en-US/settings';
 
 export default {
-  'navbar.lang' : 'Cn',
+  'navbar.lang' : '中',
   //
   'delete.tips': 'Delete the prompt',
   'delete.prompt': 'Are you sure you want to delete it?',

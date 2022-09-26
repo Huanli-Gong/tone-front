@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useLayoutEffect, useCallback } from 'react'
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
 import { useIntl } from 'umi'
-import { Tooltip } from 'antd'
+import { Tooltip, message } from 'antd'
+import Clipboard from 'clipboard'
 
 const { document, location }: any = window
 
@@ -125,4 +126,23 @@ export const JumpResult: React.FC<ResultProps> = ({ ws_id, job_id, style }) => {
         )
     }
     return <></>
+}
+
+
+export const useCopyText = (successText: string) => (text: string) => {
+    const ele = document.createElement("a")
+    ele.style.height = "0px"
+    ele.style.width = "0px"
+    ele.innerHTML = ""
+    ele.id = "currentCopyLinkEle"
+    document.body.appendChild(ele)
+    const cb = new Clipboard(ele, {
+        text: () => text
+    })
+
+    cb.on('success', function (e) {
+        message.success(successText)
+    })
+    ele.click()
+    cb.destroy()
 }
