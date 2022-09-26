@@ -182,7 +182,8 @@ const TestJob: React.FC<any> = (props) => {
                             }
                         }
                     ).filter(Boolean)
-                    result[key] = arrayItem
+                    if (arrayItem.length !== 0)
+                        result[key] = arrayItem
                 }
                 else if (t === '[object Object]') {
                     if (JSON.stringify(z) !== '{}')
