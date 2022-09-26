@@ -429,7 +429,7 @@ const Standalone = (props: any, ref: any) => {
         {
             title: '操作',
             fixed: 'right',
-            width: !BUILD_APP_ENV ? 240 : 190,
+            // width: !BUILD_APP_ENV ? 240 : 190,
             // align: 'center',
             ellipsis: {
                 showTitle: false,

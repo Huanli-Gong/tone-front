@@ -36,7 +36,7 @@ const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any)
                         fill: baseicData.filter((v) => v.value === seriesName)[0].color
                     };
                 x = x - rect.width / 2;
-                let pathData: any | undefined, arrowX, arrowY;
+                let pathData: any, arrowX, arrowY;
 
                 if (seriesName === "Skip") {
                     rect = { width: 40, height: 10 };
@@ -159,7 +159,7 @@ const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any)
                         ${params.marker} ${params.name} <br />
                         ${commitLinkTip('JobID', item.job_id, ws_id)}
                         ${textTip('commit', item.commit)}
-                        ${textTip(formatMessage({id: 'analysis.table.column.note'}), item.note)}
+                        ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item.note)}
                     </div>`
                 )
             },
