@@ -14,7 +14,7 @@ export default forwardRef((props: any, ref: any) => {
     const [reportTemplate, setReportTemplate] = useState<any>([])
 
     // 选择分组
-    const [groupMethod, setGroupMethod] = useState('job')
+    const [groupMethod, setGroupMethod] = useState('')
     // 根据选择分组，选择基准组数据源。
     const [testConfig, setTestConfig] = useState<any>([]) // 阶段数据
     const [envPrep, setEnvPrep] = useState<any>([]) // 所有阶段数据中的模板数据集合
@@ -43,21 +43,20 @@ export default forwardRef((props: any, ref: any) => {
         if (template && Object.keys(template).length) {
             const { auto_report, group_method, base_group, base_group_info, report_template_id, test_config, } = template
             const { stage_id, } = base_group_info || {}
-            const tempGroupMethod = group_method || 'job'; // group_method值可能为null
             setTrigger(auto_report)
-            setGroupMethod(tempGroupMethod)
+            setGroupMethod(group_method)
             // 表单数据回填
             if (auto_report) {
                 const defaultTem = _.find(reportTemplate, { is_default: true })
                 // *根据“分组方式”区分base_group字段回填数据
-                const baseGroupObject = tempGroupMethod === 'job' ? {
+                const baseGroupObject = group_method === 'job' ? {
                     base_group_job: stage_id ? [stage_id, base_group] : [],
                 } : {
                     base_group_stage: base_group || undefined,
                 }
                 form.setFieldsValue({
                     ...template,
-                    group_method: tempGroupMethod,
+                    group_method,
                     // base_group字段数据回填
                     ...baseGroupObject,
                     report_template_id: report_template_id || _.get(defaultTem, 'id')
@@ -182,13 +181,12 @@ export default forwardRef((props: any, ref: any) => {
 
                         <Form.Item label="分组方式"
                             name="group_method"
-                            initialValue={'job'}>
+                        >
                             <Radio.Group onChange={(e) => { setGroupMethod(e.target.value) }}>
                                 <Radio value={'job'}>以Job维度分组</Radio>
                                 <Radio value={'stage'}>以阶段维度分组</Radio>
                             </Radio.Group>
                         </Form.Item>
-
                         {groupMethod === 'job' && (
                             <Form.Item label="选择基准组"
                                 name="base_group_job"
