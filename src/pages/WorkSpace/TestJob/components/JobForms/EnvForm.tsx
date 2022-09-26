@@ -253,7 +253,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             }
             {
                 kernel === 'install_un_push' &&
-                <UnPushForm disabled={disabled} />
+                <UnPushForm disabled={disabled} form={form} />
             }
             {
                 kernel === 'install_build_kernel' &&
