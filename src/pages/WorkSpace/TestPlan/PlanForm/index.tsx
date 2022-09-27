@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Breadcrumb, Row, Steps, Button, Result, Col, Space, message, Spin , Badge } from 'antd'
+import { Breadcrumb, Row, Steps, Button, Result, Col, Space, message, Spin, Badge } from 'antd'
 
 import BasicSetting from './components/BasicSetting'
 import TestSetting from './components/TestSetting'
 import ReportSetting from './components/ReportSetting'
 import TouchSetting from './components/TouchSetting'
 
-import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
-import { ArrowLeftOutlined, ArrowRightOutlined , CheckOutlined} from '@ant-design/icons'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
+import { ArrowLeftOutlined, ArrowRightOutlined, CheckOutlined } from '@ant-design/icons'
 import {
     CreateContainer, ContainerBody, ContainerBreadcrumb, LeftWrapper,
     RightBody, RightNav, RightWrapper, SuccessDescriptionContainer
@@ -16,23 +16,24 @@ import { history, FormattedMessage } from 'umi'
 import { runningTestPlan, creatTestPlan, queryTestPlanDetails, updateTestPlan } from '@/pages/WorkSpace/TestPlan/services'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
+import _ from 'lodash'
 
 /** 
  * 计划管理/新建计划（新）
  * */
 const TestPlan = (props: any) => {
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
 
     const { route } = props
     // console.log('route.name:', route.name)
 
-    writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
+    writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
     const { ws_id, plan_id } = props.match.params
     const [current, setCurrent] = useState(0)
 
     const [loading, setLoading] = useState(route.name !== 'Create')
-    const [isFormStep, setIsFormStep] = useState( true ) //填表阶段
+    const [isFormStep, setIsFormStep] = useState(true) //填表阶段
     const [pedding, setPedding] = useState(false)
 
     const basicSettingRef: any = useRef()
@@ -65,11 +66,11 @@ const TestPlan = (props: any) => {
         setCurrent(current - 1)
     }
 
-    const handleStepChange = async ( key : number ) => {
-        if ( key > current) {
+    const handleStepChange = async (key: number) => {
+        if (key > current) {
             await hanleStepNext(key)
         }
-        else setCurrent( key )
+        else setCurrent(key)
     }
 
     const hanleStepNext = async (stepKey: any) => {
@@ -92,7 +93,7 @@ const TestPlan = (props: any) => {
                         }
                     }
                 })
-            } 
+            }
             if (current === 1) {
                 // 校验各阶段都添加了模版，才能跳到下一步
                 await checkDataSource()
@@ -131,16 +132,23 @@ const TestPlan = (props: any) => {
         const touch = await touchSettingRef.current.validate()
         const pipline = dataSource.pipline
 
-        const { 
-            headers, devel, hotfix, kernel, build_config, 
+        const {
+            headers, devel, hotfix, kernel, build_config,
             build_machine, code_branch, code_repo,
             commit_id, compile_branch, cpu_arch, ...formValue
         } = basic;
 
         const { base_group_job, base_group_stage, ...reportOther } = report;
         // *根据“分组方式”区分“选择基准组”字段的表单值的来源。
-        const reportValue = report.group_method === 'job' ?
-            { ...reportOther, stage_id: base_group_job[0], base_group: base_group_job[1] } : { ...reportOther, base_group: base_group_stage}
+
+        const { group_method } = report
+        let reportValues = { ...reportOther }
+        if (group_method === "job") {
+            const [stage_id, base_group] = base_group_job
+            reportValues = Object.assign(reportValues, { stage_id, base_group })
+        }
+        if (group_method === "stage")
+            reportValues = Object.assign(reportValues, { base_group: base_group_stage })
 
         return {
             ...formValue,
@@ -149,7 +157,7 @@ const TestPlan = (props: any) => {
                 build_config, build_machine, code_branch, code_repo,
                 commit_id, compile_branch, cpu_arch
             },
-            ...reportValue,
+            ...reportValues,
             ...touch,
             ...pipline
         }
@@ -159,9 +167,9 @@ const TestPlan = (props: any) => {
         if (pedding) return
         setPedding(true)
         const formData = await formatterData()
-        const { code, msg, data } = await creatTestPlan({ ...formData , ws_id })
+        const { code, msg, data } = await creatTestPlan({ ...formData, ws_id })
         if (code !== 200) {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
             setPedding(false)
             return
         }
@@ -176,16 +184,26 @@ const TestPlan = (props: any) => {
             const formData = await formatterData()
             const { code, msg } = await runningTestPlan({ ...formData, is_save, ws_id, plan_id })
             if (code !== 200) {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
                 setPedding(false)
                 return;
             }
             history.push(`/ws/${ws_id}/test_plan`)
         }
-        catch( err ) {
-            console.log( err )
-            setPedding( false )
-            message.error( err.errorFields[0].errors.toString())
+        catch (err) {
+            console.log(err)
+            setPedding(false)
+            trhowErrorMsg(err)
+        }
+    }
+
+    const trhowErrorMsg = (err: any) => {
+        if (err) {
+            const { errorFields } = err
+            if (errorFields && _.isArray(errorFields) && errorFields.length > 0) {
+                const { errors } = errorFields[0]
+                message.error(errors.toString())
+            }
         }
     }
 
@@ -200,36 +218,36 @@ const TestPlan = (props: any) => {
             const formData = await formatterData()
             const { code, msg } = await updateTestPlan({ ...formData, ws_id, plan_id })
             if (code !== 200) {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
                 setPedding(false)
                 return;
             }
             history.push(`/ws/${ws_id}/test_plan`)
         }
-        catch( err ) {
-            console.log( err )
-            setPedding( false )
-            message.error( err.errorFields[0].errors.toString())
+        catch (err) {
+            console.log(err)
+            setPedding(false)
+            trhowErrorMsg(err)
         }
     }
 
     // 校验数据
     const checkDataSource = () => {
-        return new Promise(( resolve : any , reject : any ) => {
+        return new Promise((resolve: any, reject: any) => {
             const pipline = dataSource.pipline
             const { env_prep = {}, test_config = [] } = pipline || {}
-    
-            if (env_prep.machine_info && !env_prep.machine_info.length){
+
+            if (env_prep.machine_info && !env_prep.machine_info.length) {
                 message.error(`${env_prep.name}模板不能为空`)
                 reject()
             }
-    
+
             if (test_config.length) {
-                test_config.forEach((item: any)=> {
+                test_config.forEach((item: any) => {
                     const { name, template = [] } = item
                     if (!template.length) {
-                       message.error(`${name}模板不能为空`)
-                       reject()
+                        message.error(`${name}模板不能为空`)
+                        reject()
                     }
                 })
             } else {
@@ -246,7 +264,7 @@ const TestPlan = (props: any) => {
                 <ContainerBreadcrumb align="middle">
                     <Breadcrumb >
                         <Breadcrumb.Item onClick={handleBackPlanManage}>
-                            <span style={{ cursor : 'pointer' }}><FormattedMessage id={`Workspace.TestPlan.Manage`} /></span>
+                            <span style={{ cursor: 'pointer' }}><FormattedMessage id={`Workspace.TestPlan.Manage`} /></span>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item >
                             <FormattedMessage id={`Workspace.TestPlan.${route.name}`} />
@@ -258,12 +276,12 @@ const TestPlan = (props: any) => {
                         isFormStep ?
                             <>
                                 {/* 左侧   步骤 === 进度显示部分 ==== onChange={setCurrent}  */}
-                                <LeftWrapper state={ route.name !== 'Create' }>
-                                    <Steps current={current} direction="vertical" style={{ height: 201 }} onChange={ handleStepChange } >
-                                        <Steps.Step title="基础配置" key={ 0 } className={styles[(route.name === 'Run' || route.name === 'Edit' ) ? 'stepsWrapper_1' : 'stepsWrapper']}/>
-                                        <Steps.Step title="测试配置" key={ 1 } className={styles[(route.name === 'Run' || route.name === 'Edit' ) ? 'stepsWrapper_2' : 'stepsWrapper']}/>
-                                        <Steps.Step title="报告配置" key={ 2 } />
-                                        <Steps.Step title="触发配置" key={ 3 } />
+                                <LeftWrapper state={route.name !== 'Create'}>
+                                    <Steps current={current} direction="vertical" style={{ height: 201 }} onChange={handleStepChange} >
+                                        <Steps.Step title="基础配置" key={0} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_1' : 'stepsWrapper']} />
+                                        <Steps.Step title="测试配置" key={1} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_2' : 'stepsWrapper']} />
+                                        <Steps.Step title="报告配置" key={2} />
+                                        <Steps.Step title="触发配置" key={3} />
                                     </Steps>
                                 </LeftWrapper>
                                 <RightWrapper>
@@ -295,11 +313,11 @@ const TestPlan = (props: any) => {
                                                         <Button onClick={() => handleTestPlanOption(true)} >保存并运行</Button>
                                                     </>
                                                 }
-                                                <div className={styles.plan_step_btn} onClick={()=> hanleStepNext('NextStep')}>
+                                                <div className={styles.plan_step_btn} onClick={() => hanleStepNext('NextStep')}>
                                                     {
                                                         current < 3 &&
                                                         <>
-                                                            <span style={{fontSize: 14 }}>下一步</span>
+                                                            <span style={{ fontSize: 14 }}>下一步</span>
                                                             <ArrowRightOutlined />
                                                         </>
                                                     }
@@ -320,20 +338,18 @@ const TestPlan = (props: any) => {
                                     <RightBody>
                                         <BasicSetting
                                             show={current === 0 ? 'block' : 'none'}
-                                            ws_id={ws_id}
                                             ref={basicSettingRef}
                                             template={template}
                                         />
                                         <TestSetting
                                             show={current === 1 ? 'block' : 'none'}
-                                            ws_id={ws_id}
                                             template={template}
                                             onChange={hanldePrepDataChange}
                                         />
 
                                         <ReportSetting
+                                            {...props}
                                             show={current === 2 ? 'block' : 'none'}
-                                            ws_id={ws_id}
                                             ref={reportSettingRef}
                                             template={template}
                                         />
@@ -345,7 +361,7 @@ const TestPlan = (props: any) => {
                                     </RightBody>
                                 </RightWrapper>
                             </>
-                             :
+                            :
                             <div style={{ width: '100%' }}>
                                 {/* 计划成功部分 */}
                                 <Result
@@ -388,7 +404,7 @@ const TestPlan = (props: any) => {
                                                         <span>启用：</span>
                                                         <span>
                                                             {
-                                                                successData?.enable ? 
+                                                                successData?.enable ?
                                                                     <Badge status="processing" text="是" /> :
                                                                     <Badge status="default" text="否" />
                                                             }

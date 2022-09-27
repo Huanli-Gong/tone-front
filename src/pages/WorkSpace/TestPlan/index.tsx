@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
-import { Space, Table, Tabs, Button, message, Popconfirm, Spin } from 'antd'
+import { Space, Tabs, Button, message, Popconfirm, Spin } from 'antd'
 import { useRequest, history, FormattedMessage, Access, useAccess } from 'umi'
 import CommonPagination from '@/components/CommonPagination'
 
@@ -29,23 +29,19 @@ const TestPlanManage = (props: any) => {
     const access = useAccess()
     writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
     const viewSettingRef: any = useRef()
 
     const [pageParams, setPageParams] = useState<any>({ ws_id, page_num: 1, page_size: 10 })
 
-    const { data, run, refresh, loading } = useRequest(
+    const { data, refresh, loading } = useRequest(
         (params: any = pageParams) => queryPlanManageList(params),
         {
             initialData: {},
             formatResult: (req: any) => req,
-            manual: true
+            refreshDeps: [pageParams],
         }
     )
-
-    useEffect(() => {
-        run(pageParams)
-    }, [pageParams])
 
     const handleRun = async (row: any) => {
         if (!row.enable) return;
@@ -79,7 +75,7 @@ const TestPlanManage = (props: any) => {
     const columns = [{
         dataIndex: 'name',
         title: '计划名称',
-        width:200,
+        width: 200,
         ellipsis: {
             showTitle: false
         },
@@ -87,7 +83,7 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'cron_info',
         title: '触发规则',
-        width:120,
+        width: 120,
         ellipsis: {
             showTitle: false
         },
@@ -97,7 +93,7 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'enable',
         title: '启用',
-        width:120,
+        width: 120,
         ellipsis: {
             showTitle: false
         },
@@ -115,7 +111,7 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'creator_name',
         title: '创建人',
-        width:120,
+        width: 120,
         ellipsis: {
             showTitle: false
         },
@@ -133,13 +129,13 @@ const TestPlanManage = (props: any) => {
             showTitle: false
         },
         width: 220,
-        render: (row: any,record:any) => (
+        render: (row: any, record: any) => (
             <Space>
                 <OptButton disabled={!row.enable} onClick={() => handleRun(row)}>运行</OptButton>
                 <OptButton onClick={() => handleView(row)}>查看</OptButton>
                 <OptButton onClick={() => handleCopy(row)}>复制</OptButton>
                 <Access accessible={access.WsTourist()}>
-                    <Access 
+                    <Access
                         accessible={access.WsMemberOperateSelf(record.creator)}
                         fallback={
                             <Space>

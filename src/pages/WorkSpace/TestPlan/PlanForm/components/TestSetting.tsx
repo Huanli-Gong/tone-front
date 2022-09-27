@@ -11,9 +11,11 @@ import {
     TemplateItem, TemplateIndex, TemplateName, StartLine, ServerScript, ServerIndex, ServerTitle, ServerItem,
     ScriptChildrenWrapper, ServerChildAddItem, ServerDeleteIcon, StepUnEmptyCircle, DeleteTemplateIcon
 } from './styled'
+import { useParams } from "umi"
 
 const TestSetting = (props: any) => {
-    const { ws_id, show, onChange, template } = props
+    const { show, onChange, template } = props
+    const { ws_id } = useParams() as any
 
     const defaultPrepStepData = { name: '环境准备', machine_info: [], visible: false }
     const defaultTemplateData = { name: '新测试阶段', template: [], impact_next: false, }
@@ -77,7 +79,7 @@ const TestSetting = (props: any) => {
                     </Menu.Item>
                 </Menu>
             }
-            placement="bottomCenter"
+            placement="bottom"
             arrow
         >
             <Tooltip placement="top" title="添加新阶段">
@@ -298,8 +300,8 @@ const TestSetting = (props: any) => {
                                                 <TemplateItem onClick={() => handleReplaceTemplate(index, idx, item.id)} >
                                                     <TemplateIndex>{idx + 1}</TemplateIndex>
                                                     <TemplateName>
-                                                        <Tooltip title={ item.name }>
-                                                            <Typography.Text ellipsis style={{ width : '90%' }}>
+                                                        <Tooltip title={item.name}>
+                                                            <Typography.Text ellipsis style={{ width: '90%' }}>
                                                                 {item.name}
                                                             </Typography.Text>
                                                         </Tooltip>
