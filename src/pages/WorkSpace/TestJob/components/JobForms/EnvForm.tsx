@@ -40,7 +40,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 setReset(false)
                 setReboot(false)
                 setMonitor(false)
-                // setKernal("no") /* project_id ? 'install_build_kernel' : 'no' */
+                setKernal("no") /* project_id ? 'install_build_kernel' : 'no' */
             },
             setVal: (data: Object) => {
                 let { rpm_info, script_info, kernel_version, kernel_info, build_pkg_info }: any = data
