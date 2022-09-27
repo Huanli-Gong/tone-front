@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useRequest, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale  } from 'umi'
+import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryTestResult } from '../service'
 import { Space, Row, Button, Menu, Dropdown } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
@@ -8,14 +8,14 @@ import { matchTestType } from '@/utils/utils'
 import CaseTable from './CaseTable'
 import JoinBaseline from '../components/JoinBaseline'
 import EditRemarks from '../components/EditRemarks'
-import { uniqBy } from 'lodash'
+import { filter, uniqBy } from 'lodash'
 import { ReactComponent as StopCircle } from '@/assets/svg/TestResult/suite/skip.svg'
 import { ReactComponent as SuccessCircle } from '@/assets/svg/TestResult/suite/success.svg'
 import { ReactComponent as ErrorCircle } from '@/assets/svg/TestResult/suite/fail.svg'
 import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { AccessTootip } from '@/utils/utils';
 import ResizeTable from '@/components/ResizeTable'
 
 // 结果详情 - 测试列表
@@ -25,36 +25,35 @@ const TestResultTable: React.FC<any> = (props) => {
     const locale = getLocale() === 'en-US';
 
     const funcStates = [
-        { key: 'count',  name: formatMessage({id: `ws.result.details.count`}), value: '', color: '#649FF6' },
-        { key: 'success',name: formatMessage({id: `ws.result.details.success`}), value: 'success', color: '#81BF84' },
-        { key: 'fail', name: formatMessage({id: `ws.result.details.fail`}), value: 'fail', color: '#C84C5A' },
-        { key: 'warn', name: formatMessage({id: `ws.result.details.warn`}), value: 'warn', color: '#dcc506' },
-        { key: 'skip', name: formatMessage({id: `ws.result.details.skip`}), value: 'skip', color: '#DDDDDD' },
+        { key: 'count', name: formatMessage({ id: `ws.result.details.count` }), value: '', color: '#649FF6' },
+        { key: 'success', name: formatMessage({ id: `ws.result.details.success` }), value: 'success', color: '#81BF84' },
+        { key: 'fail', name: formatMessage({ id: `ws.result.details.fail` }), value: 'fail', color: '#C84C5A' },
+        { key: 'warn', name: formatMessage({ id: `ws.result.details.warn` }), value: 'warn', color: '#dcc506' },
+        { key: 'skip', name: formatMessage({ id: `ws.result.details.skip` }), value: 'skip', color: '#DDDDDD' },
     ]
     const perfStates = [
-        { key: 'count',  name: formatMessage({id: `ws.result.details.count`}), value: '', color: '#649FF6' },
-        { key: 'increase',name: formatMessage({id: `ws.result.details.increase`}), value: 'increase', color: '#81BF84' },
-        { key: 'decline', name: formatMessage({id: `ws.result.details.decline`}), value: 'decline', color: '#C84C5A' },
-        { key: 'normal',  name: formatMessage({id: `ws.result.details.normal`}), value: 'normal', color: '#DDDDDD' },
-        { key: 'invalid', name: formatMessage({id: `ws.result.details.invalid`}), value: 'invalid', color: '#DDDDDD' },
-        { key: 'na', name: formatMessage({id: `ws.result.details.na`}), value: 'na', color: '#DDDDDD' },
+        { key: 'count', name: formatMessage({ id: `ws.result.details.count` }), value: '', color: '#649FF6' },
+        { key: 'increase', name: formatMessage({ id: `ws.result.details.increase` }), value: 'increase', color: '#81BF84' },
+        { key: 'decline', name: formatMessage({ id: `ws.result.details.decline` }), value: 'decline', color: '#C84C5A' },
+        { key: 'normal', name: formatMessage({ id: `ws.result.details.normal` }), value: 'normal', color: '#DDDDDD' },
+        { key: 'invalid', name: formatMessage({ id: `ws.result.details.invalid` }), value: 'invalid', color: '#DDDDDD' },
+        { key: 'na', name: formatMessage({ id: `ws.result.details.na` }), value: 'na', color: '#DDDDDD' },
     ]
     const businessBusinessStates = [
-        { key: 'count',  name: formatMessage({id: `ws.result.details.business.count`}), value: '', color: '#649FF6' },
-        { key: 'success',name: formatMessage({id: `ws.result.details.business.success`}), value: 'success', color: '#81BF84' },
-        { key: 'fail',   name: formatMessage({id: `ws.result.details.business.fail`}), value: 'fail', color: '#C84C5A' },
+        { key: 'count', name: formatMessage({ id: `ws.result.details.business.count` }), value: '', color: '#649FF6' },
+        { key: 'success', name: formatMessage({ id: `ws.result.details.business.success` }), value: 'success', color: '#81BF84' },
+        { key: 'fail', name: formatMessage({ id: `ws.result.details.business.fail` }), value: 'fail', color: '#C84C5A' },
     ]
 
     const { id: job_id, ws_id } = useParams() as any
     const { caseResult = {}, test_type = '功能', provider_name: serverProvider = '', creator, refreshResult } = props
-    const defaultParams = { state: '', job_id }
-    const initialData: any[] = []
     const testType = matchTestType(test_type)
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [openAllRows, setOpenAllRows] = useState(false)
     const [suiteCaseSelectKeys, setSuiteCaseSelectKeys] = useState<any>([])
     const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
+    const [expandedCaseRowKeys, setExpandedCaseRowKeys] = React.useState<any[]>([])
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
     const editRemarkDrawer: any = useRef(null)
@@ -62,41 +61,29 @@ const TestResultTable: React.FC<any> = (props) => {
     // const [openAllExpand, setOpenAllExpand] = useState(false)
     const access = useAccess()
     const [refreshCaseTable, setRefreshCaseTable] = useState(false)
-    const [isExpandAll, setIsExpandAll] = useState(false)
     // 展开指标级的标志
     const [indexExpandFlag, setIndexExpandFlag] = useState(false)
 
-    const { data: dataSource, run, params, loading, refresh } = useRequest(
-        (p) => queryTestResult(p),
-        {
-            formatResult: response => {
-                if (response.code === 200){
-                    if(params[0].state.length == 0){
-                        setFilterData(response.data || [])
-                    }
-                    if (response.data){
-                        return response.data
-                    } else return initialData
-                }
-                else {
-                    requestCodeMessage(response.code, response.msg)
-                    return initialData
-                }
-            },
-            initialData,
-            defaultParams: [defaultParams]
-        }
-    )
-   
+    const [selectSuiteState, setSelectSuiteState] = React.useState<undefined | string>("")
+    const [loading, setLoading] = React.useState(true)
+
+    const queryDefaultTestData = async () => {
+        setLoading(true)
+        const { data } = await queryTestResult({ state: '', job_id })
+        setLoading(false)
+        setFilterData(Object.prototype.toString.call(data) === "[object Array]" ? data : [])
+    }
+
+    React.useEffect(() => {
+        if (job_id || refreshResult)
+            queryDefaultTestData()
+    }, [job_id, refreshResult])
+
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
-    useEffect(()=> {
-        if(refreshResult) refresh();
-    },[ refreshResult ])
-
     // 判断第一条数据中的属性
-    const { baseline, baseline_job_id } = dataSource[0] || {}
+    const { baseline, baseline_job_id } = filterData[0] || {}
     const columns = React.useMemo(() => [
         {
             title: 'Test Suite',
@@ -150,29 +137,29 @@ const TestResultTable: React.FC<any> = (props) => {
             }
         },
         {
-            title: ['functional', 'business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.functional" />: (testType === 'business_business' ? <FormattedMessage id="ws.result.details.business_business" /> : <FormattedMessage id="ws.result.details.performance" />),
+            title: ['functional', 'business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.functional" /> : (testType === 'business_business' ? <FormattedMessage id="ws.result.details.business_business" /> : <FormattedMessage id="ws.result.details.performance" />),
             width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
             render: (_: any) => {
                 return (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
                         (
                             <Space>
-                                <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.conf_count}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('success')} >{_.conf_success}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('fail')} >{_.conf_fail}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#dcc506" }} onClick={() => handleStateChange('warn')} >{_.conf_warn}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleSuiteStateChange(_, '')} >{_.conf_count}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleSuiteStateChange(_, 'success')} >{_.conf_success}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleSuiteStateChange(_, 'fail')} >{_.conf_fail}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#dcc506" }} onClick={() => handleSuiteStateChange(_, 'warn')} >{_.conf_warn}</div>
                                 {testType !== 'business_business' && (
-                                    <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('skip')} >{_.conf_skip}</div>
+                                    <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleSuiteStateChange(_, 'skip')} >{_.conf_skip}</div>
                                 )}
                             </Space>
                         ) : (
                             <Space>
-                                <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleStateChange('')} >{_.count}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleStateChange('increase')} >{_.increase}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleStateChange('decline')} >{_.decline}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('normal')} >{_.normal}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('invalid')} >{_.invalid}</div>
-                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleStateChange('na')} >{_.na}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#649FF6" }} onClick={() => handleSuiteStateChange(_, '')} >{_.count}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#81BF84" }} onClick={() => handleSuiteStateChange(_, 'increase')} >{_.increase}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#C84C5A" }} onClick={() => handleSuiteStateChange(_, 'decline')} >{_.decline}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleSuiteStateChange(_, 'normal')} >{_.normal}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleSuiteStateChange(_, 'invalid')} >{_.invalid}</div>
+                                <div className={styles.column_circle_text} style={{ background: "#DDDDDD", color: "rgba(0,0,0.65)" }} onClick={() => handleSuiteStateChange(_, 'na')} >{_.na}</div>
                             </Space>
                         )
                 )
@@ -268,14 +255,14 @@ const TestResultTable: React.FC<any> = (props) => {
     }
 
     const handleContrastBaselineOk = () => {
-        refresh()
+        queryDefaultTestData()
         setSuiteCaseSelectKeys([])
         setSelectedRowKeys([])
         setRefreshCaseTable(!refreshCaseTable)
     }
 
     const handleJoinBaselineOk = () => {
-        refresh()
+        queryDefaultTestData()
         setSuiteCaseSelectKeys([])
         setSelectedRowKeys([])
     }
@@ -293,60 +280,75 @@ const TestResultTable: React.FC<any> = (props) => {
     }
 
     const handleOpenAll = () => {
-        setOpenAllRows(!openAllRows)
-        setIndexExpandFlag(!indexExpandFlag)
-        if (!openAllRows) {
-            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
-            setIsExpandAll(true)
-        } else {
-            setExpandedRowKeys([])
-            setIsExpandAll(false)
-        }
+        setIndexExpandFlag(!openAllRows)
+        suiteCaseExpandedContrl(!openAllRows)
     }
 
     // conf级
     const handleOpenExpandBtn = () => {
-        if (!openAllRows) {
-            // case1.展开
-            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
-            // case2. 展开状态标志
-            setOpenAllRows(true)
-        } else {
-            setExpandedRowKeys([])
+        if (openAllRows) {
+            setExpandedCaseRowKeys([])
             setIndexExpandFlag(false)
-            setOpenAllRows(false)
         }
+        setOpenAllRows(!openAllRows)
+        setExpandedRowKeys(!openAllRows ? filterData.map((i: any) => i.suite_id) : [])
     }
+
     // index级
     const indexExpandClick = () => {
+        setIndexExpandFlag(!indexExpandFlag)
         if (!indexExpandFlag) {
-            setOpenAllRows(true)
-            setIndexExpandFlag(true)
-            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
-            setIsExpandAll(true)
-        } else {
-            setIndexExpandFlag(false)
-            setIsExpandAll(false)
+            suiteCaseExpandedContrl(true)
+        }
+        else {
+            setExpandedCaseRowKeys([])
         }
     }
 
-    const handleStateChange = (state: string) => {
-        run({ ...defaultParams, state })
-        if(!!filterData.length){
-            setExpandedRowKeys(filterData.map(({ suite_id }: any) => suite_id))
-            setIsExpandAll(true)
-        }
-        // handleOpenAll()
+    const handleSuiteStateChange = (row: any, state: string) => {
+        setExpandedRowKeys((l: any[]) => l.concat(row.suite_id))
+        setExpandedCaseRowKeys((l: any[]) => l.concat(row.suite_id))
+        setFilterData((source: any) => {
+            return source?.map((item: any) => {
+                if (item.suite_id === row.suite_id)
+                    return {
+                        ...item, expandedState: state,
+                    }
+                return item
+            })
+        })
     }
+
+    const suiteCaseExpandedContrl = (isExpanded: boolean) => {
+        const openKeys = isExpanded ? filterData.map(({ suite_id }: any) => suite_id) : []
+        setOpenAllRows(isExpanded)
+        setExpandedRowKeys(openKeys)
+        setExpandedCaseRowKeys(openKeys)
+    }
+
+    const handleStateChange = (state: string) => {
+        setSelectSuiteState(state)
+        setFilterData((source: any) => {
+            return source?.map((item: any) => ({
+                ...item, expandedState: state,
+            }))
+        })
+        if (!!filterData.length) {
+            handleOpenAll()
+            suiteCaseExpandedContrl(true)
+        }
+    }
+
     useEffect(() => {
         if (caseResult.count < 50) {
-            setExpandedRowKeys(dataSource.map(({ suite_id }: any) => suite_id))
             // case2. 展开状态标志
+            const openKeys = filterData.map(({ suite_id }: any) => suite_id)
+            setExpandedRowKeys(openKeys)
+            setExpandedCaseRowKeys(openKeys)
             setOpenAllRows(true)
             setIndexExpandFlag(true)
-            setIsExpandAll(true)
         }
-    }, [caseResult, dataSource])
+    }, [caseResult, filterData])
 
     const rowSelection = testType === 'performance' ? {
         columnWidth: 40,
@@ -376,9 +378,14 @@ const TestResultTable: React.FC<any> = (props) => {
         }
         setSuiteCaseSelectKeys(uniqBy(suiteData, 'suite_id'))
     }
+
+    const isOpenAllConf = React.useMemo(() => {
+        return expandedRowKeys.length === filterData.length
+    }, [expandedRowKeys, filterData])
+
     const childName = ['functional', 'business_functional', 'business_business'].includes(testType) ? 'Case' : 'index'
-    const expandBtnText = openAllRows ? formatMessage({id: `ws.result.details.folded.conf`}): formatMessage({id: `ws.result.details.expand.conf`})
-    const expandIndexBtnText = indexExpandFlag ? formatMessage({id: `ws.result.details.folded.${childName}`}): formatMessage({id: `ws.result.details.expand.${childName}`})
+    const expandBtnText = isOpenAllConf ? formatMessage({ id: `ws.result.details.folded.conf` }) : formatMessage({ id: `ws.result.details.expand.conf` })
+    const expandIndexBtnText = indexExpandFlag ? formatMessage({ id: `ws.result.details.folded.${childName}` }) : formatMessage({ id: `ws.result.details.expand.${childName}` })
 
     return (
         <>
@@ -408,7 +415,11 @@ const TestResultTable: React.FC<any> = (props) => {
                                 </Menu>
                             }
                         >
-                            {openAllRows ? formatMessage({id: `ws.result.details.folded.all`}) : formatMessage({id: `ws.result.details.expand.all`})}
+                            {
+                                isOpenAllConf ?
+                                    formatMessage({ id: `ws.result.details.folded.all` }) :
+                                    formatMessage({ id: `ws.result.details.expand.all` })
+                            }
                         </Dropdown.Button>
                         {
                             ['performance', 'business_performance'].includes(testType) &&
@@ -439,7 +450,7 @@ const TestResultTable: React.FC<any> = (props) => {
                                         onClick={() => handleStateChange(value)}
                                         style={{
                                             cursor: 'pointer',
-                                            color: params[0] && params[0].state === value ? '#1890FF' : 'rgba(0, 0, 0, 0.65)'
+                                            color: selectSuiteState === value ? '#1890FF' : 'rgba(0, 0, 0, 0.65)'
                                         }}
                                     >
                                         {name}({caseResult[key]})
@@ -452,7 +463,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 <ResizeTable
                     columns={columns as any}
                     rowKey="suite_id"
-                    dataSource={dataSource}
+                    dataSource={filterData}
                     pagination={false}
                     size="small"
                     loading={loading}
@@ -467,7 +478,7 @@ const TestResultTable: React.FC<any> = (props) => {
                             if (expanded) {
                                 const tempList = expandedRowKeys.concat([record.suite_id])
                                 setExpandedRowKeys(tempList)
-                                if (tempList?.length === dataSource.length) {
+                                if (tempList?.length === filterData.length) {
                                     // 展开的状态标志
                                     setOpenAllRows(true)
                                     setIndexExpandFlag(true)
@@ -493,12 +504,10 @@ const TestResultTable: React.FC<any> = (props) => {
                                 provider_name={serverProvider}
                                 testType={testType}
                                 job_id={job_id}
-                                openAllRows={openAllRows}
                                 setIndexExpandFlag={setIndexExpandFlag}
-                                isExpandAll={isExpandAll}
-                                state={params[0].state}
                                 suiteSelect={selectedRowKeys}
                                 onCaseSelect={handleCaseSelect}
+                                expandedCaseRowKeys={expandedCaseRowKeys}
                             />
                         ),
 
@@ -520,7 +529,7 @@ const TestResultTable: React.FC<any> = (props) => {
             />
             <EditRemarks
                 ref={editRemarkDrawer}
-                onOk={refresh}
+                onOk={queryDefaultTestData}
             />
             <ContrastBaseline
                 ref={contrastBaselineDrawer}
