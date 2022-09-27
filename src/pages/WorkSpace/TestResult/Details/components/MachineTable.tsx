@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Space, Typography, Table, Spin } from 'antd';
 import { ExclamationCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import styles from './index.less';
 import { queryMachineData } from '../service';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
 
 const RenderMachineItem = (props: any) => {
+    const { ws_id } = useParams() as any
     const [flag, setFlag] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)
     const [dataSource, setDataSource] = useState<Array<{}>>([])
@@ -54,12 +55,12 @@ const RenderMachineItem = (props: any) => {
         {
             title: <FormattedMessage id="ws.result.details.use_state" />,
             dataIndex: 'state',
-            render: StateBadge,
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
         },
         {
             title: <FormattedMessage id="ws.result.details.real_state" />,
             dataIndex: 'real_state',
-            render: StateBadge,
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
         }
     ]
     return (
@@ -73,7 +74,7 @@ const RenderMachineItem = (props: any) => {
                             <Typography.Text style={{ fontFamily: 'PingFangSC-Medium', color: 'rgba(0,0,0,0.65)', marginRight: 8 }}><FormattedMessage id="ws.result.details.failed.server" /></Typography.Text>
                             {
                                 Array.isArray(dataSource) && dataSource.map((item: any, index: number) => {
-                                    const {ip , sn , pub_ip , device_type } = item
+                                    const { ip, sn, pub_ip, device_type } = item
                                     const $ip = device_type ? ip : pub_ip
 
                                     const l = $ip && sn ? $ip + "/" + sn : $ip || sn

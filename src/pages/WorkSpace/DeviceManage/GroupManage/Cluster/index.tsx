@@ -18,6 +18,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import PermissionTootip from '@/components/Public/Permission/index';
 import { Access, useAccess } from 'umi';
 import OverflowList from '@/components/TagOverflow/index'
+import EllipsisPulic from '@/components/Public/EllipsisHeightPulic'
 
 
 /**
@@ -43,7 +44,7 @@ const Cluster = (props: any, ref: any) => {
         open: createClusterRef.current.show
     }))
 
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
 
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
@@ -132,8 +133,8 @@ const Cluster = (props: any, ref: any) => {
             filterDropdown: ({ confirm }: any) => (
                 <SelectTags
                     ws_id={ws_id}
-                    confirm={confirm} 
-                    onConfirm={(tags: any) => { setParams({ ...params, page:1, tags  })}}
+                    confirm={confirm}
+                    onConfirm={(tags: any) => { setParams({ ...params, page: 1, tags }) }}
                 />
             )
         },
@@ -144,7 +145,11 @@ const Cluster = (props: any, ref: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, description })} />
-            )
+            ),
+            render(row: any) {
+                const title = row || "-"
+                return <EllipsisPulic title={title}>{title}</EllipsisPulic>
+            }
         },
         {
             title: '操作',
@@ -152,7 +157,7 @@ const Cluster = (props: any, ref: any) => {
             render: (record: any, row: any) => (
                 <Space>
                     <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}>添加</Button>
-                    <Access 
+                    <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
