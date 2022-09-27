@@ -44,7 +44,7 @@ const Standalone = (props: any, ref: any) => {
     const addDeviceRef: any = useRef(null)
 
     useImperativeHandle(ref, () => ({
-        open: addDeviceRef.current.show 
+        open: addDeviceRef.current.show
     }))
 
     const { height: layoutHeight } = useClientSize()
@@ -181,8 +181,8 @@ const Standalone = (props: any, ref: any) => {
         }
     }
 
-    const handleRefresh = async(row:any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider:'aligroup' })
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aligroup' })
         if (code === 200) {
             message.success('同步状态成功')
             getTestServerList()
@@ -303,7 +303,10 @@ const Standalone = (props: any, ref: any) => {
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sm_name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: totalParam })} />
-            )
+            ),
+            render(_: any) {
+                return <EllipsisPulic title={_} />
+            }
         },
         !BUILD_APP_ENV && {
             title: 'IDC',
@@ -312,7 +315,7 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             dataIndex: 'idc',
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.dic ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas.idc ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: totalParam })} />
             )
@@ -401,6 +404,9 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            render(_: any) {
+                return <EllipsisPulic title={_} />
+            }
         },
         {
             title: '标签',

@@ -4,14 +4,14 @@ import { Space, Button, Input, Divider } from 'antd';
 import styles from './index.less'
 
 const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus }) => {
-	const [val, setVal] = useState<number>()
+	const [val, setVal] = useState<any>()
 	const input: any = useRef(null);
 	useEffect(() => {
 		input.current.focus()
 	}, [autoFocus]);
 	const { Search } = Input;
 	return (
-		<div className={ styles.filter_input_wrapper }>
+		<div className={styles.filter_input_wrapper}>
 			<div>
 				<Search
 					ref={input}
@@ -44,8 +44,8 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus }) => {
 					type="text"
 					onClick={() => {
 						confirm && confirm()
-						setVal(undefined)
-						onConfirm(undefined)
+						setVal(null)
+						onConfirm(null)
 					}}
 					size="small"
 					style={{ width: 75 }}
