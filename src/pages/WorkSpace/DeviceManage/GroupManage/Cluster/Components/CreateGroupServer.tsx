@@ -24,11 +24,11 @@ const CreateGroupDrawer = (props: any, ref: any) => {
             if (_) {
                 setSource(_)
                 let params = _
-                const list = params.tag_list.map((i:any) => i.id)
+                const list = params.tag_list.map((i: any) => i.id)
                 params.tags = list
                 setTagFlag({ ...tagFlag, isQuery: 'edit', list })
                 form.setFieldsValue(params)
-            }else{
+            } else {
                 setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
             }
         }
@@ -79,6 +79,7 @@ const CreateGroupDrawer = (props: any, ref: any) => {
             visible={visible}
             onClose={handleCancel}
             width="376"
+            destroyOnClose
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
@@ -99,8 +100,11 @@ const CreateGroupDrawer = (props: any, ref: any) => {
                 <Form.Item name="name" label="集群名称" rules={[{ message: '名称不能为空', required: true }]}>
                     <Input autoComplete="off" placeholder="请输入" />
                 </Form.Item>
-                <Owner />
-                <MachineTags {...tagFlag}/>
+                {
+                    visible &&
+                    <Owner />
+                }
+                <MachineTags {...tagFlag} />
                 <Form.Item name="description" label="备注">
                     <Input.TextArea
                         placeholder="请输入备注信息"

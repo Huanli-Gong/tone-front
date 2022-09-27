@@ -122,20 +122,23 @@ interface GroupRowProps {
     gLen: number,   /* group数量 */
     enLocale?: boolean,
 }
+interface EnvGroupLProps {
+    enLocale?: boolean,
+}
 
 const setEnvGroupWdith = (l: number, enLocale: boolean) => {
     if (l == 1) return (`calc( 100% - ${enLocale? 360: 110}px )`)
     return (`calc( (100% - ${enLocale? 360: 110}px) / ${l})`)
 }
 
-export const EnvGroupL = styled.div`
+export const EnvGroupL = styled.div<EnvGroupLProps>`
     width: ${props => props.enLocale ? 360: 110}px;
     float:left;
     padding-left:16px;
     border-right:1px solid rgba(0,0,0,0.10);
 `
 export const EnvGroupR = styled.div<GroupRowProps>`
-    width: ${({ gLen, enLocale }) => setEnvGroupWdith(gLen, enLocale)};
+    width: ${({ gLen, enLocale }: any) => setEnvGroupWdith(gLen, enLocale)};
     display:flex;
     padding-left:13px;
     border-right:1px solid rgba(0,0,0,0.10);

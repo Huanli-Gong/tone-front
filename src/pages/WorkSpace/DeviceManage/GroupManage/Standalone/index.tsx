@@ -220,16 +220,15 @@ const Standalone = (props: any, ref: any) => {
                             provider={"aligroup"}
                         />
                     )
-                else
-                    return (
-                        <Row justify="start" align="middle">
-                            <TreeSvg style={{ marginRight: 8, height: 40 }} />
-                            <ServerLink
-                                val={_}
-                                provider={"aligroup"}
-                            />
-                        </Row>
-                    )
+                return (
+                    <Row justify="start" align="middle">
+                        <TreeSvg style={{ marginRight: 8, height: 40 }} />
+                        <ServerLink
+                            val={_}
+                            provider={"aligroup"}
+                        />
+                    </Row>
+                )
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -363,7 +362,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: StateBadge,
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: totalParam })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
@@ -377,7 +376,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: StateBadge,
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: totalParam })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
