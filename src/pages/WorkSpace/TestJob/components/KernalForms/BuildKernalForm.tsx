@@ -103,13 +103,13 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                         <>
                             <Form.Item
                                 {...itemLayout}
-                                label={formatMessage({ id: 'cbc.product' })}
+                                label={formatMessage({ id: 'kernel.form.cbc.product' })}
                                 name="name"
-                                rules={[{ required: true, message: formatMessage({ id: 'cbc.product.empty' }) }]}
+                                rules={[{ required: true, message: formatMessage({ id: 'kernel.form.cbc.product.empty' }) }]}
                             >
                                 <Select
                                     disabled={disabled}
-                                    placeholder={formatMessage({ id: 'cbc.product.empty' })}
+                                    placeholder={formatMessage({ id: 'kernel.form.cbc.product.empty' })}
                                     onChange={handleCbpSelectChange}
                                     style={disabledStyles}
                                 >
