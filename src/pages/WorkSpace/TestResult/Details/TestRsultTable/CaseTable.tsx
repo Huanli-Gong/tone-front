@@ -1,6 +1,6 @@
 import { Table, Space, Row } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
-import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useRequest, Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryTestResultSuiteConfList } from '../service'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
@@ -19,29 +19,29 @@ import treeSvg from '@/assets/svg/tree.svg'
 import { AccessTootip } from '@/utils/utils';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
-const CaseTable: React.FC<any> = ({
-    suite_id, testType, suite_name, server_provider, provider_name, creator,
-    suiteSelect = [], onCaseSelect, state = '', openAllRows = false, isExpandAll = false, setIndexExpandFlag
+const CaseTable: React.FC<Record<string, any>> = ({
+    suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
+    suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag
 }) => {
-    const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
-    const { id: job_id, ws_id } = useParams() as any
+    const { id: job_id } = useParams() as any
     const background = `url(${treeSvg}) center center / 38.6px 32px `
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
 
     const access = useAccess()
-    const [childState, setChildState] = useState(state)
+    const [childState, setChildState] = useState(expandedState)
     const [refreshId, setRefreshId] = useState(null)
 
     const { data, loading, refresh, run } = useRequest(
-        () => queryTestResultSuiteConfList({ job_id, suite_id, state }),
+        () => queryTestResultSuiteConfList({ job_id, suite_id, state: expandedState }),
         { initialData: [], manual: true }
     )
+
     useEffect(() => {
         run()
-        setChildState(state)
-    }, [state])
+        setChildState(expandedState)
+    }, [expandedState])
 
     const hanldeChangeChildState = (id: any, s: string = '') => {
         setExpandedRowKeys(Array.from(new Set(expandedRowKeys.concat(id))))
@@ -75,10 +75,10 @@ const CaseTable: React.FC<any> = ({
                     showHeader: false,
                 },
                 render: (_: string, row: any) => (
-                    <ServerLink 
-                        val={_} 
-                        param={row.server_id} 
-                        provider={provider_name} 
+                    <ServerLink
+                        val={_}
+                        param={row.server_id}
+                        provider={provider_name}
                     />
                 )
             },
@@ -96,7 +96,7 @@ const CaseTable: React.FC<any> = ({
                 }
             },
             { // title : '总计/通过/失败/跳过',
-                width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255: 302,
+                width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
                 render: (_: any) => (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
                         (
@@ -175,24 +175,25 @@ const CaseTable: React.FC<any> = ({
                 width: locale ? 180 : 145,
                 fixed: 'right',
                 render: (_: any) => {
-                     
+
                     return (
-                    <Access accessible={access.WsTourist()}>
-                        <Access accessible={access.WsMemberOperateSelf(creator)}
-                            fallback={
+                        <Access accessible={access.WsTourist()}>
+                            <Access accessible={access.WsMemberOperateSelf(creator)}
+                                fallback={
+                                    <Space>
+                                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                                    </Space>
+                                }
+                            >
                                 <Space>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
                                 </Space>
-                            }
-                        >
-                            <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
-                            </Space>
+                            </Access>
                         </Access>
-                    </Access>
-                )}
+                    )
+                }
             }
         ].filter(Boolean)
     }, [testType, access, creator, data, locale])
@@ -236,16 +237,16 @@ const CaseTable: React.FC<any> = ({
     useEffect(() => {
         onCaseSelect(suite_id, selectedRowKeys)
     }, [selectedRowKeys])
-    
+
     // 子级表格会通过监听传入的状态：展开全部/收起。
     useEffect(() => {
-        if (data.length && isExpandAll) {
+        if (data.length && expandedCaseRowKeys.includes(suite_id)) {
             setExpandedRowKeys(data.map((i: any) => i.test_case_id))
         } else {
             setExpandedRowKeys([])
         }
-    }, [data,isExpandAll])
-    
+    }, [data, expandedCaseRowKeys])
+
     return (
         <div style={{ width: '100%' }}>
             <Row justify="start">

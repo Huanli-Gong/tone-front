@@ -285,7 +285,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                             i !== baseIndex ?
                                                                                 <Row justify="space-between">
                                                                                     <Col span={12}>
-                                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="analysis.results"/></Typography.Text>
+                                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="analysis.result"/></Typography.Text>
                                                                                     </Col>
                                                                                     <Col span={12}>
                                                                                         <RightResult>

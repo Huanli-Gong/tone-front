@@ -29,24 +29,37 @@ export default (props: any) => {
     const joinBaseline: any = useRef(null)
 
     const searchInput: any = useRef(null)
-    const [searchText, setSearchText] = useState('')
+    // const [searchText, setSearchText] = useState('')
+    // const [searchedColumn, setSearchedColumn] = useState('')
 
-    const [searchedColumn, setSearchedColumn] = useState('')
+    const defaultKeys = {
+        job_id,
+        case_id: test_case_id,
+        suite_id,
+        ws_id,
+        sub_case_name: undefined,
+        sub_case_result: undefined,
+        page_size: 10,
+        page_num: 1
+    }
+    const [interfaceSearchKeys, setInterfaceSearchKeys] = React.useState(defaultKeys)
 
-    const { data, refresh, loading, run } = useRequest(
-        (sub_case_result = '') => queryCaseResult({ job_id, case_id: test_case_id, suite_id, ws_id, sub_case_result }),
-        { initialData: [], manual: true }
+    const { data, refresh, loading } = useRequest(
+        (params = interfaceSearchKeys) => queryCaseResult(params),
+        {
+            initialData: [], refreshDeps: [interfaceSearchKeys], formatResult(res) {
+                return res
+            },
+        }
     )
 
     const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
         confirm();
-        setSearchText(selectedKeys[0])
-        setSearchedColumn(dataIndex)
+        setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys[0], page_num: 1, page_size: 10 }))
     };
 
     const handleReset = (clearFilters: any) => {
         clearFilters();
-        setSearchText('')
     };
 
     const getColumnSearchProps = (dataIndex: any, name: any) => ({
@@ -54,7 +67,7 @@ export default (props: any) => {
             <div style={{ padding: 8 }}>
                 <Input
                     ref={searchInput}
-                    placeholder={`${formatMessage({ id: 'operation.search'})} ${name}`}
+                    placeholder={`${formatMessage({ id: 'operation.search' })} ${name}`}
                     value={selectedKeys[0]}
                     onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                     onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -77,45 +90,37 @@ export default (props: any) => {
             </div>
         ),
         filterIcon: (filtered: any) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-        onFilter: (value: any, record: any) =>
-            record[dataIndex]
-                ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-                : '',
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setTimeout(() => searchInput.current.select(), 100);
             }
         },
-        render: (text: any) =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
+        render: (text: any,) => (
+            <Highlighter
+                highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                searchWords={[interfaceSearchKeys?.sub_case_name as any]}
+                autoEscape
+                textToHighlight={text ? text.toString() : ''}
+            />
+        )
     });
 
-    const handleNeedRun = () => {
-        if (state === 'success') run(1)
-        if (state === 'fail') run(2)
-        if (state === 'skip') run(5)
-        if (state === 'warn') run(6)
-        if (state === '') run()
-    }
+    const stateWordMap = (st: string) => new Map([
+        ["success", 1],
+        ["fail", 2],
+        ["skip", 5],
+        ["warn", 6],
+    ]).get(st) || undefined
 
     useEffect(() => {
         if (refreshId === test_case_id) {
-            handleNeedRun()
+            setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
             setTimeout(() => {
                 setRefreshId(null)
             }, 300)
         }
         if (!refreshId) {
-            handleNeedRun()
+            setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_result: stateWordMap(state) }))
         }
     }, [state])
 
@@ -144,8 +149,8 @@ export default (props: any) => {
         title: (
             <QusetionIconTootip
                 placement="bottomLeft"
-                title={formatMessage({ id: 'ws.result.details.test.result'})}
-                desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file'})}
+                title={formatMessage({ id: 'ws.result.details.test.result' })}
+                desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file' })}
             />
         ),
         render: (_: any) => {
@@ -161,14 +166,14 @@ export default (props: any) => {
         title: (
             <QusetionIconTootip
                 placement="bottomLeft"
-                title={formatMessage({ id: 'ws.result.details.baseline.description'})}
-                desc={formatMessage({ id: 'ws.result.details.baseline.description.ps'})}
+                title={formatMessage({ id: 'ws.result.details.baseline.description' })}
+                desc={formatMessage({ id: 'ws.result.details.baseline.description.ps' })}
             />
         ),
         ellipsis: true,
         render: (_: any, row: any) => {
             let context = row.description
-            const localeStr = formatMessage({ id: 'ws.result.details.match.baseline'})
+            const localeStr = formatMessage({ id: 'ws.result.details.match.baseline' })
             if (row.match_baseline && row.result === 'Fail')
                 context = _ ? `${_}(${localeStr})` : localeStr
             if (access.IsWsSetting())
@@ -197,7 +202,7 @@ export default (props: any) => {
         }
     }, {
         dataIndex: 'bug',
-        title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" />: <FormattedMessage id="ws.result.details.bug" />,
+        title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" /> : <FormattedMessage id="ws.result.details.bug" />,
         ellipsis: true,
         render: (_: any, row: any) => {
             let context = row.bug
@@ -220,11 +225,11 @@ export default (props: any) => {
         }
     }, {
         dataIndex: 'note',
-        title:  (
+        title: (
             <QusetionIconTootip
                 placement="bottomLeft"
-                title={formatMessage({ id: 'ws.result.details.result.remarks'})}
-                desc={formatMessage({ id: 'ws.result.details.result.remarks.ps'})}
+                title={formatMessage({ id: 'ws.result.details.result.remarks' })}
+                desc={formatMessage({ id: 'ws.result.details.result.remarks.ps' })}
             />
         ),
         ...tooltipTd()
@@ -256,27 +261,27 @@ export default (props: any) => {
     return (
         <>
             {
-                // data.length > 9 ?
-                // <VirtualTable
-                //     rowKey="id"
-                //     size="small"
-                //     loading={loading}
-                //     className={styles.result_info_table_head}
-                //     pagination={false}
-                //     columns={columns}
-                //     scroll={{ y: 300 }}
-                //     rowClassName={styles.result_info_table_row}
-                //     dataSource={data}
-                // /> :
                 <Table
                     rowKey="id"
                     size="small"
                     loading={loading}
                     className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
-                    // pagination={ true }
+                    pagination={{
+                        pageSize: data.page_size || 10,
+                        current: data.page_num || 1,
+                        total: data.total || 0,
+                        showQuickJumper: true,
+                        showSizeChanger: true,
+                        onChange(page_num, page_size) {
+                            setInterfaceSearchKeys((p: any) => ({ ...p, page_num, page_size }))
+                        },
+                        showTotal(total, range) {
+                            return `共 ${total} 条`
+                        },
+                    }}
                     columns={columns}
                     rowClassName={styles.result_info_table_row}
-                    dataSource={data}
+                    dataSource={data.data || []}
                 />
             }
             <EditRemarks ref={editRemark} onOk={refresh} />

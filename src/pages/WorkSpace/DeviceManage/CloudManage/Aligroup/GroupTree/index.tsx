@@ -11,10 +11,11 @@ import styles from './style.less';
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
-import { Access, useAccess } from 'umi'
+import { Access, useAccess, useParams } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 
 const GroupTree: React.FC<any> = (props) => {
+    const { ws_id } = useParams() as any
     const { cluster_id, width, onRef, size, top, handleOpenLogDrawer } = props
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>([]);
@@ -61,12 +62,12 @@ const GroupTree: React.FC<any> = (props) => {
             fixed: 'left',
             render: (_: any, row: any) => (
                 instance ?
-                <ServerLink
-                    val={_}
-                    param={row.id}
-                    provider={"aliyun"}
-                />
-                : <EllipsisPulic title={row.name} />
+                    <ServerLink
+                        val={_}
+                        param={row.id}
+                        provider={"aliyun"}
+                    />
+                    : <EllipsisPulic title={row.name} />
             )
         },
         instance && {
@@ -191,13 +192,13 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: '机器状态',
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         instance &&
         {
             title: '实际状态',
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
             title: '备注',
@@ -213,7 +214,7 @@ const GroupTree: React.FC<any> = (props) => {
             width: 140,
             render: (_: number, row: any) => (
                 <Space>
-                    <Access 
+                    <Access
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
@@ -249,8 +250,8 @@ const GroupTree: React.FC<any> = (props) => {
         setColumns(dataSource)
     }, [data])
 
-    const handleRefresh = async(row:any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider:'aliyun' })
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
         if (code === 200) {
             message.success('同步机器状态成功')
             getList()

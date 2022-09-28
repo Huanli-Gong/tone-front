@@ -44,7 +44,7 @@ const Standalone = (props: any, ref: any) => {
     const addDeviceRef: any = useRef(null)
 
     useImperativeHandle(ref, () => ({
-        open: addDeviceRef.current.show 
+        open: addDeviceRef.current.show
     }))
 
     const { height: layoutHeight } = useClientSize()
@@ -181,8 +181,8 @@ const Standalone = (props: any, ref: any) => {
         }
     }
 
-    const handleRefresh = async(row:any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider:'aligroup' })
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aligroup' })
         if (code === 200) {
             message.success('同步状态成功')
             getTestServerList()
@@ -220,16 +220,15 @@ const Standalone = (props: any, ref: any) => {
                             provider={"aligroup"}
                         />
                     )
-                else
-                    return (
-                        <Row justify="start" align="middle">
-                            <TreeSvg style={{ marginRight: 8, height: 40 }} />
-                            <ServerLink
-                                val={_}
-                                provider={"aligroup"}
-                            />
-                        </Row>
-                    )
+                return (
+                    <Row justify="start" align="middle">
+                        <TreeSvg style={{ marginRight: 8, height: 40 }} />
+                        <ServerLink
+                            val={_}
+                            provider={"aligroup"}
+                        />
+                    </Row>
+                )
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -303,7 +302,10 @@ const Standalone = (props: any, ref: any) => {
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sm_name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: totalParam })} />
-            )
+            ),
+            render(_: any) {
+                return <EllipsisPulic title={_} />
+            }
         },
         !BUILD_APP_ENV && {
             title: 'IDC',
@@ -312,7 +314,7 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             dataIndex: 'idc',
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.dic ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas.idc ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: totalParam })} />
             )
@@ -360,7 +362,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: StateBadge,
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: totalParam })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
@@ -374,7 +376,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: StateBadge,
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: totalParam })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
@@ -401,6 +403,9 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            render(_: any) {
+                return <EllipsisPulic title={_} />
+            }
         },
         {
             title: '标签',
@@ -429,7 +434,7 @@ const Standalone = (props: any, ref: any) => {
         {
             title: '操作',
             fixed: 'right',
-            width: !BUILD_APP_ENV ? 240 : 190,
+            width: !BUILD_APP_ENV ? 280 : 240,
             // align: 'center',
             ellipsis: {
                 showTitle: false,
@@ -519,7 +524,7 @@ const Standalone = (props: any, ref: any) => {
                     expandedRowKeys: defaultExpandRowKeys,
                     expandIcon: () => false,
                 }}
-                scroll={{ x: 'max-content', y: layoutHeight - 50 - 66 - 30 - 20 }}
+                scroll={{ x: '100%', y: layoutHeight - 50 - 66 - 30 - 20 }}
             />
             <CommonPagination
                 pageSize={urlParmas.page_size}

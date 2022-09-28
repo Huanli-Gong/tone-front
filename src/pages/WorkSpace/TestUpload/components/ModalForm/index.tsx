@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useEffect } from 'react'
-import { Modal, Space, Spin, Alert, Form, Button, message, Input, Tooltip, Select, Typography } from 'antd'
-import { FormattedMessage, useIntl, Access, useAccess } from 'umi';
-import { isNaN } from 'lodash'
+import { Modal, Space, Spin, Alert, Form, Button, message, Input, Radio, Select } from 'antd'
+import { useParams, FormattedMessage, useIntl } from 'umi';
+import { debounce, isNaN, stubFalse } from 'lodash'
 import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
 import { queryBaselineList, } from '@/pages/WorkSpace/Baseline/services';
 import { queryJobTypeList, } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -11,16 +11,16 @@ import BizUpload from './component/BizUpload';
 import styles from './style.less';
 const { Option } = Select;
 
-const DrawerForm = forwardRef((props:any, ref:any) => {
+const DrawerForm = forwardRef((props: any, ref: any) => {
   const { formatMessage } = useIntl();
-  const { ws_id, visible } : any = props
-  const access = useAccess();
+  const { ws_id } = useParams() as any
+  const { visible }: any = props
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   // 产品数据源
   const [fetching, setFetching] = useState(false);
   // const [productKeyword, setProductKeyword] = useState('');
-  const [productPagination, setProductPagination] =  useState({ data: [], total: 0, page_num: 1, page_size: 20 });
+  const [productPagination, setProductPagination] = useState({ data: [], total: 0, page_num: 1, page_size: 20 });
   const [productId, setProductId] = useState('');
   // 项目数据源
   const [projectList, setProjectList] = useState([]);
@@ -28,7 +28,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
   const [serverType, setServerType] = useState('');
   const [testType, setTestType] = useState('');
   const [hasBaseline, setHasBaseline] = useState(''); // 是否有基线选项。
-  const [baselinePagination, setBaselinePagination] =  useState({ data: [], total: 0, page_num: 1, page_size: 20 });
+  const [baselinePagination, setBaselinePagination] = useState({ data: [], total: 0, page_num: 1, page_size: 20 });
   // Job类型数据源
   const [jobTypeList, setJobTypeList] = useState([]);
   const [jobId, setJobId] = useState('');
@@ -37,7 +37,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
 
 
   // 1.请求数据
-  const fetchProductList = async(query: any, option="concat") => {
+  const fetchProductList = async (query: any, option = "concat") => {
     const tempValue = { ws_id, ...query };
     try {
       setFetching(true)
@@ -54,29 +54,29 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
         }
 
       } else {
-        message.error(res.msg || formatMessage({id: 'request.failed'}) );
+        message.error(res.msg || formatMessage({ id: 'request.failed' }));
       }
       setFetching(false);
-    } catch(e) {
+    } catch (e) {
       setFetching(false);
     }
   }
   // 2.请求数据
-  const fetchProjectList = async(query: any) => {
+  const fetchProjectList = async (query: any) => {
     const tempValue = { ws_id, ...query };
     try {
       const res = await queryProjectList(tempValue);
       if (res.code === 200) {
         setProjectList(res.data || []);
       } else {
-        message.error(res.msg || formatMessage({id: 'request.failed'}) );
+        message.error(res.msg || formatMessage({ id: 'request.failed' }));
       }
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }
   // 3.请求数据
-  const fetchBaselineList = async(query: any, option="concat") => {
+  const fetchBaselineList = async (query: any, option = "concat") => {
     try {
       const res = await queryBaselineList({ ws_id, server_provider: serverType, test_type: testType, ...query });
       if (res.code === 200) {
@@ -90,28 +90,28 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
           setBaselinePagination(res);
         }
       } else {
-        message.error(res.msg || formatMessage({id: 'request.failed'}) );
+        message.error(res.msg || formatMessage({ id: 'request.failed' }));
       }
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }
   // 4.请求数据
-  const fetchJobTypeList = async(query: any) => {
+  const fetchJobTypeList = async (query: any) => {
     try {
       const res = await queryJobTypeList({ ws_id, ...query });
       if (res.code === 200) {
         const temp = res.data || [];
-        setJobTypeList(temp.filter((key: any)=> key.enable));
+        setJobTypeList(temp.filter((key: any) => key.enable));
       } else {
-        message.error(res.msg || formatMessage({id: 'request.failed'}) );
+        message.error(res.msg || formatMessage({ id: 'request.failed' }));
       }
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     if (visible) {
       const { page_num, page_size } = productPagination
       fetchProductList({ page_num, page_size }, 'reset');
@@ -125,7 +125,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
       const aa = form.getFieldsValue()
       // console.log('validateFields:', aa)
       let flag = false
-      Object.keys(aa)?.forEach((item=> {
+      Object.keys(aa)?.forEach((item => {
         if (!aa[item] && item !== 'baseline_id' && item !== 'ip') {
           flag = true
         }
@@ -136,9 +136,9 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     window.addEventListener("click", validateFields);
-    return ()=> {
+    return () => {
       window.removeEventListener('click', validateFields)
     }
   }, [])
@@ -160,7 +160,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
   const handleClose = () => {
     initialState();
     form.resetFields();
-    props.callback({ title: ''});
+    props.callback({ title: '' });
   }
 
   // 确认
@@ -171,13 +171,13 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
       const query = { server_type: serverType, test_type: testType, ...values };
       const { code, msg } = await createProject(query);
       if (code === 200) {
-        message.success(formatMessage({id: 'request.create.success'}));
+        message.success(formatMessage({ id: 'request.create.success' }));
         // step1.初始化状态、关闭对话框
         initialState();
         form.resetFields();
-        props.callback({ title: 'ok'});
+        props.callback({ title: 'ok' });
       } else {
-        message.error(msg || formatMessage({id: 'request.create.failed'}) );
+        message.error(msg || formatMessage({ id: 'request.create.failed' }));
       }
       setLoading(false);
     }).catch(() => {
@@ -194,16 +194,16 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
     fetchProjectList({ product_id: value })
   }
   // 删除产品
-  const handleClear =() => {
+  const handleClear = () => {
     setProductId('');
     form.setFieldsValue({ project_id: undefined });
     //
     validateFields()
-  }  
+  }
   const handlePopupScroll = ({ target }: any) => {
     const { page_num, page_size, total, } = productPagination
-    const { clientHeight, scrollHeight, scrollTop} = target 
-    if ( clientHeight + scrollTop + 1 >= scrollHeight  && !isNaN(page_num) && Math.ceil(total/page_size) > page_num ) {
+    const { clientHeight, scrollHeight, scrollTop } = target
+    if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
       fetchProductList({ page_num: page_num + 1, page_size }, 'concat')
     }
   }
@@ -214,7 +214,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
     setJobId(value)
     form.setFieldsValue({ baseline_id: undefined });
     // case2.根据选择的job，请求基线数据。
-    const filterList = jobTypeList.filter((item:any)=> item.id === value)
+    const filterList = jobTypeList.filter((item: any) => item.id === value)
     if (filterList.length) {
       const { server_type, test_type, has_baseline } = filterList[0];
       setServerType(server_type)
@@ -223,7 +223,7 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
       fetchBaselineList({ server_provider: server_type, test_type, page_num: 1, page_size: 20 }, 'reset');
     }
   }
-  const jobOnClear =() => {
+  const jobOnClear = () => {
     // case1.重置控件
     setJobId('')
     form.setFieldsValue({ baseline_id: undefined });
@@ -234,26 +234,21 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
   // 基线
   const baselinePopupScroll = ({ target }: any) => {
     const { page_num, page_size, total, } = baselinePagination
-    const { clientHeight, scrollHeight, scrollTop} = target 
-    if ( clientHeight + scrollTop + 1 >= scrollHeight  && !isNaN(page_num) && Math.ceil(total/page_size) > page_num ) {
+    const { clientHeight, scrollHeight, scrollTop } = target
+    if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
       fetchBaselineList({ page_num: page_num + 1, page_size }, 'concat')
     }
   }
 
   const requiredMessage = formatMessage({ id: 'please.select' });
-  const AuthPop = (
-    <Space>
-        <Typography.Text><FormattedMessage id="upload.list.Drawer.accessible"/></Typography.Text>
-        <a href="/help_doc/2" target="_blank"><FormattedMessage id="upload.list.Drawer.help_doc"/></a>
-    </Space>
-)
+
   return (
     <Modal
       title={<FormattedMessage id="upload.list.Drawer.title" />}
       width={460}
       visible={visible}
       maskClosable={!loading}
-      onCancel={!loading ? handleClose : ()=>{}}
+      onCancel={!loading ? handleClose : () => { }}
       className={styles.drawerWarper}
       footer={
         <div style={{ textAlign: 'right', }}>
@@ -267,147 +262,147 @@ const DrawerForm = forwardRef((props:any, ref:any) => {
           </Space>
         </div>
       }>
-        <div className={styles.contentWarper} ref={ref}>
-            <Alert message={<FormattedMessage id="upload.list.Drawer.upload.Alert" />} type="info" showIcon style={{marginBottom:20,padding: '4px 15px'}} />
-            <Spin spinning={loading}>
-              <Form form={form}
-                layout="vertical"
+      <div className={styles.contentWarper} ref={ref}>
+        <Alert message={<FormattedMessage id="upload.list.Drawer.upload.Alert" />} type="info" showIcon style={{ marginBottom: 20, padding: '4px 15px' }} />
+        <Spin spinning={loading}>
+          <Form form={form}
+            layout="vertical"
+          >
+            {/** ----------start 1.选项目------------------------ */}
+            <Form.Item label={<FormattedMessage id="upload.list.Drawer.product" />}
+              name="product_id"
+              rules={[{
+                required: true,
+                message: requiredMessage,
+              }]}>
+              <Select
+                allowClear
+                style={{ width: '100%' }}
+                placeholder={<FormattedMessage id="upload.list.Drawer.product.placeholder" />}
+                notFoundContent={fetching ? <Spin size="small" /> : null}
+                getPopupContainer={node => node.parentNode}
+                onChange={productOnChange}
+                onPopupScroll={handlePopupScroll}
+                onClear={handleClear}
+                autoFocus={true}
+                showSearch
+                filterOption={(input, option: any) => {
+                  return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }}
               >
-                {/** ----------start 1.选项目------------------------ */}
-                <Form.Item label={<FormattedMessage id="upload.list.Drawer.product" />}
-                name="product_id"
+                {productPagination.data.map((item: any) => (
+                  <Option key={item.id} value={item.id}>{item.name}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            {/** project相关 */}
+            <Form.Item label={<FormattedMessage id="upload.list.Drawer.project" />}
+              name="project_id"
+              rules={[{
+                required: true,
+                message: requiredMessage,
+              }]}>
+              <Select
+                placeholder={<FormattedMessage id="upload.list.Drawer.project.placeholder" />}
+                getPopupContainer={node => node.parentNode}
+                disabled={!productId || !projectList.length}>
+                {projectList.map((item: any) => (
+                  <Option key={item.id} value={item.id}>{item.name}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+            {/** ----------end 选项目------------------------ */}
+
+            {/** ----------start 2.选基线------------------------ */}
+            <Form.Item label={<FormattedMessage id="upload.list.Drawer.job_type" />}
+              name="job_type_id"
+              rules={[{
+                required: true,
+                message: requiredMessage,
+              }]}>
+              <Select allowClear
+                placeholder={<FormattedMessage id="upload.list.Drawer.job_type.placeholder" />}
+                getPopupContainer={node => node.parentNode}
+                onChange={jobOnChange}
+                onClear={jobOnClear}
+                showSearch
+                filterOption={(input, option: any) => {
+                  return option.children?.props?.children[0]?.props?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }}
+              >
+                {jobTypeList.map((item: any) => (
+                  <Option key={item.id} value={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>{item.name}</span>
+                      <span>{switchTestType(item.test_type, formatMessage)} | {switchServerType(item.server_type, formatMessage)}</span>
+                    </div>
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            {hasBaseline ?
+              <Form.Item label={<FormattedMessage id="upload.list.Drawer.baseline" />}
+                name="baseline_id"
                 rules={[{
-                  required: true,
+                  required: false,
                   message: requiredMessage,
                 }]}>
-                  <Select
-                    allowClear
-                    style={{ width: '100%' }}
-                    placeholder={<FormattedMessage id="upload.list.Drawer.product.placeholder" />}
-                    notFoundContent={fetching ? <Spin size="small" /> : null}
-                    getPopupContainer={node => node.parentNode}
-                    onChange={productOnChange}
-                    onPopupScroll={handlePopupScroll}
-                    onClear={handleClear}
-                    autoFocus={true}
-                    showSearch
-                    filterOption={(input, option: any) => {
-                      return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }}
-                  >
-                    {productPagination.data.map((item: any) => (
-                      <Option key={item.id} value={item.id}>{item.name}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-
-                {/** project相关 */}
-                <Form.Item label={<FormattedMessage id="upload.list.Drawer.project" />}
-                  name="project_id" 
-                  rules={[{
-                    required: true,
-                    message: requiredMessage,
-                  }]}>
-                  <Select 
-                    placeholder={<FormattedMessage id="upload.list.Drawer.project.placeholder" />}
-                    getPopupContainer={node => node.parentNode}
-                    disabled={!productId || !projectList.length}>
-                    {projectList.map((item: any) => (
-                      <Option key={item.id} value={item.id}>{item.name}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                {/** ----------end 选项目------------------------ */}
-
-                {/** ----------start 2.选基线------------------------ */}
-                <Form.Item label={<FormattedMessage id="upload.list.Drawer.job_type" />}
-                  name="job_type_id" 
-                  rules={[{
-                    required: true,
-                    message: requiredMessage,
-                  }]}>
-                  <Select allowClear
-                    placeholder={<FormattedMessage id="upload.list.Drawer.job_type.placeholder" />}
-                    getPopupContainer={node => node.parentNode}
-                    onChange={jobOnChange}
-                    onClear={jobOnClear}
-                    showSearch
-                    filterOption={(input, option: any) => {
-                      return option.children?.props?.children[0]?.props?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }}
-                  >
-                    {jobTypeList.map((item: any) => (
-                      <Option key={item.id} value={item.id} style={{display: 'flex',justifyContent: 'space-between'}}>
-                        <div style={{display: 'flex',justifyContent: 'space-between'}}>
-                          <span>{item.name}</span>
-                          <span>{switchTestType(item.test_type, formatMessage)} | {switchServerType(item.server_type, formatMessage)}</span>
-                        </div>
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-
-                {hasBaseline ?
-                  <Form.Item label={<FormattedMessage id="upload.list.Drawer.baseline" />}
-                    name="baseline_id" 
-                    rules={[{
-                      required: false,
-                      message: requiredMessage,
-                    }]}>
-                      <Select
-                        allowClear={true}
-                        placeholder={<FormattedMessage id="upload.list.Drawer.baseline.placeholder" />}
-                        onPopupScroll={baselinePopupScroll}
-                        getPopupContainer={node => node.parentNode}
-                        disabled={!jobId || !baselinePagination.data?.length}
-                        showSearch
-                        filterOption={(input, option: any) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                      >
-                        {baselinePagination.data?.map((item: any) => (
-                          <Option key={item.id} value={item.id}>{item.name}</Option>
-                        ))}
-                    </Select>
-                  </Form.Item>
-                  : null}
-                {/** ----------end 选基线------------------------ */}
-                <Form.Item label={<FormattedMessage id="upload.list.Drawer.ip" />}
-                  name="ip"
-                  rules={[{
-                    required: false,
-                    // max: 32,
-                    // pattern: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
-                    // message: '请输入正确格式的IP'
-                  }]}
+                <Select
+                  allowClear={true}
+                  placeholder={<FormattedMessage id="upload.list.Drawer.baseline.placeholder" />}
+                  onPopupScroll={baselinePopupScroll}
+                  getPopupContainer={node => node.parentNode}
+                  disabled={!jobId || !baselinePagination.data?.length}
+                  showSearch
+                  filterOption={(input, option: any) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
                 >
-                  <Input placeholder={formatMessage({id: 'upload.list.Drawer.ip.placeholder'}) }/>
-                </Form.Item>
+                  {baselinePagination.data?.map((item: any) => (
+                    <Option key={item.id} value={item.id}>{item.name}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              : null}
+            {/** ----------end 选基线------------------------ */}
+            <Form.Item label={<FormattedMessage id="upload.list.Drawer.ip" />}
+              name="ip"
+              rules={[{
+                required: false,
+                // max: 32,
+                // pattern: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+                // message: '请输入正确格式的IP'
+              }]}
+            >
+              <Input placeholder={formatMessage({ id: 'upload.list.Drawer.ip.placeholder' })} />
+            </Form.Item>
 
 
-                <Form.Item label={<FormattedMessage id="upload.list.Drawer.result" />}
-                  name="file" 
-                  rules={[{
-                    required: true,
-                    message: formatMessage({id: 'upload.list.Drawer.upload.message'}),
-                  }]}
-                  extra={formatMessage({id: 'upload.list.Drawer.upload.supportText'}) + ': .tar、.tar.gz'}
-                >
-                  <BizUpload callback={validateFields} />
-                </Form.Item>
-                <Form.Item style={{ display: 'none' }}
-                  name="ws_id"
-                  initialValue={ws_id}
-                  rules={[{
-                    required: true,
-                  }]}
-                >
-                  <Input type="hidden" />
-                </Form.Item>
+            <Form.Item label={<FormattedMessage id="upload.list.Drawer.result" />}
+              name="file"
+              rules={[{
+                required: true,
+                message: formatMessage({ id: 'upload.list.Drawer.upload.message' }),
+              }]}
+              extra={formatMessage({ id: 'upload.list.Drawer.upload.supportText' }) + ': .tar、.tar.gz'}
+            >
+              <BizUpload callback={validateFields} />
+            </Form.Item>
+            <Form.Item style={{ display: 'none' }}
+              name="ws_id"
+              initialValue={ws_id}
+              rules={[{
+                required: true,
+              }]}
+            >
+              <Input type="hidden" />
+            </Form.Item>
 
-              </Form>
-            </Spin>
-        </div>
+          </Form>
+        </Spin>
+      </div>
     </Modal>
   )
 });

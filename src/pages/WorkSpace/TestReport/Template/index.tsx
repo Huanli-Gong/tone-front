@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, memo } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 
 import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Tooltip, Button, Spin, Input, Divider } from 'antd'
@@ -379,9 +379,14 @@ const TemplatePage = (props: any) => {
 
     useEffect(() => {
         if (route.name === 'TemplateEdit') editPageSetData()
-        else
+        else {
             document.title = `${formatMessage({id: 'report.create.report.template'})} - T-One`
-    }, [])
+            setLoading(false)
+        }
+        return () => {
+            setLoading(true)
+        }
+    }, [route.name])
 
     const filterFieldData = (data: any, rowkey: string, name: string, field: any) => {
         return produce(

@@ -158,7 +158,7 @@ export default (): React.ReactNode => {
     }
 
     const wsHelpDoc = async () => {
-        const { data } = await queryHelpDocList({ page_size: 1000 })
+        const { data } = await queryHelpDocList()
         if (Array.isArray(data)) {
             setHelps(data)
         }

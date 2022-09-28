@@ -46,7 +46,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     const requestJoinBaseline = async (name: any) => {
         if (!name) return
-        const { code } = await createBaseline({
+        const { code, msg } = await createBaseline({
             name,
             server_provider,
             test_type,
@@ -54,7 +54,13 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             ws_id,
         })
 
-        if (code === 200) getBaselinePerfData()
+        if (code === 200) {
+            getBaselinePerfData()
+            message.success('添加基线成功!!!')
+        } else {
+            requestCodeMessage(code, msg)
+        }
+
     }
 
     const getBaselinePerfData = async () => {
@@ -98,7 +104,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             return
         }
         onOk()
-        message.success(formatMessage({id: 'operation.success'}) )
+        message.success(formatMessage({ id: 'operation.success' }))
         handleClose()
     }
 
@@ -209,14 +215,14 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             maskClosable={false}
             keyboard={false}
             width="376"
-            title={<FormattedMessage id="ws.result.details.join.baseline"/>}
+            title={<FormattedMessage id="ws.result.details.join.baseline" />}
             visible={visible}
             onClose={handleClose}
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
-                        <Button type="primary" onClick={handleOk} disabled={padding}><FormattedMessage id="operation.ok"/></Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk} disabled={padding}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }
@@ -228,70 +234,82 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 /*hideRequiredMark*/
                 >
                     {test_type === 'functional' &&
-                        <Form.Item label={<FormattedMessage id="ws.result.details.bug"/>}
-                            name="bug" 
+                        <Form.Item label={<FormattedMessage id="ws.result.details.bug" />}
+                            name="bug"
                             rules={[{
                                 required: true,
                             }]}
                         >
-                            <Input placeholder={formatMessage({id: 'ws.result.details.bug.placeholder'})}
+                            <Input placeholder={formatMessage({ id: 'ws.result.details.bug.placeholder' })}
                                 autoComplete="off" />
                         </Form.Item>
                     }
                     {test_type === 'performance' &&
-                        <Form.Item label={<FormattedMessage id="ws.result.details.baseline_id"/>}
-                            name="baseline_id">
-                            <Select
-                                mode="multiple"
-                                className={styles.pers_select}
-                                listHeight={160}
-                                getPopupContainer={node => node.parentNode}
-                                onSearch={handleFuncsBaselineSelectSearch}
-                                // onBlur={handlePerfBaselineSelectBlur}
-                                ref={perBaselineSelect}
-                                defaultActiveFirstOption={false}
-                                filterOption={
-                                    (input, option: any) => option.value.indexOf(input) >= 0
-                                }
-                                placeholder={formatMessage({id: 'ws.result.details.baseline_id.placeholder'})}
-                                dropdownStyle={{ padding: 0, margin: 0 }}
-                                notFoundContent={
-                                    funcsSelectVal && accessible &&
-                                    <div
-                                        style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%' }}
-                                        onClick={handlePerfBaselineSelectBlur}
-                                    >
-                                        <span className={styles.join_base_line}>
-                                            <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
-                                            <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
-                                                <FormattedMessage id="ws.result.details.create.baseline" />
-                                            </span>
-                                        </span>
-                                    </div>
-                                }
+                        <div onMouseDown={(e) => {
+                            e.preventDefault();
+                        }}>
+                            <Form.Item
+                                label={<FormattedMessage id="ws.result.details.baseline_id" />}
+                                name="baseline_id"
                             >
-                                {
-                                    baselinePerfList.map(
-                                        (item: any, index: number) => (
-                                            <Select.Option key={index} value={item} >
-                                                <Highlighter
-                                                    highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
-                                                    searchWords={[funcsSelectVal]}
-                                                    autoEscape
-                                                    textToHighlight={item}
-                                                />
-                                            </Select.Option>
+                                <Select
+                                    mode="multiple"
+                                    // className={styles.pers_select}
+                                    listHeight={160}
+                                    getPopupContainer={node => node.parentNode}
+                                    onSearch={handleFuncsBaselineSelectSearch}
+                                    // onBlur={handlePerfBaselineSelectBlur}
+                                    ref={perBaselineSelect}
+                                    defaultActiveFirstOption={false}
+                                    filterOption={
+                                        (input, option: any) => option.value.indexOf(input) >= 0
+                                    }
+                                    placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}
+                                    dropdownStyle={{ padding: 0, margin: 0 }}
+                                    dropdownRender={menu => (
+                                        <>
+                                            {menu}
+                                            <Divider style={{ margin: '8px 0' }} />
+                                            {
+                                                accessible &&
+                                                <div
+                                                    style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
+                                                    onClick={handlePerfBaselineSelectBlur}
+                                                >
+                                                    <span>
+                                                        <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                            <FormattedMessage id="ws.result.details.create.baseline" />
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            }
+                                        </>
+                                    )}
+                                >
+                                    {
+                                        baselinePerfList.map(
+                                            (item: any, index: number) => (
+                                                <Select.Option key={index} value={item} >
+                                                    <Highlighter
+                                                        highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}
+                                                        searchWords={[funcsSelectVal]}
+                                                        autoEscape
+                                                        textToHighlight={item}
+                                                    />
+                                                </Select.Option>
+                                            )
                                         )
-                                    )
-                                }
-                            </Select>
-                        </Form.Item>
+                                    }
+                                </Select>
+                            </Form.Item>
+                        </div>
                     }
                     {test_type === 'functional' &&
-                        <Form.Item label={<FormattedMessage id="ws.result.details.baseline_id"/>}
+                        <Form.Item label={<FormattedMessage id="ws.result.details.baseline_id" />}
                             name="baseline_name_list" >
                             <Select
-                                placeholder={formatMessage({id: 'ws.result.details.baseline_id.placeholder'})}
+                                placeholder={formatMessage({ id: 'ws.result.details.baseline_id.placeholder' })}
                                 mode="multiple"
                                 className={styles.select_baseline}
                                 allowClear
@@ -309,14 +327,16 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     <div style={{ maxHeight: 300, overflow: 'auto' }}>
                                         <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} style={{ paddingLeft: 10, height: 32, lineHeight: '32px' }}>全选</Checkbox>
                                         <Checkbox.Group options={baselineList} value={checkedList} onChange={onChange} className={styles.join_baseline} />
-                                        <Divider style={{ margin: '2px 0' }} />
+                                        <Divider style={{ margin: '8px 0' }} />
                                         {accessible && <div
-                                            style={{ display: 'inline-block', flexWrap: 'nowrap', paddingLeft: 10, width: '100%' }}
+                                            style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
                                             onClick={handleFuncsBaselineSelectBlur}
                                         >
-                                            <span className={styles.join_base_line}>
+                                            <span>
                                                 <PlusOutlined style={{ marginRight: 8, color: '#1890FF' }} />
-                                                <FormattedMessage id="ws.result.details.create.baseline" />
+                                                <span style={{ color: 'rgba(0, 0, 0, 0.85)' }} >
+                                                    <FormattedMessage id="ws.result.details.create.baseline" />
+                                                </span>
                                             </span>
                                         </div>
                                         }
@@ -327,17 +347,17 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     }
                     {test_type === 'functional' &&
                         <>
-                            <Form.Item label={<FormattedMessage id="ws.result.details.impact_result"/>}
+                            <Form.Item label={<FormattedMessage id="ws.result.details.impact_result" />}
                                 name="impact_result"
                                 initialValue={true}>
                                 <Radio.Group>
-                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
-                            <Form.Item label={<FormattedMessage id="ws.result.details.description"/>}
+                            <Form.Item label={<FormattedMessage id="ws.result.details.description" />}
                                 name="description">
-                                <Input.TextArea rows={4} placeholder={formatMessage({id: 'ws.result.details.description.placeholder'})} />
+                                <Input.TextArea rows={4} placeholder={formatMessage({ id: 'ws.result.details.description.placeholder' })} />
                             </Form.Item>
                             {/* <Form.Item label="备注" name="note">
                                 <Input.TextArea rows={4} placeholder="请输入备注信息" />

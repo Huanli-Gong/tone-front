@@ -287,7 +287,7 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: StateBadge,
+                render: (_: any, row: any) => StateBadge(_, row, ws_id),
                 filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
                     <SelectDropSync
@@ -307,7 +307,7 @@ export default (props: any) => {
                     showTitle: false
                 },
                 dataIndex: 'real_state',
-                render: StateBadge,
+                render: (_: any, row: any) => StateBadge(_, row, ws_id),
                 filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
                     <SelectDropSync
@@ -476,8 +476,8 @@ export default (props: any) => {
         }
     }
 
-    const handleRefresh = async(row:any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider:'aliyun' })
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aliyun' })
         if (code === 200) {
             message.success('同步机器状态成功')
             getList()

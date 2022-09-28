@@ -3,17 +3,29 @@ import { Form, Select, Spin, Empty } from 'antd';
 import { useRequest } from 'umi'
 import { member } from './service'
 
-export default () => {
+const Owner: React.FC = () => {
     const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
-        (keyword = '') => member({ keyword, scope: 'aligroup', page_num:1, page_size:200 }),
+        (keyword = '') => member({ keyword, scope: 'aligroup', page_num: 1, page_size: 200 }),
         {
-            initialData: [],
             debounceInterval: 300,
         }
     )
+
     const handleSearch = async (word: any = '') => {
         fetchUserRunner(word)
     }
+
+    if (!user)
+        return (
+            <Form.Item
+                label="Owner"
+                rules={[{ required: true, message: '请选择' }]}
+            >
+                <Select
+                    placeholder="请选择Owner"
+                />
+            </Form.Item>
+        )
     return (
         <Form.Item
             name="emp_id"
@@ -43,7 +55,7 @@ export default () => {
                                 value={item.emp_id}
                                 key={index}
                             >
-                                {item.last_name}({item.first_name === "" ? item.last_name : item.first_name}){ !BUILD_APP_ENV && ` - ${item.emp_id}`}
+                                {item.last_name}({item.first_name === "" ? item.last_name : item.first_name}){!BUILD_APP_ENV && ` - ${item.emp_id}`}
                             </Select.Option>
                         )
                     })
@@ -52,3 +64,5 @@ export default () => {
         </Form.Item>
     )
 }
+
+export default Owner

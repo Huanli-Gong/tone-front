@@ -1,7 +1,13 @@
-.expandConf:hover { color: #1890ff; background: rgba(24,143,255, 0.05); }
-.expandIndex:hover { color: #1890ff; background: rgba(24,143,255, 0.05); }
+.expandConf:hover {
+    color: #1890ff;
+    background: rgba(24, 143, 255, 0.05);
+  }
 
-
+.expandIndex:hover {
+    color: #1890ff;
+    background: rgba(24, 143, 255, 0.05);
+}
+  
 .result_expand_table {
     :global( .ant-table-expanded-row > td ) {
         background: rgb(251, 251, 251);
@@ -16,10 +22,22 @@
         padding: unset;
     }
 }
-
+  
 .result_info_table_head {
-    :global( .ant-table-thead .ant-table-cell ) {
-        background: #EDEDED;
+    :global(.ant-table-thead .ant-table-cell) {
+        background: #ededed;
+    }
+
+    :global {
+        .ant-table {
+            margin: 0 !important;
+        }
+    }
+
+    :global {
+        .ant-table.ant-table-small.ant-table-empty {
+            margin: 0!important;
+        }
     }
 
     :global {
@@ -28,24 +46,23 @@
         }
     }
 }
-.result_info_table_head_line {
-    :global {
-        tbody > tr:nth-last-child(1) > td {
-            border-bottom: none;
-        }
-    }
-}
-
+  
 .result_info_table_row {
     background: #fbfbfb;
 
-    :global( .ant-table-cell ) {
-        background: #fbfbfb !important;
-        border-bottom: 1px solid #f0f0f0;
-        padding-left: 8px;
+    :global {
+        .ant-table-cell {
+            background: #fbfbfb !important;
+            border-bottom: 1px solid #f0f0f0;
+            padding-left: 8px;
+        }
+
+        td {
+            border-bottom: 1px solid #f0f0f0!important;
+        }
     }
 }
-
+  
 .column_circle_text {
     display: inline-block;
     min-width: 33px;
@@ -56,14 +73,14 @@
     text-align: center;
     color: #ffffff;
     line-height: 18px;
-    cursor: pointer; 
+    cursor: pointer;
 }
-
-.edit:hover{
-    color:#1890ff
+  
+.edit:hover {
+    color: #1890ff;
 }
-
-.file_icon ,
+  
+.file_icon,
 .dir_icon {
     display: inline-block;
     width: 16px;
@@ -71,15 +88,15 @@
     margin-top: 5px;
     background: url('~@/assets/single-only-sprite.png') no-repeat center center;
 }
-
+  
 .file_icon {
     background-position: 0 -48px;
 }
-
+  
 .dir_icon {
-    background-position: 0 -16px;
+      background-position: 0 -16px;
 }
-
+  
 .resultCaseTableCls {
     :global {
         .expandedRowClassNameCls>td {
@@ -89,10 +106,19 @@
         .expandedRowClassNameCls > td > div {
             width: 100% !important;
         }
+
+        .ant-table-empty .ant-table-tbody > tr.ant-table-placeholder td {
+            border-bottom: none;
+        }
+
+        & table:first-child > tbody:last-child tr td {
+            border-bottom: none;
+        }
     }
 }
-
+  
 /* 去掉二级表格最底部下划线 */
 .resultCaseTableCls > div > div > div > div > div > table > tbody > tr:nth-last-child(2) > td {
     border-bottom: none;
 }
+  
