@@ -67,6 +67,8 @@ export default forwardRef((props: any, ref: any) => {
                     ...baseGroupObj,
                     report_template_id: report_template_id || _.get(defaultTem, 'id')
                 })
+                setGroupMethod(group_method)
+
                 // 根据后端返回数据，重组基准组的数据源
                 if (test_config) {
                     const modules = test_config?.map((item: any, index: any) => {
@@ -83,7 +85,6 @@ export default forwardRef((props: any, ref: any) => {
                     setEnvPrep(modules)
                 }
             }
-            group_method && setGroupMethod(group_method)
         }
     }, [template, reportTemplate])
 
