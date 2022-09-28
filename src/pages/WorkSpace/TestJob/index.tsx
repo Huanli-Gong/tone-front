@@ -154,7 +154,7 @@ const TestJob: React.FC<any> = (props) => {
             },
         })
         clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}) )
+            message.success(formatMessage({ id: 'request.copy.success' }))
             e.clearSelection();
         })
         return () => {
@@ -410,12 +410,12 @@ const TestJob: React.FC<any> = (props) => {
         }
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
 
         if (!data.test_config) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         const test_config = handleServerChannel(data.test_config)
         let { code, msg } = await createWsJobTest({ ...data, test_config })
@@ -471,8 +471,8 @@ const TestJob: React.FC<any> = (props) => {
             if (code !== 200) return
         }
         const data = isYamlFormat ? await transformDate(resultData) : await transformDate()
-        if (isMonitorEmpty(data)) return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
-        if (!data.test_config) return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+        if (isMonitorEmpty(data)) return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        if (!data.test_config) return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         name === 'TestJob' || name === 'TestExport' ?
             saveTemplateDrawer.current.show() :
             handleSaveTemplateOk({})
@@ -484,11 +484,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         data = {
             workspace: ws_id,
@@ -499,7 +499,7 @@ const TestJob: React.FC<any> = (props) => {
         const { code, msg } = await saveTestTemplate({ ...data, test_config, ...vals })
 
         if (code === 200) {
-            message.success(formatMessage({id: 'ws.test.job.operation.success'}) )
+            message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
             saveTemplateDrawer.current.hide()
             templatePopoverRefresh()
             setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
@@ -529,11 +529,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
             setFetching(false)
-            message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
             return
         }
         if (!data.baseline) {
@@ -560,7 +560,7 @@ const TestJob: React.FC<any> = (props) => {
             setModifyTemplate(false)
             setDisabled(true)
             setTemplateEnable(data.enable)
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             if (name !== 'TemplatePreview')
                 history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
         }
@@ -577,11 +577,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         if (!data.baseline) {
             data.baseline = null
@@ -596,7 +596,7 @@ const TestJob: React.FC<any> = (props) => {
         })
 
         if (code === 200) {
-            message.success(formatMessage({id: 'request.save.success'}) )
+            message.success(formatMessage({ id: 'request.save.success' }))
             history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
         }
         else requestCodeMessage(code, msg)
@@ -822,7 +822,7 @@ const TestJob: React.FC<any> = (props) => {
     useEffect(() => {
         const clipboard = new Clipboard('#copy_dom_id')
         clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}) )
+            message.success(formatMessage({ id: 'request.copy.success' }))
             e.clearSelection();
         })
         return () => {
@@ -865,7 +865,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const renderButton = (
         <>
-            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button> }
+            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
             <Button type="primary" onClick={handleSaveTemplateModify}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
         </>
     )
@@ -957,7 +957,7 @@ const TestJob: React.FC<any> = (props) => {
                                                         autoComplete="off"
                                                         prefix={<SearchOutlined />}
                                                         className={styles.job_search_inp}
-                                                        placeholder={formatMessage({id: 'ws.test.job.search.placeholder.template'})}
+                                                        placeholder={formatMessage({ id: 'ws.test.job.search.placeholder.template' })}
                                                         onChange={handleChangeTemplateName}
                                                     />
                                                 }
@@ -972,7 +972,7 @@ const TestJob: React.FC<any> = (props) => {
                                                                             <div className={styles.template_item}
                                                                                 key={item.id}
                                                                                 onClick={(): any => {
-                                                                                    if (!item.job_type) return message.error(formatMessage({id: 'ws.test.job.please.delete'}) )
+                                                                                    if (!item.job_type) return message.error(formatMessage({ id: 'ws.test.job.please.delete' }))
                                                                                     history.push(`/ws/${ws_id}/test_job/${item.job_type_id}?template_id=${item.id}`)
                                                                                     setTemplateBtnVisible(false)
                                                                                 }}
@@ -1000,10 +1000,15 @@ const TestJob: React.FC<any> = (props) => {
                                 </Row>
                                 <div className={styles.page_tags}>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        <FormattedMessage id={`header.${detail.server_type}`} defaultMessage=""/>
+                                        {
+                                            detail.server_type &&
+                                            <FormattedMessage id={`header.${detail.server_type}`} defaultMessage="" />
+                                        }
                                     </Tag>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        {detail.test_type === 'business' ? <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others"/>: <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage=""/>}
+                                        {detail.test_type === 'business' ?
+                                            <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others" /> :
+                                            detail.test_type && <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage="" />}
                                     </Tag>
                                 </div>
                                 <div className={styles.page_dec}>{detail.description}</div>
@@ -1015,7 +1020,7 @@ const TestJob: React.FC<any> = (props) => {
                             <Row className={styles.page_body} justify="center" >
                                 <div ref={bodyRef} style={{ width: 1000 }} />
                                 {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange}>
-                                    <YamlFormat style={{ marginRight: 5 }} />{isYamlFormat? <FormattedMessage id="ws.test.job.switch.form.mode" />: <FormattedMessage id="ws.test.job.switch.yaml.mode" />} 
+                                    <YamlFormat style={{ marginRight: 5 }} />{isYamlFormat ? <FormattedMessage id="ws.test.job.switch.form.mode" /> : <FormattedMessage id="ws.test.job.switch.yaml.mode" />}
                                 </div>}
                                 <div style={isYamlFormat ? { width: 1240, display: 'none' } : { width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>

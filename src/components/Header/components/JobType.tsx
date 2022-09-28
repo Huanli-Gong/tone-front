@@ -23,9 +23,9 @@ const JobTypeModal: React.FC<Record<string, any>> = (props) => {
     const { ws_id, jobTypes, typesRun, typeFetchLoading } = useHeaderContext()
     const { onOk = () => { }, getData } = props
 
-    useEffect(()=> {
+    useEffect(() => {
         typesRun();
-    },[])
+    }, [])
 
     const dataSourceCopy = getData(jobTypes)
 
@@ -46,14 +46,18 @@ const JobTypeModal: React.FC<Record<string, any>> = (props) => {
                                 history.push(`/ws/${ws_id}/test_job/${item.id}`)
                             }}
                         >
-                            {item.is_first && <span className={styles[locale ? 'right_default_en': 'right_default']}></span>}
+                            {item.is_first && <span className={styles[locale ? 'right_default_en' : 'right_default']}></span>}
 
                             <div className={styles.type_modal_title}>
                                 <TootipOver>{item.name}</TootipOver>
                             </div>
                             <div style={{ paddingLeft: 16 }}>
-                                <Tag color="#F2F4F6" style={{ color: '#515B6A', padding: '0 4px' }}><FormattedMessage id={`header.${item.server_type}`} defaultMessage=""/></Tag>
-                                <Tag color="#F2F4F6" style={{ color: '#515B6A', padding: '0 4px', marginRight: 0 }}><FormattedMessage id={`header.test_type.${item.test_type}`} defaultMessage=""/></Tag>
+                                <Tag color="#F2F4F6" style={{ color: '#515B6A', padding: '0 4px' }}>
+                                    {item.server_type && <FormattedMessage id={`header.${item.server_type}`} defaultMessage="" />}
+                                </Tag>
+                                <Tag color="#F2F4F6" style={{ color: '#515B6A', padding: '0 4px', marginRight: 0 }}>
+                                    {item.test_type && <FormattedMessage id={`header.test_type.${item.test_type}`} defaultMessage="" />}
+                                </Tag>
                             </div>
                         </div>
                     )
