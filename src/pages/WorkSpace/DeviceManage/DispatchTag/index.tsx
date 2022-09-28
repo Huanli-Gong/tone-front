@@ -140,13 +140,19 @@ const SuiteManagement: React.FC<any> = props => {
 			title: '创建时间',
 			dataIndex: 'gmt_created',
 			width: 200,
-			render: (_: string, row: any) => row.create_user !== '系统预设' && <PopoverEllipsis width={200 * ratio} title={row.gmt_created} />
+			render: (_: string, row: any) => {
+				if (row.create_user !== '系统预设') return <PopoverEllipsis width={200 * ratio} title={row.gmt_created} />
+				return "-"
+			}
 		},
 		{
 			title: '修改时间',
 			dataIndex: 'gmt_modified',
 			width: 200,
-			render: (_: string, row: any) => row.create_user !== '系统预设' && <PopoverEllipsis width={200 * ratio} title={row.gmt_modified} />
+			render: (_: string, row: any) => {
+				if (row.create_user !== '系统预设') return <PopoverEllipsis width={200 * ratio} title={row.gmt_modified} />
+				return "-"
+			}
 		},
 		{
 			title: '操作',

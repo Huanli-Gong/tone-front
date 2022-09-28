@@ -302,7 +302,10 @@ const Standalone = (props: any, ref: any) => {
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sm_name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: totalParam })} />
-            )
+            ),
+            render(_: any) {
+                return <EllipsisPulic title={_} />
+            }
         },
         !BUILD_APP_ENV && {
             title: 'IDC',
@@ -311,7 +314,7 @@ const Standalone = (props: any, ref: any) => {
                 showTitle: false,
             },
             dataIndex: 'idc',
-            filterIcon: () => <FilterFilled style={{ color: urlParmas.dic ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: urlParmas.idc ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: totalParam })} />
             )
@@ -400,6 +403,9 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            render(_: any) {
+                return <EllipsisPulic title={_} />
+            }
         },
         {
             title: '标签',
@@ -428,7 +434,7 @@ const Standalone = (props: any, ref: any) => {
         {
             title: '操作',
             fixed: 'right',
-            width: !BUILD_APP_ENV ? 240 : 190,
+            width: !BUILD_APP_ENV ? 280 : 240,
             // align: 'center',
             ellipsis: {
                 showTitle: false,
@@ -518,7 +524,7 @@ const Standalone = (props: any, ref: any) => {
                     expandedRowKeys: defaultExpandRowKeys,
                     expandIcon: () => false,
                 }}
-                scroll={{ x: 'max-content', y: layoutHeight - 50 - 66 - 30 - 20 }}
+                scroll={{ x: '100%', y: layoutHeight - 50 - 66 - 30 - 20 }}
             />
             <CommonPagination
                 pageSize={urlParmas.page_size}

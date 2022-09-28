@@ -18,7 +18,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import PermissionTootip from '@/components/Public/Permission/index';
 import { Access, useAccess } from 'umi';
 import OverflowList from '@/components/TagOverflow/index'
-import EllipsisPulic from '@/components/Public/EllipsisHeightPulic'
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 
 
 /**
@@ -146,9 +146,8 @@ const Cluster = (props: any, ref: any) => {
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, description })} />
             ),
-            render(row: any) {
-                const title = row || "-"
-                return <EllipsisPulic title={title}>{title}</EllipsisPulic>
+            render(_: any) {
+                return <EllipsisPulic title={_} />
             }
         },
         {
