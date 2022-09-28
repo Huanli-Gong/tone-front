@@ -226,7 +226,7 @@ export default (props: any) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>
+                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>}
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
                                 { !BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button> }
@@ -234,7 +234,7 @@ export default (props: any) => {
                         }
                     >
                         <Space>
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>
+                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>}
                             <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
                             <Popconfirm
                                 title="确定要删除吗？"

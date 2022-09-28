@@ -217,14 +217,14 @@ const GroupTree: React.FC<any> = (props) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                { instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button> }
+                                {BUILD_APP_ENV && instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button>}
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>编辑</Button>
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>删除</Button>
                             </Space>
                         }
                     >
                         <Space>
-                            {instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button>}
+                            {BUILD_APP_ENV && instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button>}
                             <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
                             <Popconfirm
                                 title={<div style={{ color: 'red' }}>确认要删除吗？</div>}

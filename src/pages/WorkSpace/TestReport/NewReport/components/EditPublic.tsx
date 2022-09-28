@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
+import { AccessTootip } from '@/utils/utils';
 import styled from 'styled-components';
 import _ from 'lodash';
 import { editReportInfo } from '../../services';
@@ -114,6 +115,8 @@ export const SettingRegUpdate = ({
         fontStyle?: any,
         defaultHolder?: string,
     }) => {
+    const access = useAccess();
+    const creator_id = window.location.search
     const { formatMessage } = useIntl()
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
@@ -170,7 +173,7 @@ export const SettingRegUpdate = ({
             message.error(msg)
         }
     }
-
+    console.log('creator_id', creator_id)
     const handleChange = (title: any) => {
         if (_.isNull(title) || _.isUndefined(title)) return <FormattedMessage id="report.not.filled" />
         return title
@@ -193,7 +196,16 @@ export const SettingRegUpdate = ({
                     :
                     <div style={{ width: '100%', ...style }}>
                         <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
+                        <Access accessible={access.WsTourist()}>
+                            <Access
+                                accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5, creator_id.length)))}
+                                fallback={
+                                    <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
+                                }
+                            >
+                                <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
+                            </Access>
+                        </Access>
                     </div>
             }
         </>
