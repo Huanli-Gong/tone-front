@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { history, useModel, useParams } from 'umi'
 import { person_auth } from '@/services/user';
 import { deepObject } from '@/utils/utils';
+import { enterWorkspaceHistroy } from '@/services/Workspace';
 
 export default (props: any) => {
     const { children } = props
@@ -13,7 +14,7 @@ export default (props: any) => {
         let flag = authList
         const { ws_id: old_ws_id } = authList
 
-        if (!ws_id || old_ws_id && old_ws_id !== ws_id) {
+        if (!old_ws_id || old_ws_id !== ws_id) {
             const { data } = await person_auth({ ws_id })
             const accessData = deepObject(data)
             setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
@@ -25,6 +26,8 @@ export default (props: any) => {
             }
         }
 
+        enterWorkspaceHistroy({ ws_id })
+        
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
 
         if (!ws_is_exist) {

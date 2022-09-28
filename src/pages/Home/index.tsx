@@ -62,8 +62,6 @@ const avatarStyle = {
     marginRight: 10
 }
 
-
-
 export default (): React.ReactNode => {
     const access = useAccess();
 
@@ -87,10 +85,7 @@ export default (): React.ReactNode => {
     ]
     const tourKey = [{
         tab: formatMessage({ id: 'pages.home.tab.all' }), key: 'all'
-    },
-    ]
-
-
+    },]
 
     const [wsData, setWsData]: Array<any> = useState([])
     const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
@@ -198,7 +193,9 @@ export default (): React.ReactNode => {
 
     const enterWorkspace = async (record: any) => {
         if (access.IsAdmin()) {
-            return history.push(jumpWorkspace(record.id))
+            history.push(jumpWorkspace(record.id))
+            // enterWorkspaceHistroy({ ws_id: record.id })
+            return
         }
 
         if (!user_id && !record.is_public) {
@@ -210,7 +207,8 @@ export default (): React.ReactNode => {
 
         if (record.is_public || record.is_member) {
             const path: string = await getEnterWorkspaceState(record)
-            return history.push(path)
+            path && history.push(path)
+            return
         }
 
         history.push({ pathname: '/401', state: record.id })
