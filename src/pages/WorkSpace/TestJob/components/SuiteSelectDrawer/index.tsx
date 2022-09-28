@@ -1,9 +1,9 @@
-import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber, Row, Col } from 'antd'
+import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
 import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
-import { QusetionIconTootip, getHasMuiltip } from '../untils'
+import { QusetionIconTootip, getHasMuiltip, formatter } from '../untils'
 import lodash from 'lodash'
 import ServerFormItem from './ServerFormItem'
 import MonitorItem from './MonitorItem'
@@ -154,24 +154,24 @@ const SuiteDrawer = (props: any, ref: any) => {
         return { suiteMultip }
     }
     const changeServerSelect = (params: any) => {
-        const { server_object_id, server_tag_id, ip, is_instance , customer_server } = params
+        const { server_object_id, server_tag_id, ip, is_instance, customer_server } = params
         let flag = location.search.indexOf('inheriting_machine') !== -1
-        
-        if ( customer_server && JSON.stringify( customer_server ) !== '{}') {
-            const { custom_ip , custom_channel } = customer_server 
+
+        if (customer_server && JSON.stringify(customer_server) !== '{}') {
+            const { custom_ip, custom_channel } = customer_server
             if (custom_ip && custom_channel) {
                 setServerObjectType('ip')
                 setServerType('custom')
             }
             return
         }
-        if( flag && ip ){
-            if (server_type === 'aliyun' && run_mode === 'standalone'){
+        if (flag && ip) {
+            if (server_type === 'aliyun' && run_mode === 'standalone') {
                 if (is_instance === 0) setServerObjectType('setting')
                 if (is_instance === 1) setServerObjectType('instance')
             } else {
                 setServerObjectType('server_object_id')
-            } 
+            }
             return
         }
 
@@ -187,7 +187,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                     setServerObjectType('server_object_id')
             }
             if (!lodash.isEmpty(server_tag_id)) setServerObjectType('server_tag_id')
-            return 
+            return
         }
 
         // if (ip === '随机' || ip === '') setServerObjectType('ip')
@@ -227,10 +227,10 @@ const SuiteDrawer = (props: any, ref: any) => {
                     setSuiteForm(suiteMultip)
                     const caseParams = getRealParams(caseMultip)
                     const suiteParams = getRealParams(suiteMultip)
-                    const { custom_channel , custom_ip , ip , server_object_id , server_tag_id , repeat } = caseParams
-                    const params = { custom_channel , custom_ip , ip , server_object_id , server_tag_id , repeat }
-                    changeServerSelect( params )
-                    form.setFieldsValue({ ...suiteParams , ...params })
+                    const { custom_channel, custom_ip, ip, server_object_id, server_tag_id, repeat } = caseParams
+                    const params = { custom_channel, custom_ip, ip, server_object_id, server_tag_id, repeat }
+                    changeServerSelect(params)
+                    form.setFieldsValue({ ...suiteParams, ...params })
                 }
                 else {
                     const { suiteMultip } = getMultipFields(dataSource)
@@ -317,7 +317,7 @@ const SuiteDrawer = (props: any, ref: any) => {
 
     const isCustom = () => serverType === 'custom'
     const isTagId = () => !isCustom() && serverObjectType === 'server_tag_id'
-    const isObjectId = () => !isCustom() && ( serverObjectType && serverObjectType !== 'server_tag_id' && serverObjectType !== 'ip' )
+    const isObjectId = () => !isCustom() && (serverObjectType && serverObjectType !== 'server_tag_id' && serverObjectType !== 'ip')
     const isRandom = () => !isCustom() && serverObjectType === 'ip'
 
     const getType = (v: any) => Object.prototype.toString.call(v)
@@ -359,10 +359,10 @@ const SuiteDrawer = (props: any, ref: any) => {
             if (custom_channel && custom_ip) ip = custom_ip
 
         let is_instance = undefined
-        if ( serverObjectType === 'instance' ) is_instance = 1
-        if ( serverObjectType === 'setting') is_instance = 0
+        if (serverObjectType === 'instance') is_instance = 1
+        if (serverObjectType === 'setting') is_instance = 0
 
-        const resultValues = { ...values , ip , is_instance }
+        const resultValues = { ...values, ip, is_instance }
 
         const firstFilterParams = {
             ...params,
@@ -483,7 +483,7 @@ const SuiteDrawer = (props: any, ref: any) => {
             let multipServer = customLen > 1
 
             if (multipServer || multipPool) setMask(true)
-            
+
             if (!multipPool && !multipServer) {
                 setServerType('pool')
                 if (objectLen === 1) {
@@ -511,7 +511,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                 multipServer = true
                 multipPool = true
             }
-            if ( multipPool ) setServerObjectType(null)
+            if (multipPool) setServerObjectType(null)
             return {
                 serverPool: multipPool,
                 selfServer: multipServer,
@@ -526,13 +526,14 @@ const SuiteDrawer = (props: any, ref: any) => {
         return { serverPool: false, selfServer: false, repeat: false, cleanup_info: false, setup_info: false }
     }, [caseFrom, batch, server_type, settingType, suiteForm, run_mode])
 
+
     return (
         <DrawerWrapper
             maskClosable={false}
             keyboard={false}
             title={
                 <div>
-                    <div>{`${batch ? formatMessage({id:'select.suite.batch.config'}): formatMessage({id:'select.suite.config'})} ${settingType === 'suite' ? 'Suite' : 'Conf'}`}</div>
+                    <div>{`${batch ? formatMessage({ id: 'select.suite.batch.config' }) : formatMessage({ id: 'select.suite.config' })} ${settingType === 'suite' ? 'Suite' : 'Conf'}`}</div>
                     {
                         !batch &&
                         <NameContent>
@@ -550,10 +551,10 @@ const SuiteDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', padding: '0 8px' }} >
                     <Button onClick={handleClose} style={{ marginRight: 8 }}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                     <Button onClick={hanldeOk} type="primary">
-                        <FormattedMessage id="operation.ok"/>
+                        <FormattedMessage id="operation.ok" />
                     </Button>
                 </div>
             }
@@ -581,7 +582,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                             ((settingType === 'suite' && suiteHasMultip) || caseHasMultip) && (
                                 <div style={{ padding: '0 20px 8px' }}>
                                     <Alert
-                                        message={<FormattedMessage id="select.suite.vertical.message"/>}
+                                        message={<FormattedMessage id="select.suite.vertical.message" />}
                                         type="warning"
                                         showIcon
                                         style={{ fontSize: 12, padding: '5px 10px' }}
@@ -609,8 +610,8 @@ const SuiteDrawer = (props: any, ref: any) => {
 
                         {
                             (contrl.includes('variable') && checked && settingType === 'case') &&
-                            <Form.Item 
-                                label={<FormattedMessage id="select.suite.variable"/>}
+                            <Form.Item
+                                label={<FormattedMessage id="select.suite.variable" />}
                                 className={'drawer_padding'}>
                                 <Form.List
                                     name="env_info"
@@ -619,24 +620,24 @@ const SuiteDrawer = (props: any, ref: any) => {
                                         (fields, { add, remove }) => (
                                             fields.map((field, index) => {
                                                 const evn = form.getFieldValue('env_info')
-                                                const RowItem = ({ label, value, width }: any)=> (
-                                                   <div style={{ display: 'flex'}}>
-                                                       <div style={{ flexWrap: 'nowrap', flexShrink: 0 }}>{label}</div>
-                                                       <div style={{ flexWrap: 'wrap', width }}>{value}</div>
-                                                   </div>
+                                                const RowItem = ({ label, value, width }: any) => (
+                                                    <div style={{ display: 'flex' }}>
+                                                        <div style={{ flexWrap: 'nowrap', flexShrink: 0 }}>{label}</div>
+                                                        <div style={{ flexWrap: 'wrap', width }}>{value}</div>
+                                                    </div>
                                                 )
                                                 return (
                                                     <Space key={field.key} style={{ marginBottom: 8 }} align="start">
                                                         <Tooltip placement="topLeft" overlayStyle={{ width: 250 }}
-                                                          title={
-                                                            (evn[index]?.name || evn[index]?.des) ?
-                                                            <Space direction="vertical">
-                                                                {!!evn[index]?.name && <RowItem label={formatMessage({id: 'select.suite.variable.name'})} value={evn[index]?.name} width={180}/>}
-                                                                {!!evn[index]?.des && <RowItem label={formatMessage({id: 'select.suite.variable.desc'})} value={evn[index]?.des} width={165}/>}
-                                                            </Space>
-                                                            :
-                                                            null
-                                                        }>
+                                                            title={
+                                                                (evn[index]?.name || evn[index]?.des) ?
+                                                                    <Space direction="vertical">
+                                                                        {!!evn[index]?.name && <RowItem label={formatMessage({ id: 'select.suite.variable.name' })} value={evn[index]?.name} width={180} />}
+                                                                        {!!evn[index]?.des && <RowItem label={formatMessage({ id: 'select.suite.variable.desc' })} value={evn[index]?.des} width={165} />}
+                                                                    </Space>
+                                                                    :
+                                                                    null
+                                                            }>
                                                             {/* <Form.Item
                                                                 name={[field.name, 'name']}
                                                                 fieldKey={[field.fieldKey, 'name']}
@@ -645,12 +646,12 @@ const SuiteDrawer = (props: any, ref: any) => {
                                                             </Form.Item> */}
                                                             <FieldsInput>{evn[index]?.name || 'key'}</FieldsInput>
                                                         </Tooltip>
-                                                        <span style={{marginTop:5,display:'block'}}>=</span>
+                                                        <span style={{ marginTop: 5, display: 'block' }}>=</span>
                                                         <Form.Item
                                                             name={[field.name, 'val']}
                                                             fieldKey={[field.fieldKey, 'val']}
                                                         >
-                                                            <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || formatMessage({id: 'select.suite.value'}) } />
+                                                            <Input disabled={isNullEnv} autoComplete="off" placeholder={evn[index].des || formatMessage({ id: 'select.suite.value' })} />
                                                         </Form.Item>
                                                     </Space>
                                                 )
@@ -664,13 +665,13 @@ const SuiteDrawer = (props: any, ref: any) => {
                         {
                             (contrl.includes('reboot') && checked) && (
                                 <Form.Item
-                                    label={<FormattedMessage id="select.suite.need_reboot"/>}
+                                    label={<FormattedMessage id="select.suite.need_reboot" />}
                                     name="need_reboot"
                                     className={'drawer_padding'}
                                 >
                                     <Radio.Group>
-                                        <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                                        <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             )
@@ -681,25 +682,25 @@ const SuiteDrawer = (props: any, ref: any) => {
                             <>
                                 <Form.Item
                                     name="setup_info"
-                                    label={<FormattedMessage id="select.suite.setup_info"/>}
+                                    label={<FormattedMessage id="select.suite.setup_info" />}
                                     className={'drawer_padding'}
                                 >
                                     <Input.TextArea
                                         rows={4}
                                         placeholder={
-                                            multipInfo.setup_info ? formatMessage({id: 'select.suite.setup_info.placeholder'}) : formatMessage({id: 'select.suite.please.enter'})
+                                            multipInfo.setup_info ? formatMessage({ id: 'select.suite.setup_info.placeholder' }) : formatMessage({ id: 'select.suite.please.enter' })
                                         }
                                     />
                                 </Form.Item>
                                 <Form.Item
                                     name="cleanup_info"
-                                    label={<FormattedMessage id="select.suite.cleanup_info"/>}
+                                    label={<FormattedMessage id="select.suite.cleanup_info" />}
                                     className={'drawer_padding'}
                                 >
                                     <Input.TextArea
                                         rows={4}
                                         placeholder={
-                                            multipInfo.cleanup_info ? formatMessage({id: 'select.suite.cleanup_info.placeholder'}) : formatMessage({id: 'select.suite.please.enter'})
+                                            multipInfo.cleanup_info ? formatMessage({ id: 'select.suite.cleanup_info.placeholder' }) : formatMessage({ id: 'select.suite.please.enter' })
                                         }
                                     />
                                 </Form.Item>
@@ -713,12 +714,13 @@ const SuiteDrawer = (props: any, ref: any) => {
 
                         <Form.Item
                             name="priority"
-                            label={<QusetionIconTootip title={formatMessage({id: 'select.suite.priority'})} desc={formatMessage({id: 'select.suite.priority.desc'})} />}
+                            label={<QusetionIconTootip title={formatMessage({ id: 'select.suite.priority' })} desc={formatMessage({ id: 'select.suite.priority.desc' })} />}
                             className={'drawer_padding'}
                         >
                             <InputNumber
+                                formatter={formatter}
                                 style={{ width: '100%' }} min={0} step={1} max={20}
-                                placeholder={caseFrom?.priority?.length > 1 ? formatMessage({id: 'select.suite.multiple.values'}): formatMessage({id: 'select.suite.please.enter'})}
+                                placeholder={caseFrom?.priority?.length > 1 ? formatMessage({ id: 'select.suite.multiple.values' }) : formatMessage({ id: 'select.suite.please.enter' })}
                             />
                         </Form.Item>
                     </Form>
