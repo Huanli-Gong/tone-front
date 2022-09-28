@@ -108,11 +108,15 @@ const Standalone = (props: any, ref: any) => {
     // }, [])
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
-        const data = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aligroup' })
-        if (data.data.length > 0) {
-            setDeleteVisible(true)
+        const { data, code, msg } = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aligroup' })
+        if(code === 200){
+            if (data.length > 0) {
+                setDeleteVisible(true)
+            } else {
+                setDeleteDefault(true)
+            }
         } else {
-            setDeleteDefault(true)
+            requestCodeMessage(code,msg)
         }
     }
     // const calcPageNo = (total = 0, pageNo = 1, pageSize = 10, delNum = 1) => {
@@ -149,6 +153,7 @@ const Standalone = (props: any, ref: any) => {
         //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
         let pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
         if (data.code === 200) {
+            setSelectRowKeys(selectRowKeys.filter((i:any) => i !== id))
             message.success('操作成功！')
             setDeleteVisible(false)
             setDeleteDefault(false)

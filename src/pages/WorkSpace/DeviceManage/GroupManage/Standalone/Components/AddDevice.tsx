@@ -45,7 +45,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setModifyProps(data)
                 setIsMoreEdit(_.get(data, 'opreateType') === 'moreEdit')
                 data.ip && form.setFieldsValue({ ips: [data.ip] })
-                const list = data.tag_list.map((item:any) => item.id)
+                let list = []
+                if(data.tag_list){
+                    list = data.tag_list.map((item:any) => item.id)
+                }
                 setTagFlag({ ...tagFlag, isQuery: 'edit', list })
             }else{
                 setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })

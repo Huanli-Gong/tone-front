@@ -190,6 +190,7 @@ export default forwardRef((props: any, ref: any) => {
                         {groupMethod === 'job' && (
                             <Form.Item label="选择基准组"
                                 name="base_group_job"
+                                rules={[{ required: true, message: '请选择' }]}
                             >
                                 <Cascader options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
                             </Form.Item>
@@ -197,6 +198,7 @@ export default forwardRef((props: any, ref: any) => {
                         {groupMethod === 'stage' && (
                             <Form.Item label="选择基准组"
                                 name="base_group_stage"
+                                rules={[{ required: true, message: '请选择' }]}
                             >
                                 <Select placeholder="请选择" getPopupContainer={node => node.parentNode}>
                                     {testConfig.map((item: any, index: number) =>
