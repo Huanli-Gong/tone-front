@@ -46,7 +46,7 @@ export default forwardRef((props: any, ref: any) => {
     // 编辑
     useEffect(() => {
         if (template && Object.keys(template).length) {
-            const { auto_report, group_method, base_group, base_group_info, report_template_id, test_config, } = template
+            const { auto_report, group_method = "no", base_group, base_group_info, report_template_id, test_config, } = template
             const { stage_id, } = base_group_info || {}
             setTrigger(auto_report)
             // 表单数据回填
