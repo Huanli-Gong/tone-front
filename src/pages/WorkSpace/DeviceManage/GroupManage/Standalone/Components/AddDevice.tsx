@@ -227,6 +227,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     // 失焦校验
     const handleBlurIps = () => {
         if(selectIpsValue.length > 0){
+            if(selectIpsValue.indexOf('，') > 1){
+                message.error('机器ip参数格式不正确')
+                return 
+            }
             const matchResult: any = selectIpsValue.trim().split(/,|\s/) || []
             const resultIp: any = Array.from(
                 new Set(matchResult.concat(vals))
