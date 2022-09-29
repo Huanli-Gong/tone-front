@@ -75,6 +75,7 @@ const JobTypeTab: React.FC<Record<string, any>> = ({ onOk }) => {
     React.useEffect(() => {
         setTestType('全部')
     }, [ws_id])
+    
     return (
         <Tabs
             defaultActiveKey={tab}
