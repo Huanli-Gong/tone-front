@@ -20,12 +20,8 @@ const TootipOver: React.FC<any> = ({ children }: any) => {
 
 const JobTypeModal: React.FC<Record<string, any>> = (props) => {
     const locale = getLocale() === 'en-US'
-    const { ws_id, jobTypes, typesRun, typeFetchLoading } = useHeaderContext()
+    const { ws_id, jobTypes, typeFetchLoading } = useHeaderContext()
     const { onOk = () => { }, getData } = props
-
-    useEffect(() => {
-        typesRun();
-    }, [])
 
     const dataSourceCopy = getData(jobTypes)
 
