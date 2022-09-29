@@ -232,7 +232,7 @@ const Standalone = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip: ip.trim(), page_num: totalParam })} />
             )
         },
         {
