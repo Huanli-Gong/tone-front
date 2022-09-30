@@ -9,13 +9,14 @@ interface ServerType {
     param?: string | number,
     provider: "aligroup" | "aliyun",
     description?: string,
+    machine_pool?:boolean,
 }
 const TextWarp = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-const ServerLink: React.FC<ServerType> = ({ val, param, provider, description }) => {
+const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, machine_pool = false }) => {
     const access = useAccess();
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
@@ -32,7 +33,8 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description })
 
     const handleIpHerf = async () => {
         if (provider === "aliyun") {
-            const { data, code, msg } = await querySeverLink({ id: param })
+            let params = machine_pool ? { server_id: param } : { id: param }
+            const { data, code, msg } = await querySeverLink(params)
             if (code === 200) {
                 const win: any = window.open("");
                 setTimeout(function () { win.location.href = data.link })
