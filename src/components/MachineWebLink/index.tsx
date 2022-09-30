@@ -8,13 +8,14 @@ interface ServerType {
     val: string | number,
     param?: string | number,
     provider: "aligroup" | "aliyun",
+    description?: string,
 }
 const TextWarp = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
+const ServerLink: React.FC<ServerType> = ({ val, param, provider, description }) => {
     const access = useAccess();
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
@@ -57,13 +58,29 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
             </TextWarp>
         )
 
+    const machineDesc = (
+        <>
+            <div>机器IP：{val}</div>
+            <div>机器备注：{description}</div>
+        </>
+    )
+
     if (val) {
-        return (
-            show ?
-                <Tooltip title={val} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+        if(show){
+            return (
+                <Tooltip title={machineDesc} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}
-                </Tooltip> : TypographyDiv
-        )
+                </Tooltip> 
+            )
+        }
+        if(description){
+            return (
+                <Tooltip title={description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                    {TypographyDiv}
+                </Tooltip>
+            )
+        }
+        return TypographyDiv;
     }
     return <span>-</span>
 }
