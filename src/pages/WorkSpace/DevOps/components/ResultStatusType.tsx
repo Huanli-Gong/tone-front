@@ -1,15 +1,17 @@
 import { Radio, Space, Typography, Tag } from 'antd'
 import React from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import ConfigRow from './ConfigRow'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestJob/components/untils'
 
 const ResultTestType: React.FC<{ dataSource: any, update: any, field: string }> = (props) => {
+    const { formatMessage } = useIntl()
     const { dataSource, update, field } = props
     const fieldValue = dataSource[field]
     const onChange: any = ({ target }: any) => update({ [field]: target.value })
 
     return (
-        <ConfigRow title={'功能测试结果类型'} >
+        <ConfigRow title={formatMessage({id: 'devOps.function.test.result.type'}) }>
             <Radio.Group
                 defaultValue={fieldValue}
                 onChange={onChange}
@@ -25,10 +27,10 @@ const ResultTestType: React.FC<{ dataSource: any, update: any, field: string }> 
                             <Space direction="vertical">
                                 <Typography.Text>
                                     <Typography.Text strong>type1：</Typography.Text>
-                                    <Typography.Text>按照执行结果为依据展示</Typography.Text>
+                                    <Typography.Text><FormattedMessage id="devOps.display.execution.results"/></Typography.Text>
                                 </Typography.Text>
                                 <Space>
-                                    <Typography.Text strong>拥有状态：</Typography.Text>
+                                    <Typography.Text strong><FormattedMessage id="devOps.ownership.status"/>：</Typography.Text>
                                     <Tag color="#81BF84" >Complete</Tag>
                                     <Tag color="#649FF6" >Running</Tag>
                                     <Tag color="#C84C5A" >Fail</Tag>
@@ -38,10 +40,10 @@ const ResultTestType: React.FC<{ dataSource: any, update: any, field: string }> 
                                 </Space>
                                 <Typography.Text>
                                     <Typography.Text strong>type2：</Typography.Text>
-                                    <Typography.Text>按照case结果为依据展示</Typography.Text>
+                                    <Typography.Text><FormattedMessage id="devOps.display.execution.case.results"/></Typography.Text>
                                 </Typography.Text>
                                 <Space>
-                                    <Typography.Text strong>拥有状态：</Typography.Text>
+                                    <Typography.Text strong><FormattedMessage id="devOps.ownership.status"/>：</Typography.Text>
                                     <Tag color="#81BF84" >Pass</Tag>
                                     <Tag color="#649FF6" >Running</Tag>
                                     <Tag color="#C84C5A" >Fail</Tag>

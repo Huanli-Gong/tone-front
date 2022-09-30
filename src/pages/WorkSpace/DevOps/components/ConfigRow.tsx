@@ -10,6 +10,7 @@ const RowWrapper = styled(Row)`
 `
 const ColTitle = styled(Col)`
     text-align:right;
+    width: 260px;
     &::after {
         content: '：';
     }
@@ -25,10 +26,10 @@ const ConfigRow = (props: IProps) => {
 
     return (
         <RowWrapper gutter={20}>
-            <ColTitle span={4}>
+            <ColTitle>
                 {title}
             </ColTitle>
-            <Col span={20}>
+            <Col>
                 {children}
             </Col>
         </RowWrapper>

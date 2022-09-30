@@ -1,14 +1,17 @@
 import { Drawer, Space, Button, Form, Input, message } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import { createRepository, updateRepository, checkGitlab } from '../services'
 import styles from './index.less'
+
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
 
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
-        const [title, setTitle] = useState('新增仓库')
+        const [title, setTitle] = useState('new')
         const [msg, setMsg] = useState<string>()
         const [urlMsg, setUrlMsg] = useState<string>()
         const [validateStatus, setValidateStatus] = useState<any>('')
@@ -19,7 +22,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "新增仓库", data: any = {}) => {
+                show: (title: string = "new", data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     setHasFeedback(false)
@@ -49,12 +52,12 @@ export default forwardRef(
                 setUrlMsg(undefined)
             } else if (!reg.test(urlValue)) {
                 setValidateStatus('warning')
-                setUrlMsg('请输入正确的gitUrl地址!')
+                setUrlMsg(formatMessage({id:'product.please.enter.right.gitUrl'}) )
                 setHasFeedback(true)
             } else {
                 setPadding(false)
                 setValidateStatus('error')
-                setUrlMsg('请检查是否有权限!')
+                setUrlMsg(formatMessage({id:'product.please.check.permission'}) )
                 setHasFeedback(true)
             }
         }
@@ -62,11 +65,11 @@ export default forwardRef(
         const defaultOption = (code: number, msg: string,title:string) => {
             if (code === 200) {
                 props.onOk(title)
-                message.success('操作成功')
+                message.success(formatMessage({id:'operation.success'}) )
                 setVisible(false)
                 form.resetFields()
             } else if (code === 1371) {
-                setMsg('仓库名称已存在')
+                setMsg(formatMessage({id:'product.repositories.already.exists'}) )
                 setValidateStatusName("error")
                 setPadding(false)
             }
@@ -80,7 +83,7 @@ export default forwardRef(
             setPadding(true)
             form.validateFields()
             .then(async (values) => {
-                if (title === '新增仓库') {
+                if (title === 'new') {
                     const { code, msg } = await createRepository({ ws_id, ...values })
                     defaultOption(code, msg, title)
                 } else {
@@ -96,15 +99,17 @@ export default forwardRef(
             <Drawer 
                 maskClosable={ false }
                 keyboard={ false }
-                title={title}
+                title={title === 'new' ? <FormattedMessage id="product.new.repositories"/>: <FormattedMessage id="product.edit.repositories"/>}
                 width="380"
                 onClose={handleClose}
                 visible={visible}
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={padding} onClick={handleOk}>{title === '新增仓库' ? '确定' : '更新'}</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" disabled={padding} onClick={handleOk}>
+                                {title === 'new' ? <FormattedMessage id="operation.ok"/>: <FormattedMessage id="operation.update"/>}
+                            </Button>
                         </Space>
                     </div>
                 }
@@ -116,16 +121,38 @@ export default forwardRef(
                     /*hideRequiredMark*/
                     className={styles.product_form}
                 >
-                    <Form.Item label="仓库名称" name="name" rules={[{ required : true , message : '请输入仓库名称'}]} help={msg} validateStatus={validateStatusName}>
-                        <Input autoComplete="auto" placeholder="请输入仓库名称" />
+                    <Form.Item label={<FormattedMessage id="product.repositories"/>}
+                        name="name" 
+                        rules={[{ 
+                            required : true, 
+                            message : formatMessage({id:'product.please.enter.repositories'}),
+                        }]} 
+                        help={msg} validateStatus={validateStatusName}>
+                        <Input autoComplete="auto" 
+                            placeholder={formatMessage({id:'product.please.enter.repositories'})}
+                        />
                     </Form.Item>
 
-                    <Form.Item label="GitUrl" name="git_url" rules={[{ required : true , message : '请输入GitUrl'}]}  help={urlMsg} validateStatus={validateStatus} hasFeedback={hasFeedback} >
-                        <Input autoComplete="auto" placeholder="请输入GitUrl" onBlur={(e: any) => UrlBlur(e)} />
+                    <Form.Item label="GitUrl" 
+                        name="git_url" 
+                        rules={[{ 
+                            required : true , 
+                            message: formatMessage({id:'product.please.enter.gitUrl'}),
+                        }]}  
+                        help={urlMsg} 
+                        validateStatus={validateStatus} 
+                        hasFeedback={hasFeedback}>
+                        <Input autoComplete="auto" 
+                            placeholder={formatMessage({id:'product.please.enter.gitUrl'}) }
+                            onBlur={(e: any) => UrlBlur(e)} />
                     </Form.Item>
 
-                    <Form.Item label="仓库描述" name="description">
-                        <Input.TextArea placeholder="请输入描述信息" rows={4} />
+                    <Form.Item 
+                        label={<FormattedMessage id="product.repositories.desc"/>}
+                        name="description">
+                        <Input.TextArea 
+                            placeholder={formatMessage({id:'product.please.enter.desc'}) }
+                            rows={4} />
                     </Form.Item>
                 </Form>
             </Drawer>

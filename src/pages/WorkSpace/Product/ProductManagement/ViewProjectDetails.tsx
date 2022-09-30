@@ -1,5 +1,5 @@
 import React, { forwardRef, useState, useImperativeHandle, useRef, useEffect } from 'react';
-import { useRequest, useParams } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage  } from 'umi'
 import { isUndefined } from 'lodash'
 import { Drawer, Space, Typography, Table, Button, message, Popconfirm, Row, Col, Dropdown, Menu, Modal } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled, MoreOutlined } from '@ant-design/icons'
@@ -12,10 +12,11 @@ import { requestCodeMessage } from '@/utils/utils';
 import styles from './index.less'
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const { ws_id } = useParams<any>()
         // const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
         const [visible, setVisible] = useState(false)
-        const [title, setTitle] = useState('项目详情')
+        const [title, setTitle] = useState('detail')
         const [projectItem, setProject] = useState<any>({})
         const projectModal: any = useRef(null)
         const addCodeModal: any = useRef(null)
@@ -64,7 +65,7 @@ export default forwardRef(
         const defaultOption = (ret: any) => {
             if (ret.code === 200) {
                 refresh()
-                message.success('操作成功!')
+                message.success(formatMessage({id: 'operation.success'}) )
             }
             else
                 requestCodeMessage(ret.code, ret.msg)
@@ -73,7 +74,7 @@ export default forwardRef(
             const { code, msg } = await deleteBranchAndRelation({ relation_id: _.id })
             if (code === 200) {
                 refresh()
-                message.success('操作成功!')
+                message.success(formatMessage({id: 'operation.success'}) )
             }
             else {
                 requestCodeMessage(code, msg)
@@ -81,7 +82,7 @@ export default forwardRef(
         }
 
         const columns = [{
-            title: '仓库名称',
+            title: <FormattedMessage id="product.repositories"/>,
             dataIndex: 'branch_name',
             ellipsis: true,
             render: (text: string) => <EllipsisPulic title={text} />,
@@ -99,7 +100,7 @@ export default forwardRef(
             render: (text: any) => <EllipsisPulic title={text} />,
         },
         {
-            title: <QusetionIconTootip title="主仓库" desc="通过设置主仓库可以建立代码与job之间的关系。" />,
+            title: <QusetionIconTootip title={formatMessage({id: 'product.is_master'})} desc={formatMessage({id: 'product.is_master.desc'})} />,
             width: 90,
             dataIndex: 'is_master',
             render: (_: any, data: any) => (
@@ -108,7 +109,7 @@ export default forwardRef(
 
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             width: 80,
             render: (_: any) => (
                 <div>
@@ -116,10 +117,10 @@ export default forwardRef(
                         _.is_master
                             ? <Space>
                                 <Popconfirm
-                                    title="不可删除主仓库，请切换主仓库后再删除！"
+                                    title={<FormattedMessage id="product.is_master.cannot.be.deleted"/>}
                                     placement="bottomLeft"
-                                    cancelText="取消"
-                                    okText="删除"
+                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                    okText={<FormattedMessage id="operation.delete"/>}
                                     okType="default"
                                     okButtonProps={{
                                         disabled: true,
@@ -128,22 +129,23 @@ export default forwardRef(
                                     <Typography.Text
                                         style={{ color: '#1890FF', cursor: 'pointer' }}
                                     >
-                                        删除
+                                        <FormattedMessage id="operation.delete"/>
                                     </Typography.Text>
                                 </Popconfirm>
                             </Space>
-                            : <Space>
+                            : 
+                            <Space>
                                 <Popconfirm
-                                    title="确定要删除吗？"
+                                    title={<FormattedMessage id="delete.prompt"/>}
                                     onConfirm={() => handleDelete(_)}
                                     placement="bottomLeft"
-                                    cancelText="取消"
-                                    okText="确认"
+                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                    okText={<FormattedMessage id="operation.confirm"/>}
                                 >
                                     <Typography.Text
                                         style={{ color: '#1890FF', cursor: 'pointer' }}
                                     >
-                                        删除
+                                        <FormattedMessage id="operation.delete"/>
                                     </Typography.Text>
                                 </Popconfirm>
                             </Space>
@@ -154,7 +156,7 @@ export default forwardRef(
         const handleOk = async () => {
             await deleteProject({ project_id: projectItem.id, ws_id: ws_id }).then(res => {
                 if (res.code === 200) {
-                    message.success('删除成功');
+                    message.success(formatMessage({id: 'request.delete.success'}) );
                     setDeleteVisible(false)
                     // 关闭抽屉
                     setVisible(false)
@@ -178,7 +180,7 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title}
+                title={title ==='detail'? <FormattedMessage id="product.detail.product"/>: title}
                 width="680"
                 onClose={handleClose}
                 visible={visible}
@@ -189,8 +191,8 @@ export default forwardRef(
                     overlayStyle={{ cursor: 'pointer' }}
                     overlay={
                         <Menu>
-                            <Menu.Item onClick={() => hanldeEdit(projectItem)}>编辑项目</Menu.Item>
-                            <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}>删除项目</i></Menu.Item>
+                            <Menu.Item onClick={() => hanldeEdit(projectItem)}><FormattedMessage id="product.edit.project"/></Menu.Item>
+                            <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}><FormattedMessage id="product.delete.project"/></i></Menu.Item>
                         </Menu>
                     }
                 >
@@ -198,20 +200,20 @@ export default forwardRef(
                 </Dropdown>
                 <div className={styles.content_warpper}>
                     <Space className={styles.title_detail_items}>
-                        <Typography.Text className={styles.product_right_name}>项目名称：</Typography.Text>
+                        <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.project.name"/>：</Typography.Text>
                         <EllipsisPulic title={projectItem.name} width={540} />
                     </Space>
                     <Space className={styles.title_detail_items}>
-                        <Typography.Text className={styles.product_right_name}>产品版本：</Typography.Text>
+                        <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.version"/>：</Typography.Text>
                         <EllipsisPulic title={projectItem.product_version} width={540} />
                     </Space>
                     <Space className={styles.title_detail_items}>
-                        <Typography.Text className={styles.product_right_name}>项目描述：</Typography.Text>
+                        <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.project.desc"/>：</Typography.Text>
                         <EllipsisPulic title={projectItem.description} width={540} />
                     </Space>
                     <Space className={styles.title_detail_items}>
-                        <Typography.Text className={styles.product_right_name}>Dashboard统计：</Typography.Text>
-                        <EllipsisPulic title={projectItem.is_show == 1 ? '是' : '否'} />
+                        <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.dashboard.count"/>：</Typography.Text>
+                        <EllipsisPulic title={projectItem.is_show == 1 ? formatMessage({id: "operation.yes"}): formatMessage({id: "operation.no"}) }/>
                     </Space>
                 </div>
 
@@ -219,10 +221,12 @@ export default forwardRef(
                 <div className={styles.content_warpper}>
                     <Row style={{ height: 60, lineHeight: '60px' }}>
                         <Col span={19} style={{ color: '#000', fontWeight: 'bold' }}>
-                            代码管理
+                            <FormattedMessage id="code.manage"/>
                         </Col>
                         <Col span={5} style={{ textAlign: 'right' }}>
-                            <Button type="primary" onClick={() => hanldeCodeModal(projectItem)}>添加代码</Button>
+                            <Button type="primary" onClick={() => hanldeCodeModal(projectItem)}>
+                                <FormattedMessage id="code.add.code"/>
+                            </Button>
                         </Col>
                     </Row>
                     <Table
@@ -237,11 +241,11 @@ export default forwardRef(
                 {
                     projectItem.is_default ?
                         <Modal
-                            title="删除提示"
-                            cancelText="取消"
+                            title={<FormattedMessage id="delete.tips"/>}
+                            cancelText={<FormattedMessage id="operation.cancel"/>}
                             //okType="danger"
                             className={styles.modalChange}
-                            okText="删除"
+                            okText={<FormattedMessage id="operation.delete"/>}
                             okButtonProps={{ disabled: true }}
                             getContainer={false}
                             visible={deleteVisible}
@@ -251,14 +255,15 @@ export default forwardRef(
                             centered={true}
                             maskClosable={false}
                         >
-                            <p>不可删除默认项目，请切换默认项目后删除？</p>
+                            <p><FormattedMessage id="product.the.default.item.cannot.be.deleted"/></p>
                         </Modal>
-                        : <Modal
-                            title="删除提示"
-                            cancelText="取消"
+                        : 
+                        <Modal
+                            title={<FormattedMessage id="delete.tips"/>}
+                            cancelText={<FormattedMessage id="operation.cancel"/>}
                             className={styles.modalChange}
                             okType="danger"
-                            okText="删除"
+                            okText={<FormattedMessage id="operation.delete"/>}
                             getContainer={false}
                             visible={deleteVisible}
                             onOk={() => handleOk()}
@@ -267,7 +272,7 @@ export default forwardRef(
                             centered={true}
                             maskClosable={false}
                         >
-                            <p>你确定要删除【{projectItem.name}】项目吗？</p>
+                            <p>{formatMessage({id: "product.are.you.sure.you.delete.project"}, {data: projectItem.name})}</p>
                         </Modal>
                 }
                 <UpdateProjectModal ref={projectModal} onOk={hanldeSubmit} setVisible={setVisible}/>

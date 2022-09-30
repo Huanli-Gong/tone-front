@@ -2,13 +2,15 @@ import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown
 import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import { queryRepositoryList, deleteRepository, queryBranchList } from '../services'
 import AddCodeDrawer from './AddCodeDrawer'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import CreateBranchDrawer from './CreateBranchDrawer'
 import { requestCodeMessage } from '@/utils/utils';
+
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
     const PAGE_DEFAULT_PARAMS = { ws_id }
     const [current, setCurrent] = useState<any>({})
@@ -55,7 +57,7 @@ export default (props: any) => {
     }, [data])
 
     const handleSubmit = async (info: string) => {
-        if (info == '新增仓库') {
+        if (info === 'new') {
             refresh().then(res => {
                 setCurrent(res.data[0])
             })
@@ -68,13 +70,13 @@ export default (props: any) => {
         }
     }
     const handleAddWareHouse = () => {
-        addScript.current?.show('新增仓库')
+        addScript.current?.show('new')
     }
 
     const fetchFinally = (code: number, msg: string) => {
         if (code === 200) {
             setCurrent({})
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
             refresh()
         }
         else requestCodeMessage( code , msg )
@@ -86,13 +88,13 @@ export default (props: any) => {
     }
 
     const hanldeEdit = () => {
-        addScript.current?.show('编辑仓库信息', current)
+        addScript.current?.show('edit', current)
     }
     const hanldeBranch = (item: any) => {
-        createBranch.current?.show('编辑Branch', item)
+        createBranch.current?.show('edit', item)
     }
     const hanldCreateBranch = () => {
-        createBranch.current?.show('新增Branch', {})
+        createBranch.current?.show('new', {})
     }
 
 
@@ -108,10 +110,10 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            <Button type="primary" onClick={handleAddWareHouse}>新增仓库</Button>
+                            <Button type="primary" onClick={handleAddWareHouse}><FormattedMessage id="product.new.repositories"/></Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
-                            <Typography.Text>仓库名称 ({data?.length && `${data?.length}`})</Typography.Text>
+                            <Typography.Text><FormattedMessage id="product.repositories"/> ({data?.length && `${data?.length}`})</Typography.Text>
                         </Row>
                         <Row className={styles.all_product}>
                             {
@@ -130,10 +132,10 @@ export default (props: any) => {
                                                     <Typography.Text >{item.name}</Typography.Text>
                                                 </EllipsisPulic>
                                                 <Popconfirm
-                                                    title="确定要删除该仓库吗？"
+                                                    title={<FormattedMessage id="product.delete.this.repositories"/>}
                                                     onConfirm={() => handleDelete(item)}
-                                                    okText="确认"
-                                                    cancelText="取消"
+                                                    okText={<FormattedMessage id="operation.confirm"/>}
+                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
                                                 >
                                                     <MinusCircleOutlined
                                                         className={hover === item.id ? styles.remove_active : styles.remove}
@@ -151,21 +153,21 @@ export default (props: any) => {
                             <Col span={24}>
                                 <Row>
                                     <Col span={8}>
-                                        <Row>
-                                            <Typography.Text strong style={{ width : 70 }} >仓库名称：</Typography.Text>
-                                            <EllipsisPulic title={current.name} style={{ width : 'calc(100% - 85px)'}}/>
+                                        <Row className={styles.detail_item_row}>
+                                            <Typography.Text strong><FormattedMessage id="product.repositories"/>：</Typography.Text>
+                                            <EllipsisPulic title={current.name} />
                                         </Row>
                                     </Col>
                                     <Col span={8}>
-                                        <Row>
-                                            <Typography.Text strong style={{ width : 70 }}>GitUrl：</Typography.Text>
-                                            <EllipsisPulic title={current.git_url} style={{ width : 'calc(100% - 85px)'}} />
+                                        <Row className={styles.detail_item_row}>
+                                            <Typography.Text strong>GitUrl：</Typography.Text>
+                                            <EllipsisPulic title={current.git_url} />
                                         </Row>
                                     </Col>
                                     <Col span={8}>
-                                        <Row>
-                                            <Typography.Text strong style={{ width : 70 }}>仓库描述：</Typography.Text>
-                                            <EllipsisPulic title={current.description} style={{ width : 'calc(100% - 85px)'}} />
+                                        <Row className={styles.detail_item_row}>
+                                            <Typography.Text strong><FormattedMessage id="product.repositories.desc"/>：</Typography.Text>
+                                            <EllipsisPulic title={current.description} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -189,7 +191,7 @@ export default (props: any) => {
                                             overlayStyle={{ cursor: 'pointer' }}
                                             overlay={
                                                 <Menu>
-                                                    <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                                                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="product.edit.info"/></Menu.Item>
                                                 </Menu>
                                             }
                                         >
@@ -200,7 +202,7 @@ export default (props: any) => {
                         </Row>
                         <Row className={styles.right_branch_context}>
                             <Row style={{ width: '100%', height: 62 }}>
-                                <Typography.Text className={styles.product_right_all_branch}>所有Branch ({BranchData.data?.length && `${BranchData.data?.length}`})</Typography.Text>
+                                <Typography.Text className={styles.product_right_all_branch}><FormattedMessage id="product.all.branch"/> ({BranchData.data?.length && `${BranchData.data?.length}`})</Typography.Text>
                             </Row>
                             <Row className={styles.right_branch_context_wrapper} >
                                 <div className={styles.right_branch_context_box_father}>
@@ -231,7 +233,7 @@ export default (props: any) => {
                                             <>
                                                 <div className={styles.right_branch_context_box_child}>
                                                     <div className={styles.right_branch_context_box_child_empty}>
-                                                        <span onClick={hanldCreateBranch}><PlusOutlined /><i>新增Branch</i></span>
+                                                        <span onClick={hanldCreateBranch}><PlusOutlined /><i><FormattedMessage id="product.new.branch"/></i></span>
                                                     </div>
                                                 </div>
                                             </> : null

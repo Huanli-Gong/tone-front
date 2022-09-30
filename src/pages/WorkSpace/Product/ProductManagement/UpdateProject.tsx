@@ -1,11 +1,12 @@
 import { requestCodeMessage } from '@/utils/utils'
 import { Input, Modal, message, Form, Space, Button, Radio } from 'antd'
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
-
+import { useIntl, FormattedMessage  } from 'umi'
 import { updateProject } from '../services'
 
 export default forwardRef(
     ( props: any, ref: any,  ) => {
+        const { formatMessage } = useIntl()
         const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
@@ -54,7 +55,7 @@ export default forwardRef(
 
         return (
             <Modal
-                title="编辑项目"
+                title={<FormattedMessage id="product.edit.project"/>}
                 visible={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -64,8 +65,8 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleCancel}>取消</Button>
-                            <Button type="primary" disabled={ padding } onClick={handleOk}>更新</Button>
+                            <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" disabled={ padding } onClick={handleOk}><FormattedMessage id="operation.update"/></Button>
                         </Space>
                     </div>
                 } 
@@ -74,25 +75,36 @@ export default forwardRef(
                     form={form}
                     layout="vertical"
                 >
-                    <Form.Item label="项目名称" name="name"
+                    <Form.Item 
+                        label={<FormattedMessage id="product.project.name"/>}
+                        name="name"
                         rules={[{
                             required: true,
                             max: 64,
                             pattern: /^[A-Za-z0-9\._-]*$/g,
-                            message: '仅允许字母、数字、下划线、中划线、点，最长64个字符',
+                            message: formatMessage({id: 'product.project.name.message'}),
                         }]}>
-                        <Input autoComplete="auto" placeholder="请输入产品名称" onChange={handleChange}/>
+                        <Input autoComplete="auto" placeholder={formatMessage({id: 'product.please.enter.project.name'})} 
+                            onChange={handleChange}/>
                     </Form.Item>
-                    <Form.Item label="产品版本" name="product_version" initialValue="uname -r">
+                    <Form.Item 
+                        label={<FormattedMessage id="product.version"/>}
+                        name="product_version" 
+                        initialValue="uname -r">
                         <Input autoComplete="auto"  onChange={handleChange}/>
                     </Form.Item>
-                    <Form.Item label="项目描述（选填）" name="description">
-                        <Input.TextArea placeholder="请输入备注信息" rows={4} onChange={handleChange}/>
+                    <Form.Item 
+                        label={<FormattedMessage id="project.description.option"/>}
+                        name="description">
+                        <Input.TextArea placeholder={formatMessage({id: 'product.please.enter.comments'})}
+                            rows={4} onChange={handleChange}/>
                     </Form.Item>
-                    <Form.Item label="Dashboard统计" name="is_show">
+                    <Form.Item 
+                        label={<FormattedMessage id="product.dashboard.count"/>}
+                        name="is_show">
                         <Radio.Group onChange={handleChange}>
-                            <Radio value={1}>是</Radio>
-                            <Radio value={0}>否</Radio>
+                            <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                            <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                         </Radio.Group>
                     </Form.Item>
                 </Form>

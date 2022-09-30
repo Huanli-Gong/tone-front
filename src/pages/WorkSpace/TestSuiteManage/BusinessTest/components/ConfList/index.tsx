@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Drawer, Popover, Tooltip, Space, message } from 'antd';
+import { useIntl, FormattedMessage } from 'umi';
 import { FilterFilled } from '@ant-design/icons';
 import moment from 'moment';
 import CodeViewer from '@/components/CodeViewer'
@@ -13,6 +14,7 @@ import styles from './index.less';
  * @description conf级列表
  */
 const List = ({ suite_id, type, dataSource }:any) => {
+	const { formatMessage } = useIntl()
   const [loading, setLoading] = useState<any>(false)
   const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 10 })
 	// 预览doc
@@ -30,13 +32,13 @@ const List = ({ suite_id, type, dataSource }:any) => {
 			},
 		},
 		{
-			title: '领域',
+			title: <FormattedMessage id="suite.domain"/>,
 			dataIndex: 'domain_name_list',
 			width: 100,
 			render: (text:any) => <PopoverEllipsis title={text} width={100} />
 		},
 		{
-			title: '运行时长(s)',
+			title: <FormattedMessage id="suite.timeout"/>,
 			dataIndex: 'timeout',
 			width: 120,
 			// onCell: () => ({ style: { maxWidth: 130 } }),
@@ -46,7 +48,7 @@ const List = ({ suite_id, type, dataSource }:any) => {
 	
 	if (!['functional', 'performance'].includes(type)) {
     columnsBusiness =   columnsBusiness.concat([{
-				title: 'CI类型',
+				title: <FormattedMessage id="suite.ci_type"/>,
 				dataIndex: 'ci_type',
 				width: 120,
 				render: (text:any) => {
@@ -55,7 +57,7 @@ const List = ({ suite_id, type, dataSource }:any) => {
 			}])
   }
   columnsBusiness =   columnsBusiness.concat([{
-			title: '创建时间',
+			title: <FormattedMessage id="suite.gmt_created"/>,
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text:any) => {
@@ -63,7 +65,7 @@ const List = ({ suite_id, type, dataSource }:any) => {
 			}
 		},
 		{
-			title: '说明',
+			title: <FormattedMessage id="suite.description"/>,
 			dataIndex: 'doc',
 			width: 200,
 			render: (text:any) => <div>{text ? 
@@ -91,7 +93,7 @@ const List = ({ suite_id, type, dataSource }:any) => {
 				maskClosable
 				keyboard={false}
 				width={376}
-				title="说明详情"
+				title={<FormattedMessage id="suite.description.details"/>}
 				onClose={() => setShowDoc({ visible: false, doc: ''}) }
 				visible={showDoc.visible}
 			>

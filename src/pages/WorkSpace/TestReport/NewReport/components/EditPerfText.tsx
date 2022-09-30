@@ -76,7 +76,7 @@ export const PerfTextArea = ({
     }
 
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not filled in' })
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title || '-'
     }
 
@@ -176,7 +176,7 @@ export const GroupItemText = ({
         color: 'rgba(0,0,0,0.85)'
     }
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not filled in' })
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title
     }
     return (

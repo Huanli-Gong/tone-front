@@ -52,7 +52,7 @@ export const SettingTextArea = ({
     }, [name])
 
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not filled in' })
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title
     }
     return (

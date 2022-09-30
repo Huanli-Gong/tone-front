@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Layout, Tabs } from 'antd'
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 
 import ProductManagement from './ProductManagement'
 import CodeManagement from './CodeManagement'
@@ -27,8 +27,8 @@ export default (props: any) => {
                     onChange={handleTab}
                     className={styles.tab_style}
                 >
-                    <Tabs.TabPane tab="产品管理" key="product"/>
-                    <Tabs.TabPane tab="代码管理" key="code"/>
+                    <Tabs.TabPane tab={<FormattedMessage id="product.manage"/>} key="product"/>
+                    <Tabs.TabPane tab={<FormattedMessage id="code.manage"/>} key="code"/>
                 </Tabs>
             }
         >
