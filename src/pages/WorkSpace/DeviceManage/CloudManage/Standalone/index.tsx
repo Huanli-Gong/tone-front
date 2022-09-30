@@ -136,7 +136,7 @@ export default (props: any) => {
                 title: 'IP',
                 dataIndex: 'private_ip', // private_ip
                 width: params.type == '0' ? 0 : 140,
-                ...inputFilterCommonFields(BUILD_APP_ENV ? "private_ip" : "pub_ip"),
+                ...inputFilterCommonFields("private_ip"),
                 ellipsis: {
                     showTitle: false
                 },
@@ -287,7 +287,7 @@ export default (props: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: StateBadge,
+                render: (_: any, row: any) => StateBadge(_, row, ws_id),
                 filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
                     <SelectDropSync
@@ -307,7 +307,7 @@ export default (props: any) => {
                     showTitle: false
                 },
                 dataIndex: 'real_state',
-                render: StateBadge,
+                render: (_: any, row: any) => StateBadge(_, row, ws_id),
                 filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
                 filterDropdown: ({ confirm }: any) => (
                     <SelectDropSync
@@ -391,7 +391,7 @@ export default (props: any) => {
                             accessible={access.WsMemberOperateSelf(row.owner)}
                             fallback={
                                 <Space>
-                                    {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button>}
+                                    {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button>}
                                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} >编辑</Button>
                                     {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>部署</Button>}
                                     {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{'删除'}</Button>}
@@ -400,7 +400,7 @@ export default (props: any) => {
                             }
                         >
                             <Space>
-                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button> }
+                                {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button>}
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
                                 {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>}
                                 {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>}
@@ -476,8 +476,8 @@ export default (props: any) => {
         }
     }
 
-    const handleRefresh = async(row:any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider:'aliyun' })
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aliyun' })
         if (code === 200) {
             message.success('同步机器状态成功')
             getList()

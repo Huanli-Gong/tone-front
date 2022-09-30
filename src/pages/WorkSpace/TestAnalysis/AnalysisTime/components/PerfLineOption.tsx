@@ -214,6 +214,7 @@ const PerfLineOption: any = ({ dataSource, ws_id, provider, formatMessage }: any
             ],
         }
     }
+
     return option
 }
 

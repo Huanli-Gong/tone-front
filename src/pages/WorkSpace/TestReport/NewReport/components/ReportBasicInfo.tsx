@@ -21,7 +21,7 @@ const ReportBasicInfo = (props: any) => {
             ...obj,
         })
     }
-
+    
     return (
         <>
             {(domainResult?.is_default || (!domainResult?.is_default && domainResult?.need_test_background)) &&
@@ -36,7 +36,7 @@ const ReportBasicInfo = (props: any) => {
                         />
                         :
                         <SettingTextArea
-                            name={saveReportData?.test_background}
+                            name={saveReportData?.test_background || domainResult?.background_desc}
                             btnConfirm={btnConfirm}
                             defaultHolder={formatMessage({id: 'report.please.enter.background'})}
                             btn={btnState}
@@ -57,7 +57,7 @@ const ReportBasicInfo = (props: any) => {
                         />
                         :
                         <SettingTextArea
-                            name={saveReportData?.test_method}
+                            name={saveReportData?.test_method || domainResult?.test_method_desc}
                             defaultHolder={formatMessage({id: 'report.please.enter.method'})}
                             btn={btnState}
                             btnConfirm={btnConfirm}
@@ -78,7 +78,7 @@ const ReportBasicInfo = (props: any) => {
                         />
                         :
                         <SettingTextArea
-                            name={saveReportData?.test_conclusion?.custom}
+                            name={saveReportData?.test_conclusion?.custom || domainResult?.test_conclusion_desc}
                             btn={btnState}
                             defaultHolder={formatMessage({id: 'report.please.enter.conclusion'}) }
                             btnConfirm={btnConfirm}

@@ -318,7 +318,7 @@ export const CreatePageData = (props: any) => {
                     let funData: any = []
                     let obj = data.data
                     if (JSON.stringify(obj) !== '{}') {
-                        if (obj.perf_item && obj.perf_item.length > 0) {
+                        if (obj.perf_item && !!obj.perf_item.length) {
                             for (let res = obj.perf_item, m = 0; m < res.length; m++) { // 自定义domain分组
                                 if (res[m].is_group) { // 是否有组
                                     let listParent: any = []
@@ -374,14 +374,6 @@ export const CreatePageData = (props: any) => {
                                                 })
                                             }
                                         })
-                                        func_data_result?.map((item: any, idx: number) => {
-                                            if (Number(item.suite_id) === Number(suite[b].test_suite_id)) {
-                                                list.push({
-                                                    ...item,
-                                                    rowKey: `${m}-${b}`
-                                                })
-                                            }
-                                        })
                                         suite[b].case_source.map((conf: any) => {
                                             conf_list.push(conf.test_conf_id || conf)
                                         })
@@ -398,7 +390,8 @@ export const CreatePageData = (props: any) => {
                                     })
                                 }
                             }
-                        } else {
+                        } 
+                        if (obj.func_item && !!obj.func_item.length) {
                             for (let res = obj.func_item, m = 0; m < res.length; m++) { // 自定义domain分组
                                 if (res[m].is_group) { // 是否有组
                                     let listParent: any = []
@@ -478,7 +471,7 @@ export const CreatePageData = (props: any) => {
                 }
             })
         }
-    }, [domainGroupResult, switchReport, compareResult])
+    }, [domainGroupResult, switchReport, perf_data_result, func_data_result ])
 
     /*
         *** 统计性能测试、功能测试总数据

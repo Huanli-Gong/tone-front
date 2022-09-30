@@ -14,11 +14,11 @@ import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import treeSvg from '@/assets/svg/tree.svg'
-import { Access, useAccess } from 'umi'
+import { Access, useAccess, useParams } from 'umi'
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default (props: any) => {
-    const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
+    const { ws_id } = useParams() as any
     const access = useAccess();
     const [loading, setLoading] = useState(true)
     const [dataSource, setDataSoure] = useState<any>([])
@@ -38,8 +38,8 @@ export default (props: any) => {
         }, []
     )
 
-    const handleRefresh = async(row:any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider:'aligroup' })
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aligroup' })
         if (code === 200) {
             message.success('同步状态成功')
             setRefrush(!refrush)
@@ -113,7 +113,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.ip}
-                    // provider={'内网机器'}
+                // provider={'内网机器'}
                 />
             )
         },
@@ -127,7 +127,7 @@ export default (props: any) => {
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.sn}
-                    // provider={'内网机器'} 
+                // provider={'内网机器'} 
                 />
             )
         },
@@ -207,12 +207,12 @@ export default (props: any) => {
         {
             title: '使用状态',
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server)
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         {
             title: '实际状态',
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server)
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
             title: '操作',
@@ -226,15 +226,15 @@ export default (props: any) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>
+                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>}
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
-                                { !BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button> }
+                                {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button>}
                             </Space>
                         }
                     >
                         <Space>
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>
+                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>}
                             <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
                             <Popconfirm
                                 title="确定要删除吗？"
@@ -244,7 +244,7 @@ export default (props: any) => {
                             >
                                 <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
                             </Popconfirm>
-                            { !BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button> }
+                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>}
                         </Space>
                     </Access>
                     <PermissionTootip>

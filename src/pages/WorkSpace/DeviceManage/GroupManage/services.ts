@@ -30,7 +30,7 @@ export const queryTestServerNewList = async (params: {
     device_mode?: string,
     channel_type?: string,
     app_group?: string,
-    state?: string,
+    state?: any[],
     tags?: string,
     page_num?: number,
     page_size?: number,

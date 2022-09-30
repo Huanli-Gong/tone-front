@@ -4,11 +4,13 @@ import styles from './index.less'
 import DeployModal from '../Standalone/Components/DeployModal'
 import { queryTestServerDetail, queryChannelState } from '../services'
 import { StateBadge } from './index'
+import { useParams } from "umi"
 
 import DeployServer from './DeployServer'
 
 const ViewDetailDrawer = forwardRef(
     (props, ref) => {
+        const { ws_id } = useParams() as any
         const [details, setDetails] = useState<any>()
         const [channelState, setChannelState] = useState(false)
         const [loading, setLoading] = useState(true)
@@ -158,7 +160,7 @@ const ViewDetailDrawer = forwardRef(
                         <Typography.Text strong>使用状态</Typography.Text>
                         <Row gutter={20} className={styles.row}>
                             <Col span={6}>机器状态:</Col>
-                            <Col span={18}>{StateBadge(details?.state, details)}</Col>
+                            <Col span={18}>{StateBadge(details?.state, details, ws_id)}</Col>
                         </Row>
                     </Layout.Content>
                     <Layout.Content style={{ marginBottom: 30 }}>
@@ -167,7 +169,7 @@ const ViewDetailDrawer = forwardRef(
                             <Col span={6}>Channel:</Col>
                             <Col span={18}>
                                 <span>{details?.channel_type}</span>
-                                
+
                                 {
                                     !BUILD_APP_ENV && details?.channel_type === 'toneagent' &&
                                     <span className={styles.btn_style} onClick={() => deployClick()}>重新部署</span>

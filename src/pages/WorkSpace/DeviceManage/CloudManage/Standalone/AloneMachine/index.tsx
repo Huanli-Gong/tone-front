@@ -13,6 +13,7 @@ import { useParams } from 'umi';
 import _ from 'lodash';
 import { AgentSelect } from '@/components/utils'
 import MachineTags from '@/components/MachineTags';
+import { QusetionIconTootip } from '@/components/Product/index'
 
 /**
  * 
@@ -864,7 +865,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                         }
                         {!is_instance ?
                             <Col span={24} className={styles.warp}>
-                                <Form.Item label="扩展字段" labelAlign="left" style={{ marginBottom: 0 }}>
+                                <Form.Item 
+                                    label={<QusetionIconTootip title="扩展字段" desc="阿里云openAPI参数" />} 
+                                    labelAlign="left" 
+                                    style={{ marginBottom: 0 }}
+                                >
                                     {
                                         <Form.List name="extra_param" >
                                             {

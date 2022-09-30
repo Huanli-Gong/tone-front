@@ -6,12 +6,12 @@
  * https://pro.ant.design/docs/deploy
  */
 
-const { BUILD_APP_ENV } = process.env as any
+const { BUILD_APP_ENV, proxy } = process.env as any
 
 export default {
     dev: {
         '/api/': {
-            target: process.env[BUILD_APP_ENV] || "http://localhost:20002",
+            target: process.env[BUILD_APP_ENV] || proxy || "http://localhost:20002",
             changeOrigin: true,
             secure: false,
             // withCredentials: true,

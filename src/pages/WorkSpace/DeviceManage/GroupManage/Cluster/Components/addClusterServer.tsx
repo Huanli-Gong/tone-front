@@ -32,6 +32,9 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     let arr: any = []
                     !!res.data.length && res.data.map((item: any) => {
                         arr.push({ value: item.ip })
+                        if(!!item.sub_server_list.length){
+                            item.sub_server_list.map((i:any) => arr.push({ value: i.ip }))
+                        }
                     })
                     setOptions(arr)
                 } else {
@@ -56,6 +59,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         if (data.in_pool) {
                             setIps({ success: [], errors: [] })
                             form.setFieldsValue({ channel_type: data.channel_type })
+                            form.setFieldsValue({ state: data.state })
                             setPoolFlag(true)
                         } else {
                             setPoolFlag(false)
@@ -197,11 +201,11 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         label="控制通道"
                         rules={[{ required: true, message: '请选择控制通道' }]}
                     >
-                        <AgentSelect disabled={(BUILD_APP_ENV) || (!BUILD_APP_ENV && poolFlag)} />
+                        <AgentSelect disabled={BUILD_APP_ENV || (!BUILD_APP_ENV && poolFlag)} />
                     </Form.Item>
                     <Form.Item label="使用状态"
                         name="state"
-                        hasFeedback
+                        // hasFeedback
                         rules={[{ required: true, message: '请选择机器状态!' }]}
                         initialValue={'Available'}
                     >
