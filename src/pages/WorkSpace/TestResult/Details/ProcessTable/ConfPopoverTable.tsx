@@ -2,7 +2,8 @@ import { Popover, Table } from 'antd'
 import React from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { evnPrepareState , tooltipTd } from '../components/index'
-import styles from './index.less'
+import styles from './index.less';
+import TidDetail from './QueryTidList';
 
 export default ( { title = '' , need_reboot , setup_info , cleanup_info , step } : any ) => {
     const { formatMessage } = useIntl()
@@ -25,7 +26,10 @@ export default ( { title = '' , need_reboot , setup_info , cleanup_info , step }
         {
             title : 'TID',
             dataIndex : 'tid',
-            ...tooltipTd(),
+            ellipsis: {
+                showTitle: false
+            },
+            render:(_:any) => <TidDetail tid={_} />
         },
         {
             dataIndex : 'start_time',

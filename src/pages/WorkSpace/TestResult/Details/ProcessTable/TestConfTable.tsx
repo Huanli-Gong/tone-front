@@ -9,6 +9,7 @@ import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale } fro
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
+import TidDetail from './QueryTidList';
 
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
     const { formatMessage } = useIntl()
@@ -92,7 +93,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             dataIndex: 'tid',
             title: 'TID',
             width: 120,
-            ...copyTooltipColumn('-', formatMessage),
+            render:(_:any) => <TidDetail tid={_} />
         },
         {
             dataIndex: 'result',

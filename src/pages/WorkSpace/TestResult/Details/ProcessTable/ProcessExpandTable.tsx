@@ -1,7 +1,7 @@
-import { Table } from 'antd'
 import React from 'react'
 import { useIntl, FormattedMessage } from 'umi'
-import { copyTooltipColumn , tooltipTd , evnPrepareState } from '../components'
+import { copyTooltipColumn , evnPrepareState } from '../components'
+import TidDetail from './QueryTidList';
 import styles from './index.less'
 import ResizeTable from '@/components/ResizeTable'
 import { ReactComponent as ColumnStateLine } from '@/assets/svg/TestResult/line.svg'
@@ -44,7 +44,10 @@ export default ({ items , mode } : any ) => {
     {
         dataIndex : 'tid',
         title : 'TID',
-        ...tooltipTd()
+        ellipsis: {
+            showTitle: false
+        },
+        render:(_:any) => <TidDetail tid={_} />
     },
     {
         dataIndex : 'gmt_created',
