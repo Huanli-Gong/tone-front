@@ -20,7 +20,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     const [tags, setTags] = useState<Array<any>>([])
     const [checkedList, setCheckedList] = React.useState<any>();
     const [reportTemplate, setReportTemplate] = useState<any>([])
-    const [defaultTemplate, setDefaultTemplate] = useState({})
+    const [defaultTemplate, setDefaultTemplate] = useState<any>({})
 
     useImperativeHandle(
         onRef,
@@ -213,10 +213,10 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                                     showSearch
                                     disabled={disabled}
                                     placeholder={formatMessage({id: 'ws.result.details.report_template.placeholder'})}
-                                    defaultValue={defaultTemplate.name}
+                                    defaultValue={defaultTemplate?.name}
                                     optionFilterProp="children"
                                     filterOption={(input, option) =>
-                                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        option?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                     }
                                 >
                                     {

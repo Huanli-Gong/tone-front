@@ -1,6 +1,6 @@
 const defaultKey = 'kernel.form'
 
-const text =  {
+const text = {
   'kernel_version': '内核版本',
   'kernel_version.message': '请选择内核版本',
   'kernel_version.placeholder': '请选择',
@@ -34,6 +34,8 @@ const text =  {
   'build_config.placeholder': '请输入编译工具的分支',
   'build_machine.placeholder': '请输入编译工具的分支',
 
+  'cbc.product': "产品配置",
+  'cbc.product.empty': "请选择产品配置"
 };
 
 export default Object.keys(text).reduce((p, key) => {

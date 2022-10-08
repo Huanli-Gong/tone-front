@@ -1,5 +1,5 @@
-import React, { useContext, useState, useRef } from 'react'
-import { Form, Select, Input } from 'antd'
+import React, { useContext, useRef } from 'react'
+import { Form, Input } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
 import { DrawerProvider } from './Provider'
 import styles from '../SelectSuite/style.less'
@@ -63,15 +63,15 @@ const CustomServer: React.FC<IProps> = (props: any) => {
             <Form.Item
                 name="custom_channel"
                 style={{ width: '100%' }}
-                rules={!mask ? 
-                    [{ required: true, message: formatMessage({id:'select.suite.custom_channel'}) }] 
-                    : 
+                rules={!mask ?
+                    [{ required: true, message: formatMessage({ id: 'select.suite.custom_channel' }) }]
+                    :
                     []
                 }
             >
                 <AgentSelect
                     style={{ width: '100%' }}
-                    placeholder={multipInfo.selfServer ? formatMessage({id:'select.suite.multiple.values'}): formatMessage({id:'select.suite.agent.select'})}
+                    placeholder={multipInfo.selfServer ? formatMessage({ id: 'select.suite.multiple.values' }) : formatMessage({ id: 'select.suite.agent.select' })}
                     onChange={(value: any) => {
                         setMask(false)
                         value && form.validate
@@ -86,13 +86,13 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                 rules={[
                     {
                         required: true,
-                        message: formatMessage({id: 'select.suite.custom_ip'})
+                        message: formatMessage({ id: 'select.suite.custom_ip' })
                     },
                     {
                         async validator(rule, value) {
-                            if (!value) return Promise.resolve(formatMessage({id: 'select.suite.custom_ip'}))
+                            if (!value) return Promise.resolve(formatMessage({ id: 'select.suite.custom_ip' }))
                             const channel_type = form.getFieldValue('custom_channel')
-                            if (!channel_type) return Promise.reject(formatMessage({id: 'select.suite.custom_channel'}))
+                            if (!channel_type) return Promise.reject(formatMessage({ id: 'select.suite.custom_channel' }))
                             setLoading(true)
                             // 接口校验
                             const { code, msg } = await checkIpAndSn({ ip: value, channel_type }) || {}
@@ -109,7 +109,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
             >
                 <Input
                     allowClear
-                    placeholder={multipInfo.selfServer ? formatMessage({id:'select.suite.multiple.values'}): `${formatMessage({id:'select.suite.enter.ip'})}${!BUILD_APP_ENV ? "/SN" : ""}`}
+                    placeholder={multipInfo.selfServer ? formatMessage({ id: 'select.suite.multiple.values' }) : `${formatMessage({ id: 'select.suite.enter.ip' })}${!BUILD_APP_ENV ? "/SN" : ""}`}
                     autoComplete="off"
                 />
             </Form.Item>
