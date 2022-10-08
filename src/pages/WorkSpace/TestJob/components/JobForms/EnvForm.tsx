@@ -11,21 +11,20 @@ import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import { getTextByJs } from '@/utils/hooks'
 import MonitorList from './MonitorList'
 
-import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 
 /**
  * 环境配置
  */
 export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = null, template = {} }: FormProps) => {
-    const { ws_id }: any = useParams()
     const { formatMessage } = useIntl()
     const [form] = Form.useForm()
     const [reset, setReset] = useState(false) // 重装
     const [reboot, setReboot] = useState(false) // 重启
     const [monitor, setMonitor] = useState(false) // 监控
 
-    const [kernel, setKernal] = useState(project_id ? 'install_build_kernel' : 'no')
+    const [kernel, setKernal] = useState("no")/* project_id ? 'install_build_kernel' : 'no' */
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
@@ -37,11 +36,11 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
         () => ({
             form,
             reset: () => {
-                setKernal(project_id ? 'install_build_kernel' : 'no')
+                form.resetFields()
                 setReset(false)
                 setReboot(false)
                 setMonitor(false)
-                form.resetFields()
+                setKernal("no") /* project_id ? 'install_build_kernel' : 'no' */
             },
             setVal: (data: Object) => {
                 let { rpm_info, script_info, kernel_version, kernel_info, build_pkg_info }: any = data
@@ -73,16 +72,16 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
         }),
     )
 
-    useEffect(()=> {
-        if(envErrorFlag){
+    useEffect(() => {
+        if (envErrorFlag) {
             form.scrollToField('env_info')
         }
-    },[ envErrorFlag ])
+    }, [envErrorFlag])
     // 新建job已经发布版本不过滤。
     const { data: kernelList } = useRequest(
         () => queryKernelList({ enable: 'True' }) // , release : 'True'
     )
-    
+
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
             const {
@@ -153,6 +152,11 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
         form.setFieldsValue({ kernel_install: kernel })
     }, [kernel])
 
+    /* React.useEffect(() => {
+        setKernal("install_build_kernel")
+        form.setFieldsValue({ kernel_install: "install_build_kernel" })
+    }, [project_id]) */
+
     return (
         <Form
             colon={false}
@@ -172,13 +176,13 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 need_reboot: false,
                 hotfix_install: true,
                 scripts: [{ pos: 'before', script: '' }],
-                kernel_install: project_id ? 'install_build_kernel' : 'no',
+                kernel_install: 'no',
             }}
         >
             {
                 'reclone' in contrl &&
                 <Form.Item
-                    label={contrl.reclone.alias || <FormattedMessage id={`job.form.${contrl.reclone.name}`}/>  }
+                    label={contrl.reclone.alias || <FormattedMessage id={`job.form.${contrl.reclone.name}`} />}
                     name="reclone_contrl"
                     initialValue={false}
                 >
@@ -207,9 +211,9 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                             </Col>
                             <Col span={12}>
                                 <Form.Item name="app_name" noStyle>
-                                    <Select getPopupContainer={node => node.parentNode} 
-                                     placeholder={<FormattedMessage id="job.form.iclone.template" />}
-                                     disabled={disabled}>
+                                    <Select getPopupContainer={node => node.parentNode}
+                                        placeholder={<FormattedMessage id="job.form.iclone.template" />}
+                                        disabled={disabled}>
                                         <Select.Option value="baseos_server">baseos_server</Select.Option>
                                         <Select.Option value="app_server">app_server</Select.Option>
                                     </Select>
@@ -218,7 +222,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                         </Row>
                     </Form.Item>
                     <Form.Item name="vm" label={<FormattedMessage id="job.form.vm" />}>
-                        <Select getPopupContainer={node => node.parentNode} 
+                        <Select getPopupContainer={node => node.parentNode}
                             placeholder={<FormattedMessage id="job.form.vm.config" />}
                             disabled={disabled}></Select>
                     </Form.Item>
@@ -227,7 +231,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             {
                 'kernel_install' in contrl &&
                 <Form.Item
-                    label={contrl.kernel_install.alias || <FormattedMessage id={`job.form.${contrl.kernel_install.name}`}/> }
+                    label={contrl.kernel_install.alias || <FormattedMessage id={`job.form.${contrl.kernel_install.name}`} />}
                     name="kernel_install"
                 >
                     <Radio.Group value={kernel} disabled={disabled} onChange={handleKernalInstallChange} >
@@ -249,16 +253,16 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             }
             {
                 kernel === 'install_un_push' &&
-                <UnPushForm disabled={disabled} />
+                <UnPushForm disabled={disabled} form={form} />
             }
             {
                 kernel === 'install_build_kernel' &&
-                <BuildKernalForm disabled={disabled} ws_id={ws_id} form={form} project_id={project_id}/>
+                <BuildKernalForm disabled={disabled} form={form} project_id={project_id} />
             }
             {
                 'reboot' in contrl &&
                 <Form.Item
-                    label={contrl.reboot.alias || <FormattedMessage id={`job.form.${contrl.reboot.name}`}/> }
+                    label={contrl.reboot.alias || <FormattedMessage id={`job.form.${contrl.reboot.name}`} />}
                     name="need_reboot"
                 >
                     <Radio.Group disabled={disabled} onChange={handleRebootChange}>
@@ -270,30 +274,30 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             {
                 'global_variable' in contrl &&
                 <Form.Item
-                    label={contrl.global_variable.alias || <FormattedMessage id={`job.form.${contrl.global_variable.name}`}/> }
+                    label={contrl.global_variable.alias || <FormattedMessage id={`job.form.${contrl.global_variable.name}`} />}
                 >
-                <Form.Item
-                    name="env_info"
-                    // label="全局变量"
-                    rules={[
-                        () => ({
-                            validator(rule, value) {
-                                if (value) {
-                                    const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                    return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'job.form.env_info.placeholder'}) );
-                                }
-                                else
-                                    return Promise.resolve()
-                            },
-                        })
-                    ]}
-                >
-                    <Input.TextArea
-                        disabled={disabled}
-                        placeholder={formatMessage({id: 'job.form.env_info.placeholder'}) }
-                    />
-                </Form.Item>
-                <QuestionCircleComponent
+                    <Form.Item
+                        name="env_info"
+                        // label="全局变量"
+                        rules={[
+                            () => ({
+                                validator(rule, value) {
+                                    if (value) {
+                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                        return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({ id: 'job.form.env_info.placeholder' }));
+                                    }
+                                    else
+                                        return Promise.resolve()
+                                },
+                            })
+                        ]}
+                    >
+                        <Input.TextArea
+                            disabled={disabled}
+                            placeholder={formatMessage({ id: 'job.form.env_info.placeholder' })}
+                        />
+                    </Form.Item>
+                    <QuestionCircleComponent
                         style={{ transform: "unset", top: 6 }}
                         contextNode={
                             <ul style={{ listStyle: 'auto', paddingInlineStart: 20, paddingTop: 15 }}>
@@ -310,12 +314,12 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 'rpm' in contrl &&
                 <FormList
                     // label="安装RPM"
-                    label={contrl.rpm.alias || <FormattedMessage id={`job.form.${contrl.rpm.name}`}/> }
+                    label={contrl.rpm.alias || <FormattedMessage id={`job.form.${contrl.rpm.name}`} />}
                     listName="rpm_info"
                     textName="rpm"
                     radioName="pos"
-                    buttonText={formatMessage({id: 'job.form.rpm.buttonText'}) }
-                    placeholder={formatMessage({id: 'job.form.rpm.placeholder'}) }
+                    buttonText={formatMessage({ id: 'job.form.rpm.buttonText' })}
+                    placeholder={formatMessage({ id: 'job.form.rpm.placeholder' })}
                     buttonShow={reboot}
                     disabled={disabled}
                 />
@@ -324,12 +328,12 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 'script' in contrl &&
                 <FormList
                     // label="执行脚本"
-                    label={contrl.script.alias || <FormattedMessage id={`job.form.${contrl.script.name}`}/>  }
+                    label={contrl.script.alias || <FormattedMessage id={`job.form.${contrl.script.name}`} />}
                     listName="script_info"
                     textName="script"
                     radioName="pos"
-                    buttonText={formatMessage({id: 'job.form.script.buttonText'}) }
-                    placeholder={formatMessage({id: 'job.form.script.placeholder'}) }
+                    buttonText={formatMessage({ id: 'job.form.script.buttonText' })}
+                    placeholder={formatMessage({ id: 'job.form.script.placeholder' })}
                     buttonShow={reboot}
                     disabled={disabled}
                 />
@@ -338,7 +342,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 'monitor' in contrl &&
                 <Form.Item
                     // label="监控配置"
-                    label={contrl.monitor.alias || <FormattedMessage id={`job.form.${contrl.monitor.name}.config`}/>  }
+                    label={contrl.monitor.alias || <FormattedMessage id={`job.form.${contrl.monitor.name}.config`} />}
                     name="moniter_contrl"
                     initialValue={false}
                 >
@@ -358,7 +362,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             }
             {
                 monitor &&
-                <MonitorList disabled={disabled} formComponent={form} template={template}/>
+                <MonitorList disabled={disabled} formComponent={form} template={template} />
             }
         </Form>
     )
