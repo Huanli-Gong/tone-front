@@ -201,7 +201,7 @@ const Standalone = (props: any, ref: any) => {
             logDrawer.current.show(id)
         }, []
     )
-    let totalParam = 1
+
     const columns: any = [
         {
             title: 'IP',
@@ -232,7 +232,7 @@ const Standalone = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip: ip.trim(), page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip: ip.trim(), page_num: 1 })} />
             )
         },
         {
@@ -251,7 +251,7 @@ const Standalone = (props: any, ref: any) => {
             ),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sn ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: 1 })} />
             )
         },
         BUILD_APP_ENV && {
@@ -273,7 +273,7 @@ const Standalone = (props: any, ref: any) => {
             render: (text: any) => <EllipsisPulic title={text} />,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: 1 })} />
             )
         },
         !BUILD_APP_ENV && {
@@ -288,7 +288,7 @@ const Standalone = (props: any, ref: any) => {
                 <SelectCheck
                     list={deviceTypeList}
                     confirm={confirm}
-                    onConfirm={(device_type: any) => setUrlParams({ ...urlParmas, device_type, page_num: totalParam })}
+                    onConfirm={(device_type: any) => setUrlParams({ ...urlParmas, device_type, page_num: 1 })}
                 />
             ),
         },
@@ -301,7 +301,7 @@ const Standalone = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.sm_name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(sm_name: string) => setUrlParams({ ...urlParmas, sm_name, page_num: 1 })} />
             ),
             render(_: any) {
                 return <EllipsisPulic title={_} />
@@ -316,7 +316,7 @@ const Standalone = (props: any, ref: any) => {
             dataIndex: 'idc',
             filterIcon: () => <FilterFilled style={{ color: urlParmas.idc ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: 1 })} />
             )
         },
         !BUILD_APP_ENV && {
@@ -340,7 +340,7 @@ const Standalone = (props: any, ref: any) => {
                 <SelectCheck
                     list={channelTypeList}
                     confirm={confirm}
-                    onConfirm={(channel_type: any) => setUrlParams({ ...urlParmas, channel_type, page_num: totalParam })}
+                    onConfirm={(channel_type: any) => setUrlParams({ ...urlParmas, channel_type, page_num: 1 })}
                 />
             ),
         },
@@ -352,7 +352,7 @@ const Standalone = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.app_group ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(app_group: string) => setUrlParams({ ...urlParmas, app_group, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(app_group: string) => setUrlParams({ ...urlParmas, app_group, page_num: 1 })} />
             )
         },
         {
@@ -365,9 +365,8 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: totalParam })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
+                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: 1 })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
             )
-
         },
         {
             title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
@@ -379,7 +378,7 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: totalParam })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
+                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: 1 })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
             )
         },
         {
@@ -397,7 +396,7 @@ const Standalone = (props: any, ref: any) => {
             dataIndex: 'description',
             filterIcon: () => <FilterFilled style={{ color: urlParmas.description ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(description: string) => setUrlParams({ ...urlParmas, description, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(description: string) => setUrlParams({ ...urlParmas, description, page_num: 1 })} />
             ),
             width: 160,
             ellipsis: {

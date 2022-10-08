@@ -5,7 +5,35 @@ import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css'
 import styled from 'styled-components'
 
-const StyledResizeable = styled(Resizable)`
+const ResizeTableWrapper = styled.div`
+    position: relative;
+    width: 100%;
+`
+
+type BorderPosition = {
+    left: number;
+}
+
+const ResizeBorder = styled.div.attrs((props: BorderPosition) => ({
+    style: {
+        left: props.left,
+    },
+})) <BorderPosition>`
+    width: 0px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-left: 1px dashed #d9d9d9;
+    z-index: 9999;
+`
+
+type ResizeProps = {
+    resize?: boolean;
+}
+
+const StyledResizeable = styled(Resizable) <ResizeProps>`
+    user-select: none;
     &::before {
         position: absolute;
         top: 50%;
@@ -33,22 +61,21 @@ const StyledResizeable = styled(Resizable)`
         height: 100%;
         bottom: 0;
         right: -5px;
-        cursor: col-resize;
+        cursor: ${({ resize }) => resize ? "col-resize" : "default"};
         background-image:none;
         z-index: 1;
     }
 `
 
 const ResizeableTitle = (props: any) => {
-    const { onResize, width, ...restProps } = props;
+    const { width, ...restProps } = props;
     // if (!width) return <th {...restProps} />;
-
     return (
         <StyledResizeable
             width={!width ? 90 : width}
             height={0}
-            onResize={onResize}
             draggableOpts={{ enableUserSelectHack: false }}
+            {...restProps}
         >
             <th {...restProps} />
         </StyledResizeable>
@@ -57,41 +84,78 @@ const ResizeableTitle = (props: any) => {
 
 const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
     const { columns = [], ...rest } = props
+
     const [tableColumns, setTableColumns] = React.useState<any[]>([])
+    const [end, setEnd] = React.useState(0)
+    const [start, setStart] = React.useState(0)
+    const [borderShow, setBorderShow] = React.useState(false)
+
+    const ref = React.useRef<HTMLDivElement>(null)
 
     React.useEffect(() => {
         setTableColumns(columns)
     }, [columns])
 
-    const handleResize = (index: number) => (e: any, { size }: any) => {
+    const handleResizeStart = React.useCallback((index: number) => (e: any, { size }: any) => {
+        if (!columns[index].ellipsis) return
+
+        const { clientX } = e
+        setStart(clientX)
+        setEnd(clientX)
+        setBorderShow(true)
+    }, [columns])
+
+    const handleResizeMove = React.useCallback((index: number) => (e: any) => {
+        const { clientX } = e
+        setEnd(clientX)
+    }, [])
+
+    const handleResizeStop = React.useCallback((index: number) => (e: any, { size }: any) => {
+        const { clientX } = e
         const nextColumns = [...tableColumns];
+
         if (nextColumns[index].ellipsis) {
             nextColumns[index] = {
                 ...nextColumns[index],
-                width: size.width,
+                width: size.width += clientX - start,
             }
             setTableColumns(nextColumns)
         }
-    }
+
+        setEnd(0)
+        setStart(0)
+        setBorderShow(false)
+    }, [tableColumns, start])
 
     return (
-        <Table
-            {...rest}
-            components={{
-                header: {
-                    cell: ResizeableTitle,
-                },
-            }}
-            columns={
-                tableColumns.map((col: any, index: any) => ({
-                    ...col,
-                    onHeaderCell: (column: any) => ({
-                        width: column.width,
-                        onResize: handleResize(index),
-                    }),
-                }))
+        <ResizeTableWrapper ref={ref}>
+            <Table
+                {...rest}
+                components={{
+                    header: {
+                        cell: ResizeableTitle,
+                    },
+                }}
+                columns={
+                    tableColumns.map((col: any, index: any) => ({
+                        ...col,
+                        onHeaderCell: (column: any) => ({
+                            resize: !!col.ellipsis,
+                            width: column.width,
+                            onResizeStart: handleResizeStart(index),
+                            onResize: handleResizeMove(index),
+                            onResizeStop: handleResizeStop(index),
+                        }),
+                    }))
+                }
+            />
+            {
+                borderShow &&
+                <ResizeBorder
+                    left={(end || start) - (ref?.current as any)?.offsetLeft || 0}
+                />
             }
-        />
+        </ResizeTableWrapper>
     )
 }
 
