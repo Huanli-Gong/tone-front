@@ -108,11 +108,15 @@ const Standalone = (props: any, ref: any) => {
     // }, [])
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
-        const data = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aligroup' })
-        if (data.data.length > 0) {
-            setDeleteVisible(true)
+        const { data, code, msg } = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aligroup' })
+        if(code === 200){
+            if (data.length > 0) {
+                setDeleteVisible(true)
+            } else {
+                setDeleteDefault(true)
+            }
         } else {
-            setDeleteDefault(true)
+            requestCodeMessage(code,msg)
         }
     }
     // const calcPageNo = (total = 0, pageNo = 1, pageSize = 10, delNum = 1) => {
@@ -149,6 +153,7 @@ const Standalone = (props: any, ref: any) => {
         //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
         let pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
         if (data.code === 200) {
+            setSelectRowKeys(selectRowKeys.filter((i:any) => i !== id))
             message.success('操作成功！')
             setDeleteVisible(false)
             setDeleteDefault(false)
@@ -232,7 +237,7 @@ const Standalone = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip, page_num: totalParam })} />
+                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip: ip.trim(), page_num: totalParam })} />
             )
         },
         {
@@ -446,7 +451,7 @@ const Standalone = (props: any, ref: any) => {
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>
+                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>}
                                 <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
                                 <Button style={{ padding: 0 }} size="small" type="link"
@@ -457,7 +462,7 @@ const Standalone = (props: any, ref: any) => {
                         }
                     >
                         <Space>
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>
+                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>}
                             <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)}>编辑</Button>
                             <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}>删除</Button>
                             {

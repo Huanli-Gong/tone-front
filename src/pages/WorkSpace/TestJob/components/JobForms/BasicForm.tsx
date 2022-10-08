@@ -137,9 +137,14 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                     name="project"
                     label={contrl.project.alias || <FormattedMessage id={`job.form.${contrl.project.name}`}/> }
                 >
-                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled}
+                    <Select 
+                        allowClear 
+                        getPopupContainer={node => node.parentNode} 
+                        showSearch 
+                        disabled={disabled}
                         placeholder={formatMessage({id: 'job.form.project.placeholder'}) }
                         onSelect={handleSelect}
+                        filterOption={(inputValue,option:any) => option.children.indexOf(inputValue) >= 0}
                     >
                         {
                             projectList.map(

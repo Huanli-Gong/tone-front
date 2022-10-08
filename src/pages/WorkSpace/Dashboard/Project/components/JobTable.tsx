@@ -194,10 +194,10 @@ const JobTable = (props: any) => {
                                         </span>
                                     }
                                     <Popconfirm
-                                        title={<FormattedMessage id="Drawer.delete.title" />}
+                                        title={<FormattedMessage id="delete.prompt" />}
                                         onConfirm={() => handleDelete(_)}
-                                        okText={<FormattedMessage id="Drawer.btn.confirm" />}
-                                        cancelText={<FormattedMessage id="Drawer.btn.cancel" />}
+                                        okText={<FormattedMessage id="operation.confirm" />}
+                                        cancelText={<FormattedMessage id="operation.cancel" />}
                                     >
                                         <Typography.Text
                                             style={{ color: '#1890FF', cursor: 'pointer' }}

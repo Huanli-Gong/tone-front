@@ -45,3 +45,8 @@ export const testYaml = async ( data : any ) => {
 export const formatYamlToJson = async ( data : any ) => {
     return request(`/api/job/data_conversion/` , { data , method : 'post' })
 }
+
+//查询cbp产品列表
+export const queryCbpProduct = async () => {
+    return request(`/api/job/test/{PRODUCT}`)
+}

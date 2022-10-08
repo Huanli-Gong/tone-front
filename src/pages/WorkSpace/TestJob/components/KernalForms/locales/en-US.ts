@@ -34,6 +34,8 @@ const text =  {
   'build_config.placeholder': 'Enter Compile Branch',
   'build_machine.placeholder': 'Enter Compile Branch',
 
+  'cbc.product': "Product Config",
+  'cbc.product.empty': "Enter Product Config"
 };
 
 export default Object.keys(text).reduce((p, key) => {
