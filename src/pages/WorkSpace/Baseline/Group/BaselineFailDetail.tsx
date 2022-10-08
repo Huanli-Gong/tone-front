@@ -85,10 +85,10 @@ export default forwardRef(
             commentModal.current.show(currentObj)
         }
 
-        const handleDelete = function* () {
-            const currentObject = threeLevelDetailData.filter((item: any) => item && item.test_case_id === current.test_case_id)[0] || {};
-            yield deletefuncsDetail({ id: currentObject.id, ws_id });
-
+        const handleDelete = async(record:any) => {
+            // const currentObject = threeLevelDetailData.filter((item: any) => item && item.test_case_id === current.test_case_id)[0] || {};
+            const { code, msg } = await deletefuncsDetail({ id: record.id, ws_id });
+            defaultOption(code, msg);
         }
 
         const fn = (job_id: any) => {
@@ -195,14 +195,7 @@ export default forwardRef(
                                 {/* 删除的弹框 */}
                                 <Popconfirm
                                     title="你确定要删除吗？"
-                                    onConfirm={() => {
-                                        const generObj = handleDelete();
-                                        const excuteResult: any = generObj.next();
-                                        excuteResult.value.then((result: any) => {
-                                            const { code, msg } = result;
-                                            defaultOption(code, msg);
-                                        })
-                                    }}
+                                    onConfirm={() => handleDelete(record)}
                                     okText="确认"
                                     cancelText="取消"
                                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>

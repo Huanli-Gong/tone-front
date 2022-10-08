@@ -50,7 +50,7 @@ const RenderChart = (props: any) => {
                     myChart.setOption(AliyunPerfLine({ dataSource, ws_id, formatMessage }))
                 }
                 else {
-                    myChart.setOption(PerfLineOption(dataSource, ws_id))
+                    myChart.setOption(PerfLineOption({ dataSource, ws_id, formatMessage }))
                 }
             }
             if (testType === 'functional') {
@@ -93,11 +93,11 @@ const RenderChart = (props: any) => {
             }
             {
                 (testType === 'functional' && showType === 'result_trend') &&
-                <Title><FormattedMessage id="analysis.chart.title.passRate"/></Title>
+                <Title><FormattedMessage id="analysis.chart.title.passRate" /></Title>
             }
             {
                 (testType === 'functional' && showType === 'pass_rate') &&
-                <Title><FormattedMessage id="analysis.chart.title.resultTrend"/></Title>
+                <Title><FormattedMessage id="analysis.chart.title.resultTrend" /></Title>
             }
             <div ref={chart} style={{ width: '100%', height: 360 - 48 }} />
         </CardWrapper>

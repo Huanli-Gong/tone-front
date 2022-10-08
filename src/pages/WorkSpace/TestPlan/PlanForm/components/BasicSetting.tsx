@@ -248,11 +248,11 @@ const BasicSetting = (props: any, ref: any) => {
                         }
                         {
                             (kernel === 'install_un_push')
-                            && <UnPushForm needScriptList={false} />
+                            && <UnPushForm needScriptList={false} form={form} />
                         }
                         {
                             (kernel === 'install_build_kernel') &&
-                            <BuildKernalForm needScriptList={false} ws_id={ws_id} />
+                            <BuildKernalForm needScriptList={false} form={form} />
                         }
                     </>
                 }

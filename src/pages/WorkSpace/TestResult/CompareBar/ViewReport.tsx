@@ -158,6 +158,9 @@ export default (props: any) => {
             window.removeEventListener('click', windowClick)
         }
     }, [])
+    const handleLeave = () => {
+        setVisible(false)
+    }
     const getContent = (data: any) => {
         return (
             <div onClick={handleClick}>
@@ -175,13 +178,15 @@ export default (props: any) => {
         );
     }
     const isFlag = _.get(jobInfo, 'report_li') && jobInfo.report_li.length
+
     return (
-        <div className={styles.conf_item_box} key={isFlag}>
+        <div className={styles.conf_item_box} key={isFlag} onMouseLeave={handleLeave}>
             <Popover placement={dreType} 
                 title={<FormattedMessage id="ws.result.list.view.report" />}
                 content={getContent(jobRefReport)} 
                 trigger="click" 
-                overlayClassName={styles.popover_job} visible={visible}>
+                overlayClassName={styles.popover_job} 
+                visible={visible}>
                 {
                     origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
                         <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
