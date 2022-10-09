@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { history, useModel, useParams } from 'umi'
+import { history, useModel, useParams, useLocation } from 'umi'
 import { person_auth } from '@/services/user';
 import { deepObject } from '@/utils/utils';
 import { enterWorkspaceHistroy } from '@/services/Workspace';
 
 export default (props: any) => {
     const { children } = props
+    const locationHistory = useLocation()
     const { ws_id } = useParams() as any
     const { initialState, setInitialState } = useModel('@@initialState')
     const { authList } = initialState
@@ -26,8 +27,14 @@ export default (props: any) => {
             }
         }
 
-        enterWorkspaceHistroy({ ws_id })
-        
+        const { state } = locationHistory as any
+        /* 没有history state && fetchWorkspaceHistoryRecord 未请求记录history接口*/
+        if (state?.fetchWorkspaceHistoryRecord) {
+            history.replace(locationHistory.pathname, undefined)
+        } else {
+            enterWorkspaceHistroy({ ws_id })
+        }
+
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
 
         if (!ws_is_exist) {
@@ -43,7 +50,7 @@ export default (props: any) => {
 
     useEffect(() => {
         checkAccess()
-    }, [location.pathname])
+    }, [locationHistory.pathname])
 
     return children
 }

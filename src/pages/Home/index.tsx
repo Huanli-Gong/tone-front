@@ -207,7 +207,7 @@ export default (): React.ReactNode => {
 
         if (record.is_public || record.is_member) {
             const path: string = await getEnterWorkspaceState(record)
-            path && history.push(path)
+            path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
             return
         }
 
