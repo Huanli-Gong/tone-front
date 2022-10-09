@@ -129,6 +129,7 @@ export default (props: any) => {
         }
         else requestCodeMessage( code , msg )
     }
+    
     const approveList = (item: any) => {
         const type = item.action !== 'join'
         let approveTime = false

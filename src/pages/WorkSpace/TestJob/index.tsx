@@ -992,10 +992,15 @@ const TestJob: React.FC<any> = (props) => {
                                 </Row>
                                 <div className={styles.page_tags}>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        <FormattedMessage id={`header.${detail.server_type}`} defaultMessage="" />
+                                        {
+                                            detail.server_type &&
+                                            <FormattedMessage id={`header.${detail.server_type}`} defaultMessage="" />
+                                        }
                                     </Tag>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        {detail.test_type === 'business' ? <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others" /> : <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage="" />}
+                                        {detail.test_type === 'business' ?
+                                            <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others" /> :
+                                            detail.test_type && <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage="" />}
                                     </Tag>
                                 </div>
                                 <div className={styles.page_dec}>{detail.description}</div>

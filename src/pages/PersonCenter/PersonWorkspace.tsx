@@ -43,6 +43,7 @@ export default (props: any) => {
             </>
         )
     }
+    
     const handleEnterWs = async (id: any, creator:number) => {
         const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: id })
         if (code === 200) {
