@@ -163,8 +163,14 @@ export default forwardRef(
                                 dropdownRender={(menu)=>(
                                     <div>
                                         {menu}
-                                        <div style={{ maxHeight: 300, overflow: 'auto' }} onClick={addWareHouse}>
-                                            <span className={styles.test_summary_job}><PlusOutlined style={{ marginRight:6 }}/>新增仓库</span>
+                                        <div style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '8px 0 8px 8px' }}
+                                            onClick={addWareHouse}>
+                                            <span>
+                                                <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                    <FormattedMessage id="product.new.repositories" />
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 )}>

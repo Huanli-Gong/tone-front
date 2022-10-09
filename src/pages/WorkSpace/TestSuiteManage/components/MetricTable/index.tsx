@@ -34,10 +34,11 @@ const SuiteManagement: React.FC<any> = ({ id , innerKey , ws_id }) => {
 		<div className={styles.warp} key={id}>
 			<CommonTable
 				columns={columns}
-				scrollType = {640}
+				// scrollType = {640}
 				loading={ expandInnerLoading }
 				list={expandInnerList.data}
 				showPagination={ false }
+				scroll={{ x: 640 }}
 			/>
 		</div>
 	);

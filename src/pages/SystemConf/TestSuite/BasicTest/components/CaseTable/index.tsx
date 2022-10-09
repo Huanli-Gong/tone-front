@@ -234,7 +234,8 @@ export default forwardRef(({ id }: any, ref: any) => {
                 innerKey == '1' ?
                     <CommonTable
                         columns={columns}
-                        scrollType={1400}
+                        // scrollType={1400}
+                        scroll={{ x: 1400 }}
                         loading={expandLoading}
                         list={expandList.data}
                         page={expandList.page_num}

@@ -324,6 +324,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                 totalPage={data.total_page}
                 total={data.total}
                 handlePage={onChange}
+                scroll={{ x: '100%' }}
             />
         </div>
     );

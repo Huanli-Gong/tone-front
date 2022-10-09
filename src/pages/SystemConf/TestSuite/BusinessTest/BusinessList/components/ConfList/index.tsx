@@ -266,7 +266,8 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 				total={total}
 				handlePage={onChange}
 				rowSelection={rowSelection}
-				scrollType={1100}
+				// scrollType={1100}
+				scroll={{ x: 1100 }}
 				paginationBottom={true}
 			/>
 			<Modal title="删除提示"

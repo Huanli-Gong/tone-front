@@ -91,7 +91,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
             {
                 innerKey === 'case' ?
                     <CommonTable
-                        scrollType={1030}
+                        // scrollType={1030}
                         columns={columns}
                         list={record}
                         loading={false}
@@ -111,6 +111,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                                 } :
                                 {}
                         }
+                        scroll={{ x: 1030 }}
                     /> :
                     <MetricTable ws_id={ws_id} id={id} innerKey={innerKey} />
             }

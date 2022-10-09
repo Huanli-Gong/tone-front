@@ -362,7 +362,8 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             {innerKey == '1' ?
                 <CommonTable className={styles.FuncOrPerfConfList_root}
                     columns={columns}
-                    scrollType={1400}
+                    // scrollType={1400}
+                    scroll={{ x: 1400 }}
                     loading={expandLoading}
                     list={expandList.data}
                     page={expandList.page_num}

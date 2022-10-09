@@ -1,11 +1,12 @@
 import React, { forwardRef, useState, useImperativeHandle, useRef, useEffect } from 'react';
-import { useRequest, useParams, useIntl, FormattedMessage  } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage, getLocale  } from 'umi'
 import { isUndefined } from 'lodash'
 import { Drawer, Space, Typography, Table, Button, message, Popconfirm, Row, Col, Dropdown, Menu, Modal } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled, MoreOutlined } from '@ant-design/icons'
 import { deleteProject, updateBranchAndRelation, queryProjectBranch, deleteBranchAndRelation } from '../services'
 import { QusetionIconTootip } from '@/components/Product/index'
 import UpdateProjectModal from './UpdateProject'
+import EllipsisPopover from '@/components/Public/EllipsisPopover'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddCodeModal from './NewCodeModal'
 import { requestCodeMessage } from '@/utils/utils';
@@ -13,6 +14,8 @@ import styles from './index.less'
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
+        const enLocale = getLocale() === 'en-US'
+
         const { ws_id } = useParams<any>()
         // const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
         const [visible, setVisible] = useState(false)
@@ -82,7 +85,7 @@ export default forwardRef(
         }
 
         const columns = [{
-            title: <FormattedMessage id="product.repositories"/>,
+            title: <EllipsisPopover title={formatMessage({id: "product.repositories"})} placement={'top'} />,
             dataIndex: 'branch_name',
             ellipsis: true,
             render: (text: string) => <EllipsisPulic title={text} />,
@@ -101,7 +104,7 @@ export default forwardRef(
         },
         {
             title: <QusetionIconTootip title={formatMessage({id: 'product.is_master'})} desc={formatMessage({id: 'product.is_master.desc'})} />,
-            width: 90,
+            width: enLocale? 160: 90,
             dataIndex: 'is_master',
             render: (_: any, data: any) => (
                 data.is_master ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} onClick={() => handleSetDefault(_, data)} />
@@ -110,7 +113,7 @@ export default forwardRef(
         },
         {
             title: <FormattedMessage id="Table.columns.operation"/>,
-            width: 80,
+            width: enLocale? 100: 80,
             render: (_: any) => (
                 <div>
                     {
@@ -201,15 +204,15 @@ export default forwardRef(
                 <div className={styles.content_warpper}>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.project.name"/>：</Typography.Text>
-                        <EllipsisPulic title={projectItem.name} width={540} />
+                        <EllipsisPulic title={projectItem.name} width={450} />
                     </Space>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.version"/>：</Typography.Text>
-                        <EllipsisPulic title={projectItem.product_version} width={540} />
+                        <EllipsisPulic title={projectItem.product_version} width={450} />
                     </Space>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.project.desc"/>：</Typography.Text>
-                        <EllipsisPulic title={projectItem.description} width={540} />
+                        <EllipsisPulic title={projectItem.description} width={500} />
                     </Space>
                     <Space className={styles.title_detail_items}>
                         <Typography.Text className={styles.product_right_name}><FormattedMessage id="product.dashboard.count"/>：</Typography.Text>

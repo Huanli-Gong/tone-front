@@ -136,6 +136,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 							expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 									(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
+				scroll={undefined}
 			/>
 		</div>
   )

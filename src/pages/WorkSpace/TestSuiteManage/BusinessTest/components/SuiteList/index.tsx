@@ -168,6 +168,7 @@ const List = ({ business_id, dataSource }:any) => {
 							expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 									(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
+				scroll={{ x: '100%' }}
 			/>
 
       <Drawer

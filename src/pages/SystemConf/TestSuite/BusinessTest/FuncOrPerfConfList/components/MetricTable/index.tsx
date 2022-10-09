@@ -147,7 +147,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		<div className={styles.warp} key={id}>
 			<CommonTable className={styles.FuncOrPerfConfList_root}
 				columns={columns}
-				scrollType={670}
+				// scrollType={670}
 				loading={expandInnerLoading}
 				list={expandInnerList.data}
 				page={expandInnerList.page_num}
@@ -156,6 +156,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 				pageSize={expandInnerList.page_size}
 				handlePage={handlePage}
 				paginationBottom={true}
+				scroll={{ x: 670 }}
 			/>
 
 			<MetricEditDrawer

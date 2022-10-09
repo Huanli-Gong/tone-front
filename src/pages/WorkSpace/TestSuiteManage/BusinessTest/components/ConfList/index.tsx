@@ -88,6 +88,7 @@ const List = ({ suite_id, type, dataSource }:any) => {
 				// pageSize={pageSize}
 				// total={total}
 				// handlePage={onChange}
+				scroll={{ x: '100%' }}
 			/>
       <Drawer
 				maskClosable

@@ -18,7 +18,7 @@ export default {
 
    'product.please.enter.name': '请输入产品名称',
    'product.version.command': '版本命令',
-   'product.version.command.help': '此产品的当前测试版本获取命令，默认是：uname -r',
+   'product.version.command.help': '获取当前测试版本的命令，默认是：uname -r', //'此产品的当前测试版本获取命令，默认是：uname -r',
    'product.please.enter.version.command': '请输入版本命令',
    'product.description.option': '产品描述(选填)',
    'product.please.enter.comments': '请输入备注信息',

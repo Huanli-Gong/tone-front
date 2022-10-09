@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { UserTable } from './data.d';
 import { Table, Pagination, Spin } from 'antd';
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable'
 const CommonTable: React.FC<UserTable> = ({
@@ -15,7 +16,9 @@ const CommonTable: React.FC<UserTable> = ({
     paginationBottom = false,
     pageSize = 10,
     components,
+    scroll,
 }) => {
+    const { formatMessage } = useIntl()
     const table = useRef<any>(null)
     const getTop = (e: any) => {
         var offset = e.offsetTop;
@@ -44,7 +47,7 @@ const CommonTable: React.FC<UserTable> = ({
                 pagination={false}
                 rowSelection={rowSelection}
                 expandable={expandable}
-                scroll={{ x: '100%' }}
+                scroll={scroll} // { x: '100%' }
                 components={components}
                 onRow={(record, index) => {
                     return {
@@ -59,7 +62,7 @@ const CommonTable: React.FC<UserTable> = ({
                         total >= 1 &&
                         <>
                             <div className={total == 0 ? styles.hidden : ''}>
-                                共{total}条
+                               {formatMessage({id: 'pagination.total.strip'}, {data: total})}
                             </div>
                             <Pagination
                                 className={total == 0 ? styles.hidden : ''}

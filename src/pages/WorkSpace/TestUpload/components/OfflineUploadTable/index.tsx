@@ -218,6 +218,7 @@ export default forwardRef((props: any, ref: any) => {
         pageSize={data.page_size}
         list={data.data}
         handlePage={onChange}
+        scroll={{ x: '100%' }}
       />
 
       <ModalForm ws_id={ws_id} visible={visible} callback={hiddenModalCallback} />
