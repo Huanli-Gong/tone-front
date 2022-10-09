@@ -100,24 +100,29 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
         if (!columns[index].ellipsis) return
 
         const { clientX } = e
-        setStart(clientX)
-        setEnd(clientX)
+        const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
+        setStart(drageX)
+        setEnd(drageX)
         setBorderShow(true)
-    }, [columns])
+    }, [columns, ref])
 
     const handleResizeMove = React.useCallback((index: number) => (e: any) => {
         const { clientX } = e
-        setEnd(clientX)
-    }, [])
+        const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
+
+        setEnd(drageX)
+    }, [ref])
 
     const handleResizeStop = React.useCallback((index: number) => (e: any, { size }: any) => {
         const { clientX } = e
+        const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
+
         const nextColumns = [...tableColumns];
 
         if (nextColumns[index].ellipsis) {
             nextColumns[index] = {
                 ...nextColumns[index],
-                width: size.width += clientX - start,
+                width: size.width += drageX - start,
             }
             setTableColumns(nextColumns)
         }
@@ -125,7 +130,7 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
         setEnd(0)
         setStart(0)
         setBorderShow(false)
-    }, [tableColumns, start])
+    }, [tableColumns, start, ref])
 
     return (
         <ResizeTableWrapper ref={ref}>
@@ -152,7 +157,7 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
             {
                 borderShow &&
                 <ResizeBorder
-                    left={(end || start) - (ref?.current as any)?.offsetLeft || 0}
+                    left={end || start}
                 />
             }
         </ResizeTableWrapper>
