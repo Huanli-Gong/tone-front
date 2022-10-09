@@ -77,7 +77,7 @@ export default (props: any) => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: dataIndex === 'private_ip' ? val.trim() : val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {

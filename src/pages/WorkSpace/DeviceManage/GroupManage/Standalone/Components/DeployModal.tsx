@@ -39,8 +39,7 @@ export default forwardRef((props: any, ref: any) => {
     // 1.请求数据
     const getVersionData = async () => {
         try {
-            const res: any = await queryVersionList({ arch }); // { page_num: 1, page_size: 100000  }
-            const { code, msg, data = [] } = res || {}
+            const { code, msg, data = [] } = await queryVersionList({ arch }); // { page_num: 1, page_size: 100000  }
             if (code === 200) {
                 if (isString(data)) {
                     setData([])
@@ -54,12 +53,6 @@ export default forwardRef((props: any, ref: any) => {
             // setLoading(false)
         }
     }
-
-    useEffect(() => {
-        // 请求版本数据
-        if (useBuildEnv || selectedRow.length)
-            getVersionData()
-    }, [selectedRow, arch])
 
     useImperativeHandle(
         ref,
@@ -164,6 +157,12 @@ export default forwardRef((props: any, ref: any) => {
         if (useBuildEnv) return 'active'
         return radioType === 'cloudManage' ? 'passive' : 'active'
     }
+
+    useEffect(() => {
+        // 请求版本数据
+        if (!!selectedRow.length)
+            getVersionData()
+    }, [selectedRow, arch])
 
     return (
         <div>
