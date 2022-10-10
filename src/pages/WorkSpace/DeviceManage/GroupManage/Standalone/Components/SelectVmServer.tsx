@@ -3,11 +3,12 @@ import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback 
 import { Modal, Table, Spin, Row, Space, Select, Typography, Alert, Button, message } from 'antd'
 import { requestCodeMessage } from '@/utils/utils'
 import { checkTestServerIps } from '@/pages/WorkSpace/DeviceManage/GroupManage/services'
-import { useParams, request } from 'umi'
+import { useParams, request, useIntl, FormattedMessage } from 'umi'
 import { AlertProps } from 'antd/lib/alert'
 import { AgentSelect } from '@/components/utils'
 
 const SelectVmServer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl();
     const { onOk } = props
     const { ws_id } = useParams<any>()
     const [visible, setVisible] = useState(false)
@@ -60,13 +61,13 @@ const SelectVmServer = (props: any, ref: any) => {
         title: 'SN',
     }, {
         dataIndex: 'hostname',
-        title: '机器名称',
+        title: <FormattedMessage id="device.machine.name"/>,
     }, {
         dataIndex: 'idc',
         title: 'IDC',
     }, {
         dataIndex: 'app_group',
-        title: '分组',
+        title: <FormattedMessage id="device.app_group"/>,
     },]
 
     const onChange = useCallback(
@@ -92,7 +93,7 @@ const SelectVmServer = (props: any, ref: any) => {
                 }
                 handleClose()
                 onOk()
-                message.success("添加成功!")
+                message.success(formatMessage({id: 'operation.success'}) )
             }
             setLoading(false)
         }
@@ -132,7 +133,7 @@ const SelectVmServer = (props: any, ref: any) => {
     return (
         <Modal
             visible={visible}
-            title={'选择虚拟机'}
+            title={<FormattedMessage id="device.select.virtual.machine"/>}
             width={800}
             onCancel={handleClose}
             footer={false}
@@ -150,11 +151,11 @@ const SelectVmServer = (props: any, ref: any) => {
                 }
 
                 <Space style={{ marginBottom: 16 }} >
-                    <Typography.Text>控制通道：</Typography.Text>
+                    <Typography.Text><FormattedMessage id="device.channel_type"/>：</Typography.Text>
                     <AgentSelect
                         value={channelType}
                         onChange={onChannelTypeChange}
-                        placeholder="请选择控制通道"
+                        placeholder={formatMessage({id:'device.channel_type.message'}) }
                     />
                 </Space>
 
@@ -173,13 +174,15 @@ const SelectVmServer = (props: any, ref: any) => {
 
                 <Row justify="end" style={{ marginTop: 16 }}>
                     <Space>
-                        <Button type="default" onClick={handleClose}>取消</Button>
+                        <Button type="default" onClick={handleClose}>
+                            <FormattedMessage id="operation.cancel"/>
+                        </Button>
                         <Button
                             type="primary"
                             onClick={hanldeOk}
                             disabled={!canSubmit}
                         >
-                            确定
+                            <FormattedMessage id="operation.ok"/>
                         </Button>
                     </Space>
                 </Row>

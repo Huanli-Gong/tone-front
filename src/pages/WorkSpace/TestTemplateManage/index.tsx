@@ -1,6 +1,6 @@
 import { Space, Typography, Badge, message, Button, Modal, Spin } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
-import { useRequest, history, useModel } from 'umi'
+import { useRequest, history, useModel, FormattedMessage, useIntl } from 'umi'
 import { queryTestTemplateList, deleteTestTemplate, queryTemplateDel } from './service'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import CopyModal from './components/CopyModal'
@@ -13,6 +13,7 @@ import { cloneDeep, get } from 'lodash'
 import { Access, useAccess } from 'umi'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const access = useAccess();
     const PAGE_DEFAULT_PARAMS = { page_num: 1, page_size: 10, ws_id }
@@ -82,7 +83,7 @@ export default (props: any) => {
             })
             setDeleteVisible(false)
             setDeleteDefault(false)
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
         }
         else {
             requestCodeMessage(code, msg)
@@ -90,14 +91,14 @@ export default (props: any) => {
     }
 
     const handleEdit = ({ id, job_type, }: any): any => {
-        if (!job_type) return message.warning('问题模板，请及时删除！')
+        if (!job_type) return message.warning(formatMessage({id: 'job.templates.delete.the.problem.template'}) )
         history.push({ pathname: `/ws/${ws_id}/test_template/${id}/edit`, state: { params } })
     }
     const handleDetail = () => {
         window.open(`/ws/${ws_id}/refenerce/3/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
     const handlePreview = ({ id, job_type, creator }: any): any => {
-        if (!job_type) return message.warning('问题模板，请及时删除')
+        if (!job_type) return message.warning(formatMessage({id: 'job.templates.delete.the.problem.template'}) )
         history.push({
             pathname: `/ws/${ws_id}/test_template/${id}/preview`, state: {
                 creator,
@@ -107,11 +108,11 @@ export default (props: any) => {
     }
 
     const handleCopy = (_: any) => {
-        copyModal.current.show('模板复制', _)
+        copyModal.current.show('copy', _)
     }
 
     const columns: any = [{
-        title: '名称',
+        title: <FormattedMessage id="job.templates.name"/>,
         dataIndex: 'name',
         ellipsis: true,
         fixed: 'left',
@@ -123,29 +124,31 @@ export default (props: any) => {
         // ),
         ...getSearchFilter(params, setParams, 'name')
     }, {
-        title: '描述',
+        title: <FormattedMessage id="job.templates.description"/>,
         ellipsis: true,
         width: 150,
         dataIndex: 'description'
     }, {
-        title: '启用',
+        title: <FormattedMessage id="job.templates.enable"/>,
         ellipsis: true,
         width: 80,
         dataIndex: 'enable',
         render: (_: any) => (
             <>
                 <Badge status={_ ? 'success' : 'error'} />
-                <Typography.Text>{_ ? '启用' : '停用'}</Typography.Text>
+                <Typography.Text>{_ ? <FormattedMessage id="job.templates.enable"/>: <FormattedMessage id="job.templates.stop"/>}</Typography.Text>
             </>
         ),
         ...getRadioFilter(
             params,
             setParams,
-            [{ name: '启用', value: 1 }, { name: '停用', value: 0 }],
+            [
+                { name: formatMessage({id: 'job.templates.enable'}), value: 1 }, 
+                { name: formatMessage({id: 'job.templates.stop'}), value: 0 }],
             'enable'
         )
     }, {
-        title: 'Job类型',
+        title: <FormattedMessage id="job.templates.job_type"/>,
         dataIndex: 'job_type',
         width: 130,
         ellipsis: true,
@@ -158,46 +161,46 @@ export default (props: any) => {
         )
     }, {
         width: 90,
-        title: '创建人',
+        title: <FormattedMessage id="job.templates.creator_name"/>,
         ellipsis: true,
         dataIndex: 'creator_name',
         ...getUserFilter({ name: 'creator', data: params, setDate: setParams, flag: true })
     }, {
         width: 90,
         ellipsis: true,
-        title: '修改人',
+        title: <FormattedMessage id="job.templates.update_user"/>,
         dataIndex: 'update_user',
     }, {
-        title: '创建时间',
+        title: <FormattedMessage id="job.templates.gmt_created"/>,
         width: 120,
         ellipsis: true,
         dataIndex: 'gmt_created',
     }, {
-        title: '修改时间',
+        title: <FormattedMessage id="job.templates.gmt_modified"/>,
         width: 120,
         ellipsis: true,
         dataIndex: 'gmt_modified',
     }, {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation"/>,
         width: 155,
         fixed: 'right',
         render: (_: any, row: any) => (
             <Space>
-                <span onClick={() => handlePreview(_)} style={{ color: '#1890FF', cursor: 'pointer' }}>预览</span>
+                <span onClick={() => handlePreview(_)} style={{ color: '#1890FF', cursor: 'pointer' }}><FormattedMessage id="operation.preview"/></span>
                 <Access
                     accessible={access.WsMemberOperateSelf(row.creator)}
                     fallback={
                         <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>复制</span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>编辑</span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}>删除</span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.copy"/></span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></span>
                         </Space>
                     }
                 >
                     <Space>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}>复制</span>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}>编辑</span>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}>删除</span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}><FormattedMessage id="operation.copy"/></span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}><FormattedMessage id="operation.edit"/></span>
+                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}><FormattedMessage id="operation.delete"/></span>
                     </Space>
                 </Access>
             </Space>
@@ -215,9 +218,7 @@ export default (props: any) => {
     }, [])
 
     return (
-        <SingleTabCard
-            title="模板列表"
-        >
+        <SingleTabCard title={<FormattedMessage id="job.templates.list"/>}>
             <Spin spinning={loading}>
                 <div ref={resizeTableRef}>
                     <ResizeTable
@@ -247,17 +248,17 @@ export default (props: any) => {
             <CopyModal ref={copyModal} onOk={handleCopyModalOk} />
 
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="job.templates.delete.prompt"/>}
                 centered={true}
                 visible={deleteVisible}
                 //onOk={remOuter}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={handleDelete}>
-                        确定删除
+                        <FormattedMessage id="operation.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={600}
@@ -265,28 +266,28 @@ export default (props: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    删除该模板将同时移除测试计划中的此模板配置，请谨慎删除！！
+                    <FormattedMessage id="job.templates.delete.prompt.ps"/>
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="job.templates.view.details"/></div>
             </Modal>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="job.templates.delete.prompt"/>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={handleDelete}>
-                        确定删除
+                        <FormattedMessage id="operation.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要删除吗？
+                    {<FormattedMessage id="delete.prompt"/>}
                 </div>
             </Modal>
 

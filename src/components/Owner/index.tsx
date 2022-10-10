@@ -1,9 +1,10 @@
 import React from 'react';
 import { Form, Select, Spin, Empty } from 'antd';
-import { useRequest, useParams } from 'umi'
+import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { member } from './service'
 
 const Owner: React.FC = () => {
+    const { formatMessage } = useIntl()
     const { ws_id }:any = useParams();
     const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
         (keyword = '') => member({ keyword, scope: 'aligroup', ws_id, page_num: 1, page_size: 500 }),
@@ -31,7 +32,7 @@ const Owner: React.FC = () => {
         <Form.Item
             name="emp_id"
             label="Owner"
-            rules={[{ required: true, message: '请选择' }]}
+            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
         >
             <Select
                 allowClear
@@ -40,7 +41,7 @@ const Owner: React.FC = () => {
                         <Spin size="small" /> :
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
-                placeholder="请选择Owner"
+                placeholder={formatMessage({id: 'select.owner'})}
                 filterOption={false}
                 onSearch={handleSearch}
                 style={{ width: '100%' }}

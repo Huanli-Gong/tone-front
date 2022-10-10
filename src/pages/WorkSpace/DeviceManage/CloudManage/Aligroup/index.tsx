@@ -15,7 +15,7 @@ import MachineTags from '@/components/MachineTags';
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
-import { useParams } from 'umi';
+import { useParams, useIntl, FormattedMessage, getLocale } from 'umi';
 import { useClientSize } from '@/utils/hooks';
 import { AccessTootip } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
@@ -35,6 +35,8 @@ interface AligroupParams {
     description: string,
 }
 const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
     const access = useAccess();
@@ -42,7 +44,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const tree = useRef<any>(null)
     const outTable = useRef<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState<any>({ data: [] });    
+    const [data, setData] = useState<any>({ data: [] });
     const [params, setParams] = useState<AligroupParams>({
         refresh: true,
         page: 1,
@@ -88,7 +90,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         setLoading(false)
     };
 
-    
+
     const newGroup = () => {
         setOutId(undefined)
         setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
@@ -127,7 +129,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             if (res.code === 200) {
                 // 成功
                 setVisible(false)
-                message.success('操作成功');
+                message.success(formatMessage({id: 'operation.success'}));
                 setParams({ ...params, refresh: !params.refresh })
                 return
             }
@@ -145,7 +147,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         if (res.code === 200) {
             // 成功
             setVisible(false)
-            message.success('操作成功');
+            message.success(formatMessage({id: 'operation.success'}));
             setParams({ ...params, page: 1, refresh: !params.refresh })
             return
         }
@@ -181,7 +183,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const removeGroup = async (id: number) => {
         let data = { ws_id: ws_id }
         await delGroup(id, data)
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}));
         setDeleteVisible(false)
         setDeleteDefault(false)
         setParams({ ...params, refresh: !params.refresh })
@@ -231,7 +233,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     const columns: any = [
         {
-            title: '集群名',
+            title: <FormattedMessage id="device.cluster.name"/>,
             dataIndex: 'name',
             width: 150,
             ...inputFilterCommonFields("name"),
@@ -258,7 +260,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             render: (_: any, row: any) => <PopoverEllipsis title={row.owner_name} />
         },
         {
-            title: '标签',
+            title: <FormattedMessage id="device.tag"/>,
             dataIndex: 'tag_list',
             ellipsis: {
                 showTitle: false
@@ -281,7 +283,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             )
         },
         {
-            title: '备注',
+            title: <FormattedMessage id="device.description"/>,
             dataIndex: 'description',
             width: 300,
             ...inputFilterCommonFields("description"),
@@ -295,27 +297,27 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             </PopoverEllipsis>,
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             valueType: 'option',
             dataIndex: 'id',
             width: 180,
             render: (_: any, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { addMachine(row.id) }}>添加</Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { addMachine(row.id) }}><FormattedMessage id="operation.add"/></Button>
                 <Access
                     accessible={access.WsMemberOperateSelf(row.owner)}
                     fallback={
                         <Space>
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>编辑</Button>
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>删除</Button>
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
                         </Space>
                     }
                 >
                     <Space>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => modifyGroup(row)}>编辑</Button>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row })}>删除</Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => modifyGroup(row)}><FormattedMessage id="operation.edit"/></Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete"/></Button>
                     </Space>
                 </Access>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}>日志</Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}><FormattedMessage id="operation.log"/></Button>
             </Space>,
         },
     ];
@@ -353,7 +355,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
             <Row justify="space-between" style={{ padding: '16px 20px 0' }} ref={outTable}>
                 <div className={data.total == 0 ? styles.hidden : ''} >
-                    共{data.total || 0}条
+                   {formatMessage({id: 'pagination.total.strip'}, {data: data.total || 0 })}
                 </div>
                 <Pagination
                     className={data.total == 0 ? styles.hidden : ''}
@@ -371,7 +373,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={outId ? "编辑集群" : "创建集群"}
+                title={outId ? <FormattedMessage id="device.cluster.edit"/>: <FormattedMessage id="device.cluster.btn"/>}
                 width={376}
                 onClose={() => setVisible(false)}
                 visible={visible}
@@ -379,10 +381,10 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 footer={
                     <div style={{ textAlign: 'right', }}>
                         <Button onClick={() => setVisible(false)} style={{ marginRight: 8 }}>
-                            取消
+                            <FormattedMessage id="device.cluster.btn"/>
                         </Button>
-                        <Button type="primary" onClick={() => onSubmit()} >
-                            {outId ? '更新' : '确定'}
+                        <Button type="primary" onClick={() => onSubmit()}>
+                            {outId ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
                         </Button>
                     </div>
                 }
@@ -393,13 +395,13 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 >
                     <Row gutter={16}>
                         <Col span={24}>
-                            <Form.Item label="集群名称"
+                            <Form.Item label={<FormattedMessage id="device.cluster.name.s"/>}
                                 name="name"
-                                rules={[{ required: true, message: '请输入集群名称' }]}
+                                rules={[{ required: true, message: formatMessage({id: 'device.cluster.name.s.message'}) }]}
                                 validateStatus={validateResult.error ? 'error' : undefined}
-                                help={validateResult.msg === 'cluster existed' ? '集群名称已存在' : validateResult.msg}
+                                help={validateResult.msg === 'cluster existed' ? formatMessage({id: 'device.cluster.name.s.existed'}) : validateResult.msg}
                             >
-                                <Input autoComplete="off" placeholder="请输入" onChange={(e: any) => setValidateResult({})} />
+                                <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} onChange={(e: any) => setValidateResult({})} />
                             </Form.Item>
                         </Col>
                         <Col span={24}>
@@ -411,9 +413,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                         <Col span={24}>
                             <Form.Item
                                 name="description"
-                                label="备注"
+                                label={<FormattedMessage id="device.description"/>}
                             >
-                                <Input.TextArea rows={3} placeholder="请输入" />
+                                <Input.TextArea rows={3} placeholder={formatMessage({id: 'please.enter'})} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -424,17 +426,17 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             {/** 云上集群 - 添加 */}
             <GroupMachine onRef={aloneMachine} run_mode={'standalone'} ws_id={ws_id} onSuccess={successCallback} />
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 visible={deleteVisible}
                 //onOk={remOuter}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeGroup(deleteObj.id)}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={600}
@@ -442,28 +444,28 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    已有模板配置了该集群，删除机器后对应的测试机配置会自动改为随机，请谨慎删除！！
+                    <FormattedMessage id="device.cluster.delete.tips"/>
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.quote.details"/></div>
             </Modal>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeGroup(deleteObj.id)}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要删除吗？
+                    <FormattedMessage id="delete.prompt"/>
                 </div>
             </Modal>
         </div>

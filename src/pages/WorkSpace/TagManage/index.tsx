@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Space, Tabs, Drawer, Form, Tag, Input, message, Popconfirm, Pagination, Spin, Popover, Table, Row } from 'antd';
+import { FormattedMessage, useIntl  } from 'umi'
 import { tagList, addTag, editTag, delSuite } from './service';
 import styles from './style.less';
 import ColorPicker from './components/ColorPicker';
@@ -10,7 +11,9 @@ import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import SelectDrop from '@/components/Public//SelectDrop';
 import { SingleTabCard } from '@/components/UpgradeUI';
 import { requestCodeMessage } from '@/utils/utils';
+
 const SuiteManagement: React.FC<any> = props => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const { TabPane } = Tabs;
     const [formSuite] = Form.useForm();
@@ -48,7 +51,7 @@ const SuiteManagement: React.FC<any> = props => {
     const editOuter = (row: any) => {
         formSuite.resetFields()
         setValidateStatus('success')
-        setMsg('仅允许包含字母、数字、下划线、中划线、点')
+        setMsg(formatMessage({id: 'job.tags.msg1'}) )
         setVisible(true)
         setOutId(row.id)
         setTimeout(function () {
@@ -77,7 +80,7 @@ const SuiteManagement: React.FC<any> = props => {
         }
         if (res.code == 1302) {
             setValidateStatus('error')
-            setMsg('标签名称已存在')
+            setMsg(formatMessage({id: 'job.tags.msg2'}) )
             setFetching(false)
             return
         }
@@ -87,7 +90,7 @@ const SuiteManagement: React.FC<any> = props => {
         setTimeout(function () {
             setFetching(false)
         }, 1)
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         outId ? setRefresh(!refresh) : page == 1 ? setRefresh(!refresh) : setPage(1)
     }
     const onSuiteSubmit = () => {
@@ -95,11 +98,11 @@ const SuiteManagement: React.FC<any> = props => {
             const reg = new RegExp(/^[A-Za-z0-9\._-]*$/g);
             if (!val.name || val.name.replace(/\s+/g, "") == '') {
                 setValidateStatus('error')
-                setMsg('请输入')
+                setMsg(formatMessage({id: 'please.enter'}) )
                 return
             } else if (!reg.test(val.name) || val.name.length > 32) {
                 setValidateStatus('error')
-                setMsg('仅允许包含字母、数字、下划线、中划线、点，最长32个字符')
+                setMsg(formatMessage({id: 'job.tags.msg3'}) )
                 return
             } else {
                 submitSuite(val)
@@ -107,7 +110,7 @@ const SuiteManagement: React.FC<any> = props => {
         }).catch(err => {
             if (!err.values.name || err.values.name.replace(/\s+/g, "") == '') {
                 setValidateStatus('error')
-                setMsg('请输入')
+                setMsg(formatMessage({id: 'please.enter'}) )
             }
         })
     }
@@ -119,7 +122,7 @@ const SuiteManagement: React.FC<any> = props => {
         //     formSuite.setFieldsValue({ run_environment: 'aligroup', run_mode: 'standalone', tag_color: 'rgb(255,157,78,1)' })
         // }, 1)
         setValidateStatus('')
-        setMsg('仅允许包含字母、数字、下划线、中划线、点')
+        setMsg(formatMessage({id: 'job.tags.msg1'}) )
     }
     const remOuter = async (params: any) => {
         const res = await delSuite({ tag_id: params.id, ws_id })
@@ -128,13 +131,14 @@ const SuiteManagement: React.FC<any> = props => {
             return
         }
         setPage(Math.round((data.total - 1) / pageSize) || 1)
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         setRefresh(!refresh)
     }
 
+    // <FormattedMessage id=""/>
     const columns: any = [
         {
-            title: '标签名称',
+            title: <FormattedMessage id="job.tags.tag.name"/>,
             dataIndex: 'name',
             width: 120,
             filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
@@ -160,26 +164,26 @@ const SuiteManagement: React.FC<any> = props => {
             )
         },
         {
-            title: '标签来源',
+            title: <FormattedMessage id="job.tags.source_tag"/>,
             dataIndex: 'source_tag',
             width: 100,
         },
         {
-            title: '创建人',
+            title: <FormattedMessage id="job.tags.creator_name"/>,
             dataIndex: 'creator_name',
             width: 100,
             filterIcon: () => <FilterFilled style={{ color: creator_id ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectDrop confirm={confirm} onConfirm={(val: number) => { setPage(1), setCreator(val) }} />,
         },
         {
-            title: '修改人',
+            title: <FormattedMessage id="job.tags.update_user"/>,
             dataIndex: 'update_user',
             width: 100,
             filterIcon: () => <FilterFilled style={{ color: update_id ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectDrop confirm={confirm} onConfirm={(val: number) => { setPage(1), setUpdater(val) }} />,
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="job.tags.gmt_created"/>,
             dataIndex: 'gmt_created',
             width: 120,
             ellipsis: {
@@ -188,7 +192,7 @@ const SuiteManagement: React.FC<any> = props => {
             render: (_: any, row: any) => row.source_tag !== '系统标签' && <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: '修改时间',
+            title: <FormattedMessage id="job.tags.gmt_modified"/>,
             dataIndex: 'gmt_modified',
             width: 120,
             ellipsis: {
@@ -197,7 +201,7 @@ const SuiteManagement: React.FC<any> = props => {
             render: (_: any, row: any) => row.source_tag !== '系统标签' && <PopoverEllipsis title={row.gmt_modified} />
         },
         {
-            title: '备注',
+            title: <FormattedMessage id="job.tags.remarks"/>,
             dataIndex: 'description',
             width: 100,
             filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
@@ -217,33 +221,34 @@ const SuiteManagement: React.FC<any> = props => {
             </PopoverEllipsis>
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             valueType: 'option',
             dataIndex: 'creator',
             width: 150,
             render: (_: any, row: any) => (
                 row.source_tag !== '系统标签' &&
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter({ ...row })}>编辑</Button>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter({ ...row })}><FormattedMessage id="operation.edit"/></Button>
                     <Popconfirm
-                        title={<div style={{ color: 'red' }}>删除标签后，Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
+                        title={<div style={{ color: 'red' }}><FormattedMessage id="job.tags.delete.prompt"/></div>}
                         placement="topRight"
-                        okText="取消"
-                        cancelText="确定删除"
+                        okText={<FormattedMessage id="operation.cancel"/>}
+                        cancelText={<FormattedMessage id="operation.delete"/>}
                         onCancel={() => remOuter(row)}
                         overlayStyle={{ width: '300px' }}
                         icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                     >
-                        <Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
                     </Popconfirm>
             </Space>
             ),
         },
     ];
+
     return (
         <SingleTabCard
-            title={'Job标签管理'}
-            extra={<Button key="3" type="primary" onClick={newSuite}>新建Job标签</Button>}
+            title={<FormattedMessage id="job.tags.name"/>}
+            extra={<Button key="3" type="primary" onClick={newSuite}><FormattedMessage id="job.tags.create"/></Button>}
         >
             <Spin spinning={loading}>
                 <Table
@@ -254,8 +259,8 @@ const SuiteManagement: React.FC<any> = props => {
                     size="small"
                 />
                 <Row justify="space-between" style={{ marginTop: 20 }}>
-                    <div className={data.total == 0 ? styles.hidden : ''} >
-                        共{data.total}条
+                    <div className={data.total == 0 ? styles.hidden : ''}>
+                        {formatMessage({id: 'pagination.total.strip'}, {data: data.total})}
                     </div>
                     <Pagination
                         size="small"
@@ -274,7 +279,7 @@ const SuiteManagement: React.FC<any> = props => {
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={(outId ? '编辑' : "创建") + "标签"}
+                title={outId ? <FormattedMessage id="job.tags.edit.tag"/>: <FormattedMessage id="job.tags.create.tag"/>}
                 width={376}
                 onClose={() => setVisible(false)}
                 visible={visible}
@@ -286,10 +291,10 @@ const SuiteManagement: React.FC<any> = props => {
                         }}
                     >
                         <Button onClick={() => setVisible(false)} style={{ marginRight: 8 }}>
-                            取消
+                            <FormattedMessage id="operation.cancel"/>
                         </Button>
                         <Button onClick={onSuiteSubmit} type="primary" htmlType="submit" >
-                            {outId ? '更新' : '确定'}
+                            {outId ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
                         </Button>
                     </div>
                 }
@@ -305,25 +310,28 @@ const SuiteManagement: React.FC<any> = props => {
                     >
                         <Form.Item
                             name="tag_color"
-                            label="标签颜色"
-                            rules={[{ required: true, message: '请选择' }]}
+                            label={<FormattedMessage id="job.tags.tag_color"/>}
+                            rules={[{ 
+                                required: true, 
+                                message: formatMessage({id: 'please.select'}),
+                            }]}
                         >
                             <ColorPicker />
                         </Form.Item>
                         <Form.Item
                             name="name"
-                            label="标签名称"
+                            label={<FormattedMessage id="job.tags.tag.name"/>}
                             validateStatus={validateStatus}
                             help={msg}
                             rules={[{ required: true }]}
                         >
                             <Input
                                 autoComplete="off"
-                                placeholder="请输入"
+                                placeholder={formatMessage({id: 'please.enter'}) }
                                 onChange={(e) => {
                                     if (!e.target.value.replace(/\s+/g, "")) {
                                         setValidateStatus('error')
-                                        setMsg('请输入')
+                                        setMsg(formatMessage({id: 'please.enter'})  )
                                         return
                                     }
                                     setMsg(undefined)
@@ -333,9 +341,9 @@ const SuiteManagement: React.FC<any> = props => {
                         </Form.Item>
                         <Form.Item
                             name="description"
-                            label="备注"
+                            label={<FormattedMessage id="job.tags.remarks"/>}
                         >
-                            <Input.TextArea rows={3} placeholder="请输入备注信息" />
+                            <Input.TextArea rows={3} placeholder={formatMessage({id: 'job.tags.remarks.placeholder'}) } />
                         </Form.Item>
                     </Form>
                 </Spin>

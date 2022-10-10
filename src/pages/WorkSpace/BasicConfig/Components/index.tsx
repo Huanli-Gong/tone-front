@@ -4,12 +4,10 @@ import styles from './index.less'
 import _ from 'lodash'
 
 import { saveWorkspaceConfig, deleteWorkspace } from '@/services/Workspace'
-import { useParams, history } from 'umi'
+import { useParams, history, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 import { queryWorkspaceMember } from '@/services/Workspace'
 import produce from 'immer'
-
-import type { SelectProps } from 'antd/es/select';
 
 interface ContentProps {
     handleCancel?: () => void,
@@ -37,8 +35,8 @@ export const IsPublicComponent = (props: any) => {
     return (
         <Space>
             <Radio.Group onChange={handleClick} value={title} disabled={props.disabled}>
-                <Radio value={true}>公开</Radio>
-                <Radio value={false}>私密</Radio>
+                <Radio value={true}><FormattedMessage id="ws.config.public"/></Radio>
+                <Radio value={false}><FormattedMessage id="ws.config.private"/></Radio>
             </Radio.Group>
         </Space>
     )
@@ -123,6 +121,9 @@ const nameRunder = ({ first_name, last_name }: { first_name: string, last_name: 
 }
 
 export const TransferContent: React.FC<ContentProps> = (props) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id } = useParams() as any
     const { refresh } = props
 
@@ -165,10 +166,10 @@ export const TransferContent: React.FC<ContentProps> = (props) => {
     return (
         <Layout.Content style={{ width: 400 }}>
             <Row style={{ marginTop: 4, marginBottom: 24 }} className={styles.full_width}>
-                <Alert message="Workspace权限转移，将空间所有权限转交给指定成员" type="warning" showIcon style={{ width: '100%', height: 32 }} />
+                <Alert message={<FormattedMessage id="ws.config.transfer.Alert"/>} type="warning" showIcon style={{ width: '100%', height: enLocale ? 64: 32 }} />
             </Row>
             <Row className={styles.full_width}>
-                <Typography.Text strong >用户</Typography.Text>
+                <Typography.Text strong><FormattedMessage id="ws.config.transfer.user"/></Typography.Text>
             </Row>
             <Row style={{ marginTop: 6 }} className={styles.full_width}>
                 <Select
@@ -177,7 +178,7 @@ export const TransferContent: React.FC<ContentProps> = (props) => {
                     value={id}
                     showSearch
                     onSearch={_.debounce(handleSearch, 500)}
-                    placeholder="输入花名、姓名"
+                    placeholder={formatMessage({id: 'ws.config.transfer.placeholder'})}
                     notFoundContent={fetching ? <Spin size="small" /> : null}
                     filterOption={false}
                     options={members}
@@ -186,8 +187,8 @@ export const TransferContent: React.FC<ContentProps> = (props) => {
             <Divider style={{ marginTop: 24, marginBottom: 10, width: 'calc(100% + 48px)', transform: 'translateX(-24px)' }} />
             <Row justify="end" className={styles.full_width}>
                 <Space>
-                    <Button onClick={props.handleCancel}>取消</Button>
-                    <Button type="primary" onClick={() => handleSubmit()}>确定</Button>
+                    <Button onClick={props.handleCancel}><FormattedMessage id="operation.cancel"/></Button>
+                    <Button type="primary" onClick={() => handleSubmit()}><FormattedMessage id="operation.ok"/></Button>
                 </Space>
             </Row>
         </Layout.Content>
@@ -211,13 +212,15 @@ export const LogOffContent: React.FC<ContentProps> = (props) => {
     return (
         <Layout.Content style={{ width: 400 }}>
             <Row>
-                <Typography.Text style={{ color: '(0,0,0,0.65)', lineHeight: '22px' }}>一旦你注销Workspace，里面所有Job结果、测试计划、测试分析、测试报告中所有内容以及所关联的所有文档都将会被永久删除。这是一个不可恢复的操作，请谨慎对待！</Typography.Text>
+                <Typography.Text style={{ color: '(0,0,0,0.65)', lineHeight: '22px' }}>
+                    <FormattedMessage id="ws.config.warning"/>
+                </Typography.Text>
             </Row>
             <Divider style={{ marginTop: 24, marginBottom: 10, width: 'calc(100% + 48px)', transform: 'translateX(-24px)' }} />
             <Row justify="end" className={styles.full_width}>
                 <Space>
-                    <Button onClick={handleCancel}>取消</Button>
-                    <Button type="primary" onClick={() => handleSubmit && handleSubmit()} >注销</Button>
+                    <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
+                    <Button type="primary" onClick={() => handleSubmit && handleSubmit()} ><FormattedMessage id="operation.log.off"/></Button>
                 </Space>
             </Row>
         </Layout.Content>

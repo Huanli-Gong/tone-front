@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Badge } from 'antd';
+import { useIntl, FormattedMessage  } from 'umi'
 
 const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dataArr }) => {
 	// const dataArr = stateType === 'real_state' ? ['Available','Broken'] : ['Available', 'Occupied', 'Broken', 'Reserved']
@@ -39,7 +40,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 				<Select
 					allowClear
 					style={{ width: '100%' }}
-					placeholder={'请选择状态'}
+					placeholder={<FormattedMessage id="ws.dashboard.please.select.state" />}
 					showSearch
 					onSearch={handleSearch}
 					onChange={handleSelectChange}
@@ -64,7 +65,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 					size="small"
 					style={{ width: 75 }}
 				>
-					搜索
+					<FormattedMessage id="operation.search" />
 				</Button>
 				<Button
 					type="text"
@@ -77,7 +78,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 					size="small"
 					style={{ width: 75, border: 'none' }}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 				</Button>
 			</Space>
 		</div>

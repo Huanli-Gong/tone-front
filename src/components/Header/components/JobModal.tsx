@@ -78,7 +78,7 @@ const JobTemplateModal: React.FC<Record<string, any>> = (props) => {
                                                                     color="#F2F4F6"
                                                                     style={{ color: '#515B6A' }}
                                                                 >
-                                                                    {field === 'server_provider' ? func(item[field]) : <FormattedMessage id={func(item[field])} defaultMessage="DEF_COMMON_FORMATE"/> }
+                                                                    {field === 'server_provider' ? func(item[field], formatMessage) : <FormattedMessage id={func(item[field])} defaultMessage="DEF_COMMON_FORMATE"/> }
                                                                 </Tag>
                                                             )
                                                         })

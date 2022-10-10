@@ -1,0 +1,26 @@
+export default {
+  // job templates
+  'job.templates.list': '模板列表',
+  'job.templates.name': '名称',
+  'job.templates.description': '描述',
+  'job.templates.enable': '启用',
+  'job.templates.stop': '停用',
+  'job.templates.job_type': 'Job类型',
+  'job.templates.creator_name': '创建人',
+  'job.templates.update_user': '修改人',
+  'job.templates.gmt_created': '创建时间',
+  'job.templates.gmt_modified': '修改时间',
+  'job.templates.delete.the.problem.template': '问题模板，请及时删除！',
+
+  'job.templates.copy': '模板复制',
+  'job.templates.edit': '模板编辑',
+  'job.templates.original.name': '原模板名称',
+  'job.templates.template.name': '模板名称',
+  'job.templates.new.template.name': '新模板名称',
+  'job.templates.template.name.message': '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
+  'job.templates.templates.desc': '模板描述',
+  'job.templates.templates.desc.placeholder': '请输入模板描述',
+  'job.templates.delete.prompt': '删除提示',
+  'job.templates.delete.prompt.ps': '删除该模板将同时移除测试计划中的此模板配置，请谨慎删除！！', 
+  'job.templates.view.details': '查看引用详情',
+}

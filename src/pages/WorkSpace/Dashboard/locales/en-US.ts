@@ -48,7 +48,7 @@ const text =  {
   'import.test.cases': 'Import testcases',
   'import.notification.config': 'Import notification configuration',
   // report table
-  'view.report': 'View report',
+  'view.report': 'View Report',
   'report.name': 'Name',
   'report.creator_name': 'Creator',
   'report.gmt_created': 'Created at',

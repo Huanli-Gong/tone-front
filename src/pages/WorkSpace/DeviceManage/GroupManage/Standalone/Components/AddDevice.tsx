@@ -6,11 +6,12 @@ import Owner from '@/components/Owner/index';
 import DeployServer from '../../Components/DeployServer'
 import DeployModal from './DeployModal'
 import styles from './AddDevice.less'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import { AgentSelect } from '@/components/utils';
 import MachineTags from '@/components/MachineTags';
 
 const AddDeviceDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const { onFinish } = props
 
@@ -24,12 +25,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const [ips, setIps] = useState<any>({ success: [], errors: [] })
     const [validateMsg, setValidateMsg] = useState<any>('');
     const [padding, setPadding] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [selectIpsValue, setSelectIpsValue] = useState('')
     const [vals, setVals] = useState([])
     const [validateResult, setValidateResult] = useState<any>({});
     const [isMoreEdit, setIsMoreEdit] = useState<boolean>(false)
-    const SELECT_IPS_PLACEHOLDER_STRING = `输入${BUILD_APP_ENV ? '机器IP' : 'IP/SN'},多个以空格或英文逗号分隔`
+    const SELECT_IPS_PLACEHOLDER_STRING = formatMessage({ id: BUILD_APP_ENV ? 'device.machine.IP.placeholder1' : 'device.machine.IP.placeholder2' })
     const [tagFlag, setTagFlag] = useState({
         list: [],
         isQuery: '',
@@ -83,12 +84,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             }
 
             if (data.code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 onFinish()
                 handleClose()
             }
             else {
-                message.error(data.msg || '操作失败')
+                message.error(data.msg || formatMessage({id: 'operation.failed'}) )
             }
             setPadding(false)
         })
@@ -96,7 +97,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setPadding(false)
             })
     }
-    
+
     // 提交
     const handleMoreEditFinish = () => {
         setPadding(true)
@@ -108,12 +109,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             data = await batchPutTestServer(values)
 
             if (data.code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 onFinish()
                 handleClose()
             }
             else {
-                message.error(data.msg || '操作失败')
+                message.error(data.msg || formatMessage({id: 'operation.failed'}) )
             }
             setPadding(false)
         })
@@ -142,7 +143,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}>详细信息</span></Tooltip>
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info"/></span></Tooltip>
         </Space>
     )
 
@@ -150,8 +151,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const ValidateIps: React.FC<any> = ({ data, channelType }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}>详细信息</span></Tooltip>
-            {BUILD_APP_ENV ? <></> : channelType === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick(data.data)}>部署ToneAgent</span>}
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info"/></span></Tooltip>
+            {BUILD_APP_ENV ? <></> : channelType === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick(data.data)}>
+                <FormattedMessage id="device.deploy.toneagent"/>
+            </span>}
         </Space>
     )
 
@@ -273,7 +276,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             keyboard={false}
             maskClosable={false}
             forceRender={true}
-            title={!modifyProps ? '添加机器' : '编辑机器'}
+            title={!modifyProps ? <FormattedMessage id="device.add.btn"/>: <FormattedMessage id="device.device.edit"/>}
             width="376"
             visible={visible}
             destroyOnClose={true}
@@ -282,9 +285,9 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right' }}>
                     <Space>
-                        <Button onClick={handleClose} disabled={padding}>取消</Button>
+                        <Button onClick={handleClose} disabled={padding}><FormattedMessage id="operation.cancel"/></Button>
                         <Button onClick={isMoreEdit ? handleMoreEditFinish : handleFinish} type="primary" loading={padding}>
-                            {!modifyProps ? '确定' : '更新'}
+                            {!modifyProps ? <FormattedMessage id="operation.ok"/>: <FormattedMessage id="operation.update"/>}
                         </Button>
                     </Space>
                 </div>
@@ -298,11 +301,11 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         channel_type: BUILD_APP_ENV ? open_agent : self_agent
                     }}
                 >
-                    {!isMoreEdit && <Form.Item label="控制通道"
+                    {!isMoreEdit && <Form.Item label={<FormattedMessage id="device.channel_type"/>}
                         name="channel_type"
                         rules={[{
                             required: true,
-                            message: '请选择控制通道',
+                            message: formatMessage({id: 'device.channel_type.message'}),
                         }]}
                         // 表单提交后校验该通道是否可用
                         validateStatus={validateResult.error ? 'error' : ''}
@@ -314,7 +317,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         <AgentSelect
                             onChange={handleIpsChange}
                             disabled={BUILD_APP_ENV ? true : disabledState}
-                            placeholder="请选择控制通道"
+                            placeholder={formatMessage({id: 'device.channel_type.message'}) }
                         />
                     </Form.Item>}
 
@@ -322,7 +325,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     {/** 添加 */}
                     {!isMoreEdit && !modifyProps &&
                         <Form.Item
-                            label={BUILD_APP_ENV ? "机器IP" : '机器'}
+                            label={BUILD_APP_ENV ? <FormattedMessage id="device.machine.IP"/>: <FormattedMessage id="device.machine"/>}
                             name="ips"
                             validateStatus={ips.errors.length > 0 ? 'error' : undefined}
                             help={ips.errors.length > 0 ? validateMsg : undefined}
@@ -355,13 +358,13 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     {/** 编辑 */}
                     {!isMoreEdit && modifyProps &&
                         <>
-                            <Form.Item name="ip" label="机器">
+                            <Form.Item name="ip" label={<FormattedMessage id="device.machine"/>}>
                                 <Input disabled />
                             </Form.Item>
                             <Form.Item
                                 name="name"
-                                label="机器名称"
-                                rules={[{ required: true, message: '请输入机器名称' }]}
+                                label={<FormattedMessage id="device.machine.name"/>}
+                                rules={[{ required: true, message: formatMessage({id: 'device.machine.message'}) }]}
                                 initialValue="SN"
                             >
                                 <Input autoComplete="off" />
@@ -377,12 +380,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     }
 
                     {!isMoreEdit && <Form.Item
-                        label="使用状态"
+                        label={<FormattedMessage id="device.usage.state"/>}
                         name="state"
-                        rules={[{ required: true, message: '请选择机器状态!' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
                         initialValue={'Available'}
                     >
-                        <Select placeholder="请选择机器状态" disabled={disabledState}>
+                        <Select placeholder={formatMessage({id: 'device.usage.state.message'})} disabled={disabledState}>
                             <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
                             <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
                             <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
@@ -390,8 +393,8 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     </Form.Item>}
                     {!isMoreEdit && <Owner />}
                     {!isMoreEdit && <MachineTags {...tagFlag}/>}
-                    <Form.Item label="备注" name="description">
-                        <Input.TextArea placeholder="请输入备注信息" />
+                    <Form.Item label={<FormattedMessage id="device.description"/>} name="description">
+                        <Input.TextArea placeholder={formatMessage({id: 'device.description.placeholder'})} />
                     </Form.Item>
                 </Form>
             </Spin>

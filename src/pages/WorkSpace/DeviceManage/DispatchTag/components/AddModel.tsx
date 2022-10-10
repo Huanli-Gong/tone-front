@@ -2,11 +2,12 @@ import React from 'react'
 import { Drawer, Button, Form, Input, message } from 'antd'
 import ColorPicker from './ColorPicker';
 import { addTag, editTag } from '../service';
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 
 const nameReg = /^[A-Za-z0-9\._-]{0,32}$/
 
 const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = ({ callback }, ref) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
 
     const [form] = Form.useForm();
@@ -54,7 +55,7 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
                         message.error(msg)
                         return
                     }
-                    message.success('操作成功');
+                    message.success(formatMessage({id: 'operation.success'}) );
                     callback()
                     handleClose()
                 }
@@ -67,7 +68,7 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={(dataSet.id ? '编辑' : "创建") + "标签"}
+            title={dataSet.id ? <FormattedMessage id="device.edit.tag"/>: <FormattedMessage id="device.create.tag"/>}
             width={376}
             onClose={handleClose}
             visible={visible}
@@ -75,10 +76,10 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Button onClick={handleClose} style={{ marginRight: 8 }}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                     <Button onClick={onSuiteSubmit} type="primary" htmlType="submit" >
-                        {dataSet.id ? '更新' : '确定'}
+                        {dataSet.id ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
                     </Button>
                 </div>
             }
@@ -92,35 +93,35 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
             >
                 <Form.Item
                     name="tag_color"
-                    label="标签颜色"
-                    rules={[{ required: true, message: '请选择' }]}
+                    label={<FormattedMessage id="device.tag_color"/>}
+                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                 >
                     <ColorPicker />
                 </Form.Item>
                 <Form.Item
                     name="name"
-                    label="标签名称"
+                    label={<FormattedMessage id="device.tag.name"/>}
                     rules={[
                         {
                             validator(rule, value) {
-                                if (!value) return Promise.reject('标签名称不能为空')
-                                if (!value.replace(/\s+/g, "")) return Promise.reject('标签名称不能为空')
-                                if (!nameReg.test(value)) return Promise.reject('仅允许包含字母、数字、下划线、中划线、点，最长32个字符')
+                                if (!value) return Promise.reject(formatMessage({id: 'device.tag.name.message'}) )
+                                if (!value.replace(/\s+/g, "")) return Promise.reject(formatMessage({id: 'device.tag.name.message'}) )
+                                if (!nameReg.test(value)) return Promise.reject(formatMessage({id: 'device.name.message'}) )
                                 return Promise.resolve()
                             }
                         }
                     ]}
                 >
                     <Input
-                        placeholder="请输入"
+                        placeholder={formatMessage({id: 'please.select'}) }
                         autoComplete="off"
                     />
                 </Form.Item>
                 <Form.Item
                     name="description"
-                    label="备注"
+                    label={<FormattedMessage id="device.description"/>}
                 >
-                    <Input.TextArea rows={3} placeholder="请输入备注信息" />
+                    <Input.TextArea rows={3} placeholder={formatMessage({id: 'device.description.placeholder'}) } />
                 </Form.Item>
             </Form>
         </Drawer>

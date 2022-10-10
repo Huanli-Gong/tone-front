@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Layout, Tabs, Space, Avatar, Typography, Button, message, Input, Modal, Select, Row, Col, Form, AutoComplete } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { queryMember, addWorkspaceMember, queryWorkspaceMemberCounts, queryWorkspaceMember } from '@/services/Workspace'
 import styles from './index.less'
 import TableComponent from './Components/Table'
 import { roleList } from '@/pages/SystemConf/UserManagement/service'
 import { Access, useAccess } from 'umi'
 import { SingleTabCard } from '@/components/UpgradeUI';
-import { requestCodeMessage, switchUserRole } from '@/utils/utils';
+import { requestCodeMessage, switchUserRole2 } from '@/utils/utils';
 
 let timeout: any
 let timer: any
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const access = useAccess();
     const [role, setRole] = useState('ws_owner')
@@ -109,7 +111,7 @@ export default (props: any) => {
                     setPadding(false)
 
                     if (data.code === 200) {
-                        message.success('添加成功!')
+                        message.success(formatMessage({id: 'operation.success'}) )
                         setVisible(false)
                         //getMemberCounts()
                         setRefresh(!refresh)
@@ -134,10 +136,10 @@ export default (props: any) => {
     }
 
     const childTabs = [
-        { name: `所有者 ${memberCounts.ws_owner}`, role: 'ws_owner' },
-        { name: `管理员 ${memberCounts?.ws_admin}`, role: 'ws_admin' },
-        { name: `测试管理员 ${memberCounts?.ws_test_admin}`, role: 'ws_test_admin' },
-        { name: `Workspace成员 ${memberCounts.ws_member}`, role: 'ws_member' }
+        { name: `${formatMessage({id: 'member.ws_owner'})} ${memberCounts.ws_owner}`, role: 'ws_owner' },
+        { name: `${formatMessage({id: 'member.ws_admin'})} ${memberCounts?.ws_admin}`, role: 'ws_admin' },
+        { name: `${formatMessage({id: 'member.ws_test_admin'})} ${memberCounts?.ws_test_admin}`, role: 'ws_test_admin' },
+        { name: `${formatMessage({id: 'member.ws_member'})} ${memberCounts.ws_member}`, role: 'ws_member' }
     ]
 
     const getMemberCounts = async () => {
@@ -156,7 +158,7 @@ export default (props: any) => {
     return (
         <Layout.Content>
             <SingleTabCard
-                title={`全部 ${memberCounts.all_count}`}
+                title={`${formatMessage({id: 'all'})} ${memberCounts.all_count}`}
                 extra={
                     <Space>
                         <AutoComplete
@@ -167,14 +169,14 @@ export default (props: any) => {
                             onSearch={handleSearchWorkspaceMember}
                         >
                             <Input.Search
-                                placeholder="搜索用户"
+                                placeholder={formatMessage({id: 'member.search.users'})}
                                 onPressEnter={(evt: any) => setKeyword(evt.target.value)}
                             />
                         </AutoComplete>
                         <Access
                             accessible={access.WsBtnPermission()}
                         >
-                            <Button type="primary" onClick={handleOpenAddMemberModal}>添加成员</Button>
+                            <Button type="primary" onClick={handleOpenAddMemberModal}><FormattedMessage id="member.add.member"/></Button>
                         </Access>
                     </Space>
                 }
@@ -202,7 +204,7 @@ export default (props: any) => {
             {
                 visible &&
                 <Modal
-                    title="添加成员"
+                    title={formatMessage({id: 'member.add.member'})}
                     visible={visible}
                     onOk={handleOk}
                     onCancel={handleCancel}
@@ -212,9 +214,11 @@ export default (props: any) => {
                         layout="vertical"
                         form={form}
                     >
-                        <Form.Item label="用户" name="emp_id_list"
+                        <Form.Item 
+                            label={<FormattedMessage id="member.user"/>}
+                            name="emp_id_list"
                             rules={[
-                                { required: true, message: '请选择用户' }
+                                { required: true, message: formatMessage({id: 'member.please.select.user'}) }
                             ]}
                         >
                             <Select
@@ -248,22 +252,24 @@ export default (props: any) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="角色" name="role_id"
+                        <Form.Item 
+                            label={<FormattedMessage id="member.role"/>}
+                            name="role_id"
                             rules={[
                                 {
                                     required: true,
-                                    message: '请选择角色',
+                                    message: formatMessage({id: 'member.please.select.role'}),
                                 }
                             ]}
                         >
                             <Select
                                 style={{ width: '100%', minHeight: 32 }}
-                                placeholder="请选择角色"
+                                placeholder={formatMessage({id: 'member.please.select.role'})}
                                 allowClear
                                 showArrow
                             >
                                 {select.map((item: any) => {
-                                    return <Select.Option key={item.id} value={item.id}>{switchUserRole(item.name)}</Select.Option>
+                                    return <Select.Option key={item.id} value={item.id}>{switchUserRole2(item.name, formatMessage)}</Select.Option>
                                 })}
                             </Select>
                         </Form.Item>

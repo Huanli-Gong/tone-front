@@ -1,7 +1,7 @@
 import { Table, Layout, Spin, Row } from 'antd'
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import BaselineFailDetail from './BaselineFailDetail'
-import { useLocation } from 'umi'
+import { useLocation, FormattedMessage, useIntl } from 'umi'
 
 import { queryBaselineDetail } from '../services'
 import BaselineMetricDetail from './BaselineMetricDetail'
@@ -11,6 +11,7 @@ import treeSvg from '@/assets/svg/tree.svg'
 
 // 性能三级
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { isOpen, setIsOpen } = props
     const { query }: any = useLocation()
 
@@ -52,7 +53,7 @@ export default (props: any) => {
                     if (+ testCase.test_case_id === + query.test_case_id) {
                         setCurrent(testCase)
                         addScript.current?.show(
-                            test_type === 'functional' ? 'FailCase详情' : 'Metric详情',
+                            test_type === 'functional' ? formatMessage({id: 'pages.workspace.baseline.failDetail'}): formatMessage({id: 'pages.workspace.baseline.mertricDetail'}),
                             testCase
                         )
                         setLoading(false)
@@ -99,11 +100,10 @@ export default (props: any) => {
                                     onClick: () => {
                                         setExpand(!expand);
                                         setCurrent(record);
-                                        if (test_type === 'functional') {
-                                            addScript.current?.show('FailCase详情', record)
-                                        } else {
-                                            addScript.current?.show('Metric详情', record)
-                                        }
+                                        addScript.current?.show(
+                                            test_type === 'functional'? formatMessage({id: 'pages.workspace.baseline.failDetail'}): formatMessage({id: 'pages.workspace.baseline.mertricDetail'}), 
+                                            record,
+                                        )
                                     }, // 点击行
 
                                 };

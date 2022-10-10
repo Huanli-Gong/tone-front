@@ -13,7 +13,7 @@ import {
 import { SettingEdit, IsPublicComponent } from './Components'
 import { Access, useAccess } from 'umi'
 import { queryWorkspaceDetail, saveWorkspaceConfig } from '@/services/Workspace'
-import { useModel, useParams } from 'umi'
+import { useModel, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import PartDom from '@/components/Public/TitlePart'
 import styles from './index.less'
 import _ from 'lodash'
@@ -26,6 +26,9 @@ import Cover from './Components/Cover'
 const { Text } = Typography
 
 const WorkspaceBasicConfig: React.FC = () => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id } = useParams() as any
 
     const access = useAccess();
@@ -87,7 +90,7 @@ const WorkspaceBasicConfig: React.FC = () => {
         })
         if (code === 200) {
             refresh()
-            message.success('成功保存')
+            message.success(formatMessage({id: 'request.save.success'}) )
         }
         else {
             requestCodeMessage(code, msg)
@@ -104,6 +107,9 @@ const WorkspaceBasicConfig: React.FC = () => {
         && _.get(detail, 'description') === _.get(firstDetail, 'description')
         && _.get(detail, 'is_public') === _.get(firstDetail, 'is_public'))
 
+    const widthLocale = enLocale ? 120: 70
+    const wsInfoStyles = { width: widthLocale, textAlign: 'right' }
+
     return (
         <Layout.Content style={{ background: '#f5f5f5',overflowY:'auto' }}>
             <Row className={styles.row_box}>
@@ -112,13 +118,13 @@ const WorkspaceBasicConfig: React.FC = () => {
                     layout="vertical"
                     style={{ width: '100%' }}
                 >
-                    <PartDom text='封面信息' />
+                    <PartDom text={formatMessage({id: 'ws.config.cover.info'})} />
                     <Cover intro={detail} refresh={refresh} />
                     <Form.Item
-                        label="显示名 "
+                        label={<FormattedMessage id="ws.config.show_name"/>}
                         name="show_name"
                         validateStatus={errorReg.regShowName ? 'error' : undefined}
-                        help={errorReg.regShowName ? '长度最多30位,仅允许包含汉字、字母、数字、下划线、中划线、点' : undefined}
+                        help={errorReg.regShowName ? formatMessage({id: 'ws.config.show_name.help'}) : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -130,10 +136,10 @@ const WorkspaceBasicConfig: React.FC = () => {
                         />
                     </Form.Item>
                     <Form.Item
-                        label="名称 "
+                        label={<FormattedMessage id="ws.config.name"/>}
                         name="name"
                         validateStatus={errorReg.regName ? 'error' : undefined}
-                        help={errorReg.regName ? '只允许英文小写、下划线和数字，最多30个字符' : undefined}
+                        help={errorReg.regName ? formatMessage({id: 'ws.config.name.help'}) : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -146,9 +152,9 @@ const WorkspaceBasicConfig: React.FC = () => {
                         />
                     </Form.Item>
                     <Form.Item
+                        label={<FormattedMessage id="ws.config.description"/>}
                         validateStatus={errorReg.regDescription ? 'error' : undefined}
-                        help={errorReg.regDescription ? '长度最多200位' : undefined}
-                        label="介绍 "
+                        help={errorReg.regDescription ? formatMessage({id: 'ws.config.description.help'}) : undefined}
                         name="description">
                         <SettingEdit
                             type="textarea"
@@ -161,7 +167,8 @@ const WorkspaceBasicConfig: React.FC = () => {
                             setErrorReg={setErrorReg}
                         />
                     </Form.Item>
-                    <Form.Item label="是否公开 " style={{ marginBottom: 16 }} name="is_public">
+                    <Form.Item label={<FormattedMessage id="ws.config.is_public"/>}
+                        style={{ marginBottom: 16 }} name="is_public">
                         <IsPublicComponent
                             title={detail?.is_public}
                             keyName="is_public"
@@ -178,7 +185,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                             onClick={isOk ? () => { } : handleSave}
                             type="primary"
                         >
-                            确定
+                            <FormattedMessage id="operation.ok"/>
                         </Button>
                     </Access>
                 </Form>
@@ -188,10 +195,12 @@ const WorkspaceBasicConfig: React.FC = () => {
                     {...layout}
                     style={{ width: '100%' }}
                 >
-                    <PartDom text='Workspace信息' />
+                    <PartDom text={formatMessage({id: 'ws.config.workspace.info'})} />
                     <div className={styles.second_part}>
-                        <span style={{ width: 70, textAlign: 'right' }}>所有者：</span>
-                        <Row style={{ width: 'calc(100% - 70px)' }}>
+                        <span style={wsInfoStyles}>
+                            <FormattedMessage id="ws.config.owner"/>：
+                        </span>
+                        <Row style={{ width: `calc(100% - ${widthLocale}px)` }}>
                             <Col span={24}>
                                 <Space>
                                     <Avatar size={25} src={detail?.owner_avatar} />
@@ -204,11 +213,15 @@ const WorkspaceBasicConfig: React.FC = () => {
                         </Row>
                     </div>
                     <div className={styles.second_part}>
-                        <span style={{ width: 70, textAlign: 'right' }}>创建时间：</span>
+                        <span style={wsInfoStyles}>
+                            <FormattedMessage id="ws.config.creation.time"/>：
+                        </span>
                         <Text>{detail?.gmt_created}</Text>
                     </div>
                     <div className={styles.second_part} style={{ marginBottom: 16 }}>
-                        <span style={{ width: 70, textAlign: 'right' }}>人数：</span>
+                        <span style={wsInfoStyles}>
+                            <FormattedMessage id="ws.config.member_count"/>：
+                        </span>
                         <Text>{detail?.member_count}</Text>
                     </div>
                 </Form>
@@ -225,7 +238,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         style={{ width: '100%' }}
                         className={styles.three_part}
                     >
-                        <PartDom text='更多操作' />
+                        <PartDom text={formatMessage({id: 'ws.config.more.operation'})} />
                         <Form.Item>
                             <Space>
                                 <Transfer refresh={refresh} />

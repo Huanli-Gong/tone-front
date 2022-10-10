@@ -1,11 +1,13 @@
 import { Drawer, Space, Button, Form, Input, Radio, message, Select } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import { createCloudImage, updateCloudImage, queryCloudAk, queryRegionCloudAk } from '../../service'
 
 import styles from './index.less'
 import _ from 'lodash'
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const defaultParmasAk = {
             page_num: 1,
             page_size: 1000,
@@ -14,7 +16,7 @@ export default forwardRef(
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('新建Image') // 弹框顶部title
+        const [title, setTitle] = useState('new') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
         const [akData, setAkData] = useState<any>([]) // 编辑的数据
         const [regionList, setRegionList] = useState<any>([])
@@ -33,7 +35,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "新建Image", data: any = {}) => {
+                show: (title: string = "new", data: any = {}) => {
 
                     let type = ''
                     if (data && data.provider) {
@@ -84,7 +86,7 @@ export default forwardRef(
             if (code === 200) {
                 props.onOk()
                 props.setPage(1)
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 setVisible(false)
                 form.resetFields() //重置一组字段到 initialValues
             }
@@ -134,7 +136,7 @@ export default forwardRef(
                     const arr = akData.filter(item => item.name === values.ak_name)
                     if (arr.length) akId = arr[0].id
                     values.ak_id = akId
-                    if (title === '新建Image') {
+                    if (title === 'new') {
                         const { code, msg } = await createCloudImage({ ...values, ws_id: props.ws_id })
                         defaultOption(code, msg, 'new')
                     }
@@ -145,7 +147,10 @@ export default forwardRef(
                 })
                 .catch(err => console.log(err))
         }
-        const providerArr = [{ id: 'aliyun_ecs', name: '阿里云ECS' }, { id: 'aliyun_eci', name: '阿里云ECI' }]
+        const providerArr = [
+            {id:'aliyun_ecs', name: formatMessage({id: 'device.aliyun_ecs'}) },
+            {id:'aliyun_eci', name: formatMessage({id: 'device.aliyun_eci'}) },
+        ]
         const providerSelectFn = (value: string) => {
             setProviderStatus(true)
             if (value !== providerType) {
@@ -171,8 +176,10 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={padding} onClick={handleOk}>{editer && editer.name ? '更新' : '确定'}</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" disabled={padding} onClick={handleOk}>
+                                {editer && editer.name ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
+                            </Button>
                         </Space>
                     </div>
                 }
@@ -183,14 +190,14 @@ export default forwardRef(
                 /*hideRequiredMark*/
                 >
                     <Form.Item
-                        label="云服务商"
+                        label={<FormattedMessage id="device.cloud.service.provider"/>}
                         name="provider"
                         validateStatus={(!providerStatus) && 'error'}
-                        help={(!providerStatus ? `云服务商不能为空` : undefined)}
+                        help={(!providerStatus ? formatMessage({ id: 'device.cloud.service.provider.cannot.empty'}) : undefined)}
                         rules={[{ required: true }]}>
                         <Select
                             onSelect={providerSelectFn}
-                            placeholder="请选择云服务商"
+                            placeholder={formatMessage({ id: 'device.cloud.service.provider.select'})}
                             // defaultValue={providerArr[0].id}
                             filterOption={(input, option: any) => {
                                 return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -213,7 +220,7 @@ export default forwardRef(
                         label="Ak Name"
                         name="ak_name"
                         validateStatus={(!providerType || !nameAkStatus) && 'error'}
-                        help={(!providerType ? `请先选择云服务商` : undefined) || (!nameAkStatus ? `AK Name不能为空`: undefined)}
+                        help={(!providerType ? formatMessage({ id: 'device.cloud.service.provider.select'}) : undefined) || (!nameAkStatus ? formatMessage({ id: 'device.ak.name.cannot.empty'}) : undefined)}
                         rules={[{ required: true }]}>
                         <Select
                             onChange={(value) => {
@@ -225,7 +232,7 @@ export default forwardRef(
                             }
                             }
                             onSelect={() => { setNameAkStatus(true) }}
-                            placeholder="请选择AK Name"
+                            placeholder={formatMessage({ id: 'device.ak.name.select'})}
                             disabled={!providerType ? true : false}
                             showSearch={true}
                             filterOption={(input, option: any) => {
@@ -258,7 +265,7 @@ export default forwardRef(
                             }
                             setRegionStatus(true)
                         }} /> */}
-                        <Select placeholder="请输入region" disabled={!regionList.length}>
+                        <Select placeholder={formatMessage({ id: 'device.region.placeholder'})} disabled={!regionList.length}>
                             {regionList.map((item: any) =>
                                 <Select.Option value={item.id} key={item.id}>
                                     {item.name}
@@ -270,9 +277,9 @@ export default forwardRef(
                         label="Image Group"
                         name="platform"
                         validateStatus={(!platformStatus) ? 'error': undefined}
-                        help={(!platformStatus && `Image Group不能为空`)}
+                        help={(!platformStatus && formatMessage({ id: 'device.image.group.cannot.empty'}) )}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入Image Group" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.group.enter'})} onChange={(e) => {
                             if (!e.target.value) {
                                 setPlatformStatus(false)
                                 return
@@ -286,9 +293,9 @@ export default forwardRef(
                         label="Image Name"
                         name="image_name"
                         validateStatus={(!nameStatus || !queryNameStatus) && 'error'}
-                        help={(!nameStatus ? `Image Name不能为空`: undefined) || (!queryNameStatus ? `Image Name不能重复`: undefined)}
+                        help={(!nameStatus ? formatMessage({ id: 'device.image.name.cannot.empty'}) : undefined) || (!queryNameStatus ? formatMessage({ id: 'device.image.name.cannot.repeated'}) : undefined)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入Image Name" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.name.enter'})} onChange={(e) => {
                             if (!e.target.value) {
                                 setNameStatus(false)
                                 return
@@ -301,9 +308,9 @@ export default forwardRef(
                         label="Image ID"
                         name="image_id"
                         validateStatus={(!idStatus) && 'error'}
-                        help={(!idStatus ? `Image ID不能为空` : undefined)}
+                        help={(!idStatus ? formatMessage({ id: 'device.image.id.cannot.empty'}) : undefined)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入Image ID" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.id.enter'})} onChange={(e) => {
                             if (!e.target.value) {
                                 setIDStatus(false)
                                 return
@@ -315,9 +322,9 @@ export default forwardRef(
                         label="Image Version"
                         name="image_version"
                         validateStatus={(!versionStatus) && 'error'}
-                        help={(!versionStatus ? `Image Version不能为空`: undefined)}
+                        help={(!versionStatus ? formatMessage({ id: 'device.image.version.cannot.empty'}) : undefined)}
                         rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder="请输入Image Version" onChange={(e) => {
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.version.enter'})} onChange={(e) => {
                             if (!e.target.value) {
                                 setVersiontatus(false)
                                 return

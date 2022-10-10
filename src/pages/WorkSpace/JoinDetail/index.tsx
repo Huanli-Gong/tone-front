@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Tabs, message } from 'antd'
-
+import { useIntl, FormattedMessage } from "umi"
 import { queryWorkspaceApproveQuantity } from '@/services/Workspace'
 import TableComponent from './Components/Table'
 import styles from './index.less'
@@ -8,6 +8,7 @@ import { TabCard } from '@/components/UpgradeUI'
 import { requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const [status, setStatus] = useState('0')
     const [tabNumbers, setTabNumbers] = useState({
@@ -37,8 +38,8 @@ export default (props: any) => {
                     defaultActiveKey={status}
                     onChange={val => setStatus(val)}
                 >
-                    <Tabs.TabPane tab={`待审批 ${tabNumbers.backlog_count}`} key="0" />
-                    <Tabs.TabPane tab={`审批记录 ${tabNumbers.finished_count}`} key="1" />
+                    <Tabs.TabPane tab={`${formatMessage({id: 'approval.pending'})} ${tabNumbers.backlog_count}`} key="0" />
+                    <Tabs.TabPane tab={`${formatMessage({id: 'approval.record'})} ${tabNumbers.finished_count}`} key="1" />
                 </Tabs>
             }
         >

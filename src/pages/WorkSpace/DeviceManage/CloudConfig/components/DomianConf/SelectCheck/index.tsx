@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Checkbox, Button, Divider, Space } from 'antd';
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less';
 
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, configType }) => {
+	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<number[]>([])
 	const [all, setAll] = useState<boolean>(false)
 	const [init, setInit] = useState<boolean>(false)
@@ -32,7 +34,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, configType }) =>
 					onChange={onCheckAllChange}
 					checked={all}
 				>
-					全选
+					<FormattedMessage id="operation.select.all" />
 				</Checkbox>
 				<Checkbox.Group onChange={handleDomainRadio} value={val}>
 					<Space direction="vertical" size={0}>
@@ -57,7 +59,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, configType }) =>
 					}
 					}
 				>
-					确定
+					<FormattedMessage id="operation.ok" />
 				</Button>
 				<Button
 					size="small"
@@ -71,7 +73,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, configType }) =>
 					}
 					}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 				</Button>
 			</div>
 		</div>

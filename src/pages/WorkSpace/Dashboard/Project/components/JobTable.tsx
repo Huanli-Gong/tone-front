@@ -8,7 +8,7 @@ import { message, Space, Typography, Tooltip, Popconfirm, Row, Spin } from 'antd
 import ViewReports from './ViewReports'
 import { queryTestResultList } from '@/pages/WorkSpace/TestResult/services'
 import styled from 'styled-components'
-import { useParams, Access, useAccess, useIntl, FormattedMessage } from 'umi'
+import { useParams, Access, useAccess, useIntl, FormattedMessage, getLocale } from 'umi'
 import RerunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
@@ -42,6 +42,8 @@ const ColumnCircleText = styled.span`
 
 const JobTable = (props: any) => {
     const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id, project_id }: any = useParams()
     const DEFAULT_TABLE_PARAMS = { page_num: 1, page_size: 10, ws_id, project_id }
 
@@ -159,7 +161,7 @@ const JobTable = (props: any) => {
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            width: 160,
+            width: enLocale ? 220: 160,
             fixed: 'right',
             render: (_: any) => {
                 return (

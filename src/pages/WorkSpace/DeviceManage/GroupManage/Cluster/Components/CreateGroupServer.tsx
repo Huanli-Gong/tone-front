@@ -1,12 +1,13 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { Drawer, Form, Input, Space, Button, message, Spin } from 'antd'
-import { createServerGroup, updateServerGroup } from '../../services'
+import { queryServerTagList, createServerGroup, updateServerGroup } from '../../services'
 import Owner from '@/components/Owner/index'
 import { requestCodeMessage } from '@/utils/utils'
 import MachineTags from '@/components/MachineTags';
 
 const CreateGroupDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id, run_mode, run_environment, onFinish } = props
     const [tagFlag, setTagFlag] = useState({
         list: [],
@@ -50,7 +51,7 @@ const CreateGroupDrawer = (props: any, ref: any) => {
                     data = await updateServerGroup(source.id, { ...values, ws_id })
 
                 if (data.code === 200) {
-                    message.success('操作成功')
+                    message.success(formatMessage({id: 'operation.success'}) )
                     onFinish()
                     handleCancel()
                 }
@@ -74,7 +75,7 @@ const CreateGroupDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={!source ? '创建集群' : '编辑集群'}
+            title={!source ? <FormattedMessage id="device.cluster.btn"/>: <FormattedMessage id="device.cluster.edit"/>}
             forceRender={true}
             visible={visible}
             onClose={handleCancel}
@@ -83,9 +84,9 @@ const CreateGroupDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleCancel}>取消</Button>
+                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
                         <Button type="primary" disabled={padding} onClick={handleFinish}>
-                            {!source ? '确定' : '更新'}
+                            {!source ? <FormattedMessage id="operation.ok"/>: <FormattedMessage id="operation.update"/>}
                         </Button>
                     </Space>
                 </div>
@@ -97,17 +98,21 @@ const CreateGroupDrawer = (props: any, ref: any) => {
                 form={form}
                 name="createGroup"
             >
-                <Form.Item name="name" label="集群名称" rules={[{ message: '名称不能为空', required: true }]}>
-                    <Input autoComplete="off" placeholder="请输入" />
+                <Form.Item name="name" label={<FormattedMessage id="device.cluster.name.s"/>}
+                    rules={[{ 
+                        message: formatMessage({id: 'device.cluster.name.s.message'}), 
+                        required: true 
+                }]}>
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                 </Form.Item>
                 {
                     visible &&
                     <Owner />
                 }
-                <MachineTags {...tagFlag} />
-                <Form.Item name="description" label="备注">
+                <MachineTags {...tagFlag}/>
+                <Form.Item name="description" label={<FormattedMessage id="device.description"/>}>
                     <Input.TextArea
-                        placeholder="请输入备注信息"
+                        placeholder={formatMessage({id: 'device.description.placeholder'})}
                     />
                 </Form.Item>
             </Form>

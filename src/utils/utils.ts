@@ -85,20 +85,16 @@ export const switchBusinessType = (business_type: string) => {
   }
 };
 
-export const switchTestType = (str: string) => {
+export const switchTestType = (str: string, formatMessage: any) => {
   switch (str) {
-    case 'functional':
-      return '功能';
-    case 'performance':
-      return '性能';
-    case 'stability':
-      return '稳定性';
-    case 'business':
-      return '业务';
-    default:
-      return '';
+    case 'functional': return formatMessage({id: str})
+    case 'performance': return formatMessage({id: str})
+    case 'stability': return formatMessage({id: str})
+    case 'business': return formatMessage({id: str})
+    default: return ''
   }
 };
+
 export const switchChineseType = (str: string) => {
   switch (str) {
     case '功能测试':
@@ -112,11 +108,8 @@ export const switchChineseType = (str: string) => {
   }
 };
 
-export const switchServerType = (str: string) => {
-  if (getLocale() === 'en-US') {
-    return str === 'aligroup' ? aligroupServer_en : aliyunServer_en;
-  }
-  return str === 'aligroup' ? aligroupServer : aliyunServer;
+export const switchServerType = (str: string, formatMessage?: any) => {
+  return str === 'aligroup' ? formatMessage({id: 'aligroupServer'}) : formatMessage({id: 'aliyunServer'});
   /* switch (str) {
         case 'aligroup': return '内网'
         case 'aliyun': return '云上'
@@ -288,11 +281,11 @@ export const enumerChinese = (name: any) => {
   };
   return list[name];
 };
-export const enumerEnglish = (name: any) => {
+export const enumerEnglish = (name: any, formatMessage: any) => {
   const list = {
-    system: '公共镜像',
-    self: '自定义镜像',
-    others: '共享镜像',
+    system: formatMessage({id: `system.image`}),
+    self: formatMessage({id: `${name}.image`}),
+    others: formatMessage({id: `${name}.image`}),
   };
   return list[name];
 };

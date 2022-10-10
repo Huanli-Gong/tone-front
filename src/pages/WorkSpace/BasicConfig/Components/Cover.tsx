@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Row, Typography, Button, Upload, message } from 'antd'
 import AvatarCover from '@/components/AvatarCover'
-import { Access, useAccess, useParams } from 'umi'
+import { Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
 import { saveWorkspaceConfig } from '@/services/Workspace'
 import { requestCodeMessage } from '@/utils/utils'
 import styles from '../index.less'
@@ -13,6 +13,7 @@ type IProps = {
 }
 
 const Cover: React.FC<IProps> = (props) => {
+    const { formatMessage } = useIntl()
     const { refresh, intro } = props
 
     const access = useAccess()
@@ -37,7 +38,7 @@ const Cover: React.FC<IProps> = (props) => {
                 const { code, msg } = await saveWorkspaceConfig({ id: ws_id, logo: info.file.response.path })
                 if (code === 200) {
                     refresh()
-                    message.success('更新成功！')
+                    message.success(formatMessage({id: 'request.update.success'}) )
                 }
                 else requestCodeMessage(code, msg)
             } else if (info.file.status === 'error') {
@@ -58,12 +59,12 @@ const Cover: React.FC<IProps> = (props) => {
                                 // fallback={<Button disabled={true}>更新封面</Button>}
                             >
                                 <Upload {...uploadProps}>
-                                    <Button>更新封面</Button>
+                                    <Button><FormattedMessage id="ws.config.update.cover"/></Button>
                                 </Upload>
                             </Access>
                         </Row>
                         <Row style={{ marginBottom: 4 }}>
-                            <Typography.Text>支持图片类型：jpg、png，封面大小：96*96。</Typography.Text>
+                            <Typography.Text><FormattedMessage id="ws.config.cover.ps"/></Typography.Text>
                         </Row>
                         <Row>
                             <Typography.Text></Typography.Text>
@@ -79,7 +80,7 @@ const Cover: React.FC<IProps> = (props) => {
                         const { code, msg } = await saveWorkspaceConfig({ id: ws_id, logo: info.path })
                         if (code === 200) {
                             refresh()
-                            message.success('更新成功！')
+                            message.success(formatMessage({id: 'request.update.success'}) )
                         }
                         else
                             requestCodeMessage(code, msg)

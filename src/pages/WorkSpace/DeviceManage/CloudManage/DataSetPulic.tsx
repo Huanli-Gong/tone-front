@@ -2,28 +2,29 @@ import React from "react";
 
 interface DataSet {
     name?: string
+    formatMessage?: any
 }
 
 const DataSetPulic: React.FC<DataSet> = (props) => {
-    const { name } = props
+    const { name, formatMessage } = props
     if (name == 'cloud') {
-        return <div>普通云盘</div>
+        return <div>{formatMessage({id: 'device.cloud'})}</div>
     } else if (name == 'cloud_efficiency') {
-        return <div>高效云盘</div>
+        return <div>{formatMessage({id: 'device.cloud_efficiency'})}</div>
     } else if (name == 'cloud_ssd') {
-        return <div>SSD云盘</div>
+        return <div>{formatMessage({id: 'device.cloud_ssd'})}</div>
     } else if (name == 'cloud_essd') {
-        return <div>ESSD云盘</div>
+        return <div>{formatMessage({id: 'device.cloud_essd'})}</div>
     } else {
         return <div>-</div>;
     }
 }
-export const dataSetMethod = (dict:any) => {
+export const dataSetMethod = (dict:any, formatMessage: any) => {
     const obj = {
-        cloud:'普通云盘',
-        cloud_efficiency:'高效云盘',
-        cloud_ssd:'SSD云盘',
-        cloud_essd:'ESSD云盘',
+        cloud: formatMessage({id: 'device.cloud'}),
+        cloud_efficiency: formatMessage({id: 'device.cloud_efficiency'}),
+        cloud_ssd: formatMessage({id: 'device.cloud_ssd'}),
+        cloud_essd: formatMessage({id: 'device.cloud_essd'}),
     }
     return obj[dict]
 }

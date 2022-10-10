@@ -2,7 +2,7 @@ import { Layout, Spin, Table } from 'antd'
 import React, { useState, useEffect, useMemo } from 'react'
 import styles from './index.less'
 import { CaretRightFilled, CaretDownFilled, FilterFilled } from '@ant-design/icons'
-import { useRequest, useLocation, useParams } from 'umi'
+import { useRequest, useLocation, useParams, useIntl, FormattedMessage  } from 'umi'
 import { queryBaselineDetail } from '../services'
 import ExpandTable from './ExpandTable'
 import SearchInput from '@/components/Public/SearchInput'
@@ -17,6 +17,8 @@ export default (props: any) => {
     const { layoutHeight } = props
     const { query }: any = useLocation()
     const { ws_id }: any = useParams()
+    const { formatMessage } = useIntl()
+
     const { server_provider, test_type, id } = props.currentBaseline
     const PAGE_DEFAULT_PARAMS: any = { server_provider, test_type, baseline_id: id, search_suite: '' }  // 有用
 
@@ -80,7 +82,7 @@ export default (props: any) => {
                 autoFocus={autoFocus}
                 onConfirm={(val: any) => { setName(val) }}
                 currentData={{ server_provider, test_type, id }}
-                placeholder="支持搜索Test Suite名称"
+                placeholder={formatMessage({ id: 'pages.workspace.baseline.detail.table.test_suite_name' }) } // "支持搜索Test Suite名称"
                 styleObj={styleObj}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {

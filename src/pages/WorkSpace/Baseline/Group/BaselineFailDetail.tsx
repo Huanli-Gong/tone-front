@@ -1,15 +1,17 @@
 import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect, useMemo } from 'react';
-import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Form, Divider  } from 'antd';
+import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Form, Divider } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './index.less'
 import CommentModal from './CommentModal'
 import { queryBaselineDetail, deletefuncsDetail } from '../services'
 import _ from 'lodash'
 import { AccessTootip, requestCodeMessage } from '@/utils/utils';
-import { useParams, Access, useAccess } from 'umi';
+import { useParams, useIntl, useAccess, FormattedMessage, Access } from 'umi';
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
+
         const { ws_id }: any = useParams()
         const access = useAccess();
         const { server_provider, test_type, id } = props.currentBaseline
@@ -21,7 +23,7 @@ export default forwardRef(
             test_case_id: props.current.test_case_id,
         }  // 有用
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('FailCase详情') // 弹框顶部title
+        const [title, setTitle] = useState(formatMessage({id: 'pages.workspace.baseline.failDetail'}) ) // 弹框顶部title
         const [currentObj, setCurrentObj] = useState<any>({});
 
         const commentModal: any = useRef(null)
@@ -65,7 +67,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "FailCase详情", data: any = {}) => {
+                show: (title: string = "", data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     // const params = 
@@ -76,7 +78,7 @@ export default forwardRef(
         )
 
         const handleSubmit = async () => {
-            message.success('操作成功！')
+            message.success(formatMessage({id: 'operation.success'}) )
         }
 
         const handleOpenComment = (record: any) => {
@@ -118,7 +120,7 @@ export default forwardRef(
             },
             {
                 dataIndex: 'bug',
-                title: '缺陷记录',
+                title: <FormattedMessage id={`pages.workspace.baseline.failDetail.table.bug`} />,
                 key: 'bug',
                 ellipsis: {
                     showTitle: false
@@ -136,7 +138,7 @@ export default forwardRef(
             },
             {
                 dataIndex: 'source_job_id',
-                title: '来源Job',
+                title: <FormattedMessage id={`pages.workspace.baseline.failDetail.table.source_job_id`} />,
                 key: 'source_job_id',
                 ellipsis: {
                     showTitle: false
@@ -155,12 +157,12 @@ export default forwardRef(
             },
             {
                 dataIndex: 'impact_result',
-                title: '影响结果',
+                title: <FormattedMessage id={`pages.workspace.baseline.failDetail.table.impact_result`} />,
                 key: 'impact_result',
             },
             {
                 dataIndex: 'description',
-                title: '问题描述',
+                title: <FormattedMessage id={`pages.workspace.baseline.failDetail.table.description`} />,
                 key: 'description',
                 ellipsis: {
                     showTitle: false
@@ -177,29 +179,29 @@ export default forwardRef(
                 }
             },
             {
-                title: '操作',
+                title: <FormattedMessage id={`pages.workspace.baseline.failDetail.table.action`} />,
                 key: 'sub_case_name',
-                render: (text:any,record:any) => {
+                render: (text: any, record: any) => {
                     return (
-                        <Access 
+                        <Access
                             accessible={access.WsMemberOperateSelf(record.creator)}
                             fallback={
                                 <Space>
-                                    <span className={styles.fail_detail_operation} onClick={()=>AccessTootip()}>编辑</span>
-                                    <span className={styles.fail_detail_operation} onClick={()=>AccessTootip()}>删除</span>
+                                    <span className={styles.fail_detail_operation} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></span>
+                                    <span className={styles.fail_detail_operation} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></span>
                                 </Space>
                             }
                         >
                             <Space size='small'>
-                                <span className={styles.fail_detail_operation} onClick={()=>handleOpenComment(record)}>编辑</span>
+                                <span className={styles.fail_detail_operation} onClick={() => handleOpenComment(record)}><FormattedMessage id="operation.edit"/></span>
                                 {/* 删除的弹框 */}
                                 <Popconfirm
-                                    title="你确定要删除吗？"
+                                    title={<FormattedMessage id="delete.prompt"/>}
                                     onConfirm={() => handleDelete(record)}
-                                    okText="确认"
-                                    cancelText="取消"
+                                    okText={<FormattedMessage id="operation.confirm"/>}
+                                    cancelText={<FormattedMessage id="operation.cancel"/>}
                                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-                                    <span className={styles.fail_detail_operation}>删除</span>
+                                    <span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
                                 </Popconfirm>
                             </Space>
                         </Access>
@@ -210,14 +212,14 @@ export default forwardRef(
 
         const threeLevelDetailDataCopy = useMemo(() => {
             return _.cloneDeep(threeLevelDetailData).map((item: any) => {
-                item.impact_result = item.impact_result ? '是' : '否';
+                item.impact_result = item.impact_result ? formatMessage({id: 'operation.yes'}): formatMessage({id: 'operation.no'});
                 return item;
             })
         }, [threeLevelDetailData])
 
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 if (threeLevelDetailDataCopy.length < 2) {
                     props.secondRefresh()
                     props.oneRefresh()
@@ -271,7 +273,8 @@ export default forwardRef(
                                 current: pageParams.page_num,
                                 // hideOnSinglePage: true,
                                 onChange: handlePageChange,
-                                showTotal: (total) => total ? `共${total}条` : ``,
+                                
+                                showTotal: (total) => total ? formatMessage({id: 'pagination.total.strip'}, {data: total}): undefined,
                             }}
                             size="small"
                         />
