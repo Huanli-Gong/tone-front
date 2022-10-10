@@ -4,9 +4,13 @@ import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
 import styles from './index.less'
 import _ from 'lodash'
+import { useParams } from 'umi'
 
 export default forwardRef((props: any, ref: any) => {
-    const { ws_id, show, template } = props
+    const { show, template } = props
+
+    const { route } = props
+    const { ws_id } = useParams() as any
     const [form] = Form.useForm()
     // 触发开关
     const [trigger, setTrigger] = useState(false)
@@ -14,7 +18,7 @@ export default forwardRef((props: any, ref: any) => {
     const [reportTemplate, setReportTemplate] = useState<any>([])
 
     // 选择分组
-    const [groupMethod, setGroupMethod] = useState('')
+    const [groupMethod, setGroupMethod] = useState("no")
     // 根据选择分组，选择基准组数据源。
     const [testConfig, setTestConfig] = useState<any>([]) // 阶段数据
     const [envPrep, setEnvPrep] = useState<any>([]) // 所有阶段数据中的模板数据集合
@@ -27,7 +31,8 @@ export default forwardRef((props: any, ref: any) => {
                 let dataSource = _.isArray(data) ? data : []
                 const defaultTem = _.find(dataSource, { is_default: true })
                 setReportTemplate(dataSource)
-                form.setFieldsValue({ ...form.getFieldsValue(), report_template_id: defaultTem.id, })
+                if (route.name === "Create")
+                    form.setFieldsValue({ report_template_id: defaultTem.id })
             }
         } catch (e) {
             console.log(e)
@@ -41,26 +46,29 @@ export default forwardRef((props: any, ref: any) => {
     // 编辑
     useEffect(() => {
         if (template && Object.keys(template).length) {
-            const { auto_report, group_method, base_group, base_group_info, report_template_id, test_config, } = template
+            const { auto_report, group_method = "no", base_group, base_group_info, report_template_id, test_config, } = template
             const { stage_id, } = base_group_info || {}
             setTrigger(auto_report)
-            setGroupMethod(group_method)
             // 表单数据回填
             if (auto_report) {
                 const defaultTem = _.find(reportTemplate, { is_default: true })
                 // *根据“分组方式”区分base_group字段回填数据
-                const baseGroupObject = group_method === 'job' ? {
-                    base_group_job: stage_id ? [stage_id, base_group] : [],
-                } : {
-                    base_group_stage: base_group || undefined,
-                }
+
+                let baseGroupObj = {}
+                if (group_method === "job")
+                    baseGroupObj = { base_group_job: stage_id ? [stage_id, base_group] : [] }
+                if (group_method === "stage")
+                    baseGroupObj = { base_group_stage: base_group || undefined }
+
                 form.setFieldsValue({
                     ...template,
                     group_method,
                     // base_group字段数据回填
-                    ...baseGroupObject,
+                    ...baseGroupObj,
                     report_template_id: report_template_id || _.get(defaultTem, 'id')
                 })
+                setGroupMethod(group_method)
+
                 // 根据后端返回数据，重组基准组的数据源
                 if (test_config) {
                     const modules = test_config?.map((item: any, index: any) => {
@@ -78,7 +86,7 @@ export default forwardRef((props: any, ref: any) => {
                 }
             }
         }
-    }, [template])
+    }, [template, reportTemplate])
 
     useImperativeHandle(ref, () => ({
         validate: async () => {
@@ -92,6 +100,7 @@ export default forwardRef((props: any, ref: any) => {
                     return {
                         value: index + 1,
                         label: item.name,
+                        key: index,
                         children: item?.template?.map((key: any) => ({
                             value: key.id,
                             label: key.name,
@@ -115,9 +124,7 @@ export default forwardRef((props: any, ref: any) => {
                             form.setFieldsValue({ base_group_job: undefined });
                         }
                     }
-
                 }
-
             }
         }
     }))
@@ -133,6 +140,7 @@ export default forwardRef((props: any, ref: any) => {
                 style={{ width: '100%' }}
                 colon={false}
                 className={styles.job_plan_form}
+                initialValues={{ group_method: "no" }}
             >
                 <Form.Item label="自动生成报告"
                     name="auto_report">
@@ -183,24 +191,33 @@ export default forwardRef((props: any, ref: any) => {
                             name="group_method"
                         >
                             <Radio.Group onChange={(e) => { setGroupMethod(e.target.value) }}>
+                                <Radio value={"no"}>不分组</Radio>
                                 <Radio value={'job'}>以Job维度分组</Radio>
                                 <Radio value={'stage'}>以阶段维度分组</Radio>
                             </Radio.Group>
                         </Form.Item>
                         {groupMethod === 'job' && (
-                            <Form.Item label="选择基准组"
+                            <Form.Item
+                                label="选择基准组"
                                 name="base_group_job"
-                                rules={[{ required: true, message: '请选择' }]}
+                                rules={[{
+                                    required: true,
+                                    message: "基准组不能为空"
+                                }]}
                             >
-                                <Cascader options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
+                                <Cascader placeholder="请选择基准组" options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
                             </Form.Item>
                         )}
                         {groupMethod === 'stage' && (
-                            <Form.Item label="选择基准组"
+                            <Form.Item
+                                label="选择基准组"
                                 name="base_group_stage"
-                                rules={[{ required: true, message: '请选择' }]}
+                                rules={[{
+                                    required: true,
+                                    message: "基准组不能为空"
+                                }]}
                             >
-                                <Select placeholder="请选择" getPopupContainer={node => node.parentNode}>
+                                <Select placeholder="请选择基准组" getPopupContainer={node => node.parentNode}>
                                     {testConfig.map((item: any, index: number) =>
                                         <Select.Option key={index + 1} value={index + 1}>{item.name}</Select.Option>
                                     )}
