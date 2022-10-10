@@ -1,12 +1,12 @@
 import React , { forwardRef , useImperativeHandle , useState , useRef } from 'react'
 import { Form , Modal , Input , Space , Button ,} from 'antd'
-
 import { EditTwoTone } from '@ant-design/icons'
-
+import { FormattedMessage, useIntl  } from 'umi'
 import styles from './index.less'
 
 export const EditNameModal = forwardRef(
     ({ onOk } : any , ref ) => {
+        const { formatMessage } = useIntl()
         const [ visible , setVisible ] = useState( false )
         const [ id , setId ] = useState( null )
     
@@ -42,12 +42,12 @@ export const EditNameModal = forwardRef(
     
         return (
             <Modal 
-                title="修改名称"
+                title={<FormattedMessage id="job.types.modify.name"/>}
                 visible={ visible }
                 onCancel={ handleCancel }
                 onOk={ handleOk }
-                cancelText="取消"
-                okText="确定"
+                cancelText={<FormattedMessage id="operation.cancel"/>}
+                okText={<FormattedMessage id="operation.ok"/>}
                 maskClosable={ false }
             >
                 <Form 
@@ -55,8 +55,11 @@ export const EditNameModal = forwardRef(
                     /*hideRequiredMark*/ 
                     layout="vertical"
                 >
-                    <Form.Item name="alias" label="名称" rules={[{ max : 10 }]}>
-                        <Input autoComplete="off" placeholder="请输入要修改的名称，最多不超过10个字"/>
+                    <Form.Item 
+                        label={<FormattedMessage id="job.types.alias"/>}
+                        name="alias" 
+                        rules={[{ max : 10 }]}>
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'job.types.alias.placeholder'}) }/>
                     </Form.Item>
                 </Form>
             </Modal>
@@ -88,11 +91,11 @@ export const EditShowName = ({ name , item , onEdit } : any ) => {
         return (
             <Space>
                 <Input autoComplete="off" size="small" defaultValue={ item.alias } onChange={ (evt:any) => setVal( evt.target.value ) } />
-                <Button size="small" type="primary" onClick={ handleEidtOk }>保存</Button>
+                <Button size="small" type="primary" onClick={ handleEidtOk }><FormattedMessage id="operation.save"/></Button>
                 <Button size="small" onClick={ () => {
                     setEdit( false )
                     setColor('')
-                }}>取消</Button>
+                }}><FormattedMessage id="operation.cancel"/></Button>
             </Space>
         )
 

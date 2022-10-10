@@ -10,7 +10,7 @@ import styles from '@/pages/WorkSpace/TestJob/index.less'
 
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { switchServerType, switchTestType } from '@/utils/utils'
-import { useParams } from 'umi'
+import { useParams, FormattedMessage, useIntl  } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 
 interface PreviewProps {
@@ -24,6 +24,7 @@ interface PreviewProps {
 
 export default forwardRef(
     ({ item_dict = {}, name = '', server_type = '', test_type = '', description = '', onOk }: PreviewProps, ref: any) => {
+        const { formatMessage } = useIntl()
         const { ws_id }: any = useParams()
         const [visible, setVisible] = useState(false)
         const [projectId, setProjectId] = useState()
@@ -88,7 +89,7 @@ export default forwardRef(
                     >
                         <Space>
                             <ArrowLeftOutlined onClick={handleBack} style={{ fontSize: 20 }} />
-                            <Typography.Title level={4} >Job类型预览</Typography.Title>
+                            <Typography.Title level={4}><FormattedMessage id="job.types.Preview" /></Typography.Title>
                         </Space>
                     </Row>
 
@@ -103,8 +104,8 @@ export default forwardRef(
                             >
                                 <div><Typography.Text>{name}</Typography.Text></div>
                                 <div className={styles.page_tags}>
-                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }} >{switchServerType(server_type)}</Tag>
-                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{switchTestType(test_type)}</Tag>
+                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{switchServerType(server_type, formatMessage)}</Tag>
+                                    <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>{switchTestType(test_type, formatMessage)}</Tag>
                                 </div>
                                 <div className={styles.page_dec}>{description}</div>
                             </div>
@@ -114,14 +115,14 @@ export default forwardRef(
                     <div ref={bodyRef} className={styles.page_body_content} style={{ paddingLeft: bodyPaddding, paddingRight: bodyPaddding }}>
                         <Row justify="center" className={styles.page_body} >
                             <Col span={24} style={{ width: 1000, flex: 'none' }} >
-                                <Row className={styles.page_body_title}>新建Job</Row>
+                                <Row className={styles.page_body_title}><FormattedMessage id="job.types.create.job" /></Row>
                             </Col>
                             <Col span={24} style={{ width: 1000, flex: 'none' }}>
                                 {
                                     JSON.stringify(items['basic']) !== '{}' &&
                                     <Row className={styles.form_row}>
                                         <div className={styles.page_body_nav}>
-                                            <span>基础配置</span>
+                                            <span><FormattedMessage id="job.types.base" /></span>
                                         </div>
                                         <BasicForm disabled={false} contrl={items.basic}  callBackProjectId={queryProjectId}/>
                                     </Row>
@@ -130,7 +131,7 @@ export default forwardRef(
                                     JSON.stringify(items['env']) !== '{}' &&
                                     <Row className={styles.form_row}>
                                         <div className={styles.page_body_nav}>
-                                            <span>环境准备</span>
+                                            <span><FormattedMessage id="job.types.env" /></span>
                                         </div>
                                         <EnvForm disabled={false} contrl={items.env} project_id={projectId}/>
                                     </Row>
@@ -138,7 +139,7 @@ export default forwardRef(
                                 {
                                     <Row className={styles.form_row}>
                                         <div className={styles.page_body_nav}>
-                                            <span>用例和机器</span>
+                                            <span><FormattedMessage id="job.types.caseAndserver" /></span>
                                         </div>
                                         <Col span={21} offset={3}>
                                             <SelectSuite
@@ -156,7 +157,7 @@ export default forwardRef(
                                     JSON.stringify(items['more']) !== '{}' &&
                                     <Row className={styles.form_row}>
                                         <div className={styles.page_body_nav}>
-                                            <span>更多配置</span>
+                                            <span><FormattedMessage id="job.types.moreConfig" /></span>
                                         </div>
                                         <MoreForm disabled={false} ws_id={ws_id} contrl={items.more} />
                                     </Row>

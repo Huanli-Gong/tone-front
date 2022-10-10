@@ -3,10 +3,12 @@ import { EditableCell } from './EditCell'
 import { queryWorkspaceMember, deleteWorkspaceMember } from '@/services/Workspace'
 import { Table, Space, Avatar, Typography, Popconfirm, Button, message, Tag } from 'antd'
 import CommonPagination from '@/components/CommonPagination'
-import { Access, useAccess } from 'umi'
+import { Access, useAccess, useIntl, FormattedMessage  } from 'umi'
 import { roleList } from '@/pages/SystemConf/UserManagement/service'
 import { requestCodeMessage } from '@/utils/utils'
+
 const ComplateUsername: React.FC<{ user_info: any }> = ({ user_info }) => {
+    const { formatMessage } = useIntl()
     const { first_name, last_name } = user_info
 
     if (first_name && last_name)
@@ -20,6 +22,7 @@ const ComplateUsername: React.FC<{ user_info: any }> = ({ user_info }) => {
 }
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { role, keyword, refresh, onOk, roleData } = props
     const { ws_id } = props.match.params
     const access = useAccess();
@@ -45,58 +48,63 @@ export default (props: any) => {
     useEffect(() => {
         init()
     }, [pagenat, keyword, refresh])
+
     const columns: any = [
         {
-            title: '成员',
+            title: <FormattedMessage id="member.member"/>,
             render: (_: any) => (
                 <Space>
                     <Avatar src={_.user_info.avatar} />
                     <ComplateUsername user_info={_.user_info} />
                     {
                         _.user_info.is_admin
-                            ? <div style={{ width: 16, height: 16, backgroundColor: '#F9AD10', borderRadius: 2, fontSize: 12, position: 'relative' }}>
-                                <span style={{ color: '#fff', position: 'absolute', top: 0, left: 2 }}>管</span>
+                            ? <div style={{ backgroundColor: '#F9AD10', borderRadius: 2, fontSize: 12, padding: '0 4px' }}>
+                                <span style={{ color: '#fff' }}>
+                                    <FormattedMessage id="member.manage.tag"/>
+                                </span>
                             </div>
                             : null
                     }
                     {
                         _.user_info.is_self
-                            ? <Tag color="rgba(140,140,140,0.1)" style={{ color: 'rgba(0,0,0,0.65)', marginRight: 0 }}>本人</Tag>
+                            ? <Tag color="rgba(140,140,140,0.1)" style={{ color: 'rgba(0,0,0,0.65)', marginRight: 0 }}>
+                                   <FormattedMessage id="member.oneself" />
+                              </Tag>
                             : null
                     }
                 </Space>
             )
         },
         {
-            title: '账号',
+            title: <FormattedMessage id="member.account"/>,
             render: (_: any) => (<Typography.Text>{_.user_info.email}</Typography.Text>)
         },
         
         {
-            title: '角色',
+            title: <FormattedMessage id="member.role"/>,
             render: (_: any) => (
                 <EditableCell {..._} select={roleData} handleOk={init} onOk={onOk} />
             ),
         },
         {
-            title: '加入时间',
+            title: <FormattedMessage id="member.join_date"/>,
             dataIndex: 'join_date'
         },
         access.WsBtnPermission() &&
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             align: 'center',
             render: (_: any) => (
                 _.user_info.is_self || !_.user_info.can_update
-                ? <Button type="link" disabled={true}>移除</Button>
+                ? <Button type="link" disabled={true}><FormattedMessage id="member.remove"/></Button>
                 :
                 <Popconfirm
-                    title="确定要移除该用户吗？"
-                    okText="确定"
-                    cancelText="取消"
+                    title={<FormattedMessage id="member.Are.you.sure.remove.user"/>}
+                    okText={<FormattedMessage id="operation.ok"/>}
+                    cancelText={<FormattedMessage id="operation.cancel"/>}
                     onConfirm={() => handleDeleteUser(_.user_info.id)}
                 >
-                    <Button type="link">移除</Button>
+                    <Button type="link"><FormattedMessage id="member.remove"/></Button>
                 </Popconfirm>
             )
         }
@@ -107,7 +115,7 @@ export default (props: any) => {
         try {
             const data = await deleteWorkspaceMember({ ws_id, user_id })
             if (data.code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 onOk();
             } else {
                 requestCodeMessage(data.code, data.msg)
@@ -116,7 +124,7 @@ export default (props: any) => {
         }
         catch (err) {
             console.log(err)
-            message.error('发生错误，请稍后再试!')
+            message.error(formatMessage({id: 'member.an.error.occurred,please.try.again'}) )
         }
     }
 

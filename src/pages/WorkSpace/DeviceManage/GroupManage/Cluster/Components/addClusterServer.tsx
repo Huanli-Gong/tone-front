@@ -1,6 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
 import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip, AutoComplete } from 'antd'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
 import Owner from '@/components/Owner/index';
 import styles from './index.less'
@@ -8,6 +8,7 @@ import { requestCodeMessage } from '@/utils/utils';
 import { AgentSelect } from '@/components/utils';
 
 const CreateClusterDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { onFinish, ws_id } = props
     const [form] = Form.useForm()
     const [options, setOptions] = useState<{ value: string }[]>([]);
@@ -87,7 +88,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     const data: any = await addServerGroup({ ...values, ws_id, cluster_id: source.id, cluster_type: 'aligroup' })
                     if (data.code === 200) {
                         onFinish(source.id)
-                        message.success('操作成功')
+                        message.success(formatMessage({id: 'operation.success'}) )
                         handleCancel()
                     }
                     else {
@@ -112,7 +113,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}>详细信息</span></Tooltip>
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info"/></span></Tooltip>
         </Space>
     )
 
@@ -147,7 +148,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title="添加机器"
+            title={<FormattedMessage id="device.add.btn"/>}
             forceRender={true}
             visible={visible}
             width="376"
@@ -155,8 +156,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right' }} >
                     <Space>
-                        <Button onClick={handleCancel}>取消</Button>
-                        <Button type="primary" onClick={handleOk}>确定</Button>
+                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 </div>
             }
@@ -173,13 +174,13 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         <Row style={{ marginBottom: 10 }}>
                             <Col>
                                 <span style={{ color: 'red', marginRight: 10 }}>*</span>
-                                机器已存在于单机池，修改【控制通道】、【使用状态】信息请前往单机池管理页面。
+                                <FormattedMessage id="device.poolFlag"/>
                             </Col>
                         </Row>
                     }
                     <Form.Item
                         name="ip"
-                        label="机器"
+                        label={<FormattedMessage id="device.machine"/>} 
                         validateStatus={ips.errors.length > 0 ? 'error' : ''}
                         help={ips.errors.length > 0 ? validateMsg : undefined}
                         rules={[{
@@ -192,61 +193,61 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                             onSelect={onSelect}
                             onSearch={onSearch}
                             onBlur={(e: any) => handleBlurIp(e)}
-                            placeholder="输入或选择机器"
+                            placeholder={formatMessage({id: 'device.machine.select.message'})}
                         />
                     </Form.Item>
                     <Form.Item
                         name="channel_type"
                         initialValue={'toneagent'}
-                        label="控制通道"
-                        rules={[{ required: true, message: '请选择控制通道' }]}
+                        label={<FormattedMessage id="device.channel_type"/>}
+                        rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}
                     >
                         <AgentSelect disabled={BUILD_APP_ENV || (!BUILD_APP_ENV && poolFlag)} />
                     </Form.Item>
-                    <Form.Item label="使用状态"
+                    <Form.Item label={<FormattedMessage id="device.usage.state"/>}
                         name="state"
                         // hasFeedback
-                        rules={[{ required: true, message: '请选择机器状态!' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
                         initialValue={'Available'}
                     >
-                        <Select placeholder="请选择机器状态" disabled={poolFlag}>
+                        <Select placeholder={<FormattedMessage id="device.usage.state.message"/>} disabled={poolFlag}>
                             <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
                             <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
                             <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="private_ip" label="私网IP" >
-                        <Input autoComplete="off" placeholder="请输入私网IP" />
+                    <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip"/>}>
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'device.private_ip.placeholder'}) } />
                     </Form.Item>
-                    <Form.Item name="role" label="角色" rules={[{ required: true }]}>
-                        <Select getPopupContainer={node => node.parentNode} placeholder="请选择角色">
+                    <Form.Item name="role" label={<FormattedMessage id="device.role"/>} rules={[{ required: true }]}>
+                        <Select getPopupContainer={node => node.parentNode} placeholder={<FormattedMessage id="device.role.placeholder"/>}>
                             <Select.Option value="local">local</Select.Option>
                             <Select.Option value="remote">remote</Select.Option>
                         </Select>
                     </Form.Item>
                     <Owner />
-                    <Form.Item name="baseline_server" label="是否基线机器" initialValue={false}>
+                    <Form.Item name="baseline_server" label={<FormattedMessage id="device.baseline_server"/>} initialValue={false}>
                         <Radio.Group>
-                            <Radio value={true}>是</Radio>
-                            <Radio value={false}>否</Radio>
+                            <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                            <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                         </Radio.Group>
                     </Form.Item>
-                    <Form.Item name="kernel_install" label="是否安装内核" initialValue={false}>
+                    <Form.Item name="kernel_install" label={<FormattedMessage id="device.kernel_install"/>} initialValue={false}>
                         <Radio.Group>
-                            <Radio value={true}>是</Radio>
-                            <Radio value={false}>否</Radio>
+                            <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                            <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         name="var_name"
-                        label="运行变量名"
+                        label={<FormattedMessage id="device.var_name"/>}
                         rules={[{
                             required: true,
                             // pattern: /^[A-Za-z0-9]+$/g,
                             // message: '仅允许包含字母、数字'
                         }]}
                     >
-                        <Input autoComplete="off" placeholder="请输入" />
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'}) } />
                     </Form.Item>
                 </Form>
             </Spin>

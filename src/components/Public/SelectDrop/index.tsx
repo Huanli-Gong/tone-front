@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from 'react';
 import {Space, Button, Select, Divider, Spin} from 'antd';
+import { FormattedMessage, useIntl  } from 'umi'
 import { member } from './service';
-import { useIntl, FormattedMessage } from 'umi';
 
 const filterRadio: React.FC<any> = ({confirm,onConfirm,autoFocus,pageSize=50, initVal}) => {
 	const [user, setUser ] = useState<any>([])

@@ -9,7 +9,7 @@ import {
 import Owner from '@/components/Owner/index';
 import { textRender } from '@/utils/hooks';
 import styles from './style.less';
-import { useParams } from 'umi';
+import { useParams, useIntl, FormattedMessage } from 'umi';
 import { AgentSelect } from '@/components/utils'
 import _ from 'lodash';
 /**
@@ -18,6 +18,7 @@ import _ from 'lodash';
  * 
  */
 const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams<any>()
     const [loading, setLoading] = useState<boolean>(true)
     const [visible, setVisible] = useState<boolean>(false)
@@ -161,7 +162,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
                 setOptions([...options])
             } else {
-                setValidateAK({ validate: false, meg: msg || '没有符合的AK' });
+                setValidateAK({ validate: false, meg: msg || formatMessage({ id:'device.no.compliant.AK'}) });
                 form.setFieldsValue({ manufacturer: undefined })
             }
         } catch (e) {
@@ -245,7 +246,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     })
                     setValidateAK({ validate: true, meg: '' })
                 } else {
-                    setValidateAK({ validate: false, meg: msg || '没有符合的AK' })
+                    setValidateAK({ validate: false, meg: msg || formatMessage({id:'device.no.compliant.AK'}) })
                 }
                 setRegion(list)
                 setValidateRegion(!!list.length)
@@ -439,7 +440,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     const selectType = selectItem[0]['owner_alias']
                     const selectSec = selectItem[0]['platform']
                     const selectOs = selectItem[0]['os_name']
-                    const imageValue = selectType ? [enumerEnglish(selectType), selectSec, selectOs, editData.image] : undefined
+                    const imageValue = selectType ? [enumerEnglish(selectType, formatMessage), selectSec, selectOs, editData.image] : undefined
                     form.setFieldsValue({ image: imageValue })
                 }
             }
@@ -505,7 +506,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
         const res = id ? await editGroupMachine(id, { ...param }) : await addGroupMachine({ ...param })
         if (res.code === 200) {
-            message.success('操作成功');
+            message.success(formatMessage({id: 'operation.success'}) );
             // case1.初始化状态&&重置表单
             initialState()
             // case2.回调函数
@@ -553,7 +554,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 if (res.code === 200) {
                     callback()
                 } else {
-                    callback(res.msg || '校验失败')
+                    callback(res.msg || formatMessage({id: 'validator.failed'}) )
                 }
             })
         } else {
@@ -579,7 +580,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     callback()
                 } else {
                     setNameStatus('error')
-                    callback(res.msg || '校验失败')
+                    callback(res.msg || formatMessage({id: 'validator.failed'}) )
                 }
             })
         } else {
@@ -600,7 +601,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={id ? "编辑机器" : "添加机器"}
+            title={id ? <FormattedMessage id="device.device.edit"/>: <FormattedMessage id="device.add.btn"/>}
             width={724}
             onClose={onClose}
             visible={visible}
@@ -613,10 +614,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     }}
                 >
                     <Button onClick={onClose} style={{ marginRight: 8 }}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                     <Button onClick={() => onSubmit()} loading={btnLoading} type="primary">
-                        确定
+                        <FormattedMessage id="operation.ok"/>
                     </Button>
                 </div>
             }
@@ -640,13 +641,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="is_instance"
-                                    label="机器选择"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    label={<FormattedMessage id="device.server.select"/>}
+                                    rules={[{ required: true, message: formatMessage({id:'please.select'}) }]}
                                     initialValue={0}
                                 >
-                                    <Select placeholder="请选择" disabled={cloudType != 0} onChange={(value: any) => setIs_instance(value)}>
-                                        <Option value={0}>立即购买</Option>
-                                        <Option value={1}>选择已有</Option>
+                                    <Select placeholder={<FormattedMessage id="please.select"/>}
+                                        disabled={cloudType != 0} 
+                                        onChange={(value: any) => setIs_instance(value)}>
+                                        <Option value={0}><FormattedMessage id="device.buy.now"/></Option>
+                                        <Option value={1}><FormattedMessage id="device.select.exist"/></Option>
                                     </Select>
                                 </Form.Item>
                             </Col> :
@@ -656,7 +659,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="name"
-                                    label="名称"
+                                    label={<FormattedMessage id="device.name"/>}
                                     validateTrigger='onBlur'
                                     rules={[
                                         {
@@ -664,12 +667,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             min: 1,
                                             max: 32,
                                             pattern: /^[A-Za-z][A-Za-z0-9\._-]*$/g,
-                                            message: '仅允许包含字母、数字、下划线、中划线、点，且只能以字母开头，最长32个字符'
+                                            message: formatMessage({id: 'device.name.message'})
                                         },
                                         { validator: checkName },
                                     ]}
                                 >
-                                    <Input autoComplete="off" placeholder="请输入" />
+                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                                 </Form.Item>
                             </Col> :
                             null
@@ -679,13 +682,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="release_rule"
-                                    label="用完释放"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    label={<FormattedMessage id="device.run.out.release"/>}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={0}>不释放</Radio>
-                                        <Radio value={1}>释放</Radio>
-                                        <Radio value={2}><QusetionIconTootip title="失败保留" desc="自动保留24h后释放" /></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.not.release"/></Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.release"/></Radio>
+                                        <Radio value={2}><QusetionIconTootip title={formatMessage({id: 'device.failed.save'})} desc={formatMessage({id: 'device.failed.save.24h'})} /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col> :
@@ -695,10 +698,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="manufacturer"
-                                    label="云厂商/AK"
+                                    label={<FormattedMessage id="device.manufacturer/ak"/>}
                                     validateStatus={validateAK.validate ? '' : 'error'}
                                     help={validateAK.validate ? undefined : validateAK.meg}
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Cascader
                                         disabled={options?.length === 0 || !!id} // 无数据，不可编辑
@@ -719,8 +722,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     <Form.Item label="Region/Zone"
                                         name="region"
                                         validateStatus={validateRegion ? '' : 'error'}
-                                        help={validateRegion ? undefined : `没有符合的Region/Zone`}
-                                        rules={[{ required: true, message: '请选择' }]}
+                                        help={validateRegion ? undefined : formatMessage({id: 'device.region/zone'}) }
+                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                     >
                                         <Cascader
                                             disabled={region?.length === 0 || !!id || !firstAddDataFlag} // 无数据||编辑||已添加过数据时，不可编辑
@@ -736,14 +739,17 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         {!showZone ? null : !id && is_instance ?
                             <Col span={12}>
-                                <Form.Item label="已有机器"
+                                <Form.Item 
+                                    label={<FormattedMessage id="device.own.server"/>}
                                     name="instance_id"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Select
                                         showSearch
                                         optionFilterProp="children"
-                                        placeholder="请选择" labelInValue disabled={sever.length == 0}
+                                        placeholder={formatMessage({id: 'please.select'})} 
+                                        labelInValue 
+                                        disabled={sever.length == 0}
                                         filterOption={(input, option: any) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
@@ -763,14 +769,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     <Col span={12}>
                                         <Row>
                                             <Col span={8} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                                                <Form.Item label="规格"
+                                                <Form.Item 
+                                                    label={<FormattedMessage id="device.instance_type"/>}
                                                     name="instance_type_one"
-                                                    rules={[{ required: true, message: '请输入' }]}
+                                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                                                 >
                                                     <InputNumber
                                                         min={1}
                                                         style={{ width: 70 }}
-                                                        placeholder="大小"
+                                                        placeholder={formatMessage({id: 'device.spec.size'}) }
                                                         disabled={image.length === 0}
                                                     />
                                                 </Form.Item>
@@ -779,12 +786,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             <Col span={16} style={{ display: 'flex', alignItems: 'flex-start', paddingLeft: 6 }}>
                                                 <Form.Item label=""
                                                     name="instance_type_two"
-                                                    rules={[{ required: true, message: '请输入' }]}
+                                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                                                 >
                                                     <InputNumber
                                                         min={1}
                                                         style={{ width: 70, marginTop: 30 }}
-                                                        placeholder="大小"
+                                                        placeholder={formatMessage({id: 'device.spec.size'}) }
                                                         disabled={image.length === 0}
                                                     />
                                                 </Form.Item>
@@ -794,11 +801,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     </Col>
                                     :
                                     <Col span={12}>
-                                        <Form.Item label="规格"
+                                        <Form.Item label={<FormattedMessage id="device.instance_type"/>}
                                             name="instance_type"
-                                            rules={[{ required: true, message: '请选择' }]}
+                                            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                         >
-                                            <Select placeholder="请选择"
+                                            <Select placeholder={formatMessage({id: 'please.select'})}
                                                 disabled={image.length === 0}
                                                 showSearch
                                                 optionFilterProp="children"
@@ -821,11 +828,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         {!showZone ? null : !is_instance ?
                             manufacturerType === 'aliyun_eci' ?
                                 <Col span={12}>
-                                    <Form.Item label="镜像"
+                                    <Form.Item label={<FormattedMessage id="device.image"/>}
                                         name="image"
-                                        rules={[{ required: true, message: '请选择' }]}
+                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                     >
-                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
+                                        <Cascader placeholder={formatMessage({id: 'please.select'})} disabled={region?.length === 0 || image.length === 0}
                                             options={resetECI(image, 'platform')}
                                             // expandTrigger="hover"
                                             displayRender={displayRender}
@@ -836,11 +843,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 </Col>
                                 :
                                 <Col span={12}>
-                                    <Form.Item label="镜像"
+                                    <Form.Item label={<FormattedMessage id="device.image"/>}
                                         name="image"
-                                        rules={[{ required: true, message: '请选择' }]}
+                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                     >
-                                        <Cascader placeholder="请选择" disabled={region?.length === 0 || image.length === 0}
+                                        <Cascader placeholder={formatMessage({id: 'please.select'})} disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform', 'os_name')}
                                             displayRender={displayRender}
                                             dropdownMenuColumnStyle={{ width: (724 - 48) / 4 }}
@@ -852,13 +859,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         {!showZone ? null : !is_instance ?
                             <Col span={8}>
-                                <Form.Item label="系统盘"
+                                <Form.Item label={<FormattedMessage id="device.system.disk"/>}
                                     name="system_disk_category"
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder="资源紧缺" disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({id: 'device.resource.shortage'})}  disabled={true} ></Select>
                                         :
-                                        <Select placeholder="请选择">
+                                        <Select placeholder={formatMessage({id: 'please.select'})}>
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -874,11 +881,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="system_disk_size"
                                     label=" "
-                                    rules={[{ required: false, message: '请输入' }]}
+                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder="大小"
+                                        placeholder={formatMessage({id: 'device.spec.size'})}
                                         style={{ width: 70 }}
                                         min={20}
                                         max={500}
@@ -895,12 +902,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={4}>
                                 <Form.Item
                                     name="storage_type"
-                                    label="数据盘"
+                                    label={<FormattedMessage id="device.storage_type"/>}
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder="资源紧缺" disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({id: 'device.resource.shortage'})} disabled={true} ></Select>
                                         :
-                                        <Select placeholder="请选择" disabled={image.length === 0}>
+                                        <Select placeholder={formatMessage({id: 'please.select'})} disabled={image.length === 0}>
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -916,10 +923,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="storage_size"
                                     label=" "
-                                    rules={[{ required: false, message: '请输入' }]}
+                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
                                 >
                                     <InputNumber
-                                        placeholder="大小"
+                                        placeholder={formatMessage({id: 'device.spec.size'})}
                                         min={20}
                                         max={500}
                                         style={{ width: 70 }}
@@ -936,11 +943,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="storage_number"
                                     label=" "
-                                    rules={[{ required: false, message: '请输入' }]}
+                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder="数量"
+                                        placeholder={formatMessage({id: 'device.quantity'})}
                                         style={{ width: 70 }}
                                         defaultValue={0}
                                         min={0}
@@ -956,14 +963,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12} className={styles.warp} >
                                 <Form.Item
                                     name="bandwidth"
-                                    label="带宽"
-                                    rules={[{ required: true, message: '请输入' }]}
+                                    label={<FormattedMessage id="device.bandwidth"/>}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                                 >
                                     <Input
                                         type="number"
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
-                                        placeholder="请输入"
+                                        placeholder={formatMessage({id: 'please.enter'})}
                                     />
                                 </Form.Item>
                             </Col> :
@@ -971,13 +978,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         {is_instance ?
                             <Col span={12}>
-                                <Form.Item label="使用状态"
+                                <Form.Item label={<FormattedMessage id="device.usage.state"/>}
                                     name="state"
                                     hasFeedback
-                                    rules={[{ required: true, message: '请选择机器状态!' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
                                     initialValue={'Available'}
                                 >
-                                    <Select placeholder="请选择机器状态" >
+                                    <Select placeholder={formatMessage({id: 'device.usage.state.message'})} >
                                         <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
                                         <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
                                         <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
@@ -991,17 +998,18 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         <Col span={12}>
                             <Form.Item
                                 name="kernel_install"
-                                label="是否安装内核"
-                                rules={[{ required: true, message: '请选择' }]}
+                                label={<FormattedMessage id="device.kernel_install"/>}
+                                rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                             >
                                 <Radio.Group>
-                                    <Radio value={1}>是</Radio>
-                                    <Radio value={0}>否</Radio>
+                                    <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                    <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-                            <Form.Item label="运行变量名"
+                            <Form.Item 
+                                label={<FormattedMessage id="device.var_name"/>}
                                 name="var_name"
                                 rules={[
                                     {
@@ -1009,36 +1017,40 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     },
                                 ]}
                             >
-                                <Input autoComplete="off" placeholder="请输入" />
+                                <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                             </Form.Item>
                         </Col>
                         {is_instance ?
                             <Col span={12}>
                                 <Form.Item
                                     name="private_ip"
-                                    label={<QusetionIconTootip title="私网IP" desc="指定主网卡私网IP，则IP必须在虚拟交换机地址段内且可用" />}
+                                    label={
+                                        <QusetionIconTootip 
+                                            title={formatMessage({id: 'device.private_ip'})}
+                                            desc={formatMessage({id: 'device.private_ip.desc'})} />
+                                    }
                                 >
-                                    <Input autoComplete="off" placeholder="请输入" />
+                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                                 </Form.Item>
                             </Col> :
                             null
                         }
                         <Col span={12}>
                             <Form.Item
-                                label="控制通道"
+                                label={<FormattedMessage id="device.channel_type"/>}
                                 name="channel_type"
                                 initialValue={'toneagent'}
-                                rules={[{ required: true, message: '请选择控制通道' }]}
+                                rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}
                             >
                                 <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
                         </Col>
 
                         <Col span={12}>
-                            <Form.Item label="备注"
+                            <Form.Item label={<FormattedMessage id="device.description"/>}
                                 name="description"
                             >
-                                <Input.TextArea rows={3} placeholder="请输入" />
+                                <Input.TextArea rows={3} placeholder={formatMessage({id: 'please.enter'})} />
                             </Form.Item>
                         </Col>
                     </Row>

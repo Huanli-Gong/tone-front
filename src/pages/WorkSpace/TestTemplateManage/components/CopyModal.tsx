@@ -1,6 +1,7 @@
 import { requestCodeMessage } from '@/utils/utils'
 import { Drawer , Space , Button, Form, Input, Radio, message } from 'antd'
 import React , { forwardRef, useState , useImperativeHandle } from 'react'
+import { FormattedMessage, useIntl } from 'umi'
 import { copyTestTemplate , updateTestTemplate } from '../service'
 
 import styles from './index.less'
@@ -8,6 +9,7 @@ import styles from './index.less'
 
 export default forwardRef(
     ({ onOk } : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const [ visible , setVisible ] = useState( false )
         const [ padding , setPadding ] = useState( false )
         const [ name , setName ] = useState('')
@@ -24,7 +26,7 @@ export default forwardRef(
             () => ({
                 show : ( tt : string , _ : any = {} ) => {
                     tt && setTitle( tt )
-                    if ( tt === '模板复制' ) {
+                    if ( tt === 'copy' ) {
                         setName( _.name )
                         const copyName = `${ _.name }-copy-${ randomStrings() }`
                         console.log( copyName )
@@ -48,7 +50,7 @@ export default forwardRef(
                 onOk()
                 setVisible( false )
                 form.resetFields()
-                message.success('操作成功!')
+                message.success(formatMessage({id: 'operation.success'}) )
             }
             else requestCodeMessage( code , msg )
             setPadding( false )
@@ -60,7 +62,7 @@ export default forwardRef(
                 .validateFields()
                 .then( async ( values : any ) => {
                     console.log( values , data )
-                    if ( title === '模板复制' ) {
+                    if ( title === 'copy' ) {
                         const { msg , code } = await copyTestTemplate({ ...values , template_id : data.id })
                         defaultOptions( msg , code )
                     }
@@ -76,29 +78,29 @@ export default forwardRef(
         }
 
         return (
-            <Drawer 
+            <Drawer
+                title={<FormattedMessage id={`job.templates.${title}`} />}
                 maskClosable={ false }
                 keyboard={ false } 
                 visible={ visible }
                 width="380"
                 onClose={ handleClose }
-                title={ title }
                 bodyStyle={{ paddingTop : 12 }}
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={ handleClose }>取消</Button>
+                            <Button onClick={ handleClose }><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={ padding } onClick={ handleOk }>
-                                { ~ title.indexOf('编辑') ? '更新' : '确定' }
+                                { ~ title.indexOf('edit') ? <FormattedMessage id="operation.update" />: <FormattedMessage id="operation.ok" />}
                             </Button>
                         </Space>
                     </div>
                 }
             >
                 {
-                    title === '模板复制' &&
+                    title === 'copy' &&
                     <Space style={{ paddingBottom : 12 }}>
-                        <div style={{ color :  'rgba(0,0,0,.8)' , fontWeight : 600 }}>原模板名称</div>
+                        <div style={{ color :  'rgba(0,0,0,.8)' , fontWeight : 600 }}><FormattedMessage id="job.templates.original.name" /></div>
                         <div style={{ color : ' rgba(0,0,0,0.65)' }}>{ name }</div>
                     </Space>
                 }
@@ -109,24 +111,31 @@ export default forwardRef(
                     className={ styles.job_test_form }
                 >
                     <Form.Item 
-                        label={ title === '模板编辑' ? '模板名称' : '新模板名称'} 
+                        label={ title === 'edit' ? 
+                          <FormattedMessage id="job.templates.template.name" />
+                          : <FormattedMessage id="job.templates.new.template.name" />
+                        } 
                         name="name"
                         // help={msg}
                         rules={[{
                             required: true,
-                            message: '仅允许包含字母、数字、下划线、中划线、点，最长64个字符',
+                            message: formatMessage({id: 'job.templates.template.name.message'}),
                             pattern: /^[A-Za-z0-9\._-]{1,64}$/g
                         }]}
                     >
-                        <Input autoComplete="off" placeholder="仅允许包含字母、数字、下划线、中划线、点，最长64个字符"/>
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'job.templates.template.name.message'})}/>
                     </Form.Item>
-                    <Form.Item label="模板描述" name="description">
-                        <Input.TextArea rows={ 3 } placeholder="请输入模板描述" />
+                    <Form.Item 
+                        label={<FormattedMessage id="job.templates.template.desc" />}
+                        name="description">
+                        <Input.TextArea rows={ 3 } placeholder={formatMessage({id: 'job.templates.template.desc.placeholder'})}
+                         />
                     </Form.Item>
-                    <Form.Item label="启用" name="enable" initialValue={ true }>
+                    <Form.Item label={<FormattedMessage id="job.templates.enable" />}
+                        name="enable" initialValue={ true }>
                         <Radio.Group>
-                            <Radio value={ true }>是</Radio>
-                            <Radio value={ false }>否</Radio>
+                            <Radio value={ true }><FormattedMessage id="operation.yes" /></Radio>
+                            <Radio value={ false }><FormattedMessage id="operation.no" /></Radio>
                         </Radio.Group>
                     </Form.Item>
                 </Form>

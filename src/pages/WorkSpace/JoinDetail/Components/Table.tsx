@@ -1,10 +1,12 @@
 import React , { useState , useEffect } from 'react'
 import { Table, message , Row , Space , Button , Checkbox , Typography , Avatar, Tag, Badge } from 'antd'
+import { useIntl, FormattedMessage } from "umi"
 import { queryWorkspaceApproveList , optWorkspaceApprove } from '@/services/Workspace'
 import { ReactComponent as JoinWorkspace } from '@/assets/svg/join.svg'
 import { requestCodeMessage } from '@/utils/utils'
 
 export default ( props : any ) => {
+    const { formatMessage } = useIntl()
     const { onChange } = props
     const { ws_id } = props.match.params
     const status = props.status
@@ -33,8 +35,8 @@ export default ( props : any ) => {
         switch ( _.object_type ) {
             case 'workspace' : return (
                 <Space>
-                    <Tag color="#1890FF">加</Tag>
-                    <Typography.Text>加入workspace</Typography.Text>
+                    <Tag color="#1890FF"><FormattedMessage id="add"/></Tag>
+                    <Typography.Text><FormattedMessage id="join.workspace"/></Typography.Text>
                 </Space>
             )
             default : return (<Space></Space>)
@@ -51,7 +53,7 @@ export default ( props : any ) => {
         
         if ( code === 200 ) {
             initData()
-            message.success('操作成功')
+            message.success(formatMessage({id: 'operation.success'}) )
             onChange()
         }
         else requestCodeMessage( code , msg )
@@ -60,14 +62,14 @@ export default ( props : any ) => {
 
     let columns : any[] = [
         {
-            title : '申请类别',
+            title: <FormattedMessage id="application.type"/>,
             dataIndex : 'name',
             render : ( _ : any , record : any ) => (
                 <SwitchApproveClass { ...record }/>
             )
         },
         {
-            title : '申请人',
+            title: <FormattedMessage id="proposer_name"/>,
             dataIndex : 'name',
             render : ( _ : any , record : any ) => (
                 <Space>
@@ -77,11 +79,11 @@ export default ( props : any ) => {
             )
         },
         {
-            title : '申请理由',
+            title: <FormattedMessage id="application.reason"/>,
             dataIndex : 'reason'
         },
         {
-            title : '申请时间',
+            title: <FormattedMessage id="application.time"/>,
             dataIndex : 'gmt_created'
         },
     ]
@@ -90,17 +92,17 @@ export default ( props : any ) => {
         columns = [
             ...columns,
             {
-                title : '审批时间',
+                title : <FormattedMessage id="approval.time"/>,
                 dataIndex : 'gmt_modified'
             },
             {
-                title : '审批结果',
+                title : <FormattedMessage id="approval.result"/>,
                 render : ( _ : any ) => (
                     <Space>
                         <Badge status={ _.status === 'passed' ? 'success' : 'warning' }/>
                         <Typography.Text>
                             {
-                                _.status === 'passed' ? '已通过' : '已拒绝'
+                                _.status === 'passed' ? <FormattedMessage id="passed"/> : <FormattedMessage id="rejected"/>
                             }
                         </Typography.Text>
                     </Space>
@@ -112,7 +114,7 @@ export default ( props : any ) => {
         columns = [
             ...columns,
             {
-                title : '操作',
+                title : <FormattedMessage id="Table.columns.operation"/>,
                 render : ( _ : any ) => (
                     <Space>
                         <Button 
@@ -120,14 +122,14 @@ export default ( props : any ) => {
                             type="link" 
                             onClick={ () => hanldeOption({ id : _.id , name : 'pass' }) }
                         >
-                            通过
+                            <FormattedMessage id="operation.pass"/>
                         </Button>
                         <Button 
                             style={{ padding : 0 }} 
                             type="link" 
                             onClick={ () => hanldeOption({ id : _.id , name : 'refuse' }) }
                         >
-                            拒绝
+                            <FormattedMessage id="operation.refuse"/>
                         </Button>
                     </Space>
                 )
@@ -162,7 +164,7 @@ export default ( props : any ) => {
         if ( code === 200 ) {
             setSelectedRowKeys([])
             initData()
-            message.success('操作成功')
+            message.success(formatMessage({id: 'operation.success'}) )
         }
         else requestCodeMessage( code , msg )
     }
@@ -191,7 +193,7 @@ export default ( props : any ) => {
                     //hideOnSinglePage: true,
                     showQuickJumper: true,
                     defaultCurrent: 1,
-                    showTotal: t => `共${ t }条`,
+                    showTotal: t => formatMessage({id: 'pagination.total.strip'}, {data: t}),
                     total: total,
                     pageSize: pagenat.page_size,
                     onChange: (page_num, page_size) => setPagenat({
@@ -219,12 +221,12 @@ export default ( props : any ) => {
                 >
                     <Space>
                         <Checkbox indeterminate={ true }/>
-                        <Typography.Text>已选择{ selectedRowKeys.length }项</Typography.Text>
-                        <Button type="link" onClick={ () => setSelectedRowKeys([]) }>取消</Button>
+                        <Typography.Text>{formatMessage({id: 'selected.item'}, {data: selectedRowKeys.length})}</Typography.Text>
+                        <Button type="link" onClick={ () => setSelectedRowKeys([]) }><FormattedMessage id="operation.cancel"/></Button>
                     </Space>
                     <Space>
-                        <Button onClick={() => handleBatchOption( 'refuse' )}>批量拒绝</Button>
-                        <Button onClick={() => handleBatchOption( 'pass' )} type="primary">批量通过</Button>
+                        <Button onClick={() => handleBatchOption( 'refuse' )}><FormattedMessage id="batch.reject"/></Button>
+                        <Button onClick={() => handleBatchOption( 'pass' )} type="primary"><FormattedMessage id="batch.pass"/></Button>
                     </Space>
                 </Row>
             }

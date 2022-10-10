@@ -1,5 +1,6 @@
 import React from 'react'
 import { Popover, Button } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { TransferContent } from './'
 import styles from '../index.less'
 
@@ -8,6 +9,7 @@ type IProps = {
 }
 
 const Transfer: React.ForwardRefRenderFunction<{}, IProps> = (props, ref) => {
+    const { formatMessage } = useIntl()
     const { refresh } = props
 
     const [visible, setVisible] = React.useState(false)
@@ -26,12 +28,14 @@ const Transfer: React.ForwardRefRenderFunction<{}, IProps> = (props, ref) => {
                 />
             }
             trigger="click"
-            title="转交所有权"
+            title={<FormattedMessage id="ws.config.transfer.ownership"/>}
             onVisibleChange={v => setVisible(v)}
             visible={visible}
             overlayClassName={styles.transferOwnerWs}
         >
-            <Button onClick={() => setVisible(true)} >所有权转交</Button>
+            <Button onClick={() => setVisible(true)}>
+                <FormattedMessage id="ws.config.transfer.of.ownership"/>
+            </Button>
         </Popover>
     )
 }

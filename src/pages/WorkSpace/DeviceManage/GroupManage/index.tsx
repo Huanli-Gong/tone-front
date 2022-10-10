@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import Standalone from './Standalone'
 import Cluster from './Cluster'
 import { TabCard } from '@/components/UpgradeUI'
@@ -33,15 +33,15 @@ export default (props: any) => {
                 <Tabs defaultActiveKey='standalone' onTabClick={ handleTabClick }>
                     {/* <Tabs.TabPane key="standalone" tab={`内网单机`} />
                     <Tabs.TabPane key="cluster" tab={`内网集群`} /> */}
-                    <Tabs.TabPane key="standalone" tab={`单机`} />
-                    <Tabs.TabPane key="cluster" tab={`集群`} />
+                    <Tabs.TabPane key="standalone" tab={<FormattedMessage id="standalone"/>} />
+                    <Tabs.TabPane key="cluster" tab={<FormattedMessage id="cluster"/>} />
                 </Tabs>
             }
             extra={
                 tab === 'standalone' ?
-                    <Button key="1" type="primary" onClick={handleAddTestServer}>添加机器</Button>
+                    <Button key="1" type="primary" onClick={handleAddTestServer}><FormattedMessage id="device.add.btn"/></Button>
                     :
-                    <Button key="2" type="primary" onClick={handleCreateServer}>创建集群</Button>
+                    <Button key="2" type="primary" onClick={handleCreateServer}><FormattedMessage id="device.cluster.btn"/></Button>
             }
         >
             {

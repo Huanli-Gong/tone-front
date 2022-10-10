@@ -6,12 +6,13 @@ import { queryBaselineDetail, deletePerfsDetail } from '../services'
 import _ from 'lodash'
 import Clipboard from 'clipboard'
 import { AccessTootip, requestCodeMessage } from '@/utils/utils';
-import { useParams, Access, useAccess } from 'umi';
+import { useParams, useIntl, useAccess, Access, FormattedMessage } from 'umi';
 
 export default forwardRef(
     (props: any, ref: any) => {
         const { ws_id }: any = useParams()
         const access = useAccess();
+        const { formatMessage } = useIntl()
         let { test_suite_name, test_case_name } = props;
         const { server_provider, test_type, id } = props.currentBaseline
         const { test_suite_id, test_case_id, server_sn } = props;
@@ -24,7 +25,7 @@ export default forwardRef(
             baseline_id: id,
         }  // 有用
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('FailCase详情') // 弹框顶部title
+        const [title, setTitle] = useState(formatMessage({id: 'pages.workspace.baseline.failDetail'})) // 弹框顶部title
         const [data, setData] = useState<[]>([])
         const [loading, setLoading] = useState(true)
         const [testCaseName, setTestCaseName] = useState(test_case_name)
@@ -55,7 +56,7 @@ export default forwardRef(
             data.forEach((record: any) => {
                 const clipboard = new Clipboard(`#copy_link_${record.id}`)
                 clipboard.on('success', function (e) {
-                    message.success('复制成功', 1)
+                    message.success(formatMessage({id: 'request.copy.success'}), 1)
                     e.clearSelection();
                 })
                 return () => {
@@ -87,7 +88,7 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "Metric详情", data: any = {}) => {
+                show: (title: string = formatMessage({ id: 'pages.workspace.baseline.mertricDetail' }), data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     PAGE_DEFAULT_PARAMS.test_case_id = data.test_case_id
@@ -100,7 +101,7 @@ export default forwardRef(
 
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 if (threeLevelDetailData.length < 2) {
                     props.secondRefresh()
                     props.oneRefresh()
@@ -132,12 +133,18 @@ export default forwardRef(
                 <div className={styles.metric_value_detail}>
                     <Row justify="space-between" className={styles.left_title}>
                         <Col span={24} className={styles.filter_search_box}>
-                            <Typography.Text strong={true}>基线数据</Typography.Text>
-                            <span className={styles.copy_link} id={copy_dom_id} data-clipboard-target={`#${copy_container}`}>复制</span>
+                            <Typography.Text strong={true}>
+                                <FormattedMessage id="pages.workspace.baseline.mertricDetail.data" />
+                            </Typography.Text>
+                            <span className={styles.copy_link} id={copy_dom_id} data-clipboard-target={`#${copy_container}`}>
+                                <FormattedMessage id="operation.copy" />
+                            </span>
                         </Col>
                     </Row>
                     <div id={copy_container} className={styles.copy_container}>
-                        <div style={{ opacity: 0, height: 0, position: 'absolute' }}>{`${metric}基线数据`}</div>
+                        <div style={{ opacity: 0, height: 0, position: 'absolute' }}>
+                            {metric}<FormattedMessage id="pages.workspace.baseline.mertricDetail.data" />
+                        </div>
                         <div className={styles.line}><Divider /></div>
                         <div className={styles.copy_content}>
                             <Row justify="space-between" className={styles.left_title}>
@@ -182,7 +189,7 @@ export default forwardRef(
                     showTitle: false
                 },
                 textWrap: 'word-break',
-                render: (text:any) => {
+                render: (text: any) => {
                     return (
                         <Tooltip placement="topLeft" title={text} overlayStyle={{ wordBreak: 'break-all' }}>
                             {text}
@@ -193,7 +200,7 @@ export default forwardRef(
             },
             {
                 dataIndex: 'baseline_data',
-                title: '基线值',
+                title: <FormattedMessage id={'pages.workspace.baseline.metricDetail.table.baseline_data'} />, // '基线值',
                 key: 'baseline_data',
                 render: (text: any, record: any) =>
                     <Popover content={reactNode(record)} title={''} trigger="hover">
@@ -201,22 +208,24 @@ export default forwardRef(
                     </Popover>
             },
             {
-                title: '操作',
+                title: <FormattedMessage id={'pages.workspace.baseline.metricDetail.table.action'} />, // '操作',
                 key: 'id',
                 render: (record: any) => {
                     return (
-                        <Access 
+                        <Access
                             accessible={access.WsMemberOperateSelf(record.creator)}
                             fallback={
                                 <Space size='small'>
-                                    <span className={styles.fail_detail_operation} onClick={()=> AccessTootip()}>删除</span>
+                                    <span className={styles.fail_detail_operation} onClick={() => AccessTootip()}>
+                                        <FormattedMessage id="operation.delete"/>
+                                    </span>
                                 </Space>
                             }
                         >
                             <Space size='small'>
                                 {/* 删除的弹框 */}
                                 <Popconfirm
-                                    title="你确定要删除吗？"
+                                    title={<FormattedMessage id="delete.prompt"/>}
                                     onConfirm={() => {
                                         const generObj = handleDelete(record);
                                         const excuteResult: any = generObj.next();
@@ -225,10 +234,10 @@ export default forwardRef(
                                             defaultOption(code, msg);
                                         })
                                     }}
-                                    okText="确认"
-                                    cancelText="取消"
+                                    okText={<FormattedMessage id="operation.confirm"/>}
+                                    cancelText={<FormattedMessage id="operation.cancel"/>}
                                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-                                    <span className={styles.fail_detail_operation}>删除</span>
+                                    <span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
                                 </Popconfirm>
                             </Space>
                         </Access>
@@ -268,7 +277,9 @@ export default forwardRef(
                             borderTop: '10px solid #f0f0f0',
                         }} />
                     </div>
-                    <div className={styles.detal_drawer_text}>{'Metric详情'}</div>
+                    <div className={styles.detal_drawer_text}>
+                        <FormattedMessage id="pages.workspace.baseline.mertricDetail" />
+                    </div>
                     <Spin spinning={loading}>
                         <Table
                             columns={columns}

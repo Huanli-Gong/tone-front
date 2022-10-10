@@ -1,10 +1,12 @@
 import React,{ useState, useEffect } from 'react';
 import {Space, Button, Select, Divider, Spin} from 'antd';
+import { useIntl, FormattedMessage } from 'umi'
 import { member,queryCloudAk } from '../../../service';
 import _ from 'lodash'
 import styles from './index.less'
 
 const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
+	const { formatMessage } = useIntl()
 	const [user, setUser ] = useState<any>([])
 	const [keyword,setKeyword] = useState<string>()
 	const [val,setVal] = useState<any>()
@@ -51,13 +53,13 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 	const placeholder = () => {
 	
 		if (name === 'creator' || name === 'creator_name') {
-			return '请选择创建者'
+			return formatMessage({id: 'device.please.select.creator'})
 		}
 		if (name === 'update_user') {
-			return '请选择修改者'
+			return formatMessage({id: 'device.please.select.update_user'})
 		}
 		if (name === 'ak_name') {
-			return '请选择akName'
+			return formatMessage({id: 'device.please.select.ak_name'})
 		}
 	}
 	return (
@@ -97,7 +99,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 					size="small"
 					style={{ width: 75 }}
 				>
-					搜索
+					<FormattedMessage id="operation.search"/>
 				</Button>
 				<Button 
 					type="text"
@@ -110,7 +112,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 					size="small" 
 					style={{ width: 75 }}
 				>
-					重置
+					<FormattedMessage id="operation.reset"/>
 				</Button>
 			</Space>
 		</div>

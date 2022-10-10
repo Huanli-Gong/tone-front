@@ -1,6 +1,7 @@
 
 import React, { forwardRef } from 'react';
 import { Tag, } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 
 /**
  * 部署Agent对话框：表单受控组件。

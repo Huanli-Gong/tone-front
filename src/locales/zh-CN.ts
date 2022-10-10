@@ -51,6 +51,7 @@ export default {
   'operation.expand': '展开',
   'operation.collapse': '收起',
   'operation.release': '释放',  
+  'operation.not.release': '不释放',
   'operation.open': '开启',  
   'operation.close': '关闭',  
   'operation.confirm.delete': '确定删除',

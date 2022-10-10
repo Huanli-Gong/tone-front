@@ -7,7 +7,7 @@ const text =  {
   'baseline': 'Test Baseline ',
   'baseline_job': 'Baseline Job',
   //------------------
-  'job_name.message': 'Letters, numbers, underscores, hyphens, "."and {date} placeholders are allowed，Chinese is not allowed',
+  'job_name.message': 'Allow letters, numbers, underscores, dashes, {date} placeholders, ".", not Chinese',
   'job_name.limit.message': 'The job name can contain a maximum of 128 characters',
   'project.placeholder': 'Select Project',
   'baseline.placeholder': 'Select the test baseline you want to compare',

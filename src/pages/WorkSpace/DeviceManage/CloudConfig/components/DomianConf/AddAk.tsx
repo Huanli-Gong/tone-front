@@ -1,22 +1,24 @@
 import { Drawer, Space, Button, Form, Input, Radio, message, Select, InputNumber } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle, useRef } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import { createCloudAk, updateCloudAk } from '../../service'
 import styles from './index.less'
 import _ from 'lodash'
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('新建AK') // 弹框顶部title
+        const [title, setTitle] = useState('new') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
         const IdRef = useRef<any>(null);
         const KeyRef = useRef<any>(null);
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "新建AK", data: any = {}) => {
+                show: (title: string = "new", data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     setEditer(data)
@@ -34,13 +36,14 @@ export default forwardRef(
             if (code === 200) {
                 // props.onOk()
                 props.setPage()
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 setVisible(false)
                 form.resetFields() //重置一组字段到 initialValues
             }
             else {
                 if (code === 201) {
-                    form.setFields([{ name: 'name', errors: ["AK Name不能重复"] }])
+                    const localeStr = formatMessage({id: 'device.ak.name.cannot.repeated'})
+                    form.setFields([{ name: 'name', errors: [localeStr] }])
                 } else {
                     message.error(msg)
                 }
@@ -71,7 +74,7 @@ export default forwardRef(
                 .then(async (values) => {
                     const valuesCopy = _.cloneDeep(values)
                     valuesCopy.enable = valuesCopy.enable ? 'True' : 'False'
-                    if (title === '新建AK') {
+                    if (title === 'new') {
                         const { code, msg } = await createCloudAk({ ...valuesCopy, ws_id: props.ws_id })
                         defaultOption(code, msg, 'new')
                     }
@@ -86,13 +89,16 @@ export default forwardRef(
                     setPadding(false)
                 })
         }
-        const providerArr = [{ id: 'aliyun_ecs', name: '阿里云ECS' }, { id: 'aliyun_eci', name: '阿里云ECI' }]
+        const providerArr = [
+            { id: 'aliyun_ecs', name: formatMessage({id: 'device.aliyun_ecs'}) }, 
+            { id: 'aliyun_eci', name: formatMessage({id: 'device.aliyun_eci'}) },
+        ]
 
         return (
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title}
+                title={title === 'new' ? <FormattedMessage id="device.new.ak"/>: <FormattedMessage id="device.edit.ak"/>}
                 width="375"
                 onClose={handleClose}
                 visible={visible}
@@ -100,8 +106,10 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={padding} onClick={handleOk}>{editer && editer.name ? '更新' : '确定'}</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" disabled={padding} onClick={handleOk}>
+                                {editer && editer.name ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
+                            </Button>
                         </Space>
                     </div>
                 }
@@ -115,12 +123,12 @@ export default forwardRef(
                     }}
                 >
                     <Form.Item
-                        label="云服务商"
+                        label={<FormattedMessage id="device.cloud.service.provider"/>}
                         name="provider"
-                        rules={[{ required: true, message: '云服务商不能为空' },]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.cloud.service.provider.cannot.empty'}) },]}
                     >
                         <Select
-                            placeholder="请选择云服务商"
+                            placeholder={formatMessage({id: 'device.cloud.service.provider.select'})}
                             filterOption={(input, option: any) => {
                                 return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }}
@@ -140,55 +148,61 @@ export default forwardRef(
                             }
                         </Select>
                     </Form.Item>
-                    <Form.Item label="是否启用" name="enable">
+                    <Form.Item 
+                        label={<FormattedMessage id="device.enable"/>}
+                        name="enable">
                         <Radio.Group>
-                            <Radio value={true}>是</Radio>
-                            <Radio value={false}>否</Radio>
+                            <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                            <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         label="AK Name"
                         name="name"
-                        rules={[{ required: true, message: 'AK Name不能为空' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.ak.name.cannot.empty'}) }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入" />
+                        <Input autoComplete="auto" placeholder={formatMessage({id: 'device.ak.name.enter'}) } />
                     </Form.Item>
                     <Form.Item
                         label="Access ID"
                         name="access_id"
-                        rules={[{ required: true, message: 'AccessID不能为空' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.access_id.cannot.empty'})  }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入" onChange={handAccessIdChange} ref={IdRef} />
+                        <Input autoComplete="auto" placeholder={formatMessage({id: 'device.access_id.enter'}) }
+                            onChange={handAccessIdChange} ref={IdRef} />
                     </Form.Item>
                     <Form.Item
                         label="Access Key"
                         name="access_key"
-                        rules={[{ required: true, message: 'AccessKey不能为空' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.access_key.cannot.empty'}) }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入" onChange={handAccessKeyChange} ref={KeyRef} />
+                        <Input autoComplete="auto" placeholder={formatMessage({id: 'device.access_key.enter'})}
+                            onChange={handAccessKeyChange} ref={KeyRef} />
                     </Form.Item>
                     <Form.Item
-                        label="机器限额"
+                        label={<FormattedMessage id="device.vm_quota"/>}
                         name="vm_quota"
-                        rules={[{ required: true, message: '机器限额不能为空' }]}
+                        rules={[{ required: true, message: formatMessage({id: 'device.vm_quota.cannot.empty'}) }]}
                     >
-                        <Input placeholder="请输入数字限额，*为不限制" />
+                        <Input placeholder={formatMessage({id: 'device.vm_quota.placeholder'})} />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
                     {
                         BUILD_APP_ENV &&
                         <Form.Item
-                            label="资源组ID"
+                            label={<FormattedMessage id="device.resource_group_id"/>}
                             name="resource_group_id"
                         >
                             <Input
                                 autoComplete="auto"
-                                placeholder="请输入"
+                                placeholder={formatMessage({id: 'please.enter'})} 
                             />
                         </Form.Item>
                     }
-                    <Form.Item label="描述（选填）" name="description">
-                        <Input.TextArea placeholder="请输入描述信息" />
+                    <Form.Item label={<FormattedMessage id="device.description.option"/>}
+                        name="description">
+                        <Input.TextArea placeholder={formatMessage({id: 'device.description.option.placeholder'})} 
+                         />
                     </Form.Item>
                 </Form>
             </Drawer>

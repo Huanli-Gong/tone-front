@@ -1,0 +1,20 @@
+export default {
+   // job tags
+   'job.tags.name': 'Job标签管理',
+   'job.tags.create': '新建Job标签',
+   'job.tags.tag.name': '标签名称',
+   'job.tags.source_tag': '标签来源',
+   'job.tags.creator_name': '创建人',
+   'job.tags.update_user': '修改人',
+   'job.tags.gmt_created': '创建时间',
+   'job.tags.gmt_modified': '修改时间',
+   'job.tags.remarks': '备注',
+   'job.tags.remarks.placeholder': '请输入备注信息',   
+   'job.tags.delete.prompt': '删除标签后，Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！',
+   'job.tags.edit.tag': '编辑标签',
+   'job.tags.create.tag': '创建标签',
+   'job.tags.tag_color': '标签颜色',
+   'job.tags.msg1': '仅允许包含字母、数字、下划线、中划线、点',
+   'job.tags.msg2': '标签名称已存在',
+   'job.tags.msg3': '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
+}
