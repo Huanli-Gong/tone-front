@@ -34,8 +34,8 @@ import OverflowList from '@/components/TagOverflow/index'
 
 interface MachineParams {
     type?: any,
-    page_num?: number,
-    page_size?: number,
+    page_num: number,
+    page_size: number,
     description?: string,
     name?: string,
     owner?: any,
@@ -64,6 +64,7 @@ export default (props: any) => {
         page_num: 1,
         page_size: 10,
     })
+    const [total, setTotal] = useState(0)
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
@@ -450,6 +451,8 @@ export default (props: any) => {
         setData({ data: [] })
         const data: any = await cloudList({ ...obj, ws_id })
         data && setData(data)
+        setTotal(data.total)
+        console.log('data',data)
         setLoading(false)
     };
     const removeCloud = _.debounce(
@@ -459,7 +462,7 @@ export default (props: any) => {
             const res = await delCloud(id, data)
             setBtnLoad(false)
             if (res.code == 200) {
-                await getList()
+                setParams({ ...params, page_num: Math.round((total - 1) / params.page_size) || 1 })
                 message.success('操作成功！');
                 setDeleteVisible(false)
                 setDeleteDefault(false)
