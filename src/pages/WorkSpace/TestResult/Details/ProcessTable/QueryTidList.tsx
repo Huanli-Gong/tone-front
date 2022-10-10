@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Divider, Spin, Layout, Typography, Row, Col, Tooltip } from 'antd';
 import { queryTidMessage } from '../service'
 import { requestCodeMessage } from "@/utils/utils";
@@ -25,7 +25,6 @@ const SegmentationMark = styled.span`
 `
 
 const TidDetail: React.FC<any> = ({ tid }) => {
-    console.log('tid', tid)
     const [loading, setLoading] = useState<boolean>(false)
     const [details, setDetails] = useState<any>({})
     const [visible, setVisible] = useState(false)
@@ -44,7 +43,7 @@ const TidDetail: React.FC<any> = ({ tid }) => {
         setVisible($visible)
     }
 
-    const TidContainer: React.FC<any> = () => {
+    const TidContainer = useMemo(()=> {
         return (
             <Spin spinning={loading}>
                 <Layout.Content style={{ marginBottom: 20 }}>
@@ -129,32 +128,22 @@ const TidDetail: React.FC<any> = ({ tid }) => {
                     <Divider orientation="left" plain>
                         <Typography.Text strong><SegmentationMark/>任务脚本</Typography.Text>
                     </Divider>
-                    {
-                        details?.script && 
-                        <Row gutter={20} style={{ margin:'0 10px'}}>
-                            <CodeEditer
-                                code={details?.script}
-                            />
-                        </Row>
-                    }
+                    <Row gutter={20} style={{ margin:'0 10px', height: 200 }}>
+                        <CodeEditer code={details.script} />
+                    </Row>
                 </Layout.Content>
                 <Layout.Content style={{ marginBottom: 30 }}>
                     <Divider orientation="left" plain>
                         <Typography.Text strong><SegmentationMark/>任务结果</Typography.Text>
                     </Divider>
-                    {
-                        details?.result && 
-                        <Row gutter={20} style={{ margin:'0 10px'}}>
-                            <CodeEditer
-                                code={details?.result}
-                            />
-                        </Row>
-                    }
+                    <Row gutter={20} style={{ margin:'0 10px', height: 200 }}>
+                        <CodeEditer code={details?.result} />
+                    </Row>
                 </Layout.Content>
             </Spin>
         )
-    }
-
+    },[details, loading])
+   
     return (
         <Tooltip
             visible={visible}
@@ -168,7 +157,7 @@ const TidDetail: React.FC<any> = ({ tid }) => {
             }}
             color="#fff"
             placement="right"
-            title={<TidContainer />}
+            title={TidContainer}
             onVisibleChange={handleVisible}
         >
             {tid}

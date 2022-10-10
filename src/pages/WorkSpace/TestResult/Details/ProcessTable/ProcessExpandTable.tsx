@@ -1,5 +1,6 @@
 import React from 'react'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage } from 'umi';
+import { Button } from 'antd';
 import { copyTooltipColumn , evnPrepareState } from '../components'
 import TidDetail from './QueryTidList';
 import styles from './index.less'
@@ -11,6 +12,7 @@ export default ({ items , mode } : any ) => {
     const columns : any = [{
         dataIndex : 'mode',
         title : <FormattedMessage id="ws.result.details.mode"/>,
+        width: 80,
         ellipsis: {
             showTitle: false
         },
@@ -22,6 +24,7 @@ export default ({ items , mode } : any ) => {
         ellipsis: {
             showTitle: false
         },
+        width: 120,
         render : () => <div><ColumnStateLine /></div>
     },
     {
@@ -30,15 +33,21 @@ export default ({ items , mode } : any ) => {
         ellipsis: {
             showTitle: false
         },
+        width: 80,
     },
     {
         dataIndex : 'state',
         title : <FormattedMessage id="ws.result.details.state"/>,
+        ellipsis: {
+            showTitle: false
+        },
+        width: 80,
         render : evnPrepareState
     },
     {
         dataIndex : 'result',
         title : <FormattedMessage id="ws.result.details.output.results"/>,
+        width: 130,
         ...copyTooltipColumn('Nothing to do', formatMessage),
     },
     {
@@ -47,6 +56,7 @@ export default ({ items , mode } : any ) => {
         ellipsis: {
             showTitle: false
         },
+        width: 80,
         render:(_:any) => <TidDetail tid={_} />
     },
     {
@@ -55,6 +65,7 @@ export default ({ items , mode } : any ) => {
         ellipsis: {
             showTitle: false
         },
+        width: 130,
     },
     {
         dataIndex : 'gmt_modified',
@@ -62,7 +73,24 @@ export default ({ items , mode } : any ) => {
         ellipsis: {
             showTitle: false
         },
-    },]
+        width: 130,
+    },
+    {
+        title: <FormattedMessage id="ws.result.details.view.log"/>,
+        ellipsis: {
+            showTitle: false
+        },
+        width: 80,
+        render: (_: any) => {
+            const strLocals = formatMessage({id: 'ws.result.details.log'})
+            // success,fail,stop 可看日志
+            if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
+                if (_.log_file)
+                    return  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
+            }
+            return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
+        }
+    }]
 
     return (
         <ResizeTable 
@@ -72,6 +100,7 @@ export default ({ items , mode } : any ) => {
             rowKey="rowKey" // "id"
             size="small"
             rowClassName={ styles.prep_test_conf_row }
+            scroll={{ x: '100%' }}
             pagination={ false }
         />
     )
