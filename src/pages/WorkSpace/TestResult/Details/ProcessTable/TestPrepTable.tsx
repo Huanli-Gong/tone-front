@@ -11,6 +11,7 @@ import styles from './index.less'
 import { requestCodeMessage, matchMode } from '@/utils/utils'
 import ResizeTable from '@/components/ResizeTable'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
+import TidDetail from './QueryTidList';
 //测试准备 ==== Table
 export default ({ job_id, refresh = false, provider_name }: any) => {
     const { formatMessage } = useIntl()
@@ -176,8 +177,11 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'tid',
             title: 'TID',
+            ellipsis: {
+                showTitle: false
+            },
             width: 80,
-            ...tooltipTd(),
+            render:(_:any) => <TidDetail tid={_} /> 
         },
         {
             dataIndex: 'gmt_created',

@@ -114,3 +114,7 @@ export const queryMachineData = async( params:any ) => {
 export const querySeverLink = async( params:any ) => {
     return request(`/api/server/get_ssh_link/`,{ params })
 }
+// tid详细信息查询
+export const queryTidMessage = async( params:any ) => {
+    return request(`/api/server/agent_task_info/`,{ params })
+}
