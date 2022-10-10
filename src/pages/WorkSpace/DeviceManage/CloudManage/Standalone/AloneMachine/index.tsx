@@ -265,7 +265,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setTimeout(function () {
             form.setFieldsValue({
                 is_instance: type - 0,
-                release_rule: 1,
+                
                 bandwidth: 10,
                 extra_param: [{ param_key: '', param_value: '' }]
             })
@@ -288,7 +288,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         param.extra_param = JSON.stringify(param.extra_param) === '{}' ? [{ param_key: '', param_value: '' }] : param.extra_param
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
         param.is_instance = param.is_instance ? 1 : 0
-        param.release_rule = param.release_rule ? 1 : 0
+        // param.release_rule = param.release_rule ? 1 : 0
         param.manufacturer = [param.manufacturer, param.ak_id]
         param.region = [param.region, param.zone]
 
@@ -504,7 +504,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                         instance_type_two: 1,
                         system_disk_size: 40,
                         storage_size: 40,
-                        storage_number: 1
+                        storage_number: 1,
+                        release_rule: 0,
                     }}
                 >
                     <Row gutter={16}>
@@ -546,38 +547,23 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             null
                         }
                         {/** 机器配置 */}
-                        {!is_instance && !id ?
+                        {!is_instance ?
                             <Col span={12}>
                                 <Form.Item
                                     name="release_rule"
                                     label="用完释放"
                                     rules={[{ required: true, message: '请选择' }]}
-                                    initialValue={0}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
+                                        <Radio value={0}>不释放</Radio>
+                                        <Radio value={1}>释放</Radio>
+                                        <Radio value={2}><QusetionIconTootip title="失败保留" desc="自动保留24h后释放" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col> :
                             null
                         }
-                        {!is_instance && id ?
-                            <Col span={12}>
-                                <Form.Item
-                                    name="release_rule"
-                                    label="用完释放"
-                                    rules={[{ required: true, message: '请选择' }]}
-                                    initialValue={0}
-                                >
-                                    <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
-                                    </Radio.Group>
-                                </Form.Item>
-                            </Col> :
-                            null
-                        }
+                        
                         {!id || !is_instance ?
                             <Col span={12}>
                                 <Form.Item

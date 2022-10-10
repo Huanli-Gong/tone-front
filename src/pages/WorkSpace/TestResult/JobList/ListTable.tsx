@@ -6,7 +6,6 @@ import { StarOutlined, StarFilled } from '@ant-design/icons'
 import { JobListStateTag } from '../Details/components'
 import { QusetionIconTootip } from '@/components/Product';
 import lodash from 'lodash'
-import { useRequest } from "ahooks"
 import CommonPagination from '@/components/CommonPagination';
 import {
     queryTestResultList,
@@ -63,7 +62,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const rerunRef = React.useRef(null) as any
 
     const [loading, setLoading] = React.useState(true)
-    const [source, setSource] = React.useState(undefined)
+    const [source, setSource] = React.useState<Record<string, any>>({})
 
     const queryTestList = async () => {
         setLoading(true)
@@ -383,7 +382,7 @@ const ListTable: React.FC<IProps> = (props) => {
         handleResetSelectedKeys()
         message.success(formatMessage({ id: 'operation.success' }))
         countRefresh()
-        refresh()
+        queryTestList()
     }
 
     let basePadding = { padding: "0 16px" }

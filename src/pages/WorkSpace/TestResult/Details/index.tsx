@@ -369,11 +369,17 @@ const TestResultDetails: React.FC = (props: any) => {
                                         <Access accessible={access.WsTourist()}>
                                             <Access
                                                 accessible={access.WsMemberOperateSelf(data.creator)}
-                                                fallback={<Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>
-                                                    <FormattedMessage id="ws.result.details.stop"/>
-                                                </Button>}
+                                                fallback={['running','pending','pending_q'].includes(data.state) &&  
+                                                    <Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>
+                                                        <FormattedMessage id="ws.result.details.stop"/>
+                                                    </Button>
+                                                }
                                             >
-                                                {<Button onClick={handleStopJob} style={{ marginRight: 8 }}><FormattedMessage id="ws.result.details.stop"/></Button>}
+                                                {['running','pending','pending_q'].includes(data.state) && 
+                                                    <Button onClick={handleStopJob} style={{ marginRight: 8 }}>
+                                                        <FormattedMessage id="ws.result.details.stop"/>
+                                                    </Button>
+                                                }
                                             </Access>
                                         </Access>
                                     </div>

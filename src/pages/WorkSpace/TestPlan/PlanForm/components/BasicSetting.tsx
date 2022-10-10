@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
 import { Form, Input, Select, Radio } from 'antd'
-import { useRequest } from 'umi'
+import { useParams, useRequest } from 'umi'
 
 import { queryProjectList, queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
@@ -29,7 +29,9 @@ const BaselineWrapper = styled.div`
     position:relative;
 `
 const BasicSetting = (props: any, ref: any) => {
-    const { ws_id, template, show } = props
+    const { template, show } = props
+
+    const { ws_id } = useParams() as any
     const [form] = Form.useForm()
     const [kernel, setKernal] = useState('install_push')
 
@@ -246,11 +248,11 @@ const BasicSetting = (props: any, ref: any) => {
                         }
                         {
                             (kernel === 'install_un_push')
-                            && <UnPushForm needScriptList={false} />
+                            && <UnPushForm needScriptList={false} form={form} />
                         }
                         {
                             (kernel === 'install_build_kernel') &&
-                            <BuildKernalForm needScriptList={false} ws_id={ws_id} />
+                            <BuildKernalForm needScriptList={false} form={form} />
                         }
                     </>
                 }

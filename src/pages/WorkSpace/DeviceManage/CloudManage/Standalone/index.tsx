@@ -77,7 +77,7 @@ export default (props: any) => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: dataIndex === 'private_ip' ? val.trim() : val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {
@@ -109,7 +109,14 @@ export default (props: any) => {
             />
         ),
     })
-
+    const paramTransform = (val:any) => {
+        const dict = {
+            0:'不释放',
+            1:'释放',
+            2:'失败保留'
+        }
+        return dict[val] || ''
+    }
     useEffect(() => {
         let columns: any = [
             {
@@ -145,6 +152,7 @@ export default (props: any) => {
                         val={text}
                         param={row.id}
                         provider={"aliyun"}
+                        machine_pool={true}
                     />
                 )
             },
@@ -247,13 +255,13 @@ export default (props: any) => {
             {
                 title: '用完释放',
                 align: 'center',
-                ...radioFilterCommonFields("release_rule", [{ id: 1, name: "是" }, { id: 0, name: "否" }]),
+                ...radioFilterCommonFields("release_rule", [{ id: 0, name: "不释放" }, { id: 1, name: "释放" }, { id: 2, name: "失败保留" }]),
                 dataIndex: 'release_rule',
                 width: 110,
                 ellipsis: {
                     showTitle: false
                 },
-                render: (_: any, row: any) => <div>{row.release_rule ? '是' : '否'}</div>
+                render: (_: any, row: any) => <div>{paramTransform(row.release_rule)}</div>
             },
             {
                 title: 'Console配置',

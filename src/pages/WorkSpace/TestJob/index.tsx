@@ -3,7 +3,7 @@ import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, 
 
 import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
-import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
+import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
@@ -20,8 +20,6 @@ import TemplateForm from './components/JobForms/TemplateForm'
 
 import { createWsJobTest, queryTestTemplateData, queryTestExportValues, formatYamlToJson, testYaml } from './services'
 import { saveTestTemplate, queryTestTemplateList, updateTestTemplate } from '@/pages/WorkSpace/TestTemplateManage/service'
-
-import Clipboard from 'clipboard'
 
 import _ from 'lodash'
 import { ReactComponent as YamlFormat } from '@/assets/svg/yaml_format.svg'
@@ -147,20 +145,7 @@ const TestJob: React.FC<any> = (props) => {
         setItems({ basic, env, suite, more })
     }
 
-    useEffect(() => {
-        const clipboard = new Clipboard('.copy_link', {
-            text: function () {
-                return window.location.href;
-            },
-        })
-        clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}) )
-            e.clearSelection();
-        })
-        return () => {
-            clipboard.destroy()
-        }
-    }, [])
+    const handleCopyText = useCopyText(formatMessage({ id: 'request.copy.success' }))
 
     //数据初始化 init hooks //新建job 1 jobType预览 2 模板预览 3 模板测试 4
     useEffect(() => {
@@ -168,29 +153,35 @@ const TestJob: React.FC<any> = (props) => {
         getPageData()
     }, [location.pathname, query])
 
+    const isEmpty = (s: any) => [null, undefined, ""].includes(s)
+
     const compact = (obj: any) => {
         let result = {}
         Object.keys(obj).forEach(
             key => {
                 const z = obj[key]
-                if (z === null || z === undefined || z === '')
+                if (isEmpty(z))
                     return
                 const t = Object.prototype.toString.call(z)
                 if (t === '[object Array]') {
                     const arrayItem = z.filter(
                         (item: any) => {
                             let noData = false
-                            Object.keys(item).forEach(
-                                ctx => {
-                                    const t = item[ctx]
-                                    if (t === null || t === undefined || t === '')
-                                        noData = true
-                                }
-                            )
-                            if (!noData)
-                                return item
+                            if (JSON.stringify(item) === "{}") return
+                            if (isEmpty(item)) return
+                            if (Object.prototype.toString.call(item) === "[object Object]") {
+                                Object.keys(item).forEach(
+                                    ctx => {
+                                        const t = item[ctx]
+                                        if (isEmpty(t))
+                                            noData = true
+                                    }
+                                )
+                                if (!noData)
+                                    return item
+                            }
                         }
-                    )
+                    ).filter(Boolean)
                     if (arrayItem.length !== 0)
                         result[key] = arrayItem
                 }
@@ -342,6 +333,8 @@ const TestJob: React.FC<any> = (props) => {
                             }
                         }
 
+                        console.log(monitor_info)
+
                         return compact({
                             test_case,
                             setup_info: setup_info === '[]' ? '' : setup_info,
@@ -410,26 +403,31 @@ const TestJob: React.FC<any> = (props) => {
         }
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
 
         if (!data.test_config) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         const test_config = handleServerChannel(data.test_config)
-        let { code, msg } = await createWsJobTest({ ...data, test_config })
-        if (code === 200) {
-            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
-            history.push(`/ws/${ws_id}/test_result`)
+        try {
+            let { code, msg } = await createWsJobTest({ ...data, test_config })
+            if (code === 200) {
+                setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
+                history.push(`/ws/${ws_id}/test_result`)
+            }
+            if (code === 1380) {
+                setEnvErrorFlag(true)
+                requestCodeMessage(code, msg)
+            }
+            else
+                requestCodeMessage(code, msg)
+            setFetching(false)
         }
-        if (code === 1380) {
-            setEnvErrorFlag(true)
-            requestCodeMessage(code, msg)
+        catch (error) {
+
         }
-        else
-            requestCodeMessage(code, msg)
-        setFetching(false)
     }
     const handleServerChannel = (testConfig: any[]) => {
         let flag = location.search.indexOf('inheriting_machine') !== -1
@@ -471,8 +469,8 @@ const TestJob: React.FC<any> = (props) => {
             if (code !== 200) return
         }
         const data = isYamlFormat ? await transformDate(resultData) : await transformDate()
-        if (isMonitorEmpty(data)) return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
-        if (!data.test_config) return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+        if (isMonitorEmpty(data)) return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        if (!data.test_config) return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         name === 'TestJob' || name === 'TestExport' ?
             saveTemplateDrawer.current.show() :
             handleSaveTemplateOk({})
@@ -484,11 +482,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         data = {
             workspace: ws_id,
@@ -499,7 +497,7 @@ const TestJob: React.FC<any> = (props) => {
         const { code, msg } = await saveTestTemplate({ ...data, test_config, ...vals })
 
         if (code === 200) {
-            message.success(formatMessage({id: 'ws.test.job.operation.success'}) )
+            message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
             saveTemplateDrawer.current.hide()
             templatePopoverRefresh()
             setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
@@ -529,11 +527,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
             setFetching(false)
-            message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
             return
         }
         if (!data.baseline) {
@@ -560,7 +558,7 @@ const TestJob: React.FC<any> = (props) => {
             setModifyTemplate(false)
             setDisabled(true)
             setTemplateEnable(data.enable)
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             if (name !== 'TemplatePreview')
                 history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
         }
@@ -577,11 +575,11 @@ const TestJob: React.FC<any> = (props) => {
         let data = await transformDate()
         if (isMonitorEmpty(data)) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.machine.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
         }
         if (!data.test_config) {
             setFetching(false)
-            return message.warning(formatMessage({id: 'ws.test.job.suite.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         if (!data.baseline) {
             data.baseline = null
@@ -596,7 +594,7 @@ const TestJob: React.FC<any> = (props) => {
         })
 
         if (code === 200) {
-            message.success(formatMessage({id: 'request.save.success'}) )
+            message.success(formatMessage({ id: 'request.save.success' }))
             history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
         }
         else requestCodeMessage(code, msg)
@@ -755,6 +753,7 @@ const TestJob: React.FC<any> = (props) => {
         return { code, result }
 
     }
+
     const getFormData = (dataCopy: any) => {
         const { template_name, description, enable,
             name, project, baseline,
@@ -810,25 +809,18 @@ const TestJob: React.FC<any> = (props) => {
         const new_test_config = suiteTable.current?.setVal(testConfigInfo) || []
         return { templateEditFormInfo, basicFormInfo, envFormInfo, moreFormInfo, new_test_config }
     }
+
     const handleTestYaml = async () => {
         const parmas = { yaml_data: jobInfo, workspace: ws_id }
         let { code, msg } = await testYaml(parmas)
         requestCodeMessage(code, msg)
     }
+
     const handleClose = () => {
         setIsYamlFormat(false)
         setJobInfo('')
     }
-    useEffect(() => {
-        const clipboard = new Clipboard('#copy_dom_id')
-        clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}) )
-            e.clearSelection();
-        })
-        return () => {
-            clipboard.destroy()
-        }
-    }, [])
+
     const fakeClick = (obj: any) => {
         var ev = document.createEvent("MouseEvents");
         ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
@@ -850,6 +842,7 @@ const TestJob: React.FC<any> = (props) => {
         // if (code === 200 && _.get(data, 'name')) fileName = _.get(data, 'name')
         exportRaw(`${fileName}.yaml`, jobInfo);
     }
+
     const AuthPop = (
         <Space>
             <Typography.Text><FormattedMessage id="ws.test.job.no.permission, please.refer" /></Typography.Text>
@@ -865,7 +858,7 @@ const TestJob: React.FC<any> = (props) => {
 
     const renderButton = (
         <>
-            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button> }
+            {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
             <Button type="primary" onClick={handleSaveTemplateModify}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
         </>
     )
@@ -914,7 +907,7 @@ const TestJob: React.FC<any> = (props) => {
                             {
                                 !modifyTemplate &&
                                 <>
-                                    <Button className="copy_link"><FormattedMessage id="ws.test.job.copy.link" /></Button>
+                                    <Button onClick={() => handleCopyText(location.href)}><FormattedMessage id="ws.test.job.copy.link" /></Button>
                                     <Access accessible={access.WsMemberOperateSelf(state?.creator)}
                                         fallback={<Button onClick={() => AccessTootip()}><FormattedMessage id="ws.test.job.ModifySetting" /></Button>}
                                     >
@@ -937,7 +930,6 @@ const TestJob: React.FC<any> = (props) => {
                 <div className={styles.page_header}
                     style={['TestJob', 'TestExport'].includes(name) ? { paddingBottom: 80 } : {}}
                 >
-
                     <div style={{ height: 250, minWidth: 1080, background: '#fff', position: 'absolute', left: 0, top: 0, width: '100%' }} />
                     <Row className={styles.page_title} justify="center" >
                         <Row style={{ width: headerWidth }}>
@@ -957,7 +949,7 @@ const TestJob: React.FC<any> = (props) => {
                                                         autoComplete="off"
                                                         prefix={<SearchOutlined />}
                                                         className={styles.job_search_inp}
-                                                        placeholder={formatMessage({id: 'ws.test.job.search.placeholder.template'})}
+                                                        placeholder={formatMessage({ id: 'ws.test.job.search.placeholder.template' })}
                                                         onChange={handleChangeTemplateName}
                                                     />
                                                 }
@@ -972,7 +964,7 @@ const TestJob: React.FC<any> = (props) => {
                                                                             <div className={styles.template_item}
                                                                                 key={item.id}
                                                                                 onClick={(): any => {
-                                                                                    if (!item.job_type) return message.error(formatMessage({id: 'ws.test.job.please.delete'}) )
+                                                                                    if (!item.job_type) return message.error(formatMessage({ id: 'ws.test.job.please.delete' }))
                                                                                     history.push(`/ws/${ws_id}/test_job/${item.job_type_id}?template_id=${item.id}`)
                                                                                     setTemplateBtnVisible(false)
                                                                                 }}
@@ -1000,10 +992,15 @@ const TestJob: React.FC<any> = (props) => {
                                 </Row>
                                 <div className={styles.page_tags}>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        <FormattedMessage id={`header.${detail.server_type}`} defaultMessage=""/>
+                                        {
+                                            detail.server_type &&
+                                            <FormattedMessage id={`header.${detail.server_type}`} defaultMessage="" />
+                                        }
                                     </Tag>
                                     <Tag color="#F2F4F6" style={{ color: '#515B6A' }}>
-                                        {detail.test_type === 'business' ? <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others"/>: <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage=""/>}
+                                        {detail.test_type === 'business' ?
+                                            <FormattedMessage id={`header.business.${detail.business_type}`} defaultMessage="business.others" /> :
+                                            detail.test_type && <FormattedMessage id={`header.test_type.${detail.test_type}`} defaultMessage="" />}
                                     </Tag>
                                 </div>
                                 <div className={styles.page_dec}>{detail.description}</div>
@@ -1014,9 +1011,22 @@ const TestJob: React.FC<any> = (props) => {
                         <Spin spinning={isloading} style={{ width: '100%' }}>
                             <Row className={styles.page_body} justify="center" >
                                 <div ref={bodyRef} style={{ width: 1000 }} />
-                                {(name === 'TestJob' || name === 'TestExport') && <div className={styles.yaml_transform_icon} style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }} onClick={handleFormatChange}>
-                                    <YamlFormat style={{ marginRight: 5 }} />{isYamlFormat? <FormattedMessage id="ws.test.job.switch.form.mode" />: <FormattedMessage id="ws.test.job.switch.yaml.mode" />} 
-                                </div>}
+                                {
+                                    (name === 'TestJob' || name === 'TestExport') &&
+                                    <div
+                                        className={styles.yaml_transform_icon}
+                                        style={isYamlFormat ? { top: 10, right: 10 } : { top: -14, right: -110 }}
+                                        onClick={handleFormatChange}
+                                    >
+                                        <Space>
+                                            <YamlFormat />
+                                            {isYamlFormat ?
+                                                <FormattedMessage id="ws.test.job.switch.form.mode" /> :
+                                                <FormattedMessage id="ws.test.job.switch.yaml.mode" />
+                                            }
+                                        </Space>
+                                    </div>
+                                }
                                 <div style={isYamlFormat ? { width: 1240, display: 'none' } : { width: 1000 }}>
                                     <Col span={24} style={{ width: 1000 }}>
                                         {name === 'TestJob' && <Row className={styles.page_body_title}><FormattedMessage id="ws.test.job.create.job" /></Row>}
@@ -1113,28 +1123,34 @@ const TestJob: React.FC<any> = (props) => {
                                             </Row>
                                         }
                                     </Col>
-
                                 </div>
-                                {isYamlFormat && <div className={styles.yaml_container} ><Col span={24} className={styles.yaml_operate} >
-                                    <span className={styles.yaml_copy_link} onClick={handleTestYaml}><YamlTest className={styles.operate_icon} />
-                                        <FormattedMessage id="ws.test.job.yaml.test" />
-                                    </span>
-                                    <span className={styles.yaml_copy_link} id='copy_dom_id' data-clipboard-text={jobInfo.replace('---', '')} style={{ marginLeft: 10 }}> <YamlCopy className={styles.operate_icon} />
-                                        <FormattedMessage id="ws.test.job.copy" />
-                                    </span>
-                                    <span className={styles.yaml_copy_link} onClick={handleDownload} style={{ marginLeft: 10 }}><YamlDownload className={styles.operate_icon} />
-                                        <FormattedMessage id="ws.test.job.download" />
-                                    </span>
-                                    <CloseOutlined onClick={handleClose} style={{ float: 'right', color: '#fff' }} />
-                                </Col>
-                                    <CodeEditer
-                                        mode='yaml'
-                                        code={jobInfo}
-                                        onChange={(value: any) => setJobInfo(
-                                            value
-                                        )}
-                                    /></div>}
-
+                                {
+                                    isYamlFormat &&
+                                    <div className={styles.yaml_container} >
+                                        <Col span={24} className={styles.yaml_operate} >
+                                            <Space align="center" className={styles.yaml_copy_link} onClick={handleTestYaml}>
+                                                <YamlTest className={styles.operate_icon} />
+                                                <FormattedMessage id="ws.test.job.yaml.test" />
+                                            </Space>
+                                            <Space align="center" className={styles.yaml_copy_link} id='copy_dom_id' onClick={() => handleCopyText(jobInfo.replace('---', ''))} style={{ marginLeft: 10 }}>
+                                                <YamlCopy className={styles.operate_icon} />
+                                                <FormattedMessage id="ws.test.job.copy" />
+                                            </Space>
+                                            <Space align="center" className={styles.yaml_copy_link} onClick={handleDownload} style={{ marginLeft: 10 }}>
+                                                <YamlDownload className={styles.operate_icon} />
+                                                <FormattedMessage id="ws.test.job.download" />
+                                            </Space>
+                                            <CloseOutlined onClick={handleClose} style={{ float: 'right', color: '#fff' }} />
+                                        </Col>
+                                        <CodeEditer
+                                            mode='yaml'
+                                            code={jobInfo}
+                                            onChange={(value: any) => setJobInfo(
+                                                value
+                                            )}
+                                        />
+                                    </div>
+                                }
                             </Row>
                         </Spin>
                     </div>

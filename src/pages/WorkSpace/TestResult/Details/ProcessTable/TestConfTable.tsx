@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Table, message, Tooltip } from 'antd'
+import { Button, message } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
@@ -27,9 +27,9 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
     const { initialState } = useModel('@@initialState');
     const access = useAccess();
 
-    const queryTestListTableData = async () => {
+    const queryTestListTableData = async (params:any) => {
         setLoading(true)
-        const { data, code, msg, total } = await queryProcessCaseList(pageParams)
+        const { data, code, msg, total } = await queryProcessCaseList(params)
         if (code === 200) {
             setDataSource(data)
             setTotal(total)
@@ -38,9 +38,9 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             requestCodeMessage(code, msg)
         }
     }
-
+   
     useEffect(() => {
-        queryTestListTableData()
+        queryTestListTableData(pageParams)
     }, [pageParams])
 
 
@@ -54,7 +54,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         {
             dataIndex: 'server',
             title: ['business_business'].includes(testType) ? <FormattedMessage id="ws.result.details.the.server"/> : <FormattedMessage id="ws.result.details.test.server"/>,
-            width: 80,
+            width: 100,
             ellipsis: {
                 showTitle: false
             },
@@ -63,6 +63,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                     val={_} 
                     param={row.server_id}
                     provider={provider_name} 
+                    description={row.server_description}
                 />
             )
             
@@ -148,15 +149,15 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                             </span>
                         }
                     >
-                        { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
-                        { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} ><FormattedMessage id="ws.result.details.skip"/></Button> }
+                        { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop', pageParams)} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
+                        { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip', pageParams)} ><FormattedMessage id="ws.result.details.skip"/></Button> }
                     </Access>
                 </Access>
             )
         },
-    ], [testType, locale])
+    ], [testType, locale, pageParams])
 
-    const doConfServer = async (_: any, state: any) => {
+    const doConfServer = async (_: any, state: any, params:any) => {
         // 添加用户id
         const { user_id } = initialState?.authList
         const q = user_id ? { user_id } : {}
@@ -166,12 +167,12 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             test_job_conf_id: _.id,
             state
         })
-        if (code !== 200) {
+        if (code === 200) {
+            queryTestListTableData(params)
+            message.success(formatMessage({id: 'operation.success'}))
+        } else {
             requestCodeMessage(code, msg)
-            return
         }
-        message.success(formatMessage({id: 'operation.success'}))
-        queryTestListTableData()
     }
 
     return (
@@ -186,7 +187,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 scroll={{ x: 1350 }}
             />
             <CommonPagination
-                style={{ marginTop: 8, marginBottom: 0}}
+                style={{ marginTop: 8, marginBottom: 0 }}
                 total={total}
                 currentPage={pageParams.page_num}
                 pageSize={pageParams.page_size}

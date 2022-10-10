@@ -61,7 +61,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                 }
                 return result
             },
-            refreshDeps: [wsId, initialState?.refreshMenu]
+            // refreshDeps: [wsId, initialState?.refreshMenu]
         }
     )
 
@@ -75,7 +75,10 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
     )
 
     React.useEffect(() => {
-        if (wsId) jobTemplatesRun({ ...defaultParams, ws_id: wsId })
+        if (wsId) {
+            jobTypesRun()
+            jobTemplatesRun({ ...defaultParams, ws_id: wsId })
+        }
     }, [wsId, initialState?.refreshMenu])
 
     useEffect(() => {

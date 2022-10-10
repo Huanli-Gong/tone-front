@@ -21,7 +21,7 @@ const WorkspaceLayout = (props: any) => {
     const [openKeys, setOpenKeys] = useState<any>([])
 
     const realPath = pathname.replace(ws_id, ':ws_id')
-    
+
     const routeRight = useMemo(() => {
         return routes.filter(
             (cur: any) => !cur.inNav && !cur.unaccessible
@@ -88,12 +88,12 @@ const WorkspaceLayout = (props: any) => {
                 }
             }
             return []
-        }, [routeRight, realPath ]
+        }, [routeRight, realPath]
     )
 
     useEffect(() => {
         setOpenKeys(getOpenKeys())
-    }, [routeRight,pathname])
+    }, [routeRight, pathname])
 
     const onOpenChange = useCallback((keys: any) => {
         const latestOpenKey: any = keys.find((key: any) => openKeys.indexOf(key) === -1);
@@ -111,7 +111,7 @@ const WorkspaceLayout = (props: any) => {
                 <AdCompoent />
             </div>
         )
-        
+
     return (
         <Layout key={timeStampKey} className={styles.layout} >
             <Layout.Sider theme="light" className={styles.ws_slider}>

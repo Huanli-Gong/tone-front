@@ -55,7 +55,7 @@ export async function getInitialState(): Promise<any> {
                 return initialState
             }
 
-            enterWorkspaceHistroy({ ws_id })  //
+            // enterWorkspaceHistroy({ ws_id })  //
         }
 
         return {

@@ -1,5 +1,5 @@
 import { useClientSize } from '@/utils/hooks';
-import { Col, Layout, Row, Statistic, Typography, Space, message, Spin } from 'antd';
+import { Col, Layout, Row, Statistic, Typography, Space, message, Spin, Skeleton } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 
@@ -111,31 +111,30 @@ const ItemIcon = styled.div<ItemIconProps>`
     ${({ background }) => background ? `background-color:${background};` : null}
 `
 
+const dataSet = ["workspace", "group", "benchmark", "baseline"]
+
 export default () => {
     const { height: layoutHeight } = useClientSize()
 
-    const [workspace, setWorkspace] = useState<any>(null)
-    const [loading, setLoading] = useState(true)
+    const [workspace, setWorkspace] = useState<any>({})
+    const [loading, setLoading] = React.useState(true)
 
     const { data: realtime } = useRequest(queryLiveData, {
-        onSuccess: () => {
-            setLoading(false)
-        },
         pollingInterval: 5000,
+        onSuccess() {
+            setLoading(false)
+        }
     })
-    
-    const dataSet = ["workspace", "group", "benchmark", "baseline"]
 
     const getWorkspaceData = async () => {
-        setLoading(true)
-        let arr = {};
-        for await (const i of dataSet) {
+        dataSet.forEach(async (i) => {
             const { data, code, msg } = await querySysData({ data_type: i })
-            if (code !== 200) return requestCodeMessage(code, msg)
-            arr = { ...arr, ...data }
-        }
-        setWorkspace(arr)
-        setLoading(false)
+            if (code !== 200) {
+                console.log(msg)
+                return
+            }
+            setWorkspace((wsConf: any) => Object.assign(wsConf, data))
+        })
     }
 
     useEffect(() => {
@@ -144,139 +143,165 @@ export default () => {
 
     return (
         <Container height={layoutHeight - 50}>
-            <Spin spinning={loading}>
-                <RealtimeDataRow>
-                    <DashBoardTitle span={24}><Typography.Text strong>实时数据</Typography.Text></DashBoardTitle>
-                    <RealtimeDataItem>
-                        <Row>
-                            <Col span={12}>
-                                <UnMarginStatistic groupSeparator="" title={'Job总数（个）'} value={realtime?.job_total_num} />
-                            </Col>
-                            <Col span={12}>
-                                <SmailStatistic title={'Running'} value={realtime?.job_running_num} valueStyle={{ color: '#2B7EF7' }} />
-                            </Col>
-                        </Row>
-                    </RealtimeDataItem>
-                    <RealtimeDataItem>
-                        <Row>
-                            <Col span={12}>
-                                <UnMarginStatistic groupSeparator="" title={'Test Run(次)'} value={realtime?.test_run_total_num} />
-                            </Col>
-                            <Col span={12}>
-                                <SmailStatistic title={'当前运行'} value={realtime?.test_run_running_num} valueStyle={{ color: '#2B7EF7' }} />
-                            </Col>
-                        </Row>
-                    </RealtimeDataItem>
-                    <RealtimeDataItem>
-                        <Row>
-                            <Col span={12}>
-                                <UnMarginStatistic groupSeparator="" title={'机器调度(次)'} value={realtime?.server_alloc_num} />
-                            </Col>
-                            <Col span={12}>
-                                <SmailStatistic title={'当前运行'} value={realtime?.server_running_num} valueStyle={{ color: '#2B7EF7' }} />
-                            </Col>
-                        </Row>
-                    </RealtimeDataItem>
-                    <RealtimeDataItem>
-                        <Row>
-                            <Col span={12}>
-                                <UnMarginStatistic groupSeparator="" title={'总数据量(万)'} value={realtime?.result_total_num} formatter={(val: any) => (val / 10000).toFixed(2)} />
-                            </Col>
-                            <Col span={12}>
-                                <Space>
-                                    <SmailStatistic title={'功能'} value={realtime?.func_result_num} formatter={(val: any) => (val / 10000).toFixed(2)} valueStyle={{ color: '#0FB966' }} />
-                                    <SmailStatistic title={'性能'} value={realtime?.perf_result_num} formatter={(val: any) => (val / 10000).toFixed(2)} valueStyle={{ color: '#0FB966' }} />
-                                </Space>
-                            </Col>
-                        </Row>
-                    </RealtimeDataItem>
-                    <RealtimeDataItem>
-                        <UnMarginStatistic title={'累计测试时长（天）'} value={realtime?.total_duration} precision={2} />
-                    </RealtimeDataItem>
-                </RealtimeDataRow>
-                <MarginBottomRow gutter={16}>
-                    <Col span={6} >
-                        <WitheBlock height={166}>
-                            <Col span={24}>
-                                <UnMarginStatistic title={'Workspace数(个)'} value={workspace?.workspace_num} />
-                            </Col>
-                            <Col span={24}>
-                                <Space size={48}>
-                                    <SmailStatistic title={'产品数'} value={workspace?.product_num} />
-                                    <SmailStatistic title={'项目数'} value={workspace?.project_num} />
-                                </Space>
-                            </Col>
-                            <ItemIcon background={'rgba(181,39,207,0.10)'} >
-                                <WorkspaceQuantity />
-                            </ItemIcon>
-                        </WitheBlock>
-                    </Col>
-                    <Col span={6} >
-                        <WitheBlock height={166}>
-                            <Col span={24}>
-                                <UnMarginStatistic title={'团队数(个)'} value={workspace?.team_num} />
-                            </Col>
-                            <SmailStatistic title={'用户数'} value={workspace?.user_total_num} />
-                            <ItemIcon background={'rgba(243,97,94,0.10)'} >
-                                <TeamQuantity />
-                            </ItemIcon>
-                        </WitheBlock>
-                    </Col>
-                    <Col span={6} >
-                        <WitheBlock height={166}>
-                            <Col span={24}>
-                                <UnMarginStatistic title={'Benchmark数(个)'} value={workspace?.benchmark_num} />
-                            </Col>
-                            <Space size={48}>
-                                <SmailStatistic title={'TestConf'} value={workspace?.test_conf_num} />
-                                <SmailStatistic title={'TestCase'} value={workspace?.test_case_num} />
-                                <SmailStatistic title={'Metric'} value={workspace?.test_metric_num} />
+            <RealtimeDataRow >
+                {/* <Skeleton loading={loading} paragraph={{ rows: 2 }} active>
+                    <> */}
+                <DashBoardTitle span={24}><Typography.Text strong>实时数据</Typography.Text></DashBoardTitle>
+                <RealtimeDataItem>
+                    <Row>
+                        <Col span={12}>
+                            <UnMarginStatistic groupSeparator="" title={'Job总数（个）'} value={realtime?.job_total_num || "-"} />
+                        </Col>
+                        <Col span={12}>
+                            <SmailStatistic title={'Running'} value={realtime?.job_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                        </Col>
+                    </Row>
+                </RealtimeDataItem>
+                <RealtimeDataItem>
+                    <Row>
+                        <Col span={12}>
+                            <UnMarginStatistic groupSeparator="" title={'Test Run(次)'} value={realtime?.test_run_total_num || "-"} />
+                        </Col>
+                        <Col span={12}>
+                            <SmailStatistic title={'当前运行'} value={realtime?.test_run_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                        </Col>
+                    </Row>
+                </RealtimeDataItem>
+                <RealtimeDataItem>
+                    <Row>
+                        <Col span={12}>
+                            <UnMarginStatistic groupSeparator="" title={'机器调度(次)'} value={realtime?.server_alloc_num || "-"} />
+                        </Col>
+                        <Col span={12}>
+                            <SmailStatistic title={'当前运行'} value={realtime?.server_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                        </Col>
+                    </Row>
+                </RealtimeDataItem>
+                <RealtimeDataItem>
+                    <Row>
+                        <Col span={12}>
+                            <UnMarginStatistic groupSeparator="" title={'总数据量(万)'} value={realtime?.result_total_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} />
+                        </Col>
+                        <Col span={12}>
+                            <Space>
+                                <SmailStatistic title={'功能'} value={realtime?.func_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
+                                <SmailStatistic title={'性能'} value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
                             </Space>
-                            <ItemIcon background={'rgba(235,162,62,0.10)'} >
-                                <BenchmarkQuantity />
-                            </ItemIcon>
-                        </WitheBlock>
-                    </Col>
-                    <Col span={6} >
-                        <WitheBlock height={166}>
-                            <Col span={24}>
-                                <UnMarginStatistic title={'总基线数(个)'} value={workspace?.baseline_total_num} />
-                            </Col>
+                        </Col>
+                    </Row>
+                </RealtimeDataItem>
+                <RealtimeDataItem>
+                    <UnMarginStatistic title={'累计测试时长（天）'} value={realtime?.total_duration || "-"} precision={2} />
+                </RealtimeDataItem>
+                {/* </>
+                </Skeleton> */}
+            </RealtimeDataRow>
+            <MarginBottomRow gutter={16}>
+                <Col span={6} >
+                    <WitheBlock height={166}>
+                        {/* {
+                            workspace.workspace_num || "-" ?
+                                <> */}
+                        <Col span={24}>
+                            <UnMarginStatistic title={'Workspace数(个)'} value={workspace?.workspace_num || "-"} />
+                        </Col>
+                        <Col span={24}>
                             <Space size={48}>
-                                <SmailStatistic title={'功能数据'} value={workspace?.func_baseline_res_num} />
-                                <SmailStatistic title={'性能数据'} value={workspace?.perf_baseline_res_num} />
+                                <SmailStatistic title={'产品数'} value={workspace?.product_num || "-"} />
+                                <SmailStatistic title={'项目数'} value={workspace?.project_num || "-"} />
                             </Space>
-                            <ItemIcon background={'rgba(104,203,158,0.10)'} >
-                                <BaselineQuantity />
-                            </ItemIcon>
-                        </WitheBlock>
-                    </Col>
-                </MarginBottomRow>
-                <MarginBottomRow gutter={16}>
-                    <Col span={12}>
-                        <WitheBlock height={376}>
-                            <MissionTrends />
-                        </WitheBlock>
-                    </Col>
-                    <Col span={12}>
-                        <WitheBlock height={376}>
-                            <CreateJobs />
-                        </WitheBlock>
-                    </Col>
-                </MarginBottomRow>
-                <Row gutter={16}>
-                    <Col span={12}>
-                        <WitheBlock height={400}>
-                            <ClassUsers />
-                        </WitheBlock>
-                    </Col>
-                    <Col span={12}>
-                        <WitheBlock height={400} no_padding={'true'}>
-                            <CreateRank />
-                        </WitheBlock>
-                    </Col>
-                </Row>
-            </Spin>
+                        </Col>
+                        <ItemIcon background={'rgba(181,39,207,0.10)'} >
+                            <WorkspaceQuantity />
+                        </ItemIcon>
+                        {/* </> :
+                                <Skeleton active />
+                        } */}
+                    </WitheBlock>
+                </Col>
+                <Col span={6} >
+                    <WitheBlock height={166}>
+                        {/* {
+                            workspace.team_num || "-" ?
+                                <> */}
+                        <Col span={24}>
+                            <UnMarginStatistic title={'团队数(个)'} value={workspace?.team_num || "-"} />
+                        </Col>
+                        <SmailStatistic title={'用户数'} value={workspace?.user_total_num || "-"} />
+                        <ItemIcon background={'rgba(243,97,94,0.10)'} >
+                            <TeamQuantity />
+                        </ItemIcon>
+                        {/* </> :
+                                <Skeleton active />
+                        } */}
+                    </WitheBlock>
+                </Col>
+                <Col span={6} >
+                    <WitheBlock height={166}>
+                        {/* {
+                            workspace.test_conf_num || "-" ?
+                                <> */}
+                        <Col span={24}>
+                            <UnMarginStatistic title={'Benchmark数(个)'} value={workspace?.benchmark_num || "-"} />
+                        </Col>
+                        <Space size={48}>
+                            <SmailStatistic title={'TestConf'} value={workspace?.test_conf_num || "-"} />
+                            <SmailStatistic title={'TestCase'} value={workspace?.test_case_num || "-"} />
+                            <SmailStatistic title={'Metric'} value={workspace?.test_metric_num || "-"} />
+                        </Space>
+                        <ItemIcon background={'rgba(235,162,62,0.10)'} >
+                            <BenchmarkQuantity />
+                        </ItemIcon>
+                        {/* </> :
+                                <Skeleton active />
+                        } */}
+                    </WitheBlock>
+                </Col>
+                <Col span={6} >
+                    <WitheBlock height={166}>
+                        {/* {
+                            workspace.baseline_total_num || "-" ?
+                                <> */}
+                        <Col span={24}>
+                            <UnMarginStatistic title={'总基线数(个)'} value={workspace?.baseline_total_num || "-"} />
+                        </Col>
+                        <Space size={48}>
+                            <SmailStatistic title={'功能数据'} value={workspace?.func_baseline_res_num || "-"} />
+                            <SmailStatistic title={'性能数据'} value={workspace?.perf_baseline_res_num || "-"} />
+                        </Space>
+                        <ItemIcon background={'rgba(104,203,158,0.10)'} >
+                            <BaselineQuantity />
+                        </ItemIcon>
+                        {/*  </> :
+                                <Skeleton active />
+                        } */}
+                    </WitheBlock>
+                </Col>
+            </MarginBottomRow>
+            <MarginBottomRow gutter={16}>
+                <Col span={12}>
+                    <WitheBlock height={376}>
+                        <MissionTrends />
+                    </WitheBlock>
+                </Col>
+                <Col span={12}>
+                    <WitheBlock height={376}>
+                        <CreateJobs />
+                    </WitheBlock>
+                </Col>
+            </MarginBottomRow>
+            <Row gutter={16}>
+                <Col span={12}>
+                    <WitheBlock height={400}>
+                        <ClassUsers />
+                    </WitheBlock>
+                </Col>
+                <Col span={12}>
+                    <WitheBlock height={400} no_padding={'true'}>
+                        <CreateRank />
+                    </WitheBlock>
+                </Col>
+            </Row>
         </Container>
     )
 }

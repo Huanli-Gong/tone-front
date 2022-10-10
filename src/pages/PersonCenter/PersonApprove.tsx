@@ -1,5 +1,5 @@
 import React from 'react'
-import { message,Space, Avatar, Spin,Button, Tag } from 'antd'
+import { message, Space, Avatar, Spin, Button, Tag } from 'antd'
 import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { history } from 'umi'
 import styles from './index.less'
@@ -14,9 +14,9 @@ import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
     const { approveData, loading, handleTabClick, userId } = props
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
     let approveDataList = _.isArray(approveData) ? approveData : []
-    approveDataList = approveDataList.filter(item => _.get(item,'ws_info'))
+    approveDataList = approveDataList.filter(item => _.get(item, 'ws_info'))
     const statusColorFn = (status: any) => {
         switch (status) {
             case 'waiting': return <Tag className={styles.stateColorFn} color='#FF9D4E'  >审核中</Tag>
@@ -41,17 +41,17 @@ export default (props: any) => {
         )
     }
     const ellipsisText = (name: string) => {
-        if(!name) return ''
+        if (!name) return ''
         return name.slice(0, 1)
     }
     const valueFn = (obj: any) => {
         if (obj.id === 'logo') {
             // return (<Avatar size="small" src={obj.value || ''} alt="avatar" className={styles.avatar} />)
             const logo = obj.value
-            if(logo) {
-                return (<Avatar size="small" src={logo} alt="avatar" className={styles.avatar} shape="square"/>)
+            if (logo) {
+                return (<Avatar size="small" src={logo} alt="avatar" className={styles.avatar} shape="square" />)
             }
-            return <Avatar size="small" shape="square" className={styles.avatar} style={{  backgroundColor: obj.theme_color, fontSize: 14, fontWeight: 'bold' }} >{ellipsisText(obj.show_name)}</Avatar>
+            return <Avatar size="small" shape="square" className={styles.avatar} style={{ backgroundColor: obj.theme_color, fontSize: 14, fontWeight: 'bold' }} >{ellipsisText(obj.show_name)}</Avatar>
         }
         if (obj.id === 'is_public') {
             const text = obj.value ? '公开' : '不公开'
@@ -65,13 +65,13 @@ export default (props: any) => {
         return <EllipsisRect text={obj.value} />
     }
     const secondRowFn = (item: any) => {
-        const obj = {value: item.ws_info.logo, id: 'logo', theme_color: item.ws_info.theme_color,show_name: item.ws_info.show_name}
+        const obj = { value: item.ws_info.logo, id: 'logo', theme_color: item.ws_info.theme_color, show_name: item.ws_info.show_name }
         return (
-                <div className={styles.second_row}>
-                    
-                    {valueFn(obj)}
-                    <span className={styles.text_label}> {obj.show_name} </span>
-                </div>
+            <div className={styles.second_row}>
+
+                {valueFn(obj)}
+                <span className={styles.text_label}> {obj.show_name} </span>
+            </div>
         )
     }
     const descriptionFn = (lable: any, value: any) => {
@@ -103,7 +103,7 @@ export default (props: any) => {
             </ul>
         )
     }
-    const thirdRowFn = (item:any) => {
+    const thirdRowFn = (item: any) => {
         return (
             <>
                 <Space>
@@ -117,24 +117,26 @@ export default (props: any) => {
             </>
         )
     }
-    const handleClick = async (id: any, creator:number) => {
+    
+    const handleClick = async (id: any, creator: number) => {
         const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: id })
         if (code === 200) {
-            if(first_entry && creator === userId) {
-                history.push(`/ws/${id}/workspace/initSuccess`)
-            }else {
+            if (first_entry && creator === userId) {
+                history.push(`/ws/${id}/workspace/initSuccess`, { fetchWorkspaceHistoryRecord: true })
+            } else {
                 // history.push(`/ws/${id}/dashboard`)
-                history.push(jumpWorkspace(id))
+                history.push(jumpWorkspace(id), { fetchWorkspaceHistoryRecord: true })
             }
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
+
     const approveList = (item: any) => {
         const type = item.action !== 'join'
         let approveTime = false
         let refuseReason = false
 
-        if((item.action === 'create' || item.action === 'delete') && item.status === 'refused') {
+        if ((item.action === 'create' || item.action === 'delete') && item.status === 'refused') {
             approveTime = true
             refuseReason = true
         }
@@ -151,11 +153,11 @@ export default (props: any) => {
                 <div style={{ display: approveTime ? 'block' : 'none' }}>{descriptionFn('审批时间', item.gmt_modified)}</div>
                 <div>{approveUsersFn('审批人员', item.approve_users)}</div>
                 {item.status === 'refused' && <JoinPopover handleTabClick={handleTabClick} wsInfo={item} />}
-                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}>进入Workspace</Button>} 
+                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}>进入Workspace</Button>}
             </div >
         )
     }
-  
+
     return (
         <Spin spinning={loading}>
             <div className={styles.approve_content} id="content" style={{ minHeight: layoutHeight - 270 - 40 }}>

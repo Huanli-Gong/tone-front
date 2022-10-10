@@ -13,13 +13,13 @@ import { useClientSize } from '@/utils/hooks';
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { initialState } = useModel('@@initialState')
-    useRequest(
+    /* useRequest(
         (p) => enterWorkspaceHistroy(p),
         {
             formatResult: response => response,
             defaultParams: [{ ws_id }],
         }
-    )
+    ) */
     
     const { height: layoutHeight } = useClientSize()
 

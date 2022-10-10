@@ -45,7 +45,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setModifyProps(data)
                 setIsMoreEdit(_.get(data, 'opreateType') === 'moreEdit')
                 data.ip && form.setFieldsValue({ ips: [data.ip] })
-                const list = data.tag_list.map((item:any) => item.id)
+                let list = []
+                if(data.tag_list){
+                    list = data.tag_list.map((item:any) => item.id)
+                }
                 setTagFlag({ ...tagFlag, isQuery: 'edit', list })
             }else{
                 setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
@@ -227,6 +230,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     // 失焦校验
     const handleBlurIps = () => {
         if(selectIpsValue.length > 0){
+            if(selectIpsValue.indexOf('，') > 1){
+                message.error('机器ip参数格式不正确')
+                return 
+            }
             const matchResult: any = selectIpsValue.trim().split(/,|\s/) || []
             const resultIp: any = Array.from(
                 new Set(matchResult.concat(vals))

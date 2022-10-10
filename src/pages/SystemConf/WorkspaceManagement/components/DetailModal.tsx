@@ -45,7 +45,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const toWS = async () => {
         await enterWorkspaceHistroy({ ws_id, system_entry: true })
         // history.push(`/ws/${ws_id}/dashboard`)
-        ws_id && history.push(jumpWorkspace(ws_id))
+        ws_id && history.push(jumpWorkspace(ws_id), { fetchWorkspaceHistoryRecord: true })
     }
 
     const confirm = async () => {
