@@ -8,13 +8,15 @@ interface ServerType {
     val: string | number,
     param?: string | number,
     provider: "aligroup" | "aliyun",
+    description?: string,
+    machine_pool?:boolean,
 }
 const TextWarp = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 `
-const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
+const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, machine_pool = false }) => {
     const access = useAccess();
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
@@ -31,7 +33,8 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
 
     const handleIpHerf = async () => {
         if (provider === "aliyun") {
-            const { data, code, msg } = await querySeverLink({ id: param })
+            let params = machine_pool ? { server_id: param } : { id: param }
+            const { data, code, msg } = await querySeverLink(params)
             if (code === 200) {
                 const win: any = window.open("");
                 setTimeout(function () { win.location.href = data.link })
@@ -57,13 +60,29 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider }) => {
             </TextWarp>
         )
 
+    const machineDesc = (
+        <>
+            <div>机器IP：{val}</div>
+            <div>机器备注：{description}</div>
+        </>
+    )
+
     if (val) {
-        return (
-            show ?
-                <Tooltip title={val} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+        if(show){
+            return (
+                <Tooltip title={machineDesc} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}
-                </Tooltip> : TypographyDiv
-        )
+                </Tooltip> 
+            )
+        }
+        if(description){
+            return (
+                <Tooltip title={description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                    {TypographyDiv}
+                </Tooltip>
+            )
+        }
+        return TypographyDiv;
     }
     return <span>-</span>
 }

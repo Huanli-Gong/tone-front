@@ -66,6 +66,7 @@ const GroupTree: React.FC<any> = (props) => {
                         val={_}
                         param={row.id}
                         provider={"aliyun"}
+                        machine_pool={true}
                     />
                     : <EllipsisPulic title={row.name} />
             )

@@ -152,6 +152,7 @@ export default (props: any) => {
                         val={text}
                         param={row.id}
                         provider={"aliyun"}
+                        machine_pool={true}
                     />
                 )
             },
