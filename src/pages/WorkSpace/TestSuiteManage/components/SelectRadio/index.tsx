@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Radio, Button, Divider } from 'antd';
+import { useIntl, FormattedMessage } from 'umi'
 import styles from '../../style.less';
 
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
@@ -35,7 +36,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 						onConfirm(undefined)
 					}}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 				</Button>
 				<Button
 					size="small"
@@ -45,7 +46,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 						onConfirm(val)
 					}}
 				>
-					确定
+					<FormattedMessage id="operation.ok" />
 				</Button>
 			</div>
 		</div>

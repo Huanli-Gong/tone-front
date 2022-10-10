@@ -16,4 +16,5 @@ export type UserTable = {
     scrollType?: number;
     className?: any;
     paginationBottom?: boolean;
+    scroll?: any;
 } & TableProps

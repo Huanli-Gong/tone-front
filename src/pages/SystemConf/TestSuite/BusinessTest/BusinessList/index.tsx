@@ -224,6 +224,7 @@ export default forwardRef(( props : any, ref: any) => {
 					className={styles.businessList}
 					columns={columns}
 					list={list}
+					scroll={{ x: '100%' }}
 					// loading={true}
 					loading={loading}
 					page={pageNum}

@@ -36,6 +36,7 @@ const RoleManagementTable: React.FC<any> = () => {
                 pageSize={data.page_size}
                 totalPage={data.total_page}
                 total={data.total}
+                scroll={{ x: '100%' }}
             />
         </div>
     )

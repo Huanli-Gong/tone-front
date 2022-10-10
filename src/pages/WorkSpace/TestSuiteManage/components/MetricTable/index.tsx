@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useIntl, FormattedMessage } from 'umi'
 import { querySuiteList } from '../../service';
 import styles from '../../style.less';
 import CommonTable from '@/components/Public/CommonTable';
 
 const SuiteManagement: React.FC<any> = ({ id , innerKey , ws_id }) => {
+	const { formatMessage } = useIntl()
 	const [expandInnerList,setExpandInnerList] = useState<any>([])
 	const [expandInnerLoading,setExpandInnerLoading] = useState<boolean>(true)
 	
@@ -22,20 +24,21 @@ const SuiteManagement: React.FC<any> = ({ id , innerKey , ws_id }) => {
 	}, [ innerKey ]);
 
 	const columns = [
-        { title: '指标', dataIndex: 'name',width:200,fixed:'left'},
-        { title: 'Avg阈值(%)', dataIndex: 'cmp_threshold',width:160, render(_: any) { return _ ? Number(_).toFixed(2) : _ }},
-        { title: 'CV阈值(%)', dataIndex: 'cv_threshold',width:140, render(_: any) { return _ ? Number(_).toFixed(2) : _ }},
-        { title: '期望方向', dataIndex: 'direction',width:140},
+        { title: formatMessage({id: 'suite.indicators'}), dataIndex: 'name',width:200,fixed:'left'},
+        { title: formatMessage({id: 'suite.cmp_threshold'}), dataIndex: 'cmp_threshold',width:160, render(_: any) { return _ ? Number(_).toFixed(2) : _ }},
+        { title: formatMessage({id: 'suite.cv_threshold'}), dataIndex: 'cv_threshold',width:140, render(_: any) { return _ ? Number(_).toFixed(2) : _ }},
+        { title: formatMessage({id: 'suite.direction'}), dataIndex: 'direction',width:140},
 	];
 	
 	return (
 		<div className={styles.warp} key={id}>
 			<CommonTable
 				columns={columns}
-				scrollType = {640}
+				// scrollType = {640}
 				loading={ expandInnerLoading }
 				list={expandInnerList.data}
 				showPagination={ false }
+				scroll={{ x: 640 }}
 			/>
 		</div>
 	);

@@ -11,7 +11,7 @@ type IProps = {
 
 export const QusetionIconTootip: React.FC<IProps> = ({ desc, title, ...rest }) => (
     <Space>
-        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }} >{title}</span>
+        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>{title}</span>
         <Tooltip
             overlayClassName={styles.table_question_tooltip}
             placement="bottomLeft"

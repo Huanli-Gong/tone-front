@@ -410,7 +410,8 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 						expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 							(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
-				scrollType={1250}
+				// scrollType={1250}
+				scroll={{ x: 1250 }}
 				paginationBottom={true}
 			/>
 			<Modal title="删除提示"

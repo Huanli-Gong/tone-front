@@ -107,6 +107,12 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
 
+  .detail_item_row {
+    flex-flow: row nowrap;
+    padding-right: 10px;
+    & > span:nth-child(1) { flex-shrink: 0;}
+  }
+
   .title_detail_item {
     margin-right: 100px;
 
@@ -219,9 +225,14 @@
     border-radius: 4px;
     padding: 20px;
     cursor: pointer;
+    //
+    display: flex;
+    align-items: center;
+    justify-content: center;
   &_empty {
+    margin: 0 -20px;
     text-align: center;
-    line-height: 78px;
+    // line-height: 78px;
     font-size: 16px;
     color: #1890FF;
     font-family: 'PingFangSC-Regular';

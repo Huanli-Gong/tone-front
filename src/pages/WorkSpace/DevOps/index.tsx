@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Typography, message, Spin, Radio, InputNumber, Button, Row, Col, Space } from 'antd'
-import { FormattedMessage, useParams } from 'umi'
+import { useIntl, FormattedMessage, useParams, getLocale } from 'umi'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestJob/components/untils'
 
 import { queryDevOpsConfig, updateDevOpsConfig } from './service'
@@ -18,6 +18,7 @@ const RowWrapper = styled(Row)`
 
 const ColTitle = styled(Col)`
     text-align:right;
+    width: 260px;
 `
 
 const TypographyText = styled(Typography.Text)`
@@ -31,6 +32,8 @@ const TypographyIcon = styled(Typography.Text)`
 `
 
 const DevOps = (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
     const [loading, setLoading] = useState<boolean>(false)
     const [btnSwitch, setBtnSwitch] = useState(true)
@@ -108,18 +111,18 @@ const DevOps = (props: any) => {
     return (
         <Spin spinning={loading}>
             <OperationTabCard
-                title={<FormattedMessage id={`Workspace.${props.route.name}`} />}
+                title={<FormattedMessage id={`menu.Workspace.${props.route.name}`} />}
             >
                 <RowWrapper gutter={20}>
-                    <ColTitle span={4}>
+                    <ColTitle>
                         <Typography.Text>
-                            broken机器自动恢复：
+                            <FormattedMessage id="broken.automatic.recovery" />：
                         </Typography.Text>
                     </ColTitle>
-                    <Col span={20}>
+                    <Col>
                         <Radio.Group onChange={hanldeChange} value={autoServe}>
-                            <Radio value={'1'}>是</Radio>
-                            <Radio value={'0'}>否</Radio>
+                            <Radio value={'1'}><FormattedMessage id="operation.yes" /></Radio>
+                            <Radio value={'0'}><FormattedMessage id="operation.no" /></Radio>
                         </Radio.Group>
                     </Col>
                 </RowWrapper>
@@ -127,12 +130,12 @@ const DevOps = (props: any) => {
                     autoServe == '1' &&
                     <>
                         <RowWrapper gutter={20}>
-                            <ColTitle span={4}>
+                            <ColTitle>
                                 <Typography.Text>
-                                    时间：
+                                <FormattedMessage id="devOps.time" />：
                                 </Typography.Text>
                             </ColTitle>
-                            <Col span={20}>
+                            <Col>
                                 <Space align='center'>
                                     <Typography.Text>
                                         <InputNumber
@@ -143,7 +146,9 @@ const DevOps = (props: any) => {
                                             value={day}
                                             onChange={(val: any) => setDay(typeof val === 'number' ? val : 0)}
                                         />
-                                        <TypographyText>天</TypographyText>
+                                        <TypographyText>
+                                        <FormattedMessage id="devOps.day" />
+                                        </TypographyText>
                                     </Typography.Text>
                                     <Typography.Text>
                                         <InputNumber
@@ -154,7 +159,7 @@ const DevOps = (props: any) => {
                                             value={hours}
                                             onChange={(val: any) => setHours(typeof val === 'number' ? val : 0)}
                                         />
-                                        <TypographyText>时</TypographyText>
+                                        <TypographyText><FormattedMessage id="devOps.hours" /></TypographyText>
                                     </Typography.Text>
                                     <Typography.Text>
                                         <InputNumber
@@ -165,24 +170,27 @@ const DevOps = (props: any) => {
                                             value={minute}
                                             onChange={(val: any) => setMinute(typeof val === 'number' ? val : 0)}
                                         />
-                                        <TypographyText>分钟</TypographyText>
+                                        <TypographyText><FormattedMessage id="devOps.minute" /></TypographyText>
                                     </Typography.Text>
 
                                     <Typography.Text>=</Typography.Text>
-                                    <Typography.Text>{countMinute}分钟</Typography.Text>
+                                    <Typography.Text>{countMinute}<FormattedMessage id="devOps.minute" /></Typography.Text>
                                     <TypographyIcon>
                                         <QusetionIconTootip
                                             title=""
-                                            desc={'最短恢复时间5分钟，最长恢复时间7天'}
+                                            desc={formatMessage({id: 'devOps.recovery.time.range'}) }
                                         />
                                     </TypographyIcon>
                                 </Space>
                             </Col>
                         </RowWrapper>
                         <RowWrapper gutter={20}>
-                            <Col span={20} offset={4}>
+                            <ColTitle>&emsp;</ColTitle>
+                            <Col>
                                 <Space size={"large"}>
-                                    <Button size="small" type="primary" onClick={handleOk} disabled={btnSwitch}>更新</Button>
+                                    <Button size="small" type="primary" onClick={handleOk} disabled={btnSwitch}>
+                                        <FormattedMessage id="operation.update" />
+                                    </Button>
                                 </Space>
                             </Col>
                         </RowWrapper>

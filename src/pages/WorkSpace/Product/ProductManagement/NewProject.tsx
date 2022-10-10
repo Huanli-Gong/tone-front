@@ -1,20 +1,22 @@
 import { Drawer, Space, Typography, Form, Button, message, Input, Tooltip, Radio } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { useIntl, FormattedMessage  } from 'umi'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import styles from './index.less'
 import { createProject } from '../services'
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [padding , setPadding ] = useState( false )
         const [msg, setMsg] = useState<string>()
-        const [title, setTitle] = useState('创建项目')
+        const [title, setTitle] = useState('new')
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "创建项目", data: any = {}) => {
+                show: (title: string = "new", data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
                     form.setFieldsValue(data)
@@ -32,10 +34,10 @@ export default forwardRef(
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
                 props.onOk()
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 handleClose();
             }else if(code === 1371){
-                setMsg('项目名称已存在')
+                setMsg(formatMessage({id: 'project.name.already.exists'}) )
             }
             else {
                 message.error(msg)
@@ -47,7 +49,7 @@ export default forwardRef(
             setPadding( true )
             form.validateFields()
                 .then(async (values) => {
-                    if (title === '创建项目') {
+                    if (title === 'new') {
                         const { code, msg } = await createProject({ ws_id, product_id: props.current.id, ...values })
                         defaultOption(code, msg)
                     }
@@ -61,7 +63,7 @@ export default forwardRef(
             <Drawer 
                 maskClosable={ false }
                 keyboard={ false }
-                title={title}
+                title={title === 'new' ? <FormattedMessage id="product.create.project"/>: title}
                 width="380"
                 onClose={handleClose}
                 visible={visible}
@@ -69,15 +71,15 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={ padding } onClick={handleOk}>确定</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" disabled={ padding } onClick={handleOk}><FormattedMessage id="operation.ok"/></Button>
                         </Space>
                     </div>
                 }
             >
                 <div className={styles.content_warpper}>
                     <Space style={{ display: 'revert', marginBottom: 5 }}>
-                        <Typography.Text style={{ color: '#000', opacity: 0.85, fontSize: 14 }}>产品名称</Typography.Text>
+                        <Typography.Text style={{ color: '#000', opacity: 0.85, fontSize: 14 }}><FormattedMessage id="product.name"/></Typography.Text>
                     </Space>
                     <Space className={styles.title_detail_project}>
                         <EllipsisPulic title={props.current.name} />
@@ -95,22 +97,39 @@ export default forwardRef(
                         initialValues={{ is_show:1 }}
                         className={styles.product_form}
                     >
-                        <Form.Item label="项目名称" name="name" help={msg} rules={[{
-                            required: true,
-                            max: 64,
-                            pattern: /^[A-Za-z0-9\._-]*$/g,
-                            message: '仅允许字母、数字、下划线、中划线、点，最长64个字符',
-                        }]}><Input autoComplete="auto" placeholder="请输入项目名称" /></Form.Item>
-                        <Form.Item label="产品版本（选填）" name="product_version">
-                            <Input autoComplete="auto" placeholder="请输入版本号" />
+                        <Form.Item 
+                            label={<FormattedMessage id="product.project.name"/>}
+                            name="name" 
+                            help={msg} 
+                            rules={[{
+                                required: true,
+                                max: 64,
+                                pattern: /^[A-Za-z0-9\._-]*$/g,
+                                message: formatMessage({id: 'product.project.name.message' }),
+                            }]}>
+                            <Input autoComplete="auto" 
+                                placeholder={formatMessage({id: 'product.please.enter.project.name' })}
+                            />
                         </Form.Item>
-                        <Form.Item label="项目描述（选填）" name="description">
-                            <Input.TextArea placeholder="请输入描述信息" rows={4} />
+                        <Form.Item 
+                            label={<FormattedMessage id="product.version.option"/>}
+                            name="product_version">
+                            <Input autoComplete="auto" 
+                                placeholder={formatMessage({id: 'product.please.enter.version' })}
+                            />
                         </Form.Item>
-                        <Form.Item label="Dashboard统计" name="is_show">
+                        <Form.Item 
+                            label={<FormattedMessage id="product.description.option"/>}
+                            name="description">
+                            <Input.TextArea 
+                                placeholder={formatMessage({id: 'product.please.enter.desc' })}
+                                rows={4} />
+                        </Form.Item>
+                        <Form.Item label={<FormattedMessage id="product.dashboard.count"/>}
+                            name="is_show">
                             <Radio.Group>
-                                <Radio value={1}>是</Radio>
-                                <Radio value={0}>否</Radio>
+                                <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                             </Radio.Group>
                         </Form.Item>
                     </Form>

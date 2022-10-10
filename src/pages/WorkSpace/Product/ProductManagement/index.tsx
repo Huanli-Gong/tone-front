@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Button, Layout, Row, Col, Typography, Spin, Popconfirm, Dropdown, Menu, message, Input } from 'antd'
 import { MinusCircleOutlined, MoreOutlined, ExclamationCircleOutlined, HolderOutlined } from '@ant-design/icons'
-import { useLocation, useParams, useRequest, useAccess, Access } from 'umi'
+import { useLocation, useParams, useRequest, useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { deleteProduct, updateProject, dropProduct, dropProject, queryDropProduct, queryDropProject } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddProductDrawer from './AddProduct'
@@ -15,6 +15,7 @@ import { requestCodeMessage } from '@/utils/utils';
 import styles from './index.less'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const access = useAccess()
 
     const { ws_id } = useParams<any>()
@@ -73,13 +74,13 @@ export default (props: any) => {
     }
 
     const handleAddProduct = () => {
-        addProduct.current?.show('新增产品信息')
+        addProduct.current?.show('new')
     }
 
     const fetchFinally = (code: number, msg: string) => {
         if (code === 200) {
             setCurrent({})
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
             refresh()
         }
         else requestCodeMessage(code, msg)
@@ -90,10 +91,10 @@ export default (props: any) => {
     }
 
     const hanldeEdit = () => {
-        addProduct.current?.show('编辑产品信息', current)
+        addProduct.current?.show('edit', current)
     }
     const hanldeProjectDetail = (item: any) => {
-        showProject.current?.show('项目详情', item)
+        showProject.current?.show('detail', item)
     }
 
     const handleIcon = async (id: any) => {
@@ -115,10 +116,10 @@ export default (props: any) => {
     //     updateDefaultProject(id)
     // },[])
     const hanldCreateProject = () => {
-        createProject.current?.show('创建项目', {})
+        createProject.current?.show('new', {})
     }
     const handleSubmit = async (info: string) => {
-        if (info == '新增产品信息') {
+        if (info == 'new') {
             refresh().then(res => {
                 setCurrent(res.data[0])
             })
@@ -202,10 +203,10 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.product_left}>
                         <div className={styles.create_button_wrapper}>
-                            <Button onClick={handleAddProduct} type="primary" >新增产品</Button>
+                            <Button onClick={handleAddProduct} type="primary"><FormattedMessage id="product.new.product"/></Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
-                            <Typography.Text>所有产品 ({data?.length && `${data?.length}`})</Typography.Text>
+                            <Typography.Text><FormattedMessage id="product.all.product"/> ({data?.length && `${data?.length}`})</Typography.Text>
                         </Row>
                         <DragDropContext onDragEnd={onDragEnd}>
                             <Droppable droppableId="droppable">
@@ -221,7 +222,7 @@ export default (props: any) => {
                                                 return (
                                                     <Draggable
                                                         index={index}
-                                                        key={item.key}
+                                                        key={item.key || item.name}
                                                         draggableId={String(index + 1)}
                                                         product={item.id}
                                                     >
@@ -247,10 +248,10 @@ export default (props: any) => {
                                                                         {
                                                                             item.is_default
                                                                                 ? <Popconfirm
-                                                                                    title={<div style={{ color: 'red' }}>不可删除默认产品，请切换默认产品后进行删除！</div>}
+                                                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="product.default.products.cannot.be.deleted"/></div>}
                                                                                     onConfirm={() => handleDelete(item)}
-                                                                                    cancelText="取消"
-                                                                                    okText="确定删除"
+                                                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                                                                    okText={<FormattedMessage id="operation.confirm.delete"/>}
                                                                                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                                                                                     okButtonProps={{
                                                                                         type: 'default',
@@ -261,11 +262,12 @@ export default (props: any) => {
                                                                                         className={hover === item.id ? styles.remove_active : styles.remove}
                                                                                     />
                                                                                 </Popconfirm>
-                                                                                : <Popconfirm
-                                                                                    title={<div style={{ color: 'red' }}>删除产品会对模板和报告有影响(job详<br />情页的“所属项目”变空、模板中project<br />选择变为默认的)，请谨慎删除！！</div>}
+                                                                                : 
+                                                                                <Popconfirm
+                                                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="product.deletion.has.influence"/></div>}
                                                                                     onCancel={() => handleDelete(item)}
-                                                                                    cancelText="确定删除"
-                                                                                    okText="取消"
+                                                                                    cancelText={<FormattedMessage id="operation.confirm.delete"/>}
+                                                                                    okText={<FormattedMessage id="operation.cancel"/>}
                                                                                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                                                                                 >
                                                                                     <MinusCircleOutlined
@@ -292,21 +294,21 @@ export default (props: any) => {
                             <Col span={24}>
                                 <Row>
                                     <Col span={8}>
-                                        <Row>
-                                            <Typography.Text strong style={{ width: 75 }} >产品名称：</Typography.Text>
-                                            <EllipsisPulic title={current.name} style={{ width: 'calc(100% - 85px)' }} />
+                                        <Row className={styles.detail_item_row}>
+                                            <Typography.Text strong><FormattedMessage id="product.name"/>：</Typography.Text>
+                                            <EllipsisPulic title={current.name} />
                                         </Row>
                                     </Col>
                                     <Col span={8}>
-                                        <Row>
-                                            <Typography.Text strong style={{ width: 75 }}>产品描述：</Typography.Text>
-                                            <EllipsisPulic title={current.description} style={{ width: 'calc(100% - 85px)' }} />
+                                        <Row className={styles.detail_item_row}>
+                                            <Typography.Text strong><FormattedMessage id="product.description"/>：</Typography.Text>
+                                            <EllipsisPulic title={current.description} />
                                         </Row>
                                     </Col>
                                     <Col span={8}>
-                                        <Row>
-                                            <Typography.Text strong style={{ width: 75 }}>版本命令：</Typography.Text>
-                                            <EllipsisPulic title={current.command} style={{ width: 'calc(100% - 85px)' }} />
+                                        <Row className={styles.detail_item_row}>
+                                            <Typography.Text strong><FormattedMessage id="product.version.command"/>：</Typography.Text>
+                                            <EllipsisPulic title={current.command} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -315,7 +317,7 @@ export default (props: any) => {
                                 overlayStyle={{ cursor: 'pointer' }}
                                 overlay={
                                     <Menu>
-                                        <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                                        <Menu.Item onClick={hanldeEdit}><FormattedMessage id="product.edit.info"/></Menu.Item>
                                     </Menu>
                                 }
                             >
@@ -324,10 +326,12 @@ export default (props: any) => {
                         </Row>
                         <Row className={styles.right_project}>
                             <Row style={{ width: '100%', height: 62 }}>
-                                <Typography.Text className={styles.product_right_all_project}>所有项目 ({projectData.data?.length && `${projectData.data?.length}`})</Typography.Text>
+                                <Typography.Text className={styles.product_right_all_project}><FormattedMessage id="product.all.items"/> ({projectData.data?.length && `${projectData.data?.length}`})</Typography.Text>
                                 <Form form={form}>
                                     <Form.Item name="server_type">
-                                        <Input.Search placeholder="搜索项目" onSearch={inputSearch}
+                                        <Input.Search 
+                                            placeholder={formatMessage({id: 'product.search.for.items'}) }
+                                            onSearch={inputSearch}
                                             allowClear
                                             style={{ width: 200, height: 32, marginTop: 15 }} />
                                     </Form.Item>

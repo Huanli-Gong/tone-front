@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Popover, Tooltip, Drawer, Space, message, Button, Modal, Affix, Row, Checkbox, Typography, Popconfirm } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
-import { FormattedMessage, useModel } from 'umi';
+import { useIntl, FormattedMessage, useModel } from 'umi';
 import moment from 'moment';
 import CodeViewer from '@/components/CodeViewer'
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
@@ -17,6 +17,7 @@ import styles from './index.less';
  * @description suite级列表
  */
 const List = ({ business_id, dataSource }:any) => {
+	const { formatMessage } = useIntl()
   const [loading, setLoading] = useState<any>(false)
   const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 10 })
 	// 复选行
@@ -55,18 +56,18 @@ const List = ({ business_id, dataSource }:any) => {
 			},
 		},
     {
-			title: '运行模式',
+			title: <FormattedMessage id="suite.run_mode"/>,
 			dataIndex: 'run_mode',
 			width: 100,
 			render: (text:any) =>
 				<>
 					{runList.map((item: any)=> {
-					  return item.id === text ? <span key={item.id}>{item.name || '-'}</span> : null })
+					  return item.id === text ? <span key={item.id}>{formatMessage({id: item.id}) || '-'}</span> : null })
 					}
 				</>,
 		},
 		{
-			title: '领域',
+			title: <FormattedMessage id="suite.domain"/>,
 			dataIndex: 'domain_name_list',
 			width: 100,
 			render: (text:any) => {
@@ -74,22 +75,22 @@ const List = ({ business_id, dataSource }:any) => {
 			}
 		},
 		{
-			title: '测试类型',
+			title: <FormattedMessage id="suite.test_type"/>,
 			dataIndex: 'test_type',
 			width: 100,
 			render: (text:any) =>
 				<>
 					{test_type_enum.map((item: any)=> {
-						return item.value === text ? <span key={item.value}>{item.name || '-'}</span> : null })
+						return item.value === text ? <span key={item.value}>{formatMessage({id: item.value}) || '-'}</span> : null })
 					}
 				</>
 		},
 		{
-			title: <>视图类型 <Tooltip title={
+			title: <><FormattedMessage id="suite.view_type"/> <Tooltip title={
 					<div>
-						<div>Type1：所有指标拆分展示</div>
-						<div>Type2：多Conf同指标合并</div>
-						<div>Type3：单Conf多指标合并</div>
+						<div><FormattedMessage id="suite.view_type.type1"/></div>
+						<div><FormattedMessage id="suite.view_type.type2"/></div>
+						<div><FormattedMessage id="suite.view_type.type3"/></div>
 					</div>
 				} placement="bottomLeft"><QuestionCircleOutlined /></Tooltip></>,
 			dataIndex: 'view_type',
@@ -98,7 +99,7 @@ const List = ({ business_id, dataSource }:any) => {
 			render: (_: any, record: any) => suiteChange(_, record),
 		},
     {
-			title: '说明',
+			title: <FormattedMessage id="suite.description"/>,
 			dataIndex: 'doc',
 			width: 150,
 			render: (text:any) => <div>{text ? 
@@ -110,7 +111,7 @@ const List = ({ business_id, dataSource }:any) => {
 				/> : '-'}</div>,
 		},
 		{
-			title: '备注',
+			title: <FormattedMessage id="suite.remarks"/>,
 			dataIndex: 'description',
 			className: 'no_padding_head',
 			width: 100,
@@ -129,7 +130,7 @@ const List = ({ business_id, dataSource }:any) => {
 			dataIndex: 'owner_name',
 		},
     {
-			title: '创建时间',
+			title: <FormattedMessage id="suite.gmt_created"/>,
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text:any) => {
@@ -167,13 +168,14 @@ const List = ({ business_id, dataSource }:any) => {
 							expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 									(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
+				scroll={{ x: '100%' }}
 			/>
 
       <Drawer
 				maskClosable // ={false}
 				keyboard={false}
 				width={376}
-				title="说明详情"
+				title={<FormattedMessage id="suite.description.details"/>}
 				onClose={() => setShowDoc({ visible: false, doc: ''}) }
 				visible={showDoc.visible}
 			>

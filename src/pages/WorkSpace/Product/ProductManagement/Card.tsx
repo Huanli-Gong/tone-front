@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Typography, Tooltip } from 'antd';
+import { useIntl, FormattedMessage } from 'umi'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { ReactComponent as Statistical } from '@/assets/svg/dashboard/statistical.svg'
 import { ReactComponent as NoStatistical } from '@/assets/svg/dashboard/noStatistical.svg'
@@ -17,6 +18,7 @@ const Card = ({
   handleProjecIcon,
   hanldeProjectDetail
 }: any) => {
+  const { formatMessage } = useIntl()
   const { id, name, product_version, is_default, is_show, description } = data
   const ref: any = useRef(null)
   
@@ -89,10 +91,10 @@ const Card = ({
           <EllipsisPulic title={product_version}>
             <Typography.Text className={styles.project_version}>
               {is_show ?
-                <Tooltip placement="bottomLeft" title='项目会统计在Dashboard'>
+                <Tooltip placement="bottomLeft" title={formatMessage({id: 'product.counted.on.the.dashboard'}) }>
                   <Statistical style={{ marginRight: 6, verticalAlign: 'text-bottom' }} />
                 </Tooltip> :
-                <Tooltip placement="bottomLeft" title='项目不会统计在Dashboard'>
+                <Tooltip placement="bottomLeft" title={formatMessage({id: 'product.not.counted.on.the.dashboard'}) }>
                   <NoStatistical style={{ marginRight: 6, verticalAlign: 'text-bottom' }} />
                 </Tooltip>
               }

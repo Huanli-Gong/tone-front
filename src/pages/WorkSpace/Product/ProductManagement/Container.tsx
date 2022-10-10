@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import { useIntl, FormattedMessage } from 'umi'
 import { PlusOutlined } from '@ant-design/icons';
 import Card from './Card';
 import styles from './index.less';
@@ -42,7 +43,7 @@ const Container = (props: any) => {
           <div className={styles.project_create} onClick={hanldCreateProject}>
             <div className={styles.project_create_empty}>
                 <PlusOutlined style={{ marginRight: 6 }}/>
-                创建项目
+                <FormattedMessage id="product.create.project"/>
             </div>
           </div>
           )
