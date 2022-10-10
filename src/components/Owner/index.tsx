@@ -1,11 +1,12 @@
 import React from 'react';
 import { Form, Select, Spin, Empty } from 'antd';
-import { useRequest } from 'umi'
+import { useRequest, useParams } from 'umi'
 import { member } from './service'
 
 const Owner: React.FC = () => {
+    const { ws_id }:any = useParams();
     const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
-        (keyword = '') => member({ keyword, scope: 'aligroup', page_num: 1, page_size: 200 }),
+        (keyword = '') => member({ keyword, scope: 'aligroup', ws_id, page_num: 1, page_size: 500 }),
         {
             debounceInterval: 300,
         }

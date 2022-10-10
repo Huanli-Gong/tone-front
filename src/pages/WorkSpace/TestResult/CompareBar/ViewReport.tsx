@@ -19,6 +19,7 @@ export default (props: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { initialState } = useModel('@@initialState');
+    let timeout: any = null;
     const { dreType, jobInfo, origin, buttonStyle = {}, title } = props
     const viewAllReport = jobInfo && jobInfo.report_li
     const page_default_params: any = { name: '', creator_name: '' }
@@ -159,8 +160,12 @@ export default (props: any) => {
         }
     }, [])
     const handleLeave = () => {
-        setVisible(false)
+        if (timeout !== null) clearTimeout(timeout); 
+        timeout = setTimeout(() => {
+            setVisible(false)
+        }, 500);
     }
+
     const getContent = (data: any) => {
         return (
             <div onClick={handleClick}>
