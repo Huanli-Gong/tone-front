@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import { Table, Card, message, Tooltip } from 'antd'
+import { Table, Card, message, Button } from 'antd'
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
 import Clipboard from 'clipboard'
@@ -121,6 +121,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'mode',
             title: <FormattedMessage id="ws.result.details.mode"/>,
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -131,6 +132,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'server',
             title: <FormattedMessage id="ws.result.details.test.server"/>,
+            width: 120,
             ellipsis: {
                 showTitle: false
             },
@@ -149,6 +151,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'stage',
             title: <FormattedMessage id="ws.result.details.stage"/>,
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -157,6 +160,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'state',
             title: <FormattedMessage id="ws.result.details.state"/>,
+            width: 80,
             ellipsis: {
                 showTitle: false
             },
@@ -165,23 +169,43 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'result',
             title: <FormattedMessage id="ws.result.details.output.results"/>,
+            width: 130,
             ...tooltipTd('Nothing to do'),
         },
         {
             dataIndex: 'tid',
             title: 'TID',
+            width: 80,
             ...tooltipTd(),
         },
         {
             dataIndex: 'gmt_created',
             title: <FormattedMessage id="ws.result.details.start_time"/>,
+            width: 130,
             ...tooltipTd(),
         },
         {
             dataIndex: 'gmt_modified',
             title: <FormattedMessage id="ws.result.details.finish_time"/>,
+            width: 130,
             ...tooltipTd(),
         },
+        {
+            title: <FormattedMessage id="ws.result.details.view.log"/>,
+            width: 80,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any) => {
+                const strLocals = formatMessage({id: 'ws.result.details.log'})
+                // success,fail,stop 可看日志
+                if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
+                    if (_.log_file)
+                        return  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
+                }
+                return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
+            }
+        }
     ]
 
     const clusterColumns = [
@@ -218,6 +242,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 size="small"
                 className={styles.prepTable}
                 pagination={false}
+                scroll={{ x: '100%' }}
                 expandable={{
                     expandedRowClassName: () => 'expanded-row-padding-no',
                     expandedRowKeys: expandedKeys,

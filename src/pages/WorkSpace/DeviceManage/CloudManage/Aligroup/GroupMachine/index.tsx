@@ -364,7 +364,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         Promise.all([handleSearch(), getAK()]).then(() => { setLoading(false) })
         setTimeout(function () {
             form.setFieldsValue({
-                release_rule: 1,
+            
                 baseline_server: 1,
                 kernel_install: 1,
                 bandwidth: 10,
@@ -380,7 +380,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         let param = { ...row }
         param.tags = param.tag_list?.map((item: any) => { return item.id })
         param.is_instance = param.is_instance ? 1 : 0
-        param.release_rule = param.release_rule ? 1 : 0
+        // param.release_rule = param.release_rule ? 1 : 0
         param.baseline_server = param.baseline_server ? 1 : 0
         param.kernel_install = param.kernel_install ? 1 : 0
         param.manufacturer = [param.manufacturer, param.ak_id]
@@ -630,7 +630,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         instance_type_two: 1,
                         system_disk_size: 40,
                         storage_size: 40,
-                        storage_number: 1
+                        storage_number: 1,
+                        release_rule: 0
                     }}
                 >
                     <Row gutter={16}>
@@ -647,23 +648,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         <Option value={0}>立即购买</Option>
                                         <Option value={1}>选择已有</Option>
                                     </Select>
-                                </Form.Item>
-                            </Col> :
-                            null
-                        }
-                        {/** 机器配置 */}
-                        {!is_instance && !id ?
-                            <Col span={12}>
-                                <Form.Item
-                                    name="release_rule"
-                                    label="用完释放"
-                                    rules={[{ required: true, message: '请选择' }]}
-                                    initialValue={0}
-                                >
-                                    <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
-                                    </Radio.Group>
                                 </Form.Item>
                             </Col> :
                             null
@@ -690,17 +674,18 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             </Col> :
                             null
                         }
-                        {!is_instance && id ?
+                        {/** 机器配置 */}
+                        {!is_instance ?
                             <Col span={12}>
                                 <Form.Item
                                     name="release_rule"
                                     label="用完释放"
                                     rules={[{ required: true, message: '请选择' }]}
-                                    initialValue={0}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
+                                        <Radio value={0}>不释放</Radio>
+                                        <Radio value={1}>释放</Radio>
+                                        <Radio value={2}><QusetionIconTootip title="失败保留" desc="自动保留24h后释放" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col> :
