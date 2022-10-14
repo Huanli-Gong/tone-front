@@ -36,7 +36,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
     useEffect(() => {
         if (BUILD_APP_ENV) {
             run()
-            form?.resetFields()
+            // form?.resetFields()
         }
     }, [project_id])
 

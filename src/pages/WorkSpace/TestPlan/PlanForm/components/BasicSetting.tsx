@@ -34,7 +34,6 @@ const BasicSetting = (props: any, ref: any) => {
     const { ws_id } = useParams() as any
     const [form] = Form.useForm()
     const [kernel, setKernal] = useState('install_push')
-
     const [testObject, setTestObject] = useState('rpm')
 
     const { data: projectList } = useRequest(
@@ -53,6 +52,7 @@ const BasicSetting = (props: any, ref: any) => {
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
+        form.setFieldsValue({ test_obj: testObject })
         form.resetFields(['kernel', 'devel', 'headers', 'kernel_version'])
     }
 
@@ -104,8 +104,9 @@ const BasicSetting = (props: any, ref: any) => {
                 className={styles.job_plan_form}
                 // onFieldsChange={ onChange }
                 initialValues={{
-                    hotfix: true,
-                    test_obj: 'rpm'
+                    hotfix_install: true,
+                    test_obj: 'rpm',
+                    scripts: [{ pos: 'before', script: '' }],
                 }}
             >
                 <Form.Item
@@ -220,15 +221,14 @@ const BasicSetting = (props: any, ref: any) => {
                 </Form.Item>
                 <Form.Item name="test_obj" label={"被测对象"}>
                     <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
-                        <Select.Option value={'kernel'} >{'内核包'}</Select.Option>
-                        <Select.Option value={'rpm'} >{'其他软件'}</Select.Option>
+                        <Select.Option value='kernel'>{'内核包'}</Select.Option>
+                        <Select.Option value='rpm'>{'其他软件'}</Select.Option>
                     </Select>
                 </Form.Item>
                 {
                     testObject == 'kernel' &&
                     <>
                         {
-                            form.getFieldValue('test_obj') == 'kernel' &&
                             <Form.Item label={'内核'} >
                                 <Radio.Group value={kernel} onChange={handleKernalInstallChange}>
                                     <Radio value="install_push">安装已发布</Radio>
@@ -243,12 +243,12 @@ const BasicSetting = (props: any, ref: any) => {
                                 form={form}
                                 kernel={kernel}
                                 kernelList={kernelList}
-                                needScriptList={false}
+                                needScriptList={true}
                             />
                         }
                         {
-                            (kernel === 'install_un_push')
-                            && <UnPushForm needScriptList={false} form={form} />
+                            (kernel === 'install_un_push') && 
+                            <UnPushForm needScriptList={true} form={form} />
                         }
                         {
                             (kernel === 'install_build_kernel') &&
