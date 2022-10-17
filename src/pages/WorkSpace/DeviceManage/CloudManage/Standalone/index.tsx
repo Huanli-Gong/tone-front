@@ -455,7 +455,6 @@ export default (props: any) => {
         const data: any = await cloudList({ ...obj, ws_id })
         data && setData(data)
         setTotal(data.total)
-        console.log('data',data)
         setLoading(false)
     };
     const removeCloud = _.debounce(
