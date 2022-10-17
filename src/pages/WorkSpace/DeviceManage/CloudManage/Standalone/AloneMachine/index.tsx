@@ -93,7 +93,6 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         targetOption.loading = true;
         try {
             const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
-            targetOption.loading = false;
             if (code === 200) {
                 targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
                 setOptions([...options])
@@ -101,6 +100,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 setValidateAK({ validate: false, meg: msg || formatMessage({id: 'device.no.compliant.AK'})  })
                 form.setFieldsValue({ manufacturer: undefined })
             }
+            targetOption.loading = false;
         } catch (e) {
             targetOption.loading = false;
         }

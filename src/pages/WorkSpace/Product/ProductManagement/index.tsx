@@ -22,7 +22,6 @@ export default (props: any) => {
     const { query }: any = useLocation()
     const [current, setCurrent] = useState<any>({})
     const [clickType, setClickType] = useState<string>('menu') // 区分点击位置。
-    const [projectUp, setProjectUp] = useState(false)
     const [hover, setHover] = useState(null)
     const addProduct: any = useRef(null)
     const showProject: any = useRef(null)
@@ -100,21 +99,14 @@ export default (props: any) => {
     const handleIcon = async (id: any) => {
         const res = await updateProject({ project_id: id, is_default: 1 })
         if (res.code === 200) {
-            setProjectUp(true)
-
+            projectRefresh()
+            refresh()
             message.success('修改默认项目成功')
         } else {
             requestCodeMessage(data.code, data.msg)
         }
-        setProjectUp(false)
     }
-    useEffect(() => {
-        projectRefresh()
-        refresh()
-    }, [projectUp])
-    // const handleIcon = useCallback((id: any) => {
-    //     updateDefaultProject(id)
-    // },[])
+    
     const hanldCreateProject = () => {
         createProject.current?.show('new', {})
     }
@@ -140,9 +132,9 @@ export default (props: any) => {
             setClickType('searchButton')
             projectRun({ product_id: current.id, name: value, ws_id })
         }
-        if (event.target.name === '') {
-            projectRun({ product_id: current.id, name: value, ws_id })
-        }
+        // if (event.target.name === '') {
+        //     projectRun({ product_id: current.id, name: value, ws_id })
+        // }
     }
 
     useEffect(() => {
