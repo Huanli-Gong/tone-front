@@ -259,8 +259,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'callback_api' in contrl &&
                 <Form.Item
                     name="callback_api"
-                    label={formatMessage({id: 'job.form.callback_api.label'})}
-                    validateStatus={regCallbackUrl && 'error'}
+                    label={contrl.callback_api.alias || formatMessage({id: `job.form.${contrl.callback_api.alias}`})}
+                    validateStatus={regCallbackUrl && 'error' || undefined}
                     help={regCallbackUrl && formatMessage({id: 'job.form.callback_api.help'}) }
                 >
                     <Input

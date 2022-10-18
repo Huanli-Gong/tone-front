@@ -16,7 +16,7 @@ const ViewCollapse = (props: any) => {
 
     const [loading, setLoading] = useState(true)
 
-    const queryPlanViewListData = async (param: any = { ws_id }) => {
+    const queryPlanViewListData = async (param: any = { ws_id, page_num: 1, page_size: 500 }) => {
         setLoading(true)
         const { data, total, code, msg } = await queryPlanViewList(param)
         if (code === 200)
