@@ -255,7 +255,6 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any) => (
                 <ServerLink
                     val={_}
-                    // provider={'内网机器'}
                     provider={"aligroup"}
                 />
             ),

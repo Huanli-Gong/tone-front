@@ -218,12 +218,12 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {
             dataIndex: 'server',
             title: <FormattedMessage id="ws.result.details.test.server"/>,
-            width: 160,
+            width: 120,
             render: (_: any, row: any) => (
                 _ ?
                     <ServerLink 
                         val={_} 
-                        param={row.server_id}
+                        param={row.items[0]?.server_id}
                         provider={provider_name} 
                     />
                     : '-'

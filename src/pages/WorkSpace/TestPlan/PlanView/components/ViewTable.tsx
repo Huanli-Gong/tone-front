@@ -81,9 +81,9 @@ const ViewTable = (props: ViewTableProps) => {
             ellipsis: {
                 showTitle: false
             },
+            className: 'plan_name_hover',
             render: (_: string, record: any) => (
                 <span
-                    style={{ cursor: 'pointer' }}
                     onClick={
                         () => hanldeOpenPlanDetail(record)
                     }
@@ -227,6 +227,7 @@ const ViewTable = (props: ViewTableProps) => {
             <Spin spinning={loading}>
                 <ResizeTable
                     className={styles.ViewTableStyle}
+                    rowClassName={styles.result_table_row}
                     columns={resultColumns}
                     dataSource={data.data}
                     size="small"

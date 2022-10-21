@@ -331,8 +331,6 @@ const TestJob: React.FC<any> = (props) => {
                             }
                         }
 
-                        console.log(monitor_info)
-
                         return compact({
                             test_case,
                             setup_info: setup_info === '[]' ? '' : setup_info,

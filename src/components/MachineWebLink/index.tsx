@@ -68,16 +68,23 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
     )
 
     if (val) {
-        if(show){
+        if(!show && description){
+            return (
+                <Tooltip title={description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                    {TypographyDiv}
+                </Tooltip> 
+            )
+        }
+        if(show && description){
             return (
                 <Tooltip title={machineDesc} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}
                 </Tooltip> 
             )
         }
-        if(description){
+        if(show){
             return (
-                <Tooltip title={description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
+                <Tooltip title={val} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}
                 </Tooltip>
             )
