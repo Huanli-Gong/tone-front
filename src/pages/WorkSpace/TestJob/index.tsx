@@ -169,17 +169,15 @@ const TestJob: React.FC<any> = (props) => {
                             let noData = false
                             if (JSON.stringify(item) === "{}") return
                             if (isEmpty(item)) return
-                            if (Object.prototype.toString.call(item) === "[object Object]") {
-                                Object.keys(item).forEach(
-                                    ctx => {
-                                        const t = item[ctx]
-                                        if (isEmpty(t))
-                                            noData = true
-                                    }
-                                )
-                                if (!noData)
-                                    return item
-                            }
+                            Object.keys(item).forEach(
+                                ctx => {
+                                    const t = item[ctx]
+                                    if (isEmpty(t))
+                                        noData = true
+                                }
+                            )
+                            if (!noData)
+                                return item
                         }
                     ).filter(Boolean)
                     if (arrayItem.length !== 0)
