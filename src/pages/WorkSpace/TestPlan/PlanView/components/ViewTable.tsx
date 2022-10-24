@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { Space, Table, Popconfirm, message, Spin, Tooltip } from 'antd'
+import { Space, Popconfirm, message, Spin, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { StateTagRender, RenderCountTags } from './'
 import { useRequest, history, Access, useAccess } from 'umi'
@@ -9,7 +9,7 @@ import { getSearchFilter, getCheckboxFilter } from '@/components/TableFilters'
 import CompareBar from './compareBar'
 import styles from './compareBar.less'
 import _ from 'lodash'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
 import ResizeTable from '@/components/ResizeTable'
 
@@ -21,6 +21,7 @@ interface ViewTableProps {
     plan_id: string | number
     ws_id: string
     showPagination?: boolean
+    callBackViewTotal?: any
 }
 
 const ViewAllPlan = styled.div`
@@ -36,41 +37,39 @@ const ViewAllPlan = styled.div`
 const ViewTable = (props: ViewTableProps) => {
     // 权限
     const access = useAccess()
-    const { plan_id, ws_id, showPagination = false } = props
+    const { plan_id, ws_id, showPagination = false, callBackViewTotal } = props
     const [pageParam, setPageParam] = useState<any>({ page_size: 10, page_num: 1, ws_id, plan_id })
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [allGroup, setAllGroup] = useState<any>([])
-
-    const { data, run, loading, refresh } = useRequest(
+    const pageCurrent = useStateRef(pageParam)
+    const { data, run, loading } = useRequest(
         (params: any) => queryPlanResult(params),
         {
-            initialData: { data: [], total: 1 },
+            initialData: { data: [] },
             manual: true,
             formatResult: ret => ret
         }
     )
+    const totalCurrent = useStateRef(data)
     useEffect(() => {
-        // console.log('pageParam:', pageParam)
         run(pageParam)
         // 过滤筛选
-    }, [plan_id, pageParam.name, pageParam.state])
-    const getWidth = () => {
-        const arr = data && _.isArray(data.data) ? data.data : [];
-        const flag = arr.some((item: any) => _.get(item, 'report_li') && item.report_li.length)
-        return flag ? 150 : 100
+    }, [plan_id, pageParam])
 
-    }
     const hanldeOpenPlanDetail = useCallback((row) => {
         history.push(`/ws/${ws_id}/test_plan/view/detail/${row.id}`)
     }, [])
-
-    const hanldeDeletePlan = async (row: any) => {
+    
+    const hanldeDeletePlan =  async(row: any) => {
+        const { page_num, page_size } = pageCurrent.current
+        const { total } = totalCurrent.current
         const { code, msg } = await deletePlanInstance({ plan_instance_id: row.id, ws_id })
         if (code !== 200) {
             requestCodeMessage(code, msg)
             return
         }
-        refresh()
+        callBackViewTotal()
+        setPageParam({ ...pageParam, page_num: handlePageNum(total, page_num, page_size)})
         message.success('操作成功')
     }
 
@@ -160,7 +159,7 @@ const ViewTable = (props: ViewTableProps) => {
                         <Access accessible={access.WsTourist()}>
                             <Access
                                 accessible={access.WsMemberOperateSelf(row.creator)}
-                                fallback={<OptionButton className="option-delete" onClick={()=> AccessTootip()}>删除</OptionButton>}
+                                fallback={<OptionButton className="option-delete" onClick={() => AccessTootip()}>删除</OptionButton>}
                             >
                                 <Popconfirm
                                     title="确认删除该计划吗？"
@@ -242,9 +241,7 @@ const ViewTable = (props: ViewTableProps) => {
                         currentPage={pageParam.page_num}
                         onPageChange={
                             (page_num, page_size) => {
-                                const param = { page_num, page_size, ws_id, plan_id }
-                                setPageParam(param)
-                                run(param)
+                                setPageParam({ ...pageParam, page_num, page_size })
                             }
                         }
                     />
@@ -264,53 +261,4 @@ const ViewTable = (props: ViewTableProps) => {
     )
 }
 
-export default ViewTable
-
-/* const selectedChange = (record: any, selected: any) => {
-    // 去掉未选组的job 开始
-    let arrKeys = _.cloneDeep(selectedRowKeys)
-    let arrData: any = _.cloneDeep(allGroup)
-    if (selected) {
-        arrKeys = [...arrKeys, record.id]
-        arrData = [...arrData, { id: record.id, job_total: record.job_total }]
-    } else {
-        arrKeys = arrKeys.filter((keys: any) => Number(keys) !== Number(record.id))
-        arrData = arrData.filter((obj: any) => Number(obj.id) !== Number(record.id))
-    }
-    setSelectedRowKeys(arrKeys);
-    setAllGroup(arrData)
-}
-
-const allSelectFn = (allData: any) => {
-    const arr = _.isArray(allData) ? allData : []
-    const keysArr: any = []
-    const groupData: any = []
-    arr.forEach((item: any) => {
-        keysArr.push(item.id)
-        groupData.push({ id: item.id, job_total: item.job_total })
-    })
-    let arrKeys = _.cloneDeep(selectedRowKeys)
-    let arrData: any = _.cloneDeep(allGroup)
-    setSelectedRowKeys([...arrKeys, ...keysArr])
-    setAllGroup([...arrData, ...groupData])
-}
-const cancleAllSelectFn = (allData: any) => {
-    const arr = _.isArray(allData) ? allData : []
-    const keysArr: any = []
-    arr.forEach((item: any) => keysArr.push(item.id))
-    setSelectedRowKeys(_.difference(_.cloneDeep(selectedRowKeys), keysArr))
-    setAllGroup(_.differenceBy(_.cloneDeep(allGroup), arr, 'id'))
-}
-const rowSelection = {
-    selectedRowKeys,
-    preserveSelectedRowKeys: false,
-    onSelect: selectedChange,
-    onSelectAll: (selected: boolean, selectedRows: [], changeRows: []) => {
-        if (selected) {
-            allSelectFn(changeRows)
-            return
-        } else {
-            cancleAllSelectFn(changeRows)
-        }
-    },
-}; */
+export default ViewTable;

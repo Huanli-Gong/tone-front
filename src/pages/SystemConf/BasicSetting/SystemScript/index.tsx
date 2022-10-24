@@ -6,7 +6,7 @@ import { MinusCircleOutlined, MoreOutlined, FilterFilled, SearchOutlined, Exclam
 import { useRequest } from 'umi'
 
 import { queryConfigList, deleteConfig, updateConfig } from '../services'
-
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import AddScripotDrawer from './AddScript'
 import CodeEditer from '@/components/CodeEditer'
 import HistroyVersion from './HistoryVersion'
@@ -219,7 +219,7 @@ export default (props: any) => {
                                         >
                                             <Row justify="space-between">
                                                 <Typography.Text>
-                                                    { transformKey( item.config_key ) }
+                                                    <EllipsisPulic width={220} title={transformKey(item.config_key)}>{ transformKey( item.config_key ) }</EllipsisPulic>
                                                 </Typography.Text>
                                                 <Popconfirm
                                                     title={<div style={{ color:'red' }}>删除脚本将可能导致Job无法正常<br/>运行，请谨慎删除！！</div>}
