@@ -1,3 +1,4 @@
+import React from 'react';
 import { message } from 'antd';
 import { parse } from 'querystring';
 import { useIntl, getLocale } from 'umi'
@@ -87,10 +88,10 @@ export const switchBusinessType = (business_type: string) => {
 
 export const switchTestType = (str: string, formatMessage: any) => {
   switch (str) {
-    case 'functional': return formatMessage({id: str})
-    case 'performance': return formatMessage({id: str})
-    case 'stability': return formatMessage({id: str})
-    case 'business': return formatMessage({id: str})
+    case 'functional': return formatMessage({ id: str })
+    case 'performance': return formatMessage({ id: str })
+    case 'stability': return formatMessage({ id: str })
+    case 'business': return formatMessage({ id: str })
     default: return ''
   }
 };
@@ -109,7 +110,7 @@ export const switchChineseType = (str: string) => {
 };
 
 export const switchServerType = (str: string, formatMessage?: any) => {
-  return str === 'aligroup' ? formatMessage({id: 'aligroupServer'}) : formatMessage({id: 'aliyunServer'});
+  return str === 'aligroup' ? formatMessage({ id: 'aligroupServer' }) : formatMessage({ id: 'aliyunServer' });
   /* switch (str) {
         case 'aligroup': return '内网'
         case 'aliyun': return '云上'
@@ -283,9 +284,9 @@ export const enumerChinese = (name: any) => {
 };
 export const enumerEnglish = (name: any, formatMessage: any) => {
   const list = {
-    system: formatMessage({id: `system.image`}),
-    self: formatMessage({id: `${name}.image`}),
-    others: formatMessage({id: `${name}.image`}),
+    system: formatMessage({ id: `system.image` }),
+    self: formatMessage({ id: `${name}.image` }),
+    others: formatMessage({ id: `${name}.image` }),
   };
   return list[name];
 };
@@ -531,3 +532,21 @@ export const aliyunServer_standalone_en = isOpenSource ? list_en['elastic_pool.s
 export const aligroupServer_cluster_en = isOpenSource ? list_en['fixed_pool.cluster'] : list_en['aligroup.cluster'];
 export const aliyunServer_cluster_en = isOpenSource ? list_en['elastic_pool.cluster'] : list_en['aliyun.cluster'];
 // ----------------- end 替换上面的逻辑 ------------------
+
+
+// 分页删除一页最后一条跳转到前一页逻辑处理
+export const handlePageNum = (total: number, page_num: number, page_size: number) => {
+  let totalPage = Math.ceil((total - 1) / page_size)
+  let currentPage = page_num > totalPage ? totalPage : page_num
+  page_num = currentPage < 1 ? 1 : currentPage
+  return page_num
+}
+
+export const useStateRef = (state: any) => {
+  const stateRef = React.useRef<any>()
+  React.useEffect(() => {
+    stateRef.current = state
+    return () => { }
+  }, [state])
+  return stateRef
+}

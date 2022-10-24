@@ -29,7 +29,7 @@ const ViewCollapse = (props: any) => {
     useEffect(() => {
         queryPlanViewListData()
     }, [])
-
+    
     return (
         <Spin spinning={loading}>
             <Space direction="vertical" style={{ width: '100%', paddingLeft: 20, paddingRight: 20 }}>
@@ -65,7 +65,7 @@ const ViewCollapse = (props: any) => {
                                     }
                                     key={i.id}
                                 >
-                                    <ViewTable ws_id={ws_id} plan_id={i.id} />
+                                    <ViewTable ws_id={ws_id} plan_id={i.id} callBackViewTotal={queryPlanViewListData}/>
                                 </Collapse.Panel>
                             </Collapse>
                         )) :
