@@ -545,7 +545,7 @@ export default (props: any) => {
                 <Tabs.TabPane tab={<FormattedMessage id="device.server.instance"/>} key={'1'} />
             </Tabs>
 
-            <ResizeTable
+            {!!data.data.length && <ResizeTable
                 loading={loading}
                 size={'small'}
                 scroll={{
@@ -557,7 +557,7 @@ export default (props: any) => {
                 dataSource={data.data}
                 rowKey={'id'}
                 pagination={false}
-            />
+            />}
 
             <div className={!loading ? styles.pagination : styles.hidden} >
                 <div className={data.total == 0 ? styles.hidden : ''} >

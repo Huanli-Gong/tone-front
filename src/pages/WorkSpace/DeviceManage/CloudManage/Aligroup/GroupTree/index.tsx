@@ -305,7 +305,7 @@ const GroupTree: React.FC<any> = (props) => {
                     style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
                 />
             }
-            <ResizeTable
+            { !!data.length && <ResizeTable
                 style={{ width: width - 79 }}
                 loading={loading}
                 scroll={{ x: 2160 }}
@@ -314,7 +314,7 @@ const GroupTree: React.FC<any> = (props) => {
                 dataSource={data}
                 rowKey={'id'}
                 pagination={false}
-            />
+            /> }
             <GroupMachine onRef={aloneMachine} run_mode={'standalone'} onSuccess={onSuccess} />
         </div>
     )

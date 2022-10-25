@@ -33,7 +33,7 @@ const BasicSetting = (props: any, ref: any) => {
 
     const { ws_id } = useParams() as any
     const [form] = Form.useForm()
-    const [kernel, setKernal] = useState('install_push')
+    const [kernel, setKernal] = useState('no')
     const [testObject, setTestObject] = useState('rpm')
 
     const { data: projectList } = useRequest(
@@ -64,11 +64,10 @@ const BasicSetting = (props: any, ref: any) => {
 
     useEffect(() => {
         if (template && JSON.stringify(template) !== '{}') {
-            const { build_info, kernel_info, kernel_version, test_obj } = template
-            // const { build_info, kernel_info, kernel_version, test_obj, auto_report, report_template_id } = template
+            const { build_pkg_info, kernel_info, kernel_version, test_obj } = template
             setTestObject(test_obj)
             if (test_obj === 'kernel') {
-                if (JSON.stringify(build_info) !== '{}') {
+                if (JSON.stringify(build_pkg_info) !== '{}') {
                     setKernal('install_build_kernel')
                 }
                 if (JSON.stringify(kernel_info) !== '{}') {
@@ -76,7 +75,7 @@ const BasicSetting = (props: any, ref: any) => {
                     else setKernal('install_un_push')
                 }
             }
-            form.setFieldsValue({ ...kernel_info, ...build_info, ...template, })
+            form.setFieldsValue({ ...kernel_info, ...build_pkg_info, ...template, })
         }
     }, [template])
 
@@ -231,6 +230,7 @@ const BasicSetting = (props: any, ref: any) => {
                         {
                             <Form.Item label={'内核'} >
                                 <Radio.Group value={kernel} onChange={handleKernalInstallChange}>
+                                    <Radio value="no">不安装</Radio>
                                     <Radio value="install_push">安装已发布</Radio>
                                     <Radio value="install_un_push">安装未发布</Radio>
                                     <Radio value="install_build_kernel">Build内核</Radio>
@@ -252,7 +252,7 @@ const BasicSetting = (props: any, ref: any) => {
                         }
                         {
                             (kernel === 'install_build_kernel') &&
-                            <BuildKernalForm needScriptList={false} form={form} />
+                            <BuildKernalForm needScriptList={false} form={form} isPlan={true}/>
                         }
                     </>
                 }

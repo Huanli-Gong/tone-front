@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { Space, Tabs, Button, message, Popconfirm, Spin } from 'antd'
@@ -31,17 +31,23 @@ const TestPlanManage = (props: any) => {
 
     const { height: layoutHeight } = useClientSize()
     const viewSettingRef: any = useRef()
-
+    const [data , setData] = useState<any>([])
+    const [loading, setLoading] = useState<boolean>(true)
     const [pageParams, setPageParams] = useState<any>({ ws_id, page_num: 1, page_size: 10 })
 
-    const { data, refresh, loading } = useRequest(
-        (params: any = pageParams) => queryPlanManageList(params),
-        {
-            initialData: {},
-            formatResult: (req: any) => req,
-            refreshDeps: [pageParams],
+    const queryPlanList = async() => {
+        const data = await queryPlanManageList(pageParams)
+        if(data.code === 200){
+            setData(data)
+        } else {
+            requestCodeMessage(data.code, data.msg)
         }
-    )
+        setLoading(false)
+    }
+
+    useEffect(()=> {
+        queryPlanList()
+    },[])
 
     const handleRun = async (row: any) => {
         if (!row.enable) return;
@@ -59,7 +65,7 @@ const TestPlanManage = (props: any) => {
             return
         }
         message.success('复制成功!')
-        refresh()
+        queryPlanList()
     }
 
     const handleEdit = (row: any) => {
@@ -68,7 +74,7 @@ const TestPlanManage = (props: any) => {
 
     const handleDelete = async (row: any) => {
         const { code, msg } = await deleteTestPlan({ plan_id: row.id, ws_id })
-        if (code === 200) refresh()
+        if (code === 200) queryPlanList()
         else requestCodeMessage(code, msg)
     }
 

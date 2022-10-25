@@ -79,17 +79,17 @@ const TestPlan = (props: any) => {
         try {
             if (current === 0) {
                 const basicFormValue = await basicSettingRef.current.validate()
-                const { headers, devel, hotfix, kernel, build_config, build_machine, code_branch, code_repo,
-                    commit_id, compile_branch, cpu_arch, ...formValue
+                const { headers, devel, hotfix_install, scripts, kernel, build_config, build_machine, code_branch, code_repo,
+                    commit_id, compile_branch, cpu_arch, product_name, ...formValue
                 } = basicFormValue
                 setDataSource({
                     ...dataSource,
                     basic: {
                         ...formValue,
-                        kernel_info: { headers, devel, hotfix, kernel },
-                        build_info: {
+                        kernel_info: { headers, devel, hotfix_install, kernel, scripts },
+                        build_pkg_info: {
                             build_config, build_machine, code_branch, code_repo,
-                            commit_id, compile_branch, cpu_arch
+                            commit_id, compile_branch, cpu_arch, name: product_name
                         }
                     }
                 })
@@ -133,9 +133,9 @@ const TestPlan = (props: any) => {
         const pipline = dataSource.pipline
 
         const {
-            headers, devel, hotfix, kernel, build_config,
+            headers, devel, hotfix_install, scripts, kernel, build_config,
             build_machine, code_branch, code_repo,
-            commit_id, compile_branch, cpu_arch, ...formValue
+            commit_id, compile_branch, cpu_arch, product_name, ...formValue
         } = basic;
 
         const { base_group_job, base_group_stage, ...reportOther } = report;
@@ -152,10 +152,10 @@ const TestPlan = (props: any) => {
 
         return {
             ...formValue,
-            kernel_info: { headers, devel, hotfix, kernel },
-            build_info: {
+            kernel_info: { headers, devel, hotfix_install, scripts, kernel },
+            build_pkg_info: {
                 build_config, build_machine, code_branch, code_repo,
-                commit_id, compile_branch, cpu_arch
+                commit_id, compile_branch, cpu_arch, name: product_name
             },
             ...reportValues,
             ...touch,

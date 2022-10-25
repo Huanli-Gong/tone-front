@@ -27,7 +27,7 @@ const DrawerForm = forwardRef((props, ref) => {
     const [state, setState] = useState(false)
     const [noteVal, setNoteVal] = useState('')
     const [dataSet, setDataSet] = useState<any>({})
-    const { kernel_info = {}, rpm_info = {}, build_info = {}, test_result }: any = dataSet;
+    const { kernel_info = {}, rpm_info = {}, build_pkg_info = {}, test_result }: any = dataSet;
 
     useImperativeHandle(
         ref,
@@ -191,7 +191,7 @@ const DrawerForm = forwardRef((props, ref) => {
                         <ItemRow label="备注" text={dataSet.note} type="edit" />
                     </div>
                 </Row>
-                {(!!Object.keys(build_info).length || !!Object.keys(kernel_info).length || !!Object.keys(rpm_info).length || dataSet.env_info || dataSet?.plan_config_info?.func_baseline_name || dataSet?.plan_config_info?.perf_baseline_name) ?
+                {(!!Object.keys(build_pkg_info).length || !!Object.keys(kernel_info).length || !!Object.keys(rpm_info).length || dataSet.env_info || dataSet?.plan_config_info?.func_baseline_name || dataSet?.plan_config_info?.perf_baseline_name) ?
                     <Row className={styles.form_row}>
                         <div className={styles.page_body_nav}>
                             <span>公共配置</span>
@@ -200,15 +200,15 @@ const DrawerForm = forwardRef((props, ref) => {
                             <ItemRow label="功能基线" text={dataSet?.plan_config_info?.func_baseline_name} />
                             <ItemRow label="性能基线" text={dataSet?.plan_config_info?.perf_baseline_name} />
                             {/** 1.基础配置build内核 */}
-                            {!!Object.keys(build_info).length && (
+                            {!!Object.keys(build_pkg_info).length && (
                                 <>
-                                    <ItemRow label="代码仓库" text={build_info.code_repo} />
-                                    <ItemRow label="代码分支" text={build_info.code_branch} />
-                                    <ItemRow label="编译分支" text={build_info.compile_branch} />
-                                    <ItemRow label="CpuArch" text={build_info.cpu_arch} />
-                                    <ItemRow label="Commit ID" text={build_info.commit_id} />
-                                    <ItemRow label="Build Config" text={build_info.build_config} />
-                                    <ItemRow label="Build Machine" text={build_info.build_machine} />
+                                    <ItemRow label="代码仓库" text={build_pkg_info.code_repo} />
+                                    <ItemRow label="代码分支" text={build_pkg_info.code_branch} />
+                                    <ItemRow label="编译分支" text={build_pkg_info.compile_branch} />
+                                    <ItemRow label="CpuArch" text={build_pkg_info.cpu_arch} />
+                                    <ItemRow label="Commit ID" text={build_pkg_info.commit_id} />
+                                    <ItemRow label="Build Config" text={build_pkg_info.build_config} />
+                                    <ItemRow label="Build Machine" text={build_pkg_info.build_machine} />
                                 </>
                             )
                             }
