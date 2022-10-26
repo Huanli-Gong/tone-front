@@ -126,9 +126,9 @@ export default forwardRef(
                         <Input autoComplete="off" placeholder={formatMessage({id: 'job.templates.template.name.message'})}/>
                     </Form.Item>
                     <Form.Item 
-                        label={<FormattedMessage id="job.templates.template.desc" />}
+                        label={<FormattedMessage id="job.templates.templates.desc" />}
                         name="description">
-                        <Input.TextArea rows={ 3 } placeholder={formatMessage({id: 'job.templates.template.desc.placeholder'})}
+                        <Input.TextArea rows={ 3 } placeholder={formatMessage({id: 'job.templates.templates.desc.placeholder'})}
                          />
                     </Form.Item>
                     <Form.Item label={<FormattedMessage id="job.templates.enable" />}

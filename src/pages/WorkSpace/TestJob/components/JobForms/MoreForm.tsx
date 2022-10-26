@@ -219,7 +219,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             }
             {
                 'report' in contrl &&
-                <Form.Item label={formatMessage({id: 'job.form.report.label'})} name="report_name">
+                <Form.Item label={contrl.report.alias || formatMessage({id: 'job.form.report.label'})} name="report_name">
                     <Input
                         value={checkedList || undefined}
                         onChange={onReportChange}
@@ -236,7 +236,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 checkedList && 'report' in contrl &&
                 <Form.Item
                     name="report_template"
-                    label={formatMessage({id: 'job.form.report_template.label'})}
+                    label={contrl.report.alias || formatMessage({id: 'job.form.report_template.label'})}
                 >
                     <Select
                         showSearch
@@ -259,7 +259,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'callback_api' in contrl &&
                 <Form.Item
                     name="callback_api"
-                    label={contrl.callback_api.alias || formatMessage({id: `job.form.${contrl.callback_api.alias}`})}
+                    label={contrl.callback_api.alias || formatMessage({id: 'job.form.callback_api.label'})}
                     validateStatus={regCallbackUrl && 'error' || undefined}
                     help={regCallbackUrl && formatMessage({id: 'job.form.callback_api.help'}) }
                 >
