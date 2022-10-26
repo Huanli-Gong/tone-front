@@ -181,7 +181,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                         }
                         {
                             'report' in contrl &&
-                            <Form.Item label={<FormattedMessage id="ws.result.details.report"/>}
+                            <Form.Item label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report"/>}
                                 name="report_name">
                                 <Input
                                     value={checkedList || undefined}
@@ -207,7 +207,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             checkedList && 'report' in contrl &&
                             <Form.Item
                                 name="report_template_id"
-                                label={<FormattedMessage id="ws.result.details.report_template"/>}
+                                label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report_template"/>}
                             >
                                 <Select
                                     showSearch
@@ -230,7 +230,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             'callback_api' in contrl &&
                             <Form.Item
                                 name="callback_api"
-                                label={<FormattedMessage id="ws.result.details.callback_api"/>}
+                                label={contrl?.callback_api?.alias || <FormattedMessage id="ws.result.details.callback_api"/>}
                             >
                                 <Input
                                     autoComplete="off"

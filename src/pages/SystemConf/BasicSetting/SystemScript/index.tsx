@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styles from './index.less'
 
 import { MinusCircleOutlined, MoreOutlined, FilterFilled, SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 
 import { queryConfigList, deleteConfig, updateConfig } from '../services'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -14,6 +14,8 @@ import CommentModal from './CommentModal'
 import { requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const PAGE_DEFAULT_PARAMS = { config_type: 'script' }
 
     const [current, setCurrent] = useState<any>({})
@@ -67,13 +69,13 @@ export default (props: any) => {
     }, [data])
 
     const handleAddScript = () => {
-        addScript.current?.show('新增脚本')
+        addScript.current?.show('new')
     }
 
     const fetchFinally = (code: number, msg: string) => {
         if (code === 200) {
             setCurrent({})
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
             refresh()
         }
         else requestCodeMessage( code , msg )
@@ -85,7 +87,7 @@ export default (props: any) => {
     }
 
     const hanldeEdit = () => {
-        addScript.current?.show('编辑脚本', current)
+        addScript.current?.show('edit', current)
     }
 
     const handleOpenComment = () => {
@@ -100,7 +102,7 @@ export default (props: any) => {
         })
     }
     const handleComSubmit = () => {
-        message.success('操作成功！')
+        message.success(formatMessage({id: 'operation.success'}) )
         refresh()
     }
 
@@ -143,7 +145,7 @@ export default (props: any) => {
     const beforeunload = (event: any) => {
         if (!disabled) {
             event.preventDefault()
-            return event.returnValue = '内容尚未保存，确定要离开吗？'
+            return event.returnValue = formatMessage({id: 'basic.save.warning'})
         }
         return false
     }
@@ -177,10 +179,10 @@ export default (props: any) => {
                 <Row justify="space-between">
                     <div className={styles.script_left}>
                         <div className={styles.create_button_wrapper}>
-                            <Button type="primary" onClick={handleAddScript}>新增脚本</Button>
+                            <Button type="primary" onClick={handleAddScript}><FormattedMessage id="basic.addScript.new"/></Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
-                            <Typography.Text>所有脚本 {data?.length && `(${data?.length})`}</Typography.Text>
+                            <Typography.Text><FormattedMessage id="basic.all.script"/>{data?.length && `(${data?.length})`}</Typography.Text>
                             <div className={styles.filter_icon} onClick={handleClickFilter}>
                                 <FilterFilled style={{ color: 'rgba(0 , 0 , 0 ,.45)' }} />
                             </div>
@@ -190,7 +192,7 @@ export default (props: any) => {
                             >
                                 <Col span={24} className={styles.filter_search_box}>
                                     <Input
-                                        placeholder="支持按照脚本名称、备注搜索"
+                                        placeholder={formatMessage({id: 'basic.support.searching.by.script'})}
                                         value={search}
                                         onChange={({ target }) => setSearch(target.value)}
                                         suffix={<SearchOutlined />}
@@ -199,8 +201,8 @@ export default (props: any) => {
                                 <Divider style={{ margin: 0 }} />
                                 <Col span={24}>
                                     <Row justify="space-between">
-                                        <Col span={12} onClick={handleSearchScript} className={`${styles.filter_dropdown_opt} ${styles.filter_search_btn}`}>搜索</Col>
-                                        <Col span={12} onClick={handleResetSearch} className={styles.filter_dropdown_opt}>重置</Col>
+                                        <Col span={12} onClick={handleSearchScript} className={`${styles.filter_dropdown_opt} ${styles.filter_search_btn}`}><FormattedMessage id="operation.search"/></Col>
+                                        <Col span={12} onClick={handleResetSearch} className={styles.filter_dropdown_opt}><FormattedMessage id="operation.reset"/></Col>
                                     </Row>
                                 </Col>
                             </Row>
@@ -222,10 +224,10 @@ export default (props: any) => {
                                                     <EllipsisPulic width={220} title={transformKey(item.config_key)}>{ transformKey( item.config_key ) }</EllipsisPulic>
                                                 </Typography.Text>
                                                 <Popconfirm
-                                                    title={<div style={{ color:'red' }}>删除脚本将可能导致Job无法正常<br/>运行，请谨慎删除！！</div>}
+                                                    title={<div style={{ color:'red', width:'280px' }}><FormattedMessage id="basic.delete.the.script.warning"/></div>}
                                                     onCancel={() => handleDelete(item)}
-                                                    okText="取消"
-                                                    cancelText="确定删除"
+                                                    okText={<FormattedMessage id="operation.cancel"/>}
+                                                    cancelText={<FormattedMessage id="operation.confirm.delete"/>}
                                                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                                                 >
                                                     <MinusCircleOutlined
@@ -247,7 +249,7 @@ export default (props: any) => {
                                         <Col span={24}>
                                             <Row>
                                                 <Col span={ 8 } className={ styles.history_top_info }>
-                                                    <Typography.Text className={ styles.script_right_name }>脚本名称：</Typography.Text>
+                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 108 }: {}}><FormattedMessage id="basic.script_name"/>：</span>
                                                     <Typography.Text>
                                                         <Tooltip title={ transformKey( current.config_key ) } placement="bottomLeft">
                                                             { transformKey( current.config_key ) }
@@ -255,11 +257,11 @@ export default (props: any) => {
                                                     </Typography.Text>
                                                 </Col>
                                                 <Col span={ 6 } className={ styles.history_top_info }>
-                                                    <Typography.Text className={ styles.script_right_name }>原子步骤：</Typography.Text>
+                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 122 }: {}}><FormattedMessage id="basic.atomic_step"/>：</span>
                                                     <Typography.Text>{ bindStage }</Typography.Text>
                                                 </Col>
-                                                <Col span={ 10 } className={ styles.history_top_info }>
-                                                    <Typography.Text className={ styles.script_right_name }>描述：</Typography.Text>
+                                                <Col span={ 10 } className={styles.history_top_info }>
+                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 100 }: {}}><FormattedMessage id="basic.desc"/>：</span>
                                                     <Typography.Text className={ styles.desc_content_style }>
                                                         <Tooltip title={ current.description } placement="bottomLeft">
                                                             { current.description }
@@ -270,12 +272,12 @@ export default (props: any) => {
                                         </Col>
                                         <Col span={24}>
                                             <Space>
-                                                <Typography.Text className={styles.script_right_name}>是否启用：</Typography.Text>
+                                                <Typography.Text className={styles.script_right_name}><FormattedMessage id="basic.is_enable"/>：</Typography.Text>
                                                 <Typography.Text>
                                                 {
                                                     current.enable ? 
-                                                    <span style={{ color: "#10CF2D"}}>启用</span> : 
-                                                    <span style={{ color: "#F5222D"}}>停用</span>
+                                                    <span style={{ color: "#10CF2D"}}><FormattedMessage id="basic.enable"/></span> : 
+                                                    <span style={{ color: "#F5222D"}}><FormattedMessage id="basic.stop"/></span>
                                                 }
                                                 </Typography.Text>
                                             </Space>
@@ -284,8 +286,8 @@ export default (props: any) => {
                                             overlayStyle={{ cursor: 'pointer' }}
                                             overlay={
                                                 <Menu>
-                                                    <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
-                                                    <Menu.Item onClick={handleOpenHistoryModal}>历史版本</Menu.Item>
+                                                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="basic.edit.information"/></Menu.Item>
+                                                    <Menu.Item onClick={handleOpenHistoryModal}><FormattedMessage id="basic.historical.version"/></Menu.Item>
                                                 </Menu>
                                             }
                                         >
@@ -303,9 +305,9 @@ export default (props: any) => {
                                     </Row>
                                     <Row className={styles.right_bottom_options}>
                                         <Space>
-                                            <Button style={{ width: 80, marginRight: 20 }} onClick={handleOpenComment} disabled={disabled} type="primary" >提交</Button>
-                                            <Typography.Text style={{ fontSize: 12, color: 'rgba( 0 , 0 , 0 , .65 )', marginRight: 20 }}>最后修改时间：{current.gmt_modified}</Typography.Text>
-                                            <Typography.Text style={{ fontSize: 12, color: 'rgba( 0 , 0 , 0 , .65 )', marginRight: 20 }}>最后修改人：{current.update_user}</Typography.Text>
+                                            <Button style={{ width: 80, marginRight: 20 }} onClick={handleOpenComment} disabled={disabled} type="primary"><FormattedMessage id="basic.submit"/></Button>
+                                            <Typography.Text style={{ fontSize: 12, color: 'rgba( 0 , 0 , 0 , .65 )', marginRight: 20 }}><FormattedMessage id="basic.last.modified.time"/>：{current.gmt_modified}</Typography.Text>
+                                            <Typography.Text style={{ fontSize: 12, color: 'rgba( 0 , 0 , 0 , .65 )', marginRight: 20 }}><FormattedMessage id="basic.last.modified.person"/>：{current.update_user}</Typography.Text>
                                             {
                                                 current.commit &&
                                                 <Typography.Text style={{ fontSize: 12, color: 'rgba( 0 , 0 , 0 , .65 )' }}>Comment：{current.commit}</Typography.Text>

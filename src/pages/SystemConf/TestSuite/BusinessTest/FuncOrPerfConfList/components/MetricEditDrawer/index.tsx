@@ -1,12 +1,13 @@
 import React , { forwardRef , useState , useImperativeHandle } from 'react'
 import { Drawer , Form , Button , Input , Select , InputNumber } from 'antd'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 
 import { queryTestMetric } from '@/pages/SystemConf/TestSuite/service'
 import styles from '../../index.less';
 
 export default forwardRef(
     ({ onOk , parentId , componentType } : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const [ title , setTitle ] = useState( '' )
         const [ visible , setVisible ] = useState( false )
         const [ form ] = Form.useForm()
@@ -21,7 +22,7 @@ export default forwardRef(
         )
 
         useImperativeHandle( ref , () => ({
-            show : ( t : string = '新增Metric', _ : any = {} ) => {
+            show : ( t : string = '', _ : any = {} ) => {
                 const params : any = componentType === 'suite' ? { suite_id : parentId } : { case_id : parentId }
                 run( params )
                 setTitle( t )
@@ -71,7 +72,7 @@ export default forwardRef(
                 maskClosable={ false }
                 keyboard={ false }
                 className={styles.warp}
-                title={ title }
+                title={<FormattedMessage id={`metricEditer.title.${title}`}/>}
                 width={376}
                 onClose={ handleCancle }
                 visible={ visible }
@@ -79,10 +80,10 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right' }} >
                         <Button onClick={ handleCancle } style={{ marginRight: 8 }}>
-                                取消
+                            <FormattedMessage id="operation.cancel"/>
                         </Button>
                             <Button onClick={ handleOk } type="primary" htmlType="submit" >
-                            { title.indexOf('新增') > -1 ? '确定' : '更新'}
+                            { title.indexOf('new') > -1 ? <FormattedMessage id="operation.ok"/> : <FormattedMessage id="operation.update"/>}
                         </Button>
                     </div>
                 }
@@ -93,18 +94,18 @@ export default forwardRef(
                     /*hideRequiredMark*/
                 >
                     {
-                        ~title.indexOf('编辑') ?
+                        ~title.indexOf('edit') ?
                         <Form.Item
                             name="name"
                             label="Metric"
-                            rules={[{ required: true, message: '请输入' }]}
+                            rules={[{ required: true, message: formatMessage({ id: 'please.enter'}) }]}
                         >
-                            <Input autoComplete="off" placeholder="请输入" />
+                            <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                         </Form.Item> :
                         <Form.Item
                             name="name"
                             label="Metric"
-                            rules={[{ required: true, message: '请选择' }]}
+                            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                         >
                             <Select
                                 mode="multiple"
@@ -125,26 +126,26 @@ export default forwardRef(
                     }
                     <Form.Item
                         name="cmp_threshold"
-                        label="​Avg阈值(%)"
-                        rules={[{ required: true, message: '请输入' }]}
+                        label={<FormattedMessage id="TestSuite.cmp_threshold"/>}
+                        rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                     >
-                        <InputNumber precision={2} style={{width:'100%'}} min={0} step={1}  placeholder="请输入" />
+                        <InputNumber precision={2} style={{width:'100%'}} min={0} step={1}  placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>
                     <Form.Item
                         name="cv_threshold"
-                        label="CV阈值(%)"
-                        rules={[{ required: true, message: '请输入' }]}
+                        label={<FormattedMessage id="TestSuite.cv_threshold"/>}
+                        rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                     >
-                        <InputNumber precision={2} style={{width:'100%'}} min={0} step={1} placeholder="请输入" />
+                        <InputNumber precision={2} style={{width:'100%'}} min={0} step={1} placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>		
                     <Form.Item
                         name="direction"
-                        label="期望方向"
-                        rules={[{ required: true, message: '请选择' }]}
+                        label={<FormattedMessage id="TestSuite.direction"/>}
+                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                     >
-                        <Select placeholder="请选择">
-                            <Select.Option value='increase'>上升</Select.Option>
-                            <Select.Option value='decline'>下降</Select.Option>
+                        <Select placeholder={formatMessage({id: 'please.select'})}>
+                            <Select.Option value='increase'><FormattedMessage id="TestSuite.increase"/></Select.Option>
+                            <Select.Option value='decline'><FormattedMessage id="TestSuite.decline"/></Select.Option>
                         </Select>
                     </Form.Item>
                 </Form>

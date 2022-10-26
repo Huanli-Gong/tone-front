@@ -2,19 +2,17 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { TabCard } from '@/components/UpgradeUI'
 import { Tabs, Button } from 'antd'
-import { history, useLocation } from 'umi'
+import { history, useLocation, useIntl, FormattedMessage } from 'umi'
 
 import BasicTest from './BasicTest'
 import SetDomain from './SetDomain'
 import { BusinessList } from './BusinessTest'
-
 import { useDomain } from './hooks'
 import { ContainerContext } from './Provider'
-
-const runList = [{ id: 'standalone', name: '单机' }, { id: 'cluster', name: '集群' }]
-const viewType = [{ id: 'Type1', name: '所有指标拆分展示(Type1)' }, { id: 'Type2', name: '多Conf同指标合并(Type2)' }, { id: 'Type3', name: '单Conf多指标合并(Type3)' }]
+import { runList } from '@/utils/utils';
 
 const TestSuite = (props: any) => {
+    const { formatMessage } = useIntl()
     const { query }: any = useLocation()
 
     const testType = useMemo(() => {
@@ -38,28 +36,31 @@ const TestSuite = (props: any) => {
     }
 
     const buttonText = useMemo(() => {
-        if (testType === 'functional') return `新增功能Test Suite`
-        if (testType === 'performance') return '新增性能Test Suite'
-        if (testType === 'business') return '新增业务Test Suite'
-        if (testType === 'domainconf') return '新增领域'
-        return '新增功能Test Suite'
+        if (testType === 'functional') return <FormattedMessage id='TestSuite.create.functional'/>
+        if (testType === 'performance') return <FormattedMessage id='TestSuite.create.performance'/>
+        if (testType === 'business')   return <FormattedMessage id='TestSuite.create.business'/>
+        if (testType === 'domainconf') return <FormattedMessage id='TestSuite.create.domainconf'/>
+        return <FormattedMessage id='TestSuite.create.functional'/>
     }, [testType])
 
     return (
         <ContainerContext.Provider
             value={{
                 domainList,
-                runList,
-                viewType
+                runList: runList.map((item)=> ({...item, name: formatMessage({id: item.id}) }) ),
+                viewType: [
+                    { id: 'Type1', name: formatMessage({id: 'TestSuite.view_type.type1'}) }, 
+                    { id: 'Type2', name: formatMessage({id: 'TestSuite.view_type.type2'}) }, 
+                    { id: 'Type3', name: formatMessage({id: 'TestSuite.view_type.type3'}) },
+                ]
             }}
         >
             <TabCard
                 title={
                     <Tabs defaultActiveKey={ query.test_type || 'functional' } onChange={handleTab} activeKey={testType} >
-                        <Tabs.TabPane tab="功能测试" key="functional" />
-                        <Tabs.TabPane tab="性能测试" key="performance" />
-                        {/* <Tabs.TabPane tab="业务测试" key="business" /> */}
-                        <Tabs.TabPane tab="领域配置" key="domainconf" />
+                        <Tabs.TabPane tab={<FormattedMessage id="functional.test"/>} key="functional" />
+                        <Tabs.TabPane tab={<FormattedMessage id="performance.test"/>} key="performance" />
+                        <Tabs.TabPane tab={<FormattedMessage id="TestSuite.domain.conf"/>} key="domainconf" />
                     </Tabs>
                 }
                 extra={

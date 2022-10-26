@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { history, useAccess } from 'umi'
+import { history, useAccess, useIntl, FormattedMessage } from 'umi'
 import classes from 'classnames'
-import { useModel } from 'umi';
 import styles from './index.less'
 import { Layout, Row, Col, Form, Input, Radio, Button, Upload, Space, Typography, message, notification } from 'antd'
 import { QuestionCircleOutlined, CloseOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
@@ -16,6 +15,7 @@ const QuestionTip = (props: {
     path: String,
     name: String
 }): React.ReactElement => {
+    const { formatMessage } = useIntl()
     const [visible, setVisible] = useState(false)
     // onClick={ () => history.push() }
     return (
@@ -44,6 +44,7 @@ const QuestionTip = (props: {
 }
 
 export default (props: any): React.ReactElement => {
+    const { formatMessage } = useIntl()
     const [imgUrl, setImgUrl] = useState({ path: '', link: '' })
     const access = useAccess();
     const [isWsInit, setIsWsInit] = useState(false)
@@ -89,7 +90,7 @@ export default (props: any): React.ReactElement => {
             history.push(`/ws/${data.id}/workspace/initSuccess`)
         }
         else {
-            message.error(msg || '系统初始化失败', 2, () => {
+            message.error(msg || formatMessage({id: 'workspace.submit.failed'}), 2, () => {
                 clearInterval(timer.current)
                 setIsWsInit(false)
             })
@@ -175,8 +176,8 @@ export default (props: any): React.ReactElement => {
 
                                         if (data.code === 200) {
                                             notification.open({
-                                                message: '提交成功',
-                                                description: <span>Workspace创建申请提交成功，可在【个人中心】-【我的申请】中<span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => history.push('/personCenter?person=approve')}>查看审批进度</span></span>,
+                                                message: <FormattedMessage id="workspace.submit.success"/>,
+                                                description: <span><FormattedMessage id="workspace.submit.desc1"/><span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => history.push('/personCenter?person=approve')}><FormattedMessage id="workspace.submit.desc2"/></span></span>,
                                                 icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
                                                 duration: 3,
                                             })
@@ -193,7 +194,7 @@ export default (props: any): React.ReactElement => {
                         >
                             <Form.Item label=" ">
                                 <Space>
-                                    <Typography.Title level={3}>创建Workspace</Typography.Title>
+                                    <Typography.Title level={3}><FormattedMessage id="workspace.ws.create"/></Typography.Title>
                                 </Space>
                             </Form.Item>
                             <Form.Item
@@ -202,21 +203,21 @@ export default (props: any): React.ReactElement => {
                                         required: true,
                                         validator: async (rule, value) => {
                                             if (!value)
-                                                return Promise.reject("Workspace显示名不能为空")
+                                                return Promise.reject(formatMessage({id: 'workspace.show_name.rules1'}))
 
                                             if (!/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/.test(value))
-                                                return Promise.reject("仅允许包含汉字、字母、数字、下划线、中划线、点，最多30个字符")
+                                                return Promise.reject(formatMessage({id: 'workspace.show_name.rules2'}))
 
                                             return Promise.resolve()
                                         }
                                     }
                                 ]}
-                                label={"Workspace显示名"}
+                                label={<FormattedMessage id="workspace.show_name.s"/>}
                                 name="show_name"
                             >
                                 <Input
                                     autoComplete="off"
-                                    placeholder="workspace对外的展示名称，允许中文"
+                                    placeholder={formatMessage({id: 'workspace.show_name.placeholder'})}
                                     allowClear
                                 />
                             </Form.Item>
@@ -226,10 +227,10 @@ export default (props: any): React.ReactElement => {
                                         required: true,
                                         validator: async (rule, value) => {
                                             if (!value)
-                                                return Promise.reject("Workspace名称不能为空")
+                                                return Promise.reject(formatMessage({id: 'workspace.ws.name.rules1'}) )
 
                                             if (!/^[a-z0-9_-]{0,30}$/.test(value))
-                                                return Promise.reject("只允许英文小写、下划线和数字，最多30个字符")
+                                                return Promise.reject(formatMessage({id: 'workspace.ws.name.rules2'}) )
 
                                             return Promise.resolve()
                                         }
@@ -237,8 +238,8 @@ export default (props: any): React.ReactElement => {
                                 ]}
                                 label={
                                     <QuestionTip
-                                        name="Workspace名称"
-                                        tip="【Workspace名称】会用在测试结果文件的目录树中"
+                                        name={<FormattedMessage id="workspace.ws.name"/>}
+                                        tip={<FormattedMessage id="workspace.ws.tip"/>}
                                         path=""
                                     />
                                 }
@@ -246,30 +247,30 @@ export default (props: any): React.ReactElement => {
                             >
                                 <Input
                                     autoComplete="off"
-                                    placeholder="只允许英文小写、下划线和数字，最多30个字符"
+                                    placeholder={formatMessage({id: 'workspace.ws.name.placeholder'})}
                                     allowClear
                                 />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
-                                label="Workspace简介"
+                                label={<FormattedMessage id="workspace.show_name.s"/>}
                                 name="description"
                             >
                                 <Input.TextArea
                                     rows={3}
                                     allowClear
-                                    placeholder="请描述workspace的用途，例如产品/项目相关的测试介绍"
+                                    placeholder={formatMessage({id: 'workspace.description.placeholder'})}
                                 />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
-                                label="申请理由"
+                                label={<FormattedMessage id="workspace.reason"/>}
                                 name="reason"
                             >
                                 <Input.TextArea
                                     allowClear
                                     rows={4}
-                                    placeholder="例：方便高效协作和团队管理"
+                                    placeholder={formatMessage({id: 'workspace.reason.placeholder'})}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -277,23 +278,23 @@ export default (props: any): React.ReactElement => {
                                 name="is_public"
                                 label={
                                     <QuestionTip
-                                        name="是否公开"
-                                        tip="Workspace权限的开放和私密，决定了测试数据是否共享给平台用户查看，是否允许平台用户申请加入。"
+                                        name={<FormattedMessage id="workspace.is_public"/>}
+                                        tip={<FormattedMessage id="workspace.is_public.tip"/>}
                                         path=""
                                     />
                                 }
                             >
                                 <Radio.Group>
                                     <Radio value={false} className={styles.mb_16}>
-                                        私密<span>需申请才可加入</span>
+                                        <span><FormattedMessage id="workspace.private.ps"/></span>
                                     </Radio>
                                     <br />
                                     <Radio value={true}>
-                                        公开<span>T-one用户均可加入</span>
+                                        <span><FormattedMessage id="workspace.public.ps"/></span>
                                     </Radio>
                                 </Radio.Group>
                             </Form.Item>
-                            <Form.Item label="项目封面" >
+                            <Form.Item label={<FormattedMessage id="workspace.project.cover"/>}>
                                 <Form.Item name="logo" noStyle>
                                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                                         <div style={{ marginRight: 16 }}>
@@ -328,10 +329,10 @@ export default (props: any): React.ReactElement => {
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <Row>
                                                 <Col span={24}>
-                                                    可拖拽照片到左侧区域上传
+                                                    <FormattedMessage id="workspace.cover.drag"/>
                                                 </Col>
                                                 <Col span={24}>
-                                                    封面大小：96*96   支持图片类型：jpg, png
+                                                    <FormattedMessage id="workspace.cover.size"/>
                                                 </Col>
                                             </Row>
                                         </div>
@@ -339,7 +340,7 @@ export default (props: any): React.ReactElement => {
                                 </Form.Item>
                             </Form.Item>
                             <Form.Item style={{ marginTop: 30 }}>
-                                <Button type="primary" disabled={pedding} htmlType="submit">提交审核</Button>
+                                <Button type="primary" disabled={pedding} htmlType="submit"><FormattedMessage id="workspace.submit.review"/></Button>
                             </Form.Item>
                         </Form>
                     </Col>
@@ -349,21 +350,21 @@ export default (props: any): React.ReactElement => {
                         <Col offset={3} span={3} style={{ borderLeft: '1px solid rgba(0,0,0,.06)' }}></Col>
                         <Col span={12}>
                             <Row className={styles.create_banner}></Row>
-                            <Row className={styles.issue_title}>关于Workspace</Row>
+                            <Row className={styles.issue_title}><FormattedMessage id="workspace.ws.about"/></Row>
                             <Row>
                                 <ul className={styles.performance_ul}>
-                                    <li><Typography.Text type="secondary">Workspace创建成功后将拥有独立的空间，独立资源，独立配置，独立的团队管理，高效协作</Typography.Text></li>
-                                    <li><Typography.Text type="secondary">每一个Workspace在数据上是隔离的</Typography.Text></li>
-                                    <li><Typography.Text type="secondary">满足不同领域个性化测试的需求</Typography.Text></li>
+                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li1"/></Typography.Text></li>
+                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li2"/></Typography.Text></li>
+                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li3"/></Typography.Text></li>
                                 </ul>
                             </Row>
                             <Row >
-                                <Button type="link" onClick={() => history.push('/help_doc')}>查看更多</Button>
+                                <Button type="link" onClick={() => history.push('/help_doc')}><FormattedMessage id="workspace.see.more"/></Button>
                             </Row>
                         </Col>
                     </Row>
                 </Col>
-                <Button className={styles.close_btn} onClick={() => history.go(-1)}><CloseOutlined />关闭</Button>
+                <Button className={styles.close_btn} onClick={() => history.go(-1)}><CloseOutlined /><FormattedMessage id="operation.close"/></Button>
                 <CropperImage
                     ref={cropperRef}
                     onOk={
@@ -380,7 +381,7 @@ export default (props: any): React.ReactElement => {
                         <div className={styles.init_container}>
                             <div className={styles.icon_gif} />
                             <div className={styles.init_text}>
-                                系统初始化中
+                                <FormattedMessage id="workspace.system.initialization"/>
                                 <span className="dot" />
                                 <span className="dot" />
                                 <span className="dot" />
