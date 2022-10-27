@@ -464,7 +464,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         if (label[label.length - 1] !== 'latest') {
             return label[label.length - 1];
         }
-        return `${label[1].props.children}:${label[2].props.children}:latest`
+        return `${label[1].props?.children}:${label[2].props?.children}:latest`
     }
 
     const disabledState = useMemo(() => {

@@ -203,7 +203,7 @@ const TemplatePreview = (props: any) => {
                 <PreviewBar>
                     <Row align="middle">
                         <Space>
-                            <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20 }} /></span>
+                            <span onClick={handleBack} ><ArrowLeftOutlined style={{ fontSize: 20, cursor:'pointer' }} /></span>
                             <Space size={0}>
                                 <Typography.Title level={4}><FormattedMessage id="report.template.preview"/></Typography.Title>
                                 <span style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="report.take.3.control.groups"/></span>

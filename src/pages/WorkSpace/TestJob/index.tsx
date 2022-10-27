@@ -228,7 +228,7 @@ const TestJob: React.FC<any> = (props) => {
                 monitor_info, reclone_contrl, app_name, os,
                 vm, need_reboot, kernel_version, kernel_install,
                 code_repo, code_branch, compile_branch, cpu_arch, commit_id,
-                build_config, build_machine, scripts, kernel, devel, headers, hotfix_install
+                build_config, build_machine, scripts, kernel, devel, headers, hotfix_install, ...rest
             }: any = envVal
 
             installKernel = kernel_install
@@ -236,7 +236,7 @@ const TestJob: React.FC<any> = (props) => {
 
             const build_pkg_info = {
                 code_repo, code_branch, compile_branch, cpu_arch, commit_id,
-                build_config, build_machine, scripts,
+                build_config, build_machine, scripts, ...rest
             }
 
             const kernel_info = { kernel, devel, headers, hotfix_install, scripts }
