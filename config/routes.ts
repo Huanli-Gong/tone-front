@@ -4,7 +4,7 @@ const routes = [
 	{
 		path: '/',
 		name: 'home',
-		component: './Home',
+		component: BUILD_APP_ENV === "opensource" ? "./Home" : "./AnolisHome"
 	},
 	{
 		path: '/job/:job_id',
@@ -391,7 +391,7 @@ const routes = [
 						component: '@/pages/WorkSpace/TestReport/NewReport',
 						access: 'IsWsSetting',
 					},
-					
+
 					{
 						path: '*',
 						redirect: '/',
