@@ -25,3 +25,20 @@ export const BaseTitle = styled(Typography)`
     font-size: 16px;
     color: rgba(0,0,0,0.85);
 `
+
+type TSpaceProps = {
+    direction?: "row" | "column";
+    gap?: number | string;
+}
+
+const transSpaceGap = (gap?: number | string) => {
+    if (Object.prototype.toString.call(gap) === "[object String]") return `gap: ${gap};`
+    if (Object.prototype.toString.call(gap) === "[object Number]") return `gap: ${gap}px;`
+    return ""
+}
+
+export const TSpace = styled.div<TSpaceProps>`
+    display: flex;
+    flex-direction: ${({ direction }) => direction ?? "row"};
+    ${({ gap }) => transSpaceGap(gap)}
+`

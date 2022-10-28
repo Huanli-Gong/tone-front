@@ -3,7 +3,7 @@ import { Tabs, Row, Space, Input, Button, Spin, Empty } from "antd"
 import { useIntl, useAccess, Access, history } from "umi"
 
 import styled from "styled-components"
-import { Whiteboard } from "../styled"
+import { TSpace, Whiteboard } from "../styled"
 import { TableRow, TableHeader } from "./TableColumns"
 
 import { queryHomeWorkspace } from '@/services/Workspace';
@@ -33,6 +33,8 @@ type DefaultListQuery = {
     total?: number;
     data?: any[]
 } & Record<string, any>
+
+const tabsKeys = ['all', 'history', 'joined', 'created']
 
 const WorkspaceTabs: React.FC = () => {
     const intl = useIntl()
@@ -71,7 +73,7 @@ const WorkspaceTabs: React.FC = () => {
                     onTabClick={t => setTabkey(t)}
                 >
                     {
-                        ['all', 'history', 'joined', 'created'].map((i: string) => (
+                        tabsKeys.map((i: string) => (
                             <Tabs.TabPane
                                 key={i}
                                 tab={intl.formatMessage({ id: `pages.home.tab.${i}` })}
@@ -96,7 +98,7 @@ const WorkspaceTabs: React.FC = () => {
                 </Space>
             </Row>
             <Row>
-                <Space direction="vertical" style={{ width: "100%" }}>
+                <TSpace direction="column" gap={8} style={{ width: "100%" }}>
                     {
                         !loading &&
                         (
@@ -124,7 +126,7 @@ const WorkspaceTabs: React.FC = () => {
                         )
                     }
                     {loading && <BaseBoard ><Spin /></BaseBoard>}
-                </Space>
+                </TSpace>
             </Row>
         </Whiteboard>
     )

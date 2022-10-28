@@ -1,5 +1,5 @@
 import { targetJump } from "@/utils/utils"
-import { Row, Space, Typography, Tag, Empty } from "antd"
+import { Row, Space, Typography, Tag, Empty, Skeleton } from "antd"
 import React from "react"
 import { FullSpace, Whiteboard } from "../styled"
 import { useIntl } from "umi"
@@ -13,7 +13,7 @@ const EmptyBlock = styled.div`
 `
 
 const NoticeBlock: React.FC<Record<string, any>> = (props) => {
-    const { title, path, list = [], firstTagColor } = props
+    const { title, path, list = [], firstTagColor, loading } = props
 
     const intl = useIntl()
 
@@ -76,11 +76,19 @@ const NoticeBlock: React.FC<Record<string, any>> = (props) => {
                     {
                         !list.length &&
                         <EmptyBlock >
-                            <Empty
-                                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                style={{ margin: 0, padding: 0 }}
-                                description={intl.formatMessage({ id: `pages.anolis_home.${title}.empty.text` })}
-                            />
+                            {
+                                loading ?
+                                    <Skeleton
+                                        title={{ width: "100%" }}
+                                        paragraph={{ rows: title === "notice" ? 1 : 4, width: "100%" }}
+                                        active
+                                    /> :
+                                    <Empty
+                                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                        style={{ margin: 0, padding: 0 }}
+                                        description={intl.formatMessage({ id: `pages.anolis_home.${title}.empty.text` })}
+                                    />
+                            }
                         </EmptyBlock>
                     }
                 </Space>

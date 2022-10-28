@@ -2,7 +2,7 @@ import AvatarCover from "@/components/AvatarCover"
 import { Avatar, Button, Space, Typography } from "antd"
 import React from "react"
 import styled from "styled-components"
-import { useAccess, history, useModel, useIntl } from "umi"
+import { history, useModel, useIntl, useAccess } from "umi"
 import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 
 import { enterWorkspaceHistroy } from '@/services/Workspace'
@@ -24,7 +24,9 @@ const TableCellColumn = styled.div`
     cursor: pointer;
     &:hover {
         box-shadow: 0 3px 20px 0 rgba(0,0,0,0.20);
+        z-index: 20;
         .ant-btn {
+            /* visibility: visible; */
             display: block;
         }
     }
@@ -60,6 +62,8 @@ const Operations = styled.div`
     justify-content: end;
     .ant-btn {
         display: none;
+        /* visibility: hidden; */
+        margin: 0 !important;
     }
     
 `
@@ -83,10 +87,10 @@ export const getEnterWorkspaceState = async (record: any, user_id: any) => {
 }
 
 export const TableRow: React.FC<Record<string, any>> = (props) => {
-    const { show_name, is_public, description, avatar, owner_name, id } = props
+    const { show_name, is_public, description, avatar, owner_name, id, is_member } = props
 
-    const intl = useIntl()
     const access = useAccess()
+    const intl = useIntl()
     const { initialState } = useModel("@@initialState")
     const { user_id } = initialState?.authList || {}
 
@@ -98,24 +102,27 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
     }
 
     const renderOperationButton = () => {
-        if (access.WsTourist())
+        if (access.IsAdmin() || is_member)
             return (
                 <Button onClick={handleJumpWs}>
                     {intl.formatMessage({ id: `pages.anolis_home.button.start_test` })}
                 </Button>
             )
-        if (!is_public && !!user_id)
-            return <ApplyJoinWorkspace onRef={ref} ws_id={id} />
-        return (
-            <Button type="primary" onClick={handleJumpWs}>
-                {intl.formatMessage({ id: `pages.anolis_home.button.tourist_test` })}
-            </Button>
-        )
+        else {
+            if (is_public)
+                return (
+                    <Button type="primary" onClick={handleJumpWs}>
+                        {intl.formatMessage({ id: `pages.anolis_home.button.tourist_test` })}
+                    </Button>
+                )
+        }
+
+        return <ApplyJoinWorkspace onRef={ref} ws_id={id} />
     }
 
     const handleClick = () => {
-        if (!access.WsTourist() && !is_public) return ref.current?.show()
-        return handleJumpWs()
+        if (is_member || is_public) return handleJumpWs()
+        return ref.current?.show()
     }
 
     return (

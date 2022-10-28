@@ -1,5 +1,5 @@
 import React from "react"
-import { FullSpace, HomeContainer, VerticalSpace } from "./styled"
+import { FullSpace, HomeContainer, TSpace } from "./styled"
 import { queryHelpDocList } from '../HelpDocument/services'
 import HomeBanner from "./components/Banner"
 import TopWorkspaces from "./components/TopWorkspace"
@@ -8,8 +8,10 @@ import WorkspaceTabs from "./TabTable.tsx"
 
 const AnolisHome: React.FC<Record<string, any>> = () => {
     const [docs, setDocs] = React.useState({ "notice": [], "help_doc": [] })
+    const [loading, setLoading] = React.useState(true)
 
     const fetcher = async () => {
+        setLoading(true)
         const { data, code } = await queryHelpDocList()
         if (code !== 200) return
         const ft = data.filter(({ active }: any) => active)
@@ -27,6 +29,7 @@ const AnolisHome: React.FC<Record<string, any>> = () => {
             return pre
         }, {})
         setDocs(rt as any)
+        setLoading(false)
     }
 
     React.useEffect(() => {
@@ -35,17 +38,18 @@ const AnolisHome: React.FC<Record<string, any>> = () => {
 
     return (
         <HomeContainer>
-            <VerticalSpace size={20}>
+            <TSpace gap={20} direction="column">
                 <HomeBanner />
-                <FullSpace size={20}>
+                <TSpace gap={20}>
                     <TopWorkspaces />
-                    <FullSpace direction="vertical" size={20} >
+                    <TSpace direction="column" gap={20} >
                         {
                             Object.entries(docs).map((item => {
                                 const [$type, list]: any = item
 
                                 return (
                                     <NoticeBlock
+                                        loading={loading}
                                         key={$type}
                                         firstTagColor={$type === "help_doc" ? "#108ee9" : '#FF4D4D'}
                                         title={$type}
@@ -55,10 +59,10 @@ const AnolisHome: React.FC<Record<string, any>> = () => {
                                 )
                             }))
                         }
-                    </FullSpace>
-                </FullSpace>
+                    </TSpace>
+                </TSpace>
                 <WorkspaceTabs />
-            </VerticalSpace>
+            </TSpace>
         </HomeContainer>
     )
 }
