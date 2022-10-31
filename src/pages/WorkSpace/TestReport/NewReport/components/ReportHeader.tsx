@@ -11,7 +11,7 @@ const CreateMsg = styled.span`
 `
 const ReportHeader = () => {
     const { formatMessage } = useIntl()
-    const { btnState, obj, setObj, saveReportData, btnConfirm } = useContext(ReportContext)
+    const { btnState, obj, setObj, saveReportData, btnConfirm, creator } = useContext(ReportContext)
     const handleChangeVal = (val: any, text: string) => {
         obj[text] = val
         setObj({
@@ -45,6 +45,7 @@ const ReportHeader = () => {
                     field='description'
                     style={{ marginBottom:8 }}
                     defaultHolder={formatMessage({id: 'report.please.enter.desc'})}
+                    creator={creator}
                 />
                 : 
                 <SettingTextArea 

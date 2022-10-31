@@ -16,6 +16,7 @@ import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonM
 import _ from 'lodash';
 import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
 import { useClientSize } from '@/utils/hooks';
+import { requestCodeMessage } from '@/utils/utils';
 
 const Report = (props: any) => {
     const { formatMessage } = useIntl()
@@ -51,6 +52,10 @@ const Report = (props: any) => {
             setAllGroupData(shareData.allGroupData)
             setBaselineGroupIndex(shareData.baselineGroupIndex)
             setShareWsId(shareData.allGroupData[0]?.members[0]?.ws_id)
+        } else if( data.code === 500){
+            history.push('/500')
+        } else {
+            requestCodeMessage(data.code,data.msg)
         }
     }
 
@@ -122,6 +127,10 @@ const Report = (props: any) => {
                 setCompareResult({
                     ...compareResult
                 })
+                if(res.code === 500){
+                    history.push('/500')
+                    return
+                }
                 if (res.code !== 200) {
                     message.error(res.msg)
                     return
@@ -158,8 +167,12 @@ const Report = (props: any) => {
             testDataParam,
             envDataParam: paramEenvironment
         }
-        const { data } = await compareForm({ form_data })
-        setShareId(data)
+        const { data, code, msg } = await compareForm({ form_data })
+        if(code === 200) {
+            setShareId(data)
+        } else {
+            requestCodeMessage(code,msg)
+        }
     }
 
     useEffect(()=> {
@@ -271,7 +284,7 @@ const Report = (props: any) => {
                                 </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
-                                    {!form_id && <Button type="primary" onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>
+                                    {!form_id && <Button type="primary" loading={compareLen !== suiteLen} onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>
                                     <FormattedMessage id="analysis.create.report" />
                                 </Button>}
                                 </Access>

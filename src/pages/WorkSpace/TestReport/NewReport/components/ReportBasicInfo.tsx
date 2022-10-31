@@ -6,7 +6,7 @@ import { ModuleWrapper, SubTitle } from '../ReportUI';
 import _ from 'lodash';
 const ReportBasicInfo = (props: any) => {
     const { formatMessage } = useIntl()
-    const { btnState, obj, setObj, saveReportData, summaryData, btnConfirm, domainResult } = useContext(ReportContext)
+    const { btnState, obj, setObj, saveReportData, summaryData, btnConfirm, domainResult, creator } = useContext(ReportContext)
     const handleChangeVal = (val: any, text: string) => {
         if (text == 'custom') {
             if (summaryData && summaryData !== undefined) {
@@ -33,6 +33,7 @@ const ReportBasicInfo = (props: any) => {
                             saveData={saveReportData}
                             field='test_background'
                             defaultHolder={formatMessage({id: 'report.please.enter.background'})}
+                            creator={creator}
                         />
                         :
                         <SettingTextArea
@@ -54,6 +55,7 @@ const ReportBasicInfo = (props: any) => {
                             saveData={saveReportData}
                             field='test_method'
                             defaultHolder={formatMessage({id: 'report.please.enter.method'})}
+                            creator={creator}
                         />
                         :
                         <SettingTextArea
@@ -74,7 +76,8 @@ const ReportBasicInfo = (props: any) => {
                         <SettingRegUpdate
                             saveData={saveReportData}
                             field='custom'
-                            defaultHolder={formatMessage({id: 'report.please.enter.conclusion'}) }
+                            defaultHolder={formatMessage({id: 'report.please.enter.conclusion'})}
+                            creator={creator}
                         />
                         :
                         <SettingTextArea
