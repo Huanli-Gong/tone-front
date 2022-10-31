@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Form, Radio, Select } from 'antd'
 import ScriptsListForm from './ScriptsFormList'
 import styles from './index.less'
@@ -26,10 +26,21 @@ const PushForm: React.FC<IProps> = (props) => {
                 kernel_version: kernelList[idx].version,
                 kernel: kernelList[idx].kernel_link,
                 headers: kernelList[idx].headers_link,
-                devel: kernelList[idx].devel_link
+                devel: kernelList[idx].devel_link,
+                
             })
         }
     }
+
+    useEffect(()=> {
+        const obj = form.getFieldValue('kernel_info')
+        if(obj && JSON.stringify(obj) !== '{}'){
+            form.setFieldsValue({
+                hotfix_install:obj?.hotfix_install,
+                scripts:obj?.scripts
+            })
+        }
+    },[ form ])
 
     return (
         <Form.Item label=" ">

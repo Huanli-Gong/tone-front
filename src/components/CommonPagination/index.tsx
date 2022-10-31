@@ -39,7 +39,6 @@ export default ( props : PaginationProps ) => {
                     size="small"
                     showSizeChanger
                     pageSizeOptions={sizeNumber}
-                    //hideOnSinglePage={ true }
                     onChange={ onPageChange }
                     showQuickJumper={ true }
                     onShowSizeChange={ onPageChange }

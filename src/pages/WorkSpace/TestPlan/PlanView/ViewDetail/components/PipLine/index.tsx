@@ -14,7 +14,7 @@ import PipLineItemStep from './PipLineItemStep'
 
 const PipLine = ( props : any ) => {
     const { data, prepareCallback = ()=> {}, ws_id } = props
-    const { state, build_info={}, build_result, prepare_result, test_result= [] } = data
+    const { state, build_pkg_info={}, build_result, prepare_result, test_result= [] } = data
     // 测试准备阶段
     const { name = "" } = prepare_result || {}
     // 主流程状态
@@ -33,7 +33,7 @@ const PipLine = ( props : any ) => {
         </PipLineStart>
 
         {/** Build阶段 */}
-        <PipLineItemBuild data={build_result || build_info}  mainStatus={mainEndFlag} />
+        <PipLineItemBuild data={build_result || build_pkg_info}  mainStatus={mainEndFlag} />
 
         {/** 准备阶段 */}
         {!!name && ( <PipLineItemPrepare data={prepare_result} callback={prepareCallback}  mainStatus={mainEndFlag}/> )}

@@ -1,4 +1,4 @@
-import React from "react"
+import React,{ useEffect } from "react"
 import { Col, Row, Space, Typography, Divider, DatePicker, Button, message } from "antd"
 import FilterItem from "./Item"
 import { columns } from "./columns"
@@ -65,8 +65,8 @@ const FilterForm: React.FC<IProps> = (props) => {
     const { query } = useLocation() as any
 
     const [values, setValues] = React.useState<any>(undefined)
-    const [left, setLeft] = React.useState({})
-    const [right, setRight] = React.useState({})
+    const [left, setLeft] = React.useState<any>({})
+    const [right, setRight] = React.useState<any>({})
 
     const handleLeftChange = (vals: any) => {
         const result = Object.entries(vals).reduce((pre: any, cur: any) => {
@@ -77,7 +77,13 @@ const FilterForm: React.FC<IProps> = (props) => {
                     return pre
                 };
             }
-            pre[name] = value;
+            if (["job_id","name", "fail_case"].includes(name)) {
+                if (value && value.length > 0) {
+                    pre[name] = value.trim()
+                    return pre
+                } 
+            }
+            pre[name] = value
             return pre
         }, {})
         setLeft(result)
@@ -126,14 +132,19 @@ const FilterForm: React.FC<IProps> = (props) => {
         document.body.removeChild(dom)
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if(left.creation_time){
+            delete left.creation_time
+        }
+        if(left.completion_time){
+            delete left.completion_time
+        }
         setValues(Object.assign(left, right))
     }, [left, right])
 
     const queryValue = React.useMemo(() => {
         const { ws_id, page_size, page_num, tab, ...rest } = query
         const { completion_time, creation_time, ...leftValues } = rest
-
         const transObj = (vals: any) => {
             const v = Object.keys(vals).filter((k: any) => !!vals[k]).map((name) => {
                 if (!vals[name]) return { name, value: undefined }

@@ -33,8 +33,7 @@ const BasicSetting = (props: any, ref: any) => {
 
     const { ws_id } = useParams() as any
     const [form] = Form.useForm()
-    const [kernel, setKernal] = useState('install_push')
-
+    const [kernel, setKernal] = useState('no')
     const [testObject, setTestObject] = useState('rpm')
 
     const { data: projectList } = useRequest(
@@ -53,6 +52,7 @@ const BasicSetting = (props: any, ref: any) => {
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
+        form.setFieldsValue({ test_obj: testObject })
         form.resetFields(['kernel', 'devel', 'headers', 'kernel_version'])
     }
 
@@ -64,11 +64,10 @@ const BasicSetting = (props: any, ref: any) => {
 
     useEffect(() => {
         if (template && JSON.stringify(template) !== '{}') {
-            const { build_info, kernel_info, kernel_version, test_obj } = template
-            // const { build_info, kernel_info, kernel_version, test_obj, auto_report, report_template_id } = template
+            const { build_pkg_info, kernel_info, kernel_version, test_obj } = template
             setTestObject(test_obj)
             if (test_obj === 'kernel') {
-                if (JSON.stringify(build_info) !== '{}') {
+                if (JSON.stringify(build_pkg_info) !== '{}') {
                     setKernal('install_build_kernel')
                 }
                 if (JSON.stringify(kernel_info) !== '{}') {
@@ -76,7 +75,7 @@ const BasicSetting = (props: any, ref: any) => {
                     else setKernal('install_un_push')
                 }
             }
-            form.setFieldsValue({ ...kernel_info, ...build_info, ...template, })
+            form.setFieldsValue({ ...kernel_info, ...build_pkg_info, ...template, })
         }
     }, [template])
 
@@ -104,8 +103,9 @@ const BasicSetting = (props: any, ref: any) => {
                 className={styles.job_plan_form}
                 // onFieldsChange={ onChange }
                 initialValues={{
-                    hotfix: true,
-                    test_obj: 'rpm'
+                    hotfix_install: true,
+                    test_obj: 'rpm',
+                    scripts: [{ pos: 'before', script: '' }],
                 }}
             >
                 <Form.Item
@@ -220,17 +220,17 @@ const BasicSetting = (props: any, ref: any) => {
                 </Form.Item>
                 <Form.Item name="test_obj" label={"被测对象"}>
                     <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
-                        <Select.Option value={'kernel'} >{'内核包'}</Select.Option>
-                        <Select.Option value={'rpm'} >{'其他软件'}</Select.Option>
+                        <Select.Option value='kernel'>{'内核包'}</Select.Option>
+                        <Select.Option value='rpm'>{'其他软件'}</Select.Option>
                     </Select>
                 </Form.Item>
                 {
                     testObject == 'kernel' &&
                     <>
                         {
-                            form.getFieldValue('test_obj') == 'kernel' &&
                             <Form.Item label={'内核'} >
                                 <Radio.Group value={kernel} onChange={handleKernalInstallChange}>
+                                    <Radio value="no">不安装</Radio>
                                     <Radio value="install_push">安装已发布</Radio>
                                     <Radio value="install_un_push">安装未发布</Radio>
                                     <Radio value="install_build_kernel">Build内核</Radio>
@@ -243,16 +243,16 @@ const BasicSetting = (props: any, ref: any) => {
                                 form={form}
                                 kernel={kernel}
                                 kernelList={kernelList}
-                                needScriptList={false}
+                                needScriptList={true}
                             />
                         }
                         {
-                            (kernel === 'install_un_push')
-                            && <UnPushForm needScriptList={false} form={form} />
+                            (kernel === 'install_un_push') && 
+                            <UnPushForm needScriptList={true} form={form} />
                         }
                         {
                             (kernel === 'install_build_kernel') &&
-                            <BuildKernalForm needScriptList={false} form={form} />
+                            <BuildKernalForm needScriptList={false} form={form} isPlan={true}/>
                         }
                     </>
                 }

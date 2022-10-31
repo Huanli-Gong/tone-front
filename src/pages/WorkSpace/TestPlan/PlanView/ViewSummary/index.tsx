@@ -1,11 +1,11 @@
 import { Breadcrumb, Row, Typography } from 'antd'
-import React from 'react'
+import React,{ useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { FormattedMessage, useRequest , history } from 'umi'
+import { FormattedMessage, history } from 'umi'
 import { RenderDataRow } from '../components'
 import ViewTable from '../components/ViewTable'
 import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
-
+import { requestCodeMessage } from '@/utils/utils'
 import { queryPlanViewList } from '@/pages/WorkSpace/TestPlan/PlanView/services'
 
 interface ContainerProps {
@@ -48,17 +48,22 @@ const LinkSpan = styled.span`
 const ViewDetail = (props: any) => {
     const { route, match } = props
     const { plan_id, ws_id } = match.params
-
+    const [ data, setData ] = useState<any>({})
     writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
 
     const { height: layoutHeight, width: layoutWidth } = useClientSize()
 
-    const { data } = useRequest(
-        () => queryPlanViewList({ ws_id, plan_id }),
-        {
-            initialData: {},
-        }
-    )
+    const queryPlanViewListData = async (param: any = { ws_id, plan_id }) => {
+        const { data, code, msg } = await queryPlanViewList(param)
+        if (code === 200)
+            setData(data)
+        else
+            requestCodeMessage(code, msg)
+    }
+
+    useEffect(() => {
+        queryPlanViewListData()
+    }, [])
 
     return (
         <DetailContainer height={layoutHeight - 50} width={layoutWidth} >
@@ -83,9 +88,8 @@ const ViewDetail = (props: any) => {
                     {data?.description}
                 </DescriptionRow>
             </DetailHeader>
-            
             <DetailBody >
-                <ViewTable plan_id={plan_id} ws_id={ws_id} showPagination={true} />
+                <ViewTable plan_id={plan_id} ws_id={ws_id} showPagination={true} callBackViewTotal={queryPlanViewListData}/>
             </DetailBody>
         </DetailContainer>
     )

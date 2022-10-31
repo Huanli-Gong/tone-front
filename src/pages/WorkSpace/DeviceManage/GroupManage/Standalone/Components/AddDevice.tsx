@@ -25,7 +25,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const [ips, setIps] = useState<any>({ success: [], errors: [] })
     const [validateMsg, setValidateMsg] = useState<any>('');
     const [padding, setPadding] = useState(false)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [selectIpsValue, setSelectIpsValue] = useState('')
     const [vals, setVals] = useState([])
     const [validateResult, setValidateResult] = useState<any>({});

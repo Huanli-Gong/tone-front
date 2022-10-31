@@ -1,7 +1,9 @@
 import React , { useState , useImperativeHandle , forwardRef } from 'react'
 import { Table, Drawer, Divider , Row } from 'antd'
 import { queryServerHistory } from './service'
+import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import styles from './style.less'
+import { isString } from 'lodash';
 
 // 内网单机: 字段名匹配
 const matchFieldName = (params: string)=> {
@@ -25,7 +27,13 @@ const matchFieldName = (params: string)=> {
 // 遍历单元格内变更的字段名。
 const renderCell = ( vals : any ) => vals.map((key: any, index: number) => (
         <Row justify="center" key={ index }>
-            <Row justify="center" className={styles.cell} >{matchFieldName(key)}</Row>
+            <Row justify="center" className={styles.cell}>
+                {
+                    isString(key) && !!key.length ? 
+                    <EllipsisPulic title={matchFieldName(key)} width={160}>{matchFieldName(key)}</EllipsisPulic>
+                    : '-'
+                }
+            </Row>
             {index !== vals.length - 1 && <Divider className={ styles.no_margin_line }/> }
         </Row>
     )

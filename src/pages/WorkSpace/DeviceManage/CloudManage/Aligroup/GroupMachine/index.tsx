@@ -632,7 +632,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         system_disk_size: 40,
                         storage_size: 40,
                         storage_number: 1,
-                        release_rule: 0
+                        release_rule: 1
                     }}
                 >
                     <Row gutter={16}>

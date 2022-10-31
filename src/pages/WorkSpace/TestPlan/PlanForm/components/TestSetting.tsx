@@ -113,6 +113,10 @@ const TestSetting = (props: any) => {
     }
 
     const hanldeStepTitleChange = (val: any, index: any) => {
+        if (val.length > 20) {
+            message.warning('最长输入20个字符')
+            return
+        }
         setTestConfig(
             testConfig.map((i: any, idx: number) => {
                 if (idx === index) return { ...i, name: val }
