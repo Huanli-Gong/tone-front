@@ -160,28 +160,24 @@ const TestJob: React.FC<any> = (props) => {
         Object.keys(obj).forEach(
             key => {
                 const z = obj[key]
-                if (isEmpty(z))
+                if (z === null || z === undefined || z === '')
                     return
                 const t = Object.prototype.toString.call(z)
                 if (t === '[object Array]') {
                     const arrayItem = z.filter(
                         (item: any) => {
                             let noData = false
-                            if (JSON.stringify(item) === "{}") return
-                            if (isEmpty(item)) return
-                            if (Object.prototype.toString.call(item) === "[object Object]") {
-                                Object.keys(item).forEach(
-                                    ctx => {
-                                        const t = item[ctx]
-                                        if (isEmpty(t))
-                                            noData = true
-                                    }
-                                )
-                                if (!noData)
-                                    return item
-                            }
+                            Object.keys(item).forEach(
+                                ctx => {
+                                    const t = item[ctx]
+                                    if (t === null || t === undefined || t === '')
+                                        noData = true
+                                }
+                            )
+                            if (!noData)
+                                return item
                         }
-                    ).filter(Boolean)
+                    )
                     if (arrayItem.length !== 0)
                         result[key] = arrayItem
                 }
@@ -299,6 +295,7 @@ const TestJob: React.FC<any> = (props) => {
                         run_mode,
                     }),
                     cases: cases.map((ctx: any) => {
+                        // console.log(ctx)
                         const {
                             id: test_case,
                             setup_info,
@@ -311,9 +308,9 @@ const TestJob: React.FC<any> = (props) => {
                             monitor_info,
                             priority,
                             env_info,
-                            // server:{
-                            //     ip,
-                            //     tag
+                            // server: {
+                            // ip,
+                            // tag,
                             // },
                             is_instance,
                             custom_ip,
@@ -333,7 +330,7 @@ const TestJob: React.FC<any> = (props) => {
                             }
                         }
 
-                        console.log(monitor_info)
+                        // console.log(monitor_info)
 
                         return compact({
                             test_case,
@@ -348,7 +345,7 @@ const TestJob: React.FC<any> = (props) => {
                             priority,
                             is_instance,
                             env_info: evnInfoStr,
-                            // server:{
+                            // server: {
                             //     ip,
                             //     tag: tag && _.isArray(tag) ? tag.toString() : '',
                             // },
@@ -410,6 +407,7 @@ const TestJob: React.FC<any> = (props) => {
             setFetching(false)
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
+        // console.log(data.test_config)
         const test_config = handleServerChannel(data.test_config)
         try {
             let { code, msg } = await createWsJobTest({ ...data, test_config })
@@ -423,11 +421,12 @@ const TestJob: React.FC<any> = (props) => {
             }
             else
                 requestCodeMessage(code, msg)
-            setFetching(false)
+            // setFetching(false)
         }
         catch (error) {
 
         }
+        setFetching(false)
     }
     const handleServerChannel = (testConfig: any[]) => {
         let flag = location.search.indexOf('inheriting_machine') !== -1
