@@ -1,13 +1,13 @@
 import React from 'react'
 import { Tabs } from 'antd'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { ViewContent , ViewLayout , TabContainer } from './styled'
 import ViewCollapse from './components/ViewCollapse'
-import { FormattedMessage } from 'umi'
 
 import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
 
 const PalnView = (props: any) => {
+    const { formatMessage } = useIntl()
     const { route , match } = props
     const { ws_id } = match.params 
 

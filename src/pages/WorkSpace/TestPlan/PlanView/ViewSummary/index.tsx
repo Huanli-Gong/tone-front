@@ -1,7 +1,7 @@
 import { Breadcrumb, Row, Typography } from 'antd'
 import React,{ useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { FormattedMessage, history } from 'umi'
+import { FormattedMessage, useRequest, history } from 'umi'
 import { RenderDataRow } from '../components'
 import ViewTable from '../components/ViewTable'
 import { useClientSize , writeDocumentTitle } from '@/utils/hooks'

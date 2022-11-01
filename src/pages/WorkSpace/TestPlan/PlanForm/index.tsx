@@ -12,7 +12,7 @@ import {
     CreateContainer, ContainerBody, ContainerBreadcrumb, LeftWrapper,
     RightBody, RightNav, RightWrapper, SuccessDescriptionContainer
 } from './styles'
-import { history, FormattedMessage } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import { runningTestPlan, creatTestPlan, queryTestPlanDetails, updateTestPlan } from '@/pages/WorkSpace/TestPlan/services'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
@@ -22,11 +22,13 @@ import _ from 'lodash'
  * 计划管理/新建计划（新）
  * */
 const TestPlan = (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { height: layoutHeight } = useClientSize()
 
     const { route } = props
     // console.log('route.name:', route.name)
-
     writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
     const { ws_id, plan_id } = props.match.params
@@ -236,9 +238,9 @@ const TestPlan = (props: any) => {
         return new Promise((resolve: any, reject: any) => {
             const pipline = dataSource.pipline
             const { env_prep = {}, test_config = [] } = pipline || {}
-
+            const localStr = formatMessage({ id: 'plan.cannot.be.empty' })   
             if (env_prep.machine_info && !env_prep.machine_info.length) {
-                message.error(`${env_prep.name}模板不能为空`)
+                message.error(`${env_prep.name}${localStr}`)
                 reject()
             }
 
@@ -246,12 +248,12 @@ const TestPlan = (props: any) => {
                 test_config.forEach((item: any) => {
                     const { name, template = [] } = item
                     if (!template.length) {
-                        message.error(`${name}模板不能为空`)
-                        reject()
+                       message.error(`${name}${localStr}`)
+                       reject()
                     }
                 })
             } else {
-                message.error(`${env_prep.name}模板不能为空`)
+                message.error(`${env_prep.name}${localStr}`)
                 reject()
             }
             resolve()
@@ -264,7 +266,7 @@ const TestPlan = (props: any) => {
                 <ContainerBreadcrumb align="middle">
                     <Breadcrumb >
                         <Breadcrumb.Item onClick={handleBackPlanManage}>
-                            <span style={{ cursor: 'pointer' }}><FormattedMessage id={`Workspace.TestPlan.Manage`} /></span>
+                            <span style={{ cursor: 'pointer' }}><FormattedMessage id={`menu.Workspace.TestPlan.Manage`} /></span>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item >
                             <FormattedMessage id={`Workspace.TestPlan.${route.name}`} />
@@ -276,15 +278,15 @@ const TestPlan = (props: any) => {
                         isFormStep ?
                             <>
                                 {/* 左侧   步骤 === 进度显示部分 ==== onChange={setCurrent}  */}
-                                <LeftWrapper state={route.name !== 'Create'}>
+                                <LeftWrapper state={route.name !== 'Create'} enLocale={enLocale}>
                                     <Steps current={current} direction="vertical" style={{ height: 201 }} onChange={handleStepChange} >
-                                        <Steps.Step title="基础配置" key={0} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_1' : 'stepsWrapper']} />
-                                        <Steps.Step title="测试配置" key={1} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_2' : 'stepsWrapper']} />
-                                        <Steps.Step title="报告配置" key={2} />
-                                        <Steps.Step title="触发配置" key={3} />
+                                        <Steps.Step title={<FormattedMessage id="plan.basic.configuration" />} key={0} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_1' : 'stepsWrapper']} />
+                                        <Steps.Step title={<FormattedMessage id="plan.test.configuration" />}  key={1} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_2' : 'stepsWrapper']} />
+                                        <Steps.Step title={<FormattedMessage id="plan.report.configuration" />} key={2} />
+                                        <Steps.Step title={<FormattedMessage id="plan.trigger.configuration" />} key={3} />
                                     </Steps>
                                 </LeftWrapper>
-                                <RightWrapper>
+                                <RightWrapper enLocale={enLocale}>
                                     {/* 右侧 导航  === 操作部分 ==== */}
                                     <RightNav>
                                         <Row justify="space-between" align="middle">
@@ -293,7 +295,7 @@ const TestPlan = (props: any) => {
                                                     current === 0 ? null : (
                                                         <>
                                                             <ArrowLeftOutlined />
-                                                            <span >上一步</span>
+                                                            <span><FormattedMessage id="operation.previous" /></span>
                                                         </>
                                                     )
                                                 }
@@ -302,22 +304,22 @@ const TestPlan = (props: any) => {
                                                 {
                                                     route.name === 'Run' &&
                                                     <>
-                                                        <Button onClick={() => handleTestPlanOption()} >仅运行</Button>
-                                                        <Button onClick={() => handleTestPlanOption(true)} type="primary">运行并保存</Button>
+                                                        <Button onClick={() => handleTestPlanOption()}><FormattedMessage id="plan.run.only" /></Button>
+                                                        <Button onClick={() => handleTestPlanOption(true)} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>
                                                     </>
                                                 }
                                                 {
                                                     route.name === 'Edit' &&
                                                     <>
-                                                        <Button onClick={hanldeUpdatePlan} type="primary">保存</Button>
-                                                        <Button onClick={() => handleTestPlanOption(true)} >保存并运行</Button>
+                                                        <Button onClick={hanldeUpdatePlan} type="primary"><FormattedMessage id="plan.save" /></Button>
+                                                        <Button onClick={() => handleTestPlanOption(true)}><FormattedMessage id="plan.save.and.run" /></Button>
                                                     </>
                                                 }
                                                 <div className={styles.plan_step_btn} onClick={() => hanleStepNext('NextStep')}>
                                                     {
                                                         current < 3 &&
                                                         <>
-                                                            <span style={{ fontSize: 14 }}>下一步</span>
+                                                            <span style={{fontSize: 14 }}><FormattedMessage id="operation.next" /></span>
                                                             <ArrowRightOutlined />
                                                         </>
                                                     }
@@ -327,7 +329,7 @@ const TestPlan = (props: any) => {
                                                     <>
                                                         {
                                                             route.name === 'Create' &&
-                                                            <Button type="primary" onClick={hanldePushTestPlan}>发布</Button>
+                                                            <Button type="primary" onClick={hanldePushTestPlan}><FormattedMessage id="plan.release" /></Button>
                                                         }
                                                     </>
                                                 }
@@ -367,23 +369,23 @@ const TestPlan = (props: any) => {
                                 <Result
                                     status="success"
                                     style={{ margin: '0 auto' }}
-                                    title="测试计划创建成功"
-                                    subTitle="测试计划可以实现版本全面测试、周期性测试、测试流程串联、测试验证阶段卡点等"
+                                    title={<FormattedMessage id="plan.created.success" />}
+                                    subTitle={<FormattedMessage id="plan.the.test.plan.can" />}
                                     extra={[
                                         <Button type="primary" key="console" onClick={() => history.push(`/ws/${ws_id}/test_plan`)} >
-                                            返回计划管理
+                                            <FormattedMessage id="plan.return.management" />
                                         </Button>
                                     ]}
                                 />
                                 <SuccessDescriptionContainer>
-                                    <Col span={24}><b>计划配置信息</b></Col>
+                                    <Col span={24}><b><FormattedMessage id="plan.configuration.information" /></b></Col>
                                     <Col span={24}>
                                         <Row>
                                             {
                                                 successData?.name &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>计划名称：</span>
+                                                        <span><FormattedMessage id="plan.table.name" />：</span>
                                                         <span>{successData?.name}</span>
                                                     </Space>
                                                 </Col>
@@ -392,7 +394,7 @@ const TestPlan = (props: any) => {
                                                 successData?.cron_info &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>触发规则：</span>
+                                                        <span><FormattedMessage id="plan.table.cron_info" />：</span>
                                                         <span>{successData?.cron_info}</span>
                                                     </Space>
                                                 </Col>
@@ -401,12 +403,12 @@ const TestPlan = (props: any) => {
                                                 successData?.enable &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>启用：</span>
+                                                        <span><FormattedMessage id="plan.table.enable" />：</span>
                                                         <span>
                                                             {
                                                                 successData?.enable ?
-                                                                    <Badge status="processing" text="是" /> :
-                                                                    <Badge status="default" text="否" />
+                                                                    <Badge status="processing" text={<FormattedMessage id="operation.yes" />} /> :
+                                                                    <Badge status="default" text={<FormattedMessage id="operation.no" />} />
                                                             }
                                                         </span>
                                                     </Space>
@@ -416,7 +418,7 @@ const TestPlan = (props: any) => {
                                                 successData?.next_time &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>下次触发时间：</span>
+                                                        <span><FormattedMessage id="plan.next_time" />：</span>
                                                         <span>{successData?.next_time}</span>
                                                     </Space>
                                                 </Col>

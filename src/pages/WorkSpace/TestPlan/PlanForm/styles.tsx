@@ -19,7 +19,8 @@ export const ContainerBody = styled( Row )<Props>`
 `
 
 interface LeftWrapperProps {
-    state : Boolean
+    state : Boolean,
+    enLocale: Boolean
 }
 
 export const LeftWrapper = styled.div<LeftWrapperProps>`
@@ -44,12 +45,25 @@ export const LeftWrapper = styled.div<LeftWrapperProps>`
             }
         `
     }
+    ${
+        ({ enLocale }) => enLocale && `
+            width: 300px;
+        `
+    }
 `
 
-export const RightWrapper = styled.div`
+interface RightWrapperProps {
+    enLocale: Boolean
+}
+export const RightWrapper = styled.div<RightWrapperProps>`
     height : 100%;
     width : calc( 100% - 240px );
     overflow : hidden;
+    ${
+        ({ enLocale }) => enLocale && `
+            width: calc( 100% - 300px );
+        `
+    }
 `
 
 export const RightNav = styled.div`

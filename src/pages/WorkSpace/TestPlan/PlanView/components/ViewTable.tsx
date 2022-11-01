@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin, Tooltip } from 'antd'
 import styled from 'styled-components'
 import { StateTagRender, RenderCountTags } from './'
-import { useRequest, history, Access, useAccess } from 'umi'
+import { useRequest, history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { queryPlanResult, deletePlanInstance } from '../services'
 import CommonPagination from '@/components/CommonPagination'
 import { getSearchFilter, getCheckboxFilter } from '@/components/TableFilters'
@@ -35,6 +35,7 @@ const ViewAllPlan = styled.div`
 `
 
 const ViewTable = (props: ViewTableProps) => {
+    const { formatMessage } = useIntl()
     // 权限
     const access = useAccess()
     const { plan_id, ws_id, showPagination = false, callBackViewTotal } = props
@@ -59,8 +60,8 @@ const ViewTable = (props: ViewTableProps) => {
     const hanldeOpenPlanDetail = useCallback((row) => {
         history.push(`/ws/${ws_id}/test_plan/view/detail/${row.id}`)
     }, [])
-    
-    const hanldeDeletePlan =  async(row: any) => {
+
+    const hanldeDeletePlan = async (row: any) => {
         const { page_num, page_size } = pageCurrent.current
         const { total } = totalCurrent.current
         const { code, msg } = await deletePlanInstance({ plan_instance_id: row.id, ws_id })
@@ -70,13 +71,13 @@ const ViewTable = (props: ViewTableProps) => {
         }
         callBackViewTotal()
         setPageParam({ ...pageParam, page_num: handlePageNum(total, page_num, page_size)})
-        message.success('操作成功')
+        message.success( formatMessage({id: 'plan.operation.success'}) )
     }
 
     let columns = [
         {
             dataIndex: 'name',
-            title: '计划名称',
+            title: <FormattedMessage id="plan.plan.name" />,
             ellipsis: {
                 showTitle: false
             },
@@ -93,7 +94,7 @@ const ViewTable = (props: ViewTableProps) => {
             ...getSearchFilter(pageParam, setPageParam, 'name')
         }, {
             dataIndex: 'state',
-            title: '状态',
+            title: <FormattedMessage id="plan.state" />,
             width: 120,
             render(_: string) {
                 return <StateTagRender state={_} />
@@ -110,7 +111,7 @@ const ViewTable = (props: ViewTableProps) => {
                 'state'
             )
         }, {
-            title: '总计/成功/失败',
+            title: <FormattedMessage id="plan.total/success/failure" />,
             width: 180,
             render: (row: any) => (
                 <RenderCountTags {...row.statistics} />
@@ -118,7 +119,7 @@ const ViewTable = (props: ViewTableProps) => {
         }, {
             dataIndex: 'trigger_name',
             width: 100,
-            title: '触发者',
+            title: <FormattedMessage id="plan.trigger" />,
             ellipsis: {
                 showTitle: false,
             },
@@ -131,15 +132,15 @@ const ViewTable = (props: ViewTableProps) => {
             }
         }, {
             dataIndex: 'start_time',
-            title: '开始时间',
+            title: <FormattedMessage id="plan.start_time" />,
             width: 180
         }, {
             dataIndex: 'end_time',
-            title: '完成时间',
+            title: <FormattedMessage id="plan.end_time" />,
             width: 180
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation" />,
             width: 150,
             ellipsis: {
                 showTitle: false
@@ -154,27 +155,27 @@ const ViewTable = (props: ViewTableProps) => {
                                 () => hanldeOpenPlanDetail(row)
                             }
                         >
-                            详情
+                            <FormattedMessage id="operation.detail" />
                         </OptionButton>
                         <Access accessible={access.WsTourist()}>
                             <Access
                                 accessible={access.WsMemberOperateSelf(row.creator)}
-                                fallback={<OptionButton className="option-delete" onClick={() => AccessTootip()}>删除</OptionButton>}
+                                fallback={<OptionButton className="option-delete" onClick={()=> AccessTootip()}><FormattedMessage id="operation.delete" /></OptionButton>}
                             >
                                 <Popconfirm
-                                    title="确认删除该计划吗？"
-                                    okText="确认"
-                                    cancelText="取消"
+                                    title={<FormattedMessage id="delete.prompt" />}
+                                    okText={<FormattedMessage id="operation.ok" />}
+                                    cancelText={<FormattedMessage id="operation.cancel" />}
                                     onConfirm={() => hanldeDeletePlan(row)}
                                 >
-                                    <OptionButton className="option-delete">删除</OptionButton>
+                                    <OptionButton className="option-delete"><FormattedMessage id="operation.delete" /></OptionButton>
                                 </Popconfirm>
                             </Access>
                         </Access>
                         <ViewReport
                             className={'option-detail'}
                             dreType="left"
-                            title={'报告'}
+                            title={formatMessage({id: 'plan.report'}) }
                             ws_id={ws_id}
                             jobInfo={row}
                             origin={'jobList'}

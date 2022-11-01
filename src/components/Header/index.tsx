@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, useAccess, useParams } from 'umi'
+import { history, useModel, useRequest, useAccess, useParams, FormattedMessage } from 'umi'
 import { Typography, Row, Menu, Col, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
@@ -225,7 +225,8 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                             }
                                                                         }}
                                                                     >
-                                                                        {item.name}
+                                                                        {/* {item.name} */}
+                                                                        <FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE' } />
                                                                     </span>
                                                                     <CaretDownOutlined style={{ fontSize: 10 }} />
                                                                 </Space>
@@ -237,7 +238,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                             }
                                             if (item.children && item.children.length > 0) {
                                                 return (
-                                                    <Menu.Item key={itemPath} title={item.name}>
+                                                    <Menu.Item key={itemPath} title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE' } />}> {/* {item.name} */}
                                                         <Dropdown
                                                             arrow={true}
                                                             overlayClassName={styles.dropdownArrowHide}
@@ -251,10 +252,11 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                             return (
                                                                                 <Menu.Item
                                                                                     key={i.path}
-                                                                                    title={i.name}
+                                                                                    title={<FormattedMessage id={i.locale || 'DEF_COMMON_FORMATE' } />} // {i.name}
                                                                                     onClick={() => history.push(i.path.replace(':ws_id', ws_id))}
                                                                                 >
-                                                                                    {i.name}
+                                                                                    {/* {i.name} */}
+                                                                                    <FormattedMessage id={i.locale || 'DEF_COMMON_FORMATE' } />
                                                                                 </Menu.Item>
                                                                             )
                                                                         })
@@ -266,7 +268,8 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                 <Space>
                                                                     {SwithRouteIcon(item.locale)}
                                                                     <span style={{ height: '100%', display: "inline-block" }} >
-                                                                        {item.name}
+                                                                        {/* {item.name} */}
+                                                                        <FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} />
                                                                     </span>
                                                                     <CaretDownOutlined style={{ fontSize: 10 }} />
                                                                 </Space>
@@ -280,11 +283,12 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                 <Menu.Item
                                                     onClick={() => history.push(path)}
                                                     key={itemPath}
-                                                    title={item.name}
+                                                    title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} />} // {item.name}
                                                 >
                                                     <Space>
                                                         {SwithRouteIcon(item.locale)}
-                                                        {item.name}
+                                                        {/* {item.name} */}
+                                                        <FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} />
                                                     </Space>
                                                     <div className={'nav_bottom_line'} />
                                                 </Menu.Item>
@@ -294,11 +298,11 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                             <Menu.Item
                                                 onClick={() => history.push(item.path)}
                                                 key={item.path}
-                                                title={item.name}
+                                                title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE' } />} // {item.name}
                                             >
                                                 <Space>
                                                     {SwithRouteIcon(item.locale)}
-                                                    <span>{item.name}</span>
+                                                    <span><FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} /></span>
                                                 </Space>
                                                 <div className={'nav_bottom_line'} />
                                             </Menu.Item>

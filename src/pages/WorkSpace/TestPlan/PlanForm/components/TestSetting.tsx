@@ -11,14 +11,15 @@ import {
     TemplateItem, TemplateIndex, TemplateName, StartLine, ServerScript, ServerIndex, ServerTitle, ServerItem,
     ScriptChildrenWrapper, ServerChildAddItem, ServerDeleteIcon, StepUnEmptyCircle, DeleteTemplateIcon
 } from './styled'
-import { useParams } from "umi"
+import { useParams, useIntl, FormattedMessage } from 'umi'
 
 const TestSetting = (props: any) => {
+    const { formatMessage } = useIntl()
     const { show, onChange, template } = props
     const { ws_id } = useParams() as any
 
-    const defaultPrepStepData = { name: '环境准备', machine_info: [], visible: false }
-    const defaultTemplateData = { name: '新测试阶段', template: [], impact_next: false, }
+    const defaultPrepStepData = { name: formatMessage({id: 'job.types.env'}), /*'环境准备'*/ machine_info: [], visible: false }
+    const defaultTemplateData = { name: formatMessage({id: 'plan.new.stage'}), /*'新测试阶段',*/ template: [], impact_next: false, }
 
     const [testConfig, setTestConfig] = useState<any>([defaultTemplateData])
 
@@ -40,12 +41,12 @@ const TestSetting = (props: any) => {
     }
 
     const addTemplateData = () => ({
-        name: `新测试阶段${testConfig.length + 1}`, template: [], impact_next: false
+        name: `${formatMessage({id: 'plan.new.stage'})}${testConfig.length + 1}`, template: [], impact_next: false
     })
 
     const handleAddTestStep = (index: number) => {
         if (testConfig.length > 4) {
-            message.warning('测试阶段最多5个')
+            message.warning(formatMessage({id: 'plan.stage.maximum5'}) )
             return
         }
         let content: any = []
@@ -67,14 +68,14 @@ const TestSetting = (props: any) => {
                         <Menu.Item onClick={handleAddPrepareStep}>
                             <Space>
                                 <PlusMnueIcon />
-                                <span>环境准备阶段</span>
+                                <span><FormattedMessage id="plan.pre.stage"/></span>
                             </Space>
                         </Menu.Item>
                     }
                     <Menu.Item onClick={() => handleAddTestStep(props.index)}>
                         <Space>
                             <PlusMnueIcon />
-                            <span>新测试阶段</span>
+                            <span><FormattedMessage id="plan.new.stage"/></span>
                         </Space>
                     </Menu.Item>
                 </Menu>
@@ -82,7 +83,7 @@ const TestSetting = (props: any) => {
             placement="bottom"
             arrow
         >
-            <Tooltip placement="top" title="添加新阶段">
+            <Tooltip placement="top" title={formatMessage({id: 'plan.add.stage'})}>
                 {props.children}
             </Tooltip>
         </Dropdown>
@@ -114,7 +115,7 @@ const TestSetting = (props: any) => {
 
     const hanldeStepTitleChange = (val: any, index: any) => {
         if (val.length > 20) {
-            message.warning('最长输入20个字符')
+            message.warning(formatMessage({id: 'plan.enter.up.20.characters'}) )
             return
         }
         setTestConfig(
@@ -201,7 +202,7 @@ const TestSetting = (props: any) => {
                 <div style={{ display: 'flex', margin: '0 auto' }}>
                     <StartPiplineWrapper >
                         <StartStepCircle />
-                        <StepStartWord >开始</StepStartWord>
+                        <StepStartWord ><FormattedMessage id="plan.start"/></StepStartWord>
                         <StartLine />
                     </StartPiplineWrapper>
                     {
@@ -242,7 +243,7 @@ const TestSetting = (props: any) => {
                                     <ArrowDashedBlue />
                                     <AddTemplateItem >
                                         <ChildAddIcon />
-                                        <span>添加机器</span>
+                                        <span><FormattedMessage id="plan.add.machine"/></span>
                                     </AddTemplateItem>
                                 </ServerChildAddItem>
                             </ChildrenStepWrapper>
@@ -253,11 +254,11 @@ const TestSetting = (props: any) => {
                             <StepWrapper key={index}>
                                 <StepTips justify="space-between" align="middle">
                                     <Space>
-                                        <span>是否影响后续步骤</span>
+                                        <span><FormattedMessage id="plan.subsequent.steps"/></span>
                                         <Switch
                                             onChange={(val: any) => hanldeEffectStepSwitchChange(val, index)}
-                                            checkedChildren="是"
-                                            unCheckedChildren="否"
+                                            checkedChildren={<FormattedMessage id="operation.yes"/>}
+                                            unCheckedChildren={<FormattedMessage id="operation.no"/>}
                                             checked={i.impact_next}
                                         />
                                     </Space>
@@ -270,7 +271,7 @@ const TestSetting = (props: any) => {
                                                 <AddStepDropdown hasEnv={index === 0 && !envPrep.visible} index={index}>
                                                     <StepPreAddBtn />
                                                 </AddStepDropdown> :
-                                                <Tooltip placement="top" title="添加新阶段">
+                                                <Tooltip placement="top" title={formatMessage({id:'plan.add.stage'})}>
                                                     <StepPreAddBtn onClick={() => handleAddTestStep(index)} />
                                                 </Tooltip>
                                         }
@@ -291,7 +292,7 @@ const TestSetting = (props: any) => {
                                                     <StepNextAddBtn />
                                                 </AddStepDropdown> :
                                         } */}
-                                        <Tooltip placement="top" title="添加新阶段">
+                                        <Tooltip placement="top" title={formatMessage({id:'plan.add.stage'})}>
                                             <StepNextAddBtn onClick={() => handleAddTestStep(index + 1)} />
                                         </Tooltip>
                                     </StepOptionRight>
@@ -326,7 +327,7 @@ const TestSetting = (props: any) => {
                                             <ArrowDashedBlue />
                                             <AddTemplateItem onClick={() => handleAddTemplate(index)}>
                                                 <ChildAddIcon />
-                                                <span>添加模板</span>
+                                                <span><FormattedMessage id="plan.add.template"/></span>
                                             </AddTemplateItem>
                                         </ChildAddItem>
                                     }

@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { Drawer, Row, Col, Space, Button, message, Badge } from 'antd'
 
 import { queryTestPlanDetails } from '@/pages/WorkSpace/TestPlan/services'
-import { history } from 'umi'
-import { aligroupServer, aliyunServer, requestCodeMessage } from '@/utils/utils'
+import { history, useIntl, FormattedMessage  } from 'umi'
+import { requestCodeMessage } from '@/utils/utils'
 
 const leftWidth = `160px`
 
@@ -97,6 +97,7 @@ const SettingRow: React.FC<any> = ({ name = '', children }) => (
 )
 
 const ViewPlanDetail = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props
     const [visible, setVisible] = useState(false)
     const [dataSource, setDataSource] = useState<any>(undefined)
@@ -127,13 +128,11 @@ const ViewPlanDetail = (props: any, ref: any) => {
         history.push(`/ws/${ws_id}/test_plan/${dataSource.id}/run`)
     }
 
-    // console.log('dataSource:', dataSource)
-
     return (
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title="计划配置"
+            title={<FormattedMessage id="plan.configuration" />}
             visible={visible}
             width={900}
             onClose={handleClose}
@@ -141,39 +140,40 @@ const ViewPlanDetail = (props: any, ref: any) => {
             footer={
                 <Row justify="end">
                     <Space>
-                        <Button onClick={hanldeOpenEdit}>编辑配置</Button>
-                        <Button onClick={hanldeRunning} type="primary">运行计划</Button>
+                        <Button onClick={hanldeOpenEdit}><FormattedMessage id="plan.edit.configuration" /></Button>
+                        <Button onClick={hanldeRunning} type="primary"><FormattedMessage id="plan.run.plan" /></Button>
                     </Space>
                 </Row>
             }
         >
             <Row style={{ marginBottom: 20 }}>
                 <DrawerNavbar>
-                    <span>基础信息</span>
+                    <span><FormattedMessage id="plan.basic.info" /></span>
                 </DrawerNavbar>
-                <SettingSpaceItem name="名称" val={dataSource?.name} />
-                <SettingSpaceItem name="创建人" val={dataSource?.creator_name} />
-                <SettingSpaceItem name="所属项目" val={dataSource?.project_name} />
+                <SettingSpaceItem name={formatMessage({id:'plan.name'})} val={dataSource?.name} />
+                <SettingSpaceItem name={formatMessage({id:'plan.creator_name'})} val={dataSource?.creator_name} />
+                <SettingSpaceItem name={formatMessage({id:'plan.project_name'})} val={dataSource?.project_name} />
                 {/* <SettingSpaceItem name="内网功能基线" val={dataSource?.func_baseline_name} /> */}
                 {/* <SettingSpaceItem name="内网性能基线" val={dataSource?.perf_baseline_name} /> */}
                 {/* <SettingSpaceItem name="云上功能基线" val={dataSource?.func_baseline_aliyun_name} />
                 <SettingSpaceItem name="云上性能基线" val={dataSource?.perf_baseline_aliyun_name} /> */}
-                <SettingSpaceItem name={`功能基线（${aligroupServer}）`} val={dataSource?.func_baseline_name} />
-                <SettingSpaceItem name={`性能基线（${aligroupServer}）`} val={dataSource?.perf_baseline_name} />
-                <SettingSpaceItem name={`功能基线（${aliyunServer}）`} val={dataSource?.func_baseline_aliyun_name} />
-                <SettingSpaceItem name={`性能基线（${aliyunServer}）`} val={dataSource?.perf_baseline_aliyun_name} />
-                <SettingSpaceItem name="描述" val={dataSource?.description} />
-                <SettingSpaceItem name="通知主题" val={dataSource?.notice_name || ((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
-                <SettingSpaceItem name="邮件通知" val={dataSource?.email_info} />
-                <SettingSpaceItem name="钉钉通知" val={dataSource?.ding_talk_info} />
+                <SettingSpaceItem name={`${formatMessage({id:'plan.func_baseline'})}（${formatMessage({id: 'aligroupServer'})}）`} val={dataSource?.func_baseline_name} />
+                <SettingSpaceItem name={`${formatMessage({id:'plan.perf_baseline'})}（${formatMessage({id: 'aligroupServer'})}）`} val={dataSource?.perf_baseline_name} />
+                <SettingSpaceItem name={`${formatMessage({id:'plan.func_baseline'})}（${formatMessage({id: 'aliyunServer'})}）`} val={dataSource?.func_baseline_aliyun_name} />
+                <SettingSpaceItem name={`${formatMessage({id:'plan.perf_baseline'})}（${formatMessage({id: 'aliyunServer'})}）`} val={dataSource?.perf_baseline_aliyun_name} />
+                <SettingSpaceItem name={formatMessage({id:'plan.description'})} val={dataSource?.description} />
+                <SettingSpaceItem name={formatMessage({id:'plan.notice_name'})} val={dataSource?.notice_name || ((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
+                <SettingSpaceItem name={formatMessage({id:'plan.email_info'})} val={dataSource?.email_info} />
+                <SettingSpaceItem name={formatMessage({id:'plan.ding_talk_info'})} val={dataSource?.ding_talk_info} />
                 <SettingSpaceItem
-                    name="启用"
+                    name={formatMessage({id:'plan.enable'})}
                     val={
                         <span style={{ paddingLeft: 4 }}>
                             {
                                 dataSource?.enable ?
-                                    <Badge status="processing" text="是" /> :
-                                    <Badge status="default" text="否" />
+                                    <Badge status="processing" text={<FormattedMessage id="operation.yes" />} /> 
+                                    :
+                                    <Badge status="default" text={<FormattedMessage id="operation.no" />} />
                             }
                         </span>
                     }
@@ -181,15 +181,15 @@ const ViewPlanDetail = (props: any, ref: any) => {
             </Row>
             <Row style={{ marginBottom: 20 }}>
                 <DrawerNavbar>
-                    <span>公共配置</span>
+                    <span><FormattedMessage id="plan.public.config" /></span>
                 </DrawerNavbar>
                 <PrepSpaceItem name="功能基线" val={dataSource?.func_baseline_name} />
                 <PrepSpaceItem name="性能基线" val={dataSource?.perf_baseline_name} />
                 {
                     (dataSource?.test_obj === 'kernel' && JSON.stringify(dataSource?.build_pkg_info) !== '{}') &&
                     <>
-                        <PrepSpaceItem isLink name="代码仓库" val={dataSource?.build_pkg_info.code_repo} />
-                        <PrepSpaceItem isLink name="编译分支" val={dataSource?.build_pkg_info.compile_branch} />
+                        <PrepSpaceItem isLink name={formatMessage({id:'plan.code_repo'})} val={dataSource?.build_pkg_info.code_repo} />
+                        <PrepSpaceItem isLink name={formatMessage({id:'plan.compile_branch'})} val={dataSource?.build_pkg_info.compile_branch} />
                         <PrepSpaceItem name="CpuArch" val={dataSource?.build_pkg_info.cpu_arch} />
                         <PrepSpaceItem name="Commit ID" val={dataSource?.build_pkg_info.commit_id} />
                         <PrepSpaceItem name="Build config" val={dataSource?.build_pkg_info.build_config} />
@@ -199,20 +199,20 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 {
                     (dataSource?.test_obj === 'kernel' && JSON.stringify(dataSource?.kernel_info) !== '{}') &&
                     <>
-                        <PrepSpaceItem isLink name="kernel包" val={dataSource?.kernel_info.kernel} />
-                        <PrepSpaceItem isLink name="devel包" val={dataSource?.kernel_info.devel} />
-                        <PrepSpaceItem isLink name="headers包" val={dataSource?.kernel_info.headers} />
-                        <PrepSpaceItem name="hotfix" val={dataSource?.kernel_info.hotfix ? '是' : '否'} />
-                        <PrepSpaceItem name="内核版本" val={dataSource?.kernel_info.kernel_version} />
+                        <PrepSpaceItem isLink name={formatMessage({id:'plan.kernel.pkg'})} val={dataSource?.kernel_info.kernel} />
+                        <PrepSpaceItem isLink name={formatMessage({id:'plan.devel'})} val={dataSource?.kernel_info.devel} />
+                        <PrepSpaceItem isLink name={formatMessage({id:'plan.headers'})} val={dataSource?.kernel_info.headers} />
+                        <PrepSpaceItem name="hotfix" val={dataSource?.kernel_info.hotfix ? formatMessage({id: 'operation.yes'}): formatMessage({id: 'operation.no'})} />
+                        <PrepSpaceItem name={formatMessage({id:'plan.kernel_version'})} val={dataSource?.kernel_info.kernel_version} />
                     </>
                 }
-                <PrepSpaceItem name="全局RPM" val={dataSource?.rpm_info} />
-                <PrepSpaceItem name="全局变量" val={dataSource?.env_info} />
+                <PrepSpaceItem name={formatMessage({id:'plan.rpm_info'})} val={dataSource?.rpm_info} />
+                <PrepSpaceItem name={formatMessage({id:'plan.env_info'})} val={dataSource?.env_info} />
             </Row>
 
             <Row style={{ marginBottom: 20 }}>
                 <DrawerNavbar>
-                    <span>测试配置</span>
+                    <span><FormattedMessage id="plan.test.configuration" /></span>
                 </DrawerNavbar>
                 {
                     (dataSource?.env_prep && JSON.stringify(dataSource?.env_prep) !== '{}') &&
@@ -245,27 +245,27 @@ const ViewPlanDetail = (props: any, ref: any) => {
 
             <Row style={{ marginBottom: 20 }}>
                 <DrawerNavbar>
-                    <span>报告配置</span>
+                    <span><FormattedMessage id="plan.report.configuration" /></span>
                 </DrawerNavbar>
                 {dataSource?.auto_report ? (
                     <>
-                        <SettingSpaceItem name="自动生成报告" val={<span style={{ paddingLeft: 4 }}><Badge status="processing" text="是" /></span>} />
-                        <SettingSpaceItem name="报告名称" val={dataSource?.report_name || '{date} {plan_name} {plan_id} {product_version}'} />
-                        <SettingSpaceItem name="报告模板" val={dataSource?.report_template_name} />
-                        <SettingSpaceItem name="分组方式" val={dataSource?.group_method === 'job' ? '以Job维度分组' : '以阶段维度分组'} />
-                        <SettingSpaceItem name="基准组" val={dataSource?.group_method === 'job' ? `${dataSource?.base_group_info?.stage_name || '-'} / ${dataSource?.base_group_info?.template_name}` : dataSource?.base_group_info?.stage_name} />
-                        <SettingSpaceItem name="报告描述" val={dataSource?.report_description} />
-                    </>)
+                        <SettingSpaceItem name={formatMessage({id: 'plan.generate.reports'})} val={<span style={{ paddingLeft: 4 }}><Badge status="processing" text={formatMessage({id: 'operation.yes'})} /></span>} />
+                        <SettingSpaceItem name={formatMessage({id: 'plan.report_name'})} val={dataSource?.report_name || '{date} {plan_name} {plan_id} {product_version}'} />
+                        <SettingSpaceItem name={formatMessage({id: 'plan.report_template_name'})} val={dataSource?.report_template_name} />
+                        <SettingSpaceItem name={formatMessage({id: 'plan.group_method'})} val={dataSource?.group_method === 'job' ? formatMessage({id: 'plan.group_method.job'}) : formatMessage({id: 'plan.group_method.stage'})} />
+                        <SettingSpaceItem name={formatMessage({id: 'plan.base_group_info'})} val={dataSource?.group_method === 'job' ? `${dataSource?.base_group_info?.stage_name || '-'} / ${dataSource?.base_group_info?.template_name}` : dataSource?.base_group_info?.stage_name} />
+                        <SettingSpaceItem name={formatMessage({id: 'plan.report_description'})} val={dataSource?.report_description} />
+                    </> )
                     :
-                    <SettingSpaceItem name="自动生成报告" val={<span style={{ paddingLeft: 4 }}><Badge status="default" text="否" /></span>} />
+                    <SettingSpaceItem name={formatMessage({id: 'plan.generate.reports'})} val={<span style={{ paddingLeft: 4 }}><Badge status="default" text={formatMessage({id: 'operation.no'})} /></span>} />
                 }
             </Row>
 
             <Row>
                 <DrawerNavbar>
-                    <span>触发配置</span>
+                    <span><FormattedMessage id="plan.trigger.configuration" /></span>
                 </DrawerNavbar>
-                <SettingSpaceItem name="触发规则" val={dataSource?.cron_info || '无'} />
+                <SettingSpaceItem name={formatMessage({id: 'plan.trigger.rule'})} val={dataSource?.cron_info || formatMessage({id: 'plan.width.out'})} />
             </Row>
         </Drawer>
     )

@@ -193,7 +193,7 @@ const ListTable: React.FC<IProps> = (props) => {
             title: (
                 <QusetionIconTootip
                     placement="bottomLeft"
-                    title={formatMessage({ id: 'ws.result.list.test_type.Tootip' })}
+                    title={<FormattedMessage id="ws.result.list.test_type.Tootip" />}
                     desc={
                         <ul style={{ paddingInlineStart: 'inherit', paddingTop: 4, marginBottom: 4, paddingLeft: 0 }}>
                             <li><FormattedMessage id="ws.result.list.test_type.desc1" /></li>
