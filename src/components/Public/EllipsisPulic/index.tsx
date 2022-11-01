@@ -11,7 +11,7 @@ interface EllipsisProps {
     title: string,
     children?: React.ReactNode,
     style?: any,
-    width?: number,
+    width?: number | string,
     color?:string,
     placement?: any,
 }
