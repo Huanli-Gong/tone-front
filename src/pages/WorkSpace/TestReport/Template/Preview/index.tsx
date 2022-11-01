@@ -229,9 +229,9 @@ const TemplatePreview = (props: any) => {
                             </Description>
                         </CustomRow>
 
-                        <SettingRow title={formatMessage({id: 'report.test.background'})} id={'need_test_background'} show={dataSource?.need_test_background} />
-                        <SettingRow title={formatMessage({id: 'report.test.method'})} id={'need_test_method'} show={dataSource?.need_test_method} />
-                        <SettingRow title={formatMessage({id: 'report.test.conclusion'})} id={'need_test_conclusion'} show={dataSource?.need_test_conclusion} />
+                        <SettingRow title={formatMessage({id: 'report.test.background'})} id={'need_test_background'} show={dataSource?.need_test_background} desc={dataSource?.background_desc}/>
+                        <SettingRow title={formatMessage({id: 'report.test.method'})} id={'need_test_method'} show={dataSource?.need_test_method}  desc={dataSource?.test_method_desc}/>
+                        <SettingRow title={formatMessage({id: 'report.test.conclusion'})} id={'need_test_conclusion'} show={dataSource?.need_test_conclusion}  desc={dataSource?.test_conclusion_desc}/>
 
                         {
                             dataSource.need_test_summary &&
@@ -239,7 +239,7 @@ const TemplatePreview = (props: any) => {
                         }
 
                         <TestEnv
-                         env_description_desc={dataSource?.env_description_desc}
+                            env_description_desc={dataSource?.env_description_desc}
                             need_test_env={dataSource?.need_test_env}
                             need_env_description={dataSource?.need_env_description}
                         />
