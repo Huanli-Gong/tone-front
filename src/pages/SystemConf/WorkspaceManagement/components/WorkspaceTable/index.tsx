@@ -63,6 +63,8 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
         detailModalRef.current?.show(id)
     }
 
+    const canTopWsNumb = BUILD_APP_ENV === "opensource" ? 9 : 12
+
     const columns: any[] = useMemo(() => {
         return (
             [
@@ -98,7 +100,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     // ellipsis: true,
                     render: (_: number, row: WorkspaceTable) => <Space style={{ width: '124px' }}>
                         <Avatar size={25} src={row.owner_avatar} alt={row.owner_name} />
-                        <EllipsisPulic title={row.owner_name || ''} width={99}/>
+                        <EllipsisPulic title={row.owner_name || ''} width={99} />
                     </Space>,
                 }, {
                     title: '简介',
@@ -153,17 +155,16 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                                 disabled={row.is_common}
                                 checked={row.is_common || row.is_show}
                                 onClick={() => {
-                                    if (showNum >= 9) {
-                                        if(page === 1 && idx <= 8){
+                                    if (showNum >= canTopWsNumb) {
+                                        if (page === 1 && idx < canTopWsNumb) {
                                             onTopChange(row)
-                                        }else{
-                                            message.error('最多配置9个推荐Workspace')
+                                        } else {
+                                            message.error(`最多配置${canTopWsNumb}个推荐Workspace`)
                                         }
                                     } else {
                                         onTopChange(row)
                                     }
-                                }
-                                }
+                                }}
                             />
                         )
                     }
@@ -175,7 +176,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     }
                 }].filter(Boolean)
         )
-    }, [data,showNum])
+    }, [data, showNum])
 
 
 
