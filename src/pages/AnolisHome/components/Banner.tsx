@@ -1,7 +1,7 @@
 import React from "react"
 import { Button, Col, Divider, Row, Space, Typography } from "antd"
 import styled, { keyframes, css } from "styled-components";
-import { useIntl } from "umi";
+import { getLocale, useIntl } from "umi";
 
 import { DownOutlined, UpOutlined } from "@ant-design/icons"
 
@@ -104,6 +104,7 @@ const project_features = ["quality_collaboration", "data_analysis", "process_sup
 const HomeBanner: React.FC<Record<string, any>> = () => {
     const [collapsed, setCollapsed] = React.useState<any>(undefined)
 
+    const locale = getLocale()
     const intl = useIntl()
 
     const ref = React.useRef(null)
@@ -111,8 +112,11 @@ const HomeBanner: React.FC<Record<string, any>> = () => {
 
     const boxSize = size.width ?? innerWidth
 
-    const textWidth = boxSize < 1400 ? boxSize * .55 - (1400 - boxSize) : boxSize * .7
-    const subTextWidth = boxSize < 1400 ? boxSize * .75 - (1400 - boxSize) : boxSize * .7
+    const percent = locale === "en-US" ? .6 : .7
+    const textPercent = locale === "en-US" ? .43 : .7
+
+    const textWidth = boxSize < 1400 ? boxSize * .55 - (1400 - boxSize) : boxSize * textPercent
+    const subTextWidth = boxSize < 1400 ? boxSize * .75 - (1400 - boxSize) : boxSize * percent
 
     return (
         <Banner collapsed={collapsed}>
