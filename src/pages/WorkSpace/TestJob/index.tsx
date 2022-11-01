@@ -858,7 +858,7 @@ const TestJob: React.FC<any> = (props) => {
     const renderButton = (
         <>
             {templateEnabel && <Button onClick={handleSaveCreateSubmit}><FormattedMessage id="ws.test.job.SaveCreateSubmit" /></Button>}
-            <Button type="primary" onClick={handleSaveTemplateModify}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
+            <Button type="primary" onClick={handleSaveTemplateModify} loading={fetching}><FormattedMessage id="ws.test.job.SaveTemplateModify" /></Button>
         </>
     )
 
