@@ -12,7 +12,7 @@ import SelectCheck from '@/components/Public//SelectCheck';
 import SearchInput from '@/components/Public/SearchInput';
 import SelectDrop from '@/components/Public//SelectDrop';
 import SelectRadio from '@/components/Public/SelectRadio';
-import { useLocation } from 'umi'
+import { useLocation, useIntl, FormattedMessage, getLocale } from 'umi'
 import SuiteEditer from './components/AddSuiteTest'
 import DesFastEditDrawer from './components/DesFastEditDrawer'
 import BatchDelete from './components/BatchDelete';
@@ -29,6 +29,8 @@ let timeout: any = null;
 let timer: any = null;
 
 const SuiteManagement = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
 
     useImperativeHandle(ref, () => ({
         openCreateDrawer: suiteEditDrawer.current.show
@@ -53,7 +55,10 @@ const SuiteManagement = (props: any, ref: any) => {
 
     const [dataSource, setDataSource] = useState<any>([])
 
-    const defaultList = [{ id: 1, name: '是' }, { id: 0, name: '否' }]
+    const defaultList = [
+        { id: 1, name: formatMessage({id: 'operation.yes'}) }, 
+        { id: 0, name: formatMessage({id: 'operation.no'}) },
+    ]
 
     const confDrawer: any = useRef(null)
 
@@ -92,16 +97,16 @@ const SuiteManagement = (props: any, ref: any) => {
                         let len = valid.length
                         for (var i = 0; i < len; i++) {
                             if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                                message.error('变量数据格式错误');
+                                message.error(formatMessage({id: 'TestSuite.data.format.error'}) );
                                 return
                             }
                         }
                     } else {
-                        message.error('变量数据格式错误');
+                        message.error(formatMessage({id: 'TestSuite.data.format.error'}) );
                         return
                     }
                 } catch (e) {
-                    message.error('变量数据格式错误');
+                    message.error(formatMessage({id: 'TestSuite.data.format.error'}) );
                     return
                 }
             }
@@ -119,7 +124,7 @@ const SuiteManagement = (props: any, ref: any) => {
             const params = { ...param, ...{ test_suite_id } }
             const { code, msg } = id ? await editCase(id, params) : await addCase(params)
             if (code == 201) {
-                message.error('Test Suite名称重复');
+                message.error(formatMessage({id: 'TestSuite.repeated.suite.name'}) );
                 return
             }
             if (code == 202) {
@@ -129,7 +134,7 @@ const SuiteManagement = (props: any, ref: any) => {
         }
 
         confDrawer.current.hide()
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         setConfRefresh(!confRefresh)
     }
 
@@ -159,12 +164,13 @@ const SuiteManagement = (props: any, ref: any) => {
         for (var i = 0; i < arr.length; i++) newArr.push(Number.parseInt(arr[i]))
         row.domain_list_str = newArr
         domainList.forEach((item: any) => { if (item.name == row.domain) row.domain = item.id })
-        suiteEditDrawer.current.show('编辑Test Suite', row)
+        
+        suiteEditDrawer.current.show('edit', row) // 编辑Test Suite
     }
 
     const onDesSubmit = async ({ doc, id }: any) => {
         await editSuite(id, { doc })
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         edscFastEditer.current.hide()
         pageParams.page_num === 1 ?
             getList() :
@@ -178,7 +184,7 @@ const SuiteManagement = (props: any, ref: any) => {
             await addSuite(params)
         if (code !== 200) return requestCodeMessage(code, msg);
         suiteEditDrawer.current.hide()
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         getList()
     }
 
@@ -197,21 +203,21 @@ const SuiteManagement = (props: any, ref: any) => {
         setDeleteVisible(false)
         setDeleteDefault(false)
         await delSuite(deleteObj.id)
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         getList()
     }
 
     const synchro = async (row: any) => {
         setSync(true)
-        const hide = message.loading({ content: '同步中', duration: 0 })
+        const hide = message.loading({ content: formatMessage({id: 'operation.synchronizing'}), duration: 0 })
         const { code } = await syncSuite(row.id)
         setSync(false)
         hide()
         if (code !== 200) {
-            message.warning('同步失败')
+            message.warning(formatMessage({id: 'request.synchronize.failed'}) )
             return
         }
-        message.success('同步成功')
+        message.success(formatMessage({id: 'request.synchronize.success'}) )
         getList()
         setAsyncTime(new Date().getTime())
     }
@@ -243,10 +249,10 @@ const SuiteManagement = (props: any, ref: any) => {
             )
         },
         {
-            title: '运行模式',
+            title: <FormattedMessage id="TestSuite.run_mode"/>,
             dataIndex: 'run_mode',
-            render: (_: any) => _ === 'standalone' ? "单机" : '集群',
-            width: 100,
+            render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone"/> : <FormattedMessage id="cluster"/>,
+            width: enLocale? 150: 100,
             filterIcon: () => <FilterFilled style={{ color: pageParams.run_mode ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
@@ -259,7 +265,7 @@ const SuiteManagement = (props: any, ref: any) => {
             ),
         },
         {
-            title: '领域',
+            title: <FormattedMessage id="TestSuite.domain"/>,
             dataIndex: 'domain_name_list',
             width: 90,
             ellipsis: true,
@@ -274,16 +280,16 @@ const SuiteManagement = (props: any, ref: any) => {
         },
         {
             title: (
-                testType == 'functional' ?
+                testType === 'functional' ?
                     <></> :
                     <Space>
-                        视图类型
+                        <FormattedMessage id="TestSuite.view_type"/>
                         <Tooltip
                             title={
                                 <div>
-                                    <div>Type1：所有指标拆分展示</div>
-                                    <div>Type2：多Conf同指标合并</div>
-                                    <div>Type3：单Conf多指标合并</div>
+                                    <div><FormattedMessage id="TestSuite.view_type.1"/></div>
+                                    <div><FormattedMessage id="TestSuite.view_type.2"/></div>
+                                    <div><FormattedMessage id="TestSuite.view_type.3"/></div>
                                 </div>
                             }
                             placement="bottomLeft"
@@ -293,12 +299,12 @@ const SuiteManagement = (props: any, ref: any) => {
                     </Space>
             ),
             dataIndex: 'view_type',
-            render: (_: any, record: any) => testType == 'functional' ? <></> : suiteChange(_, record),
-            width: testType == 'functional' ? 0 : 120,
+            render: (_: any, record: any) => testType === 'functional' ? <></> : suiteChange(_, record),
+            width: testType === 'functional' ? 0 : 120,
             ellipsis: true,
         },
         {
-            title: '说明',
+            title: <FormattedMessage id="TestSuite.desc"/>,
             dataIndex: 'doc',
             width: 130,
             ellipsis: true,
@@ -316,9 +322,9 @@ const SuiteManagement = (props: any, ref: any) => {
             )
         },
         {
-            title: '默认用例',
-            width: 110,
-            render: (_: any, row: any) => row.is_default ? '是' : '否',
+            title: <FormattedMessage id="TestSuite.default.case"/>,
+            width: enLocale? 130: 110,
+            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
             filterIcon: () => <FilterFilled style={{ color: pageParams.is_default === 1 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
@@ -331,11 +337,9 @@ const SuiteManagement = (props: any, ref: any) => {
         {
             title: (
                 <Space>
-                    是否认证
+                    <FormattedMessage id="TestSuite.is_certified"/>
                     <Tooltip
-                        title={<div>
-                            Is Certificated ：Certificated用例才能同步到Testfarm
-                        </div>}
+                        title={<div><FormattedMessage id="TestSuite.is_certified.title"/></div>}
                         placement="bottomLeft"
                     >
                         <QuestionCircleOutlined />
@@ -343,7 +347,7 @@ const SuiteManagement = (props: any, ref: any) => {
                 </Space>
             ),
             width: 120,
-            render: (_: any, row: any) => row.certificated ? '是' : '否',
+            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
             filterIcon: () => <FilterFilled style={{ color: pageParams.certificated === 1 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
@@ -369,40 +373,40 @@ const SuiteManagement = (props: any, ref: any) => {
             ),
         },
         {
-            title: '备注',
+            title: <FormattedMessage id="TestSuite.remarks"/>,
             dataIndex: 'description',
             width: 100,
             ellipsis: true,
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="TestSuite.gmt_created"/>,
             dataIndex: 'gmt_created',
             width: 200,
             sorter: true,
             render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: '修改时间',
+            title: <FormattedMessage id="TestSuite.gmt_modified"/>,
             dataIndex: 'gmt_modified',
             sorter: true,
             width: 200,
             render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_modified} />
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             valueType: 'option',
             dataIndex: 'id',
-            width: '140px',
+            width: enLocale? 190: 140,
             fixed: 'right',
             render: (_: any, row: any) => (
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => synchro(row)}>同步</Button>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}>编辑</Button>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteOuter(row)}>删除</Button>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => synchro(row)}><FormattedMessage id="operation.synchronize"/></Button>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}><FormattedMessage id="operation.edit"/></Button>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteOuter(row)}><FormattedMessage id="operation.delete"/></Button>
                 </Space>
             )
         },
-    ];
+    ]
 
     const [time, setTime] = useState()
     const onExpand = async (record: any) => {
@@ -412,7 +416,7 @@ const SuiteManagement = (props: any, ref: any) => {
     const handleSynchronous = async () => {
         const data = await manual()
         if (data.code === 200) {
-            message.success('同步命令开始执行成功')
+            message.success(formatMessage({id: 'request.synchronize.command.success'}) )
         } else if (data.code === 201) {
             message.warning(data.msg)
         } else {
@@ -429,7 +433,7 @@ const SuiteManagement = (props: any, ref: any) => {
 
     const defaultOption = (code: number, msg: string) => {
         if (code === 200) {
-            message.success('操作成功')
+            message.success(formatMessage({id: 'operation.success'}) )
             const pageNum = Math.ceil((dataSource.total - 1) / pageParams.page_size) || 1
             let index = pageParams.page_num
             if (pageParams.page_num > pageNum) {
@@ -440,10 +444,6 @@ const SuiteManagement = (props: any, ref: any) => {
         else {
             requestCodeMessage(code, msg)
         }
-    }
-
-    const totalTotal = (total: any) => {
-        return total || 0
     }
 
     const totalPaginationClass = (total: any) => {
@@ -467,8 +467,8 @@ const SuiteManagement = (props: any, ref: any) => {
                 <Alert type="success"
                     showIcon
                     style={{ marginBottom: 16, height: 32 }}
-                    message={<span className={styles.synchronousTime}>缓存周期5分钟，上次缓存tone用例时间：{time}</span>}
-                    action={<span className={styles.synchronous} onClick={handleSynchronous}>同步</span>}
+                    message={<span className={styles.synchronousTime}><FormattedMessage id="TestSuite.synchronize.time"/>{time}</span>}
+                    action={<span className={styles.synchronous} onClick={handleSynchronous}><FormattedMessage id="operation.synchronize"/></span>}
                 />
 
                 <Table
@@ -515,7 +515,7 @@ const SuiteManagement = (props: any, ref: any) => {
                     dataSource.total &&
                     <Row justify="space-between" style={{ padding: '16px 20px 0' }}>
                         <div>
-                            共{totalTotal(dataSource.total)}条
+                            {formatMessage({id: 'pagination.total.strip'}, {data: dataSource.total || 0 })}
                         </div>
                         <Pagination
                             className={totalPaginationClass(dataSource.total)}
@@ -547,7 +547,7 @@ const SuiteManagement = (props: any, ref: any) => {
                 onOk={onDesSubmit}
             />
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 className={styles.modalChange}
                 visible={deleteVisible}
@@ -555,10 +555,10 @@ const SuiteManagement = (props: any, ref: any) => {
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={remOuter}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={600}
@@ -566,32 +566,34 @@ const SuiteManagement = (props: any, ref: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    该Suite({deleteObj.name})已被Worksapce引用，删除后将影响以下Workspace的Test Suite管理列表，以及应用该Suite的Job、模板、计划，请谨慎删除！！
+                    {formatMessage({id: 'TestSuite.suite.delete.warning'}, {data: deleteObj.name })}
                 </div>
                 <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    删除suite影响范围：运行中的job、测试模板、对比分析报告
+                    <FormattedMessage id="TestSuite.suite.delete.range"/>
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
+                    <FormattedMessage id="view.reference.details"/>
+                </div>
             </Modal>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 className={styles.modalChange}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={remOuter}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要删除吗？
+                    <FormattedMessage id="delete.prompt"/>
                 </div>
             </Modal>
             <ConfEditDrawer ref={confDrawer} onOk={submitCase} />

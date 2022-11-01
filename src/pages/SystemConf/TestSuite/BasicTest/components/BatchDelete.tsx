@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Affix, Typography, Checkbox, Row, Space, Button, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi'
 import { TestContext } from '../../Provider';
 import { delBentch } from '../../service';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -23,6 +24,7 @@ const BatchRow = styled(Row)`
     box-shadow:0 -9px 28px 8px rgba(0,0,0,0.05), 0 -6px 16px 0 rgba(0,0,0,0.08), 0 -3px 6px -4px rgba(0,0,0,0.12);
 `
 const BatchDelete = () => {
+    const { formatMessage } = useIntl()
     const {
         selectedRowKeys,
         setSelectedRowKeys,
@@ -46,7 +48,7 @@ const BatchDelete = () => {
     }
 
     const onBentch = () => {
-        confDrawerShow('批量编辑Test Conf', { bentch: true })
+        confDrawerShow('batch.edit', { bentch: true }) // 批量编辑Test Conf
     }
 
     const handleDetail = () => {
@@ -60,23 +62,23 @@ const BatchDelete = () => {
                 <BatchRow justify="space-between" >
                     <Space>
                         <Checkbox indeterminate={true} />
-                        <Typography.Text>已选择{selectedRowKeys.length}项</Typography.Text>
-                        <Button type="link" onClick={() => setSelectedRowKeys([])}>取消</Button>
+                        <Typography.Text>{formatMessage({id: 'selected.item'}, {data: selectedRowKeys.length})}</Typography.Text>
+                        <Button type="link" onClick={() => setSelectedRowKeys([])}><FormattedMessage id="operation.cancel"/></Button>
                     </Space>
                     <Space>
-                        <Button onClick={handleBentch}>批量删除</Button>
-                        <Button type="primary" onClick={onBentch}>批量编辑</Button>
+                        <Button onClick={handleBentch}><FormattedMessage id="operation.batch.delete"/></Button>
+                        <Button type="primary" onClick={onBentch}><FormattedMessage id="operation.batch.edit"/></Button>
                     </Space>
                 </BatchRow>
             </Affix>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 footer={[
                     <Button key="submit" onClick={remAll}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 centered={true}
@@ -87,31 +89,31 @@ const BatchDelete = () => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    conf已被Worksapce引用，删除后将影响以下Workspace的Test Suite管理列表，以及应用该Suite的Job、模板、计划，请谨慎删除！！
+                    <FormattedMessage id="TestSuite.conf.delete.warning"/>
                 </div>
                 <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    删除conf影响范围：运行中的job、测试模板、对比分析报告
+                    <FormattedMessage id="TestSuite.conf.delete.range"/>
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details"/></div>
             </Modal>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={remAll}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要删除吗？
+                    <FormattedMessage id="delete.prompt"/>
                 </div>
             </Modal>
         </>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Tabs, Input, Button, Space } from 'antd';
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 import WorkspaceTable from './components/WorkspaceTable';
 import { quantity } from './service';
 import { Count } from './data';
@@ -11,6 +11,7 @@ const { TabPane } = Tabs;
 const { Search } = Input;
 
 const WorkspaceManagement: React.FC<{}> = () => {
+	const { formatMessage } = useIntl()
 	const [index, setIndex] = useState<string>('1');
 	const all = useRef<any>(null)
 	const overt = useRef<any>(null)
@@ -46,11 +47,13 @@ const WorkspaceManagement: React.FC<{}> = () => {
 
 	const operations = <Space>
 		<Search
-			placeholder="搜索workspace"
+			placeholder={formatMessage({id: 'workspace.ws.search'}) }
 			onSearch={onSearch}
 			style={{ width: 200 }}
 		/>
-		<Button type="primary" onClick={() => history.push('/workspace/create')} >新建Workspace</Button>
+		<Button type="primary" onClick={() => history.push('/workspace/create')}>
+			<FormattedMessage id="workspace.ws.new"/>
+		</Button>
 	</Space>
 
 	return (
@@ -61,9 +64,9 @@ const WorkspaceManagement: React.FC<{}> = () => {
 					onChange={handleTab}
 					className={styles.tab_style}
 				>
-					<TabPane tab={"全部 " + num.total_count} key="1" />
-					<TabPane tab={"公开 " + num.public_count} key="2" />
-					<TabPane tab={"私密 " + num.un_public_count} key="3" />
+					<TabPane tab={`${formatMessage({id: 'workspace.all'})} ${num.total_count}`} key="1" />
+					<TabPane tab={`${formatMessage({id: 'workspace.public'})} ${num.public_count}`} key="2" />
+					<TabPane tab={`${formatMessage({id: 'workspace.private'})} ${num.un_public_count}`} key="3" />
 				</Tabs>
 			}
 			extra={operations}

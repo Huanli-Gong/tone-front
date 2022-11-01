@@ -5,13 +5,14 @@ import RoleManagementTable from './components/RoleManagementTable';
 import { roleList } from './service';
 import styles from '@/pages/SystemConf/MenuLayout/style.less'
 import { TabCard } from '@/components/UpgradeUI';
+import { useIntl, FormattedMessage } from 'umi';
 
 const { TabPane } = Tabs;
 const { Search } = Input;
 const { Option } = Select;
 
 const UserManagement: React.FC<{}> = () => {
-
+	const { formatMessage } = useIntl()
 	const [select, setSelect] = useState<any[]>([]);
 	const [rolelist, setRolelist] = useState<any[]>([]);
 	const [num, setNum] = useState<number>(0);
@@ -81,26 +82,26 @@ const UserManagement: React.FC<{}> = () => {
 	<Space>
 		<Select
 			style={{ width: 180 }}
-			placeholder="请选择角色"
+			placeholder={<FormattedMessage id="user.please.select.role"/>}
 			allowClear
 			defaultValue={role}
 			onChange={(val: number) => {
 				handleChange(val)
 			}}
-		//onFocus={handleSelectFocus}
 		>
 			{select.map((item: any) => {
 				return <Option key={item.id} value={item.id} >{item.name}</Option>
 			})}
 		</Select>
 		<Search
-			placeholder="搜索用户"
+			placeholder={formatMessage({id: 'user.please.search.user'}) }
 			allowClear
 			defaultValue={keyword}
 			onSearch={onSearch}
 			style={{ width: 200 }}
 		/>
 	</Space>
+
 	return (
 		<TabCard
 			title={
@@ -109,8 +110,8 @@ const UserManagement: React.FC<{}> = () => {
 					onChange={handleTab}
 					className={styles.tab_style}
 				>
-					<TabPane tab={"用户 " + num} key="1" />
-					<TabPane tab={"角色 " + roleTotal} key="2" />
+					<TabPane tab={`${formatMessage({id: 'user.tab.user'})} ${num}`} key="1" />
+					<TabPane tab={`${formatMessage({id: 'user.tab.role'})} ${roleTotal}`} key="2" />
 				</Tabs>
 			}
 		>

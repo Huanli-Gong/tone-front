@@ -1,6 +1,6 @@
 import { Layout, Space, Table, Typography, Badge, message, Spin, Popconfirm, Tooltip } from 'antd'
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react'
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { deleteConfig, queryConfigList } from '../services'
 import { getRadioFilter, getSearchFilter, getUserFilter } from '@/components/TableFilters'
@@ -10,6 +10,8 @@ import { request } from 'express'
 import { requestCodeMessage } from '@/utils/utils'
 
 const SystemParameter = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
 
     useImperativeHandle(ref, () => ({
         openSetting: () => addConfigDrawer.current.show()
@@ -34,7 +36,7 @@ const SystemParameter = (props: any, ref: any) => {
 
     const columns = [{
         dataIndex: 'config_key',
-        title: '配置名称',
+        title: <FormattedMessage id="basic.config_key"/>,
         ellipsis: {
             showTitle: false
         },
@@ -46,7 +48,8 @@ const SystemParameter = (props: any, ref: any) => {
         ...getSearchFilter(params, setParams, 'config_key'),
     }, {
         dataIndex: 'config_value',
-        title: '配置内容',
+        title: <FormattedMessage id="basic.config_value"/>,
+        width: 160,
         ellipsis: {
             showTitle: false
         },
@@ -58,33 +61,34 @@ const SystemParameter = (props: any, ref: any) => {
         ...getSearchFilter(params, setParams, 'config_value'),
     }, {
         dataIndex: 'enable',
-        title: '是否启用',
+        title: <FormattedMessage id="basic.is_enable"/>,
+        width: 100,
         render: (_: any) => (
             <>
                 <Badge status={_ ? 'success' : 'error'} />
-                <Typography.Text>{_ ? '启用' : '停用'}</Typography.Text>
+                <Typography.Text>{_ ? <FormattedMessage id="basic.enable"/> : <FormattedMessage id="basic.stop"/> }</Typography.Text>
             </>
         ),
-        ...getRadioFilter(params, setParams, [{ name: '启用', value: 1 }, { name: '停用', value: 0 }], 'enable'),
+        ...getRadioFilter(params, setParams, [{ name: <FormattedMessage id="basic.enable"/>, value: 1 }, { name: <FormattedMessage id="basic.stop"/>, value: 0 }], 'enable'),
     }, {
         dataIndex: 'gmt_created',
-        title: '创建时间',
+        title: <FormattedMessage id="basic.gmt_created"/>,
         width: 175,
     }, {
         dataIndex: 'gmt_modified',
-        title: '修改时间',
+        title: <FormattedMessage id="basic.gmt_modified"/>,
         width: 175,
     }, {
         dataIndex: 'creator_name',
-        title: '创建者',
+        title: <FormattedMessage id="basic.creator"/>,
         ...getUserFilter({ name: 'creator', data: params, setDate: setParams })
     }, {
         dataIndex: 'update_user',
-        title: '修改者',
+        title: <FormattedMessage id="basic.update_user"/>,
         ...getUserFilter({ name: 'update_user', data: params, setDate: setParams })
     }, {
         dataIndex: 'description',
-        title: '描述',
+        title: <FormattedMessage id="basic.desc"/>,
         ellipsis: {
             showTitle: false
         },
@@ -94,28 +98,29 @@ const SystemParameter = (props: any, ref: any) => {
             </Tooltip>
         ),
     }, {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation"/>,
         width: 100,
+        fixed: 'right',
         render: (_: any) => (
             <Space>
                 <span
                     onClick={() => handleEdit(_)}
                     style={{ color: '#1890FF', cursor: 'pointer' }}
                 >
-                    编辑
+                    <FormattedMessage id="operation.edit"/>
                 </span>
 
                 <Popconfirm
-                    title={<div style={{ color: 'red' }}>删除系统参数将可能导致系统部分<br />功能无法正常使用，请谨慎删除！！</div>}
+                    title={<div style={{ color: 'red' }}><FormattedMessage id="basic.delete.popconfirm.title"/></div>}
                     onCancel={() => handleDelete(_)}
-                    okText="取消"
-                    cancelText="确认删除"
+                    okText={<FormattedMessage id="operation.cancel"/>}
+                    cancelText={<FormattedMessage id="operation.confirm.delete"/>}
                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                 >
                     <Typography.Text
                         style={{ color: '#1890FF', cursor: 'pointer' }}
                     >
-                        删除
+                        <FormattedMessage id="operation.delete"/>
                     </Typography.Text>
                 </Popconfirm>
             </Space>
@@ -123,14 +128,14 @@ const SystemParameter = (props: any, ref: any) => {
     },]
 
     const handleEdit = (_: any) => {
-        addConfigDrawer.current.show('编辑配置', _)
+        addConfigDrawer.current.show('edit', _)
     }
 
     const handleDelete = async (_: any) => {
         const { code, msg } = await deleteConfig({ config_id: _.id })
         if (code === 200) {
             refresh()
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
         }
         else {
             requestCodeMessage(code, msg)
@@ -148,6 +153,7 @@ const SystemParameter = (props: any, ref: any) => {
                     columns={columns}
                     pagination={false}
                     size="small"
+                    scroll={enLocale? { x: 1200 } : undefined}
                 />
                 <CommonPagination
                     pageSize={params.page_size}

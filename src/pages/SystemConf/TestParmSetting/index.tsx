@@ -20,15 +20,22 @@ import {
     deleteConfig,
 } from './service'
 import moment from 'moment'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import ProverEllipsis from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/ProverEllipsis'
 import { requestCodeMessage } from '@/utils/utils';
+
 const { Text } = Typography;
 const QuestionTip:any = ( props : {
     tip : String,
     path : String,
-    name : String
+    name : String,
+    style?: any,
 }) : React.ReactElement => {
+    const enLocale = getLocale() === 'en-US'
     const [ visible , setVisible ] = useState( false )
+
+    const propsStyle = props.style || {}
+
     return (
         <div className={ styles.question_tip_container }>
                 <span 
@@ -40,7 +47,7 @@ const QuestionTip:any = ( props : {
                         className={ styles.question_icon }
                     />
                     <div
-                        style={{ display : visible ? 'block' : 'none' }}
+                        style={{ display: visible ? 'block' : 'none', ...propsStyle }}
                         className={ classes( styles.question_tip_wrapper , styles.w_384 ) }
                     >
                         <p>{ props.tip }</p>
@@ -54,13 +61,13 @@ const ModalTitle = (): React.ReactElement => {
         return (
             <>
                 <Result status="success" className={ styles.success_icon }/>
-                <span className={styles.icon_des}>图标说明：job已经被推送过</span>
+                <span className={styles.icon_des}><FormattedMessage id="testfarm.job.has.been.pushed"/></span>
             </>
         )
     }
     return (
         <>
-            <span className={styles.modal_Title}>手动推送</span>
+            <span className={styles.modal_Title}><FormattedMessage id="testfarm.manual.push"/></span>
             <Popover content={content}>
                 <QuestionCircleOutlined
                     className={styles.question_icon}
@@ -83,6 +90,8 @@ function debounce(fn:any, param:any) {
 }
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const [form] = Form.useForm()
     const [projectData, setProjectData] = useState<any>({})
     const [workspaceData, setWorkspaceData] = useState<[]>([])
@@ -146,7 +155,7 @@ export default (props: any) => {
             })
             .catch((e) => {
                 setLoading(false)
-                message.error('请求失败')
+                message.error(formatMessage({id: 'request.failed'}) )
                 console.log(e)
             })
     }, [])
@@ -273,30 +282,31 @@ export default (props: any) => {
             </Form.Item>
         )
     }
+
     const getText = (type: string) => {
         switch (type) {
             case 'url':
-                return '请输入Testfarm地址'
+                return formatMessage({id: 'testfarm.url.placeholder'})
             case 'token':
-                return '请输入'
+                return formatMessage({id: 'please.enter'})
             case 'job':
-                return '请输入Job名称规则'
+                return formatMessage({id: 'testfarm.job.name.rules.placeholder'})
             case 'project':
-                return '请选择Project'
+                return formatMessage({id: 'testfarm.project.placeholder'})
             default:
-                return '请输入'
+                return formatMessage({id: 'please.enter'})
         }
     }
     const getLabel = (type: string) => {
         switch (type) {
             case 'job':
-                return 'Job名称规则'
+                return <FormattedMessage id="testfarm.job.name.rules"/>
             case 'token':
                 return 'Token'
             case 'url':
-                return 'Testfarm地址'
+                return <FormattedMessage id="testfarm.testfarm.url"/>
             case 'systemName':
-                return 'Slave名称'
+                return <FormattedMessage id="testfarm.systemName"/>
             default:
                 return ''
         }
@@ -373,7 +383,7 @@ export default (props: any) => {
         const {code, msg} = await queryPushJobAdd({ job_id: selectJobId })
         setConfirmLoading(false)
         if (code === 200) {
-            message.success(msg || '推送成功')
+            message.success(msg || formatMessage({id: 'push.success'}) )
             handleCancel()
         }
         if (code !== 200) requestCodeMessage( code , msg )
@@ -464,15 +474,15 @@ export default (props: any) => {
                             pushconfig: [{ workspace: '', project: '', job: '' }]
                         }}
                         labelCol={{ span: 4 }}
-                        wrapperCol={{ span: 14 }}
+                        wrapperCol={{ span: enLocale ? 20: 14 }}
                         colon={false}
                         requiredMark={true}
                     >
 
-                        <Row gutter={20} style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: '#fff',margin:'0 0 10px' }} className={styles.site_config_row}>
-                            <PartDom text='站点选择' />
+                        <Row gutter={20} style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: '#fff', margin:'0 0 10px' }} className={styles.site_config_row}>
+                            <PartDom text={<FormattedMessage id="testfarm.site.selection"/>} />
                             <Alert
-                                message={`上次同步时间：${testFarmDataDetail.last_sync_time || '-'}`}
+                                message={<><FormattedMessage id="testfarm.last.synchronization.time"/>：{testFarmDataDetail.last_sync_time || '-'}</>}
                                 type="success"
                                 showIcon
                                 style={{ marginBottom: 16,width: '100%' }}
@@ -486,10 +496,10 @@ export default (props: any) => {
                                                     return (
                                                         <Row gutter={10} style={{ marginBottom: 8 }} key={field.key}>
                                                             <Col span={24} style={{display:'flex',}}>
-                                                                <Form.Item name={[field.name, 'primarySite']} label="是否主站点">
+                                                                <Form.Item name={[field.name, 'primarySite']} label={<FormattedMessage id="testfarm.is_main_site"/>}>
                                                                     <Radio.Group onChange={onChange}>
-                                                                        <Radio value={1}> 是</Radio>
-                                                                        <Radio value={0}>否</Radio>
+                                                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                                                                     </Radio.Group>
                                                                 </Form.Item>
                                                             </Col>
@@ -516,8 +526,8 @@ export default (props: any) => {
                             </Form.Item>
                         </Row>
                         <Row gutter={20} style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: '#fff',margin:'0 0 10px' }} className={styles.push_config_row}>
-                            <PartDom text='推送配置'>
-                                <QuestionTip tip="指定project，自动上传更新数据" />
+                            <PartDom text={formatMessage({ id: 'testfarm.push.configuration' })}>
+                                <QuestionTip tip={formatMessage({ id: 'testfarm.specify.project' })}  style={{lineHeight:'20px',textAlign:'left',width: '250px'}}/>
                             </PartDom>
                             <Form.Item label="" labelAlign="left">
 
@@ -535,11 +545,14 @@ export default (props: any) => {
                                                                 {testFarmDataDetail?.push_config_list?.length > 0 && <>
                                                                 <Col span={24} style={{display:'flex',}}>
                                                                     <Form.Item name={[field.name, 'workspace']} label="Workspace" labelAlign='left' required={true}>
-                                                                        <Select showSearch onChange={_.partial(leftHandleChange,_,_,index,'workspace')} placeholder="请选择Workspace" allowClear={true}
-                                                                         filterOption={(input, option: any) => {
-                                                                            return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                                        }}
-                                                                        optionFilterProp="children">
+                                                                        <Select showSearch 
+                                                                            onChange={_.partial(leftHandleChange,_,_,index,'workspace')} 
+                                                                            placeholder={<FormattedMessage id="please.select.workspace"/>}
+                                                                            allowClear={true}
+                                                                            filterOption={(input, option: any) => {
+                                                                                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                                            }}
+                                                                            optionFilterProp="children">
                                                                             {
                                                                                 getLeftOptions(_.cloneDeep(workspaceData), form.getFieldsValue(), index).map(
                                                                                     (item: any) => (
@@ -560,7 +573,9 @@ export default (props: any) => {
                                                                             iconStyles={{ transform: 'translateY(6px)', cursor: 'pointer',marginLeft: 2 }}
                                                                             currentIndex={index}
                                                                             contentMark={<div>
-                                                                                <p onClick={!isPush && _.partial(showModal)} style={{ cursor: isPush ? 'default' : 'pointer', color: isPush ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.85)' }}>手动推送</p>
+                                                                                <p onClick={!isPush && _.partial(showModal)} style={{ cursor: isPush ? 'default' : 'pointer', color: isPush ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.85)' }}>
+                                                                                    <FormattedMessage id="testfarm.manual.push"/>
+                                                                                </p>
                                                                                 {index > 0 && <p
                                                                                     style={{color:'#FF4D4F'}}
                                                                                     onClick={() => {
@@ -570,10 +585,10 @@ export default (props: any) => {
                                                                                         const configId = _.get(testFarmDataDetail,`push_config_list[${index}].id`)
                                                                                         delPushConfig({push_config_id:configId})
                                                                                         remove(field.name)
-                                                                                    }}>移除</p>}
+                                                                                    }}><FormattedMessage id="operation.remove"/></p>}
                                                                             </div>}
                                                                             handleEllipsis={handleEllipsis}
-                                                                            typeName='master_prover'
+                                                                            typeName={enLocale ? 'master_prover_en': 'master_prover'}
                                                                             currentEditGroupIndex={currentEditIndex} />
                                                                     }
                                                                 </Col>
@@ -589,12 +604,13 @@ export default (props: any) => {
                                                                     <span style={{opacity: 0}}><Ellipsis /></span>
                                                                 </Col>
                                                                 <Col span={24}>
-                                                                    <Form.Item name={[field.name, 'startTime']} label="同步启始时间">
-                                                                        <DatePicker allowClear = {false} onChange={_.partial(handleTimeChange, _, _, index)} showTime />
+                                                                    <Form.Item name={[field.name, 'startTime']} label={<FormattedMessage id="testfarm.synchronization.start_time"/>}>
+                                                                        <DatePicker allowClear = {false} onChange={_.partial(handleTimeChange, _, _, index)} showTime placeholder={enLocale? 'Start Time': undefined}/>
                                                                     </Form.Item>
                                                                 </Col>
+
                                                                 <Col span={24} style={{display:'flex',}}>
-                                                                    {jobInfo && <Text className={styles.sync_info}>{`当前同步的Job信息：#${jobInfo.job_id}  ${jobInfo.job_name}`}</Text>}
+                                                                    {jobInfo && <Text className={styles.sync_info}><FormattedMessage id="testfarm.job.information"/>{`：#${jobInfo.job_id}  ${jobInfo.job_name}`}</Text>}
                                                                 </Col>
                                                                 </>}
                                                                 { index < fields.length - 1 && <Divider dashed style={{ margin: '22px 0 22px 0' }} />}
@@ -604,7 +620,7 @@ export default (props: any) => {
                                                                         onClick={_.partial(handleCreateConfig,add)}>
                                                                         {/*添加按钮*/}
                                                                         <PlusCircleTwoTone/>
-                                                                        <Text className={styles.add_pushconfig} >添加推送配置 </Text>
+                                                                        <Text className={styles.add_pushconfig}><FormattedMessage id="testfarm.push.configuration.add"/></Text>
                                                                     </Space>
                                                                 }
                                                             </div>
@@ -621,7 +637,7 @@ export default (props: any) => {
                         </Row>
                         <Row gutter={20} style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: '#fff',margin:'0 0 10px' }} className={styles.push_check_row}>
                             <Col span={24}>
-                                <PartDom text='推送验证'></PartDom>
+                                <PartDom text={<FormattedMessage id="testfarm.push.validation"/>}></PartDom>
                                 <Form.Item>
                                     <div className={styles.button}>
                                         <Button type="primary" onClick={() => {
@@ -631,16 +647,18 @@ export default (props: any) => {
                                             excuteResult.value.then((result: any) => {
                                                 const { code, msg } = result;
                                                 if (code === 200) {
-                                                    message.success('数据链路正常')
+                                                    message.success(formatMessage({ id: 'testfarm.data.link.is.normal' }) )
                                                 } else {
-                                                    requestCodeMessage( code , msg || '数据链路异常')
+                                                    requestCodeMessage( code , msg || formatMessage({ id: 'testfarm.data.link.is.abnormal' }) )
                                                 }
                                                 setLoading(false)
                                             })
 
-                                        }}>测试一下</Button>
+                                        }}>
+                                            <FormattedMessage id="testfarm.Test"/>
+                                        </Button>
                                         <p>
-                                            点击按钮，可手动推送数据，确认流程是否走得通
+                                            <FormattedMessage id="testfarm.confirm.whether.the.process.is.feasible"/>
                                         </p>
                                     </div>
                                 </Form.Item>
@@ -662,11 +680,11 @@ export default (props: any) => {
                         okButtonProps={{disabled:!selectJobId}}
                     >
                         <>
-                            <p style={{ marginBottom: 8 }}>选择Job</p>
+                            <p style={{ marginBottom: 8 }}><FormattedMessage id="testfarm.job"/></p>
                             <Select
                                 allowClear
                                 style={{ width: '100%' }}
-                                placeholder="请选择Job"
+                                placeholder={<FormattedMessage id="testfarm.please.select.job"/>}
                                 showSearchnotFoundContent={fetching ? <Spin size="small" /> : null}
                                 onChange={handleSelChange}
                                 labelInValue
