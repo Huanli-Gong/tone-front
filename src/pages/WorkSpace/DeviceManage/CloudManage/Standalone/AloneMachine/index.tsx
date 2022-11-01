@@ -91,18 +91,17 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
     const loadAkData = async (selectedOptions: any) => {
         const targetOption = selectedOptions[selectedOptions.length - 1];
         targetOption.loading = true;
-        try {
-            const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
-            if (code === 200) {
-                targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
+        const { code, data, msg } = await querysAK({ ws_id, provider: targetOption.value })
+        if (code === 200) {
+            targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
+            setOptions([...options])
+        } else {
+            setTimeout(() => {
+                targetOption.children = []
                 setOptions([...options])
-            } else {
-                setValidateAK({ validate: false, meg: msg || formatMessage({id: 'device.no.compliant.AK'})  })
-                form.setFieldsValue({ manufacturer: undefined })
-            }
-            targetOption.loading = false;
-        } catch (e) {
-            targetOption.loading = false;
+            }, 500);
+            setValidateAK({ validate: false, meg: msg || formatMessage({id: 'device.no.compliant.AK'})  })
+            form.setFieldsValue({ manufacturer: undefined })
         }
     }
 
@@ -151,7 +150,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 })
                 setValidateAK({ validate: true, meg: '' })
             } else {
-                setValidateAK({ validate: false, meg: msg || formatMessage({id: 'device.no.compliant.AK'})   })
+                setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
             }
             setRegion(list)
             setValidateRegion(!!list.length)
@@ -266,7 +265,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setTimeout(function () {
             form.setFieldsValue({
                 is_instance: type - 0,
-                
+
                 bandwidth: 10,
                 extra_param: [{ param_key: '', param_value: '' }]
             })
@@ -283,7 +282,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         setShowZone(1)
         setLoading(true)
         setVisible(true)
-        const list = row.tag_list.map((item:any) => item.id)
+        const list = row.tag_list.map((item: any) => item.id)
         setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         let param = { ...row }
         param.extra_param = JSON.stringify(param.extra_param) === '{}' ? [{ param_key: '', param_value: '' }] : param.extra_param
@@ -407,7 +406,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         param.description = params.description || ''
         const res = id ? await editCloud(id, { ...param }) : await addCloud({ ...param })
         if (res.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) );
+            message.success(formatMessage({ id: 'operation.success' }));
             onSuccess(param.is_instance || type, id)
             setVisible(false)
         } else if (res.code === 201) {
@@ -451,7 +450,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                 if (res.code === 200) {
                     callback()
                 } else {
-                    callback(res.msg || formatMessage({id: 'validator.failed'}) )
+                    callback(res.msg || formatMessage({ id: 'validator.failed' }))
                 }
             })
         } else {
@@ -464,7 +463,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         if (label[label.length - 1] !== 'latest') {
             return label[label.length - 1];
         }
-        return `${label[1].props.children}:${label[2].props.children}:latest`
+        return `${label[1].props?.children}:${label[2].props?.children}:latest`
     }
 
     const disabledState = useMemo(() => {
@@ -475,7 +474,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={<FormattedMessage id={id ? 'device.device.edit': 'device.add.btn'} />}
+            title={<FormattedMessage id={id ? 'device.device.edit' : 'device.add.btn'} />}
             width={724}
             onClose={onClose}
             visible={visible}
@@ -537,12 +536,12 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                             min: 1,
                                             max: 32,
                                             pattern: /^[A-Za-z][A-Za-z0-9\._-]*$/g,
-                                            message: formatMessage({id: 'device.name.message'})
+                                            message: formatMessage({ id: 'device.name.message' })
                                         },
                                         { validator: checkName },
                                     ]}
                                 >
-                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                                 </Form.Item>
                             </Col> :
                             null
@@ -553,18 +552,18 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 <Form.Item
                                     name="release_rule"
                                     label={<FormattedMessage id="device.release_rule" />}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={0}><FormattedMessage id="operation.not.release"/></Radio>
-                                        <Radio value={1}><FormattedMessage id="operation.release"/></Radio>
-                                        <Radio value={2}><QusetionIconTootip title={formatMessage({id: 'device.failed.save'})} desc={formatMessage({id: 'device.failed.save.24h'})} /></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.not.release" /></Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.release" /></Radio>
+                                        <Radio value={2}><QusetionIconTootip title={formatMessage({ id: 'device.failed.save' })} desc={formatMessage({ id: 'device.failed.save.24h' })} /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col> :
                             null
                         }
-                        
+
                         {!id || !is_instance ?
                             <Col span={12}>
                                 <Form.Item
@@ -572,7 +571,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     label={<FormattedMessage id="device.manufacturer/ak" />}
                                     validateStatus={validateAK.validate ? '' : 'error'}
                                     help={validateAK.validate ? undefined : validateAK.meg}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Cascader
                                         options={options}
@@ -592,8 +591,8 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     <Form.Item label="Region/Zone"
                                         name="region"
                                         validateStatus={validateRegion ? '' : 'error'}
-                                        help={validateRegion ? undefined : formatMessage({id: 'device.region/zone'}) }
-                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                        help={validateRegion ? undefined : formatMessage({ id: 'device.region/zone' })}
+                                        rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
                                         <Cascader
                                             disabled={region?.length === 0}
@@ -611,11 +610,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item label={<FormattedMessage id="device.own.server" />}
                                     name="instance_id"
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Select showSearch
                                         optionFilterProp="children"
-                                        placeholder={formatMessage({id: 'please.select'})}
+                                        placeholder={formatMessage({ id: 'please.select' })}
                                         labelInValue disabled={sever.length == 0}
                                         filterOption={(input, option: any) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -639,12 +638,12 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                             <Col span={8} style={{ display: 'flex', alignItems: 'flex-start' }}>
                                                 <Form.Item label={<FormattedMessage id="device.instance_type" />}
                                                     name="instance_type_one"
-                                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                                 >
                                                     <InputNumber
                                                         min={1}
                                                         style={{ width: 70 }}
-                                                        placeholder={formatMessage({id: 'device.spec.size'})}
+                                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                                         disabled={disabled || image.length === 0}
                                                     />
                                                 </Form.Item>
@@ -653,12 +652,12 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                             <Col span={16} style={{ display: 'flex', alignItems: 'flex-start', paddingLeft: 6 }}>
                                                 <Form.Item label=""
                                                     name="instance_type_two"
-                                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                                 >
                                                     <InputNumber
                                                         min={1}
                                                         style={{ width: 70, marginTop: 30 }}
-                                                        placeholder={formatMessage({id: 'device.spec.size'})}
+                                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                                         disabled={disabled || image.length === 0}
                                                     />
                                                 </Form.Item>
@@ -671,11 +670,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                         {/** case2: aliyun_ecs  */}
                                         <Form.Item label={<FormattedMessage id="device.instance_type" />}
                                             name="instance_type"
-                                            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                            rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                         >
                                             <Select disabled={disabled || image.length === 0}
                                                 showSearch
-                                                placeholder={formatMessage({id: 'please.select'})}
+                                                placeholder={formatMessage({ id: 'please.select' })}
                                                 optionFilterProp="children"
                                                 filterOption={(input, option: any) =>
                                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -701,9 +700,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                         name="image"
                                         // validateStatus={(validateImage && image.length === 0) ? 'error' : '' }
                                         // help={(validateImage && image.length === 0) ? '没有符合的镜像' : '请选择'}
-                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                        rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
-                                        <Cascader placeholder={formatMessage({id: 'please.select'}) } disabled={region?.length === 0 || image.length === 0}
+                                        <Cascader placeholder={formatMessage({ id: 'please.select' })} disabled={region?.length === 0 || image.length === 0}
                                             options={resetECI(image, 'platform')}
                                             // expandTrigger="hover"
                                             displayRender={displayRender}
@@ -718,9 +717,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                         name="image"
                                         // validateStatus={(validateImage && image.length === 0) ? 'error' : '' }
                                         // help={(validateImage && image.length === 0) ? '没有符合的镜像' : '请选择'}
-                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                        rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
-                                        <Cascader placeholder={formatMessage({id: 'please.select'})} disabled={region?.length === 0 || image.length === 0}
+                                        <Cascader placeholder={formatMessage({ id: 'please.select' })} disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform', 'os_name')}
                                             displayRender={displayRender}
                                             dropdownMenuColumnStyle={{ width: (724 - 48) / 4 }}
@@ -734,12 +733,12 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             <Col span={8}>
                                 <Form.Item label={<FormattedMessage id="device.system.disk" />}
                                     name="system_disk_category"
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({id: 'device.resource.shortage'})} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
                                         :
-                                        <Select placeholder={formatMessage({id: 'please.select'})} disabled={disabled} >
+                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -755,11 +754,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 <Form.Item
                                     name="system_disk_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder={formatMessage({id: 'device.spec.size'})}
+                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
                                         min={20}
                                         max={500}
@@ -777,9 +776,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     name="storage_type"
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({id: 'device.resource.shortage'})} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
                                         :
-                                        <Select placeholder={formatMessage({id: 'please.select'})} disabled={disabled} >
+                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -795,11 +794,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 <Form.Item
                                     name="storage_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder={formatMessage({id: 'device.spec.size'})}
+                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
                                         min={20}
                                         max={500}
@@ -816,11 +815,11 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 <Form.Item
                                     name="storage_number"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder={formatMessage({id: 'device.quantity'})}
+                                        placeholder={formatMessage({ id: 'device.quantity' })}
                                         style={{ width: 70 }}
                                         min={0}
                                         max={16}
@@ -839,14 +838,14 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                 <Form.Item
                                     name="bandwidth"
                                     label={<FormattedMessage id="device.bandwidth" />}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <Input
                                         type="number"
                                         min={10}
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
-                                        placeholder={formatMessage({id: 'please.enter'})}
+                                        placeholder={formatMessage({ id: 'please.enter' })}
                                     />
                                 </Form.Item>
                             </Col> :
@@ -854,9 +853,9 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                         }
                         {!is_instance ?
                             <Col span={24} className={styles.warp}>
-                                <Form.Item 
-                                    label={<QusetionIconTootip title={formatMessage({id: 'device.extended.fields'})} desc={formatMessage({id: 'device.aliyun.params'})} />}
-                                    labelAlign="left" 
+                                <Form.Item
+                                    label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={formatMessage({ id: 'device.aliyun.params' })} />}
+                                    labelAlign="left"
                                     style={{ marginBottom: 0 }}
                                 >
                                     {
@@ -937,7 +936,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             <Form.Item label={<FormattedMessage id="device.channel_type" />}
                                 name="channel_type"
                                 initialValue={'toneagent'}
-                                rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}>
+                                rules={[{ required: true, message: formatMessage({ id: 'device.channel_type.message' }) }]}>
                                 <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
                         </Col>
@@ -947,10 +946,10 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                                     label={<FormattedMessage id="device.usage.state" />}
                                     name="state"
                                     hasFeedback
-                                    rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
                                     initialValue={'Available'}
                                 >
-                                    <Select placeholder={formatMessage({id: 'device.usage.state.message'})}
+                                    <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}
                                         disabled={disabledState}>
                                         <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
                                         <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
@@ -962,7 +961,7 @@ const Index: React.FC<any> = ({ onRef, type, onSuccess }) => {
                             <Form.Item label={<FormattedMessage id="device.description" />}
                                 name="description"
                             >
-                                <Input.TextArea rows={3} placeholder={formatMessage({id: 'please.enter'})}  />
+                                <Input.TextArea rows={3} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
                     </Row>

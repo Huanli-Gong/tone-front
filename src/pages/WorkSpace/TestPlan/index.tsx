@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { Space, Tabs, Button, message, Popconfirm, Spin } from 'antd'
-import { useRequest, history, FormattedMessage, Access, useAccess } from 'umi'
+import { useRequest, history, useIntl, FormattedMessage, Access, useAccess } from 'umi'
 import CommonPagination from '@/components/CommonPagination'
 
 import styled from 'styled-components'
@@ -24,6 +24,7 @@ const OptButton = styled.span<OptionBtnProp>`
 `
 
 const TestPlanManage = (props: any) => {
+    const { formatMessage } = useIntl()
     const { route } = props
     const { ws_id } = props.match.params
     const access = useAccess()
@@ -58,7 +59,7 @@ const TestPlanManage = (props: any) => {
             requestCodeMessage(code, msg)
             return
         }
-        message.success('复制成功!')
+        message.success(formatMessage({id: 'request.copy.success'}) )
         refresh()
     }
 
@@ -74,15 +75,14 @@ const TestPlanManage = (props: any) => {
 
     const columns = [{
         dataIndex: 'name',
-        title: '计划名称',
-        width: 200,
+        title: <FormattedMessage id="plan.table.name" />,
         ellipsis: {
             showTitle: false
         },
         ...getSearchFilter(pageParams, setPageParams, 'name')
     }, {
         dataIndex: 'cron_info',
-        title: '触发规则',
+        title: <FormattedMessage id="plan.table.cron_info" />,
         width: 120,
         ellipsis: {
             showTitle: false
@@ -92,25 +92,28 @@ const TestPlanManage = (props: any) => {
         }
     }, {
         dataIndex: 'enable',
-        title: '启用',
+        title: <FormattedMessage id="plan.table.enable" />,
         width: 120,
         ellipsis: {
             showTitle: false
         },
         render: (_: any) => (
-            _ ? '是' : '否'
+            _ ? <FormattedMessage id="operation.yes" />: <FormattedMessage id="operation.no" />
             // <Badge status="processing" text="是" /> :
             // <Badge status="default" text="否" />
         ),
         ...getRadioFilter(
             pageParams,
             setPageParams,
-            [{ name: '是', value: 'True' }, { name: '否', value: 'False' }],
+            [
+                { name: formatMessage({id: 'operation.yes'}), value: 'True' }, 
+                { name: formatMessage({id: 'operation.no'}), value: 'False' }
+            ],
             'enable'
         )
     }, {
         dataIndex: 'creator_name',
-        title: '创建人',
+        title: <FormattedMessage id="plan.table.creator_name" />,
         width: 120,
         ellipsis: {
             showTitle: false
@@ -118,39 +121,40 @@ const TestPlanManage = (props: any) => {
         ...getUserFilter({ name: 'creator_name', data: pageParams, setDate: setPageParams })
     }, {
         dataIndex: 'gmt_created',
-        title: '创建时间',
+        title: <FormattedMessage id="plan.table.gmt_created" />,
         ellipsis: {
             showTitle: false
         },
         width: 170,
     }, {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation" />,
         ellipsis: {
             showTitle: false
         },
         width: 220,
         render: (row: any, record: any) => (
             <Space>
-                <OptButton disabled={!row.enable} onClick={() => handleRun(row)}>运行</OptButton>
-                <OptButton onClick={() => handleView(row)}>查看</OptButton>
-                <OptButton onClick={() => handleCopy(row)}>复制</OptButton>
+                <OptButton disabled={!row.enable} onClick={() => handleRun(row)}><FormattedMessage id="operation.run" /></OptButton>
+                <OptButton onClick={() => handleView(row)}><FormattedMessage id="operation.view" /></OptButton>
+                <OptButton onClick={() => handleCopy(row)}><FormattedMessage id="operation.copy" /></OptButton>
                 <Access accessible={access.WsTourist()}>
                     <Access
                         accessible={access.WsMemberOperateSelf(record.creator)}
                         fallback={
                             <Space>
-                                <OptButton onClick={() => AccessTootip()}>编辑</OptButton>
-                                <OptButton onClick={() => AccessTootip()}>删除</OptButton>
+                                <OptButton onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></OptButton>
+                                <OptButton onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptButton>
                             </Space>
                         }
                     >
                         <Space>
-                            <OptButton onClick={() => handleEdit(row)}>编辑</OptButton>
-                            <Popconfirm title="确认删除该计划吗？"
+                            <OptButton onClick={() => handleEdit(row)}><FormattedMessage id="operation.edit" /></OptButton>
+                            <Popconfirm title={<FormattedMessage id="delete.prompt" />}
                                 onConfirm={() => handleDelete(row)}
-                                okText="确认"
-                                cancelText="取消">
-                                <OptButton>删除</OptButton>
+                                okText={<FormattedMessage id="operation.confirm" />}
+                                cancelText={<FormattedMessage id="operation.cancel" />}
+                            >
+                                <OptButton><FormattedMessage id="operation.delete" /></OptButton>
                             </Popconfirm>
                         </Space>
                     </Access>

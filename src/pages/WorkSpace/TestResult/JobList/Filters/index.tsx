@@ -133,13 +133,7 @@ const FilterForm: React.FC<IProps> = (props) => {
     }
 
     useEffect(() => {
-        if(left.creation_time){
-            delete left.creation_time
-        }
-        if(left.completion_time){
-            delete left.completion_time
-        }
-        setValues(Object.assign(left, right))
+        setValues({...left, ...right})
     }, [left, right])
 
     const queryValue = React.useMemo(() => {

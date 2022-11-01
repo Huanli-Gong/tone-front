@@ -106,10 +106,10 @@ const ViewDetail = ( props : any ) => {
                     <Tag color='#81BF84' style={{ fontWeight: 500, textAlign: 'center' }}>Complete</Tag>
                 )}
                 {!!start_time && (
-                  <Tag style={normalStyle}>开始时间：{start_time}</Tag>
+                  <Tag style={normalStyle}><FormattedMessage id="plan.start_time"/>：{start_time}</Tag>
                 )}
                 {!!end_time && (
-                  <Tag style={normalStyle}>完成时间：{end_time}</Tag> 
+                  <Tag style={normalStyle}><FormattedMessage id="plan.end_time"/>：{end_time}</Tag> 
                 )}
             </div>
         )
@@ -151,7 +151,7 @@ const ViewDetail = ( props : any ) => {
                     <Row justify="space-between" align="bottom">
                         <TagInfo data={dataSet} />
                         <div style={{display: 'flex'}}>
-                            <Button onClick={() => BasicSettingClick(dataSet)} disabled={!Object.keys(dataSet).length}>计划配置</Button>
+                            <Button onClick={() => BasicSettingClick(dataSet)} disabled={!Object.keys(dataSet).length}><FormattedMessage id="plan.configuration"/></Button>
                             <ViewReport dreType="bottomRight" ws_id={ws_id} jobInfo={dataSet} origin={'jobDetail'} buttonStyle={{marginRight: 0,marginLeft: 10}}/>
                         </div>
                     </Row>

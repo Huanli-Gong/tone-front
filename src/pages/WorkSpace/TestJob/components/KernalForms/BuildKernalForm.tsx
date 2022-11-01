@@ -14,11 +14,12 @@ type IProps = {
     disabled?: boolean;
     needScriptList?: boolean;
     form?: FormInstance;
-    project_id?: any
+    project_id?: any;
+    isPlan?:boolean;
 }
 
 const BuildKernelForm: React.FC<IProps> = (props) => {
-    const { disabled, project_id, form, needScriptList } = props
+    const { disabled, project_id, form, needScriptList, isPlan = false } = props
     const { formatMessage } = useIntl()
     const [codeBranch, setCodeBranch] = useState<any>(form?.getFieldValue('code_repo'))
     const { data = [], run } = useRequest(() =>
@@ -104,7 +105,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                             <Form.Item
                                 {...itemLayout}
                                 label={formatMessage({ id: 'kernel.form.cbc.product' })}
-                                name="name"
+                                name={ isPlan ? "product_name" : "name" }
                                 rules={[{ required: true, message: formatMessage({ id: 'kernel.form.cbc.product.empty' }) }]}
                             >
                                 <Select

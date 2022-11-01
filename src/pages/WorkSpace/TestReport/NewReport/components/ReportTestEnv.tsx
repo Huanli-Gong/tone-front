@@ -28,6 +28,7 @@ const ReportTestEnv = () => {
         btnConfirm,
         groupLen,
         domainResult,
+        creator
     } = useContext(ReportContext)
 
     const handleChangeVal = (val: any, text: string) => {
@@ -61,7 +62,8 @@ const ReportTestEnv = () => {
                 <SettingRegUpdate
                     saveData={saveReportData}
                     field='text'
-                    defaultHolder={formatMessage({id:'report.please.enter.description'}) }
+                    defaultHolder={formatMessage({id:'report.please.enter.description'})}
+                    creator={creator}
                 />
                 :
                 <SettingTextArea

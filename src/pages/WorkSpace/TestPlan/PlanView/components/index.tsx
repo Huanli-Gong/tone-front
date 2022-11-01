@@ -1,5 +1,6 @@
 import { Space } from 'antd';
 import React from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 
 interface StateTagprop {
@@ -80,14 +81,14 @@ const DataRowSpace = styled( Space )`
 export const RenderDataRow = ( props : any ) => (
     <DataRowSpace>
         <div>
-            <span>触发次数：</span><span style={{ marginRight: 8, color: runningColr }}>{ props.trigger_count }</span>
-            <span>成功：</span><span style={{ marginRight: 8, color: complateColr }}>{ props.success_count }</span>
-            <span>失败：</span><span style={{ marginRight: 8, color: failColr }}>{ props.fail_count }</span>
+            <span><FormattedMessage id="plan.trigger_count"/>：</span><span style={{ marginRight: 8, color: runningColr }}>{ props.trigger_count }</span>
+            <span><FormattedMessage id="plan.success"/>：</span><span style={{ marginRight: 8, color: complateColr }}>{ props.success_count }</span>
+            <span><FormattedMessage id="plan.fail"/>：</span><span style={{ marginRight: 8, color: failColr }}>{ props.fail_count }</span>
         </div>
         {
             props.next_time && 
             <>
-                <span>下次触发时间：</span> 
+                <span><FormattedMessage id="plan.next_time"/>：</span> 
                 <span>{ props.next_time }</span>
             </>
         }

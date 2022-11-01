@@ -117,7 +117,7 @@ const UserManagement: React.FC<{}> = () => {
 		>
 			{
 				index === '1' ?
-					<UserManagementTable
+				!!select.length && <UserManagementTable
 						onRef={all}
 						select={select}
 						rolelist={rolelist}

@@ -9,6 +9,7 @@ export const CreatePageData = (props: any) => {
     const [logoData, setLogoData] = useState<Array<{}>>([])
     const [loading, setLoading] = useState<Boolean>(true)
     const [envData, setEnvData] = useState<Array<{}>>([])
+    const [suiteLen, setSuiteLen] = useState(1)
     const defaultConf = {
         need_test_suite_description: true,
         need_test_env: true,
@@ -71,6 +72,7 @@ export const CreatePageData = (props: any) => {
         }
         let resLen: any = []
         resLen = perfArr.concat(funcArr)
+        setSuiteLen(resLen.length)
         resLen.map((item: any, i: number) => queryCompareResultFn(item)
             .then(res => {
                 if (res.code === 200) {
@@ -100,6 +102,13 @@ export const CreatePageData = (props: any) => {
     }, [testDataParam])
 
     const { func_data_result, perf_data_result } = compareResult
+
+    const compareLen = useMemo(() => {
+        const { func_data_result, perf_data_result } = compareResult
+        let perf = perf_data_result.length
+        let func = func_data_result.length
+        return perf + func
+    }, [compareResult])
 
     //自定义报告模板
     const getTemplate = async () => {
@@ -589,6 +598,7 @@ export const CreatePageData = (props: any) => {
         setDomainResult,
         loading,
         saveReportData,
+        isFlag: compareLen !== suiteLen
     }
 }
 
@@ -614,6 +624,7 @@ export const EditPageData = (props: any) => {
     const [dataSource, setDataSource] = useState<any>({})
     const [allGroupData, setAllGroupData] = useState<any>([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(0)
+    const [creator, setCreator] = useState<any>()
     const [template, setTemplate] = useState<any>({})
     const { report_id } = props.match.params
 
@@ -623,7 +634,8 @@ export const EditPageData = (props: any) => {
         if (code == 200) {
             setDataSource(data[0])
             window.document.title = data[0]?.name || 'T-one'
-            const { tmpl_id, ws_id } = data[0]
+            const { tmpl_id, ws_id, creator } = data[0]
+            setCreator(creator)
             const res = await detailTemplate({ id: tmpl_id, ws_id })
             let perf_item: any = []
             let func_item: any = []
@@ -752,6 +764,7 @@ export const EditPageData = (props: any) => {
         loading,
         saveReportData,
         wsId: dataSource.ws_id,
-        queryReport
+        queryReport,
+        creator
     }
 }

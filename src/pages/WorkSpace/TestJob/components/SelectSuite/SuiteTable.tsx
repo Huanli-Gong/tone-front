@@ -286,7 +286,7 @@ export default (props: any) => {
 					</Tooltip>
 				</Row>
 			}
-			<Card bodyStyle={{ width }}>
+			<Card bodyStyle={{ width:'100%' }}>
 				<Table
 					rowClassName='outter'
 					style={{ width: width - 2 }}

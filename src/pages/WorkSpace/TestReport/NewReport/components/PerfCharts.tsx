@@ -7,7 +7,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services';
 import RenderConfChart from './RenderConfChart';
 import RenderMetricChart from './RenderMetricChart';
-
+import { cloneDeep } from 'lodash'
 const FullRow = styled(Row)`
     width:100%;
 `
@@ -130,29 +130,23 @@ const ChartModal = (props: any) => {
     }
     const legData = useMemo(() => {
         let le: any = []
-        let obj = {
-            name: `${envData?.base_group.tag}`,
-            inner: <Space align="start" style={{ cursor: 'pointer' }}>
-                <Dot color={color[base_index]} />
-                { !!envData.compare_groups.length && 
-                    <Tooltip title={formatMessage({id: 'report.benchmark.group'})}>
-                        <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
-                    </Tooltip>
-                }
-                <Typography.Text strong>{envData?.base_group.tag}</Typography.Text>
-            </Space>
-        }
-        for (let compare = envData.compare_groups, k = 0; k < compare.length; k++) {
-            let key = k === base_index ? k + 1 : k 
+        let newData:any = cloneDeep(envData)
+        newData.compare_groups.splice(base_index, 0, envData.base_group)
+        for (let compare = newData.compare_groups, k = 0; k < compare.length; k++) {
             le.push({
                 name: `${compare[k].tag}`,
                 inner: <Space align="start" style={{ cursor: 'pointer' }}>
-                    <Dot color={color[key]} />
+                    <Dot color={color[k]} />
+                    { 
+                        base_index === k &&
+                        <Tooltip title={formatMessage({id: 'report.benchmark.group'})}>
+                            <GaryBaseIcon style={{ transform: 'translateY(3px)', marginLeft: 8 }} />
+                        </Tooltip>
+                    }
                     <Typography.Text strong>{compare[k].tag}</Typography.Text>
                 </Space>
             })
         }
-        le.splice(base_index, 0, obj)
         return le
     }, [envData, color])
 
