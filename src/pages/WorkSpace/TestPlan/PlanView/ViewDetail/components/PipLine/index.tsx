@@ -29,7 +29,7 @@ const PipLine = ( props : any ) => {
               <StepCircle />
               <ArrowSingleBlue />
             </StartStepBorder>
-            <StartStepWord>开始</StartStepWord>
+            <StartStepWord><FormattedMessage id="plan.start" /></StartStepWord>
         </PipLineStart>
 
         {/** Build阶段 */}
@@ -55,7 +55,7 @@ const PipLine = ( props : any ) => {
               }
             </div>
           </StepTitle>
-          <EndStepWord>结束</EndStepWord>
+          <EndStepWord><FormattedMessage id="plan.end" /></EndStepWord>
         </PipLineEnd>
       </>
     )

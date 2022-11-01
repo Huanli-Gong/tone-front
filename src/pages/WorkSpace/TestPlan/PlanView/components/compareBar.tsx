@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tag, Tooltip, Layout, Space, Table, Typography, Popconfirm, message, Tabs, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Breadcrumb, Modal, Checkbox } from 'antd';
-import { history, useParams } from 'umi'
+import { history, useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import styles from './compareBar.less'
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -110,8 +110,10 @@ export default (props: any) => {
         width: '100%',
     }
     return (
-        <div className={styles.job_compare} style={{ display: allGroup.length ? 'block' : 'none' }}>
-            <div className={styles.title}>对比栏<span>（{allGroup.length}）</span></div>
+        <div className={styles.job_compare} style={{display: allGroup.length ? 'block' : 'none'}}>
+            <div className={styles.title}>
+                <FormattedMessage id="plan.comparison.column"/><span>（{allGroup.length}）</span>
+            </div>
             <div className={styles.job_group} id='job_group'>
                 <Scrollbars style={scroll} ref={scrollbarsRef}>
                     <ul id='box'>
@@ -132,8 +134,8 @@ export default (props: any) => {
                 <div className={styles.operate}>
                     <Space>
                         <RightOutlined onClick={handleScroll} style={{ opacity: padding ? 1 : 0 }} />
-                        <Button onClick={handleCancle}>取消</Button>
-                        <Button type="primary" onClick={handleNext}>下一步</Button>
+                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={handleNext}><FormattedMessage id="operation.next"/></Button>
                     </Space>
                 </div>
             </div>
