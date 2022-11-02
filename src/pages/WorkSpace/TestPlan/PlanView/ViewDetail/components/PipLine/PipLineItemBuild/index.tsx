@@ -1,6 +1,6 @@
 import React , { useCallback , useRef } from 'react'
 import { Breadcrumb , Row , Typography , Space, Button, Dropdown, Menu, Tooltip } from 'antd'
-import { FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 import { getColorByState, getStepColorByState, isUrl} from '@/utils/utils'
 import { IconByState, ArrowSolid, TemplateItem }from '../modules'
 import {
@@ -16,6 +16,7 @@ import styles from './index.less'
  *  build阶段
  */
 const Index = ( props : any ) => {
+  const { formatMessage } = useIntl()
     const { data, mainStatus } = props
     const { state } = data || {}
     // 根据阶段状态
@@ -57,7 +58,9 @@ const Index = ( props : any ) => {
                     {/** 判断图标 */}
                     <IconByState params={mainIconStatus} />
 
-                    <TemplateName>Build阶段</TemplateName>
+                    <TemplateName>
+                      <FormattedMessage id="plan.build.stage"/>
+                    </TemplateName>
                   </StepTitleInput>
                   {/** 判断主横颜色 */}
                   <StepOptionRight style={{ background: mainStepColor }}>
@@ -71,9 +74,12 @@ const Index = ( props : any ) => {
                 <TemplateContent style={contentStyle}>
                   {state !== 'fail' ? (
                     <>
-                      {!!data.build_url && <ItemRow label="Build详情" text={data.build_url} />}
+                      {!!data.build_url && <ItemRow label={formatMessage({ id: 'plan.build.detail'}) } text={data.build_url} />}
                       {data.rpm_list?.map((item: string, index: number)=> {
-                        const label = ['kernel包', 'devel包', 'headers包'][index]
+                        const label = [
+                          formatMessage({ id: 'plan.kernel.pkg'}), 
+                          formatMessage({ id: 'plan.devel'}), 
+                          formatMessage({ id: 'plan.headers'})][index]
                         return <ItemRow label={label} text={item} key={index}/>
                       })}
                     </>
@@ -82,7 +88,7 @@ const Index = ( props : any ) => {
                   )}
 
                   {!!data.code_repo && (
-                    <ItemRow label="代码仓库" text={data.code_repo} />
+                    <ItemRow label={formatMessage({ id: 'plan.code_repo'}) } text={data.code_repo} />
                   )}
                 </TemplateContent>
               </TemplatesChildrenWrapper>

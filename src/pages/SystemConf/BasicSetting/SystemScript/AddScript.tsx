@@ -1,23 +1,25 @@
 import { Drawer, Space , Button , Form, Input, Select, Radio, message } from 'antd'
 import React, { forwardRef , useState , useImperativeHandle } from 'react'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 import { createCongfig , updateConfig } from '../services'
 import { requestCodeMessage } from '@/utils/utils'
 
 export default forwardRef(
     ( props : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const [ form ] = Form.useForm()
         
         const [ padding , setPadding ] = useState( false )
         const [ visible , setVisible ] = useState( false )
-        const [ title , setTitle ] = useState( '新增脚本' )
+        const [ title , setTitle ] = useState('new')
         const [msg, setMsg] = useState<string>()
         const [ editer , setEditer ] = useState<any>({})
     
         useImperativeHandle(
             ref ,
             () => ({
-                show : ( title : string = "新增脚本" , data : any = {} ) => {
+                show : ( title : string = "new" , data : any = {} ) => {
                     setVisible( true )
                     setTitle( title )
                     setEditer( data )
@@ -36,11 +38,11 @@ export default forwardRef(
         const defaultOption = ( code : number , msg : string ) => {
             if ( code === 200 ) {
                 props.onOk()
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 setVisible( false )
                 form.resetFields()
             }else if(code === 1362){
-                setMsg('config名称已存在')
+                setMsg(formatMessage({id: 'basic.config.name.already.exists'}))
             }
             else {
                 requestCodeMessage( code , msg )
@@ -52,7 +54,7 @@ export default forwardRef(
             setPadding( true )
             form.validateFields()
                 .then( async ( values ) => {
-                    if ( title === '新增脚本' ) {
+                    if ( title === 'new' ) {
                         const { code , msg } = await createCongfig({ config_type : 'script' , ...values })
                         defaultOption(code , msg )
                     }
@@ -71,16 +73,16 @@ export default forwardRef(
             <Drawer 
                 maskClosable={ false }
                 keyboard={ false } 
-                title={ title }
+                title={<FormattedMessage id={`basic.addScript.${title}`}/>  }
                 width="380"
                 onClose={ handleClose }
                 visible={ visible }
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={ handleClose }>取消</Button>
+                            <Button onClick={ handleClose }><FormattedMessage id="operation.cancel"/></Button>
                             <Button type="primary" disabled={ padding } onClick={ handleOk }>
-                                { ~title.indexOf('编辑') ? '更新' : '确定'}
+                                { ~title.indexOf('edit') ? <FormattedMessage id="operation.update"/> : <FormattedMessage id="operation.ok"/>}
                             </Button>
                         </Space>
                     </div>
@@ -93,19 +95,19 @@ export default forwardRef(
                     className={styles.system_form}
                 >
                     <Form.Item 
-                        label="脚本名称" 
+                        label={<FormattedMessage id="basic.script_name"/>}
                         name="config_key" 
                         help={msg} 
                         rules={[{
                             required: true,
                             max:32,
                             pattern: /^[A-Za-z0-9\._-]+$/g,
-                            message: '仅允许包含字母、数字、下划线、中划线、点，最长32个字符'
+                            message: formatMessage({id: 'please.enter.message'}) 
                         }]}
                     >
-                        <Input autoComplete="auto" placeholder="请输入脚本" />
+                        <Input autoComplete="auto" placeholder={formatMessage({id: 'basic.please.enter.script_name'})} />
                     </Form.Item>
-                    <Form.Item label="原子步骤" name="bind_stage">
+                    <Form.Item label={<FormattedMessage id="basic.atomic_step"/>} name="bind_stage">
                         <Select>
                             {
                                 props.stage?.map(
@@ -121,14 +123,14 @@ export default forwardRef(
                             }
                         </Select>
                     </Form.Item>
-                    <Form.Item label="是否启用" name="enable" initialValue={ true }>
+                    <Form.Item label={<FormattedMessage id="basic.is_enable"/>} name="enable" initialValue={ true }>
                         <Radio.Group>
-                            <Radio value={ true }>启用</Radio>
-                            <Radio value={ false }>停用</Radio>
+                            <Radio value={ true }><FormattedMessage id="basic.enable"/></Radio>
+                            <Radio value={ false }><FormattedMessage id="basic.stop"/></Radio>
                         </Radio.Group>
                     </Form.Item>
-                    <Form.Item label="描述" name="description">
-                        <Input.TextArea placeholder="请输入描述信息"/>
+                    <Form.Item label={<FormattedMessage id="basic.desc"/>} name="description">
+                        <Input.TextArea placeholder={formatMessage({id: 'basic.please.enter.desc'})} />
                     </Form.Item>
                 </Form>
             </Drawer>

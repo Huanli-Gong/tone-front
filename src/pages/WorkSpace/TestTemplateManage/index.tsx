@@ -127,7 +127,8 @@ export default (props: any) => {
         title: <FormattedMessage id="job.templates.description"/>,
         ellipsis: true,
         width: 150,
-        dataIndex: 'description'
+        dataIndex: 'description',
+        ...getSearchFilter(params, setParams, 'description')
     }, {
         title: <FormattedMessage id="job.templates.enable"/>,
         ellipsis: true,
@@ -170,6 +171,7 @@ export default (props: any) => {
         ellipsis: true,
         title: <FormattedMessage id="job.templates.update_user"/>,
         dataIndex: 'update_user',
+        ...getUserFilter({ name: 'update_user', data: params, setDate: setParams, flag: true })
     }, {
         title: <FormattedMessage id="job.templates.gmt_created"/>,
         width: 120,

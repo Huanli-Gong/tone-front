@@ -5,12 +5,13 @@ import CommonTable from '@/components/Public/CommonTable';
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import DeleteMetricPopover from './DeleteMetricPopover'
 
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import { requestCodeMessage } from '@/utils/utils';
 import MetricEditDrawer from '../MetricEditDrawer'
 import styles from '../../index.less';
 
 const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
+	const { formatMessage } = useIntl()
 	const [page, setPage] = useState<number>(1)
 	const [pageSize, setPageSize] = useState<number>(10)
 	const [expandInnerList, setExpandInnerList] = useState<any>([])
@@ -44,7 +45,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		setObjectId(id)
 		domainList.forEach((item: any) => { if (item.name == row.domain) row.domain = item.id })
 		setMetricId(row.id)
-		metricEditer.current.show('编辑Metric', row)
+		metricEditer.current.show('edit', row)
 	}
 
 	const submitMetric = async (data: any) => {
@@ -61,10 +62,10 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 
 	const doMetricModalFn = (params: any) => {
 		Modal.confirm({
-			title: '否同步到该TestSuite下的所有TestConf?',
+			title: <FormattedMessage id="TestSuite.is_synchronize.all.conf"/>,
 			icon: <ExclamationCircleOutlined />,
-			okText: '是',
-			cancelText: '否',
+			okText: <FormattedMessage id="operation.yes"/>,
+			cancelText: <FormattedMessage id="operation.no"/>,
 			maskClosable: false,
 			onOk() {
 				metricSubmit({ ...params, is_sync: 1 })
@@ -94,7 +95,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 			await delMetric(params.id, { is_sync, object_id, object_type, name })
 
 		if (code === 200) {
-			message.success('操作成功');
+			message.success(formatMessage({id: 'operation.success'}) );
 			setRefresh(!refresh)
 		}
 		else requestCodeMessage(code, msg)
@@ -103,33 +104,33 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	const newMetric = (id: number) => {
 		setObjectId(id)
 		setMetricId(undefined)
-		metricEditer.current.show('新增Metric')
+		metricEditer.current.show('new')
 	}
 
 	const columns = [
-		{ title: '指标', dataIndex: 'name', width: 300, fixed: 'left' },
-		{ title: '​Avg阈值(%)', dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
-		{ title: 'CV阈值(%)', dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
-		{ title: '期望方向', dataIndex: 'direction', width: 130 },
+		{ title: <FormattedMessage id="TestSuite.conf.metric"/>, dataIndex: 'name', width: 300, fixed: 'left' },
+		{ title: <FormattedMessage id="TestSuite.cmp_threshold"/>, dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
+		{ title: <FormattedMessage id="TestSuite.cv_threshold"/>, dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
+		{ title: <FormattedMessage id="TestSuite.direction"/>, dataIndex: 'direction', width: 130 },
 		{
-			title: <div>操作<Button type='primary' onClick={() => newMetric(id)} style={{ marginLeft: 10 }}>新增</Button></div>,
+			title: <div><FormattedMessage id="Table.columns.operation"/><Button type='primary' onClick={() => newMetric(id)} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new"/></Button></div>,
 			valueType: 'option',
 			dataIndex: 'id',
 			width: 180,
 			fixed: 'right',
 			render: (_: number, row: any) => (
 				<Space>
-					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editMetricRow(id, { ...row })}>编辑</Button>
+					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editMetricRow(id, { ...row })}><FormattedMessage id="operation.edit"/></Button>
 					{
 						innerKey == 1 ?
-							<Popconfirm title="确定要删除吗？"
+							<Popconfirm title={<FormattedMessage id="delete.prompt"/>}
 								// placement="topRight"	
-								okText="确定"
-								cancelText="取消"
+								okText={<FormattedMessage id="operation.ok"/>}
+								cancelText={<FormattedMessage id="operation.cancel"/>}
 								onConfirm={() => remMetricRow(row)}
 								overlayStyle={{ width: '224px' }}
 							>
-								<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
 							</Popconfirm> :
 							<DeleteMetricPopover onOk={(is_sync: any) => remMetricRow(row, is_sync)} />
 					}

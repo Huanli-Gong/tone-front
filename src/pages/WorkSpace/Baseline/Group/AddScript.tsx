@@ -141,7 +141,7 @@ export default forwardRef(
                         rules={[{ required: true }]}
                     >
                         <Input
-                            autoComplete="auto"
+                            autoComplete="off"
                             placeholder={intl.formatMessage({ id: 'pages.workspace.baseline.addScript.label.name.placeholder' })}
                             onChange={(e) => {
                                 setQueryStatus(true)

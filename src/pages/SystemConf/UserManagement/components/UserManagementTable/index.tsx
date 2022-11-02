@@ -12,8 +12,10 @@ import { FilterFilled } from '@ant-design/icons';
 import ResetModal from '../ResetModal';
 import { useRef } from 'react';
 import AvatarCover from '@/components/AvatarCover';
+import { useIntl, FormattedMessage } from 'umi';
 
 const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, onSearch, rolelist }: any) => {
+    const { formatMessage } = useIntl()
     const [data, setData] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [page, setPage] = useState<number>(1);
@@ -66,17 +68,15 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         }
         const data = await roleChange(params)
         if (data.code === 200) {
-            message.success('修改成功');
+            message.success(formatMessage({id: 'operation.success'}) );
             refresh()
         } else {
             message.error(data.msg);
         }
-        // 
-
     }
 
     const columns: any[] = [{
-        title: '成员',
+        title: <FormattedMessage id="user.last_name"/>,
         dataIndex: 'last_name',
         width: 200,
         ellipsis: {
@@ -109,14 +109,14 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             />
         </Space>,
     }, {
-        title: '账号',
+        title: <FormattedMessage id="user.email"/>,
         dataIndex: 'email',
         ellipsis: {
             showTitle: false
         },
         render: (_: number, row: UserTable) => <PopoverEllipsis title={row.email}></PopoverEllipsis>,
     }, {
-        title: '角色',
+        title: <FormattedMessage id="user.role_list"/>,
         dataIndex: 'role_list',
         render: (_: number, row: any) => (
             (select && select.length > 0) &&
@@ -137,22 +137,22 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         },
         width: 200,
     }, {
-        title: '加入时间',
+        title: <FormattedMessage id="user.gmt_created"/>,
         dataIndex: 'gmt_created',
         width: 145,
     },
     BUILD_APP_ENV === 'opensource' &&
     {
-        title: '操作',
+        title: <FormattedMessage id="Table.columns.operation"/>,
         render: (_: any, row: any) => (
             <Popconfirm
-                title="该操作会使原密码失效，且不可逆，请谨慎操作"
+                title={<FormattedMessage id="user.Popconfirm.title"/>}
                 onConfirm={() => resetPasswordConfirm(row)}
                 okButtonProps={{ type: "primary", danger: true }}
-                okText="确认重置"
+                okText={<FormattedMessage id="operation.confirm.reset"/>}
                 onVisibleChange={() => console.log('visible change')}
             >
-                <Typography.Link>重置密码</Typography.Link>
+                <Typography.Link><FormattedMessage id="operation.reset.password"/></Typography.Link>
             </Popconfirm>
         )
     }].filter(Boolean);

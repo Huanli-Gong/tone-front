@@ -181,7 +181,9 @@ const ListTable: React.FC<IProps> = (props) => {
             title: <FormattedMessage id="ws.result.list.test_type" />,
             width: locale ? 140 : 80,
             dataIndex: 'test_type',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: any, row: any) => {
                 const strLocale = matchTestType(_)
                 return <span><FormattedMessage id={`${strLocale}.test`} defaultMessage={_} /></span>
@@ -191,7 +193,7 @@ const ListTable: React.FC<IProps> = (props) => {
             title: (
                 <QusetionIconTootip
                     placement="bottomLeft"
-                    title={formatMessage({ id: 'ws.result.list.test_type.Tootip' })}
+                    title={<FormattedMessage id="ws.result.list.test_type.Tootip" />}
                     desc={
                         <ul style={{ paddingInlineStart: 'inherit', paddingTop: 4, marginBottom: 4, paddingLeft: 0 }}>
                             <li><FormattedMessage id="ws.result.list.test_type.desc1" /></li>
@@ -278,6 +280,9 @@ const ListTable: React.FC<IProps> = (props) => {
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 170 : 170,
+            ellipsis: {
+                showTitle: false,
+            },
             fixed: 'right',
             render: (_: any) => {
                 const disableStyle = { color: '#ccc', cursor: 'no-drop' }

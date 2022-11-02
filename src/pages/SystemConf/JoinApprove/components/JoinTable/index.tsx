@@ -4,7 +4,7 @@ import { Modal, Row, Col, Avatar, Space, Button, message, Spin, Badge } from 'an
 import { joinList, approve, info } from '../../service';
 import styles from './style.less';
 import CommonTable from '@/components/Public/CommonTable';
-import { FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage } from 'umi';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as UnPublicIcon } from '@/assets/svg/no_public.svg'
 import { ReactComponent as WScancel } from '@/assets/svg/ws_cancel.svg'
@@ -16,6 +16,7 @@ import RefusePopover from './RefusePopover'
 import { requestCodeMessage } from '@/utils/utils';
 
 const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
+    const { formatMessage } = useIntl()
     const [data, setData] = useState<any>({});
     const [loading, setLoading] = useState(true);
     const [modalLoading, setModalLoading] = useState(true);
@@ -108,13 +109,13 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
         setVisible(false)
         await getNum()
         await refresh()
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
     }
     const ellipsisText = (name: string) => {
         return name.slice(0, 1)
     }
     let columns: any[] = [{
-        title: <FormattedMessage id={"JoinApprove.table.category"} />,
+        title: <FormattedMessage id="JoinApprove.table.category" />,
         dataIndex: 'name',
         width: 120,
         ellipsis: true,
@@ -155,11 +156,11 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     }, {
         title: <FormattedMessage id={"JoinApprove.table.result"} />,
         render: (_: number, row: UserTable) => <Space>
-            {row.status == 'passed' && row.action == 'create' && <Badge status="success" text='通过创建' />}
-            {row.status != 'passed' && row.action == 'create' && <Badge status="default" text='拒绝创建' />}
-            {row.status == 'passed' && row.action == 'delete' && <Badge status="success" text='通过注销' />}
-            {row.status != 'passed' && row.action == 'delete' && <Badge status="default" text='拒绝注销' />}
-            <Button style={{ padding: 0, height: 'auto' }} type="link" onClick={() => getInfo(row)} >详情</Button>
+            {row.status == 'passed' && row.action == 'create' && <Badge status="success" text={<FormattedMessage id="JoinApprove.create_passed" />} />}
+            {row.status != 'passed' && row.action == 'create' && <Badge status="default" text={<FormattedMessage id="JoinApprove.create_refused" />} />}
+            {row.status == 'passed' && row.action == 'delete' && <Badge status="success" text={<FormattedMessage id="JoinApprove.logout_passed" />} />}
+            {row.status != 'passed' && row.action == 'delete' && <Badge status="default" text={<FormattedMessage id="JoinApprove.logout_refused" />} />}
+            <Button style={{ padding: 0, height: 'auto' }} type="link" onClick={() => getInfo(row)}><FormattedMessage id="operation.detail" /></Button>
         </Space>,
         width: 150
     }]] :
@@ -170,7 +171,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
             render: (_: number, row: UserTable) => <Space>
                 {/* <Button style={{padding:0, height: 'auto'}} onClick={()=>check('pass',row.id)} type="link" >通过</Button>
                                                                 <Button style={{padding:0, height: 'auto'}} onClick={()=>check('refuse',row.id)} type="link" >拒绝</Button> */}
-                <Button style={{ padding: 0, height: 'auto' }} type="link" onClick={() => getInfo(row)} >详情</Button>
+                <Button style={{ padding: 0, height: 'auto' }} type="link" onClick={() => getInfo(row)}><FormattedMessage id="operation.detail" /></Button>
             </Space>
 
         }]]
@@ -180,7 +181,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     const Footer = status == 0 ?
         <Space>
             <RefusePopover ref={refusePop} onOk={(data: any) => check('refuse', data)} />
-            <Button loading={actionLoading} onClick={() => check('pass')} type="primary" >通过</Button>
+            <Button loading={actionLoading} onClick={() => check('pass')} type="primary"><FormattedMessage id="operation.pass" /></Button>
         </Space> :
         null
 
@@ -189,7 +190,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     return (
         <div>
             <Modal
-                title="Workspace详情"
+                title={<FormattedMessage id="JoinApprove.ws.details" />}
                 visible={visible}
                 width='53.3%'
                 centered
@@ -201,7 +202,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
 
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            封面
+                            <FormattedMessage id="JoinApprove.cover" />
                         </Col>
                         <Col className={styles.content} span={20}>
                             <AvatarCover {...{ ...modal , show_name : modal.title , logo : modal.ws_logo }} size="large" />
@@ -209,7 +210,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            名称
+                            <FormattedMessage id="JoinApprove.name" />
                         </Col>
                         <Col className={styles.company} span={20}>
                             {modal.title}
@@ -217,7 +218,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            简介
+                            <FormattedMessage id="JoinApprove.introduction" />
                         </Col>
                         <Col className={styles.content} span={20}>
                             {modal.description}
@@ -225,32 +226,32 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            申请理由
+                            <FormattedMessage id="JoinApprove.application.reason" />
                         </Col>
                         <Col className={styles.content} span={20}>
-                            {modal.reason || '无'}
+                            {modal.reason || <FormattedMessage id="nothing" />}
                         </Col>
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            权限
+                            <FormattedMessage id="JoinApprove.permission" />
                         </Col>
                         <Col className={styles.content} span={20}>
                             {modal.is_public ?
                                 <div>
                                     <PublicIcon />
-                                    <span style={{ paddingLeft: '6px' }}>公开</span>
+                                    <span style={{ paddingLeft: '6px' }}><FormattedMessage id="JoinApprove.public" /></span>
                                 </div> :
                                 <div>
                                     <UnPublicIcon />
-                                    <span style={{ paddingLeft: '6px' }}>私密</span>
+                                    <span style={{ paddingLeft: '6px' }}><FormattedMessage id="JoinApprove.private" /></span>
                                 </div>
                             }
                         </Col>
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            申请人
+                            <FormattedMessage id="JoinApprove.table.applicant" />
                         </Col>
                         <Col className={styles.content} span={20}>
                             <div>
@@ -266,24 +267,25 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            申请类别
+                            <FormattedMessage id="JoinApprove.table.category" />
                         </Col>
                         <Col className={styles.content} span={20}>
                             {modal.object_type == 'workspace' && modal.action == 'create' ?
                                 <span>
                                     <WScreate style={{ float: 'left', marginRight: '5px', height: 20 }} />
-                                Workspace创建
-                            </span> :
+                                    <FormattedMessage id="JoinApprove.ws.create" />
+                                </span> 
+                                :
                                 <span>
                                     <WScancel style={{ float: 'left', marginRight: '5px', height: 20 }} />
-                                Workspace注销
+                                    <FormattedMessage id="JoinApprove.ws.logout" />
                             </span>
                             }
                         </Col>
                     </Row>
                     <Row gutter={12}>
                         <Col className={styles.title} span={4}>
-                            申请时间
+                            <FormattedMessage id="JoinApprove.table.start" />
                         </Col>
                         <Col className={styles.content} span={20}>
                             {modal.gmt_created}
@@ -292,21 +294,21 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                     {status == 1 &&
                         <Row gutter={12}>
                             <Col className={styles.title} span={4}>
-                                审批结果
-                        </Col>
+                                <FormattedMessage id="JoinApprove.table.result" />
+                            </Col>
                             <Col className={styles.content} span={20}>
-                                {modal.status == 'passed' && modal.action == 'create' && <Badge status="success" text='通过创建' />}
-                                {modal.status != 'passed' && modal.action == 'create' && <Badge status="default" text='拒绝创建' />}
-                                {modal.status == 'passed' && modal.action == 'delete' && <Badge status="success" text='通过注销' />}
-                                {modal.status != 'passed' && modal.action == 'delete' && <Badge status="default" text='拒绝注销' />}
+                                {modal.status == 'passed' && modal.action == 'create' && <Badge status="success" text={<FormattedMessage id="JoinApprove.create_passed" />} />}
+                                {modal.status != 'passed' && modal.action == 'create' && <Badge status="default" text={<FormattedMessage id="JoinApprove.create_refused" />} />}
+                                {modal.status == 'passed' && modal.action == 'delete' && <Badge status="success" text={<FormattedMessage id="JoinApprove.logout_passed" />} />}
+                                {modal.status != 'passed' && modal.action == 'delete' && <Badge status="default" text={<FormattedMessage id="JoinApprove.logout_refused" />} />}
                             </Col>
                         </Row>
                     }
                     {status == 1 &&
                         <Row gutter={12}>
                             <Col className={styles.title} span={4} style={{ paddingBottom: 0 }}>
-                                审批时间
-                        </Col>
+                                <FormattedMessage id="JoinApprove.table.end" />
+                            </Col>
                             <Col className={styles.content} span={20} style={{ paddingBottom: 0 }}>
                                 {modal.gmt_modified}
                             </Col>

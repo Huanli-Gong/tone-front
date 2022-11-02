@@ -130,9 +130,9 @@ const AdCompoent: React.FC = () => {
                             <First />
                         </div>
                     </AdCarouseItem>
-                    <AdCarouseItem >
+                    {/* <AdCarouseItem >
                         <img src={imgPic} />
-                    </AdCarouseItem>
+                    </AdCarouseItem> */}
                 </Carousel>
                 <CloseOutlie onClick={handleClose}>
                     <Typography.Text type="secondary">关闭</Typography.Text>

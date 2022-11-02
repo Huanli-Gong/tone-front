@@ -94,6 +94,9 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             dataIndex: 'tid',
             title: 'TID',
             width: 120,
+            ellipsis: {
+                showTitle: false
+            },
             render:(_:any) => <TidDetail tid={_} />
         },
         {

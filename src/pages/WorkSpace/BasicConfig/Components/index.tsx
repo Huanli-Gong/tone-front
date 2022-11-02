@@ -72,11 +72,11 @@ export const SettingEdit = ({
         let reg = /^([\w\W])+$/
         let typeName = ''
         if (inputType === 'name') {
-            reg = /^[a-z0-9_-]{1,20}$/
+            reg = /^[a-z0-9_-]{1,30}$/
             typeName = 'regName'
         }
         if (inputType === 'show_name') {
-            reg = /^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,20}$/g
+            reg = /^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/g
             typeName = 'regShowName'
         }
         if (inputType === 'description') {

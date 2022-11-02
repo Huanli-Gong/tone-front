@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { Drawer, Space, Button, Checkbox, Input, message, Row, Typography, Tooltip, Spin } from 'antd'
 import { queryTestTemplateList } from '@/pages/WorkSpace/TestTemplateManage/service'
 import { SearchOutlined } from '@ant-design/icons'
@@ -7,6 +7,7 @@ import { isArray } from 'lodash'
 import styles from './index.less'
 
 const TemplateListDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id, onOk } = props
     const [visible, setVisible] = useState(false)
     const [search, setSearch] = useState('')
@@ -97,7 +98,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title="模板列表"
+            title={<FormattedMessage id="plan.template.list" />}
             visible={visible}
             width="376"
             onClose={handleClose}
@@ -105,8 +106,8 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 typeof replaceId !== 'number' &&
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} >确定</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }

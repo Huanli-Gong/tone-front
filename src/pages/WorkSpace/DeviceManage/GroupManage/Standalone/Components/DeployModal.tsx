@@ -156,10 +156,8 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     useEffect(() => {
-        // 请求版本数据
-        if (!!selectedRow.length)
-            getVersionData()
-    }, [selectedRow, arch])
+        getVersionData()
+    }, [arch])
 
     return (
         <div>

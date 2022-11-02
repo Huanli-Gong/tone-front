@@ -55,7 +55,7 @@ const UserManagement: React.FC<{}> = () => {
 					<TabPane
 						tab={
 							<span>
-								{<FormattedMessage id={"JoinApprove.tab.pending"} />} {num.backlog_count}
+								{<FormattedMessage id="sys.approve.tab.pending" />} {num.backlog_count}
 							</span>
 						}
 						key="1"
@@ -63,7 +63,7 @@ const UserManagement: React.FC<{}> = () => {
 					<TabPane
 						tab={
 							<span>
-								{<FormattedMessage id={"JoinApprove.tab.record"} />} {num.finished_count}
+								{<FormattedMessage id="sys.approve.tab.record" />} {num.finished_count}
 							</span>
 						}
 						key="2"

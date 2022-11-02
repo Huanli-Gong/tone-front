@@ -1,11 +1,13 @@
 import React, { useImperativeHandle, useState, forwardRef } from 'react'
 import { Drawer, Form, Input, Radio, Space, Button, message } from 'antd'
-
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import { createKernel, updateKernel } from './services'
 import { requestCodeMessage } from '@/utils/utils'
 
+/** 废弃 */
 export default forwardRef(
     ({ confirm }: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
@@ -39,7 +41,7 @@ export default forwardRef(
                 setVisible(false)
                 form.resetFields()
                 setInitValue({})
-                message.success('操作成功!')
+                message.success(formatMessage({id: 'operation.success'}) )
             }
             else {
                 requestCodeMessage( code , msg )
@@ -78,9 +80,9 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
                             <Button type="primary" disabled={padding} onClick={handleSubmit}>
-                                {title.indexOf('新增') > -1 ? '确定' : '更新'}
+                                {title.indexOf('新增') > -1 ? <FormattedMessage id="operation.ok"/> : <FormattedMessage id="operation.update"/>}
                             </Button>
                         </Space>
                     </div>

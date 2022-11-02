@@ -36,7 +36,7 @@ const ResultTestType: React.FC<{ dataSource: any, update: any, field: string }> 
                                     <Tag color="#C84C5A" >Fail</Tag>
                                     <Tag color="#D9D9D9" style={{ color: "#1d1d1d" }} >Pending</Tag>
                                     <Tag color="#D9D9D9" style={{ color: "#1d1d1d" }} >Stop</Tag>
-                                    <Tag color="#D9D9D9" style={{ color: "#1d1d1d" }} >Skip</Tag>
+                                    {/* <Tag color="#D9D9D9" style={{ color: "#1d1d1d" }} >Skip</Tag> */}
                                 </Space>
                                 <Typography.Text>
                                     <Typography.Text strong>type2：</Typography.Text>
