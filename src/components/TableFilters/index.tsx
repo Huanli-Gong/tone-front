@@ -7,6 +7,7 @@ import SelectDrop from '@/components/Public/SelectDrop'
 import { useClientSize } from '@/utils/hooks';
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
+import SearchInput from '@/components/Public/SearchInput';
 const SearchTableFilter: React.FC<any> = ({ confirm, onConfirm, initVal }) => {
     const [val, setVal] = useState(initVal || '')
     const handleSearch = () => {
@@ -236,21 +237,13 @@ export const getCheckboxFilter = (props: any, setProps: any, list: any, name: st
 })
 
 export const getSearchFilter = (props: any, setProps: any, name: string) => ({
-    filterIcon: <FilterFilled style={{ color: props[name] ? '#1890ff' : undefined }} />,
-    filterDropdown: ({ confirm }: any) => {
-        const handleSetProps = (val: string) => {
-            let obj = { ...props }
-            obj[name] = val
-            setProps(obj)
-        }
-        return (
-            <SearchTableFilter
-                initVal={props[name]}
-                confirm={confirm}
-                onConfirm={handleSetProps}
-            />
-        )
-    }
+    filterDropdown: ({ confirm }: any) => (
+        <SearchInput
+            confirm={confirm}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+        />
+    ),
+    filterIcon: () => <FilterFilled style={{ color: props[name] ? '#1890ff' : undefined }} />,
 })
 
 export const getRadioFilter = (props: any, setProps: any, list: any, name: string) => ({
