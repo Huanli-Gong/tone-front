@@ -219,7 +219,7 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="Table.columns.operation"/>,
             fixed: 'right',
-            width: enLocale ? 308: 280,
+            width: BUILD_APP_ENV ? (enLocale ? 260: 185) : (enLocale ? 200: 120),
             align: 'center',
             render: (_: any, row: any) => (
                 <Space>
@@ -251,9 +251,7 @@ export default (props: any) => {
                             {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>}
                         </Space>
                     </Access>
-                    <PermissionTootip>
-                        <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>
-                    </PermissionTootip>
+                    <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>
                 </Space>
             )
         }
@@ -299,7 +297,7 @@ export default (props: any) => {
                 <div
                     style={{ width: "calc(100% - 47px)" }}
                 >
-                    <ResizeTable
+                   <ResizeTable
                         rowKey="id"
                         columns={columns}
                         loading={loading}
@@ -308,7 +306,7 @@ export default (props: any) => {
                         pagination={false}
                         scroll={{ x: '100%' }}
                         rowClassName={() => styles.row_class}
-                    />
+                    /> 
                 </div>
             </div>
             <OperationLog ref={logDrawer} operation_object="machine_cluster_aligroup_server" />
