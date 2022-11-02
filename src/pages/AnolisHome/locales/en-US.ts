@@ -30,7 +30,7 @@ const locales = {
     "process_support.child.2": "Quickly set up CI/CD processes",
     "process_support.child.3": "Custom test plans, custom test report generation",
 
-    "button.start_test": "Start to Test",
+    "button.start_test": "Enter Workspace",
     "button.apply_join": "Apply to Join",
     "button.tourist_test": "Tourists Try",
 }
