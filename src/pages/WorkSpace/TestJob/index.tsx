@@ -420,7 +420,7 @@ const TestJob: React.FC<any> = (props) => {
                 requestCodeMessage(code, msg)
             }
             else
-                requestCodeMessage(code, msg)
+                requestCodeMessage(code, formatMessage({ id: 'ws.test.job.operation.success' }))
             // setFetching(false)
         }
         catch (error) {
