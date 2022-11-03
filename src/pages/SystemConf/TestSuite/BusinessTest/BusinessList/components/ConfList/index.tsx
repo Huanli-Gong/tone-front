@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle  } from 'react';
 import { Popover, Tooltip, Space, message, Button, Popconfirm, Modal, Checkbox, Typography } from 'antd';
 import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi'
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
@@ -14,7 +15,8 @@ import styles from './index.less';
  * @description conf级列表
  */
 export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any) => {
-  const [loading, setLoading] = useState<any>(false)
+  const { formatMessage } = useIntl()
+	const [loading, setLoading] = useState<any>(false)
   const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 10 })
 	// 复选行
 	const [selectedRow, setSelectedRow] = useState<any>([])
@@ -34,7 +36,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
       if (code === 200) {
         setData(res)
       } else {
-        message.error(msg ||'请求数据失败');
+        message.error(msg || formatMessage({id: 'request.failed'}) );
       }
       setLoading(false)
     } catch (e) {
@@ -47,7 +49,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 		try {
 			const { code, msg }: any = await delCase(deleteRow.id) || {};
 			if (code === 200) {
-				message.success('删除成功');
+				message.success(formatMessage({id: 'request.delete.success'}) );
         // *判断单个删除行时，对批量选中行的影响
 				if (selectedRowKeys.includes(deleteRow.id)) {
 					const tempKeys = selectedRowKeys.filter((item)=> item !== deleteRow.id)
@@ -58,7 +60,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 				onCancel()
 				getTableData({ page_num: data.page_num, page_size: data.page_size })
 			} else {
-				message.error(msg ||'删除失败');
+				message.error(msg || formatMessage({id: 'request.delete.failed'}) );
 			}
 			setDeleteLoading(false)
 		} catch (e) {
@@ -77,7 +79,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
       // 刷新表格数据
 			getTableData({ page_num: 1, page_size: data.page_size })
 		} else {
-			message.error(msg ||'批量删除失败');
+			message.error(msg || formatMessage({id: 'operation.batch.delete.failed'}) );
 		}
 	}
 	// 4.查看引用
@@ -136,9 +138,9 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 
 	const handelAddOrEdit = ({ type, record={} }: any) => {
 		if (type === 'add') {
-			addConfDrawer.current?.show('新增Test Conf', { ...record })
+			addConfDrawer.current?.show('new', { ...record })
 		}	else if (type === 'edit') {
-			addConfDrawer.current?.show('编辑Test Conf', { ...record })
+			addConfDrawer.current?.show('edit', { ...record })
 		}
 	}
 	const handelCallback = (info: any) => {
@@ -174,7 +176,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
  
 	// 批量编辑
 	const editAll = () => {
-		addConfDrawer.current.show('批量编辑Test Conf', { editAll: true })
+		addConfDrawer.current.show('batch.edit', { editAll: true })
   }
 
 	// 1.业务测试
@@ -187,26 +189,26 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
       render: (text:any) => <PopoverEllipsis title={text} />,
 		},
 		{
-			title: '领域',
+			title: <FormattedMessage id="TestSuite.domain"/>,
 			dataIndex: 'domain_name_list',
 			width: 100,
 			render: (text:any) => <PopoverEllipsis title={text} />
 		},
 		{
-			title: '最大运行时长（秒）',
+			title: <FormattedMessage id="TestSuite.timeout"/>,
 			dataIndex: 'timeout',
 			width: 150,
 			// onCell: () => ({ style: { maxWidth: 130 } }),
 			render: (text:any) => <span>{text || '-'}</span>,
 		},
 		{
-			title: '默认运行次数',
+			title: <FormattedMessage id="TestSuite.default.repeat"/>,
 			dataIndex: 'repeat',
 			width: 110,
 			render: (text:any) => <span>{text || '-'}</span>,
 		},
     {
-			title: 'CI类型',
+			title: <FormattedMessage id="TestSuite.ci_type"/>,
 			dataIndex: 'ci_type',
 			width: 110,
 			render: (text:any) => {
@@ -214,7 +216,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 			}
 		},
     {
-			title: '创建时间',
+			title: <FormattedMessage id="TestSuite.gmt_created"/>,
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text:any) => {
@@ -222,20 +224,20 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 			}
 		},
 		{
-			title: '说明',
+			title: <FormattedMessage id="TestSuite.desc"/>,
 			dataIndex: 'description',
 			width: 200,
 			render: (text:any) => <PopoverEllipsis title={text} />,
 		},
     {
-			title: (<div>操作<Button type="primary" onClick={()=> handelAddOrEdit({ type: 'add' })} style={{ marginLeft:10}}>新增</Button></div>),
+			title: (<div><FormattedMessage id="Table.columns.operation"/><Button type="primary" onClick={()=> handelAddOrEdit({ type: 'add' })} style={{ marginLeft:10}}><FormattedMessage id="operation.new"/></Button></div>),
 			width: 150,
 			fixed: 'right',
 			render: (text: any, record: any) => {
 				return (<div>
 					<Space>
-						<a><span onClick={()=> handelAddOrEdit({ type: 'edit', record })}>编辑</span></a>
-						<a><span onClick={()=> queryDeleteSingle({ record })}>删除</span></a>
+						<a><span onClick={()=> handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit"/></span></a>
+						<a><span onClick={()=> queryDeleteSingle({ record })}><FormattedMessage id="operation.delete"/></span></a>
 					</Space>
 				</div>
 				)
@@ -270,20 +272,20 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 				scroll={{ x: 1100 }}
 				paginationBottom={true}
 			/>
-			<Modal title="删除提示"
+			<Modal title={<FormattedMessage id="delete.tips"/>}
 				centered={true}
-				okText="删除"
-				cancelText="取消"
+				okText={<FormattedMessage id="operation.delete"/>}
+				cancelText={<FormattedMessage id="operation.cancel"/>}
 				visible={deleteState.visible}
 				onCancel={onCancel}
 				width={['', 201].includes(deleteState.success) ? 300 : 600}
 				maskClosable={false}
 				footer={[
 					<Button key="submit" onClick={onSubmit} loading={deleteLoading}>
-							确定删除
+							<FormattedMessage id="operation.confirm.delete"/>
 					</Button>,
 					<Button key="back" type="primary" onClick={onCancel}>
-							取消
+							<FormattedMessage id="operation.cancel"/>
 					</Button>
 			  ]}
 			>
@@ -292,18 +294,22 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 					{['', 201].includes(deleteState.success) ? (
 						<div style={{ color:'red',marginBottom: 5 }}> 
 							<ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign:'middle' }}/>
-							确定要删除吗？
+							<FormattedMessage id="delete.prompt"/>
 						</div>
 					) : (
 						<div>
 							<div style={{ color: 'red', marginBottom: 5 }}>
 									<ExclamationCircleOutlined style={{ marginRight: 4 }} />
-									{`${deleteState.action === 'single' ? `该Conf(${deleteRow.name})` : `有Conf`}已被Worksapce引用，删除后将影响以下Workspace的Test Suite管理列表，以及应用该Suite的Job、模板、计划，请谨慎删除！！`}
+									{deleteState.action === 'single' ? 
+										formatMessage({id: 'TestSuite.conf.name.delete.warning'}, {data: deleteRow.name})
+										:
+										formatMessage({id: 'TestSuite.have.conf.delete.warning'})
+									}
 							</div>
 							<div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-									删除conf影响范围：运行中的job、测试模板、对比分析报告
+							  <FormattedMessage id="TestSuite.conf.delete.range"/>
 							</div>
-							<div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+							<div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details"/></div>
 						</div>
 					)}
 				</>
@@ -313,12 +319,14 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref : any)
 				<div className={styles.deleteAll}>
 						<Space>
 								<Checkbox indeterminate={true} />
-								<Typography.Text>已选择{selectedRowKeys.length}项</Typography.Text>
-								<Button type="link" onClick={() => { setSelectedRow([]); setSelectedRowKeys([]) }}>取消</Button>
+								<Typography.Text>
+								  {formatMessage({id: 'selected.item'}, {data: selectedRowKeys?.length})}
+								</Typography.Text>
+								<Button type="link" onClick={() => { setSelectedRow([]); setSelectedRowKeys([]) }}><FormattedMessage id="operation.cancel"/></Button>
 						</Space>
 						<Space>
-								<Button onClick={queryDeleteAll}>批量删除</Button>
-								<Button type="primary" onClick={editAll}>批量编辑</Button>
+								<Button onClick={queryDeleteAll}><FormattedMessage id="operation.batch.delete"/></Button>
+								<Button type="primary" onClick={editAll}><FormattedMessage id="operation.batch.edit"/></Button>
 						</Space>
 				</div>
 			}

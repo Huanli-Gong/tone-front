@@ -2,10 +2,12 @@ import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { Drawer, Space, Button, Form, Input, InputNumber, message, Select, Row, Col } from 'antd'
 import { MinusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { addConf, editConf, deleteBusinessConfEditAll } from '../../../../../service'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 import { filter } from 'lodash';
 
 export default forwardRef((props: any, ref: any) => {
+  const { formatMessage } = useIntl()
   const [form] = Form.useForm()
   const [padding, setPadding] = useState(false) // 确定按钮是否置灰
   const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
@@ -65,10 +67,10 @@ export default forwardRef((props: any, ref: any) => {
   const defaultOption = (code: number, msg: string, type: string) => {
     if (code === 200) {
       initialState()
-      message.success('操作成功')
+      message.success(formatMessage({id: 'operation.success'}) )
       props.callback({ type });
     } else {
-      message.error(msg || '操作失败')
+      message.error(msg || formatMessage({id: 'operation.failed'}) )
     }
   }
 
@@ -185,16 +187,16 @@ export default forwardRef((props: any, ref: any) => {
             let len = valid.length
             for (let i = 0; i < len; i++) {
                 if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                    callback('变量数据格式错误');
+                    callback(formatMessage({id: 'TestSuite.data.format.error'}) );
                     return
                 }
             }
         } else {
-            callback('变量数据格式错误');
+            callback(formatMessage({id: 'TestSuite.data.format.error'}) );
             return
         }
     } catch (e) {
-        callback('变量数据格式错误');
+        callback(formatMessage({id: 'TestSuite.data.format.error'}) );
         return
     }
     callback()
@@ -233,14 +235,14 @@ export default forwardRef((props: any, ref: any) => {
   // CI类型ReactNode 
   const ciTypeElement = (
     <div>
-      <Form.Item label="CI配置"
+      <Form.Item label={<FormattedMessage id="TestSuite.ci_type"/>}
         name="ci_type"
         rules={[
-          {required: true, message: '请选择CI类型',}
+          {required: true, message: formatMessage({id: 'TestSuite.ci_type.message'}),}
         ]}
-        extra={ciType == 'kernel_install' ? <div className={styles.CI_Config_Extra}>此选项只安装内核！</div> : undefined}
+        extra={ciType === 'kernel_install' ? <div className={styles.CI_Config_Extra}><FormattedMessage id="only.installs.the.kernel"/></div> : undefined}
         >
-        <Select placeholder="请选择CI类型" onChange={handleCIChange}>
+        <Select placeholder={formatMessage({id: 'TestSuite.ci_type.message'})} onChange={handleCIChange}>
           {[{value: 'aone'}, {value: 'jenkins'}, {value: 'kernel_install'}, {value: 'script'}].map((item: any) => 
             <Select.Option key={item.value} value={item.value}>{item.value}</Select.Option>
           )}
@@ -250,20 +252,20 @@ export default forwardRef((props: any, ref: any) => {
         {ciType === 'aone' && (
             <>
             <Form.Item label="-Host"
-              name="host" rules={[ {required: true, message: '请输入CI host'}]}>
-              <Input placeholder="请输入CI host" autoComplete="off" />
+              name="host" rules={[ {required: true, message: formatMessage({id: 'TestSuite.host.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.host.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-Pipeline id"
-              name="pipeline_id" rules={[ {required: true, message: '请输入Pipeline id'}]}>
-              <Input placeholder="请输入Pipeline id" autoComplete="off" />
+              name="pipeline_id" rules={[ {required: true, message: formatMessage({id: 'TestSuite.pipeline_id.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.pipeline_id.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-ClientKey"
-              name="user" rules={[ {required: true, message: '请输入Aone AppName'}]}>
-              <Input placeholder="请输入Aone AppName" autoComplete="off" />
+              name="user" rules={[ {required: true, message: formatMessage({id: 'TestSuite.ClientKey.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.ClientKey.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-AccessSecret"
-              name="token" rules={[ {required: true, message: '请输入Aone AccessSecret'}]}>
-              <Input placeholder="请输入Aone AccessSecret " autoComplete="off" />
+              name="token" rules={[ {required: true, message: formatMessage({id: 'TestSuite.AccessSecret.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.AccessSecret.message'})} autoComplete="off" />
             </Form.Item>
             </>
           )
@@ -271,24 +273,24 @@ export default forwardRef((props: any, ref: any) => {
         {ciType === 'jenkins' && (
             <>
             <Form.Item label="-Host"
-              name="host" rules={[ {required: true, message: '请输入CI host'}]}>
-              <Input placeholder="请输入CI host" autoComplete="off" />
+              name="host" rules={[ {required: true, message: formatMessage({id: 'TestSuite.host.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.host.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-Project Name"
-              name="project_name" rules={[ {required: true, message: '请输入Project Name'}]}>
-              <Input placeholder="请输入Project Name" autoComplete="off" />
+              name="project_name" rules={[ {required: true, message: formatMessage({id: 'TestSuite.project_name.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.project_name.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-User"
-              name="user" rules={[ {required: true, message: '请选择User'}]}>
-              <Input placeholder="请选择User" autoComplete="off" />
+              name="user" rules={[ {required: true, message: formatMessage({id: 'TestSuite.User.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.User.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-ApiToken"
-              name="token" rules={[ {required: true, message: '请输入ApiToken'}]}>
-              <Input placeholder="请输入ApiToken" autoComplete="off" />
+              name="token" rules={[ {required: true, message: formatMessage({id: 'TestSuite.ApiToken.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.ApiToken.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-BuildParams"
-              name="params" rules={[ {required: true, message: '请输入构建参数（json格式）'}]}>
-              <Input.TextArea rows={3} placeholder="请输入构建参数（json格式）" />
+              name="params" rules={[ {required: true, message: formatMessage({id: 'TestSuite.BuildParams.message'}) }]}>
+              <Input.TextArea rows={3} placeholder={formatMessage({id: 'TestSuite.BuildParams.message'})} />
             </Form.Item>
             </>
           )
@@ -296,12 +298,12 @@ export default forwardRef((props: any, ref: any) => {
         {ciType === 'script' && (
             <>
             <Form.Item label="-Host"
-              name="host" rules={[ {required: true, message: '请输入CI host'}]}>
-              <Input placeholder="请输入CI host" autoComplete="off" />
+              name="host" rules={[ {required: true, message: formatMessage({id: 'TestSuite.host.message'}) }]}>
+              <Input placeholder={formatMessage({id: 'TestSuite.host.message'})} autoComplete="off" />
             </Form.Item>
             <Form.Item label="-BuildParams(script)"
-              name="params" rules={[ {required: true, message: '请输入脚本信息'}]}>
-              <Input.TextArea rows={3} placeholder="请输入脚本信息" />
+              name="params" rules={[ {required: true, message: formatMessage({id: 'TestSuite.BuildParams(script).message'}) }]}>
+              <Input.TextArea rows={3} placeholder={formatMessage({id: 'TestSuite.BuildParams(script).message'})} />
             </Form.Item>
             </>
           )
@@ -313,7 +315,7 @@ export default forwardRef((props: any, ref: any) => {
 
   return (
     <Drawer className={styles.addConf_drawer}
-      title={title}
+      title={<FormattedMessage id={`confDrawer.title.${title}`} />}
       maskClosable
       keyboard={ false }
       width="375"
@@ -322,9 +324,9 @@ export default forwardRef((props: any, ref: any) => {
       footer={
         <div style={{ textAlign: 'right', }} >
           <Space>
-              <Button onClick={handleClose}>取消</Button>
+              <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
               <Button type="primary" disabled={padding || !nameStatus.status} onClick={editData.editAll ? handleEditAll : handleOk}>
-                {(editData?.name || editData.editAll) ? '更新' : '确定'}
+                {(editData?.name || editData.editAll) ? <FormattedMessage id="operation.update"/> : <FormattedMessage id="operation.ok"/>}
               </Button>
           </Space>
         </div>
@@ -341,53 +343,54 @@ export default forwardRef((props: any, ref: any) => {
             rules={[
               {required: true },
             ]}>
-            <Input autoComplete="off" placeholder="请输入Test Conf名称" onChange={(e) => {
+            <Input autoComplete="off" placeholder={formatMessage({id: 'TestConf.name.placeholder'})}
+              onChange={(e) => {
                 if (!e.target.value) {
-                  setNameStatus({ status: false, message: `Test Conf名称不能为空`})
+                  setNameStatus({ status: false, message: formatMessage({id: 'TestConf.name.cannot.be.empty'}) })
                 } else {
                   setNameStatus({ status: true, message: '' })
                   const value = e.target.value
                   if (!(value.match(/^[A-Za-z0-9\._-]+$/g) && value.length <= 32)) {
-                    setNameStatus({ status: false, message: `仅允许包含字母、数字、下划线、中划线、点，最长32个字符` })
+                    setNameStatus({ status: false, message: formatMessage({id: 'please.enter.message'}) })
                   }
                 }
             }} />
           </Form.Item>
         }
 
-        <Form.Item label="领域"
+        <Form.Item label={<FormattedMessage id="TestSuite.domain"/>}
           name="domain_list_str"
           rules={[
-            {required: true, message: '请选择' },
+            {required: true, message: formatMessage({id: 'please.select'}) },
           ]}>
-          <Select placeholder="请选择" mode="multiple" getPopupContainer={node => node.parentNode}>
+          <Select placeholder={formatMessage({id: 'please.select'})} mode="multiple" getPopupContainer={node => node.parentNode}>
             {props?.domainList?.map((item: any) => 
               <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
             )}
           </Select>
        </Form.Item>
 
-        <Form.Item label="最大运行时长（秒）"
+        <Form.Item label={<FormattedMessage id="TestSuite.timeout"/>}
           name="timeout"
           rules={[
-            {required: true, message: '请输入测试时长(s)'},
+            {required: true, message: formatMessage({id: 'TestSuite.timeout.message'}) },
           ]}>
-          <InputNumber style={{ width: '100%' }} min={ 0 } step={ 1 } placeholder="请输入" />
+          <InputNumber style={{ width: '100%' }} min={ 0 } step={ 1 } placeholder={formatMessage({id: 'please.enter'})} />
         </Form.Item>
 
-        <Form.Item label="运行次数"
+        <Form.Item label={<FormattedMessage id="TestSuite.repeat"/>}
           name="repeat"
           rules={[
-            {required: true, message: '请输入运行次数'},
+            {required: true, message: formatMessage({id: 'TestSuite.repeat.message'}) },
           ]}>
-          <InputNumber style={{ width: '100%' }} min={ 0 } step={ 1 } placeholder="请输入" />
+          <InputNumber style={{ width: '100%' }} min={ 0 } step={ 1 } placeholder={formatMessage({id: 'please.enter'})} />
         </Form.Item>
 
         {!editData.editAll && //批量操作时，无该部分。
           <>
             <div>
               <div className={styles.variableLabel}>
-                变量<span className={styles.Bulk_btn} onClick={handleChangeValueStyle}>{handleBulk ? 'Bulk Edit' : 'Key-Value Edit'}</span>
+                <FormattedMessage id="TestSuite.var"/><span className={styles.Bulk_btn} onClick={handleChangeValueStyle}>{handleBulk ? 'Bulk Edit' : 'Key-Value Edit'}</span>
               </div>
               {handleBulk ?
                 <>
@@ -400,21 +403,21 @@ export default forwardRef((props: any, ref: any) => {
                           //   {required: true, message: '请输入'},
                           // ]}
                           >
-                          <Input placeholder="变量名" autoComplete="off" />
+                          <Input placeholder={formatMessage({id: 'TestSuite.variable.name'})} autoComplete="off" />
                         </Form.Item>
                         <span style={{ marginTop: 5, padding:'0px 8px' }}>=</span>
                       </Col>
                       <Col span={8} className={styles.flexStart}>
                         <Form.Item
                           name={`val${item.id}`}>
-                          <Input placeholder="默认值" autoComplete="off" />
+                          <Input placeholder={formatMessage({id: 'TestSuite.default'})} autoComplete="off" />
                         </Form.Item>
                         <span style={{ marginTop: 5, padding:'0px 8px' }}>,</span>
                       </Col>
                       <Col span={8} className={styles.flexStart}>
                         <Form.Item
                           name={`des${item.id}`}>
-                          <Input placeholder="变量说明" autoComplete="off" />
+                          <Input placeholder={formatMessage({id: 'TestSuite.var.desc'})} autoComplete="off" />
                         </Form.Item>
                         <span style={{ marginTop: 5, paddingLeft:'8px' }}>
                           {variableDataList.length > 1 ?
@@ -425,13 +428,13 @@ export default forwardRef((props: any, ref: any) => {
                       </Col>
                     </Row>
                   )}
-                  <a onClick={addVariable}>+ 添加变量</a>
+                  <a onClick={addVariable}>+ <FormattedMessage id="TestSuite.var.add"/></a>
                 </>
                 : 
                 <Form.Item
                   name="var"
                   rules={[{ validator: validFunction }]}>
-                  <Input.TextArea rows={4} style={{ width: '100%' }} placeholder="格式：key=value, description，多个换行" />
+                  <Input.TextArea rows={4} style={{ width: '100%' }} placeholder={formatMessage({id: 'TestSuite.format:key=value'})} />
                 </Form.Item>
               }
             </div>
@@ -439,9 +442,9 @@ export default forwardRef((props: any, ref: any) => {
             <div style={{ height: 10, backgroundColor: '#f5f5f5', margin: '20px -24px'}}></div>
             {props?.test_type === 'business' ? ciTypeElement : null }
 
-            <Form.Item label="说明"
+            <Form.Item label={<FormattedMessage id="TestSuite.desc"/>}
               name="description">
-              <Input.TextArea rows={3} placeholder="请输入说明信息" />
+              <Input.TextArea rows={3} placeholder={formatMessage({id: 'TestSuite.desc.placeholder.s'})} />
             </Form.Item>
           </>
         }

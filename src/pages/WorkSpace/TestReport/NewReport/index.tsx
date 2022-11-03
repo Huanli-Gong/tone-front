@@ -35,7 +35,6 @@ const Report = (props: any) => {
             perf_data:[]
         }
     })
-    const creator_id = window.location.search
     const routeName = props.route.name
     
     const basicData:any = routeName === 'Report' || routeName === 'EditReport' || routeName === 'ShareReport' ? EditPageData(props) : CreatePageData(props);
@@ -54,6 +53,8 @@ const Report = (props: any) => {
         saveReportData,
         wsId,
         queryReport,
+        isFlag,
+        creator
     } = basicData
     
     const groupLen = allGroupData?.length
@@ -88,7 +89,7 @@ const Report = (props: any) => {
         }
         return result
     }
-
+    
     // 面包屑
     const BreadcrumbItem: React.FC<any> = () => (
         <ReportBread>
@@ -100,7 +101,7 @@ const Report = (props: any) => {
                 <Btn btnState={btnState}>
                     {
                         btnState ?
-                            routeName !== 'ShareReport' && <Button type="primary" disabled={btnConfirm} onClick={handleSubmit}>
+                            routeName !== 'ShareReport' && <Button type="primary" disabled={btnConfirm} onClick={handleSubmit} loading={isFlag}>
                                 {saveReportData?.id ? <FormattedMessage id="operation.update" />: <FormattedMessage id="operation.save" />}
                             </Button>
                             : <>
@@ -111,7 +112,7 @@ const Report = (props: any) => {
                                     routeName !== 'ShareReport' && 
                                     <Access accessible={access.WsTourist()}>
                                         <Access
-                                            accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5,creator_id.length)))}
+                                            accessible={access.WsMemberOperateSelf(creator)}
                                             fallback={
                                                 <span onClick={()=> AccessTootip()}><IconWarp style={{ marginRight: 4 }} /><FormattedMessage id="operation.edit" /></span>
                                             }
@@ -191,6 +192,7 @@ const Report = (props: any) => {
             groupLen,
             bodyRef,
             wsId,
+            creator,
             isOldReport: saveReportData?.old_report,
             setCollapsed,
             setObj

@@ -57,12 +57,8 @@ const ResizeableTitle = (props: any) => {
 
 const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
     const { columns = [], ...rest } = props
-    const [tableColumns, setTableColumns] = React.useState<any[]>([])
-
-    React.useEffect(() => {
-        setTableColumns(columns)
-    }, [columns])
-
+    const [tableColumns, setTableColumns] = React.useState<any[]>(columns)
+   
     const handleResize = (index: number) => (e: any, { size }: any) => {
         const nextColumns = [...tableColumns];
         if (nextColumns[index].ellipsis) {

@@ -255,7 +255,6 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any) => (
                 <ServerLink
                     val={_}
-                    // provider={'内网机器'}
                     provider={"aligroup"}
                 />
             ),
@@ -444,7 +443,7 @@ const Standalone = (props: any, ref: any) => {
         {
             title: <FormattedMessage id="Table.columns.operation"/>,
             fixed: 'right',
-            width: !BUILD_APP_ENV ? (enLocale ? 360: 300) : (enLocale ? 320: 260),
+            width: !BUILD_APP_ENV ? (enLocale ? 380: 240) : (enLocale ? 320: 260),
             // align: 'center',
             ellipsis: {
                 showTitle: false,

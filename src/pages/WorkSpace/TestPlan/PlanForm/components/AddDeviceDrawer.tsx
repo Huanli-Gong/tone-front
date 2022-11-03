@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef, useMemo } from 'react'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { Drawer, Space, Button, Form, Input, Select } from 'antd'
 import styled from 'styled-components'
 import { checkTestServerIps } from '@/pages/WorkSpace/DeviceManage/GroupManage/services'
@@ -12,6 +12,7 @@ const FormWrapper = styled(Form)`
 `
 
 const TemplateListDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id, onOk } = props
     const [visible, setVisible] = useState(false)
     const [idx, setIdx] = useState<any>(null)
@@ -50,7 +51,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
     }
 
     const title = useMemo(() => {
-        return typeof idx === 'number' ? '编辑机器' : '添加机器'
+        return typeof idx === 'number' ? <FormattedMessage id="plan.edit.machine"/>: <FormattedMessage id="plan.add.machine"/>
     }, [idx])
 
     return (
@@ -64,8 +65,8 @@ const TemplateListDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}>取消</Button>
-                        <Button type="primary" onClick={handleOk} >确定</Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk} ><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }
@@ -78,11 +79,11 @@ const TemplateListDrawer = (props: any, ref: any) => {
             >
                 <Form.Item
                     name="channel_type"
-                    label="机器"
+                    label={<FormattedMessage id="plan.channel_type" />}
                     initialValue={BUILD_APP_ENV ? open_agent : self_agent}
-                    rules={[{ required: true, message: '请选择控制通道' }]}
+                    rules={[{ required: true, message: formatMessage({id: 'plan.channel_type.message'}) }]}
                 >
-                    <AgentSelect placeholder="请选择机器类型(agent)" />
+                    <AgentSelect placeholder={formatMessage({id: 'plan.channel_type.placeholder'})} />
                 </Form.Item>
                 <Form.Item
                     name="machine"
@@ -104,14 +105,14 @@ const TemplateListDrawer = (props: any, ref: any) => {
                         }),
                     ]}
                 >
-                    <Input placeholder={`请输入机器IP${!BUILD_APP_ENV ? "/SN" : ""}`} autoComplete="off" />
+                    <Input placeholder={`${formatMessage({id: 'plan.please.enter.IP'})}${!BUILD_APP_ENV ? "/SN" : ""}`} autoComplete="off" />
                 </Form.Item>
                 <Form.Item
                     name="script"
-                    label="自定义脚本"
-                    rules={[{ required: true, message: '自定义脚本不能为空' }]}
+                    label={<FormattedMessage id="plan.custom.script" />}
+                    rules={[{ required: true, message: formatMessage({id: 'plan.custom.script.cannot.empty'}) }]}
                 >
-                    <Input.TextArea rows={4} placeholder="自定义脚本" />
+                    <Input.TextArea rows={4} placeholder={formatMessage({id: 'plan.custom.script'})} />
                 </Form.Item>
             </FormWrapper>
         </Drawer>

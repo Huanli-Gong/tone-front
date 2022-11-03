@@ -105,7 +105,7 @@ const TidDetail: React.FC<any> = ({ tid }) => {
                     </TidRow>
                     <TidRow gutter={20} >
                         <Col span={6}>Finish time:</Col>
-                        <Col span={18}>{details?.status || '-'}</Col>
+                        <Col span={18}>{details?.finish_time || '-'}</Col>
                     </TidRow>
                     <TidRow gutter={20} >
                         <Col span={6}>Exit code:</Col>

@@ -179,9 +179,7 @@ const SuiteManagement: React.FC<any> = props => {
 							</Popconfirm>
 						</Space>
 					</Access>
-					<PermissionTootip>
-						<Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log"/></Button>
-					</PermissionTootip>
+					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log"/></Button>
 				</Space>,
 		},
 	];

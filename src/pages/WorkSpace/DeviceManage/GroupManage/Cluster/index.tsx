@@ -171,9 +171,7 @@ const Cluster = (props: any, ref: any) => {
                             <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete"/></Button>
                         </Space>
                     </Access>
-                    <PermissionTootip>
-                        <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}><FormattedMessage id="operation.log"/></Button>
-                    </PermissionTootip>
+                     <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}><FormattedMessage id="operation.log"/></Button>
                 </Space>
             )
         }

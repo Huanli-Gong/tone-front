@@ -49,7 +49,7 @@ const BasicSelect: React.FC<SelectProps & any> = (props) => {
         return <Select {...rest} />
 
     const { data, loading, run } = useRequest(
-        (params = { ws_id }) => api(params),
+        (params = { ws_id, page_num: 1, page_size: 500 }) => api(params),
         { debounceInterval: 300 }
     )
 

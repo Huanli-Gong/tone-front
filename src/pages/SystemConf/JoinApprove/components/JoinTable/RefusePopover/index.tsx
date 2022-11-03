@@ -1,8 +1,10 @@
 import React , { useState , forwardRef , useImperativeHandle } from 'react'
 import { Button , Space , Row , Input , Typography , Col , Divider , Popover } from 'antd'
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 
 export default forwardRef(
     ( props : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const [ visible , setVisible ] = useState( false )
         const [ reason , setReason ] = useState('')
     
@@ -26,7 +28,7 @@ export default forwardRef(
     
         return (
             <Popover
-                title="申请加入"
+                title={<FormattedMessage id="JoinApprove.application.join"/>}
                 trigger="click"
                 visible={ visible }
                 onVisibleChange={ handleCancel }
@@ -34,8 +36,8 @@ export default forwardRef(
                     <Row>
                         <Col span={ 24 } style={{ marginBottom : 8 }}>
                             <Space>
-                                <Typography.Text>拒绝理由</Typography.Text>
-                                <Typography.Text disabled>(选填)</Typography.Text>
+                                <Typography.Text><FormattedMessage id="JoinApprove.refuse.reason"/></Typography.Text>
+                                <Typography.Text disabled>(<FormattedMessage id="JoinApprove.option"/>)</Typography.Text>
                             </Space>
                         </Col>
                         <Col span={ 24 }>
@@ -50,15 +52,15 @@ export default forwardRef(
                         <Col span={ 24 }>
                             <Row justify="end">
                                 <Space>
-                                    <Button onClick={ () => handleCancel() } >取消</Button>
-                                    <Button onClick={ handleSubmit }>确认拒绝</Button>
+                                    <Button onClick={ () => handleCancel() }><FormattedMessage id="operation.cancel"/></Button>
+                                    <Button onClick={ handleSubmit }><FormattedMessage id="JoinApprove.confirm.refuse"/></Button>
                                 </Space>
                             </Row>
                         </Col>
                     </Row>
                 }
             >
-                <Button onClick={ () => setVisible ( true )} >拒绝</Button>
+                <Button onClick={() => setVisible ( true )}><FormattedMessage id="operation.refuse"/></Button>
             </Popover>
         )
     }

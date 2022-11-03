@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, useMemo } from 'react';
 import { Button, Space, Popconfirm, message } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh } from '../../service';
@@ -22,7 +22,6 @@ const GroupTree: React.FC<any> = (props) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>([]);
     const [refresh, setRefresh] = useState<boolean>(true)
-    const [columns, setColumns] = useState<any>([]);
     const aloneMachine = useRef<any>(null)
     const access = useAccess();
 
@@ -54,14 +53,16 @@ const GroupTree: React.FC<any> = (props) => {
             requestCodeMessage(res.code, res.msg)
         }
     }
-
-    useEffect(() => {
+    const columns = useMemo(() => {
         const instance = !!data.length && data[0].is_instance
-        let dataSource: any = [{
+        return [{
             title: instance ? <FormattedMessage id="device.server.instance"/> : <FormattedMessage id="device.server.config"/>,
             dataIndex: 'name',
             width: 160,
             fixed: 'left',
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: any, row: any) => (
                 instance ?
                     <ServerLink
@@ -77,29 +78,44 @@ const GroupTree: React.FC<any> = (props) => {
             title: 'SN',
             dataIndex: 'sn',
             width: 150,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
         },
         BUILD_APP_ENV && instance && {
             title: 'TSN',
             dataIndex: 'tsn',
             width: 150,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: number, row: any) => <EllipsisPulic title={row.tsn} />
         },
         !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.pub_ip"/>,
             width: 130,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'pub_ip',
         },
         {
             title: <FormattedMessage id="device.manufacturer/ak"/>,
             dataIndex: 'manufacturer',
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: number, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
         },
         {
             title: 'Region/Zone',
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'region',
             render: (_: number, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
         },
@@ -107,22 +123,31 @@ const GroupTree: React.FC<any> = (props) => {
             title: <FormattedMessage id="device.instance_type"/>,
             dataIndex: 'instance_type',
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: number, row: any) => <EllipsisPulic title={row.instance_type} />
         },
         {
             title: <FormattedMessage id="device.image"/>,
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'image',
             render: (_: number, row: any) => <EllipsisPulic title={row.image}>{row.image_name}</EllipsisPulic>
         },
         {
             title: <FormattedMessage id="device.bandwidth"/>,
             width: 80,
-            dataIndex: 'bandwidth',
+                dataIndex: 'bandwidth',
         },
         {
             title: <FormattedMessage id="device.storage_type"/>,
             dataIndex: 'storage_type',
+            ellipsis: {
+                showTitle: false,
+            },
             width: 100,
             render: (_: number, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage}/>
         },
@@ -135,12 +160,18 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="device.console_conf"/>,
             width: enLocale ? 170: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'console_conf',
             render: (_: number, row: any) => <EllipsisPulic title={row.console_conf} />
         },
         {
             title: <FormattedMessage id="device.private_ip"/>,
             width: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'private_ip',
             render: (_: number, row: any) => <EllipsisPulic title={row.private_ip} />
         },
@@ -148,11 +179,17 @@ const GroupTree: React.FC<any> = (props) => {
             title: <FormattedMessage id="device.channel_type"/>,
             dataIndex: 'channel_type',
             width: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (_: number, row: any) => <EllipsisPulic title={row.channel_type} />
         },
         {
             title: 'Owner',
             width: 100,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'owner_name',
             render: (_: any, row: any) => <EllipsisPulic title={row.owner_name} />
         },
@@ -190,22 +227,34 @@ const GroupTree: React.FC<any> = (props) => {
             title: <FormattedMessage id="device.var_name"/>,
             dataIndex: 'var_name',
             width: enLocale ? 170: 110,
+            ellipsis: {
+                showTitle: false,
+            },
         },
         instance &&
         {
             title: <FormattedMessage id="device.server.state"/>,
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         instance &&
         {
             title: <FormattedMessage id="device.real_state"/>,
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
             title: <FormattedMessage id="device.description"/>,
             width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
             dataIndex: 'description',
             render: (_: number, row: any) => <EllipsisPulic title={row.description} width={100} />
         },
@@ -214,7 +263,7 @@ const GroupTree: React.FC<any> = (props) => {
             fixed: 'right',
             valueType: 'option',
             dataIndex: 'id',
-            width: 180,
+            width: BUILD_APP_ENV ? 160 : 120,
             render: (_: number, row: any) => (
                 <Space>
                     <Access
@@ -247,13 +296,10 @@ const GroupTree: React.FC<any> = (props) => {
                         <FormattedMessage id="operation.log"/>
                     </Button>
                 </Space>
-
-
             )
         }
         ].filter(Boolean)
-        setColumns(dataSource)
-    }, [data, enLocale])
+    },[ data, enLocale ])
 
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
@@ -305,16 +351,16 @@ const GroupTree: React.FC<any> = (props) => {
                     style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
                 />
             }
-            <ResizeTable
-                style={{ width: width - 79 }}
-                loading={loading}
-                scroll={{ x: 2160 }}
-                columns={columns}
-                showHeader={data.length > 0 ? true : false}
-                dataSource={data}
-                rowKey={'id'}
-                pagination={false}
-            />
+                <ResizeTable
+                    style={{ width: width - 79 }}
+                    loading={loading}
+                    scroll={{ x: '100%' }}
+                    columns={columns}
+                    showHeader={data.length > 0 ? true : false}
+                    dataSource={data}
+                    rowKey={'id'}
+                    pagination={false}
+                /> 
             <GroupMachine onRef={aloneMachine} run_mode={'standalone'} onSuccess={onSuccess} />
         </div>
     )

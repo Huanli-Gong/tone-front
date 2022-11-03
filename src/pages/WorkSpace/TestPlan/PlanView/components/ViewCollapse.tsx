@@ -16,7 +16,7 @@ const ViewCollapse = (props: any) => {
 
     const [loading, setLoading] = useState(true)
 
-    const queryPlanViewListData = async (param: any = { ws_id }) => {
+    const queryPlanViewListData = async (param: any = { ws_id, page_num: 1, page_size: 500 }) => {
         setLoading(true)
         const { data, total, code, msg } = await queryPlanViewList(param)
         if (code === 200)
@@ -29,7 +29,7 @@ const ViewCollapse = (props: any) => {
     useEffect(() => {
         queryPlanViewListData()
     }, [])
-
+    
     return (
         <Spin spinning={loading}>
             <Space direction="vertical" style={{ width: '100%', paddingLeft: 20, paddingRight: 20 }}>
@@ -65,7 +65,7 @@ const ViewCollapse = (props: any) => {
                                     }
                                     key={i.id}
                                 >
-                                    <ViewTable ws_id={ws_id} plan_id={i.id} />
+                                    <ViewTable ws_id={ws_id} plan_id={i.id} callBackViewTotal={queryPlanViewListData}/>
                                 </Collapse.Panel>
                             </Collapse>
                         )) :

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { message, Select, Spin, Tag } from 'antd';
+import { useIntl, FormattedMessage } from 'umi';
 import { roleChange } from '../../service'
 import styles from './index.less';
-import { requestCodeMessage, switchUserRole } from '@/utils/utils';
+import { requestCodeMessage, switchUserRole2 } from '@/utils/utils';
 // import { useAccess } from 'umi'
 
 const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number[], row: any) => void }> = ({ row, select, handleChange }: any) => {
+    const { formatMessage } = useIntl()
     const defaultName = row.role_list.map((item: any) => (item.name))
     //const [ roleName, setRoleName ] = useState<string>(handleRole(defaultName))
     const [loading, setLoading] = useState<boolean>(false)
@@ -15,12 +17,11 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
         const data = await roleChange({ user_id: row.id, role_id: value })
         setLoading(false)
         if (data.code === 200) {
-            message.success('角色修改成功')
+            message.success(formatMessage({id: 'user.role.edit.successfully'}) )
         } else {
             requestCodeMessage(data.code, data.msg)
         }
     }
-    // let dom: any = 
    
     return (
         <Spin spinning={loading} >
@@ -51,8 +52,8 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
             )} */}
             <Select
                 size='small'
-                placeholder="请选择角色"
-                defaultValue={switchUserRole(defaultName[0])}
+                placeholder={<FormattedMessage id="user.please.select.role"/>}
+                defaultValue={switchUserRole2(defaultName[0], formatMessage)}
                 //value={roleName}
                 style={{ marginLeft: -10 }}
                 dropdownMatchSelectWidth={false}
@@ -61,7 +62,7 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
                 onSelect={handleValueBlur}
             >
                 {select.map((item: any) => {
-                    return <Option key={item.id} value={item.id} >{switchUserRole(item.name)}</Option>
+                    return <Option key={item.id} value={item.id}>{switchUserRole2(item.name, formatMessage)}</Option>
                 })}
             </Select>
         </div>

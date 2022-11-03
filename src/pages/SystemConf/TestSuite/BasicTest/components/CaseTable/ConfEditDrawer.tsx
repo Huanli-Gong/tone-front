@@ -2,11 +2,12 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import { Popover, Drawer, Button, Form, Row, Col, Input, Select, InputNumber, Space, Radio, message } from 'antd'
 import styles from '../../style.less'
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { useLocation } from 'umi'
+import { useLocation, useIntl, FormattedMessage } from 'umi'
 import { useSuiteProvider } from '../../../hooks'
 
 export default forwardRef(
     ({ onOk }: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const { query }: any = useLocation()
 
         const { domainList } = useSuiteProvider()
@@ -29,7 +30,7 @@ export default forwardRef(
                         ..._,
                         certificated: _.certificated ? 1 : 0,
                     }
-                    if (domainList.length && ~t.indexOf('新增')) {
+                    if (domainList.length && ~t.indexOf('new')) {
                         domainList.forEach(({ id, name }: any) => {
                             if (name === '其他') params.domain_list_str = [id]
                         })
@@ -80,7 +81,7 @@ export default forwardRef(
                 return
             } else {
                 if (value == '') {
-                    callback('请输入');
+                    callback(formatMessage({id: 'please.enter'}) );
                     return
                 }
             }
@@ -94,16 +95,16 @@ export default forwardRef(
                     let len = valid.length
                     for (var i = 0; i < len; i++) {
                         if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                            callback('变量数据格式错误');
+                            callback(formatMessage({id: 'TestSuite.data.format.error'}));
                             return
                         }
                     }
                 } else {
-                    callback('变量数据格式错误');
+                    callback(formatMessage({id: 'TestSuite.data.format.error'}));
                     return
                 }
             } catch (e) {
-                callback('变量数据格式错误');
+                callback(formatMessage({id: 'TestSuite.data.format.error'}));
                 return
             }
             callback()
@@ -118,16 +119,16 @@ export default forwardRef(
                         let len = valid.length
                         for (var i = 0; i < len; i++) {
                             if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                                message.error('变量数据格式错误');
+                                message.error(formatMessage({id: 'TestSuite.data.format.error'}));
                                 return
                             }
                         }
                     } else {
-                        message.error('变量数据格式错误');
+                        message.error(formatMessage({id: 'TestSuite.data.format.error'}));
                         return
                     }
                 } catch (e) {
-                    message.error('变量数据格式错误');
+                    message.error(formatMessage({id: 'TestSuite.data.format.error'}));
                     return
                 }
             }
@@ -139,7 +140,7 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title}
+                title={<FormattedMessage id={`confDrawer.title.${title}`} />}
                 className={styles.warp}
                 forceRender={true}
                 destroyOnClose={true}
@@ -150,10 +151,11 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right' }} >
                         <Button onClick={handleCancel} style={{ marginRight: 8 }}>
-                            取消
+                            <FormattedMessage id="operation.cancel"/>
                         </Button>
-                        <Button onClick={handleOk} type="primary" htmlType="submit" >
-                            {title.indexOf('新增') > -1 ? '确定' : '更新'}
+                        <Button onClick={handleOk} type="primary" htmlType="submit">
+
+                            {title.indexOf('new') > -1 ? <FormattedMessage id="operation.ok"/> : <FormattedMessage id="operation.update"/>}
                         </Button>
                     </div>
                 }
@@ -175,9 +177,9 @@ export default forwardRef(
                                 <Form.Item
                                     name="name"
                                     label="Test Conf"
-                                    rules={[{ required: true, message: '请输入' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'})  }]}
                                 >
-                                    <Input autoComplete="off" placeholder="请输入" />
+                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                                 </Form.Item>
                             </Col>
                         }
@@ -186,20 +188,20 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="alias"
-                                    label="别名"
+                                    label={<FormattedMessage id="TestSuite.alias"/>}
                                 // rules={[{ required: true, message: '请输入' }]}
                                 >
-                                    <Input placeholder="请输入Test Conf别名" />
+                                    <Input placeholder={formatMessage({id: 'TestSuite.alias.placeholder'})} />
                                 </Form.Item>
                             </Col>
                         }
                         <Col span={24}>
                             <Form.Item
                                 name="domain_list_str"
-                                label="领域"
-                                rules={[{ required: true, message: '请选择' }]}
+                                label={<FormattedMessage id="TestSuite.domain"/>}
+                                rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                             >
-                                <Select placeholder="请选择" mode="multiple" getPopupContainer={node => node.parentNode} >
+                                <Select placeholder={formatMessage({id: 'please.select'})} mode="multiple" getPopupContainer={node => node.parentNode} >
                                     {
                                         domainList.map((item: any) => (
                                             <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
@@ -211,19 +213,19 @@ export default forwardRef(
                         <Col span={24}>
                             <Form.Item
                                 name="timeout"
-                                label="最大运行时长（秒）"
-                                rules={[{ required: true, message: '请输入' }]}
+                                label={<FormattedMessage id="TestSuite.timeout"/>}
+                                rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                             >
-                                <InputNumber style={{ width: '100%' }} min={0} step={1} placeholder="请输入" />
+                                <InputNumber style={{ width: '100%' }} min={0} step={1} placeholder={formatMessage({id: 'please.enter'})} />
                             </Form.Item>
                         </Col>
                         <Col span={24}>
                             <Form.Item
                                 name="repeat"
-                                label="运行次数"
-                                rules={!data.bentch ? [{ required: true, message: '请输入' }] : []}
+                                label={<FormattedMessage id="TestSuite.repeat"/>}
+                                rules={!data.bentch ? [{ required: true, message: formatMessage({id: 'please.enter'}) }] : []}
                             >
-                                <InputNumber style={{ width: '100%' }} min={1} step={1} placeholder="请输入" />
+                                <InputNumber style={{ width: '100%' }} min={1} step={1} placeholder={formatMessage({id: 'please.enter'})} />
                             </Form.Item>
                         </Col>
                         {
@@ -241,11 +243,12 @@ export default forwardRef(
                                     !handle ?
                                         <Form.Item
                                             name="var"
-                                            label="变量"
+                                            label={<FormattedMessage id="TestSuite.var"/>}
                                             rules={[{ validator: validFunction }]}
                                         >
                                             <Input.TextArea rows={4} style={{ width: '100%' }} placeholder="格式：key=value, description，多个换行" />
-                                        </Form.Item> :
+                                        </Form.Item>
+                                        :
                                         <Form.List name="var" >
                                             {(fields, { add, remove }) => {
                                                 return (
@@ -253,15 +256,17 @@ export default forwardRef(
                                                         {fields.map((field: any, index: any) => (
                                                             <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="start">
                                                                 <Form.Item
-                                                                    label={index == 0 ? '变量' : null}
+                                                                    label={index == 0 ? <FormattedMessage id="TestSuite.var"/> : null}
                                                                     {...field}
                                                                     name={[field.name, 'name']}
                                                                     fieldKey={[field.fieldKey, 'name']}
                                                                     rules={[{
-                                                                        validator(rule, value, callback) { validCell(rule, value, callback, index) },
+                                                                        validator(rule, value, callback) { 
+                                                                            validCell(rule, value, callback, index) 
+                                                                        },
                                                                     }]}
                                                                 >
-                                                                    <Input autoComplete="off" placeholder="变量名" />
+                                                                    <Input autoComplete="off" placeholder={formatMessage({id: 'TestSuite.variable.name'})} />
                                                                 </Form.Item>
                                                                 <div style={{ paddingTop: index == 0 ? '33px' : '0' }}>=</div>
                                                                 <Form.Item
@@ -273,7 +278,7 @@ export default forwardRef(
                                                                 //     validator(rule, value, callback) { validCell(rule, value, callback, index) },
                                                                 // }]}
                                                                 >
-                                                                    <Input autoComplete="off" placeholder="默认值" />
+                                                                    <Input autoComplete="off" placeholder={formatMessage({id: 'TestSuite.default'})} />
                                                                 </Form.Item>
                                                                 <div style={{ paddingTop: index == 0 ? '38px' : '0' }}>,</div>
                                                                 <Form.Item
@@ -282,7 +287,7 @@ export default forwardRef(
                                                                     name={[field.name, 'des']}
                                                                     fieldKey={[field.fieldKey, 'des']}
                                                                 >
-                                                                    <Input autoComplete="off" placeholder="变量说明" />
+                                                                    <Input autoComplete="off" placeholder={formatMessage({id: 'TestSuite.var.desc'})} />
                                                                 </Form.Item>
 
                                                                 {fields.length > 1 ?
@@ -311,7 +316,7 @@ export default forwardRef(
                                                             }}
                                                             block
                                                         >
-                                                            + 添加变量
+                                                            + <FormattedMessage id="TestSuite.var.add"/>
                                                         </Button>
 
                                                     </div>
@@ -326,12 +331,12 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="is_default"
-                                    label="默认用例"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    label={<FormattedMessage id="TestSuite.default.case"/>}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
@@ -343,12 +348,12 @@ export default forwardRef(
                                     name="certificated"
                                     label={
                                         <span>
-                                            是否认证&nbsp;
+                                            <FormattedMessage id="TestSuite.is_certified"/>&nbsp;
                                             <Popover
                                                 overlayClassName={styles.cer_tips}
                                                 content={
                                                     <div>
-                                                        <p>只有认证过得用例才能同步到Testfarm</p>
+                                                        <p><FormattedMessage id="TestSuite.is_certified.ps"/></p>
                                                     </div>
                                                 }
                                                 placement="bottomLeft"
@@ -357,11 +362,11 @@ export default forwardRef(
                                             </Popover>
                                         </span>
                                     }
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
 
                                     </Radio.Group>
                                 </Form.Item>
@@ -372,9 +377,9 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="description"
-                                    label="说明"
+                                    label={<FormattedMessage id="TestSuite.desc"/>}
                                 >
-                                    <Input.TextArea rows={4} placeholder="请输入Test Conf说明" />
+                                    <Input.TextArea rows={4} placeholder={formatMessage({id: 'TestSuite.desc.placeholder'})} />
                                 </Form.Item>
                             </Col>
                         }

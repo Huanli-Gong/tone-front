@@ -3,7 +3,7 @@ import { Drawer, Button, Form, Spin, Col, Row, Select, Input, Radio, Empty, Popo
 import styles from '../style.less'
 import { member, validateSuite } from '../../service'
 import Owner from '@/components/Owner/index';
-import { useLocation, useRequest } from 'umi'
+import { useLocation, useRequest, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { useSuiteProvider } from '../../hooks'
@@ -15,6 +15,7 @@ import { QusetionIconTootip } from '@/components/Product/index'
  */
 export default forwardRef(
     ({ onOk }: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const { query }: any = useLocation()
         const testType = query.test_type || 'functional'
         const [form] = Form.useForm()
@@ -55,7 +56,7 @@ export default forwardRef(
             form.validateFields().then(val => {
                 if (!val.name || val.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
-                    setHelp('请输入')
+                    setHelp(formatMessage({id: 'please.enter'}) )
                     return
                 }
                 val.name = val.name.replace(/\s+/g, "")
@@ -67,7 +68,7 @@ export default forwardRef(
             }).catch(err => {
                 if (!err.values.name || err.values.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
-                    setHelp('请输入')
+                    setHelp(formatMessage({id: 'please.enter'}) )
                 }
                 setDisable(false)
             })
@@ -77,7 +78,7 @@ export default forwardRef(
             const name = e.target.value.replace(/\s+/g, "")
             if (!name) {
                 setValidateStatus('error')
-                setHelp('请输入')
+                setHelp(formatMessage({id: 'please.enter'}) )
                 return
             }
             setValidateStatus('validating')
@@ -118,14 +119,14 @@ export default forwardRef(
         }
 
         const title = useMemo(() => {
-            const testType = query.test_type === 'performance' ? '性能Test Suite' : '功能Test Suite'
-            const optName = JSON.stringify(dataSource) !== '{}' ? '编辑' : '新增'
-
-            return optName + testType
+            const optName = JSON.stringify(dataSource) !== '{}' ?
+               (query.test_type === 'performance' ? <FormattedMessage id="TestSuite.performance.edit"/> : <FormattedMessage id="TestSuite.functional.edit"/>) : 
+               (query.test_type === 'performance' ? <FormattedMessage id="TestSuite.performance.new"/> : <FormattedMessage id="TestSuite.functional.new"/>) 
+            return optName
         }, [query, dataSource])
 
         const buttonText = useMemo(() => {
-            return JSON.stringify(dataSource) !== '{}' ? '更新' : '确定'
+            return JSON.stringify(dataSource) !== '{}' ? <FormattedMessage id="operation.update"/> : <FormattedMessage id="operation.ok"/>
         }, [])
 
         return (
@@ -142,7 +143,7 @@ export default forwardRef(
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div style={{ textAlign: 'right' }}>
-                        <Button onClick={handleCancel} style={{ marginRight: 8 }}>取消</Button>
+                        <Button onClick={handleCancel} style={{ marginRight: 8 }}><FormattedMessage id="operation.cancel"/></Button>
                         <Button onClick={handleOk} disabled={disable} type="primary" htmlType="submit" >
                             {buttonText}
                         </Button>
@@ -163,11 +164,11 @@ export default forwardRef(
                                     label="Test Suite"
                                     validateStatus={validateStatus}
                                     help={help}
-                                    rules={[{ required: true, message: '请输入' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
                                 >
                                     <Input
                                         autoComplete="off"
-                                        placeholder="请输入"
+                                        placeholder={formatMessage({id: 'please.enter'})}
                                         // onBlur={handleBlur} 配合debug需求，临时注释
                                         onFocus={hanldFocus}
                                         onChange={handleChange}
@@ -177,22 +178,22 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="test_type"
-                                    label="测试类型"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    label={<FormattedMessage id="TestSuite.test_type"/>}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
-                                    <Select placeholder="请选择" disabled getPopupContainer={node => node.parentNode}>
-                                        <Select.Option value="functional">功能测试</Select.Option>
-                                        <Select.Option value="performance">性能测试</Select.Option>
+                                    <Select placeholder={formatMessage({id: 'please.select'})} disabled getPopupContainer={node => node.parentNode}>
+                                        <Select.Option value="functional"><FormattedMessage id="functional.test"/></Select.Option>
+                                        <Select.Option value="performance"><FormattedMessage id="performance.test"/></Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
                                 <Form.Item
                                     name="run_mode"
-                                    label="运行模式"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    label={<FormattedMessage id="TestSuite.run_mode"/>}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
-                                    <Select placeholder="请选择" getPopupContainer={node => node.parentNode}>
+                                    <Select placeholder={formatMessage({id: 'please.select'})} getPopupContainer={node => node.parentNode}>
                                         {
                                             runList.map((item: any, index: number) => {
                                                 return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
@@ -206,9 +207,9 @@ export default forwardRef(
                                 <Col span={24}>
                                     <Form.Item
                                         name="view_type"
-                                        label="视图类型"
+                                        label={<FormattedMessage id="TestSuite.view_type"/>}
                                     >
-                                        <Select placeholder="请选择">
+                                        <Select placeholder={formatMessage({id: 'please.select'})}>
                                             {
                                                 viewType.map((item: any, index: number) => {
                                                     return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
@@ -221,10 +222,10 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="domain_list_str"
-                                    label="领域"
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    label={<FormattedMessage id="TestSuite.domain"/>}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
-                                    <Select placeholder="请选择" mode="multiple" showArrow showSearch={false} getPopupContainer={node => node.parentNode}>
+                                    <Select placeholder={formatMessage({id: 'please.select'})} mode="multiple" getPopupContainer={node => node.parentNode}>
                                         {
                                             domainList.map((item: any, index: number) => {
                                                 return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
@@ -240,13 +241,13 @@ export default forwardRef(
                                 <Form.Item
                                     name="is_default"
                                     label={
-                                        <QusetionIconTootip title="默认用例" desc="自动加入新建workspace" />
+                                        <QusetionIconTootip title={formatMessage({id: 'TestSuite.default.case'})} desc={formatMessage({id: 'TestSuite.auto.join.workspace'})} />
                                     }
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
@@ -254,31 +255,30 @@ export default forwardRef(
                                 <Form.Item
                                     name="certificated"
                                     label={
-                                        <QusetionIconTootip title="是否认证" desc="只有认证过得用例才能同步到Testfarm" />
+                                        <QusetionIconTootip title={formatMessage({id: 'TestSuite.is_certified'})} desc={formatMessage({id: 'TestSuite.is_certified.ps'})} />
                                     }
-                                    rules={[{ required: true, message: '请选择' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
-
+                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
                                 <Form.Item
                                     name="doc"
-                                    label="说明"
+                                    label={<FormattedMessage id="TestSuite.desc"/>}
                                 >
-                                    <Input.TextArea rows={3} placeholder="请输入Test Suite说明" />
+                                    <Input.TextArea rows={3} placeholder={formatMessage({id: 'TestSuite.please.enter.desc'})} />
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
                                 <Form.Item
                                     name="description"
-                                    label="备注"
+                                    label={<FormattedMessage id="TestSuite.remarks"/>}
                                 >
-                                    <Input.TextArea rows={3} placeholder="请输入" />
+                                    <Input.TextArea rows={3} placeholder={formatMessage({id: 'please.enter'})} />
                                 </Form.Item>
                             </Col>
                         </Row>

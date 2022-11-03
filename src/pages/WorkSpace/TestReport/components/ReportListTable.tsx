@@ -134,7 +134,7 @@ const ReportListTable = (props: any) => {
                         searchWords={[fetchParamsData.name || '']}
                         autoEscape
                         textToHighlight={_ || '-'}
-                        onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}/?cid=${row.creator_id}`)}
+                        onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}/`)}
                     />
                 </PopoverEllipsis>
             )
