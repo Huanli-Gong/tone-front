@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin, DatePicker, Row, Col } from 'antd'
-import { OptBtn, TableContainer, ClsResizeTable } from './styled'
-import { useRequest, history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
+import { OptBtn, ClsResizeTable } from './styled'
+import { Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -12,97 +12,67 @@ import SelectProductVersion from '@/components/Public/SelectProductVersion'
 import CommonPagination from '@/components/CommonPagination'
 import { queryReportList, delReportList, } from '../services'
 import _ from 'lodash'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 
 const { RangePicker } = DatePicker
 const ReportListTable = (props: any) => {
     const { formatMessage } = useIntl()
     const access = useAccess()
-    const { ws_id, tab, tableHeght } = props
-    const [autoFocus, setFocus] = useState(true)
-    const defaultParmas = {
+    const { ws_id, tab } = props
+    const [pageParam, setPageParam] = useState<any>({
         name: '',
         project_id: [],  //创建人id
         product_version: '',
         creator: [],
         page_num: 1,
         page_size: 10,
+        gmt_modified:'',
         ws_id,
+    })
+    const [loading, setLoading] = useState<boolean>(false)
+    const [dataSource, setDataSource] = useState<any>({})
+    const [autoFocus, setFocus] = useState(true)
+    const pageCurrent = useStateRef(pageParam)
+
+    const queryReport = async () => {
+        setLoading(true)
+        const  data = await queryReportList(pageParam)
+        if (data.code === 200) {
+            setDataSource(data || {})
+        } else {
+            requestCodeMessage(data.code, data.msg)
+        }
+        setLoading(false)
     }
 
-    const [fetchParams, setFetchParams] = useState<any>()
-    const fetchParamsData = fetchParams || defaultParmas
-
-    const { data, loading, run, refresh, params } = useRequest(
-        (data: any) => queryReportList(data),
-        {
-            formatResult: (response: any) => response,
-            initialData: { data: [], total: 0 },
-            defaultParams: [{ ws_id: ws_id, page_size: 10, page_num: 1 }]
-        }
-    )
     useEffect(() => {
-        setFetchParams(defaultParmas)
-    }, [tab])
+        queryReport()
+    }, [pageParam])
+    
+    const totalCurrent = useStateRef(dataSource)
     const handleReportDel = async (id: any) => {
-        try {
-            const { code, msg } = await delReportList({ report_id: id })
-            if (code === 200) {
-                message.success(formatMessage({id: 'request.delete.success'}) )
-                const num = data.total % data.page_size
-                if (Math.ceil(data.total / data.page_size) === data.page_num && num === 1) // 删除的是最后一页的最后一条且最后一页只有一条
-                {
-                    updateFetchParams({ page_num: data.page_num - 1 > 1 ? data.page_num - 1 : 1 })
-                }
-
-                else {
-                    refresh()
-                }
-
-            } else {
-                requestCodeMessage(code, msg)
-            }
-        } catch (e) {
-            console.log(e)
-            message.error(formatMessage({id: 'request.delete.failed'}) )
+        const { page_num, page_size } = pageCurrent.current
+        const { total } = totalCurrent.current
+        const { code, msg } = await delReportList({ report_id: id })
+        if (code === 200) {
+            setPageParam({ ...pageParam, page_num: handlePageNum(total, page_num, page_size) })
+            message.success(formatMessage({ id: 'request.delete.success' }))
+        } else {
+            requestCodeMessage(code, msg)
         }
     }
     const styleObj = {
         container: 180,
         button_width: 90
     }
-    const updateFetchParams = (obj = {}) => {
-        setFetchParams({ ...fetchParamsData, ...obj })
-        run({ ...fetchParamsData, ...obj })
-    }
-    const handleMemberFilter = (val: [], name: string) => {
-        let searchVal: any = _.isArray(val) ? val : []
-        const obj = {}
-        obj[name] = searchVal;
-        updateFetchParams(obj)
-    }
-    const handleProjectFilter = (val: [], name: string) => {
-        let searchVal: any = _.isArray(val) ? val : []
-        const obj = {}
-        obj[name] = searchVal;
-        updateFetchParams(obj)
-    }
-    const handleVersiontFilter = (val: any, name: string) => {
-        const obj = {}
-        obj[name] = val;
-        updateFetchParams(obj)
-    }
+    
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
         const end_time = dateStrings[1]
-        if (!start_time && !end_time) updateFetchParams({ gmt_modified: null })
-        if (start_time && end_time) updateFetchParams({ gmt_modified: JSON.stringify({ start_time, end_time }) })
+        if (!start_time && !end_time) setPageParam({ ...pageParam, gmt_modified: null })
+        if (start_time && end_time) setPageParam({ ...pageParam, gmt_modified: JSON.stringify({ start_time, end_time }) })
         confirm()
     }
-
-    const dataSource = useMemo(() => {
-        return data && _.isArray(data.data) ? data.data : []
-    }, [data])
 
     const columns: any = [{
         dataIndex: 'name',
@@ -116,22 +86,22 @@ const ReportListTable = (props: any) => {
             confirm={confirm}
             autoFocus={autoFocus}
             styleObj={styleObj}
-            onConfirm={(val: any) => { updateFetchParams({ name: val }) }}
+            onConfirm={(val: any) => { setPageParam({ ...pageParam, name: val }) }}
             currentData={{ tab }}
-            placeholder={formatMessage({id: 'report.columns.name.placeholder'}) }
+            placeholder={formatMessage({ id: 'report.columns.name.placeholder' })}
         />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () => <FilterFilled style={{ color: fetchParamsData.name ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: pageParam.name ? '#1890ff' : undefined }} />,
         render: (_: any, row: any) => {
             return (
                 <PopoverEllipsis title={_ || '-'} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[fetchParamsData.name || '']}
+                        searchWords={[pageParam.name || '']}
                         autoEscape
                         textToHighlight={_ || '-'}
                         onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}/`)}
@@ -147,13 +117,13 @@ const ReportListTable = (props: any) => {
         },
         width: 150,
         dataIndex: 'project',
-        filterDropdown: ({ confirm }: any) => <SelectProject autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleProjectFilter(val, 'project_id')} page_size={9999} ws_id={ws_id} />,
+        filterDropdown: ({ confirm }: any) => <SelectProject autoFocus={autoFocus} confirm={confirm} onConfirm={ (val: any) => setPageParam({ ...pageParam, project_id: val })} page_size={9999} ws_id={ws_id} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () => <FilterFilled style={{ color: fetchParamsData.project_id.length ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: pageParam.project_id.length ? '#1890ff' : undefined }} />,
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'product_version',
@@ -162,25 +132,25 @@ const ReportListTable = (props: any) => {
         },
         width: 150,
         title: <FormattedMessage id="report.columns.product_version" />,
-        filterDropdown: ({ confirm }: any) => <SelectProductVersion autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleVersiontFilter(val, 'product_version')} page_size={9999} ws_id={ws_id} />,
+        filterDropdown: ({ confirm }: any) => <SelectProductVersion autoFocus={autoFocus} confirm={confirm} onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val })} page_size={9999} ws_id={ws_id} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () => <FilterFilled style={{ color: fetchParamsData.product_version ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: pageParam.product_version ? '#1890ff' : undefined }} />,
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'creator',
         width: 150,
         title: <FormattedMessage id="report.columns.creator" />,
-        filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator')} page_size={9999} />,
+        filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val:any) => setPageParam({ ...pageParam, creator: val })} page_size={9999} />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () => <FilterFilled style={{ color: fetchParamsData.creator && fetchParamsData.creator.length ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: pageParam.creator && pageParam.creator.length ? '#1890ff' : undefined }} />,
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'description',
@@ -205,7 +175,7 @@ const ReportListTable = (props: any) => {
                 setFocus(!autoFocus)
             }
         },
-        filterIcon: () => <FilterFilled style={{ color: fetchParamsData.gmt_modified ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: pageParam.gmt_modified ? '#1890ff' : undefined }} />,
         ellipsis: true,
         render: (record: any) => {
             return record || '-'
@@ -251,18 +221,17 @@ const ReportListTable = (props: any) => {
                 rowKey="id"
                 columns={columns}
                 pagination={false}
-                dataSource={dataSource}
-                scroll={{
-                    x: '100%'
-                }}
+                dataSource={dataSource.data || []}
+                scroll={{ x: '100%' }}
             />
-
             <CommonPagination
-                total={data.total}
-                currentPage={params[0] && params[0].page_num}
-                pageSize={params[0] && params[0].page_size}
+                total={dataSource.total}
+                pageSize={pageParam.page_size}
+                currentPage={pageParam.page_num}
                 onPageChange={
-                    (page_num, page_size) => updateFetchParams({ page_num, page_size })
+                    (page_num, page_size) => {
+                        setPageParam({ ...pageParam, page_num, page_size })
+                    }
                 }
             />
         </Spin>
