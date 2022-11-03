@@ -163,7 +163,8 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                                         if (page === 1 && idx < canTopWsNumb) {
                                             onTopChange(row)
                                         } else {
-                                            message.error(`最多配置${canTopWsNumb}个推荐Workspace`)
+                                            // message.error(`最多配置${canTopWsNumb}个推荐Workspace`)
+                                            message.error(formatMessage({id: `workspace.configure.up.to.${canTopWsNumb}.recommended`}))
                                         }
                                     } else {
                                         onTopChange(row)
@@ -181,8 +182,6 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                 }].filter(Boolean)
         )
     }, [data, showNum, enLocale])
-
-
 
     const onTopChange = async (row: any) => {
         const { is_show, id } = row
