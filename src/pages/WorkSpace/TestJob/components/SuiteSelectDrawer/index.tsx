@@ -156,14 +156,14 @@ const SuiteDrawer = (props: any, ref: any) => {
     const changeServerSelect = (params: any) => {
         const { server_object_id, server_tag_id, ip, is_instance, customer_server } = params
         let flag = location.search.indexOf('inheriting_machine') !== -1
-        
-        if(lodash.isNull(ip)){
+
+        if (lodash.isNull(ip)) {
             setServerObjectType('ip')
             return
         }
 
-        if ( customer_server && JSON.stringify( customer_server ) !== '{}') {
-            const { custom_ip , custom_channel } = customer_server 
+        if (customer_server && JSON.stringify(customer_server) !== '{}') {
+            const { custom_ip, custom_channel } = customer_server
             if (custom_ip && custom_channel) {
                 setServerObjectType('ip')
                 setServerType('custom')
@@ -171,8 +171,8 @@ const SuiteDrawer = (props: any, ref: any) => {
             return
         }
 
-        if( flag && ip ){
-            if (server_type === 'aliyun' && run_mode === 'standalone'){
+        if (flag && ip) {
+            if (server_type === 'aliyun' && run_mode === 'standalone') {
                 if (is_instance === 0) setServerObjectType('setting')
                 if (is_instance === 1) setServerObjectType('instance')
             } else {
@@ -218,6 +218,7 @@ const SuiteDrawer = (props: any, ref: any) => {
 
     useEffect(() => {
         if (dataSource) {
+            console.log(dataSource)
             const initialValues = {
                 repeat: test_type === 'performance' ? 3 : 1,
                 need_reboot: false,
