@@ -98,7 +98,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             ellipsis: {
                 showTitle: false
             },
-            render:(_:any) => _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} />
+            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'result',

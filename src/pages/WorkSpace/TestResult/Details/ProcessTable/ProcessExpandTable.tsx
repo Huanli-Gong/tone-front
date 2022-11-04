@@ -58,7 +58,7 @@ export default ({ items , mode } : any ) => {
             showTitle: false
         },
         width: 80,
-        render:(_:any) => _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} />
+        render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
     },
     {
         dataIndex : 'gmt_created',

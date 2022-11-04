@@ -30,7 +30,7 @@ export default ( { title = '' , need_reboot , setup_info , cleanup_info , step }
             ellipsis: {
                 showTitle: false
             },
-            render:(_:any) => _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} />  : <TidDetail tid={_} />
+            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} />  : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex : 'start_time',
