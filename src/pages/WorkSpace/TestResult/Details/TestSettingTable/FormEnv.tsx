@@ -224,7 +224,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                         }
                         {
                             kernel === 'install_build_kernel' &&
-                            <BuildKernalForm disabled={disabled} ws_id={ws_id} project_id={template?.project_id} />
+                            <BuildKernalForm form={form} disabled={disabled} project_id={template?.project_id} />
                         }
                         {
                             'reboot' in contrl &&

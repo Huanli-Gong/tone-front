@@ -1,6 +1,6 @@
 import { Input, Modal, message, Form, Select, Space, Typography, Tooltip } from 'antd'
 import React, { useState, useImperativeHandle, forwardRef, useCallback } from 'react'
-import { useRequest,history } from 'umi'
+import { useRequest, history, useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
 import { queryRepositoryList, queryBranchList, createBranchAndRelation } from '../services'
@@ -8,6 +8,7 @@ import { requestCodeMessage } from '@/utils/utils'
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [padding , setPadding ] = useState( false )
@@ -99,7 +100,7 @@ export default forwardRef(
         }
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 props.onOk();
                 setVisible(false)
                 // 重置表单，重置数据源
@@ -127,18 +128,18 @@ export default forwardRef(
         }
         return (
             <Modal
-                title="添加代码"
+                title={<FormattedMessage id="code.add.code"/>}
                 visible={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                cancelText="取消"
-                okText="确认"
+                cancelText={<FormattedMessage id="operation.cancel"/>}
+                okText={<FormattedMessage id="operation.confirm"/>}
                 className={styles.modal_warpper}
                 maskClosable={false}
             >
                 <div className={styles.content_warpper}>
                     <Space>
-                        <Typography.Text style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 'bold', fontSize: 14 }}>项目名称：</Typography.Text>
+                        <Typography.Text style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 'bold', fontSize: 14 }}><FormattedMessage id="product.project.name"/>：</Typography.Text>
                         <Tooltip title={info.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                             <Typography.Text style={{ color: '#000', opacity: 0.65, fontSize: 14 }}><div className={styles.text_ellip}>{info.name}</div></Typography.Text>
                         </Tooltip>
@@ -151,16 +152,25 @@ export default forwardRef(
                       layout="vertical"
                       /*hideRequiredMark*/
                     >
-                        <Form.Item label="仓库名称" name="repo_id" rules={[{ required:true,message:'仓库名称不能为空' }]}>
+                        <Form.Item 
+                            label={<FormattedMessage id="product.repositories"/>}
+                            name="repo_id" 
+                            rules={[{ required: true, message:formatMessage({id: 'product.repositories.cannot.be.empty'}) }]}>
                             <Select 
-                                placeholder="请选择仓库名称" 
+                                placeholder={<FormattedMessage id="product.please.select.the.repositories"/>}
                                 notFoundContent={<div style={{ height: 0 }}></div>}
                                 onChange={handleChangeRepoid} 
                                 dropdownRender={(menu)=>(
                                     <div>
                                         {menu}
-                                        <div style={{ maxHeight: 300, overflow: 'auto' }} onClick={addWareHouse}>
-                                            <span className={styles.test_summary_job}><PlusOutlined style={{ marginRight:6 }}/>新增仓库</span>
+                                        <div style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '8px 0 8px 8px' }}
+                                            onClick={addWareHouse}>
+                                            <span>
+                                                <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                    <FormattedMessage id="product.new.repositories" />
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 )}>
@@ -179,10 +189,12 @@ export default forwardRef(
                             </Select>
                         </Form.Item>
                         <Form.Item label="GitUrl" name="gitUrl">
-                            <Input placeholder="请选择gitUrl" /* onChange={(e:any)=>InputChange(e)} */ disabled/>
+                            <Input placeholder={formatMessage({id: 'product.please.select.gitUrl'})}
+                                disabled/>
                         </Form.Item>
-                        <Form.Item label="Branch" name="branch_id" rules={[{ required:true,message:'Branch不能为空' }]}>
-                            <Select placeholder="请选择Branch">
+                        <Form.Item label="Branch" name="branch_id" 
+                            rules={[{ required:true, message: formatMessage({id: 'product.branch.cannot.be.empty'}) }]}>
+                            <Select placeholder={<FormattedMessage id="product.please.select.branch"/>}>
                               {branchList.data?.map(
                                   (item: any) => (
                                     <Select.Option key={item.id} value={item.id}>

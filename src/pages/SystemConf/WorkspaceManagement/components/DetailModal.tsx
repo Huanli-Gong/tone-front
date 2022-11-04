@@ -3,7 +3,7 @@ import { Modal, Spin, Row, Col, Space, Avatar, Popconfirm, Button, Popover, mess
 import { workspaceRemove, info } from '@/pages/SystemConf/WorkspaceManagement/service';
 
 import AvatarCover from '@/components/AvatarCover'
-import { history, useAccess } from 'umi'
+import { history, useAccess, useIntl, FormattedMessage } from 'umi'
 import { enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './style.less';
 
@@ -12,6 +12,7 @@ import { ReactComponent as UnPublicIcon } from '@/assets/svg/no_public.svg'
 import { jumpWorkspace } from '@/utils/utils';
 
 const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
+    const { formatMessage } = useIntl()
     const { refresh } = props
     const access = useAccess();
     const [visible, setVisible] = useState(false)
@@ -45,12 +46,12 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const toWS = async () => {
         await enterWorkspaceHistroy({ ws_id, system_entry: true })
         // history.push(`/ws/${ws_id}/dashboard`)
-        ws_id && history.push(jumpWorkspace(ws_id))
+        ws_id && history.push(jumpWorkspace(ws_id), { fetchWorkspaceHistoryRecord: true })
     }
 
     const confirm = async () => {
         await workspaceRemove({ id: ws_id })
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         handleCancel()
         refresh()
     }
@@ -70,8 +71,8 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     const judge = () => {
         if (source?.is_public || access.IsAdmin())
-            return <span className={styles.link} onClick={toWS} >进入</span>
-        return <span className={styles.link} style={{ display: 'none' }} onClick={toWS} >进入</span>
+            return <span className={styles.link} onClick={toWS}><FormattedMessage id="workspace.enter" /></span>
+        return <span className={styles.link} style={{ display: 'none' }} onClick={toWS}><FormattedMessage id="workspace.enter" /></span>
     }
 
     const Footer: React.FC = () => (
@@ -80,20 +81,20 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 title={null}
                 placement="topRight"
                 content={
-                    <span onClick={showConfirm} >注销workspace</span>
+                    <span onClick={showConfirm}><FormattedMessage id="workspace.ws.log.out" /></span>
                 }
             >
                 <Button type="text" style={{ padding: '0 10px', border: 'none' }} >...</Button>
             </Popover> :
             <Popconfirm
-                title="确定要注销该workspace吗？注销后数据删除，成员解散。请慎重考虑"
+                title={<FormattedMessage id="workspace.Popconfirm.title" />}
                 placement="topRight"
                 defaultVisible={true}
                 overlayStyle={{ width: 312 }}
                 onConfirm={confirm}
                 onCancel={cancel}
-                okText="确定"
-                cancelText="取消"
+                okText={<FormattedMessage id="operation.ok" />}
+                cancelText={<FormattedMessage id="operation.cancel" />}
             >
                 <Button type="text" style={{ padding: '0 10px', border: 'none' }} >...</Button>
             </Popconfirm>
@@ -101,7 +102,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     return (
         <Modal
-            title="Workspace详情"
+            title={<FormattedMessage id="workspace.ws.details" />}
             visible={visible}
             onOk={handleOk}
             onCancel={handleCancel}
@@ -116,7 +117,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             <Spin spinning={loading} >
                 <Row gutter={12}>
                     <Col className={styles.title} span={4}>
-                        封面
+                        <FormattedMessage id="workspace.cover" />
                     </Col>
                     <Col className={styles.content} span={20}>
                         <AvatarCover size="large" {...source} />
@@ -124,7 +125,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 </Row>
                 <Row gutter={12}>
                     <Col className={styles.title} span={4}>
-                        名称
+                        <FormattedMessage id="workspace.show_name" />
                     </Col>
                     <Col className={styles.company} span={20}>
                         {/* <span onClick={toWS} style={{ cursor: 'pointer' }}>{source?.show_name}</span> */}
@@ -134,7 +135,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 </Row>
                 <Row gutter={12}>
                     <Col className={styles.title} span={4}>
-                        简介
+                        <FormattedMessage id="workspace.brief.introduction" />
                     </Col>
                     <Col className={styles.content} span={20}>
                         {source?.description}
@@ -142,32 +143,32 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 </Row>
                 <Row gutter={12}>
                     <Col className={styles.title} span={4}>
-                        申请理由
+                        <FormattedMessage id="workspace.apply_reason" />
                     </Col>
                     <Col className={styles.content} span={20}>
-                        {source?.apply_reason || '无'}
+                        {source?.apply_reason || <FormattedMessage id="nothing" />}
                     </Col>
                 </Row>
                 <Row gutter={12}>
                     <Col className={styles.title} span={4}>
-                        权限
+                        <FormattedMessage id="workspace.authority" />
                     </Col>
                     <Col className={styles.content} span={20}>
                         {source?.is_public ?
                             <div className={styles.bar}>
                                 <PublicIcon />
-                                <span style={{ paddingLeft: '6px' }}>公开</span>
+                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.public" /></span>
                             </div> :
                             <div className={styles.bar}>
                                 <UnPublicIcon />
-                                <span style={{ paddingLeft: '6px' }}>私密</span>
+                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.private" /></span>
                             </div>
                         }
                     </Col>
                 </Row>
                 <Row gutter={12}>
                     <Col className={styles.title} span={4}>
-                        申请人
+                        <FormattedMessage id="workspace.applicant" />
                     </Col>
                     <Col className={styles.content} span={20}>
                         <div>
@@ -183,7 +184,7 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 </Row>
                 <Row gutter={12}>
                     <Col className={styles.title} span={4} style={{ paddingBottom: 0 }} >
-                        创建时间
+                        <FormattedMessage id="workspace.creation_time" />
                     </Col>
                     <Col className={styles.content} span={20} style={{ paddingBottom: 0 }} >
                         {source?.gmt_created}

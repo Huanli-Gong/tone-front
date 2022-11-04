@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { Space, Button, message, Typography, Popconfirm, Tooltip } from 'antd'
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { updateTestServer, deleteClusterServer, queryClusterServer, editGroupMachine, stateRefresh } from '../../services'
@@ -18,6 +18,8 @@ import { Access, useAccess, useParams } from 'umi'
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
     const access = useAccess();
     const [loading, setLoading] = useState(true)
@@ -41,7 +43,7 @@ export default (props: any) => {
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aligroup' })
         if (code === 200) {
-            message.success('同步状态成功')
+            message.success(formatMessage({id: 'device.synchronization.state.success'}) )
             setRefrush(!refrush)
         }
         else requestCodeMessage(code, msg)
@@ -56,7 +58,7 @@ export default (props: any) => {
     const defaultFetchOption = (ret: any) => {
         if (ret.code === 200) {
             setRefrush(!refrush)
-            message.success('操作成功！')
+            message.success(formatMessage({id: 'operation.success'}) )
         }
         else requestCodeMessage(ret.code, ret.msg)
     }
@@ -97,14 +99,14 @@ export default (props: any) => {
         const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
         const res = await editGroupMachine(row.id, query);
         if (res.code === 200) {
-            message.success('操作成功');
+            message.success(formatMessage({id: 'operation.success'}) );
             setRefrush(!refrush)
         } else {
             requestCodeMessage(res.code, res.msg)
         }
     }
 
-    const columns: any = [
+    const columns: any = useMemo(() => [
         {
             title: 'IP',
             width: 170,
@@ -140,7 +142,7 @@ export default (props: any) => {
             render: (record: any) => <EllipsisPulic title={record.test_server.tsn} />
         },
         !BUILD_APP_ENV && {
-            title: '机器名称',
+            title: <FormattedMessage id="device.machine.name"/>,
             width: 150,
             ellipsis: {
                 showTitle: false
@@ -148,17 +150,17 @@ export default (props: any) => {
             render: (record: any) => <EllipsisPulic title={record.test_server.name} color={'#1890ff'} />
         },
         {
-            title: '私网地址',
+            title: <FormattedMessage id="device.private_ip.s"/>,
             width: 100,
             render: (record: any) => record.test_server.private_ip || '-'
         },
         !BUILD_APP_ENV && {
             width: 100,
-            title: 'Console配置',
+            title: <FormattedMessage id="device.console_conf"/>,
             render: (record: any) => record.test_server.console_conf || '-'
         },
         {
-            title: '控制通道',
+            title: <FormattedMessage id="device.channel_type"/>,
             width: 100,
             //dataIndex: 'channel_type',
             render: (record: any) => (record.test_server.channel_type || '-')
@@ -169,7 +171,7 @@ export default (props: any) => {
         //     render: (record: any) => (record || '-')
         // },
         {
-            title: '是否Local机器',
+            title: <FormattedMessage id="device.local.server"/>,
             dataIndex: 'role',
             width: 120,
             align: 'center',
@@ -181,9 +183,9 @@ export default (props: any) => {
             </span>
         },
         {
-            title: '是否基线机器',
+            title: <FormattedMessage id="device.baseline_server"/>,
             dataIndex: 'baseline_server',
-            width: 120,
+            width: enLocale ? 150: 120,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {text ?
@@ -193,67 +195,67 @@ export default (props: any) => {
             </span>
         },
         {
-            title: '是否安装内核',
+            title: <FormattedMessage id="device.kernel_install"/>,
             dataIndex: 'kernel_install',
             width: 130,
-            render: (record: any) => (record ? '是' : '否')
+            render: (record: any) => (record ? <FormattedMessage id="operation.yes"/>: <FormattedMessage id="operation.no"/>)
         },
         {
-            title: '运行变量名',
+            title: <FormattedMessage id="device.var_name"/>,
             dataIndex: 'var_name',
-            width: 120,
+            width: enLocale ? 160: 120,
             render: (record: any) => (record || '-')
         },
         {
-            title: '使用状态',
+            title: <FormattedMessage id="device.usage.state"/>,
             width: 120,
             render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         {
-            title: '实际状态',
+            title: <FormattedMessage id="device.real_state"/>,
             width: 120,
             render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             fixed: 'right',
-            width: 220,
+            width: BUILD_APP_ENV ? (enLocale ? 260: 185) : (enLocale ? 200: 120),
             align: 'center',
             render: (_: any, row: any) => (
                 <Space>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>详情</Button>
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>
+                        <FormattedMessage id="operation.detail"/>
+                    </Button>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步状态</Button>}
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>编辑</Button>
-                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}>删除</Button>
-                                {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}>同步</Button>}
+                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state"/></Button>}
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
+                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
+                                {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization"/></Button>}
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}>同步状态</Button>}
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}>编辑</Button>
+                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state"/></Button>}
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}><FormattedMessage id="operation.edit"/></Button>
                             <Popconfirm
-                                title="确定要删除吗？"
-                                okText="确定"
-                                cancelText="取消"
+                                title={<FormattedMessage id="delete.prompt"/>}
+                                okText={<FormattedMessage id="operation.ok"/>}
+                                cancelText={<FormattedMessage id="operation.cancel"/>}
                                 onConfirm={() => handleDeleteServer(_.id)}
                             >
-                                <Button style={{ padding: 0 }} size="small" type="link" >删除</Button>
+                                <Button style={{ padding: 0 }} size="small" type="link"><FormattedMessage id="operation.delete"/></Button>
                             </Popconfirm>
                             {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>}
                         </Space>
                     </Access>
-                    <PermissionTootip>
-                        <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}>日志</Button>
-                    </PermissionTootip>
+                    <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>
                 </Space>
             )
         }
-    ].filter(Boolean)
+    ].filter(Boolean), [enLocale])
 
     // 请求页面数据
     const getClusterServer = async () => {
@@ -295,7 +297,7 @@ export default (props: any) => {
                 <div
                     style={{ width: "calc(100% - 47px)" }}
                 >
-                    <ResizeTable
+                   <ResizeTable
                         rowKey="id"
                         columns={columns}
                         loading={loading}
@@ -304,7 +306,7 @@ export default (props: any) => {
                         pagination={false}
                         scroll={{ x: '100%' }}
                         rowClassName={() => styles.row_class}
-                    />
+                    /> 
                 </div>
             </div>
             <OperationLog ref={logDrawer} operation_object="machine_cluster_aligroup_server" />

@@ -1,10 +1,12 @@
 import { Drawer, Space, Button, Form, Input, message } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { addBusiness, editBusiness } from '../../service'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 
 export default forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
@@ -17,7 +19,7 @@ export default forwardRef(
             () => ({
                 show: (data : any ) => {
                     setVisible(true)
-                    setTitle(data ? `编辑业务测试Test Suite` : '新增业务测试Test Suite')
+                    setTitle(data ? formatMessage({id: 'TestSuite.edit.business'}) : formatMessage({id: 'TestSuite.new.business'}) )
                     setEditData(data)
                     form.setFieldsValue(data) // 动态改变表单值
                 }
@@ -33,14 +35,14 @@ export default forwardRef(
 
         const defaultOption = (code: number, msg: string, type: string) => {
             if (code === 200) {
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 setVisible(false)
                 form.resetFields() //重置字段
                 props.callback()
             } else if (code === 201) {
-                setNameStatus({ status: false, message: `业务名称已存在` })
+                setNameStatus({ status: false, message: formatMessage({id: 'TestSuite.business.name.already.exists'}) })
             } else {
-                message.error(msg || '操作失败')
+                message.error(msg || formatMessage({id: 'operation.failed'}) )
             }
         }
 
@@ -79,8 +81,8 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
-                            <Button type="primary" disabled={padding || !nameStatus.status} onClick={handleOk}>{editData && editData.name ? '更新' : '确定'}</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" disabled={padding || !nameStatus.status} onClick={handleOk}>{editData && editData.name ? <FormattedMessage id="operation.update"/> : <FormattedMessage id="operation.ok"/>}</Button>
                         </Space>
                     </div>
                 }
@@ -90,35 +92,35 @@ export default forwardRef(
                     layout="vertical" // 表单布局
                 // hideRequiredMark
                 >
-                    <Form.Item label="业务名称"
+                    <Form.Item label={<FormattedMessage id="TestSuite.business.name"/>}
                         name="name"
                         validateStatus={(!nameStatus.status) ? 'error' : undefined}
                         help={(!nameStatus.status && nameStatus.message)}
                         rules={[
                             { required: true },
                         ]}>
-                        <Input autoComplete="off" placeholder="请输入业务测试名称" onChange={(e) => {
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} onChange={(e) => {
                             if (!e.target.value) {
-                                setNameStatus({ status: false, message: `业务名称不能为空` })
+                                setNameStatus({ status: false, message: formatMessage({id: 'TestSuite.business.name.cannot.be.empty'}) })
                             } else {
                                 setNameStatus({ status: true, message: '' })
                                 const value = e.target.value
                                 if (!(value.match(/^[A-Za-z0-9\._-]+$/g) && value.length <= 32)) {
-                                    setNameStatus({ status: false, message: `仅允许包含字母、数字、下划线、中划线、点，最长32个字符` })
+                                    setNameStatus({ status: false, message: formatMessage({id: 'please.enter.message'}) })
                                 }
                             }
                         }}
                             allowClear
                         />
                     </Form.Item>
-                    <Form.Item label="描述"
+                    <Form.Item label={<FormattedMessage id="TestSuite.description"/>}
                         name="description"
                         rules={[
                             { required: false },
-                            { max: 500, message: '限制最长500个字符' },
+                            { max: 500, message: formatMessage({id: 'TestSuite.description.message'}) },
                         ]}
                     >
-                        <Input.TextArea placeholder="请输入描述信息" />
+                        <Input.TextArea placeholder={formatMessage({id: 'TestSuite.please.enter.description'})} />
                     </Form.Item>
                 </Form>
             </Drawer>

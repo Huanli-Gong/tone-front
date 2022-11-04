@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useImperativeHandle, useRef, useMemo } from 'react';
 import styles from '../style.less';
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { WorkspaceTable, WorkspaceList, TableListParams } from '../../data.d';
 import { Avatar, Space, Switch, Table, Typography, Row, message } from 'antd';
-import { HolderOutlined } from '@ant-design/icons'
+import { CalculatorFilled, HolderOutlined } from '@ant-design/icons'
 import { workspaceList, updateTopWorkspaceOrder, getWrokspaces } from '../../service';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
@@ -18,6 +19,9 @@ import { saveWorkspaceConfig } from '@/services/Workspace';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 
 const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const [keyword, setKeyword] = useState<string>('')
     const detailModalRef = useRef<{ show: (ws_id: string) => void }>(null)
     const initParams = { page_num: 1, page_size: 20, is_approved: 1, is_public }
@@ -78,20 +82,20 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     )
                 },
                 {
-                    title: '封面',
+                    title: <FormattedMessage id="workspace.cover"/>,
                     dataIndex: 'logo',
                     className: 'row_cursor',
                     width: 70,
                     render: (_: number, row: WorkspaceTable) => <AvatarCover size="small" {...row} />,
                     // <img className={styles.img} src={row.logo}  />,
                 }, {
-                    title: '名称',
+                    title: <FormattedMessage id="workspace.show_name"/>,
                     dataIndex: 'show_name',
                     className: 'row_cursor',
                     width: 180,
                     render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.show_name || ''}></PopoverEllipsis>,
                 }, {
-                    title: '所有者',
+                    title: <FormattedMessage id="workspace.owner"/>,
                     dataIndex: 'owner_name',
                     className: 'row_cursor',
                     width: 124,
@@ -101,7 +105,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                         <EllipsisPulic title={row.owner_name || ''} width={99}/>
                     </Space>,
                 }, {
-                    title: '简介',
+                    title: <FormattedMessage id="workspace.brief.introduction"/>,
                     dataIndex: 'description',
                     className: 'row_cursor',
                     ellipsis: {
@@ -110,24 +114,24 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     width: 210,
                     render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.description || ''}></PopoverEllipsis>,
                 }, {
-                    title: '人数',
+                    title: <FormattedMessage id="workspace.number"/>,
                     dataIndex: 'member_count',
                     className: 'row_cursor',
-                    width: 85,
+                    width: enLocale ? 155: 85,
                 }, {
-                    title: '是否公开',
+                    title: <FormattedMessage id="workspace.is_public"/>,
                     dataIndex: 'is_public',
                     className: 'row_cursor',
-                    width: 106,
+                    width: 100,
                     render: (_: number, row: WorkspaceTable) => (
                         row.is_public ?
                             <div className={styles.bar}>
                                 <PublicIcon />
-                                <span style={{ paddingLeft: '6px' }}>公开</span>
+                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.public"/></span>
                             </div> :
                             <div className={styles.bar}>
                                 <UnPublicIcon />
-                                <span style={{ paddingLeft: '6px' }}>私密</span>
+                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.private"/></span>
                             </div>
                     )
                 },
@@ -135,21 +139,21 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     title: (
                         <QusetionIconTootip
                             placement="left"
-                            title={'首页推荐'}
+                            title={<FormattedMessage id="workspace.home.recommended"/>}
                             desc={
                                 <ul style={{ listStyle: 'auto', paddingInlineStart: 25, paddingTop: 15 }}>
-                                    <li>状态为“是”，展示在首页“推荐Worksapce”模块</li>
-                                    <li>可通过上下拖动调整显示顺序，首页显示顺序同该表格</li>
+                                    <li><FormattedMessage id="workspace.recommended1"/></li>
+                                    <li><FormattedMessage id="workspace.recommended2"/></li>
                                 </ul>
                             }
                         />
                     ),
-                    width: 150,
+                    width: enLocale ? 240: 100,
                     render(_: any, row: any, idx: number) {
                         return (
                             <Switch
-                                checkedChildren="是"
-                                unCheckedChildren="否"
+                                checkedChildren={<FormattedMessage id="operation.yes"/>}
+                                unCheckedChildren={<FormattedMessage id="operation.no"/>}
                                 disabled={row.is_common}
                                 checked={row.is_common || row.is_show}
                                 onClick={() => {
@@ -157,7 +161,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                                         if(page === 1 && idx <= 8){
                                             onTopChange(row)
                                         }else{
-                                            message.error('最多配置9个推荐Workspace')
+                                            message.error(formatMessage({id: 'workspace.configure.up.to.9.recommended'}))
                                         }
                                     } else {
                                         onTopChange(row)
@@ -168,14 +172,14 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                         )
                     }
                 }, {
-                    title: '操作',
-                    width: 80,
+                    title: <FormattedMessage id="Table.columns.operation"/>,
+                    width: 100,
                     render(_: any, row: any) {
-                        return <Typography.Link onClick={() => getInfo(row.id)}>详情</Typography.Link>
+                        return <Typography.Link onClick={() => getInfo(row.id)}><FormattedMessage id="operation.detail"/></Typography.Link>
                     }
                 }].filter(Boolean)
         )
-    }, [data,showNum])
+    }, [data, showNum, enLocale])
 
 
 

@@ -7,7 +7,6 @@ import StateRow from "./StateRow"
 import ListTable from "./ListTable"
 import FilterRow from "./Filters"
 import { columns } from "./Filters/columns"
-import { useRequest } from "ahooks"
 
 const activeCss = `
     color: #1890FF;

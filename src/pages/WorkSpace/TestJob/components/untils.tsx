@@ -90,3 +90,5 @@ export const getHasMuiltip = (d: any) => {
     }
     return false
 }
+
+export const formatter = (val: any) => val && typeof +val === "number" ? parseInt(val as any) + "" : ""

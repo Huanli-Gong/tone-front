@@ -69,7 +69,7 @@ export default {
   'report.test.data': '测试数据',
 
   'report.catalogue': '目录',
-  'report.not filled in': '未填写',
+  'report.not.filled.in': '未填写',
   'report.legend.comparison.group': '对比组图例',
   'report.conf.list': 'Test Conf列表{data}',
   'report.view': '视图',

@@ -69,7 +69,7 @@ export default {
   'report.test.data': 'Test Data',
 
   'report.catalogue': 'Catalogue',
-  'report.not filled in': 'Nothing',
+  'report.not.filled.in': 'Nothing',
   'report.legend.comparison.group': 'Comparison Group',
   'report.conf.list': 'Test Conf List {data}',
   'report.view': 'View',

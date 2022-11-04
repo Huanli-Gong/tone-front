@@ -48,8 +48,9 @@ const GroupTableRow = () => (
 const TestEnv = (props: any) => {
     const { formatMessage } = useIntl()
     const {
+        env_description_desc,
         need_test_env,
-        need_env_description
+        need_env_description,
     } = props
 
     if (need_test_env || need_env_description)
@@ -60,7 +61,7 @@ const TestEnv = (props: any) => {
                     need_env_description &&
                     <>
                         <EnvTitle><Typography.Text strong><FormattedMessage id="report.env.description"/></Typography.Text></EnvTitle>
-                        <div><Typography.Text ><FormattedMessage id="report.content.needs.to.generate"/></Typography.Text></div>
+                        <div><Typography.Text>{env_description_desc}</Typography.Text></div>
                     </>
                 }
                 {

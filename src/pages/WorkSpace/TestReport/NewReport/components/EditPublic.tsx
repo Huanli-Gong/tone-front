@@ -52,7 +52,7 @@ export const SettingTextArea = ({
     }, [name])
 
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not filled in' })
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title
     }
     return (
@@ -106,6 +106,7 @@ export const SettingRegUpdate = ({
         whiteSpace: 'pre-wrap',
     },
     defaultHolder,
+    creator,
 }:
     {
         saveData: any,
@@ -114,9 +115,9 @@ export const SettingRegUpdate = ({
         space?: string,
         fontStyle?: any,
         defaultHolder?: string,
+        creator:number,
     }) => {
     const access = useAccess();
-    const creator_id = window.location.search
     const { formatMessage } = useIntl()
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
@@ -173,7 +174,6 @@ export const SettingRegUpdate = ({
             message.error(msg)
         }
     }
-    console.log('creator_id', creator_id)
     const handleChange = (title: any) => {
         if (_.isNull(title) || _.isUndefined(title)) return <FormattedMessage id="report.not.filled" />
         return title
@@ -198,7 +198,7 @@ export const SettingRegUpdate = ({
                         <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
                         <Access accessible={access.WsTourist()}>
                             <Access
-                                accessible={access.WsMemberOperateSelf(Number(creator_id.substring(5, creator_id.length)))}
+                                accessible={access.WsMemberOperateSelf(creator)}
                                 fallback={
                                     <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
                                 }

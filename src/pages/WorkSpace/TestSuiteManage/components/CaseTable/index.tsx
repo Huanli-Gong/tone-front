@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Tabs, Tooltip, Drawer } from 'antd';
 import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
+import { useIntl, FormattedMessage } from 'umi'
 import styles from '../../style.less';
 import MetricTable from '../../components/MetricTable';
 import CommonTable from '@/components/Public/CommonTable';
@@ -31,17 +32,15 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
             fixed: 'left',
             render: (_: any) => <EllipsisPulic title={_} />
         },
-        { title: '别名', dataIndex: 'alias', width: 100, ellipsis: true },
-        {
-            title: '领域', dataIndex: 'domain_name_list', width: 100,
+        { title: <FormattedMessage id="suite.alias"/>, dataIndex: 'alias', width: 100, ellipsis: true },
+        { title: <FormattedMessage id="suite.domain"/>, dataIndex: 'domain_name_list', width: 100,
             render: (t: any) => {
                 return t || '-'
             }
         },
         { title: 'Timeout(s)', dataIndex: 'timeout', width: 100 },
-        { title: '默认运行次数', dataIndex: 'repeat', width: 120, ellipsis: true },
-        {
-            title: '变量', dataIndex: 'var', ellipsis: true,
+        { title: <FormattedMessage id="suite.repeat"/>, dataIndex: 'repeat', width: 120, ellipsis: true },
+        { title: <FormattedMessage id="suite.var"/>, dataIndex: 'var', ellipsis: true,
             width: 120,
             render: (_: number, row: any) =>
                 <PopoverEllipsis
@@ -61,7 +60,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                 </PopoverEllipsis>,
         },
         {
-            title: '说明', dataIndex: 'doc', width: 120, ellipsis: true,
+            title: <FormattedMessage id="suite.description"/>, dataIndex: 'doc', width: 120, ellipsis: true,
             render: (_: any, row: any) => (
                 <div>
                     <ButtonEllipsis
@@ -77,7 +76,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
             )
             // render: (text:string) =><Typography.Text>{ text || '-'}</Typography.Text>
         },
-        { title: '创建时间', dataIndex: 'gmt_created', width: 170 },
+        { title: <FormattedMessage id="suite.gmt_created"/>, dataIndex: 'gmt_created', width: 170 },
     ];
 
     return (
@@ -86,13 +85,13 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                 type == 'performance' &&
                 <Tabs defaultActiveKey={'case'} activeKey={innerKey} onChange={(key) => handleInnerTab(key)} >
                     <TabPane tab="Test Conf" key="case"></TabPane>
-                    <TabPane tab="指标" key="suite" ></TabPane>
+                    <TabPane tab={<FormattedMessage id="suite.indicators"/>} key="suite" ></TabPane>
                 </Tabs>
             }
             {
                 innerKey === 'case' ?
                     <CommonTable
-                        scrollType={1030}
+                        // scrollType={1030}
                         columns={columns}
                         list={record}
                         loading={false}
@@ -112,6 +111,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                                 } :
                                 {}
                         }
+                        scroll={{ x: 1030 }}
                     /> :
                     <MetricTable ws_id={ws_id} id={id} innerKey={innerKey} />
             }
@@ -119,7 +119,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                 maskClosable={false}
                 keyboard={false}
                 width={376}
-                title="说明详情"
+                title={<FormattedMessage id="suite.description.details"/>}
                 onClose={() => setShow(false)}
                 visible={show}
             >

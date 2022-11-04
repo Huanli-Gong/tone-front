@@ -12,6 +12,7 @@ import { isString } from 'lodash';
  * 部署Agent
  */
 export default forwardRef((props: any, ref: any) => {
+    const { formatMessage } = useIntl();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState<any>(false)
     const [tip, setTip] = useState<any>('')
@@ -39,8 +40,7 @@ export default forwardRef((props: any, ref: any) => {
     // 1.请求数据
     const getVersionData = async () => {
         try {
-            const res: any = await queryVersionList({ arch }); // { page_num: 1, page_size: 100000  }
-            const { code, msg, data = [] } = res || {}
+            const { code, msg, data = [] } = await queryVersionList({ arch }); // { page_num: 1, page_size: 100000  }
             if (code === 200) {
                 if (isString(data)) {
                     setData([])
@@ -48,18 +48,12 @@ export default forwardRef((props: any, ref: any) => {
                     setData(data)
                 }
             } else {
-                message.error(msg || '请求版本数据失败');
+                message.error(msg || formatMessage({id: 'device.failed.to.request.version'}) );
             }
         } catch (e) {
             // setLoading(false)
         }
     }
-
-    useEffect(() => {
-        // 请求版本数据
-        if (useBuildEnv || selectedRow.length)
-            getVersionData()
-    }, [selectedRow, arch])
 
     useImperativeHandle(
         ref,
@@ -95,14 +89,14 @@ export default forwardRef((props: any, ref: any) => {
             .validateFields()
             .then(async (values) => {
                 setLoading(true);
-                setTip('正在部署中...')
+                setTip(formatMessage({ id: "device.deploying" }) )
                 // Agent部署接口
                 const { code, msg, data = {} } = await agentDeploy(values);
                 if (code === 200) {
                     if (data.fail_servers?.length) {
                         setDeployResult(data);
                     } else {
-                        message.success('部署完成');
+                        message.success(formatMessage({ id: "device.deploy.finish" }) );
                         // case1.重置状态数据&&重置表单数据
                         form.resetFields();
                         resetInitialState();
@@ -111,7 +105,7 @@ export default forwardRef((props: any, ref: any) => {
                     }
                 }
                 else {
-                    message.error(msg || '部署失败');
+                    message.error(msg || formatMessage({ id: "device.deploy.failed" }) );
                 }
                 setLoading(false);
                 setTip('')
@@ -138,11 +132,11 @@ export default forwardRef((props: any, ref: any) => {
         // const failMsg = (<div>{fail_servers.map((item: any)=> <div>{}</div>)}</div>)
         return (
             <div>
-                {success_servers?.length ? (<><span style={{ color: '#1890FF' }}>{successIps}</span>&nbsp;部署成功；&nbsp;</>) : null}
+                {success_servers?.length ? (<><span style={{ color: '#1890FF' }}>{successIps}</span>&nbsp;<FormattedMessage id="device.deploy.success"/>；&nbsp;</>) : null}
                 {fail_servers?.map((item: any) =>
                     <div>
-                        <span style={{ color: '#F5222D' }} >{item && item.ip}</span>&nbsp;部署失败&nbsp;
-                        <Tooltip placement="bottomLeft" title={item && item.msg}><a>查看详情</a></Tooltip>
+                        <span style={{ color: '#F5222D' }} >{item && item.ip}</span>&nbsp;<FormattedMessage id="device.deploy.failed"/>&nbsp;
+                        <Tooltip placement="bottomLeft" title={item && item.msg}><a><FormattedMessage id="view.details"/></a></Tooltip>
                     </div>
                 )}
             </div>
@@ -154,16 +148,16 @@ export default forwardRef((props: any, ref: any) => {
         setDeployResult({})
     }
 
-    const { formatMessage } = useIntl();
-    const placeholder = formatMessage({ id: "Form.select.placeholder" });
-    const requiredMessage = formatMessage({ id: 'Form.select.message' });
-
     const useBuildEnv = useMemo(() => BUILD_APP_ENV && ['openanolis', 'opensource'].includes(BUILD_APP_ENV), [])
 
     const getDeployMode = () => {
         if (useBuildEnv) return 'active'
         return radioType === 'cloudManage' ? 'passive' : 'active'
     }
+
+    useEffect(() => {
+        getVersionData()
+    }, [arch])
 
     return (
         <div>
@@ -217,14 +211,14 @@ export default forwardRef((props: any, ref: any) => {
 
                         {
                             !useBuildEnv &&
-                            <Form.Item label="部署方式"
+                            <Form.Item label={<FormattedMessage id="device.deploy.mode"/>}
                                 name="channel"
                             >
                                 <Radio.Group onChange={onChangeChannel}>
-                                    <Radio value="common">通过用户名/密码部署</Radio>
+                                    <Radio value="common"><FormattedMessage id="device.deploy.mode.common"/></Radio>
                                     {
                                         (!useBuildEnv && radioType !== 'cloudManage') &&
-                                        <Radio value={self_agent}>通过{self_agent_name}部署</Radio>
+                                        <Radio value={self_agent}>{formatMessage({ id: "device.deploy.mode.self_agent" }, {data: self_agent_name})}</Radio>
                                     }
                                 </Radio.Group>
                             </Form.Item>
@@ -237,12 +231,12 @@ export default forwardRef((props: any, ref: any) => {
                             <Radio.Group>
                                 <Radio value="active">
                                     active
-                                    <Popover placement="topLeft" content={'主动模式(active)指的是agent主动连server进行通信的方式(类似push模式)'}>
+                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.active"/>}>
                                         <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
                                 </Radio>
                                 <Radio value="passive">
                                     passive
-                                    <Popover placement="topLeft" content={'被动模式(passive)指的是server主动连agent进行通信的模式(类似pull模式)'}>
+                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.passive"/>}>
                                         <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
                                 </Radio>
                             </Radio.Group>
@@ -264,9 +258,9 @@ export default forwardRef((props: any, ref: any) => {
                             name="version"
                             rules={[{
                                 required: true,
-                                message: requiredMessage,
+                                message: formatMessage({ id: 'please.select' }),
                             }]}>
-                            <Select placeholder={placeholder}
+                            <Select placeholder={formatMessage({ id: 'please.select' }) }
                                 showSearch
                                 optionFilterProp="children"
                                 filterOption={(input, option: any) =>
@@ -285,15 +279,15 @@ export default forwardRef((props: any, ref: any) => {
                                     rules={[{
                                         required: false,
                                         max: 20,
-                                        message: '允许输入长度为20个字符',
+                                        message: formatMessage({ id: 'device.user.message' }),
                                     }]}>
-                                    <Input placeholder={formatMessage({ id: "Form.input.placeholder" })} autoComplete="off" />
+                                    <Input placeholder={formatMessage({ id: 'please.enter' })} autoComplete="off" />
                                 </Form.Item>
                                 <Form.Item
                                     label="Password"
                                     name="password"
                                 >
-                                    <Input.Password placeholder={formatMessage({ id: "Form.input.placeholder" })} />
+                                    <Input.Password placeholder={formatMessage({ id: 'please.enter' })} />
                                 </Form.Item>
                             </>
                         )}

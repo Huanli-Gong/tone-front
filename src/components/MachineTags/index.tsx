@@ -1,10 +1,11 @@
 import React,{ useEffect, useState } from 'react';
 import { Form, Select, Spin, Empty, message, Tag } from 'antd';
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi';
 import { queryTag } from './service'
 const { Option } = Select;
 
 export default (props:any) => {
+    const { formatMessage } = useIntl()
     const { isQuery, list } = props;
     const { ws_id }: any = useParams()
     const [fetching, setFetching] = useState<boolean>(true)
@@ -40,7 +41,7 @@ export default (props:any) => {
                 }
                 setTagParam(res);
             } else {
-                message.error(res.msg || '请求数据失败');
+                message.error(res.msg || formatMessage({id: 'operation.failed'}) );
             }
             setFetching(false)
         } catch (err) {
@@ -81,7 +82,7 @@ export default (props:any) => {
     return (
         <Form.Item
             name="tags"
-            label="标签"
+            label={<FormattedMessage id="device.tag"/>}
         >
             <Select
                 mode="multiple"
@@ -89,7 +90,7 @@ export default (props:any) => {
                 notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                 filterOption={false}
                 loading={fetching}
-                placeholder="请选择调度标签"
+                placeholder={<FormattedMessage id="device.tag.dispatch.tag"/>}
                 onSearch={getServerTagList}
                 style={{ width: '100%' }}
                 showArrow={true}

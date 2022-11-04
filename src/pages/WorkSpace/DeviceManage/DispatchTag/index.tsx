@@ -9,11 +9,12 @@ import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { SingleTabCard } from '@/components/UpgradeUI';
 import PermissionTootip from '@/components/Public/Permission';
 import { useDetectZoom } from '@/utils/hooks';
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import AddModel from './components/AddModel'
 import { Access, useAccess } from 'umi'
 
 const SuiteManagement: React.FC<any> = props => {
+	const { formatMessage } = useIntl()
 	const { ws_id } = useParams() as any
 	const access = useAccess();
 	const ratio = useDetectZoom()
@@ -67,13 +68,13 @@ const SuiteManagement: React.FC<any> = props => {
 
 	const remOuter = async (params: any) => {
 		await delSuite(params.id, ws_id)
-		message.success('操作成功');
+		message.success(formatMessage({id: 'operation.success'}) );
 		setRefresh(!refresh)
 	}
 
 	const columns: any[] = [
 		{
-			title: '标签名称',
+			title: <FormattedMessage id="device.tag.name"/>,
 			dataIndex: 'name',
 			width: 170,
 			filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
@@ -96,7 +97,7 @@ const SuiteManagement: React.FC<any> = props => {
 			)
 		},
 		{
-			title: '备注',
+			title: <FormattedMessage id="device.description"/>,
 			dataIndex: 'description',
 			width: 100,
 			filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
@@ -111,7 +112,7 @@ const SuiteManagement: React.FC<any> = props => {
 			)
 		},
 		{
-			title: '创建人',
+			title: <FormattedMessage id="device.create_user"/>,
 			dataIndex: 'create_user',
 			width: 90,
 			ellipsis: {
@@ -124,7 +125,7 @@ const SuiteManagement: React.FC<any> = props => {
 			}
 		},
 		{
-			title: '修改人',
+			title: <FormattedMessage id="device.update_user"/>,
 			dataIndex: 'update_user',
 			ellipsis: {
 				showTitle: false
@@ -137,7 +138,7 @@ const SuiteManagement: React.FC<any> = props => {
 			}
 		},
 		{
-			title: '创建时间',
+			title: <FormattedMessage id="device.gmt_created"/>,
 			dataIndex: 'gmt_created',
 			width: 200,
 			render: (_: string, row: any) => {
@@ -146,7 +147,7 @@ const SuiteManagement: React.FC<any> = props => {
 			}
 		},
 		{
-			title: '修改时间',
+			title: <FormattedMessage id="device.gmt_modified"/>,
 			dataIndex: 'gmt_modified',
 			width: 200,
 			render: (_: string, row: any) => {
@@ -155,7 +156,7 @@ const SuiteManagement: React.FC<any> = props => {
 			}
 		},
 		{
-			title: '操作',
+			title: <FormattedMessage id="Table.columns.operation"/>,
 			valueType: 'option',
 			dataIndex: 'id',
 			width: 150,
@@ -164,33 +165,31 @@ const SuiteManagement: React.FC<any> = props => {
 				<Space>
 					<Access accessible={access.WsMemberOperateSelf()}>
 						<Space>
-							<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}>编辑</Button>
+							<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}><FormattedMessage id="operation.edit"/></Button>
 							<Popconfirm
-								title={<div style={{ color: 'red' }}>删除调度标签后，机器池、Job、测试模板所配置的当前标签均不再生效，请谨慎删除！！</div>}
+								title={<div style={{ color: 'red' }}><FormattedMessage id="device.tag.delete.tips"/></div>}
 								placement="topRight"
-								okText="取消"
-								cancelText="确定删除"
+								okText={<FormattedMessage id="operation.cancel"/>}
+								cancelText={<FormattedMessage id="operation.confirm.delete"/>}
 								onCancel={() => remOuter(row)}
 								icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
 								overlayStyle={{ width: '300px' }}
 							>
-								<Button type="link" style={{ padding: 0, height: 'auto' }}>删除</Button>
+								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
 							</Popconfirm>
 						</Space>
 					</Access>
-					<PermissionTootip>
-						<Button type="link" disabled={true} style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
-					</PermissionTootip>
+					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log"/></Button>
 				</Space>,
 		},
 	];
 
 	return (
 		<SingleTabCard
-			title="调度标签"
+			title={<FormattedMessage id="device.dispatch.tag"/>}
 			extra={
 				<Access accessible={access.WsMemberOperateSelf()}>
-					<Button key="3" type="primary" onClick={newSuite}> 创建标签 </Button>
+					<Button key="3" type="primary" onClick={newSuite}> <FormattedMessage id="device.create.tag"/> </Button>
 				</Access>
 			}
 		>
@@ -204,8 +203,8 @@ const SuiteManagement: React.FC<any> = props => {
 					pagination={false}
 				/>
 				<Row justify="space-between" style={{ padding: '16px 20px 0' }}>
-					<div className={!dataSource?.total ? styles.hidden : ''} >
-						共{dataSource?.total || 0}条
+					<div className={!dataSource?.total ? styles.hidden : ''}>
+						{formatMessage({id: 'pagination.total.strip'}, {data: dataSource?.total || 0 })}
 					</div>
 					<Pagination
 						size="small"

@@ -3,7 +3,7 @@ import { Tabs } from 'antd'
 import Group from './Group'
 import styles from './Group/index.less'
 import { TabCard } from '@/components/UpgradeUI'
-import { useLocation } from 'umi'
+import { useLocation, FormattedMessage, useIntl } from 'umi'
 
 export default (props: any) => {
     const { query }: any = useLocation()
@@ -22,8 +22,8 @@ export default (props: any) => {
                     className={styles.tab_title}
                     activeKey={tab}
                 >
-                    <Tabs.TabPane tab="功能基线" key="functional" />
-                    <Tabs.TabPane tab="性能基线" key="performance" />
+                    <Tabs.TabPane tab={<FormattedMessage id="baseline.functional"/>} key="functional" />
+                    <Tabs.TabPane tab={<FormattedMessage id="baseline.performance"/>} key="performance" />
                 </Tabs>
             }
         >

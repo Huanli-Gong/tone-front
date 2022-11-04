@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Popover, Tooltip, Space, message, Popconfirm, Modal, Button, Checkbox, Typography, Spin } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
-import { FormattedMessage, useModel } from 'umi';
+import { useIntl, FormattedMessage, useModel } from 'umi';
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
@@ -18,6 +18,7 @@ import { useClientSize } from '@/utils/hooks';
  * 系统级-业务测试
  */
 export default forwardRef(( props : any, ref: any) => {
+	const { formatMessage } = useIntl()
 	const [loading, setLoading] = useState<any>(true)
 	const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1 })
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -47,7 +48,7 @@ export default forwardRef(( props : any, ref: any) => {
 			if (code === 200) {
 				setData(res)
 			} else {
-				message.error(msg || '请求数据失败');
+				message.error(msg || formatMessage({id: 'request.failed'}) );
 			}
 			setLoading(false)
 		} catch (e) {
@@ -86,10 +87,10 @@ export default forwardRef(( props : any, ref: any) => {
 		try {
 			const { code, msg }: any = await deleteBusiness(record) || {};
 			if (code === 200) {
-				message.success('删除成功');
+				message.success(formatMessage({id: 'request.delete.success'}) );
 				getTableData(filterQuery)
 			} else {
-				message.error(msg || '请求数据失败');
+				message.error(msg || formatMessage({id: 'request.delete.failed'}) );
 			}
 			setLoading(false)
 		} catch (e) {
@@ -109,7 +110,7 @@ export default forwardRef(( props : any, ref: any) => {
 
 	let columns: any = [
 		{
-			title: '业务名称',
+			title: <FormattedMessage id="TestSuite.business.name"/>,
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 'auto',
@@ -125,7 +126,7 @@ export default forwardRef(( props : any, ref: any) => {
 			},
 		},
 		{
-			title: '创建时间',
+			title: <FormattedMessage id="TestSuite.gmt_created"/>,
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
@@ -133,7 +134,7 @@ export default forwardRef(( props : any, ref: any) => {
 			}
 		},
 		{
-			title: '修改时间',
+			title: <FormattedMessage id="TestSuite.gmt_modified"/>,
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
@@ -141,7 +142,7 @@ export default forwardRef(( props : any, ref: any) => {
 			}
 		},
 		{
-			title: '创建者',
+			title: <FormattedMessage id="TestSuite.creator_name"/>,
 			dataIndex: 'creator_name',
 			onCell: () => ({ style: { minWidth: 150 } }),
 			filterIcon: () => <FilterFilled style={{ color: creator ? '#1890ff' : undefined }} />,
@@ -156,22 +157,22 @@ export default forwardRef(( props : any, ref: any) => {
 			}
 		},
 		{
-			title: '描述',
+			title: <FormattedMessage id="TestSuite.description"/>,
 			dataIndex: 'description',
 			render: (text: any) => {
 				return <PopoverEllipsis title={text} width={200} />
 			}
 		},
 		{
-			title: '操作',
+			title: <FormattedMessage id="Table.columns.operation"/>,
 			width: 150,
 			align: 'center',
 			fixed: 'right',
 			render: (text: any, record: any) => {
 				return (
 					<Space>
-						<a><span onClick={() => AddTestDrawer.current.show(record)}>编辑</span></a>
-						<a><span onClick={() => onOk(record)}>删除</span></a>
+						<a><span onClick={() => AddTestDrawer.current.show(record)}><FormattedMessage id="operation.edit"/></span></a>
+						<a><span onClick={() => onOk(record)}><FormattedMessage id="operation.delete"/></span></a>
 					</Space>
 				)
 			},
@@ -224,6 +225,7 @@ export default forwardRef(( props : any, ref: any) => {
 					className={styles.businessList}
 					columns={columns}
 					list={list}
+					scroll={{ x: '100%' }}
 					// loading={true}
 					loading={loading}
 					page={pageNum}
@@ -252,26 +254,26 @@ export default forwardRef(( props : any, ref: any) => {
 					}}
 				/>
 
-				<Modal title="删除提示"
+				<Modal title={<FormattedMessage id="delete.tips"/>}
 					centered={true}
-					okText="删除"
-					cancelText="取消"
+					okText={<FormattedMessage id="operation.delete"/>}
+					cancelText={<FormattedMessage id="operation.cancel"/>}
 					visible={deleteVisible}
 					onCancel={onCancel}
 					width={300}
 					maskClosable={false}
 					footer={[
 						<Button key="submit" onClick={() => handelDelete(deleteRow)}>
-							确定删除
+							<FormattedMessage id="operation.confirm.delete"/>
 						</Button>,
 						<Button key="back" type="primary" onClick={onCancel}>
-							取消
+							<FormattedMessage id="operation.cancel"/>
 						</Button>
 					]}
 				>
 					<div style={{ color: 'red', marginBottom: 5 }}>
 						<ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-						确定要删除吗？
+						<FormattedMessage id="delete.prompt"/>
 					</div>
 				</Modal>
 
@@ -280,11 +282,13 @@ export default forwardRef(( props : any, ref: any) => {
 					<div className={styles.deleteAll} style={{ width: (layoutWidth - 199 - 88) }}>
 						<Space>
 							<Checkbox indeterminate={true} />
-							<Typography.Text>已选择{selectedSuites.selectedSuiteKeys?.length}项</Typography.Text>
-							<Button type="link" onClick={onCancelRowSelection}>取消</Button>
+							<Typography.Text>
+							    {formatMessage({id: 'selected.item'}, {data: selectedSuites.selectedSuiteKeys?.length})}
+							</Typography.Text>
+							<Button type="link" onClick={onCancelRowSelection}><FormattedMessage id="operation.cancel"/></Button>
 						</Space>
 						<Space>
-							<Button onClick={deleteAll}>批量删除</Button>
+							<Button onClick={deleteAll}><FormattedMessage id="operation.batch.delete"/></Button>
 						</Space>
 					</div>
 				}

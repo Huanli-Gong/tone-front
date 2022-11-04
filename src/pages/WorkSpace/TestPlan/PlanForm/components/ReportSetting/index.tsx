@@ -4,9 +4,14 @@ import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
 import styles from './index.less'
 import _ from 'lodash'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 
 export default forwardRef((props: any, ref: any) => {
-    const { ws_id, show, template } = props
+    const { formatMessage } = useIntl()
+    const { show, template } = props
+
+    const { route } = props
+    const { ws_id } = useParams() as any
     const [form] = Form.useForm()
     // 触发开关
     const [trigger, setTrigger] = useState(false)
@@ -14,7 +19,7 @@ export default forwardRef((props: any, ref: any) => {
     const [reportTemplate, setReportTemplate] = useState<any>([])
 
     // 选择分组
-    const [groupMethod, setGroupMethod] = useState('')
+    const [groupMethod, setGroupMethod] = useState("no")
     // 根据选择分组，选择基准组数据源。
     const [testConfig, setTestConfig] = useState<any>([]) // 阶段数据
     const [envPrep, setEnvPrep] = useState<any>([]) // 所有阶段数据中的模板数据集合
@@ -27,7 +32,8 @@ export default forwardRef((props: any, ref: any) => {
                 let dataSource = _.isArray(data) ? data : []
                 const defaultTem = _.find(dataSource, { is_default: true })
                 setReportTemplate(dataSource)
-                form.setFieldsValue({ ...form.getFieldsValue(), report_template_id: defaultTem.id, })
+                if (route.name === "Create")
+                    form.setFieldsValue({ report_template_id: defaultTem.id })
             }
         } catch (e) {
             console.log(e)
@@ -41,26 +47,29 @@ export default forwardRef((props: any, ref: any) => {
     // 编辑
     useEffect(() => {
         if (template && Object.keys(template).length) {
-            const { auto_report, group_method, base_group, base_group_info, report_template_id, test_config, } = template
+            const { auto_report, group_method = "no", base_group, base_group_info, report_template_id, test_config, } = template
             const { stage_id, } = base_group_info || {}
             setTrigger(auto_report)
-            setGroupMethod(group_method)
             // 表单数据回填
             if (auto_report) {
                 const defaultTem = _.find(reportTemplate, { is_default: true })
                 // *根据“分组方式”区分base_group字段回填数据
-                const baseGroupObject = group_method === 'job' ? {
-                    base_group_job: stage_id ? [stage_id, base_group] : [],
-                } : {
-                    base_group_stage: base_group || undefined,
-                }
+
+                let baseGroupObj = {}
+                if (group_method === "job")
+                    baseGroupObj = { base_group_job: stage_id ? [stage_id, base_group] : [] }
+                if (group_method === "stage")
+                    baseGroupObj = { base_group_stage: base_group || undefined }
+
                 form.setFieldsValue({
                     ...template,
                     group_method,
                     // base_group字段数据回填
-                    ...baseGroupObject,
+                    ...baseGroupObj,
                     report_template_id: report_template_id || _.get(defaultTem, 'id')
                 })
+                setGroupMethod(group_method)
+
                 // 根据后端返回数据，重组基准组的数据源
                 if (test_config) {
                     const modules = test_config?.map((item: any, index: any) => {
@@ -78,7 +87,7 @@ export default forwardRef((props: any, ref: any) => {
                 }
             }
         }
-    }, [template])
+    }, [template, reportTemplate])
 
     useImperativeHandle(ref, () => ({
         validate: async () => {
@@ -92,6 +101,7 @@ export default forwardRef((props: any, ref: any) => {
                     return {
                         value: index + 1,
                         label: item.name,
+                        key: index,
                         children: item?.template?.map((key: any) => ({
                             value: key.id,
                             label: key.name,
@@ -115,9 +125,7 @@ export default forwardRef((props: any, ref: any) => {
                             form.setFieldsValue({ base_group_job: undefined });
                         }
                     }
-
                 }
-
             }
         }
     }))
@@ -133,18 +141,22 @@ export default forwardRef((props: any, ref: any) => {
                 style={{ width: '100%' }}
                 colon={false}
                 className={styles.job_plan_form}
+                initialValues={{ group_method: "no" }}
             >
-                <Form.Item label="自动生成报告"
+                <Form.Item label={<FormattedMessage id="plan.generate.reports"/>}
                     name="auto_report">
                     <Switch onChange={setTrigger} checked={trigger}
-                        size="default" checkedChildren="开" unCheckedChildren="关" />
+                        size="default" 
+                        checkedChildren={<FormattedMessage id="plan.checked"/>}
+                        unCheckedChildren={<FormattedMessage id="plan.unChecked"/>}
+                    />
                 </Form.Item>
                 {trigger && (
                     <>
-                        <Form.Item label="报告名称">
+                        <Form.Item label={<FormattedMessage id="plan.report_name"/>}>
                             <div style={{ position: 'relative' }}>
                                 <Form.Item name="report_name">
-                                    <Input autoComplete="off" placeholder="请输入报告名称，例如：{Job_name}_report-{report_seq_id}" />
+                                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.report_name.placeholder'}, {Job_name: '{Job_name}', report_seq_id: '{report_seq_id}'} )} />
                                 </Form.Item>
                                 <div style={{ position: 'absolute', right: -22, top: -4 }}>
                                     <QusetionIconTootip
@@ -152,7 +164,7 @@ export default forwardRef((props: any, ref: any) => {
                                         placement="bottomRight"
                                         desc={
                                             <>
-                                                <Row><Typography.Text>报告名称可用占位符： </Typography.Text></Row>
+                                                <Row><Typography.Text><FormattedMessage id="plan.available.placeholders"/></Typography.Text></Row>
                                                 <Row><Typography.Text>{`{date} {plan_name} {plan_id} {product_version}`}</Typography.Text></Row>
                                             </>
                                         }
@@ -161,11 +173,11 @@ export default forwardRef((props: any, ref: any) => {
                             </div>
                         </Form.Item>
                         <Form.Item
-                            label="选择报告模板"
+                            label={<FormattedMessage id="plan.select.report.template"/>}
                             name="report_template_id"
                         >
                             <Select
-                                placeholder={'请选择报告模板'}
+                                placeholder={formatMessage({id: 'please.select'})}
                                 getPopupContainer={node => node.parentNode}
                                 showSearch
                                 optionFilterProp="children"
@@ -179,26 +191,33 @@ export default forwardRef((props: any, ref: any) => {
                             </Select>
                         </Form.Item>
 
-                        <Form.Item label="分组方式"
+                        <Form.Item label={<FormattedMessage id="plan.group_method"/>}
                             name="group_method"
                         >
                             <Radio.Group onChange={(e) => { setGroupMethod(e.target.value) }}>
-                                <Radio value={'job'}>以Job维度分组</Radio>
-                                <Radio value={'stage'}>以阶段维度分组</Radio>
+                                <Radio value={"no"}><FormattedMessage id="plan.group_method.not"/></Radio>
+                                <Radio value={'job'}><FormattedMessage id="plan.group_method.job"/></Radio>
+                                <Radio value={'stage'}><FormattedMessage id="plan.group_method.stage"/></Radio>
                             </Radio.Group>
                         </Form.Item>
                         {groupMethod === 'job' && (
-                            <Form.Item label="选择基准组"
+                            <Form.Item
+                                label={<FormattedMessage id="plan.select.base_group"/>}
                                 name="base_group_job"
-                            >
-                                <Cascader options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
+                                rules={[
+                                    { required: true, message: formatMessage({id: 'plan.select.base_group.message'}) }
+                                ]}>
+                                <Cascader placeholder={formatMessage({id: 'plan.select.base_group.message'})} options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
                             </Form.Item>
                         )}
                         {groupMethod === 'stage' && (
-                            <Form.Item label="选择基准组"
+                            <Form.Item
+                                label={<FormattedMessage id="plan.select.base_group"/>}
                                 name="base_group_stage"
-                            >
-                                <Select placeholder="请选择" getPopupContainer={node => node.parentNode}>
+                                rules={[
+                                    { required: true, message: formatMessage({id: 'plan.select.base_group.message'}) }
+                                ]}>
+                                <Select placeholder={formatMessage({id: 'plan.select.base_group.message'})} getPopupContainer={node => node.parentNode}>
                                     {testConfig.map((item: any, index: number) =>
                                         <Select.Option key={index + 1} value={index + 1}>{item.name}</Select.Option>
                                     )}
@@ -206,13 +225,13 @@ export default forwardRef((props: any, ref: any) => {
                             </Form.Item>
                         )}
 
-                        <Form.Item label="报告描述"
+                        <Form.Item label={<FormattedMessage id="plan.report_description"/>}
                             name="report_description"
                             rules={[
                                 { required: false },
-                                { max: 500, message: '限制最长500个字符' },
+                                { max: 500, message: formatMessage({id: 'plan.limit.characters'}) },
                             ]}>
-                            <Input.TextArea placeholder="请输入报告描述" />
+                            <Input.TextArea placeholder={formatMessage({id: 'plan.report_description.placeholder'})} />
                         </Form.Item>
                     </>
                 )}

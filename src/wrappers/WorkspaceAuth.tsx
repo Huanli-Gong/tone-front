@@ -1,33 +1,41 @@
-import React, { useEffect } from 'react'
-import { history, useModel } from 'umi'
+import { useEffect } from 'react'
+import { history, useModel, useParams, useLocation } from 'umi'
 import { person_auth } from '@/services/user';
-import { enterWorkspaceHistroy } from '@/services/Workspace'
-import { deepObject, jumpWorkspace } from '@/utils/utils';
+import { deepObject } from '@/utils/utils';
+import { enterWorkspaceHistroy } from '@/services/Workspace';
 
 export default (props: any) => {
     const { children } = props
-    const { ws_id } = props.match.params
+    const locationHistory = useLocation()
+    const { ws_id } = useParams() as any
     const { initialState, setInitialState } = useModel('@@initialState')
     const { authList } = initialState
 
     const checkAccess = async () => {
         let flag = authList
+        const { ws_id: old_ws_id } = authList
 
-        const { data } = await person_auth({ ws_id })
-        const accessData = deepObject(data)
-        setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
-        flag = accessData
+        if (!old_ws_id || old_ws_id !== ws_id) {
+            const { data } = await person_auth({ ws_id })
+            const accessData = deepObject(data)
+            setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
+            flag = accessData
 
-        if (!data) {
-            history.push('/500')
-            return
+            if (!data) {
+                history.push('/500')
+                return
+            }
+        }
+
+        const { state } = locationHistory as any
+        /* 没有history state && fetchWorkspaceHistoryRecord 未请求记录history接口*/
+        if (state?.fetchWorkspaceHistoryRecord) {
+            history.replace(locationHistory.pathname, undefined)
+        } else {
+            enterWorkspaceHistroy({ ws_id })
         }
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
-
-        if (ws_role_title){
-            enterWorkspaceHistroy({ ws_id }) 
-        }
 
         if (!ws_is_exist) {
             history.push(`/404`)
@@ -42,7 +50,7 @@ export default (props: any) => {
 
     useEffect(() => {
         checkAccess()
-    }, [location.pathname])
+    }, [locationHistory.pathname])
 
     return children
 }

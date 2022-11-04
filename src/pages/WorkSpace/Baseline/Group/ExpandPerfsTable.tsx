@@ -2,7 +2,7 @@ import { Layout, Row, Spin, Table, Tooltip, Typography } from 'antd'
 import React, { useState, useEffect, useMemo } from 'react'
 import styles from './index.less'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons'
-import { useLocation, useParams } from 'umi'
+import { useLocation, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryBaselineDetail } from '../services'
 import ExpandTable from './ExpandTable'
 import { partial } from 'lodash'
@@ -75,7 +75,7 @@ export default (props: any) => {
         },
         {
             dataIndex: 'server_sm_name',
-            title: '机型',
+            title: <FormattedMessage id="pages.workspace.baseline.expandPerf.server_sm_name" />,
             key: 'server_sm_name',
         },
         {
@@ -85,7 +85,7 @@ export default (props: any) => {
         },
         {
             dataIndex: 'source_job_id',
-            title: '来源Job',
+            title: <FormattedMessage id="pages.workspace.baseline.expandPerf.source_job_id" />,
             key: 'source_job_id',
             ellipsis: {
                 showTitle: false
@@ -105,7 +105,7 @@ export default (props: any) => {
     const columnsCluster = [
         {
             dataIndex: 'server_instance_type',
-            title: '规格',
+            title: <FormattedMessage id="pages.workspace.baseline.expandPerf.server_instance_type" />,
             ellipsis: {
                 showTitle: false,
             },
@@ -159,7 +159,7 @@ export default (props: any) => {
         },
         {
             dataIndex: 'source_job_id',
-            title: '来源Job',
+            title: <FormattedMessage id="pages.workspace.baseline.expandPerf.source_job_id" />,
             key: 'source_job_id',
             ellipsis: {
                 showTitle: false

@@ -2,20 +2,21 @@ import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
-import { useRequest, useParams, useLocation } from 'umi'
+import { useRequest, useParams, useLocation, FormattedMessage, useIntl } from 'umi'
 import { deleteBaseline, queryBaselineList } from '../services'
 import AddScripotDrawer from './AddScript'
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
 import BaselineDetail from './BaselineDetail'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import _ from 'lodash';
-import { requestCodeMessage, AccessTootip, aligroupServer, aliyunServer } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { useClientSize } from '@/utils/hooks'
 import { Access, useAccess } from 'umi'
 
 const { Search } = Input;
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const access = useAccess();
     const { query }: any = useLocation()
@@ -112,7 +113,7 @@ export default (props: any) => {
     }
 
     const handleAddScript = () => {
-        addScript.current?.show('新增基线')
+        addScript.current?.show('add')
     }
 
     const handleDelete = async (item: any) => {
@@ -120,14 +121,15 @@ export default (props: any) => {
         //fetchFinally(code, msg)
         if (code == 200) {
             if (item.id === current.id) setCurrent({})
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
+
             refresh()
         }
         else requestCodeMessage(code, msg)
     }
 
     const hanldeEdit = () => {
-        addScript.current?.show('编辑基线信息', current)
+        addScript.current?.show('edit', current)
     }
     const handleClickFn = (e: any) => {
         e.stopPropagation();
@@ -169,7 +171,7 @@ export default (props: any) => {
         <Dropdown
             overlay={
                 <Menu>
-                    <Menu.Item onClick={hanldeEdit}>编辑信息</Menu.Item>
+                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="baseline.edit.info"/></Menu.Item>
                 </Menu>
             }
         >
@@ -184,7 +186,7 @@ export default (props: any) => {
     )
 
     let server_provider = serverProvider || '--'
-    server_provider = server_provider === "aligroup" ? aligroupServer : aliyunServer
+    server_provider = server_provider === "aligroup" ? formatMessage({id: 'aligroupServer'}) : formatMessage({id: 'aliyunServer'})
     // server_provider = server_provider === 'aligroup' ? '内网环境' : '云上环境'
     const baelineTotal = data && data.total ? data.total : 0
 
@@ -198,10 +200,14 @@ export default (props: any) => {
                 <Row justify="space-between" >
                     <div className={styles.script_left} style={{ height: layoutHeight }}>
                         <div className={styles.create_button_wrapper}>
-                            <Button type="primary" onClick={handleAddScript}>新增基线</Button>
+                            <Button type="primary" onClick={handleAddScript}>
+                                <FormattedMessage id="baseline.create.btn"/>
+                            </Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
-                            <Typography.Text className={styles.all_baseline_title} strong={true}>所有基线 {`(${baelineTotal})`}</Typography.Text>
+                            <Typography.Text className={styles.all_baseline_title} strong={true}>
+                                <FormattedMessage id="baseline.all.baseline"/> {`(${baelineTotal})`}
+                            </Typography.Text>
                             <div className={styles.filter_icon} onClick={handleClickFilter}>
                                 <FilterFilled style={{ color: 'rgba(0 , 0 , 0 ,.45)' }} />
                             </div>
@@ -216,14 +222,18 @@ export default (props: any) => {
                                         value={search}
                                         onChange={(e: any) => setSearch(e.target.value)}
                                         onPressEnter={() => handleSearchScript()}
-                                        placeholder="支持搜索基线名称"
+                                        placeholder={formatMessage({id: 'baseline.search.baseline.name'}) }
                                         onSearch={handleSearchScript} />
                                 </Col>
                                 <Divider style={{ margin: 0 }} />
                                 <Col span={24}>
                                     <Row justify="space-between">
-                                        <Col span={12} onClick={handleSearchScript} className={`${styles.filter_dropdown_opt} ${styles.filter_search_btn}`}>搜索</Col>
-                                        <Col span={12} onClick={handleResetSearch} className={styles.filter_dropdown_opt}>重置</Col>
+                                        <Col span={12} onClick={handleSearchScript} className={`${styles.filter_dropdown_opt} ${styles.filter_search_btn}`}>
+                                            <FormattedMessage id="baseline.search"/>
+                                        </Col>
+                                        <Col span={12} onClick={handleResetSearch} className={styles.filter_dropdown_opt}>
+                                            <FormattedMessage id="operation.reset"/>
+                                        </Col>
                                     </Row>
                                 </Col>
                             </Row>
@@ -254,11 +264,11 @@ export default (props: any) => {
                                                 }
                                             >
                                                 <Popconfirm
-                                                    title={<div style={{ color: 'red' }}>删除基线将可能导致Job无法正常运行，<br />请谨慎删除！！</div>}
+                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="baseline.delete.prompt1"/><br /><FormattedMessage id="baseline.delete.prompt2"/></div>}
                                                     onCancel={() => handleDelete(item)}
-                                                    cancelText="确定删除"
+                                                    cancelText={<FormattedMessage id="operation.confirm.delete"/>}
                                                     cancelButtonProps={{ disabled: data.is_first ? true : false }}
-                                                    okText="取消"
+                                                    okText={<FormattedMessage id="operation.cancel"/>}
                                                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                                                 >
                                                     <MinusCircleOutlined
@@ -291,25 +301,25 @@ export default (props: any) => {
                         <Row className={styles.script_right_detail} align="middle">
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={`${styles.script_right_name}`} strong>基线名称：</Typography.Text>
+                                    <Typography.Text className={`${styles.script_right_name}`} strong><FormattedMessage id="baseline.baseline_name"/>：</Typography.Text>
                                     <EllipsisPulic title={current?.name} style={{ width: 318 }} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong>产品版本：</Typography.Text>
+                                    <Typography.Text className={styles.script_right_name} strong><FormattedMessage id="baseline.product_version"/>：</Typography.Text>
                                     <EllipsisPulic title={current?.version} style={{ width: 318 }} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong >测试环境：</Typography.Text>
+                                    <Typography.Text className={styles.script_right_name} strong ><FormattedMessage id="baseline.test.env"/>：</Typography.Text>
                                     <EllipsisPulic title={baselineData.length ? server_provider : '-'} style={{ width: 230 }} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong>基线描述：</Typography.Text>
+                                    <Typography.Text className={styles.script_right_name} strong><FormattedMessage id="baseline.baseline_desc"/>：</Typography.Text>
                                     <EllipsisPulic title={current?.description} style={{ width: 318 }} />
                                 </div>
                             </Col>
@@ -335,7 +345,7 @@ export default (props: any) => {
                 setCurrent={setCurrent}
             />
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.prompt"/>}
                 visible={visible}
                 width={480}
                 className={styles.baseline_del_modal}
@@ -344,18 +354,18 @@ export default (props: any) => {
                 footer={
                     <Row justify="end">
                         <Space>
-                            <Button onClick={handleCancel}>取消</Button>
+                            <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
                             {
                                 data.is_first ?
-                                    <Button disabled={true} >删除</Button> :
-                                    <Button onClick={handleDelete} type="primary" danger>删除</Button>
+                                    <Button disabled={true} ><FormattedMessage id="operation.delete"/></Button> :
+                                    <Button onClick={handleDelete} type="primary" danger><FormattedMessage id="operation.delete"/></Button>
                             }
                         </Space>
                     </Row>
                 }
             >
-                <span>该操作将删除当前基线，请谨慎操作</span>
+                <span><FormattedMessage id="baseline.delete.prompt3"/></span>
             </Modal>
-        </Layout.Content >
+        </Layout.Content>
     )
 }

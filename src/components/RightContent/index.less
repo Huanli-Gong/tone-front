@@ -126,12 +126,15 @@
 
 .msg_warp {
   :global(.ant-tabs-nav-wrap){
-      margin: 0 20px;
+      margin-left: 20px; // 为英文模式下的TabPane2提供一些空间
       padding-left: 0;
-      //border-bottom: 1px solid rgba( 0 , 0 , 0 , 0.09);
   }
   :global(.ant-tabs-top > .ant-tabs-nav){
       margin: 0 ;
+  }
+  // 为英文模式下的TabPane2提供一些空间
+  :global(.ant-tabs-top > .ant-tabs-nav > .ant-tabs-extra-content > .ant-btn-link){
+    padding: 4px 15px 4px 0px;
   }
 }
 

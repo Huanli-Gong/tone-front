@@ -9,6 +9,7 @@ import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale, useP
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
+import TidDetail from './QueryTidList';
 
 const TestConfTable: React.FC<Record<string, any>> = (props) => {
     const { test_suite_name, test_suite_id, testType, provider_name } = props
@@ -28,9 +29,9 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
     const { initialState } = useModel('@@initialState');
     const access = useAccess();
 
-    const queryTestListTableData = async () => {
+    const queryTestListTableData = async (params:any) => {
         setLoading(true)
-        const { data, code, msg, total } = await queryProcessCaseList(pageParams)
+        const { data, code, msg, total } = await queryProcessCaseList(params)
         if (code === 200) {
             setDataSource(data)
             setTotal(total)
@@ -39,9 +40,9 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             requestCodeMessage(code, msg)
         }
     }
-
+   
     useEffect(() => {
-        queryTestListTableData()
+        queryTestListTableData(pageParams)
     }, [pageParams])
 
     const columns = [
@@ -56,7 +57,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             title: ['business_business'].includes(testType) ?
                 <FormattedMessage id="ws.result.details.the.server" /> :
                 <FormattedMessage id="ws.result.details.test.server" />,
-            width: 80,
+            width: 100,
             ellipsis: {
                 showTitle: false
             },
@@ -64,7 +65,8 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 <ServerLink
                     val={_}
                     param={row.server_id}
-                    provider={provider_name}
+                    provider={provider_name} 
+                    description={row.server_description}
                 />
             )
         },
@@ -94,7 +96,10 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             dataIndex: 'tid',
             title: 'TID',
             width: 120,
-            ...copyTooltipColumn('-', formatMessage),
+            ellipsis: {
+                showTitle: false
+            },
+            render:(_:any) => <TidDetail tid={_} />
         },
         {
             dataIndex: 'result',
@@ -150,30 +155,28 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                             </span>
                         }
                     >
-                        {_.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} ><FormattedMessage id="ws.result.details.suspension" /></Button>}
-                        {_.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} ><FormattedMessage id="ws.result.details.skip" /></Button>}
+                        { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop', pageParams)} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
+                        { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip', pageParams)} ><FormattedMessage id="ws.result.details.skip"/></Button> }
                     </Access>
                 </Access>
             )
         },
-    ]
+    ], [testType, locale, pageParams])
 
-    const doConfServer = async (_: any, state: any) => {
+    const doConfServer = async (_: any, state: any, params:any) => {
         // 添加用户id
         const { user_id } = initialState?.authList
         const params = {
             editor_obj: 'test_job_conf',
             test_job_conf_id: _.id,
-            state,
-            user_id
-        }
-        const { code, msg } = await updateSuiteCaseOption(params)
-        if (code !== 200) {
+            state
+        })
+        if (code === 200) {
+            queryTestListTableData(params)
+            message.success(formatMessage({id: 'operation.success'}))
+        } else {
             requestCodeMessage(code, msg)
-            return
         }
-        message.success(formatMessage({ id: 'operation.success' }))
-        queryTestListTableData()
     }
 
     return (

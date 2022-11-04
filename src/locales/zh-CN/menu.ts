@@ -1,4 +1,7 @@
-import { aligroupServer, aliyunServer, GROUP_MANAGE, CLOUD_MANAGE } from '@/utils/utils';
+import {
+  aligroupServer_baseline, aliyunServer_baseline,
+  GROUP_MANAGE, CLOUD_MANAGE,
+} from '@/utils/utils';
 
 export default {
   'menu.Dashboard': 'Dashboard',
@@ -10,9 +13,11 @@ export default {
   'menu.exception.500': '500',
   'menu.nofoundpage.404': '404页面',
   'menu.server.500': '500页面',
-  "menu.ShareReport": '分享报告',
 
   'menu.home': '首页',
+  "menu.PersonCenter": 'Person Center',
+  "menu.HelpDoc": '帮助文档',
+  "menu.NoticeDoc": '公告',
   'menu.workspace': '工作台',
   'menu.setting': '基础配置',
   'menu.basicConfig': '基础配置',
@@ -22,6 +27,8 @@ export default {
   'menu.BasicSetting': '基础配置',
   'menu.TestParmSetting': 'Testfarm配置',
   'menu.DirectRoute': 'directRoute',
+
+  'menu.ShareReport': '测试报告',
 
   'menu.JobTypePreview': '模板预览',
   'menu.TemplateEdit': '模板编辑',
@@ -48,12 +55,16 @@ export default {
   'menu.Workspace.TestReport.TemplateEdit': '编辑报告模版',
   'menu.Workspace.TestReport.Report': '测试报告',
   'menu.Workspace.TestReport.EditReport': '编辑报告',
+  // "menu.Workspace.TestReport.ShareReport": '分享报告',
   'menu.Workspace.TestReport.CompareAnalysisConf': '结果页',
 
   'menu.Workspace.CreateReport': '创建报告',
 
   'menu.Workspace.TestSuiteSearch': '测试用例',
   'menu.Workspace.TestSuiteSearch.TestSuiteSearchResult': '搜索结果',
+  'menu.Workspace.TestSuiteSearch.IndexPage': '用例检索',
+  'menu.Workspace.TestSuiteSearch.ConfDetail': 'Conf详情',
+  'menu.Workspace.TestSuiteSearch.SuiteDetail': 'Suite详情',
 
   'menu.Workspace.Upload': '离线测试',
 
@@ -102,8 +113,8 @@ export default {
   'menu.Workspace.DeviceManage.CloudConfig': '云资源配置',
 
   'menu.Workspace.Baseline': '基线管理',
-  'menu.Workspace.Baseline.GroupBaseline': `${aligroupServer}基线`,
-  'menu.Workspace.Baseline.ClusterBaseline': `${aliyunServer}基线`,
+  'menu.Workspace.Baseline.GroupBaseline': aligroupServer_baseline,
+  'menu.Workspace.Baseline.ClusterBaseline': aliyunServer_baseline,
   'menu.Workspace.PersonCenter': '个人中心',
 
   'menu.Workspace.TestPlan': '测试计划',

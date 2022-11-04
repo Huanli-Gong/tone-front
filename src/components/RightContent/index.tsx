@@ -157,9 +157,10 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                                             onClick={handleAllRead}
                                             disabled={tab == '1' ? msgNum.task_msg_unread_num === 0 : msgNum.apply_msg_unread_num === 0}
                                         >
-                                            {/* 全部已读 */}
                                             <FormattedMessage id="right.content.all.read" />
-                                        </Button>}>
+                                        </Button>
+                                    }
+                                >
                                     <Tabs.TabPane key="1" tab={
                                         <Badge dot={msgNum.task_msg_state}><FormattedMessage id="right.content.task.notification" /></Badge>
                                     }>

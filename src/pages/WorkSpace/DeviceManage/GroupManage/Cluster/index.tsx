@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import styles from './index.less'
-
-import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
+import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table, Tooltip } from 'antd'
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
 import { MembersFilter } from './Components/FilterDropdowns'
@@ -25,6 +25,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic'
  * 内网集群
  */
 const Cluster = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const access = useAccess();
     const { loading, dataSource, params, total, refresh, setParams, setRefresh } = usePageInit(ws_id)
@@ -59,7 +60,7 @@ const Cluster = (props: any, ref: any) => {
     const defaultOption = (data: any) => {
         if (data.code === 200) {
             setRefresh(!refresh)
-            message.success('操作成功')
+            message.success(formatMessage({id: 'operation.success'}) )
             setDeleteVisible(false)
             setDeleteDefault(false)
         }
@@ -102,7 +103,7 @@ const Cluster = (props: any, ref: any) => {
 
     const columns: any = [
         {
-            title: '集群名',
+            title: <FormattedMessage id="device.cluster.name"/>,
             dataIndex: 'name',
             render: (record: any) => (<Typography.Text style={{ color: '#1890ff' }} >{record}</Typography.Text>),
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
@@ -120,7 +121,7 @@ const Cluster = (props: any, ref: any) => {
             )
         },
         {
-            title: '标签',
+            title: <FormattedMessage id="device.tag"/>,
             dataIndex: 'tag_list',
             render: (record: any) => (
                 <OverflowList list={
@@ -139,7 +140,7 @@ const Cluster = (props: any, ref: any) => {
             )
         },
         {
-            title: '备注',
+            title: <FormattedMessage id="device.description"/>,
             width: 300,
             dataIndex: 'description',
             filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
@@ -151,28 +152,26 @@ const Cluster = (props: any, ref: any) => {
             }
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             width: 190,
             render: (record: any, row: any) => (
                 <Space>
-                    <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}>添加</Button>
-                    <Access
+                    <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}><FormattedMessage id="operation.add"/></Button>
+                    <Access 
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
-                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}>编辑</Button>
-                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}>删除</Button>
+                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
+                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
                             </Space>
                         }
                     >
                         <Space>
-                            <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}>编辑</Button>
-                            <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}>删除</Button>
+                            <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}><FormattedMessage id="operation.edit"/></Button>
+                            <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete"/></Button>
                         </Space>
                     </Access>
-                    <PermissionTootip>
-                        <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}>日志</Button>
-                    </PermissionTootip>
+                     <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}><FormattedMessage id="operation.log"/></Button>
                 </Space>
             )
         }
@@ -180,7 +179,7 @@ const Cluster = (props: any, ref: any) => {
 
     return (
         <Layout.Content className={styles.table}>
-            <Spin spinning={syncServerLoading} tip="同步中">
+            <Spin spinning={syncServerLoading} tip={formatMessage({id: 'device.Synchronizing'}) }>
                 <Table
                     style={{ width: '100%' }}
                     loading={loading}
@@ -238,16 +237,16 @@ const Cluster = (props: any, ref: any) => {
                 ref={addClusterServerRef}
             />
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 visible={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteServer(deleteObj.id)}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={600}
@@ -255,28 +254,30 @@ const Cluster = (props: any, ref: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    已有模板配置了该集群，删除机器后对应的测试机配置会自动改为随机，请谨慎删除！！
+                    <FormattedMessage id="device.cluster.delete.tips"/>
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
+                    <FormattedMessage id="view.quote.details"/>
+                </div>
             </Modal>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteServer(deleteObj.id)}>
-                        确定删除
+                        <FormattedMessage id="operation.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要删除吗？
+                    <FormattedMessage id="delete.prompt"/>
                 </div>
             </Modal>
         </Layout.Content>

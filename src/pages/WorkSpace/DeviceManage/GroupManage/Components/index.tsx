@@ -57,8 +57,8 @@ export const DrawerForm = (props: any) => {
             footer={
                 <div style={{ textAlign: 'right' }} >
                     <Space>
-                        <Button onClick={onCancel}>取消</Button>
-                        <Button type="primary" onClick={onFinish}>确定</Button>
+                        <Button onClick={onCancel}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" onClick={onFinish}><FormattedMessage id="operation.ok"/></Button>
                     </Space>
                 </div>
             }
@@ -75,8 +75,8 @@ export const MemberSelect = ({ members, callback, rules, initialValue }: any) =>
         rules={rules}
         initialValue={initialValue}
     >
-        <Select
-            placeholder="请输入"
+        <Select 
+            placeholder={<FormattedMessage id="please.enter"/>}
             defaultActiveFirstOption={false}
             filterOption={false}
             showSearch
@@ -112,14 +112,14 @@ export const tagRender = ({ label, closable, onClose, value }: any) => (
 
 export const TagSelect = (props: any) => {
     const { formatMessage } = useIntl()
-    const {
-        tags,
-        rules,
-        initialValue,
-        label = formatMessage({ id: 'ws.result.details.tag' }),
-        name = 'tags',
-        placeholder = formatMessage({ id: 'ws.result.details.select.tag' }),
-        disabled = false
+    const { 
+        tags , 
+        rules , 
+        initialValue , 
+        label = formatMessage({id: 'device.tag'}), 
+        name = 'tags' , 
+        placeholder = formatMessage({id: 'device.please.select.tag'}), 
+        disabled = false 
     } = props
 
     return (

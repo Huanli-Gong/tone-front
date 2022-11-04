@@ -1,10 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { Drawer, Form, Input, Button, Space } from 'antd'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { deployClusterServer } from '../services'
 
 const DeployServer = forwardRef(
     (props: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const { handleOk } = props
 
         const [ visible , setVisible ] = useState( false )
@@ -49,7 +50,7 @@ const DeployServer = forwardRef(
             <Drawer 
                 maskClosable={ false }
                 keyboard={ false }
-                title="部署"
+                title={<FormattedMessage id="device.deploy"/>}
                 forceRender={true}
                 visible={visible}
                 width="376"
@@ -57,8 +58,8 @@ const DeployServer = forwardRef(
                 footer={
                     <div style={{ textAlign: 'right' }} >
                         <Space>
-                            <Button onClick={ handleCancel }>取消</Button>
-                            <Button type="primary" onClick={onOk}>确定</Button>
+                            <Button onClick={ handleCancel }><FormattedMessage id="operation.cancel"/></Button>
+                            <Button type="primary" onClick={onOk}><FormattedMessage id="operation.ok"/></Button>
                         </Space>
                     </div>
                 }
@@ -68,11 +69,14 @@ const DeployServer = forwardRef(
                     /*hideRequiredMark*/
                     form={form}
                 >
-                    <Form.Item name="deploy_user" label="用户名" rules={[{ required: true, message: '请输入用户名' }]}>
-                        <Input autoComplete="off" placeholder="请输入机器用户名" />
+                    <Form.Item name="deploy_user" label={<FormattedMessage id="device.deploy_user"/>}
+                        rules={[{ required: true, message: formatMessage({id: 'device.deploy_user.message'}) }]}>
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'device.deploy_user.placeholder'})} />
                     </Form.Item>
-                    <Form.Item name="deploy_pass" label="密码" rules={[{ required: true, message: '请输入密码' }]}>
-                        <Input.Password autoComplete="off" placeholder="请输入机器密码" visibilityToggle={false} />
+                    <Form.Item name="deploy_pass" label={<FormattedMessage id="device.deploy_pass"/>}
+                        rules={[{ required: true, message: formatMessage({id: 'device.deploy_pass.message'}) }]}>
+                        <Input.Password autoComplete="off" placeholder={formatMessage({id: 'device.deploy_pass.placeholder'})}
+                            visibilityToggle={false} />
                     </Form.Item>
                 </Form>
             </Drawer>

@@ -1,11 +1,13 @@
 import { requestCodeMessage } from '@/utils/utils'
 import { Input, Modal , message } from 'antd'
 import React , { useState , useImperativeHandle , forwardRef } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 
 import { updateConfig }  from '../services'
 
 export default forwardRef(
     ({ onOk } : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const PAGE_DEFAULT_PARAMS = { config_type : 'script' }
 
         const [ visible , setVisible ] = useState( false )
@@ -56,12 +58,12 @@ export default forwardRef(
                 visible={visible}
                 onOk={ handleOk }
                 onCancel={ handleCancel }
-                okText="确认"
-                cancelText="取消"
+                okText={<FormattedMessage id="operation.confirm"/>}
+                cancelText={<FormattedMessage id="operation.cancel"/>}
                 maskClosable={ false }
             >
                 <Input.TextArea 
-                    placeholder="请输入Comment信息" 
+                    placeholder={formatMessage({id: 'basic.please.enter.comment'})}
                     value={ common }
                     rows={ 4 }
                     onChange={ ({ target }) => setCommon( target.value )}

@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useEffect,useState } from 'react'
 import { Table, Space, Button, Badge, message, Tooltip, Modal, Input } from 'antd'
-import { useRequest, history, useModel } from 'umi'
+import { useRequest, history, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryJobTypeList, jobSwitch, deleteJob, queryJobTypeDel } from './services'
 import { requestCodeMessage, switchServerType, switchTestType } from '@/utils/utils'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -10,6 +10,8 @@ import { JobTypeDeleteModal, EditTalbeCell } from './components'
 import { SingleTabCard } from '@/components/UpgradeUI'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { ws_id } = props.match.params
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [DefaultJob, setDefaultJob] = useState({});
@@ -28,7 +30,8 @@ export default (props: any) => {
     const defaultOption = (ret: any) => {
         if (ret.code === 200) {
             run({ ws_id })
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
+
         }
         else
             requestCodeMessage( ret.code , ret.msg )
@@ -40,9 +43,9 @@ export default (props: any) => {
                 const result = await jobSwitch({ priority, jt_id })
                 defaultOption(result)
             }
-            else message.error('排序值须大于0')
+            else message.error(formatMessage({id: 'job.types.sort.ps1'}) )
         }
-        else message.error('排序值须为数字')
+        else message.error(formatMessage({id: 'job.types.sort.ps2'}) )
     }
 
     useEffect(() => {
@@ -66,7 +69,7 @@ export default (props: any) => {
         const result = await deleteJob({ jt_id: job.id, ws_id })
         if (result.code === 200) {
             run({ ws_id })
-            message.success('操作成功!')
+            message.success(formatMessage({id: 'operation.success'}) )
             deleteModal.current.hide()
             setDeleteDefault(false)
         }
@@ -98,16 +101,16 @@ export default (props: any) => {
 
     const columns: any = [
         {
-            title: '默认',
+            title: <FormattedMessage id="job.types.default"/>,
             fixed: 'left',
-            width: 50,
+            width: enLocale ? 100: 50,
             // dataIndex : 'is_first',
             render: (_: any) => (
                 _.is_first ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined onClick={() => handleSetDefault(_)} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
             )
         },
         {
-            title: '排序',
+            title: <FormattedMessage id="job.types.sort"/>,
             fixed: 'left',
             width: 75,
             render: (_: any) => (
@@ -115,7 +118,7 @@ export default (props: any) => {
             )
         },
         {
-            title: '类型名称',
+            title: <FormattedMessage id="job.types.type_name"/>,
             dataIndex: 'name',
             ellipsis: {
                 shwoTitle: false,
@@ -124,38 +127,38 @@ export default (props: any) => {
             render: (_: any) => <EllipsisPulic title={_}/>,
         },
         {
-            title: '测试类型',
+            title: <FormattedMessage id="job.types.test_type"/>,
             dataIndex: 'test_type',
-            render: (_: string) => switchTestType(_)
+            render: (_: string) => switchTestType(_, formatMessage)
         },
         {
-            title: '测试环境',
+            title: <FormattedMessage id="job.types.server_type"/>,
             dataIndex: 'server_type',
-            render: (_: string) => switchServerType(_)
+            render: (_: string) => switchServerType(_, formatMessage)
         },
         {
-            title: '创建者',
+            title: <FormattedMessage id="job.types.creator_name"/>,
             dataIndex: 'creator_name',
             render: (_: any) => (_ || '-')
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="job.types.gmt_created"/>,
             width: 176,
             dataIndex: 'gmt_created',
             render: (_: any) => (_ || '-')
         },
         {
-            title: '当前状态',
+            title: <FormattedMessage id="job.types.enable.state"/>,
             dataIndex: 'enable',
             render: (_: any) => (
                 <Badge
                     status={_ ? "success" : "error"}
-                    text={_ ? "启用" : "停用"}
+                    text={_ ? <FormattedMessage id="job.types.enable"/>: <FormattedMessage id="job.types.stop"/>}
                 />
             )
         },
         {
-            title: '描述',
+            title: <FormattedMessage id="job.types.description"/>,
             dataIndex: 'description',
             ellipsis: {
                 shwoTitle: false,
@@ -163,13 +166,19 @@ export default (props: any) => {
             render: (_: any) => <EllipsisPulic title={_}/>
         },
         {
-            title: '操作',
+            title: <FormattedMessage id="Table.columns.operation"/>,
             fixed: 'right',
             render: (_: any) => (
                 <Space>
-                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(ws_id, _.id)}>编辑</Button>
-                    <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link" >预览</Button>
-                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> :  <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>删除</Button>}
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(ws_id, _.id)}>
+                        <FormattedMessage id="operation.edit"/>
+                    </Button>
+                    <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link">
+                        <FormattedMessage id="operation.preview"/>
+                    </Button>
+                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> :  <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>
+                        <FormattedMessage id="operation.delete"/>
+                    </Button>}
                 </Space>
             )
         }
@@ -181,9 +190,9 @@ export default (props: any) => {
 
     return (
         <SingleTabCard
-            title={'Job类型管理'}
+            title={<FormattedMessage id="job.types.manage"/>}
             extra={
-                <Button type="primary" onClick={handleCreate}>新建Job类型</Button>
+                <Button type="primary" onClick={handleCreate}><FormattedMessage id="job.types.create"/></Button>
             }
         >
             <Table
@@ -197,23 +206,23 @@ export default (props: any) => {
             />
             <JobTypeDeleteModal ref={deleteModal} onOk={handleDelete} />
             <Modal
-				title="删除提示"
+				title={<FormattedMessage id="delete.prompt"/>}
 				centered={true}
 				visible={deleteDefault}
 				onCancel={() => setDeleteDefault(false)}
 				footer={[
 					<Button key="submit" onClick={()=>handleDelete(DefaultJob)}>
-						确定删除
+						<FormattedMessage id="operation.ok"/>
 					</Button>,
 					<Button key="back" type="primary"  onClick={() => setDeleteDefault(false)}>
-						取消
+						<FormattedMessage id="operation.cancel"/>
 					</Button>
 				]}
 				width={300}
 			>
 				<div style={{ color:'red',marginBottom: 5 }}> 
 					<ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign:'middle' 	}}/>
-					确定要删除吗？
+					<FormattedMessage id="delete.prompt"/>
 				</div>
 			</Modal>
         </SingleTabCard>

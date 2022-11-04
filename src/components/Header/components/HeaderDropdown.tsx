@@ -147,7 +147,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                                             key={index}
                                             onClick={() => {
                                                 setWs(workspace)
-                                                enterWorkspaceHistroy({ ws_id: workspace.id })
+                                                // enterWorkspaceHistroy({ ws_id: workspace.id })
                                                 history.push(jumpWorkspace(workspace.id))
                                             }}
                                             className={isActive ? 'current_ws' : ''}

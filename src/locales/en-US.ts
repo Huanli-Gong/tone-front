@@ -7,7 +7,7 @@ import settingDrawer from './en-US/settingDrawer';
 import settings from './en-US/settings';
 
 export default {
-  'navbar.lang' : 'Cn',
+  'navbar.lang' : '中',
   //
   'delete.tips': 'Delete the prompt',
   'delete.prompt': 'Are you sure you want to delete it?',
@@ -51,10 +51,11 @@ export default {
   'operation.expand': 'Expand',
   'operation.collapse': 'Collapse',
   'operation.release': 'Release',  
+  'operation.not.release': 'Not Release',
 	'operation.open': 'Open',  
   'operation.close': 'Close',
   'operation.confirm.delete': 'Determine to delete',
-  'operation.select.all': 'Select all',  
+  'operation.select.all': 'Select All',  
 	'operation.filter': 'Filter',
   'operation.pass': 'Pass',  
   'operation.refuse': 'Refuse', 

@@ -2,12 +2,13 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { Drawer, Space, Button, Form, Input, Select, Radio, Badge } from 'antd'
 
 import { updateClusterServer } from '../../services'
-import { useParams } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 import { AgentSelect } from '@/components/utils'
 
 
 const EditServerDrawer = (props: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { handleOk } = props
     const { ws_id }: any = useParams()
 
@@ -60,7 +61,7 @@ const EditServerDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title="编辑机器"
+            title={<FormattedMessage id="device.device.edit"/>}
             forceRender={true}
             visible={visible}
             width="376"
@@ -69,8 +70,10 @@ const EditServerDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right' }} >
                     <Space>
-                        <Button onClick={hanldeClose}>取消</Button>
-                        <Button type="primary" disabled={padding} onClick={onSubmit}>更新</Button>
+                        <Button onClick={hanldeClose}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button type="primary" disabled={padding} onClick={onSubmit}>
+                            <FormattedMessage id="operation.update"/>
+                        </Button>
                     </Space>
                 </div>
             }
@@ -79,23 +82,26 @@ const EditServerDrawer = (props: any, ref: any) => {
                 layout="vertical"
                 form={form}
             >
-                <Form.Item name="ip" label="机器">
+                <Form.Item name="ip" label={<FormattedMessage id="device.machine"/>}>
                     <Input disabled />
                 </Form.Item>
-                <Form.Item name="private_ip" label="私有IP">
-                    <Input autoComplete="off" placeholder="请输入私有IP" />
+                <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip.ip"/>}>
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'device.private_ip.ip.placeholder'}) } />
                 </Form.Item>
-                <Form.Item name="channel_type" initialValue={'toneagent'} label="控制通道" rules={[{ required: true, message: '请选择控制通道' }]} >
+                <Form.Item name="channel_type" 
+                    initialValue={'toneagent'} 
+                    label={<FormattedMessage id="device.channel_type"/>}
+                    rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}>
                     <AgentSelect disabled={BUILD_APP_ENV}/>
                 </Form.Item>
                 <Form.Item
-                    label="使用状态"
+                    label={<FormattedMessage id="device.usage.state"/>}
                     name="state"
                     hasFeedback
-                    rules={[{ required: true, message: '请选择机器状态!' }]}
+                    rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
                     initialValue={'Available'}
                 >
-                    <Select placeholder="请选择机器状态" >
+                    <Select placeholder={formatMessage({id: 'device.usage.state.message'})}>
                         <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
                         <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
                         <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
@@ -107,24 +113,25 @@ const EditServerDrawer = (props: any, ref: any) => {
                         <Select.Option value="remote">remote</Select.Option>
                     </Select>
                 </Form.Item> */}
-                <Form.Item name="baseline_server" label="是否基线机器">
+                <Form.Item name="baseline_server" label={<FormattedMessage id="device.baseline_server"/>}>
                     <Radio.Group>
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                     </Radio.Group>
                 </Form.Item>
-                <Form.Item name="kernel_install" label="安装内核">
+                <Form.Item name="kernel_install" label={<FormattedMessage id="device.kernel_install"/>}>
                     <Radio.Group>
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
                     </Radio.Group>
                 </Form.Item>
-                <Form.Item name="var_name" label="运行变量名" rules={[{
-                    required: true,
-                    // pattern: /^[A-Za-z0-9]+$/g,
-                    // message: '仅允许包含字母、数字'
+                <Form.Item name="var_name" label={<FormattedMessage id="device.var_name"/>}
+                    rules={[{
+                        required: true,
+                        // pattern: /^[A-Za-z0-9]+$/g,
+                        // message: '仅允许包含字母、数字'
                 }]}>
-                    <Input autoComplete="off" placeholder="请输入" />
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                 </Form.Item>
             </Form>
         </Drawer>

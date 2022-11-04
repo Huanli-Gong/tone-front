@@ -35,7 +35,6 @@ export const PerfTextArea = ({
         defaultHolder?: string,
     }) => {
     const access = useAccess();
-    const creator_id = window.location.search
     const { formatMessage } = useIntl() 
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
@@ -59,7 +58,7 @@ export const PerfTextArea = ({
         }
         return list[name];
     }
-    console.log('creator_id', creator_id)
+    
     const handleBlur = async () => {
         const { item_suite_id, suite_name } = suite
         let obj: any = {
@@ -76,7 +75,7 @@ export const PerfTextArea = ({
     }
 
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not filled in' })
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title || '-'
     }
 
@@ -176,7 +175,7 @@ export const GroupItemText = ({
         color: 'rgba(0,0,0,0.85)'
     }
     const handleChange = (title: any) => {
-        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not filled in' })
+        if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title
     }
     return (

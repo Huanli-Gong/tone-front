@@ -253,6 +253,7 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
 
 
 const RenderCheckbox: React.FC<any> = (props) => {
+    
     const { formatMessage } = useIntl()
     const { name, title, desc } = props
     const { dataSource, setDataSource, contrl } = useProvider()
@@ -371,7 +372,6 @@ const TemplatePage = (props: any) => {
             func_item: refreshRowkey(func_item)
         }
 
-        // console.log(params)
         document.title = `${data.name} - T-One`
         setDataSource(Object.assign(data, params))
         setLoading(false)
@@ -621,7 +621,6 @@ const TemplatePage = (props: any) => {
                 func_item: funcs
             }
 
-            // console.log(params)
             const data = route.name === 'TemplateEdit' ?
                 await updateReportTemplate({ ws_id, id: temp_id, ...params }) :
                 await createReportTemplate(params)
@@ -661,8 +660,6 @@ const TemplatePage = (props: any) => {
             observer.disconnect();
         }
     }, [])
-
-    // console.log(dataSource)
 
     return (
         <ReportTemplateContext.Provider

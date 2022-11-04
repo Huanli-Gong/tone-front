@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typography, Modal, Tooltip, Spin, message } from 'antd'
-import { history, useParams } from 'umi'
+import { history, useParams, useIntl, FormattedMessage } from 'umi'
 import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as UnFullExpand } from '@/assets/svg/un_full.svg'
 import { test_type_enum } from '@/utils/utils'
@@ -13,6 +13,7 @@ import CodeViewer from '@/components/CodeViewer'
 import { useClientSize } from '@/utils/hooks'
 
 const TestSuiteCreate: React.FC = () => {
+    const { formatMessage } = useIntl()
     const { ws_id, test_type }: any = useParams()
 
     const [leftWsHasSuiteArr, setLeftWsHasSuiteArr] = useState<Array<any>>([])
@@ -289,11 +290,11 @@ const TestSuiteCreate: React.FC = () => {
             //setPadding(false)
             if (data.code === 200) {
                 setBtnLoad(false)
-                message.success('操作成功')
+                message.success(formatMessage({id: 'operation.success'}) )
                 history.go(-1)
             }
             else
-                message.error('提交失败，请重试!')
+                message.error(formatMessage({id: 'operation.failed'}) )
         }
     }
 
@@ -392,11 +393,21 @@ const TestSuiteCreate: React.FC = () => {
         setLeftWsHasSuiteArr([])
     }
 
+
+    const title = useMemo(() => {
+        if (test_type === 'business') {
+            return <FormattedMessage id="suite.business" />
+        } else if (test_type === 'functional') {
+            return <FormattedMessage id="suite.functional" />
+        }
+        return <FormattedMessage id="suite.performance" />
+    }, [test_type])
+    
     return (
         <Layout.Content style={{ height: layoutHeight, overflow: 'hidden' }}>
             <PageHeader
                 className={styles.suite_nav_bar}
-                title="Test Suite管理"
+                title={<FormattedMessage id="test.suite.manage" />}
                 onBack={handleBackPage}
                 extra={
                     <Space>
@@ -404,7 +415,7 @@ const TestSuiteCreate: React.FC = () => {
                             //type="primary"
                             onClick={handleRestore}
                         >
-                            恢复
+                            <FormattedMessage id="suite.recovery" />
                         </Button>
                         <Button
                             type="primary"
@@ -412,7 +423,7 @@ const TestSuiteCreate: React.FC = () => {
                             disabled={btnLoad}
                             loading={btnLoad}
                         >
-                            保存
+                            <FormattedMessage id="operation.save" />
                         </Button>
                     </Space>
                 }
@@ -424,15 +435,15 @@ const TestSuiteCreate: React.FC = () => {
                         className={styles.suite_left_wrapper}
                         style={{ height: innerHeight - 50 - 40 }}
                     >
-                        <PageHeader title="已添加" />
+                        <PageHeader title={<FormattedMessage id="suite.added" />} />
                         {
                             <Spin spinning={leftTableLoading}>
                                 {
                                     leftTableDataSource.length === 0 ?
                                         <div style={{ textAlign: 'center', marginTop: 192 }}>
-                                            <Typography.Text>点击右侧&nbsp;</Typography.Text>
+                                            <Typography.Text><FormattedMessage id="suite.click.right" />&nbsp;</Typography.Text>
                                             <PlusCircleFilled style={{ color: '#1890ff' }} />
-                                            <Typography.Text>，从系统用例中添加用例到Workspace</Typography.Text>
+                                            <Typography.Text><FormattedMessage id="suite.add.to.workspace" /></Typography.Text>
                                         </div> :
                                         <Table
                                             size="small"
@@ -471,7 +482,7 @@ const TestSuiteCreate: React.FC = () => {
                                                 expandedRowKeys: expandRows,
                                                 expandedRowRender: (_: any) => (
                                                     <Table
-                                                        locale={{ emptyText: '暂无数据' }}
+                                                        locale={{ emptyText: <FormattedMessage id="suite.no.data" /> }}
                                                         size="small"
                                                         columns={[{
                                                             render: (row: any) => (
@@ -512,7 +523,7 @@ const TestSuiteCreate: React.FC = () => {
                         style={{ height: innerHeight - 50 - 40 }}
                     >
                         <PageHeader
-                            title={`${test_type === 'business' ? '业务' : (test_type === 'functional' ? '功能' : '性能')}用例列表`}
+                            title={title}
                             extra={
                                 <Space>
                                     <Select
@@ -520,7 +531,7 @@ const TestSuiteCreate: React.FC = () => {
                                         onSelect={handleTestSuiteSelect}
                                         style={{ width: 148 }}
                                     >
-                                        <Select.Option value="">全部领域</Select.Option>
+                                        <Select.Option value=""><FormattedMessage id="suite.all.domain" /></Select.Option>
                                         {
                                             domainList?.map((item: any) => (
                                                 <Select.Option
@@ -539,7 +550,7 @@ const TestSuiteCreate: React.FC = () => {
                                             value={searchInp}
                                             onChange={({ target }) => setSearchInp(target.value)}
                                             onPressEnter={handleTestSuiteSearch}
-                                            placeholder="搜索TestSuites"
+                                            placeholder={formatMessage({id: 'suite.search.TestSuites'})}
                                         />
                                         <span
                                             className={styles.search_input_style}
@@ -555,46 +566,46 @@ const TestSuiteCreate: React.FC = () => {
                         <Table
                             rowKey="id"
                             loading={loading}
-                            columns={
-                                test_type === 'business' ?
-                                    [
-                                        Table.SELECTION_COLUMN,
-                                        Table.EXPAND_COLUMN,
-                                        { title: 'Test Suite', dataIndex: 'name', },
-                                        { title: '业务名称', dataIndex: 'business_name', },
-                                        { title: '测试类型', dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? item.name : '')}</>, },
-                                    ] :
-                                    [
-                                        Table.SELECTION_COLUMN,
-                                        Table.EXPAND_COLUMN,
-                                        { title: 'Test Suite', dataIndex: 'name', },
-                                        { title: '变量', dataIndex: 'var', width: 180, ...toolTipSetting },
-                                        {
-                                            title: '说明',
-                                            dataIndex: 'doc',
-                                            ellipsis: {
-                                                showTitle: false,
-                                            },
-                                            width: 200,
-                                            render(text: any, record: any) {
-                                                const { doc, description } = record
-                                                const _ = doc || description
-                                                return (
-                                                    _ ?
-                                                        <Tooltip
-                                                            placement='leftTop'
-                                                            // overlayClassName={styles.tooltipCss}
-                                                            overlayInnerStyle={{ width: 450, height: 300, overflow: "auto" }}
-                                                            color="#fff"
-                                                            title={<CodeViewer code={_} />}
-                                                        >
-                                                            {_}
-                                                        </Tooltip> :
-                                                        '-'
-                                                )
-                                            }
+                            columns={test_type === 'business' ?
+                                [
+                                    Table.SELECTION_COLUMN,
+                                    Table.EXPAND_COLUMN,
+                                    { title: 'Test Suite', dataIndex: 'name', },
+                                    { title: formatMessage({id: 'suite.business_name'}), dataIndex: 'business_name', },
+                                    { title: formatMessage({id: 'suite.test_type'}), dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({id: item.value}) : '')}</>, },
+                                ] 
+                                : 
+                                [
+                                    Table.SELECTION_COLUMN,
+                                    Table.EXPAND_COLUMN,
+                                    { title: 'Test Suite', dataIndex: 'name', },
+                                    { title: formatMessage({id: 'suite.var'}), dataIndex: 'var', width: 180, ...toolTipSetting },
+                                    {
+                                        title: formatMessage({id: 'suite.description'}),
+                                        dataIndex: 'doc',
+                                        ellipsis: {
+                                            showTitle: false,
+                                        },
+                                        width: 200,
+                                        render(text: any, record: any) {
+                                            const { doc, description } = record
+                                            const _ = doc || description
+                                            return (
+                                                _ ?
+                                                    <Tooltip
+                                                        placement='leftTop'
+                                                        // overlayClassName={styles.tooltipCss}
+                                                        overlayInnerStyle={{ width: 450, height: 300, overflow: "auto" }}
+                                                        color="#fff"
+                                                        title={<CodeViewer code={_} />}
+                                                    >
+                                                        {_}
+                                                    </Tooltip> :
+                                                    '-'
+                                            )
                                         }
-                                    ]
+                                    }
+                                ]
                             }
                             size="small"
                             className={styles.left_table_style}
@@ -640,7 +651,7 @@ const TestSuiteCreate: React.FC = () => {
                                         <Table
                                             size="small"
                                             rowKey="id"
-                                            locale={{ emptyText: '暂无数据' }}
+                                            locale={{ emptyText: <FormattedMessage id="suite.no.data" /> }}
                                             columns={test_type === 'business' ?
                                                 [{
                                                     render: (_: any) => (
@@ -668,7 +679,7 @@ const TestSuiteCreate: React.FC = () => {
                                                             </Space>
                                                         )
                                                     },
-                                                    { title: '变量', dataIndex: 'var', width: 180, ...toolTipSetting },
+                                                    { title: formatMessage({id: 'suite.var'}), dataIndex: 'var', width: 180, ...toolTipSetting },
                                                     {
                                                         dataIndex: 'doc',
                                                         ellipsis: true,
@@ -714,17 +725,17 @@ const TestSuiteCreate: React.FC = () => {
                 </Row>
             </Layout>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips" />}
                 centered={true}
                 visible={deleteVisible}
                 //onOk={remOuter}
                 onCancel={handleCancel}
                 footer={[
                     <Button key="submit" onClick={handleDelete} loading={btnLoad}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={handleCancel}>
-                        取消
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={600}
@@ -732,10 +743,14 @@ const TestSuiteCreate: React.FC = () => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    要删除的{delType == 'suite' ? 'Suite' : 'Conf'}被运行中的job或测试模板引用，请谨慎删除！！
+                    {formatMessage({id: 'suite.please.delete.carefully'}, {data: delType ==='suite' ? 'Suite' : 'Conf'})}
                 </div>
-                <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>删除{delType == 'suite' ? 'suite' : 'conf'}影响范围：运行中的job、测试模板、对比分析报告</div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
+                    {formatMessage({id: 'suite.delete.influence.range'}, {data: delType ==='suite' ? 'Suite' : 'Conf'})}
+                </div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
+                    <FormattedMessage id="suite.view.reference.details" />
+                </div>
             </Modal>
         </Layout.Content>
     )

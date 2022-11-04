@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Popover, Tooltip, Space, message, Popconfirm } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
-import { FormattedMessage, useModel } from 'umi';
+import { useIntl, FormattedMessage, getLocale } from 'umi';
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
@@ -15,6 +15,8 @@ import styles from './index.less';
  * ws-业务测试
  */
 export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
+	const { formatMessage } = useIntl()
+	const enLocale = getLocale() === 'en-US'
   const [loading, setLoading] = useState<any>(false)
   const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1 })
   const [pageSize, setPageSize] = useState<number>(10);
@@ -34,7 +36,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
       if (code === 200) {
         setData(res)
       } else {
-        message.error(msg ||'请求数据失败');
+        message.error(msg || formatMessage({id: 'request.failed'}) );
       }
       setLoading(false)
     } catch (e) {
@@ -51,7 +53,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 
 	let columns: any = [
 		{
-			title: '业务名称',
+			title: <FormattedMessage id="suite.business.name"/>,
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 'auto',
@@ -67,7 +69,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 			},
 		},
     {
-			title: '创建时间',
+			title: <FormattedMessage id="suite.gmt_created"/>,
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text:any) => {
@@ -75,7 +77,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 			}
 		},
     {
-			title: '修改时间',
+			title: <FormattedMessage id="suite.gmt_modified"/>,
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text:any) => {
@@ -98,7 +100,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 			}
 		},
 		{
-			title: '备注',
+			title: <FormattedMessage id="suite.remarks"/>,
 			dataIndex: 'description',
 			render: (text:any) => {
 				return <PopoverEllipsis title={text} width={200} />
@@ -134,6 +136,7 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 							expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 									(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
+				scroll={undefined}
 			/>
 		</div>
   )

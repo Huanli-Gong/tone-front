@@ -1,8 +1,11 @@
 
 import { Radio, Button, Row, Modal } from 'antd'
 import React, { useState } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from '../../style.less';
+
 export default ({ onOk }: any) => {
+    const { formatMessage } = useIntl()
     const [visible, setVisible] = useState(false)
     const handleCancel = (visi: boolean) => {
         setVal(0)
@@ -22,25 +25,25 @@ export default ({ onOk }: any) => {
 
     return (
         <div>
-            <Button style={{ padding: 0 }} size="small" type="link" onClick={hadleClick}>删除</Button>
+            <Button style={{ padding: 0 }} size="small" type="link" onClick={hadleClick}><FormattedMessage id="operation.delete"/></Button>
             <Modal
-                title="删除提示"
-                cancelText="取消"
+                title={<FormattedMessage id="delete.tips"/>}
+                cancelText={<FormattedMessage id="operation.cancel"/>}
                 okType="danger"
                 centered={true}
                 className={styles.modalChange}
-                okText="删除"
+                okText={<FormattedMessage id="operation.delete"/>}
                 visible={visible}
                 onOk={handleOk}
                 onCancel={() => handleCancel(false)}
                 width={480}
                 maskClosable={false}
             >
-                <p>删除当前指标，将影响应用的Job及模版数据，请谨慎操作</p>
+                <p><FormattedMessage id="TestSuite.metric.delete.range"/></p>
                 <Row style={{ width: 224, marginBottom: 10 }}>
                     <Radio.Group value={val} onChange={handleChange}>
-                        <Radio value={0}>仅删除本条Metric</Radio>
-                        <Radio value={1}>同步删除TestConf下该Metric</Radio>
+                        <Radio value={0}><FormattedMessage id="TestSuite.delete.only"/></Radio>
+                        <Radio value={1}><FormattedMessage id="TestSuite.synchronize.delete"/></Radio>
                     </Radio.Group>
                 </Row>
             </Modal>

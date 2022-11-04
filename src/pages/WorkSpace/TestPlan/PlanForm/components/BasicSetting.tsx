@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
 import { Form, Input, Select, Radio } from 'antd'
-import { useRequest } from 'umi'
+import { useParams, useRequest, useIntl, FormattedMessage } from 'umi'
 
 import { queryProjectList, queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
@@ -29,10 +29,12 @@ const BaselineWrapper = styled.div`
     position:relative;
 `
 const BasicSetting = (props: any, ref: any) => {
-    const { ws_id, template, show } = props
-    const [form] = Form.useForm()
-    const [kernel, setKernal] = useState('install_push')
+    const { formatMessage } = useIntl()
+    const { template, show } = props
 
+    const { ws_id } = useParams() as any
+    const [form] = Form.useForm()
+    const [kernel, setKernal] = useState('no')
     const [testObject, setTestObject] = useState('rpm')
 
     const { data: projectList } = useRequest(
@@ -51,6 +53,7 @@ const BasicSetting = (props: any, ref: any) => {
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
+        form.setFieldsValue({ test_obj: testObject })
         form.resetFields(['kernel', 'devel', 'headers', 'kernel_version'])
     }
 
@@ -62,11 +65,10 @@ const BasicSetting = (props: any, ref: any) => {
 
     useEffect(() => {
         if (template && JSON.stringify(template) !== '{}') {
-            const { build_info, kernel_info, kernel_version, test_obj } = template
-            // const { build_info, kernel_info, kernel_version, test_obj, auto_report, report_template_id } = template
+            const { build_pkg_info, kernel_info, kernel_version, test_obj } = template
             setTestObject(test_obj)
             if (test_obj === 'kernel') {
-                if (JSON.stringify(build_info) !== '{}') {
+                if (JSON.stringify(build_pkg_info) !== '{}') {
                     setKernal('install_build_kernel')
                 }
                 if (JSON.stringify(kernel_info) !== '{}') {
@@ -74,7 +76,7 @@ const BasicSetting = (props: any, ref: any) => {
                     else setKernal('install_un_push')
                 }
             }
-            form.setFieldsValue({ ...kernel_info, ...build_info, ...template, })
+            form.setFieldsValue({ ...kernel_info, ...build_pkg_info, ...template, })
         }
     }, [template])
 
@@ -102,23 +104,25 @@ const BasicSetting = (props: any, ref: any) => {
                 className={styles.job_plan_form}
                 // onFieldsChange={ onChange }
                 initialValues={{
-                    hotfix: true,
-                    test_obj: 'rpm'
+                    hotfix_install: true,
+                    test_obj: 'rpm',
+                    scripts: [{ pos: 'before', script: '' }],
                 }}
             >
                 <Form.Item
                     name="name"
-                    label={'计划名称'}
-                    rules={[{ required: true, message: '允许字母、数字、下划线、中划线，“.”，不允许中文，最多64个字符', max: 64 }]}
+                    label={<FormattedMessage id="plan.plan.name"/>}
+                    rules={[{ required: true, message: formatMessage({id: 'plan.plan.name.message'}), max: 64 }]}
                 >
-                    <Input autoComplete="off" placeholder="允许字母、数字、下划线、中划线，“.”，不允许中文" />
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.plan.name.placeholder'})} />
                 </Form.Item>
-                <Form.Item name="description" label={'计划描述'}>
-                    <Input.TextArea autoComplete="off" placeholder="请输入计划描述模板" />
+                <Form.Item name="description" label={<FormattedMessage id="plan.plan.description"/>}>
+                    <Input.TextArea autoComplete="off" placeholder={formatMessage({id: 'plan.plan.description.placeholder'})} />
                 </Form.Item>
                 {/* rules={[{ required: true, message: "请选择Project" }]} */}
                 <Form.Item name="project_id" label={'Project'} >
-                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch placeholder="请选择Project">
+                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch 
+                        placeholder={formatMessage({id: 'plan.plan.project_id'})}>
                         {
                             projectList.map(
                                 (item: any, idx: any) => (
@@ -130,12 +134,12 @@ const BasicSetting = (props: any, ref: any) => {
                         }
                     </Select>
                 </Form.Item>
-                <Form.Item label="测试基线">
+                <Form.Item label={<FormattedMessage id="plan.test.baseline"/>}>
                     <BaselineWrapper>
                         <Form.Item name="func_baseline" >
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
                                 /* placeholder="请选择内网功能基线" */
-                                placeholder={`请选择功能基线`}
+                                placeholder={formatMessage({id: 'plan.func_baseline.placeholder'})}
                             >
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aligroup').map(
@@ -148,7 +152,7 @@ const BasicSetting = (props: any, ref: any) => {
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜功能 */}
-                            {aligroupServer}｜功能
+                            {formatMessage({id: 'aligroupServer'})}｜<FormattedMessage id="plan.function" />
                         </BaselineSpan>
                         {/* <div style={{ position : 'absolute' , right : -22 , top : -4 }}>
                             <QusetionIconTootip desc="" title="至少添加一种基线" />
@@ -158,7 +162,7 @@ const BasicSetting = (props: any, ref: any) => {
                         <Form.Item name="perf_baseline">
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
                                 /* placeholder="请选择内网性能基线" */
-                                placeholder={`请选择性能基线`}
+                                placeholder={formatMessage({id: 'plan.perf_baseline.placeholder'})}
                             >
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aligroup').map(
@@ -171,7 +175,7 @@ const BasicSetting = (props: any, ref: any) => {
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜性能 */}
-                            {aligroupServer}｜性能
+                            {formatMessage({id: 'aligroupServer'})}｜<FormattedMessage id="plan.performance" />
                         </BaselineSpan>
                     </BaselineWrapper>
 
@@ -179,7 +183,7 @@ const BasicSetting = (props: any, ref: any) => {
                     <BaselineWrapper>
                         <Form.Item name="func_baseline_aliyun">
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                                placeholder={`请选择功能基线`}
+                                placeholder={formatMessage({id: 'plan.func_baseline.placeholder'})}
                             // placeholder="请选择云上功能基线"
                             >
                                 {
@@ -192,14 +196,14 @@ const BasicSetting = (props: any, ref: any) => {
                             </Select>
                         </Form.Item>
                         <BaselineSpan>
-                            {aliyunServer}｜功能
+                            {formatMessage({id: 'aliyunServer'})}｜<FormattedMessage id="plan.function" />
                             {/* 云上｜功能 */}
                         </BaselineSpan>
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline_aliyun">
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                                placeholder={`请选择性能基线`}
+                                placeholder={formatMessage({id: 'plan.perf_baseline.placeholder'})}
                             // placeholder="请选择云上性能基线"
                             >
                                 {baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aliyun').map(
@@ -211,27 +215,29 @@ const BasicSetting = (props: any, ref: any) => {
                             </Select>
                         </Form.Item>
                         <BaselineSpan>
-                            {aliyunServer}｜性能
+                            {formatMessage({id: 'aliyunServer'})}｜<FormattedMessage id="plan.performance" />
                             {/* 云上｜性能 */}
                         </BaselineSpan>
                     </BaselineWrapper>
                 </Form.Item>
-                <Form.Item name="test_obj" label={"被测对象"}>
+                <Form.Item name="test_obj" 
+                    label={<FormattedMessage id="plan.tested.object" />}
+                >
                     <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
-                        <Select.Option value={'kernel'} >{'内核包'}</Select.Option>
-                        <Select.Option value={'rpm'} >{'其他软件'}</Select.Option>
+                        <Select.Option value={'kernel'}><FormattedMessage id="plan.kernel.package" /></Select.Option>
+                        <Select.Option value={'rpm'}><FormattedMessage id="plan.others.soft" /></Select.Option>
                     </Select>
                 </Form.Item>
                 {
                     testObject == 'kernel' &&
                     <>
                         {
-                            form.getFieldValue('test_obj') == 'kernel' &&
-                            <Form.Item label={'内核'} >
+                            <Form.Item label={<FormattedMessage id="plan.kernel" />} >
                                 <Radio.Group value={kernel} onChange={handleKernalInstallChange}>
-                                    <Radio value="install_push">安装已发布</Radio>
-                                    <Radio value="install_un_push">安装未发布</Radio>
-                                    <Radio value="install_build_kernel">Build内核</Radio>
+                                    <Radio value="no"><FormattedMessage id="ws.result.details.install_no" /></Radio>
+                                    <Radio value="install_push"><FormattedMessage id="plan.install_push" /></Radio>
+                                    <Radio value="install_un_push"><FormattedMessage id="plan.install_un_push" /></Radio>
+                                    <Radio value="install_build_kernel"><FormattedMessage id="plan.install_build_kernel" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
@@ -241,48 +247,50 @@ const BasicSetting = (props: any, ref: any) => {
                                 form={form}
                                 kernel={kernel}
                                 kernelList={kernelList}
-                                needScriptList={false}
+                                needScriptList={true}
                             />
                         }
                         {
-                            (kernel === 'install_un_push')
-                            && <UnPushForm needScriptList={false} />
+                            (kernel === 'install_un_push') && 
+                            <UnPushForm needScriptList={true} form={form} />
                         }
                         {
                             (kernel === 'install_build_kernel') &&
-                            <BuildKernalForm needScriptList={false} ws_id={ws_id} />
+                            <BuildKernalForm needScriptList={false} form={form} isPlan={true}/>
                         }
                     </>
                 }
                 <Form.Item
                     name="rpm_info"
-                    label="全局RPM"
+                    label={<FormattedMessage id="plan.rpm_info" />}
                 >
-                    <Input.TextArea placeholder="请输入RPM包URL,多个回车换行" />
+                    <Input.TextArea placeholder={formatMessage({id: 'plan.rpm_info.placeholder'})} />
                 </Form.Item>
                 <Form.Item
                     name="env_info"
-                    label="全局变量"
+                    label={<FormattedMessage id="plan.env_info" />}
                     rules={[
                         () => ({
                             validator(rule, value) {
                                 if (value) {
                                     const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                    return reg.test(value) ? Promise.resolve() : Promise.reject('格式：key=value，多个用空格或换行分割');
+                                    return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'plan.env_info.reject'}) );
                                 }
                                 return Promise.resolve()
                             },
                         })
                     ]}
                 >
-                    <Input.TextArea placeholder="格式：key=value，多个用空格或换行分割" />
+                    <Input.TextArea placeholder={formatMessage({id: 'plan.env_info.reject'})} />
                 </Form.Item>
-                <Form.Item name="notice_name" label="通知主题">
-                    <Input autoComplete="off" placeholder="[T-One] 你的测试已完成{date}" />
+                <Form.Item name="notice_name" label={<FormattedMessage id="plan.notice_name" />}>
+                    <Input autoComplete="off" 
+                        placeholder={formatMessage({id: 'plan.notice_name.placeholder'}, {date: '{date}'})}
+                    />
                 </Form.Item>
                 <Form.Item
                     name="email_info"
-                    label="邮件通知"
+                    label={<FormattedMessage id="plan.email_info" />}
                     rules={[
                         () => ({
                             validator(rule, value) {
@@ -292,23 +300,23 @@ const BasicSetting = (props: any, ref: any) => {
                                     const len = arr.filter((str: string) => !reg.test(str)).length
                                     return len === 0 ?
                                         Promise.resolve() :
-                                        Promise.reject('请输入正确的邮箱地址!')
+                                        Promise.reject(formatMessage({id: 'plan.email_info.reject'}))
                                 }
                                 return Promise.resolve()
                             }
                         })
                     ]}
                 >
-                    <Input autoComplete="off" placeholder="默认通知Job创建人，多个邮箱用空格或英文逗号分隔" />
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.email_info.placeholder'})} />
                 </Form.Item>
-                <Form.Item name="ding_talk_info" label="钉钉通知" >
-                    <Input autoComplete="off" placeholder="请输入钉钉token，多个token用空格或英文逗号分隔" />
+                <Form.Item name="ding_talk_info" label={<FormattedMessage id="plan.ding_talk_info" />}>
+                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.ding_talk_info.placeholder'})} />
                 </Form.Item>
 
-                <Form.Item name="enable" label="启用" initialValue={true} >
+                <Form.Item name="enable" label={<FormattedMessage id="plan.enable" />} initialValue={true} >
                     <Radio.Group>
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                     </Radio.Group>
                 </Form.Item>
             </Form>

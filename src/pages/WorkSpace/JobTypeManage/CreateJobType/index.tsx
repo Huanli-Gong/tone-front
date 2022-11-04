@@ -9,7 +9,7 @@ import { RectSelect } from './components/RectSelect'
 import PreviewComponent from './components/Preview'
 import Breadcrumb from 'antd/es/breadcrumb'
 import { SingleTabCard } from '@/components/UpgradeUI'
-import { aligroupServer, aliyunServer, requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage } from '@/utils/utils'
 
 const { document }: any = window
 
@@ -19,6 +19,7 @@ export default (props: any) => {
     const { setInitialState } = useModel("@@initialState")
 
     const intl = useIntl()
+    const { formatMessage } = useIntl()
     document.title = intl.messages[`Workspace.JobConfig.${props.route.name}`]
     const { route } = props
     const isUpdatePage = props.route.name === 'JobTypeUpdate'
@@ -161,7 +162,7 @@ export default (props: any) => {
                         ...state,
                         refreshMenu: !state?.refreshMenu
                     }))
-                    message.success('操作成功！')
+                    message.success(formatMessage({id: 'operation.success'}) )
                     if (saveType === 'job')
                         history.push(`/ws/${ws_id}/test_job/${id}`)
                     else
@@ -299,7 +300,7 @@ export default (props: any) => {
         >
             <Spin spinning={loading} >
 
-                <h3>类型配置</h3>
+                <h3><FormattedMessage id="job.types.type.configuration"/></h3>
                 <Form
                     form={form}
                     layout="horizontal"
@@ -308,34 +309,36 @@ export default (props: any) => {
                     wrapperCol={{ span: 21 }}
                 >
                     <Form.Item
-                        label="Job类型名称"
+                        label={<FormattedMessage id="job.types.job.name"/>}
                         name="name"
                         rules={[
-                            { required: true, message: 'Job类型名称不能为空' },
-                            { max: 20, message: 'Job类型名称最多不超过20字符' }
+                            { required: true, message: formatMessage({id: 'job.types.job.name.rules1'}) },
+                            { max: 20, message: formatMessage({id: 'job.types.job.name.rules2'}) }
                         ]}
                     >
-                        <Input autoComplete="off" placeholder="请输入类型名称" style={{ width: 500 }} />
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'job.types.job.name.placeholder'})} style={{ width: 500 }} />
                     </Form.Item>
-                    <Form.Item label="测试环境" initialValue={"aliyun"} name="server_type">
+                    <Form.Item label={<FormattedMessage id="job.types.server_type"/>} initialValue={"aliyun"} name="server_type">
                         <Radio.Group onChange={handleServerChange}>
                             <Radio value="aligroup">
-                                {aligroupServer}
+                                {formatMessage({id: 'aligroupServer'})}
                             </Radio>
                             <Radio value="aliyun">
-                                {aliyunServer}
+                                {formatMessage({id: 'aliyunServer'})}
                             </Radio>
                             {/* <Radio value="aligroup">内网环境</Radio>
                             <Radio value="aliyun">云上环境</Radio> */}
                         </Radio.Group>
                     </Form.Item>
 
-                    <Form.Item label="测试类型" initialValue={"functional"} name="test_type">
+                    <Form.Item 
+                        label={<FormattedMessage id="job.types.test_type"/>}
+                        initialValue={"functional"} name="test_type">
                         <Select allowClear onChange={handleTestTypeChange} style={{ width: 500 }}>
-                            <Select.Option value="functional">功能测试</Select.Option>
-                            <Select.Option value="performance">性能测试</Select.Option>
-                            <Select.Option value="stability">稳定性测试</Select.Option>
-                            <Select.Option value="business">业务测试</Select.Option>
+                            <Select.Option value="functional"><FormattedMessage id="functional.test"/></Select.Option>
+                            <Select.Option value="performance"><FormattedMessage id="performance.test"/></Select.Option>
+                            <Select.Option value="stability"><FormattedMessage id="stability.test"/></Select.Option>
+                            <Select.Option value="business"><FormattedMessage id="business.test"/></Select.Option>
                         </Select>
                     </Form.Item>
                     {testType === 'business' && (
@@ -345,48 +348,57 @@ export default (props: any) => {
                                 <Form.Item label=""
                                     initialValue={"business"}
                                     name="business_type"
-                                    rules={[{ required: true, message: '请选择业务测试类型' }]}
+                                    rules={[{ required: true, message: formatMessage({id: 'job.types.business.message'}) }]}
                                 >
                                     <Radio.Group onChange={handleBusinessTypeChange}>
-                                        <Radio value="functional">功能测试</Radio>
-                                        <Radio value="performance">性能测试</Radio>
-                                        <Radio value="business">接入测试</Radio>
+                                        <Radio value="functional"><FormattedMessage id="functional.test"/></Radio>
+                                        <Radio value="performance"><FormattedMessage id="performance.test"/></Radio>
+                                        <Radio value="business"><FormattedMessage id="access.test"/></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
                         </Row>
                     )}
 
-                    <Form.Item label="描述(选填)" name="description" rules={[{ max: 20, message: '描述文字最多不超过20字符' }]} >
-                        <Input.TextArea placeholder="请输入该类型的描述情况" style={{ width: 500 }} />
+                    <Form.Item 
+                        label={<FormattedMessage id="job.types.desc.option"/>}
+                        name="description" 
+                        rules={[{ 
+                            max: 20, 
+                            message: formatMessage({id: 'job.types.desc.message'}),
+                        }]} >
+                        <Input.TextArea placeholder={formatMessage({id: 'job.types.desc.placeholder'}) }
+                            style={{ width: 500 }} />
                     </Form.Item>
-                    <Form.Item label="是否启用" initialValue={true} name="enable" >
+                    <Form.Item 
+                        label={<FormattedMessage id="job.types.enable"/>}
+                        initialValue={true} name="enable" >
                         <Radio.Group onChange={handleEnabelChange}>
-                            <Radio value={true}>启用</Radio>
-                            <Radio disabled={editPagedata.is_first} value={false}>停用</Radio>
+                            <Radio value={true}><FormattedMessage id="job.types.enable"/></Radio>
+                            <Radio disabled={editPagedata.is_first} value={false}><FormattedMessage id="job.types.stop"/></Radio>
                         </Radio.Group>
                     </Form.Item>
 
-                    <h3>测试环境配置</h3>
+                    <h3><FormattedMessage id="job.types.env.configuration"/></h3>
                     <RectSelect
-                        title="1.基础配置"
-                        desc="基本信息配置概述"
+                        title={formatMessage({id: 'job.types.base.config'})}
+                        desc={formatMessage({id: 'job.types.base.config.ps'})}
                         data={source.basic}
                         name="basic"
                         onSelect={handleSelect}
                         onEdit={hanldeEditName}
                     />
                     <RectSelect
-                        title="2.环境准备配置"
-                        desc="针对不同机器上的具体操作配置"
+                        title={formatMessage({id: 'job.types.env.config'})}
+                        desc={formatMessage({id: 'job.types.env.config.ps'})}
                         data={source.env}
                         name="env"
                         onSelect={handleSelect}
                         onEdit={hanldeEditName}
                     />
                     <CheckBoxSelect
-                        title="3.测试用例和机器配置"
-                        desc="选择用例和机器调度的方案选择"
+                        title={formatMessage({id: 'job.types.case.and.server'})}
+                        desc={formatMessage({id: 'job.types.case.and.server.ps'})}
                         defaultValue={defaultSelect.server}
                         data={source.server}
                         name="server"
@@ -394,8 +406,8 @@ export default (props: any) => {
                         onEdit={hanldeEditName}
                     />
                     <CheckBoxSelect
-                        title="4.更多配置"
-                        desc="任务通知、任务标签等信息的配置"
+                        title={formatMessage({id: 'job.types.more.config'})}
+                        desc={formatMessage({id: 'job.types.more.config.ps'})}
                         data={source.more}
                         defaultValue={defaultSelect.more}
                         name="more"
@@ -407,12 +419,11 @@ export default (props: any) => {
                             {
                                 enabel &&
                                 <Button type="primary" disabled={padding} onClick={() => handleFinish('job')}>
-                                    {'保存并新建Job'}
-                                    {/* isUpdatePage ? '更新' :  */}
+                                    <FormattedMessage id="job.types.save.and.create.job"/>
                                 </Button>
                             }
-                            <Button onClick={() => handleFinish()} >仅保存</Button>
-                            <Button type="link" onClick={handlePriview}>预览</Button>
+                            <Button onClick={() => handleFinish()}><FormattedMessage id="job.types.only.save"/></Button>
+                            <Button type="link" onClick={handlePriview}><FormattedMessage id="operation.preview"/></Button>
                         </Space>
                     </Row>
                 </Form>

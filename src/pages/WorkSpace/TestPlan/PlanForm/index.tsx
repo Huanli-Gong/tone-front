@@ -1,38 +1,41 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Breadcrumb, Row, Steps, Button, Result, Col, Space, message, Spin , Badge } from 'antd'
+import { Breadcrumb, Row, Steps, Button, Result, Col, Space, message, Spin, Badge } from 'antd'
 
 import BasicSetting from './components/BasicSetting'
 import TestSetting from './components/TestSetting'
 import ReportSetting from './components/ReportSetting'
 import TouchSetting from './components/TouchSetting'
 
-import { useClientSize , writeDocumentTitle } from '@/utils/hooks'
-import { ArrowLeftOutlined, ArrowRightOutlined , CheckOutlined} from '@ant-design/icons'
+import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
+import { ArrowLeftOutlined, ArrowRightOutlined, CheckOutlined } from '@ant-design/icons'
 import {
     CreateContainer, ContainerBody, ContainerBreadcrumb, LeftWrapper,
     RightBody, RightNav, RightWrapper, SuccessDescriptionContainer
 } from './styles'
-import { history, FormattedMessage } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import { runningTestPlan, creatTestPlan, queryTestPlanDetails, updateTestPlan } from '@/pages/WorkSpace/TestPlan/services'
 import styles from './index.less'
 import { requestCodeMessage } from '@/utils/utils'
+import _ from 'lodash'
 
 /** 
  * 计划管理/新建计划（新）
  * */
 const TestPlan = (props: any) => {
-    const {height: layoutHeight} = useClientSize()
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
+    const { height: layoutHeight } = useClientSize()
 
     const { route } = props
     // console.log('route.name:', route.name)
-
-    writeDocumentTitle( `Workspace.TestPlan.${ route.name }` )
+    writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
     const { ws_id, plan_id } = props.match.params
     const [current, setCurrent] = useState(0)
 
     const [loading, setLoading] = useState(route.name !== 'Create')
-    const [isFormStep, setIsFormStep] = useState( true ) //填表阶段
+    const [isFormStep, setIsFormStep] = useState(true) //填表阶段
     const [pedding, setPedding] = useState(false)
 
     const basicSettingRef: any = useRef()
@@ -65,11 +68,11 @@ const TestPlan = (props: any) => {
         setCurrent(current - 1)
     }
 
-    const handleStepChange = async ( key : number ) => {
-        if ( key > current) {
+    const handleStepChange = async (key: number) => {
+        if (key > current) {
             await hanleStepNext(key)
         }
-        else setCurrent( key )
+        else setCurrent(key)
     }
 
     const hanleStepNext = async (stepKey: any) => {
@@ -78,21 +81,21 @@ const TestPlan = (props: any) => {
         try {
             if (current === 0) {
                 const basicFormValue = await basicSettingRef.current.validate()
-                const { headers, devel, hotfix, kernel, build_config, build_machine, code_branch, code_repo,
-                    commit_id, compile_branch, cpu_arch, ...formValue
+                const { headers, devel, hotfix_install, scripts, kernel, build_config, build_machine, code_branch, code_repo,
+                    commit_id, compile_branch, cpu_arch, product_name, ...formValue
                 } = basicFormValue
                 setDataSource({
                     ...dataSource,
                     basic: {
                         ...formValue,
-                        kernel_info: { headers, devel, hotfix, kernel },
-                        build_info: {
+                        kernel_info: { headers, devel, hotfix_install, kernel, scripts },
+                        build_pkg_info: {
                             build_config, build_machine, code_branch, code_repo,
-                            commit_id, compile_branch, cpu_arch
+                            commit_id, compile_branch, cpu_arch, name: product_name
                         }
                     }
                 })
-            } 
+            }
             if (current === 1) {
                 // 校验各阶段都添加了模版，才能跳到下一步
                 await checkDataSource()
@@ -131,25 +134,32 @@ const TestPlan = (props: any) => {
         const touch = await touchSettingRef.current.validate()
         const pipline = dataSource.pipline
 
-        const { 
-            headers, devel, hotfix, kernel, build_config, 
+        const {
+            headers, devel, hotfix_install, scripts, kernel, build_config,
             build_machine, code_branch, code_repo,
-            commit_id, compile_branch, cpu_arch, ...formValue
+            commit_id, compile_branch, cpu_arch, product_name, ...formValue
         } = basic;
 
         const { base_group_job, base_group_stage, ...reportOther } = report;
         // *根据“分组方式”区分“选择基准组”字段的表单值的来源。
-        const reportValue = report.group_method === 'job' ?
-            { ...reportOther, stage_id: base_group_job[0], base_group: base_group_job[1] } : { ...reportOther, base_group: base_group_stage}
+
+        const { group_method } = report
+        let reportValues = { ...reportOther }
+        if (group_method === "job") {
+            const [stage_id, base_group] = base_group_job
+            reportValues = Object.assign(reportValues, { stage_id, base_group })
+        }
+        if (group_method === "stage")
+            reportValues = Object.assign(reportValues, { base_group: base_group_stage })
 
         return {
             ...formValue,
-            kernel_info: { headers, devel, hotfix, kernel },
-            build_info: {
+            kernel_info: { headers, devel, hotfix_install, scripts, kernel },
+            build_pkg_info: {
                 build_config, build_machine, code_branch, code_repo,
-                commit_id, compile_branch, cpu_arch
+                commit_id, compile_branch, cpu_arch, name: product_name
             },
-            ...reportValue,
+            ...reportValues,
             ...touch,
             ...pipline
         }
@@ -159,9 +169,9 @@ const TestPlan = (props: any) => {
         if (pedding) return
         setPedding(true)
         const formData = await formatterData()
-        const { code, msg, data } = await creatTestPlan({ ...formData , ws_id })
+        const { code, msg, data } = await creatTestPlan({ ...formData, ws_id })
         if (code !== 200) {
-            requestCodeMessage( code , msg )
+            requestCodeMessage(code, msg)
             setPedding(false)
             return
         }
@@ -176,16 +186,26 @@ const TestPlan = (props: any) => {
             const formData = await formatterData()
             const { code, msg } = await runningTestPlan({ ...formData, is_save, ws_id, plan_id })
             if (code !== 200) {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
                 setPedding(false)
                 return;
             }
             history.push(`/ws/${ws_id}/test_plan`)
         }
-        catch( err ) {
-            console.log( err )
-            setPedding( false )
-            message.error( err.errorFields[0].errors.toString())
+        catch (err) {
+            console.log(err)
+            setPedding(false)
+            trhowErrorMsg(err)
+        }
+    }
+
+    const trhowErrorMsg = (err: any) => {
+        if (err) {
+            const { errorFields } = err
+            if (errorFields && _.isArray(errorFields) && errorFields.length > 0) {
+                const { errors } = errorFields[0]
+                message.error(errors.toString())
+            }
         }
     }
 
@@ -200,40 +220,40 @@ const TestPlan = (props: any) => {
             const formData = await formatterData()
             const { code, msg } = await updateTestPlan({ ...formData, ws_id, plan_id })
             if (code !== 200) {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
                 setPedding(false)
                 return;
             }
             history.push(`/ws/${ws_id}/test_plan`)
         }
-        catch( err ) {
-            console.log( err )
-            setPedding( false )
-            message.error( err.errorFields[0].errors.toString())
+        catch (err) {
+            console.log(err)
+            setPedding(false)
+            trhowErrorMsg(err)
         }
     }
 
     // 校验数据
     const checkDataSource = () => {
-        return new Promise(( resolve : any , reject : any ) => {
+        return new Promise((resolve: any, reject: any) => {
             const pipline = dataSource.pipline
             const { env_prep = {}, test_config = [] } = pipline || {}
-    
-            if (env_prep.machine_info && !env_prep.machine_info.length){
-                message.error(`${env_prep.name}模板不能为空`)
+            const localStr = formatMessage({ id: 'plan.cannot.be.empty' })   
+            if (env_prep.machine_info && !env_prep.machine_info.length) {
+                message.error(`${env_prep.name}${localStr}`)
                 reject()
             }
-    
+
             if (test_config.length) {
-                test_config.forEach((item: any)=> {
+                test_config.forEach((item: any) => {
                     const { name, template = [] } = item
                     if (!template.length) {
-                       message.error(`${name}模板不能为空`)
+                       message.error(`${name}${localStr}`)
                        reject()
                     }
                 })
             } else {
-                message.error(`${env_prep.name}模板不能为空`)
+                message.error(`${env_prep.name}${localStr}`)
                 reject()
             }
             resolve()
@@ -246,7 +266,7 @@ const TestPlan = (props: any) => {
                 <ContainerBreadcrumb align="middle">
                     <Breadcrumb >
                         <Breadcrumb.Item onClick={handleBackPlanManage}>
-                            <span style={{ cursor : 'pointer' }}><FormattedMessage id={`Workspace.TestPlan.Manage`} /></span>
+                            <span style={{ cursor: 'pointer' }}><FormattedMessage id={`menu.Workspace.TestPlan.Manage`} /></span>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item >
                             <FormattedMessage id={`Workspace.TestPlan.${route.name}`} />
@@ -258,15 +278,15 @@ const TestPlan = (props: any) => {
                         isFormStep ?
                             <>
                                 {/* 左侧   步骤 === 进度显示部分 ==== onChange={setCurrent}  */}
-                                <LeftWrapper state={ route.name !== 'Create' }>
-                                    <Steps current={current} direction="vertical" style={{ height: 201 }} onChange={ handleStepChange } >
-                                        <Steps.Step title="基础配置" key={ 0 } className={styles[(route.name === 'Run' || route.name === 'Edit' ) ? 'stepsWrapper_1' : 'stepsWrapper']}/>
-                                        <Steps.Step title="测试配置" key={ 1 } className={styles[(route.name === 'Run' || route.name === 'Edit' ) ? 'stepsWrapper_2' : 'stepsWrapper']}/>
-                                        <Steps.Step title="报告配置" key={ 2 } />
-                                        <Steps.Step title="触发配置" key={ 3 } />
+                                <LeftWrapper state={route.name !== 'Create'} enLocale={enLocale}>
+                                    <Steps current={current} direction="vertical" style={{ height: 201 }} onChange={handleStepChange} >
+                                        <Steps.Step title={<FormattedMessage id="plan.basic.configuration" />} key={0} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_1' : 'stepsWrapper']} />
+                                        <Steps.Step title={<FormattedMessage id="plan.test.configuration" />}  key={1} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_2' : 'stepsWrapper']} />
+                                        <Steps.Step title={<FormattedMessage id="plan.report.configuration" />} key={2} />
+                                        <Steps.Step title={<FormattedMessage id="plan.trigger.configuration" />} key={3} />
                                     </Steps>
                                 </LeftWrapper>
-                                <RightWrapper>
+                                <RightWrapper enLocale={enLocale}>
                                     {/* 右侧 导航  === 操作部分 ==== */}
                                     <RightNav>
                                         <Row justify="space-between" align="middle">
@@ -275,7 +295,7 @@ const TestPlan = (props: any) => {
                                                     current === 0 ? null : (
                                                         <>
                                                             <ArrowLeftOutlined />
-                                                            <span >上一步</span>
+                                                            <span><FormattedMessage id="operation.previous" /></span>
                                                         </>
                                                     )
                                                 }
@@ -284,22 +304,22 @@ const TestPlan = (props: any) => {
                                                 {
                                                     route.name === 'Run' &&
                                                     <>
-                                                        <Button onClick={() => handleTestPlanOption()} >仅运行</Button>
-                                                        <Button onClick={() => handleTestPlanOption(true)} type="primary">运行并保存</Button>
+                                                        <Button onClick={() => handleTestPlanOption()}><FormattedMessage id="plan.run.only" /></Button>
+                                                        <Button onClick={() => handleTestPlanOption(true)} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>
                                                     </>
                                                 }
                                                 {
                                                     route.name === 'Edit' &&
                                                     <>
-                                                        <Button onClick={hanldeUpdatePlan} type="primary">保存</Button>
-                                                        <Button onClick={() => handleTestPlanOption(true)} >保存并运行</Button>
+                                                        <Button onClick={hanldeUpdatePlan} type="primary"><FormattedMessage id="plan.save" /></Button>
+                                                        <Button onClick={() => handleTestPlanOption(true)}><FormattedMessage id="plan.save.and.run" /></Button>
                                                     </>
                                                 }
-                                                <div className={styles.plan_step_btn} onClick={()=> hanleStepNext('NextStep')}>
+                                                <div className={styles.plan_step_btn} onClick={() => hanleStepNext('NextStep')}>
                                                     {
                                                         current < 3 &&
                                                         <>
-                                                            <span style={{fontSize: 14 }}>下一步</span>
+                                                            <span style={{fontSize: 14 }}><FormattedMessage id="operation.next" /></span>
                                                             <ArrowRightOutlined />
                                                         </>
                                                     }
@@ -309,7 +329,7 @@ const TestPlan = (props: any) => {
                                                     <>
                                                         {
                                                             route.name === 'Create' &&
-                                                            <Button type="primary" onClick={hanldePushTestPlan}>发布</Button>
+                                                            <Button type="primary" onClick={hanldePushTestPlan}><FormattedMessage id="plan.release" /></Button>
                                                         }
                                                     </>
                                                 }
@@ -320,20 +340,18 @@ const TestPlan = (props: any) => {
                                     <RightBody>
                                         <BasicSetting
                                             show={current === 0 ? 'block' : 'none'}
-                                            ws_id={ws_id}
                                             ref={basicSettingRef}
                                             template={template}
                                         />
                                         <TestSetting
                                             show={current === 1 ? 'block' : 'none'}
-                                            ws_id={ws_id}
                                             template={template}
                                             onChange={hanldePrepDataChange}
                                         />
 
                                         <ReportSetting
+                                            {...props}
                                             show={current === 2 ? 'block' : 'none'}
-                                            ws_id={ws_id}
                                             ref={reportSettingRef}
                                             template={template}
                                         />
@@ -345,29 +363,29 @@ const TestPlan = (props: any) => {
                                     </RightBody>
                                 </RightWrapper>
                             </>
-                             :
+                            :
                             <div style={{ width: '100%' }}>
                                 {/* 计划成功部分 */}
                                 <Result
                                     status="success"
                                     style={{ margin: '0 auto' }}
-                                    title="测试计划创建成功"
-                                    subTitle="测试计划可以实现版本全面测试、周期性测试、测试流程串联、测试验证阶段卡点等"
+                                    title={<FormattedMessage id="plan.created.success" />}
+                                    subTitle={<FormattedMessage id="plan.the.test.plan.can" />}
                                     extra={[
                                         <Button type="primary" key="console" onClick={() => history.push(`/ws/${ws_id}/test_plan`)} >
-                                            返回计划管理
+                                            <FormattedMessage id="plan.return.management" />
                                         </Button>
                                     ]}
                                 />
                                 <SuccessDescriptionContainer>
-                                    <Col span={24}><b>计划配置信息</b></Col>
+                                    <Col span={24}><b><FormattedMessage id="plan.configuration.information" /></b></Col>
                                     <Col span={24}>
                                         <Row>
                                             {
                                                 successData?.name &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>计划名称：</span>
+                                                        <span><FormattedMessage id="plan.table.name" />：</span>
                                                         <span>{successData?.name}</span>
                                                     </Space>
                                                 </Col>
@@ -376,7 +394,7 @@ const TestPlan = (props: any) => {
                                                 successData?.cron_info &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>触发规则：</span>
+                                                        <span><FormattedMessage id="plan.table.cron_info" />：</span>
                                                         <span>{successData?.cron_info}</span>
                                                     </Space>
                                                 </Col>
@@ -385,12 +403,12 @@ const TestPlan = (props: any) => {
                                                 successData?.enable &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>启用：</span>
+                                                        <span><FormattedMessage id="plan.table.enable" />：</span>
                                                         <span>
                                                             {
-                                                                successData?.enable ? 
-                                                                    <Badge status="processing" text="是" /> :
-                                                                    <Badge status="default" text="否" />
+                                                                successData?.enable ?
+                                                                    <Badge status="processing" text={<FormattedMessage id="operation.yes" />} /> :
+                                                                    <Badge status="default" text={<FormattedMessage id="operation.no" />} />
                                                             }
                                                         </span>
                                                     </Space>
@@ -400,7 +418,7 @@ const TestPlan = (props: any) => {
                                                 successData?.next_time &&
                                                 <Col span={12}>
                                                     <Space>
-                                                        <span>下次触发时间：</span>
+                                                        <span><FormattedMessage id="plan.next_time" />：</span>
                                                         <span>{successData?.next_time}</span>
                                                     </Space>
                                                 </Col>

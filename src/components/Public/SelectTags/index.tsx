@@ -3,8 +3,10 @@ import { Space, Button, Select, Divider, Spin, Tag, message } from 'antd';
 import { isNaN } from 'lodash'
 import { member } from './service';
 import styles from './style.less';
+import { useIntl, FormattedMessage  } from 'umi'
 
 const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_mode}) => {
+	const { formatMessage } = useIntl()
 	const [tagsPagination, setTagsPagination] =  useState({ total: 0, page_num: 1, page_size: 10 });
 	const [isEnd,setIsEnd] = useState(false)
 	const [tags, setTags] = useState<any>([])
@@ -47,7 +49,7 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 					setTagsPagination(res);
 				}
 			} else {
-				message.error(res.msg || '请求数据失败');
+				message.error(res.msg || formatMessage({id: 'request.failed'})  );
 			}
 			setFetching(false)
 		} catch (err) {
@@ -114,8 +116,8 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 					size="small"
 					style={{ width: 75 }}
 				>
-					搜索
-			</Button>
+					<FormattedMessage id="operation.search" />
+			  </Button>
 				<Button
 					type="text"
 					onClick={() => {
@@ -128,7 +130,7 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 					size="small"
 					style={{ width: 75, border: 'none' }}
 				>
-					重置
+					<FormattedMessage id="operation.reset" />
 			</Button>
 			</Space>
 		</div>

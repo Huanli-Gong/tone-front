@@ -37,7 +37,7 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
             },
             render: (_: string | number | undefined,row:any) => (
                 _ ?
-                    <ServerLink val={_} param={row.server_id} provider={provider_name} />
+                    <ServerLink val={_} param={row.server_id} provider={provider_name} description={row.server_description}/>
                     : '-'
             )
         },

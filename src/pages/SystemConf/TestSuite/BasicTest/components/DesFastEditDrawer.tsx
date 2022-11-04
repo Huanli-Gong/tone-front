@@ -1,9 +1,11 @@
 import React, { forwardRef, useImperativeHandle , useState , useCallback } from 'react'
 import { Drawer , Button , Input } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 
 //快速修改说明
 export default forwardRef(
     ({ onOk } : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const [ val , setVal ] = useState<any>('')
         const [ visible , setVisible ] = useState( false )
         const [ data , setData ] = useState<any>({})
@@ -37,16 +39,16 @@ export default forwardRef(
                 maskClosable={ false }
                 keyboard={ false }
                 width={ 376 }
-                title="说明详情"
+                title={<FormattedMessage id="TestSuite.description.details"/>}
                 onClose={ handleCancle }
                 visible={ visible }
                 footer={
                     <div style={{textAlign: 'right'}} >
                         <Button onClick={ handleCancle } style={{ marginRight: 8 }}>
-                            取消
+                            <FormattedMessage id="operation.cancel"/>
                         </Button>
                         <Button onClick={ handleOk } type="primary" htmlType="submit" >
-                            确定
+                            <FormattedMessage id="operation.ok"/>
                         </Button>
                     </div>
                 }

@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useContext, useEffect } from 'react'
+import React, { memo, useCallback, useContext } from 'react'
 import { Form, Col, Radio, Row, Select, Input, InputNumber } from 'antd'
 import { useIntl, FormattedMessage } from 'umi';
-import { QusetionIconTootip } from '../untils'
+import { formatter, QusetionIconTootip } from '../untils'
 import ServerObjectSelect from './ServerObjectSelect'
 import DispathTagSelect from './DispathTagSelect'
 import CustomServer from './CustomServer'
@@ -51,10 +51,10 @@ export default memo(
                     <Form.Item
                         label={
                             settingType === 'suite' ?
-                                <QusetionIconTootip 
-                                    title={formatMessage({id: 'select.suite.the.server'})}
-                                    desc={formatMessage({id: 'select.suite.the.server.desc'})} />
-                                : formatMessage({id: 'select.suite.the.server'})
+                                <QusetionIconTootip
+                                    title={formatMessage({ id: 'select.suite.the.server' })}
+                                    desc={formatMessage({ id: 'select.suite.the.server.desc' })} />
+                                : formatMessage({ id: 'select.suite.the.server' })
                         }
                         className={'drawer_padding'}
                     >
@@ -69,7 +69,7 @@ export default memo(
 
                 {
                     (mask && batch) &&
-                    <Form.Item className={'drawer_padding'} 
+                    <Form.Item className={'drawer_padding'}
                         label={<FormattedMessage id="select.suite.the.server" />}>
                         <label className="ant-radio-wrapper" onClick={() => handleHideMask('pool')}>
                             <span className="ant-radio ant-radio-checked">
@@ -102,7 +102,7 @@ export default memo(
                                         style={{ width: '100%' }}
                                         value={serverObjectType}
                                         onChange={handleServerObjectTypeChange}
-                                        placeholder={formatMessage({id: 'select.suite.multiple.values'})}
+                                        placeholder={formatMessage({ id: 'select.suite.multiple.values' })}
                                     >
                                         <Select.Option value={'ip'}><FormattedMessage id="select.suite.random" /></Select.Option>
                                         {
@@ -118,17 +118,17 @@ export default memo(
                                 </Col>
                                 <Col span={14}>
                                     {
-                                        ( serverObjectType === 'ip' || !serverObjectType ) &&
+                                        (serverObjectType === 'ip' || !serverObjectType) &&
                                         <Input
-                                            title={formatMessage({id: 'select.suite.randomly.schedule'})}
+                                            title={formatMessage({ id: 'select.suite.randomly.schedule' })}
                                             style={{ width: '100%' }}
                                             autoComplete="off"
                                             disabled={true}
-                                            placeholder={formatMessage({id: 'select.suite.randomly.schedule'})}
+                                            placeholder={formatMessage({ id: 'select.suite.randomly.schedule' })}
                                         />
                                     }
                                     {
-                                        ( serverObjectType && serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id' ) &&
+                                        (serverObjectType && serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id') &&
                                         <ServerObjectSelect {...props} />
                                     }
                                     {
@@ -146,7 +146,7 @@ export default memo(
                     label={
                         <QusetionIconTootip
                             title="Repeat"
-                            desc={`${settingType === 'suite' ? formatMessage({id: 'select.suite.repeat.tootip1'}): formatMessage({id: 'select.suite.repeat.tootip2'})}`}
+                            desc={`${settingType === 'suite' ? formatMessage({ id: 'select.suite.repeat.tootip1' }) : formatMessage({ id: 'select.suite.repeat.tootip2' })}`}
                         />
                     }
                     className={'drawer_padding'}
@@ -155,8 +155,9 @@ export default memo(
                         style={{ width: '100%' }}
                         min={1}
                         step={1}
+                        formatter={formatter}
                         max={10000}
-                        placeholder={formatMessage({ id: multipInfo.repeat ? 'select.suite.multiple.values' : 'please.enter' }) }
+                        placeholder={formatMessage({ id: multipInfo.repeat ? 'select.suite.multiple.values' : 'please.enter' })}
                     />
                 </Form.Item>
 

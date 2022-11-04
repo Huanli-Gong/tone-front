@@ -20,7 +20,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     const [tags, setTags] = useState<Array<any>>([])
     const [checkedList, setCheckedList] = React.useState<any>();
     const [reportTemplate, setReportTemplate] = useState<any>([])
-    const [defaultTemplate, setDefaultTemplate] = useState({})
+    const [defaultTemplate, setDefaultTemplate] = useState<any>({})
 
     useImperativeHandle(
         onRef,
@@ -181,7 +181,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                         }
                         {
                             'report' in contrl &&
-                            <Form.Item label={<FormattedMessage id="ws.result.details.report"/>}
+                            <Form.Item label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report"/>}
                                 name="report_name">
                                 <Input
                                     value={checkedList || undefined}
@@ -207,16 +207,16 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             checkedList && 'report' in contrl &&
                             <Form.Item
                                 name="report_template_id"
-                                label={<FormattedMessage id="ws.result.details.report_template"/>}
+                                label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report_template"/>}
                             >
                                 <Select
                                     showSearch
                                     disabled={disabled}
                                     placeholder={formatMessage({id: 'ws.result.details.report_template.placeholder'})}
-                                    defaultValue={defaultTemplate.name}
+                                    defaultValue={defaultTemplate?.name}
                                     optionFilterProp="children"
                                     filterOption={(input, option) =>
-                                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        option?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                     }
                                 >
                                     {
@@ -230,7 +230,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             'callback_api' in contrl &&
                             <Form.Item
                                 name="callback_api"
-                                label={<FormattedMessage id="ws.result.details.callback_api"/>}
+                                label={contrl?.callback_api?.alias || <FormattedMessage id="ws.result.details.callback_api"/>}
                             >
                                 <Input
                                     autoComplete="off"

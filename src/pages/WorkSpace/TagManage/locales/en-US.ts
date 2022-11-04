@@ -1,0 +1,20 @@
+export default {
+  // job tags
+  'job.tags.name': 'Job Tags Management',
+  'job.tags.create': 'Create Job Tag',
+  'job.tags.tag.name': 'Tag Name',
+  'job.tags.source_tag': 'Tag Source',
+  'job.tags.creator_name': 'Creator',
+  'job.tags.update_user': 'Modified By',
+  'job.tags.gmt_created': 'Creation Time',
+  'job.tags.gmt_modified': 'Modification Time',
+  'job.tags.remarks': 'Remarks',
+  'job.tags.remarks.placeholder': 'Please enter remarks',   
+  'job.tags.delete.prompt': 'After deleting the tag, the current tag configured by the job and the test template will no longer take effect. Please delete it carefully.',
+  'job.tags.edit.tag': 'Edit Tag',
+  'job.tags.create.tag': 'Create tag',
+  'job.tags.tag_color': 'Tag Color',
+  'job.tags.msg1': 'Only letters, numbers, underscores, middle dashes and dots are allowed',
+  'job.tags.msg2': 'Tag name already exist.',
+  'job.tags.msg3': 'Only letters, numbers, underscores, middle dashes and dots are allowed. The maximum length is 32 characters.',
+}

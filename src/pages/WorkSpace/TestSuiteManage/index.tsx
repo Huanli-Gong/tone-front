@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Tabs, Pagination, Drawer, Tooltip, Row, Table, Typography, Spin } from 'antd';
 import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { querySuiteList, queryDomains } from './service';
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import { suiteChange } from '@/components/Public/TestSuite/index.js';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import styles from './style.less';
@@ -16,6 +16,8 @@ import { TabCard } from '@/components/UpgradeUI';
 import { Access, useAccess } from 'umi'
 
 const SuiteManagement: React.FC<any> = (props) => {
+	const { formatMessage } = useIntl()
+	const enLocale = getLocale() === 'en-US'
 	const { ws_id } = props.match.params
 	const access = useAccess();
 	const testType = props.location.query.test_type || 'functional'
@@ -73,9 +75,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 	}
 	const view_type_content = (
 		<div>
-			<div>Type1：所有指标拆分展示</div>
-			<div>Type2：多Conf同指标合并</div>
-			<div>Type3：单Conf多指标合并</div>
+			<div><FormattedMessage id="suite.view_type.type1"/></div>
+			<div><FormattedMessage id="suite.view_type.type2"/></div>
+			<div><FormattedMessage id="suite.view_type.type3"/></div>
 		</div>
 	)
 	const handleTab = (test_type: string) => {
@@ -113,22 +115,22 @@ const SuiteManagement: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title="运行模式"
+					title={formatMessage({id: 'suite.run_mode'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'run_mode'}
-					list={runList}
+					list={runList.map((item)=> ({...item, name: formatMessage({id: item.id}) }) ) }
 				/>
 			),
 			width: 120,
 			className: 'no_padding_head',
 			dataIndex: 'run_mode',
-			render: (_: any) => _ === 'standalone' ? "单机" : '集群',
+			render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone" />: <FormattedMessage id="cluster" />,
 		},
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title="领域"
+					title={formatMessage({id: 'suite.domain'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'domain'}
@@ -144,18 +146,18 @@ const SuiteManagement: React.FC<any> = (props) => {
 			dataIndex: 'domain_name_list',
 		},
 		{
-			title: testType == 'functional' ? <></> : <>视图类型 <Tooltip title={view_type_content} placement="bottomLeft"><QuestionCircleOutlined /></Tooltip></>,
+			title: testType === 'functional' ? <></> : <><FormattedMessage id="suite.view_type" /> <Tooltip title={view_type_content} placement="bottomLeft"><QuestionCircleOutlined /></Tooltip></>,
 			dataIndex: 'view_type',
-			width: testType == 'functional' ? 0 : 120,
+			width: testType === 'functional' ? 0 : 120,
 			ellipsis: true,
-			render: (_: any, record: any) => testType == 'functional' ? <></> : suiteChange(_, record),
+			render: (_: any, record: any) => testType === 'functional' ? <></> : suiteChange(_, record),
 		},
 		{
-			title: '说明',
+			title: <FormattedMessage id="suite.description" />,
 			dataIndex: 'doc',
 			className: 'no_padding_head',
 			width: 190,
-			render: (_:any, row:any) => (
+			render: (_: any, row: any) => (
 				<div >
 					<ButtonEllipsis
 						title={row.doc}
@@ -169,7 +171,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			)
 		},
 		{
-			title: '备注',
+			title: <FormattedMessage id="suite.remarks" />,
 			dataIndex: 'description',
 			className: 'no_padding_head',
 			width: 100,
@@ -196,7 +198,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			dataIndex: 'owner_name',
 		},
 		{
-			title: '创建时间',
+			title: <FormattedMessage id="suite.gmt_created" />,
 			dataIndex: 'gmt_created',
 			className: 'no_padding_head',
 			sorter: true,
@@ -213,15 +215,15 @@ const SuiteManagement: React.FC<any> = (props) => {
 			title={
 				<Tabs defaultActiveKey={testType} onChange={handleTab}>
 					<TabPane
-						tab="功能测试"
+						tab={<FormattedMessage id="functional.test"/>}
 						key="functional"
 					/>
 					<TabPane
-						tab="性能测试"
+						tab={<FormattedMessage id="performance.test"/>}
 						key="performance"
 					/>
 					<TabPane
-						tab="业务测试"
+						tab={<FormattedMessage id="business.test"/>}
 						key="business"
 					/>
 				</Tabs>
@@ -238,7 +240,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 							//   history.push(`/test_suite/add_business?ws=${ws_id}&test_type=${fetchParams.test_type}`)
 							// }
 						}}>
-						Test Suite管理
+						<FormattedMessage id="test.suite.manage" />
 					</Button>
 				</Access>
 			}
@@ -288,7 +290,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 							pagination={false}
 						/>
 						<Row justify="space-between" style={{ padding: '16px 20px 0' }}>
-							<div className={data.total == 0 ? styles.hidden : ''} >共{data.total || 0}条</div>
+							<div>
+								{formatMessage({id: 'pagination.total.strip'}, {data: data.total || 0 })}
+							</div>
 							<Pagination
 								className={data.total == 0 ? styles.hidden : ''}
 								showQuickJumper
@@ -311,7 +315,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 				maskClosable={false}
 				keyboard={false}
 				width={376}
-				title="说明详情"
+				title={<FormattedMessage id="suite.description.details" />}
 				onClose={() => setShow(false)}
 				visible={show}
 			>

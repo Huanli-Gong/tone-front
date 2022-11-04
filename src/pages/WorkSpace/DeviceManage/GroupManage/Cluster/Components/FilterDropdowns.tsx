@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react'
 import { Row, Select, Space, Button, Divider, Tag } from 'antd'
-
+import { useIntl, FormattedMessage } from 'umi'
 import { queryMember } from '@/services/Workspace'
 import { queryServerTagList } from '../../services'
 
@@ -45,8 +45,8 @@ export const MembersFilter = memo(
                 </div>
                 <Divider style={{ margin: '5px 0' }} />
                 <Space>
-                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}>搜索</Button>
-                    <Button size="small" style={{ width: 75 }} onClick={() => setSelectValue([])}>重置</Button>
+                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}><FormattedMessage id="operation.search"/></Button>
+                    <Button size="small" type="link" style={{ width: 75 }} onClick={() => setSelectValue([])}><FormattedMessage id="operation.reset"/></Button>
                 </Space>
             </Row>
         )
@@ -96,8 +96,8 @@ export const ServerTagsFilter = memo(
                 </div>
                 <Divider style={{ margin: '5px 0' }} />
                 <Space>
-                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}>搜索</Button>
-                    <Button size="small" style={{ width: 75 }} onClick={() => setTagsValue([])}>重置</Button>
+                    <Button size="small" type="link" style={{ width: 75 }} onClick={handleSearch}><FormattedMessage id="operation.search"/></Button>
+                    <Button size="small" style={{ width: 75 }} onClick={() => setTagsValue([])}><FormattedMessage id="operation.reset"/></Button>
                 </Space>
             </Row>
         )

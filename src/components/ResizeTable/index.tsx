@@ -85,16 +85,12 @@ const ResizeableTitle = (props: any) => {
 const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
     const { columns = [], ...rest } = props
 
-    const [tableColumns, setTableColumns] = React.useState<any[]>([])
+    const [tableColumns, setTableColumns] = React.useState<any[]>(columns)
     const [end, setEnd] = React.useState(0)
     const [start, setStart] = React.useState(0)
     const [borderShow, setBorderShow] = React.useState(false)
 
     const ref = React.useRef<HTMLDivElement>(null)
-
-    React.useEffect(() => {
-        setTableColumns(columns)
-    }, [columns])
 
     const handleResizeStart = React.useCallback((index: number) => (e: any, { size }: any) => {
         if (!columns[index].ellipsis) return

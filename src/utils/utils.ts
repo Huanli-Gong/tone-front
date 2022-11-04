@@ -1,3 +1,4 @@
+import React from 'react';
 import { message } from 'antd';
 import { parse } from 'querystring';
 import { useIntl, getLocale } from 'umi'
@@ -59,16 +60,16 @@ export const switchUserRole = (name: string) => {
 
 export const switchUserRole2 = (name: string, formatMessage: any) => {
   return new Map([
-    ['user', formatMessage({id: 'member.type.user'})],
-    ['sys_test_admin', formatMessage({id: 'member.type.sys_test_admin'})],
-    ['sys_admin', formatMessage({id: 'member.type.sys_admin'})],
-    ['ws_tourist', formatMessage({id: 'member.type.ws_tourist'})],
-    ['ws_member', formatMessage({id: 'member.type.ws_member'})],
-    ['ws_test_admin', formatMessage({id: 'member.type.ws_test_admin'})],
-    ['ws_tester', formatMessage({id: 'member.type.ws_tester'})],
-    ['ws_admin', formatMessage({id: 'member.type.ws_admin'})],
-    ['all', formatMessage({id: 'member.type.all'})],
-    ['ws_owner', formatMessage({id: 'member.type.ws_owner'})],
+    ['user', formatMessage({ id: 'member.type.user' })],
+    ['sys_test_admin', formatMessage({ id: 'member.type.sys_test_admin' })],
+    ['sys_admin', formatMessage({ id: 'member.type.sys_admin' })],
+    ['ws_tourist', formatMessage({ id: 'member.type.ws_tourist' })],
+    ['ws_member', formatMessage({ id: 'member.type.ws_member' })],
+    ['ws_test_admin', formatMessage({ id: 'member.type.ws_test_admin' })],
+    ['ws_tester', formatMessage({ id: 'member.type.ws_tester' })],
+    ['ws_admin', formatMessage({ id: 'member.type.ws_admin' })],
+    ['all', formatMessage({ id: 'member.type.all' })],
+    ['ws_owner', formatMessage({ id: 'member.type.ws_owner' })],
   ]).get(name);
 };
 
@@ -85,20 +86,16 @@ export const switchBusinessType = (business_type: string) => {
   }
 };
 
-export const switchTestType = (str: string) => {
+export const switchTestType = (str: string, formatMessage: any) => {
   switch (str) {
-    case 'functional':
-      return '功能';
-    case 'performance':
-      return '性能';
-    case 'stability':
-      return '稳定性';
-    case 'business':
-      return '业务';
-    default:
-      return '';
+    case 'functional': return formatMessage({ id: str })
+    case 'performance': return formatMessage({ id: str })
+    case 'stability': return formatMessage({ id: str })
+    case 'business': return formatMessage({ id: str })
+    default: return ''
   }
 };
+
 export const switchChineseType = (str: string) => {
   switch (str) {
     case '功能测试':
@@ -112,11 +109,8 @@ export const switchChineseType = (str: string) => {
   }
 };
 
-export const switchServerType = (str: string) => {
-  if (getLocale() === 'en-US') {
-    return str === 'aligroup' ? aligroupServer_en : aliyunServer_en;
-  }
-  return str === 'aligroup' ? aligroupServer : aliyunServer;
+export const switchServerType = (str: string, formatMessage?: any) => {
+  return str === 'aligroup' ? formatMessage({ id: 'aligroupServer' }) : formatMessage({ id: 'aliyunServer' });
   /* switch (str) {
         case 'aligroup': return '内网'
         case 'aliyun': return '云上'
@@ -149,14 +143,14 @@ export function getQuery(key: string, url = window.location.href) {
 export const matchType = (params: any, formatMessage?: any) => {
   // test suite搜索页面
   if (params === 0) return '';
-  if (params === 1) return formatMessage({id: 'added' });
-  if (params === 'performance') return formatMessage({id: 'performance' });
+  if (params === 1) return formatMessage({ id: 'added' });
+  if (params === 'performance') return formatMessage({ id: 'performance' });
   //
-  if (params === 'standalone') return formatMessage({id: 'standalone' });
-  if (params === 'cluster') return formatMessage({id: 'cluster' });
+  if (params === 'standalone') return formatMessage({ id: 'standalone' });
+  if (params === 'cluster') return formatMessage({ id: 'cluster' });
   //
-  if (params === 'functional') return formatMessage({id: 'functional' });
-  if (params === 'performance') return formatMessage({id: 'performance' });
+  if (params === 'functional') return formatMessage({ id: 'functional' });
+  if (params === 'performance') return formatMessage({ id: 'performance' });
   return '';
 };
 
@@ -288,11 +282,11 @@ export const enumerChinese = (name: any) => {
   };
   return list[name];
 };
-export const enumerEnglish = (name: any) => {
+export const enumerEnglish = (name: any, formatMessage: any) => {
   const list = {
-    system: '公共镜像',
-    self: '自定义镜像',
-    others: '共享镜像',
+    system: formatMessage({ id: `system.image` }),
+    self: formatMessage({ id: `${name}.image` }),
+    others: formatMessage({ id: `${name}.image` }),
   };
   return list[name];
 };
@@ -358,7 +352,7 @@ export const matchTestType = (params: string) => {
  * @module 测试结果-结果详情页
  * @returns Mode
  */
- export const matchMode = (params: string) => {
+export const matchMode = (params: string) => {
   switch (params) {
     case '单机':
       return 'standalone';
@@ -512,8 +506,8 @@ const list_en = {
 export const aligroupServer = isOpenSource ? list_cn['fixed_pool'] : list_cn['aligroup'];
 export const aliyunServer = isOpenSource ? list_cn['elastic_pool'] : list_cn['aliyun'];
 // 机器
-export const GROUP_MANAGE = !BUILD_APP_ENV ? (isOpenSource ? list_cn['fixed_pool.server'] : list_cn['aligroup.server']): aligroupServer;
-export const CLOUD_MANAGE = !BUILD_APP_ENV ? (isOpenSource ? list_cn['elastic_pool.server'] : list_cn['aliyun.server']): aliyunServer;
+export const GROUP_MANAGE = !BUILD_APP_ENV ? (isOpenSource ? list_cn['fixed_pool.server'] : list_cn['aligroup.server']) : aligroupServer;
+export const CLOUD_MANAGE = !BUILD_APP_ENV ? (isOpenSource ? list_cn['elastic_pool.server'] : list_cn['aliyun.server']) : aliyunServer;
 // 基线
 export const aligroupServer_baseline = isOpenSource ? list_cn['fixed_pool.baseline'] : list_cn['aligroup.baseline'];
 export const aliyunServer_baseline = isOpenSource ? list_cn['elastic_pool.baseline'] : list_cn['aliyun.baseline'];
@@ -527,8 +521,8 @@ export const aliyunServer_cluster = isOpenSource ? list_cn['elastic_pool.cluster
 export const aligroupServer_en = isOpenSource ? list_en['fixed_pool'] : list_en['aligroup'];
 export const aliyunServer_en = isOpenSource ? list_en['elastic_pool'] : list_en['aliyun'];
 // 机器
-export const GROUP_MANAGE_en = !BUILD_APP_ENV ? (isOpenSource ? list_en['fixed_pool.server'] : list_en['aligroup.server']): aligroupServer_en;
-export const CLOUD_MANAGE_en = !BUILD_APP_ENV ? (isOpenSource ? list_en['elastic_pool.server'] : list_en['aliyun.server']): aliyunServer_en;
+export const GROUP_MANAGE_en = !BUILD_APP_ENV ? (isOpenSource ? list_en['fixed_pool.server'] : list_en['aligroup.server']) : aligroupServer_en;
+export const CLOUD_MANAGE_en = !BUILD_APP_ENV ? (isOpenSource ? list_en['elastic_pool.server'] : list_en['aliyun.server']) : aliyunServer_en;
 // 基线
 export const aligroupServer_baseline_en = isOpenSource ? list_en['fixed_pool.baseline'] : list_en['aligroup.baseline'];
 export const aliyunServer_baseline_en = isOpenSource ? list_en['elastic_pool.baseline'] : list_en['aliyun.baseline'];
@@ -538,3 +532,21 @@ export const aliyunServer_standalone_en = isOpenSource ? list_en['elastic_pool.s
 export const aligroupServer_cluster_en = isOpenSource ? list_en['fixed_pool.cluster'] : list_en['aligroup.cluster'];
 export const aliyunServer_cluster_en = isOpenSource ? list_en['elastic_pool.cluster'] : list_en['aliyun.cluster'];
 // ----------------- end 替换上面的逻辑 ------------------
+
+
+// 分页删除一页最后一条跳转到前一页逻辑处理
+export const handlePageNum = (total: number, page_num: number, page_size: number) => {
+  let totalPage = Math.ceil((total - 1) / page_size)
+  let currentPage = page_num > totalPage ? totalPage : page_num
+  page_num = currentPage < 1 ? 1 : currentPage
+  return page_num
+}
+
+export const useStateRef = (state: any) => {
+  const stateRef = React.useRef<any>()
+  React.useEffect(() => {
+    stateRef.current = state
+    return () => { }
+  }, [state])
+  return stateRef
+}

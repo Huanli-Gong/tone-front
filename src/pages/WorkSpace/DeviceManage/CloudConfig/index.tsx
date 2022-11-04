@@ -3,7 +3,7 @@ import { Form, Button, Space, Tabs, message, Popconfirm, Pagination, Popover, Ta
 import { FilterFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { deleteCloudImage, queryCloudImage, deleteCloudAk, queryCloudAk } from './service';
 import styles from './style.less';
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 
 import SearchInput from '@/components/Public/SearchInput'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
@@ -18,6 +18,8 @@ import { TabCard } from '@/components/UpgradeUI';
 import { requestCodeMessage } from '@/utils/utils';
 
 const CloudConfig: React.FC<any> = (props) => {
+	const { formatMessage } = useIntl()
+	const enLocale = getLocale() === 'en-US'
 	const { ws_id } = props.match.params
 	const testType = props.location.query.test_type || 'ak'
 	const { TabPane } = Tabs;
@@ -105,7 +107,7 @@ const CloudConfig: React.FC<any> = (props) => {
 	}
 	const defaultOption = (code: number, msg: string) => {
 		if (code === 200) {
-			message.success('操作成功')
+			message.success(formatMessage({id: 'operation.success'}) )
 			const page_num = Math.ceil((data.total - 1) / fetchParams.page_size) || 1
 			let index = fetchParams.page_num
 			if (fetchParams.page_num > page_num) {
@@ -119,8 +121,14 @@ const CloudConfig: React.FC<any> = (props) => {
 		}
 	}
 
-	const providerList = [{ id: 'aliyun_ecs', name: '阿里云ECS' }, { id: 'aliyun_eci', name: '阿里云ECI' }]
-	const defaultList = [{ id: 1, name: '是' }, { id: 0, name: '否' }]
+	const providerList = [
+		{ id: 'aliyun_ecs', name: formatMessage({id: 'device.aliyun_ecs'}) }, 
+		{ id: 'aliyun_eci', name: formatMessage({id: 'device.aliyun_eci'}) },
+	]
+	const defaultList = [
+		{ id: 1, name: formatMessage({id: 'operation.yes'}) }, 
+		{ id: 0, name: formatMessage({id: 'operation.no'}) }
+	]
 	const styleObj = {
 		container: 180,
 		button_width: 90
@@ -153,7 +161,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'name' }}
-				placeholder="支持搜索AK Name"
+				placeholder={formatMessage({id: 'device.ak.name.placeholder'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -188,7 +196,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_id' }}
-				placeholder="支持搜索Access ID"
+				placeholder={formatMessage({id: 'device.access_id.placeholder'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -222,7 +230,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_key: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_key' }}
-				placeholder="支持搜索Access Key"
+				placeholder={formatMessage({id: 'device.access_key.placeholder'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -244,13 +252,13 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: "机器限额",
+			title: <FormattedMessage id="device.vm_quota"/>,
 			dataIndex: "vm_quota",
 			width: 120,
 		},
 		BUILD_APP_ENV && {
-			title: '资源组ID',
-			width: 120,
+			title: <FormattedMessage id="device.resource_group_id"/>,
+			width: enLocale? 160: 120,
 			dataIndex: 'resource_group_id',
 			ellipsis: {
 				showTitle: false
@@ -261,7 +269,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, resource_group_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'resource_group_id' }}
-				placeholder="支持搜索资源组ID"
+				placeholder={formatMessage({id: 'device.resource_group_id.placeholder'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -285,7 +293,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title="云服务商"
+					title={formatMessage({id: 'device.cloud.service.provider'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'provider'}
@@ -293,16 +301,16 @@ const CloudConfig: React.FC<any> = (props) => {
 					list={providerList}
 				/>
 			),
-			width: 100,
+			width: enLocale? 180: 100,
 			dataIndex: 'provider',
 			ellipsis: true,
 		},
 		{
-			title: '是否启用',
+			title: <FormattedMessage id="device.enable"/>,
 			width: 100,
 			dataIndex: 'enable',
 			ellipsis: true,
-			render: (_: any, row: any) => row.enable,
+			render: (_: any, row: any) => ['是', true].includes(row.enable) ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.enable ? '#1890ff' : undefined }} />,
 			filterDropdown: ({ confirm }: any) => <SelectRadio
 				list={defaultList}
@@ -315,15 +323,15 @@ const CloudConfig: React.FC<any> = (props) => {
 				}} />,
 		},
 		{
-			title: '创建时间',
-			width: 180,
+			title: <FormattedMessage id="device.gmt_created"/>,
+			width: 170,
 			dataIndex: 'gmt_created',
 			ellipsis: true,
 			sorter: true,
 		},
 		{
-			title: '修改时间',
-			width: 180,
+			title: <FormattedMessage id="device.gmt_modified"/>,
+			width: 170,
 			dataIndex: 'gmt_modified',
 			ellipsis: true,
 			sorter: true
@@ -332,7 +340,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title="创建者"
+					title={formatMessage({id: 'device.creator'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'creator'}
@@ -345,7 +353,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title="修改者"
+					title={formatMessage({id: 'device.update_user'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'update_user'}
@@ -359,7 +367,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: '描述',
+			title: <FormattedMessage id="device.description"/>,
 			dataIndex: 'description',
 			ellipsis: true,
 			// fixed: 'right',
@@ -369,21 +377,23 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: '操作',
+			title: <FormattedMessage id="Table.columns.operation"/>,
 			key: 'ak_conf',
 			fixed: 'right',
 			width: 90,
 			render: (text: any, record: any) => {
 				return (
 					<Space size='small'>
-						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
+						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>
+						   <FormattedMessage id="operation.edit"/>
+						</span>
 						<Form
 							form={form}
 							layout="vertical"
 						/*hideRequiredMark*/
 						>
 							<Popconfirm
-								title="你确定要删除吗？"
+								title={<FormattedMessage id="delete.prompt"/>}
 								onConfirm={() => {
 									const generObj = handleDelete(record);
 									const excuteResult: any = generObj.next();
@@ -392,11 +402,11 @@ const CloudConfig: React.FC<any> = (props) => {
 										defaultOption(code, msg);
 									})
 								}}
-								okText="确认"
-								cancelText="取消"
+								okText={<FormattedMessage id="operation.confirm"/>}
+								cancelText={<FormattedMessage id="operation.cancel"/>}
 								// scroll={{ x: 400 }}
 								icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-								<span className={styles.fail_detail_operation}>删除</span>
+								<span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
 							</Popconfirm>
 						</Form>
 					</Space>
@@ -418,7 +428,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_name' }}
-				placeholder="支持搜索Image Name"
+				placeholder={formatMessage({id: 'device.search.image.name'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -450,7 +460,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_id' }}
-				placeholder="支持搜索Image ID"
+				placeholder={formatMessage({id: 'device.search.image.id'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -482,7 +492,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_version: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_version' }}
-				placeholder="支持搜索Image Version"
+				placeholder={formatMessage({id: 'device.search.image.version'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -514,7 +524,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, platform: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'platform' }}
-				placeholder="支持搜索Image Group"
+				placeholder={formatMessage({id: 'device.search.image.group'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -546,7 +556,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, region: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'region' }}
-				placeholder="支持搜索Region"
+				placeholder={formatMessage({id: 'device.search.region'}) }
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -584,7 +594,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title="云服务商"
+					title={formatMessage({id: 'device.cloud.service.provider'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'provider'}
@@ -592,19 +602,19 @@ const CloudConfig: React.FC<any> = (props) => {
 					list={providerList}
 				/>
 			),
-			width: 100,
+			width: enLocale ? 180: 100,
 			dataIndex: 'provider',
 			ellipsis: true,
 		},
 		{
-			title: '创建时间',
+			title: <FormattedMessage id="device.gmt_created"/>,
 			width: 180,
 			dataIndex: 'gmt_created',
 			ellipsis: true,
 			sorter: true
 		},
 		{
-			title: '修改时间',
+			title: <FormattedMessage id="device.gmt_modified"/>,
 			width: 180,
 			dataIndex: 'gmt_modified',
 			ellipsis: true,
@@ -613,7 +623,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title="创建者"
+					title={formatMessage({id: 'device.creator'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'creator'}
@@ -627,7 +637,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title="修改者"
+					title={formatMessage({id: 'device.update_user'}) }
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'update_user'}
@@ -641,14 +651,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: '操作',
+			title: <FormattedMessage id="Table.columns.operation"/>,
 			key: 'image_conf',
 			fixed: 'right',
 			width: 100,
 			render: (text: string, record: any) => {
 				return (
 					<Space size='small'>
-						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>编辑</span>
+						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}><FormattedMessage id="operation.edit"/></span>
 						{/* 删除的弹框 */}
 						<Form
 							form={form}
@@ -656,7 +666,7 @@ const CloudConfig: React.FC<any> = (props) => {
 						/*hideRequiredMark*/
 						>
 							<Popconfirm
-								title="你确定要删除吗？"
+								title={<FormattedMessage id="delete.prompt"/>}
 								onConfirm={() => {
 									const generObj = handleDelete(record);
 									const excuteResult: any = generObj.next();
@@ -665,10 +675,10 @@ const CloudConfig: React.FC<any> = (props) => {
 										defaultOption(code, msg);
 									})
 								}}
-								okText="确认"
-								cancelText="取消"
+								okText={<FormattedMessage id="operation.ok"/>}
+								cancelText={<FormattedMessage id="operation.cancel"/>}
 								icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-								<span className={styles.fail_detail_operation}>删除</span>
+								<span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
 							</Popconfirm>
 						</Form>
 					</Space>
@@ -678,19 +688,19 @@ const CloudConfig: React.FC<any> = (props) => {
 	]
 
 	const handleAddAk = () => {
-		addScript.current?.show('新建AK')
+		addScript.current?.show('new')
 	}
 	const hanldeEdit = (record: any) => {
 		const enableCopy = _.cloneDeep(record);
 		enableCopy.enable = enableCopy.enable === '是' || enableCopy.enable === true
-		addScript.current?.show('编辑AK', enableCopy)
+		addScript.current?.show('edit', enableCopy)
 	}
 
 	const handleAddImage = () => {
-		addImage.current?.show('新建Image')
+		addImage.current?.show('new')
 	}
 	const hanldeEditImage = (record: any) => {
-		addImage.current?.show('编辑Image', record)
+		addImage.current?.show('edit', record)
 	}
 
 	let dataTable = _.isArray(data.data) ? _.cloneDeep(data.data) : []
@@ -710,17 +720,19 @@ const CloudConfig: React.FC<any> = (props) => {
 			title={
 				<Tabs activeKey={key} onChange={handleTab}  >
 					<TabPane
-						tab="AK配置"
+						tab={<FormattedMessage id="device.ak.config"/>}
 						key="ak"
 					/>
 					<TabPane
-						tab="镜像配置"
+						tab={<FormattedMessage id="device.image.config"/>}
 						key="image"
 					/>
 				</Tabs>
 			}
 			extra={
-				<Button key="3" type="primary" onClick={key === 'ak' ? handleAddAk : handleAddImage}> {key === 'ak' ? '新建AK' : '新建Image'}</Button>
+				<Button key="3" type="primary" onClick={key === 'ak' ? handleAddAk : handleAddImage}>
+					{key === 'ak' ? <FormattedMessage id="device.new.ak"/>: <FormattedMessage id="device.new.image"/>}
+				</Button>
 			}
 		>
 			<Table
@@ -755,7 +767,7 @@ const CloudConfig: React.FC<any> = (props) => {
 					data.total > 1 &&
 					<>
 						<div>
-							共{data.total || 0}条
+							{formatMessage({id: 'pagination.total.strip'}, {data: data.total || 0 })}
 						</div>
 						<Pagination
 							// className={totalPaginationClass(data.total)}

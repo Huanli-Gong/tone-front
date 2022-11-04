@@ -5,7 +5,7 @@ import { ReactComponent as WsInitSet } from '@/assets/svg/ws_init_set.svg';
 import { ReactComponent as AddOwner } from '@/assets/svg/ws_init_add_owner.svg';
 import { enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './index.less'
-import { history,useModel,useRequest } from 'umi'
+import { history,useModel,useRequest, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import { useClientSize } from '@/utils/hooks';
 
@@ -13,35 +13,38 @@ import { useClientSize } from '@/utils/hooks';
 export default (props: any) => {
     const { ws_id } = props.match.params
     const { initialState } = useModel('@@initialState')
-    useRequest(
+    /* useRequest(
         (p) => enterWorkspaceHistroy(p),
         {
             formatResult: response => response,
             defaultParams: [{ ws_id }],
         }
-    )
+    ) */
     
     const { height: layoutHeight } = useClientSize()
 
     const data = [
         {
             icon: <WsInitJob />,
-            title: '创建Job',
-            desc: '准备好了吗，创建你的测试Job吧',
-            // addDesc: '准备好了吗，创建你的测试Job吧',
-            buttonText: '立即创建'
+            title: <FormattedMessage id="workspace.create.job"/>,
+            desc: <FormattedMessage id="workspace.create_now.desc"/>,
+            buttonText: '立即创建',
+            type: 'create_now',
+
         },
         {
             icon: <WsInitSet />,
-            title: 'Workspace设置',
-            desc: '机器，Job类型，Test Suit，产品项目等配置',
-            buttonText: '去设置'
+            title: <FormattedMessage id="workspace.ws.set"/>,
+            desc: <FormattedMessage id="workspace.to_set.desc"/>,
+            buttonText: '去设置',
+            type: 'to_set',
         },
         {
             icon: <AddOwner />,
-            title: '添加成员',
-            desc: '添加成员到你的Workspace吧',
-            buttonText: '立即添加'
+            title: <FormattedMessage id="workspace.add.member"/>,
+            desc: <FormattedMessage id="workspace.add_now.desc"/>,
+            buttonText: '立即添加',
+            type: 'add_now',
         }
     ]
     const handleClick = (type:string) =>{
@@ -61,7 +64,7 @@ export default (props: any) => {
                     <div className={`${styles.init_box} ${styles.init_success_box}`}>
 
                         <div className={styles.init_sucess_text}>
-                            Workspace创建成功，现在你可以
+                            <FormattedMessage id="workspace.create.success"/>
                     </div>
                         <ul className={styles.init_sucess_opreate}>
                             {
@@ -73,13 +76,13 @@ export default (props: any) => {
                                             <div className={styles.desc}>{item.desc}</div>
                                             {
                                                 index === 0 && <div className={styles.last_line}>
-                                                    <span>查看</span>
-                                                    <span className={styles.create_doc} onClick={() => window.open(`${location.origin}/help_doc/1`)}>创建Job</span>
-                                                    <span>帮助文档</span>
+                                                    <span><FormattedMessage id="operation.view"/></span>
+                                                    <span className={styles.create_doc} onClick={() => window.open(`${location.origin}/help_doc/1`)}><FormattedMessage id="workspace.create.job"/></span>
+                                                    <span><FormattedMessage id="menu.HelpDoc"/></span>
                                                 </div>
                                             }
                                         </div>
-                                        <Button className={styles.button} type={index < 2 ? "primary" : "default"} onClick={_.partial(handleClick, item.buttonText)} style={{ color: index < 2 ? '#fff' : 'rgba(0,0,0,0.65)' }}>{item.buttonText}</Button>
+                                        <Button className={styles.button} type={index < 2 ? "primary" : "default"} onClick={_.partial(handleClick, item.buttonText)} style={{ color: index < 2 ? '#fff' : 'rgba(0,0,0,0.65)' }}><FormattedMessage id={`workspace.${item.type}`}/></Button>
                                     </div>
                                 </li>)
                             }

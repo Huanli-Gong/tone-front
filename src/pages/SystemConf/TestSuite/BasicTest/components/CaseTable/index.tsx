@@ -12,7 +12,7 @@ import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { TestContext } from '../../../Provider'
 import { requestCodeMessage } from '@/utils/utils';
 import { useSuiteProvider } from '../../../hooks';
-import { useLocation } from 'umi';
+import { useLocation, useIntl, FormattedMessage } from 'umi';
 
 /**
  * Conf级列表
@@ -20,6 +20,7 @@ import { useLocation } from 'umi';
  * @returns 
  */
 export default forwardRef(({ id }: any, ref: any) => {
+    const { formatMessage } = useIntl()
     const { query }: any = useLocation()
 
     const { domainList } = useSuiteProvider()
@@ -43,7 +44,6 @@ export default forwardRef(({ id }: any, ref: any) => {
         ref,
         () => ({
             refresh: ({ refreshId }: any) => {
-                // console.log('refreshId:', refreshId)
                 if (id === refreshId) {
                     getCase()
                 }
@@ -75,7 +75,7 @@ export default forwardRef(({ id }: any, ref: any) => {
         }
         row.domain_list_str = newArr
         domainList.forEach((item: any) => { if (item.name == row.domain) row.domain = item.id })
-        confDrawerShow('编辑Test Conf', row)
+        confDrawerShow('edit', row)
     }
 
     const deleteInner = async (row: any) => {
@@ -95,14 +95,14 @@ export default forwardRef(({ id }: any, ref: any) => {
         setDeleteVisible(false)
         setDeleteDefault(false)
         await delCase(deleteObj.id)
-        message.success('操作成功');
+        message.success(formatMessage({id: 'operation.success'}) );
         setConfRefresh(!confRefresh)
     }
     const handleDetail = () => {
         window.open(`/refenerce/conf/?name=${deleteObj.name}&id=${deleteObj.id}`)
     }
     const newCase = () => {
-        confDrawerShow('新增Test Conf', { bentch: false, test_suite_id: id })
+        confDrawerShow('new', { bentch: false, test_suite_id: id })
     }
     const rowSelection = + status === 0 ? {
         selectedRowKeys,
@@ -118,12 +118,12 @@ export default forwardRef(({ id }: any, ref: any) => {
 
     const columns = [
         { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: true, render: (_: any, row: any) => <PopoverEllipsis title={row.name} /> },
-        { title: '别名', dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
-        { title: '领域', width: 100, dataIndex: 'domain_name_list', ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
-        { title: '最大运行时长（秒）', dataIndex: 'timeout', width: 160 },
-        { title: '默认运行次数', width: '120px', dataIndex: 'repeat', ellipsis: true },
+        { title: <FormattedMessage id="TestSuite.alias"/>, dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
+        { title: <FormattedMessage id="TestSuite.domain"/>, width: 100, dataIndex: 'domain_name_list', ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
+        { title: <FormattedMessage id="TestSuite.timeout"/>, dataIndex: 'timeout', width: 160 },
+        { title: <FormattedMessage id="TestSuite.default.repeat"/>, width: '120px', dataIndex: 'repeat', ellipsis: true },
         {
-            title: '变量',
+            title: <FormattedMessage id="TestSuite.var"/>,
             ellipsis: {
                 showTitle: false
             },
@@ -146,7 +146,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                 </PopoverEllipsis>,
         },
         {
-            title: '说明',
+            title: <FormattedMessage id="TestSuite.desc"/>,
             ellipsis: true,
             width: 100,
             render: (_: any, row: any) => (
@@ -163,19 +163,19 @@ export default forwardRef(({ id }: any, ref: any) => {
             // render: (text: string) => <PopoverEllipsis title={text || ''}></PopoverEllipsis>
         },
         {
-            title: '默认用例',
+            title: <FormattedMessage id="TestSuite.default.case"/>,
             dataIndex: 'doc',
             width: '80px',
-            render: (_: any, row: any) => row.is_default ? '是' : '否'
+            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>
         },
         {
-            title: '是否认证',
+            title: <FormattedMessage id="TestSuite.is_certified"/>,
             dataIndex: 'certificated',
             width: '80px',
-            render: (_: any, row: any) => row.certificated ? '是' : '否'
+            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="TestSuite.gmt_created"/>,
             dataIndex: 'gmt_created',
             ellipsis: {
                 showTitle: false
@@ -184,14 +184,14 @@ export default forwardRef(({ id }: any, ref: any) => {
             render: (_: number, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: <div>操作<Button type='primary' onClick={newCase} style={{ marginLeft: 10 }}>新增</Button></div>,
+            title: <div><FormattedMessage id="Table.columns.operation"/><Button type='primary' onClick={newCase} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new"/></Button></div>,
             valueType: 'option',
             dataIndex: 'id',
             width: 150,
             fixed: 'right',
             render: (_: number, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}>编辑</Button>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}>删除</Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}><FormattedMessage id="operation.edit"/></Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}><FormattedMessage id="operation.delete"/></Button>
             </Space>,
         },
     ];
@@ -204,7 +204,7 @@ export default forwardRef(({ id }: any, ref: any) => {
     const handleEditDesc = async (data: any) => {
         const { code, msg } = await editCase(data.id, { doc: data.doc })
         if (code === 200) {
-            message.success('操作成功')
+            message.success(formatMessage({id: 'operation.success'}) )
             descFastEdit.current.hide()
             setConfRefresh(!confRefresh)
         }
@@ -223,8 +223,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                     >
                     </TabPane>
                     <TabPane
-                        // tab="Metric"
-                        tab="指标"
+                        tab={<FormattedMessage id="TestSuite.conf.metric"/>}
                         key="2"
                     >
                     </TabPane>
@@ -234,7 +233,8 @@ export default forwardRef(({ id }: any, ref: any) => {
                 innerKey == '1' ?
                     <CommonTable
                         columns={columns}
-                        scrollType={1400}
+                        // scrollType={1400}
+                        scroll={{ x: 1400 }}
                         loading={expandLoading}
                         list={expandList.data}
                         page={expandList.page_num}
@@ -263,13 +263,13 @@ export default forwardRef(({ id }: any, ref: any) => {
             }
             <DesFastEditDrawer ref={descFastEdit} onOk={handleEditDesc} />
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 footer={[
                     <Button key="submit" onClick={remInnner}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 centered={true}
@@ -281,32 +281,32 @@ export default forwardRef(({ id }: any, ref: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    该Conf({deleteObj.name})已被Worksapce引用，删除后将影响以下Workspace的Test Suite管理列表，以及应用该Suite的Job、模板、计划，请谨慎删除！！
+                    {formatMessage({id: 'TestSuite.conf.name.delete.warning'},{data: deleteObj.name})}
                 </div>
                 <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    删除conf影响范围：运行中的job、测试模板、对比分析报告
+                    <FormattedMessage id="TestSuite.conf.delete.range"/>
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details"/></div>
             </Modal>
             <Modal
-                title="删除提示"
+                title={<FormattedMessage id="delete.tips"/>}
                 centered={true}
                 className={styles.modalChange}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={remInnner}>
-                        确定删除
+                        <FormattedMessage id="operation.confirm.delete"/>
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel"/>
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    确定要删除吗？
+                    <FormattedMessage id="delete.prompt"/>
                 </div>
             </Modal>
         </div>

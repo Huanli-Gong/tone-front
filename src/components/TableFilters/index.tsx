@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Row, Col, Input, Divider, Typography, Radio, Checkbox, } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
-
+import { useIntl, FormattedMessage } from 'umi'
 import SelectDrop from '@/components/Public/SelectDrop'
 import { useClientSize } from '@/utils/hooks';
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
+import SearchInput from '@/components/Public/SearchInput';
 const SearchTableFilter: React.FC<any> = ({ confirm, onConfirm, initVal }) => {
     const [val, setVal] = useState(initVal || '')
     const handleSearch = () => {
@@ -37,14 +38,14 @@ const SearchTableFilter: React.FC<any> = ({ confirm, onConfirm, initVal }) => {
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         onClick={handleSearch}
                     >
-                        <Typography.Text style={{ color: '#008dff' }}>搜索</Typography.Text>
+                        <Typography.Text style={{ color: '#008dff' }}><FormattedMessage id="operation.search" /></Typography.Text>
                     </Col>
                     <Col
                         span={12}
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         onClick={handleReset}
                     >
-                        <Typography.Text>重置</Typography.Text>
+                        <Typography.Text><FormattedMessage id="operation.reset" /></Typography.Text>
                     </Col>
                 </Row>
             </Col>
@@ -73,7 +74,7 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
     return (
         <Row className={styles.wrapper_styles}>
             <Radio.Group onChange={handleChange} className={styles.checkbox_filter} value={val}>
-                <Radio className={styles.filter_item_styles} value="">全部</Radio>
+                <Radio className={styles.filter_item_styles} value=""><FormattedMessage id="all" /></Radio>
                 {
                     list.map(
                         (item: any, index: number) => (
@@ -97,14 +98,14 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         onClick={handleConfirm}
                     >
-                        <Typography.Text style={{ color: '#008dff' }}>确定</Typography.Text>
+                        <Typography.Text style={{ color: '#008dff' }}><FormattedMessage id="operation.ok" /></Typography.Text>
                     </Col>
                     <Col
                         span={12}
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         onClick={handleReset}
                     >
-                        <Typography.Text>重置</Typography.Text>
+                        <Typography.Text><FormattedMessage id="operation.reset" /></Typography.Text>
                     </Col>
                 </Row>
             </Col>
@@ -166,7 +167,7 @@ const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, styleObj
                 onClick={handleCheckAll}
                 checked={allChecked}
             >
-                全部
+                <FormattedMessage id="all" />
             </Checkbox>
             <Scrollbars autoHeightMax={scroll.height} autoHeight={true}>
                 <Checkbox.Group
@@ -200,14 +201,14 @@ const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, styleObj
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         onClick={handleConfirm}
                     >
-                        <Typography.Text style={{ color: '#008dff' }}>确定</Typography.Text>
+                        <Typography.Text style={{ color: '#008dff' }}><FormattedMessage id="operation.ok" /></Typography.Text>
                     </Col>
                     <Col
                         span={12}
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         onClick={handleReset}
                     >
-                        <Typography.Text>重置</Typography.Text>
+                        <Typography.Text><FormattedMessage id="operation.reset" /></Typography.Text>
                     </Col>
                 </Row>
             </Col>
@@ -236,21 +237,13 @@ export const getCheckboxFilter = (props: any, setProps: any, list: any, name: st
 })
 
 export const getSearchFilter = (props: any, setProps: any, name: string) => ({
-    filterIcon: <FilterFilled style={{ color: props[name] ? '#1890ff' : undefined }} />,
-    filterDropdown: ({ confirm }: any) => {
-        const handleSetProps = (val: string) => {
-            let obj = { ...props }
-            obj[name] = val
-            setProps(obj)
-        }
-        return (
-            <SearchTableFilter
-                initVal={props[name]}
-                confirm={confirm}
-                onConfirm={handleSetProps}
-            />
-        )
-    }
+    filterDropdown: ({ confirm }: any) => (
+        <SearchInput
+            confirm={confirm}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+        />
+    ),
+    filterIcon: () => <FilterFilled style={{ color: props[name] ? '#1890ff' : undefined }} />,
 })
 
 export const getRadioFilter = (props: any, setProps: any, list: any, name: string) => ({

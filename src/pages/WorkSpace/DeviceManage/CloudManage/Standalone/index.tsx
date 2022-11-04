@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Pagination, Space, Popconfirm, Tag, message, Tooltip, Tabs, Modal, Row } from 'antd';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Button, Pagination, Space, Tag, message, Tooltip, Tabs, Modal, Row } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
@@ -17,7 +17,7 @@ import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable';
-import { useParams } from 'umi';
+import { useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import _ from 'lodash'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
@@ -34,8 +34,8 @@ import OverflowList from '@/components/TagOverflow/index'
 
 interface MachineParams {
     type?: any,
-    page_num?: number,
-    page_size?: number,
+    page_num: number,
+    page_size: number,
     description?: string,
     name?: string,
     owner?: any,
@@ -53,6 +53,9 @@ const isEmpty = (d: any) => {
 }
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id }: any = useParams()
     const access = useAccess();
     const aloneMachine = useRef<any>(null)
@@ -64,11 +67,11 @@ export default (props: any) => {
         page_num: 1,
         page_size: 10,
     })
+    const [total, setTotal] = useState(0)
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
-    const [tableColumns, setTableColumns] = useState<any>([])
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
     const viewDetailRef: any = useRef(null)
@@ -77,7 +80,7 @@ export default (props: any) => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: dataIndex === 'private_ip' ? val.trim() : val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {
@@ -109,310 +112,316 @@ export default (props: any) => {
             />
         ),
     })
-
-    useEffect(() => {
-        let columns: any = [
-            {
-                title: params.type == '0' ? '配置名称' : '实例名称',
-                dataIndex: 'name',
-                width: 140,
-                fixed: 'left',
-                ellipsis: {
-                    showTitle: false
-                },
-                ...inputFilterCommonFields("name"),
-                render: (_: any, row: any) => (
-                    <EllipsisPulic title={row.name}>
-                        <Highlighter
-                            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[params.name || '']}
-                            autoEscape
-                            textToHighlight={row.name.toString()}
-                        />
-                    </EllipsisPulic>
-                )
+    const paramTransform = (val: any) => {
+        const dict = {
+            0: formatMessage({ id: 'operation.not.release' }),
+            1: formatMessage({ id: 'operation.release' }),
+            2: formatMessage({ id: 'device.failed.save' })
+        }
+        return dict[val] || ''
+    }
+    const tableColumns: any = useMemo(() => {
+        return [{
+            title: params.type == '0' ? <FormattedMessage id="device.config.name" /> : <FormattedMessage id="device.instance.name" />,
+            dataIndex: 'name',
+            width: 140,
+            fixed: 'left',
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: 'IP',
-                dataIndex: 'private_ip', // private_ip
-                width: params.type == '0' ? 0 : 140,
-                ...inputFilterCommonFields("private_ip"),
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (text: any, row: any) => (
-                    <ServerLink
-                        val={text}
-                        param={row.id}
-                        provider={"aliyun"}
+            ...inputFilterCommonFields("name"),
+            render: (_: any, row: any) => (
+                <EllipsisPulic title={row.name}>
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[params.name || '']}
+                        autoEscape
+                        textToHighlight={row.name.toString()}
                     />
-                )
+                </EllipsisPulic>
+            )
+        },
+        {
+            title: 'IP',
+            dataIndex: 'private_ip', // private_ip
+            width: params.type == '0' ? 0 : 140,
+            ...inputFilterCommonFields("private_ip"),
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: 'SN',
-                dataIndex: 'sn',
-                ...inputFilterCommonFields("sn"),
-                width: params.type == '0' ? 0 : 140,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
+            render: (text: any, row: any) => (
+                <ServerLink
+                    val={text}
+                    param={row.id}
+                    provider={"aliyun"}
+                    machine_pool={true}
+                />
+            )
+        },
+        {
+            title: 'SN',
+            dataIndex: 'sn',
+            ...inputFilterCommonFields("sn"),
+            width: params.type == '0' ? 0 : 140,
+            ellipsis: {
+                showTitle: false
             },
-            BUILD_APP_ENV && {
-                title: 'TSN',
-                dataIndex: 'tsn',
-                width: params.type == '0' ? 0 : 140,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={row.tsn} />
+            render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
+        },
+        BUILD_APP_ENV && {
+            title: 'TSN',
+            dataIndex: 'tsn',
+            width: params.type == '0' ? 0 : 140,
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: 'InstanceId',
-                dataIndex: 'instance_id',
-                ...inputFilterCommonFields("instance_id"),
-                width: params.type == '0' ? 0 : 140,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
+            render: (_: any, row: any) => <EllipsisPulic title={row.tsn} />
+        },
+        {
+            title: 'InstanceId',
+            dataIndex: 'instance_id',
+            ...inputFilterCommonFields("instance_id"),
+            width: params.type == '0' ? 0 : 140,
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '云厂商/Ak',
-                dataIndex: 'manufacturer',
-                ...inputFilterCommonFields("manufacturer_ak_name"),
-                width: 160,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
+            render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
+        },
+        {
+            title: <FormattedMessage id="device.manufacturer/ak" />,
+            dataIndex: 'manufacturer',
+            ...inputFilterCommonFields("manufacturer_ak_name"),
+            width: 160,
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: 'Region/Zone',
-                width: 160,
-                dataIndex: 'region',
-                ...inputFilterCommonFields("region_zone"),
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
+            render: (_: any, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
+        },
+        {
+            title: 'Region/Zone',
+            width: 160,
+            dataIndex: 'region',
+            ...inputFilterCommonFields("region_zone"),
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '规格',
-                width: 110,
-                dataIndex: 'instance_type',
-                ...inputFilterCommonFields("instance_type"),
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={row.instance_type} />
+            render: (_: any, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
+        },
+        {
+            title: <FormattedMessage id="device.instance_type" />,
+            width: enLocale ? 160 : 110,
+            dataIndex: 'instance_type',
+            ...inputFilterCommonFields("instance_type"),
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '镜像',
-                dataIndex: 'image',
-                ...inputFilterCommonFields("image"),
-                width: 160,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={row.image} />
+            render: (_: any, row: any) => <EllipsisPulic title={row.instance_type} />
+        },
+        {
+            title: <FormattedMessage id="device.image" />,
+            dataIndex: 'image',
+            ...inputFilterCommonFields("image"),
+            width: 160,
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '带宽',
-                width: 70,
-                ...inputFilterCommonFields("bandwidth"),
-                dataIndex: 'bandwidth',
-                ellipsis: {
-                    showTitle: false
-                },
+            render: (_: any, row: any) => <EllipsisPulic title={row.image} />
+        },
+        {
+            title: <FormattedMessage id="device.bandwidth" />,
+            width: enLocale ? 120 : 70,
+            ...inputFilterCommonFields("bandwidth"),
+            dataIndex: 'bandwidth',
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '数据盘',
-                ...selectFilterCommonFields(
-                    "storage_type",
-                    [
-                        ["cloud", "普通云盘"],
-                        ["cloud_efficiency", "高效云盘"],
-                        ["cloud_ssd", "SSD云盘"],
-                        ["cloud_essd", "ESSD云盘"],
-                    ].map(i => ({ id: i[0], name: i[1] }))
-                ),
-                dataIndex: 'storage_type',
-                width: 90,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <DataSetPulic name={row.storage_type} />
+        },
+        {
+            title: <FormattedMessage id="device.storage_type" />,
+            ...selectFilterCommonFields(
+                "storage_type",
+                [
+                    ["cloud", formatMessage({ id: 'device.cloud' })],
+                    ["cloud_efficiency", formatMessage({ id: 'device.cloud_efficiency' })],
+                    ["cloud_ssd", formatMessage({ id: 'device.cloud_ssd' })],
+                    ["cloud_essd", formatMessage({ id: 'device.cloud_essd' })],
+                ].map(i => ({ id: i[0], name: i[1] }))
+            ),
+            dataIndex: 'storage_type',
+            width: enLocale ? 130 : 90,
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '用完释放',
-                align: 'center',
-                ...radioFilterCommonFields("release_rule", [{ id: 1, name: "是" }, { id: 0, name: "否" }]),
-                dataIndex: 'release_rule',
-                width: 110,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <div>{row.release_rule ? '是' : '否'}</div>
+            render: (_: any, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage} />
+        },
+        {
+            title: <FormattedMessage id="device.release_rule" />,
+            align: 'center',
+            ...radioFilterCommonFields("release_rule", [{ id: 0, name: formatMessage({ id: 'operation.not.release' }) }, { id: 1, name: formatMessage({ id: 'operation.release' }) }, { id: 2, name: formatMessage({ id: 'device.failed.save' }) }]),
+            dataIndex: 'release_rule',
+            width: enLocale ? 150 : 110,
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: 'Console配置',
-                width: 100,
-                dataIndex: 'console_conf',
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => <EllipsisPulic title={_} />
+            render: (_: any, row: any) => <div>{paramTransform(row.release_rule)}</div>
+        },
+        {
+            title: <FormattedMessage id="device.console_conf" />,
+            width: enLocale ? 170 : 100,
+            dataIndex: 'console_conf',
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: '控制通道',
-                width: 100,
-                ellipsis: {
-                    showTitle: false
-                },
-                dataIndex: 'channel_type',
-                filterIcon: () => <FilterFilled style={{ color: params.channel_type ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => (
-                    <SelectCheck
-                        list={channelTypeList}
-                        confirm={confirm}
-                        onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
+            render: (_: any, row: any) => <EllipsisPulic title={_} />
+        },
+        {
+            title: <FormattedMessage id="device.channel_type" />,
+            width: 100,
+            ellipsis: {
+                showTitle: false
+            },
+            dataIndex: 'channel_type',
+            filterIcon: () => <FilterFilled style={{ color: params.channel_type ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectCheck
+                    list={channelTypeList}
+                    confirm={confirm}
+                    onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
+                />
+            ),
+        },
+        {
+            title: <><FormattedMessage id="device.usage.state" /> <Tooltip title={formatMessage({ id: 'device.usage.state.Tooltip' })}><QuestionCircleOutlined /></Tooltip></>,
+            dataIndex: 'state',
+            width: params.type == '0' ? 0 : (enLocale ? 150 : 120),
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectDropSync
+                    confirm={confirm}
+                    onConfirm={(val: string) =>
+                        setParams({ ...params, state: val })}
+                    stateVal={params.state}
+                    tabType={params.type}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
+                />
+            )
+        },
+        {
+            title: <><FormattedMessage id="device.real_state" /> <Tooltip title={formatMessage({ id: 'device.real_state.Tooltip' })}><QuestionCircleOutlined /></Tooltip></>,
+            width: params.type == '0' ? 0 : (enLocale ? 150 : 120),
+            ellipsis: {
+                showTitle: false
+            },
+            dataIndex: 'real_state',
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectDropSync
+                    confirm={confirm}
+                    onConfirm={(val: string) =>
+                        setParams({ ...params, real_state: val })}
+                    stateVal={params.real_state}
+                    tabType={params.type}
+                    dataArr={['Available', 'Broken']}
+                />
+            )
+        },
+        {
+            title: 'Owner',
+            width: 120,
+            dataIndex: 'owner_name',
+            ellipsis: {
+                showTitle: false
+            },
+            filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) =>
+                <SelectUser
+                    confirm={confirm}
+                    onConfirm={(val: number) => { setParams({ ...params, page_num: 1, owner: val }) }}
+                />,
+        },
+        {
+            title: <FormattedMessage id="device.tag" />,
+            dataIndex: 'tags',
+            width: 140,
+            ellipsis: {
+                showTitle: false
+            },
+            filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) =>
+                <SelectTags
+                    ws_id={ws_id}
+                    run_mode={'standalone'}
+                    autoFocus={autoFocus}
+                    confirm={confirm}
+                    onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }}
+                />,
+            render: (_: any, row: any) => (
+                <OverflowList list={row.tag_list.map((item: any, index: number) => {
+                    return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                })} />
+            )
+        },
+        {
+            title: <FormattedMessage id="device.description" />,
+            width: 140,
+            dataIndex: 'description',
+            ...inputFilterCommonFields("description"),
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any, row: any) => (
+                <EllipsisPulic title={row.description} >
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[params.description || '']}
+                        autoEscape
+                        textToHighlight={row.description ? row.description.toString() : '-'}
                     />
-                ),
+                </EllipsisPulic>
+            )
+        },
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            fixed: 'right',
+            valueType: 'option',
+            dataIndex: 'id',
+            width: params.type == '0' ? 180 : (enLocale ? 380 : 310),
+            ellipsis: {
+                showTitle: false
             },
-            {
-                title: <>使用状态 <Tooltip title={"代表T-One的管理状态"}><QuestionCircleOutlined /></Tooltip></>,
-                dataIndex: 'state',
-                width: params.type == '0' ? 0 : 120,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => StateBadge(_, row, ws_id),
-                filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => (
-                    <SelectDropSync
-                        confirm={confirm}
-                        onConfirm={(val: string) =>
-                            setParams({ ...params, state: val })}
-                        stateVal={params.state}
-                        tabType={params.type}
-                        dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
-                    />
-                )
-            },
-            {
-                title: <>实际状态 <Tooltip title={"是机器当前的真实状态"}><QuestionCircleOutlined /></Tooltip></>,
-                width: params.type == '0' ? 0 : 120,
-                ellipsis: {
-                    showTitle: false
-                },
-                dataIndex: 'real_state',
-                render: (_: any, row: any) => StateBadge(_, row, ws_id),
-                filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) => (
-                    <SelectDropSync
-                        confirm={confirm}
-                        onConfirm={(val: string) =>
-                            setParams({ ...params, real_state: val })}
-                        stateVal={params.real_state}
-                        tabType={params.type}
-                        dataArr={['Available', 'Broken']}
-                    />
-                )
-            },
-            {
-                title: 'Owner',
-                width: 120,
-                dataIndex: 'owner_name',
-                ellipsis: {
-                    showTitle: false
-                },
-                filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) =>
-                    <SelectUser
-                        confirm={confirm}
-                        onConfirm={(val: number) => { setParams({ ...params, page_num: 1, owner: val }) }}
-                    />,
-            },
-            {
-                title: '标签',
-                dataIndex: 'tags',
-                width: 140,
-                ellipsis: {
-                    showTitle: false
-                },
-                filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
-                filterDropdown: ({ confirm }: any) =>
-                    <SelectTags
-                        ws_id={ws_id}
-                        run_mode={'standalone'}
-                        autoFocus={autoFocus}
-                        confirm={confirm}
-                        onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }}
-                    />,
-                render: (_: any, row: any) => (
-                    <OverflowList list={row.tag_list.map((item: any, index: number) => {
-                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
-                    })} />
-                )
-            },
-            {
-                title: '备注',
-                width: 140,
-                dataIndex: 'description',
-                ...inputFilterCommonFields("description"),
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) => (
-                    <EllipsisPulic title={row.description} >
-                        <Highlighter
-                            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[params.description || '']}
-                            autoEscape
-                            textToHighlight={row.description ? row.description.toString() : '-'}
-                        />
-                    </EllipsisPulic>
-                )
-            },
-            {
-                title: '操作',
-                fixed: 'right',
-                valueType: 'option',
-                dataIndex: 'id',
-                width: params.type == '0' ? 160 : 270,
-                ellipsis: {
-                    showTitle: false
-                },
-                render: (_: any, row: any) =>
-                    <Space>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}>详情</Button>
-                        <Access
-                            accessible={access.WsMemberOperateSelf(row.owner)}
-                            fallback={
-                                <Space>
-                                    {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>同步状态</Button>}
-                                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} >编辑</Button>
-                                    {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>部署</Button>}
-                                    {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{'删除'}</Button>}
-                                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{params.type == '0' ? '删除' : '释放'}</Button>
-                                </Space>
-                            }
-                        >
+            render: (_: any, row: any) =>
+                <Space>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}><FormattedMessage id="operation.detail" /></Button>
+                    <Access
+                        accessible={access.WsMemberOperateSelf(row.owner)}
+                        fallback={
                             <Space>
-                                {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}>同步状态</Button>}
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} >编辑</Button>
-                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}>部署</Button>}
-                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}>{'删除'}</Button>}
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(params.type) !== '0')}>{params.type == '0' ? '删除' : '释放'}</Button>
+                                {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} ><FormattedMessage id="operation.edit" /></Button>
+                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.deploy" /></Button>}
+                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>}
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{params.type === '0' ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}</Button>
                             </Space>
-                        </Access>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>日志</Button>
-                    </Space>,
-            },
+                        }
+                    >
+                        <Space>
+                            {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state" /></Button>}
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} ><FormattedMessage id="operation.edit" /></Button>
+                            {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}><FormattedMessage id="device.deploy" /></Button>}
+                            {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}><FormattedMessage id="operation.delete" /></Button>}
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(params.type) !== '0')}>{params.type === '0' ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}</Button>
+                        </Space>
+                    </Access>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
+                </Space>,
+        },
         ].filter(Boolean)
-        setTableColumns(columns.reduce((p: any, c: any) => c.width ? p.concat(c) : p, []))
-    }, [params])
+    }, [params, enLocale])
 
     // 部署Agent
     const deployClick = (row: any) => {
@@ -422,7 +431,6 @@ export default (props: any) => {
     const deployCallback = (info: any) => {
         // case1. 部署结果信息
     }
-    // console.log('columns',columns)
     const handleOpenLogDrawer = useCallback(
         (id) => {
             logDrawer.current.show(id)
@@ -442,6 +450,7 @@ export default (props: any) => {
         setData({ data: [] })
         const data: any = await cloudList({ ...obj, ws_id })
         data && setData(data)
+        setTotal(data.total)
         setLoading(false)
     };
     const removeCloud = _.debounce(
@@ -451,8 +460,8 @@ export default (props: any) => {
             const res = await delCloud(id, data)
             setBtnLoad(false)
             if (res.code == 200) {
-                await getList()
-                message.success('操作成功！');
+                setParams({ ...params, page_num: Math.round((total - 1) / params.page_size) || 1 })
+                message.success(formatMessage({ id: 'operation.success' }));
                 setDeleteVisible(false)
                 setDeleteDefault(false)
             } else {
@@ -479,7 +488,7 @@ export default (props: any) => {
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aliyun' })
         if (code === 200) {
-            message.success('同步机器状态成功')
+            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
             getList()
         }
         else requestCodeMessage(code, msg)
@@ -514,6 +523,8 @@ export default (props: any) => {
         }
     }
 
+    const localeStr = deleteObj[params.type == '0' ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
+
     return (
         <div className={styles.warp}>
             <Tabs
@@ -522,31 +533,25 @@ export default (props: any) => {
                 onTabClick={RadioChange}
                 tabBarExtraContent={
                     <Button type="primary" onClick={addMachine}>
-                        {params.type == '0' ? '添加机器配置' : '添加机器实例'}
+                        {params.type == '0' ? <FormattedMessage id="device.add.server.config" /> : <FormattedMessage id="device.add.server.instance" />}
                     </Button>
                 }
             >
-                <Tabs.TabPane tab="机器配置" key={'0'} />
-                <Tabs.TabPane tab="机器实例" key={'1'} />
+                <Tabs.TabPane tab={<FormattedMessage id="device.server.config" />} key={'0'} />
+                <Tabs.TabPane tab={<FormattedMessage id="device.server.instance" />} key={'1'} />
             </Tabs>
-
             <ResizeTable
-                loading={loading}
                 size={'small'}
-                scroll={{
-                    // x: tableColumns.reduce((p: any, c: any) => p += c.width, 0),///type - 0 === 0 ? 1910 : 2190,
-                    // y: windowHeight - 50 - 66 - 30 - 20
-                    x: "100%",
-                }}
+                loading={loading}
+                scroll={{ x: "100%" }}
                 columns={tableColumns}
                 dataSource={data.data}
                 rowKey={'id'}
                 pagination={false}
             />
-
             <div className={!loading ? styles.pagination : styles.hidden} >
                 <div className={data.total == 0 ? styles.hidden : ''} >
-                    共{data.total}条
+                    {formatMessage({ id: 'pagination.total.strip' }, { data: data.total })}
                 </div>
                 <Pagination
                     className={data.total == 0 ? styles.hidden : ''}
@@ -569,16 +574,16 @@ export default (props: any) => {
             <DeployModal ref={deployModal} callback={deployCallback} />
             <CloudDetail ref={viewDetailRef} />
             <Modal
-                title={<div>{`${params.type ? '提示' : '删除提示'}`}</div>}
+                title={<div><FormattedMessage id={params.type ? 'device.tips' : 'delete.tips'} /></div>}
                 centered={true}
                 visible={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
-                        {params.type && deleteObj.is_release ? '释放' : '确定删除'}
+                        {params.type && <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />}
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={600}
@@ -586,21 +591,21 @@ export default (props: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    已有模板配置了该机器，删除机器后对应的测试机配置会自动改为随机，请谨慎删除！！
+                    <FormattedMessage id="device.delete.tips" />
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>查看引用详情</div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.quote.details" /></div>
             </Modal>
             <Modal
-                title={<div>{`${params.type == '0' ? '删除提示' : '提示'}`}</div>}
+                title={<div><FormattedMessage id={params.type === '0' ? 'delete.tips' : 'device.tips'} /></div>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" type={"danger" as any} onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
-                        {params.type == '0' || !deleteObj.is_release ? '确定删除' : '释放'}
+                        {params.type == '0' || !deleteObj.is_release ? <FormattedMessage id="operation.confirm.delete" /> : <FormattedMessage id="operation.release" />}
                     </Button>,
                     <Button key="back" onClick={() => setDeleteDefault(false)}>
-                        取消
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={"30%"}
@@ -609,7 +614,18 @@ export default (props: any) => {
                     <Row align="middle">
                         <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
                         <div>
-                            确定要{params.type == '0' || !deleteObj.is_release ? '删除' : '释放'}{params.type === "0" ? "配置" : "实例"}({deleteObj[params.type == '0' ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]})吗？
+                            {((params.type === '0' || !deleteObj.is_release) && params.type === '0') ?
+                                formatMessage({ id: 'device.delete.config' }, { data: localeStr }) : null
+                            }
+                            {((params.type === '0' || !deleteObj.is_release) && params.type !== '0') ?
+                                formatMessage({ id: 'device.delete.instance' }, { data: localeStr }) : null
+                            }
+                            {(!(params.type === '0' || !deleteObj.is_release) && params.type === '0') ?
+                                formatMessage({ id: 'device.release.config' }, { data: localeStr }) : null
+                            }
+                            {(!(params.type === '0' || !deleteObj.is_release) && params.type !== '0') ?
+                                formatMessage({ id: 'device.release.instance' }, { data: localeStr }) : null
+                            }
                         </div>
                     </Row>
                 </div>

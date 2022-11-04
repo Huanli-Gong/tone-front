@@ -2,10 +2,11 @@ import React from 'react';
 import { Select, message } from 'antd';
 import { updateWorkspaceMember } from '@/services/Workspace'
 import styles from './index.less';
-import { requestCodeMessage, switchUserRole } from '@/utils/utils';
-import { useParams } from 'umi';
+import { requestCodeMessage, switchUserRole2 } from '@/utils/utils';
+import { useParams, useIntl, FormattedMessage  } from 'umi';
 
 export const EditableCell: React.FC<any> = (props) => {
+    const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { user_info, select } = props
 
@@ -19,7 +20,7 @@ export const EditableCell: React.FC<any> = (props) => {
             user_id: id,
         })
         if (data.code === 200) {
-            message.success('角色修改成功')
+            message.success(formatMessage({id: 'member.role.modified.success'}) )
             props.handleOk()
             props.onOk()
         } else {
@@ -32,7 +33,7 @@ export const EditableCell: React.FC<any> = (props) => {
             <div className={styles.roleStyle}>
                 <Select
                     size='small'
-                    value={switchUserRole(defaultName[0])}
+                    value={switchUserRole2(defaultName[0], formatMessage)}
                     showSearch={false}
                     bordered={false}
                     dropdownMatchSelectWidth={false}
@@ -40,11 +41,11 @@ export const EditableCell: React.FC<any> = (props) => {
                     onSelect={onSelect}
                 >
                     {select?.map((item: any) => {
-                        return <Select.Option value={item.id} key={item.id}>{switchUserRole(item.name)}</Select.Option>
+                        return <Select.Option value={item.id} key={item.id}>{switchUserRole2(item.name, formatMessage)}</Select.Option>
                     })}
                 </Select>
             </div>
         )
     }
-    return <span>{switchUserRole(role_list[0].name)}</span>
+    return <span>{switchUserRole2(role_list[0].name, formatMessage)}</span>
 }

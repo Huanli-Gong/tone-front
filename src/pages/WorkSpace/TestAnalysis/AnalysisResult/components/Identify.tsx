@@ -31,7 +31,7 @@ const Identify: React.FC<any> = (props) => {
                         </Tooltip>
                     }
                 </Space>
-                <EllipsisPulic title={tag} />
+                <EllipsisPulic title={tag} width={'calc(100% - 100px)'}/>
             </>
         )
     }

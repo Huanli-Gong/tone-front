@@ -72,7 +72,7 @@ const text =  {
   'result': '结果',
   'business_business': '总计/成功/失败',
   'performance': 'Metric总计/上升/下降/正常/无效/NA',
-  'functional': '总计/通过/失败/跳过',
+  'functional': '总计/通过/失败/警告/跳过',
   'baseline': '对比基线',
   'baseline_job_id': '基线Job',
   'start_time': '开始时间',

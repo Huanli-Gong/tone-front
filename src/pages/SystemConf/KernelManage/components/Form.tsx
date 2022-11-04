@@ -1,15 +1,16 @@
 import React, { useImperativeHandle, useState, forwardRef } from 'react'
 import { Drawer, Form, Input, Radio, Space, Button, message } from 'antd'
-
+import {  useIntl, FormattedMessage } from 'umi'
 import { createKernel, updateKernel } from '../services'
 import { requestCodeMessage } from '@/utils/utils'
 
 export default forwardRef(
     ({ confirm }: any, ref: any) => {
+        const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
         const [padding, setPadding] = useState(false)
-        const [title, setTitle] = useState('新增内核')
+        const [title, setTitle] = useState('new')
 
         const [initValue, setInitValue] = useState<any>({})
 
@@ -39,7 +40,7 @@ export default forwardRef(
                 setVisible(false)
                 form.resetFields()
                 setInitValue({})
-                message.success('操作成功!')
+                message.success(formatMessage({id: 'operation.success'}) )
             }
             else {
                 requestCodeMessage( code , msg )
@@ -70,7 +71,7 @@ export default forwardRef(
                 maskClosable={ false }
                 keyboard={ false }
                 width={376}
-                title={title}
+                title={<FormattedMessage id={`kernel.${title}.kernel`}/>}
                 visible={visible}
                 onClose={handleClose}
                 forceRender={true}
@@ -78,9 +79,9 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}>取消</Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
                             <Button type="primary" disabled={padding} onClick={handleSubmit}>
-                                {title.indexOf('新增') > -1 ? '确定' : '更新'}
+                                {title.indexOf('new') > -1 ? <FormattedMessage id="operation.ok"/> : <FormattedMessage id="operation.update"/>}
                             </Button>
                         </Space>
                     </div>
@@ -96,35 +97,35 @@ export default forwardRef(
                             required: true,
                             max:64,
                             pattern: /^[A-Za-z0-9\._-]+$/g,
-                            message: '仅允许包含字母、数字、下划线、中划线、点，最长64个字符'
+                            message: formatMessage({id: 'kernel.version.message'})
                         }]} 
-                        label="内核版本" 
+                        label={<FormattedMessage id="kernel.version"/>}
                         name="version"
                     >
-                        <Input autoComplete="off" placeholder="请输入" />
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>
-                    <Form.Item label="kernel包路径" name="kernel_link">
-                        <Input autoComplete="off" placeholder="请输入" />
+                    <Form.Item label={<FormattedMessage id="kernel.kernel.path"/>} name="kernel_link">
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>
-                    <Form.Item label="devel包路径" name="devel_link">
-                        <Input autoComplete="off" placeholder="请输入" />
+                    <Form.Item label={<FormattedMessage id="kernel.devel.path"/>} name="devel_link">
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>
-                    <Form.Item label="headers包路径" name="headers_link">
-                        <Input autoComplete="off" placeholder="请输入" />
+                    <Form.Item label={<FormattedMessage id="kernel.headers.path"/>} name="headers_link">
+                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>
-                    <Form.Item label="备注" name="description">
-                        <Input.TextArea placeholder="请输入" />
+                    <Form.Item label={<FormattedMessage id="kernel.remarks"/>} name="description">
+                        <Input.TextArea placeholder={formatMessage({id: 'please.enter'})} />
                     </Form.Item>
-                    <Form.Item initialValue={true} label="版本类型" name="release">
+                    <Form.Item initialValue={true} label={<FormattedMessage id="kernel.version.type"/>} name="release">
                         <Radio.Group>
-                            <Radio value={true}>发布版本</Radio>
-                            <Radio value={false}>临时版本</Radio>
+                            <Radio value={true}><FormattedMessage id="kernel.release.version"/></Radio>
+                            <Radio value={false}><FormattedMessage id="kernel.temporary.version"/></Radio>
                         </Radio.Group>
                     </Form.Item>
-                    <Form.Item initialValue={true} label="是否启用" name="enable">
+                    <Form.Item initialValue={true} label={<FormattedMessage id="kernel.is_enable"/>} name="enable">
                         <Radio.Group>
-                            <Radio value={true}>启用</Radio>
-                            <Radio value={false}>停用</Radio>
+                            <Radio value={true}><FormattedMessage id="kernel.enable"/></Radio>
+                            <Radio value={false}><FormattedMessage id="kernel.stop"/></Radio>
                         </Radio.Group>
                     </Form.Item>
                 </Form>

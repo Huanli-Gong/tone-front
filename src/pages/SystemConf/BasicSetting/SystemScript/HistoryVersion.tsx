@@ -1,6 +1,6 @@
 import React , { useState , useEffect, forwardRef , useImperativeHandle , useMemo } from 'react'
 import { Modal, Row , Col , Space , Typography, Button, Spin, Empty , Tooltip } from 'antd'
-
+import { useRequest, useIntl, FormattedMessage } from 'umi'
 import 'highlight.js/styles/default.css'
 import 'highlight.js/styles/railscasts.css'
 
@@ -8,10 +8,10 @@ import styles from './index.less'
 import Highlight from 'react-highlight'
 
 import { queryHistroyVersion } from '../services'
-import { useRequest } from 'umi'
 
 export default forwardRef(
     ( props : any , ref : any ) => {
+        const { formatMessage } = useIntl()
         const { stage } = props
         const [ visible , setVisible ] = useState( false )
         const [ current , setCurrent ] = useState<any>({})
@@ -67,7 +67,7 @@ export default forwardRef(
 
         return (
             <Modal
-                title="历史版本"
+                title={<FormattedMessage id="basic.historical.version"/>}
                 centered
                 visible={ visible }
                 onOk={() => setVisible(false)}
@@ -108,7 +108,7 @@ export default forwardRef(
                                         <Col span={ 24 }>
                                             <Row>
                                                 <Col span={ 8 } className={ styles.history_top_info }>
-                                                    <Typography.Text className={ styles.script_right_name }>脚本名称：</Typography.Text>
+                                                    <Typography.Text className={ styles.script_right_name }><FormattedMessage id="basic.script_name"/>：</Typography.Text>
                                                     <Typography.Text>
                                                         <Tooltip title={ current.config_key } placement="bottomLeft">
                                                                 { current.config_key }
@@ -116,11 +116,11 @@ export default forwardRef(
                                                     </Typography.Text>
                                                 </Col>
                                                 <Col span={ 6 } className={ styles.history_top_info }>
-                                                    <Typography.Text className={ styles.script_right_name }>原子步骤：</Typography.Text>
+                                                    <Typography.Text className={ styles.script_right_name }><FormattedMessage id="basic.atomic_step"/>：</Typography.Text>
                                                     <Typography.Text>{ transStageZn(current.bind_stage) }</Typography.Text>
                                                 </Col>
                                                 <Col span={ 10 } className={ styles.history_top_info }>
-                                                    <Typography.Text className={ styles.script_right_name }>描述：</Typography.Text>
+                                                    <Typography.Text className={ styles.script_right_name }><FormattedMessage id="basic.desc"/>：</Typography.Text>
                                                     <Typography.Text className={ styles.desc_content_style }>
                                                         <Tooltip title={ current.description } placement="bottomLeft">
                                                             { current.description }
@@ -141,7 +141,7 @@ export default forwardRef(
                                     </Row>
                                     <Row style={{ height : 32 , marginTop : 20 }} justify="space-between">
                                         <Typography.Text>Comment：{ current.commit }</Typography.Text>
-                                        <Button onClick={ handleCancel }>取消</Button>
+                                        <Button onClick={ handleCancel }><FormattedMessage id="operation.cancel"/></Button>
                                     </Row>
                                 </>
                             }
