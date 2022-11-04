@@ -152,7 +152,7 @@ const SelectSuite: React.FC<any> = (
 
 		if (server_is_deleted) return $data
 
-		const { customer_server, server_tag_id } = conf
+		const { customer_server, server_tag_id, ip, server_object_id } = conf
 		let custom_channel = undefined, custom_ip = undefined;
 
 		if (customer_server) {
@@ -165,6 +165,8 @@ const SelectSuite: React.FC<any> = (
 			...$data,
 			custom_channel,
 			custom_ip,
+			ip,
+			server_object_id
 		}
 
 		if (server_tag_id) {
