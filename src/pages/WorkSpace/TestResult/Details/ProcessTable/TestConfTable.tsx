@@ -10,6 +10,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
 import TidDetail from './QueryTidList';
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 
 export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
     const { formatMessage } = useIntl()
@@ -97,7 +98,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
             ellipsis: {
                 showTitle: false
             },
-            render:(_:any) => <TidDetail tid={_} />
+            render:(_:any) => _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} />
         },
         {
             dataIndex: 'result',

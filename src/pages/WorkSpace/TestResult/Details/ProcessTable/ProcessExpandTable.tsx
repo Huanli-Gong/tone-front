@@ -6,6 +6,7 @@ import TidDetail from './QueryTidList';
 import styles from './index.less'
 import ResizeTable from '@/components/ResizeTable'
 import { ReactComponent as ColumnStateLine } from '@/assets/svg/TestResult/line.svg'
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 
 export default ({ items , mode } : any ) => {
     const { formatMessage } = useIntl()
@@ -57,7 +58,7 @@ export default ({ items , mode } : any ) => {
             showTitle: false
         },
         width: 80,
-        render:(_:any) => <TidDetail tid={_} />
+        render:(_:any) => _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} />
     },
     {
         dataIndex : 'gmt_created',
