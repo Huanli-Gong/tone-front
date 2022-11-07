@@ -221,7 +221,7 @@ export default (props: any) => {
                                         >
                                             <Row justify="space-between">
                                                 <Typography.Text>
-                                                    <EllipsisPulic width={220} title={transformKey(item.config_key)}>{ transformKey( item.config_key ) }</EllipsisPulic>
+                                                    <EllipsisPulic width={200} title={transformKey(item.config_key)}>{ transformKey( item.config_key ) }</EllipsisPulic>
                                                 </Typography.Text>
                                                 <Popconfirm
                                                     title={<div style={{ color:'red', width:'280px' }}><FormattedMessage id="basic.delete.the.script.warning"/></div>}
@@ -257,8 +257,8 @@ export default (props: any) => {
                                                     </Typography.Text>
                                                 </Col>
                                                 <Col span={ 6 } className={ styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 122 }: {}}><FormattedMessage id="basic.atomic_step"/>：</span>
-                                                    <Typography.Text>{ bindStage }</Typography.Text>
+                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 126 }: {}}><FormattedMessage id="basic.atomic_step"/>：</span>
+                                                    <Typography.Text>{ bindStage || '-' }</Typography.Text>
                                                 </Col>
                                                 <Col span={ 10 } className={styles.history_top_info }>
                                                     <span className={ styles.script_right_name } style={enLocale ? { width: 100 }: {}}><FormattedMessage id="basic.desc"/>：</span>

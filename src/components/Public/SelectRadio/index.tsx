@@ -11,6 +11,8 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 		setVal(e.target.value)
 	}
 
+	// console.log('list:', list)
+
 	return (
 		<div className={styles.filter}>
 			<Radio.Group onChange={handleDomainRadio} value={val} >

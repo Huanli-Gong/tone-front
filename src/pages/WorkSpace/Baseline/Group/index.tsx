@@ -2,7 +2,7 @@ import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
-import { useRequest, useParams, useLocation, FormattedMessage, useIntl } from 'umi'
+import { useRequest, useParams, useLocation, FormattedMessage, useIntl, getLocale } from 'umi'
 import { deleteBaseline, queryBaselineList } from '../services'
 import AddScripotDrawer from './AddScript'
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
@@ -17,6 +17,8 @@ const { Search } = Input;
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id }: any = useParams()
     const access = useAccess();
     const { query }: any = useLocation()
@@ -301,26 +303,26 @@ export default (props: any) => {
                         <Row className={styles.script_right_detail} align="middle">
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={`${styles.script_right_name}`} strong><FormattedMessage id="baseline.baseline_name"/>：</Typography.Text>
-                                    <EllipsisPulic title={current?.name} style={{ width: 318 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 115}: {}}><FormattedMessage id="baseline.baseline_name"/>：</span>
+                                    <EllipsisPulic title={current?.name} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong><FormattedMessage id="baseline.product_version"/>：</Typography.Text>
-                                    <EllipsisPulic title={current?.version} style={{ width: 318 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 122}: {}}><FormattedMessage id="baseline.product_version"/>：</span>
+                                    <EllipsisPulic title={current?.version} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong ><FormattedMessage id="baseline.test.env"/>：</Typography.Text>
-                                    <EllipsisPulic title={baselineData.length ? server_provider : '-'} style={{ width: 230 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 132}: {}}><FormattedMessage id="baseline.test.env"/>：</span>
+                                    <EllipsisPulic title={baselineData.length ? server_provider : '-'} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong><FormattedMessage id="baseline.baseline_desc"/>：</Typography.Text>
-                                    <EllipsisPulic title={current?.description} style={{ width: 318 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 155}: {}}><FormattedMessage id="baseline.baseline_desc"/>：</span>
+                                    <EllipsisPulic title={current?.description} />
                                 </div>
                             </Col>
                             <Access accessible={access.WsMemberOperateSelf(current?.creator)}>

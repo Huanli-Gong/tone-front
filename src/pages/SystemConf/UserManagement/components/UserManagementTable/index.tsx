@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, useEffect } from 'react';
+import React, { useState, useImperativeHandle, useMemo, useEffect } from 'react';
 import { UserTable, UserList, RoleChangeParams, TableListParams } from '../../data.d';
 import { Avatar, Space, message, Popconfirm, Typography } from 'antd';
 import { userManagementList, roleChange, requestResetPassword } from '../../service';
@@ -15,6 +15,8 @@ import AvatarCover from '@/components/AvatarCover';
 import { useIntl, FormattedMessage } from 'umi';
 
 const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, onSearch, rolelist }: any) => {
+    console.log('rolelist:', rolelist)
+
     const { formatMessage } = useIntl()
     const [data, setData] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(true);
