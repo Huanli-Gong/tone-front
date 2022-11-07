@@ -20,7 +20,6 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
         setLoading(false)
         if (data.code === 200) {
             message.success(formatMessage({id: 'user.role.edit.successfully'}) )
-            console.log('value:', value)
             setSelectValue(value)
         } else {
             requestCodeMessage(data.code, data.msg)
