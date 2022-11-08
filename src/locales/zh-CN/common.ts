@@ -13,6 +13,8 @@ export default {
   'request.delete.success': '删除成功',  
   'request.delete.failed': '删除失败',
   'request.update.success': '更新成功',
+  'request.reset.failed': '重置失败',
+  'request.reset.success': '重置成功',
   'request.copy.success': '复制成功',
 	'request.save.success': '保存成功', 
   'validator.failed': '校验失败',

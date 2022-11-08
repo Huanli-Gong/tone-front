@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { queryChartData } from '../services';
 import moment from 'moment'
 import { Tabs , DatePicker , message, Spin } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { Container , RankIndex , RankIndexDefault , RankRow , RankUserName , RankCount , RankDesc } from './styled'
 
 const RenderRankRow : React.FC<any>= ({ source , tab }) => (
@@ -69,12 +70,12 @@ const CreateRank = ( props : any ) => {
                 moreIcon={ false }
                 onChange={ hanldeTabChange }
             >
-                <Tabs.TabPane tab="个人创建Job排名" key="personal">
+                <Tabs.TabPane tab={<FormattedMessage id="sys.dashboard.personal.ranking"/>} key="personal">
                     <Spin spinning={ loading }>
                         <RenderRankRow source={ source } tab={ tabKey }/>
                     </Spin>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="WS创建Job排名" key="ws">
+                <Tabs.TabPane tab={<FormattedMessage id="sys.dashboard.ws.ranking"/>} key="ws">
                     <Spin spinning={ loading }>
                         <RenderRankRow source={ source } tab={ tabKey }/>
                     </Spin>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { message, Space, Avatar, Spin, Button, Tag } from 'antd'
 import { enterWorkspaceHistroy } from '@/services/Workspace'
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from './index.less'
 import JoinPopover from './JoinPopover'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
@@ -13,28 +13,31 @@ import EllipsisRect from './EllipsisRect'
 import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { approveData, loading, handleTabClick, userId } = props
     const { height: layoutHeight } = useClientSize()
     let approveDataList = _.isArray(approveData) ? approveData : []
     approveDataList = approveDataList.filter(item => _.get(item, 'ws_info'))
     const statusColorFn = (status: any) => {
         switch (status) {
-            case 'waiting': return <Tag className={styles.stateColorFn} color='#FF9D4E'  >审核中</Tag>
-            case 'passed': return <Tag color='#52C41A' className={styles.stateColorFn}>通过</Tag>
-            case 'refused': return <Tag color='#F5222D' className={styles.stateColorFn}>拒绝</Tag>
+            case 'waiting': return <Tag className={styles.stateColorFn} color='#FF9D4E'><FormattedMessage id="person.center.in_review" /></Tag>
+            case 'passed': return <Tag color='#52C41A' className={styles.stateColorFn}><FormattedMessage id="operation.pass" /></Tag>
+            case 'refused': return <Tag color='#F5222D' className={styles.stateColorFn}><FormattedMessage id="operation.refuse" /></Tag>
             default: return <></>
         }
     }
     const firstRowFn = (item: any) => {
         let actionType = ''
-        if (item.action === 'create') actionType = '创建'
-        if (item.action === 'delete') actionType = '注销'
-        if (item.action === 'join') actionType = '加入'
+        if (item.action === 'create') actionType = formatMessage({ id: 'right.content.wait.create'})
+        if (item.action === 'delete') actionType = formatMessage({ id: 'right.content.wait.delete'})
+        if (item.action === 'join') actionType = formatMessage({ id: 'right.content.wait.join'})
         return (
             <Space>
-                <span className={styles.action}> {`${actionType}Workspace`} </span>
+                <span className={styles.action}> {`${actionType}${enLocale? ' ': ''}Workspace`} </span>
                 <span className={styles.show_name}> {item.ws_info.show_name}</span>
-                <span className={styles.approv}>申请</span>
+                <span className={styles.approv}>{formatMessage({ id: 'right.content.passed.join'})}</span>
                 <span className={styles.status}> {statusColorFn(item.status)}</span>
                 <span className={styles.create_time}> {item.gmt_created}</span>
             </Space>
@@ -54,10 +57,10 @@ export default (props: any) => {
             return <Avatar size="small" shape="square" className={styles.avatar} style={{ backgroundColor: obj.theme_color, fontSize: 14, fontWeight: 'bold' }} >{ellipsisText(obj.show_name)}</Avatar>
         }
         if (obj.id === 'is_public') {
-            const text = obj.value ? '公开' : '不公开'
+            const text = obj.value ? <FormattedMessage id="workspace.public" /> : <FormattedMessage id="person.center.not.public" />
             return (
                 <>
-                    <span className={styles.is_public}>{obj.value ? <PublicIcon /> : <NPublicIcon />} </span>
+                    <span className={styles.is_public}>{obj.value ? <PublicIcon /> : <NPublicIcon />}</span>
                     {text}
                 </>
             )
@@ -74,14 +77,12 @@ export default (props: any) => {
             </div>
         )
     }
-    const descriptionFn = (lable: any, value: any) => {
+    const descriptionFn = (label: any, value: any) => {
         return (
-
             <div className={styles.description_box}>
-                <span className={`${styles.text_label}  ${styles.description_label}`}> {lable}: </span>
-                <div className={`${styles.description_value}`} style={{ marginLeft: lable === '简介' ? '44px' : '72px' }}>{value || '-'} </div>
+                <span className={`${styles.text_label} ${styles.description_label}`}> {formatMessage({ id: `person.center.${label}`})}: </span>
+                <div className={`${styles.description_value}`} style={{ marginLeft: label === 'description' ? '44px' : '72px' }}>{value || '-'} </div>
             </div>
-
         )
     }
     const approveUsersFn = (text: string, users: any) => {
@@ -108,10 +109,10 @@ export default (props: any) => {
             <>
                 <Space>
                     <span className={styles.is_public}>{item.ws_info.is_public ? <PublicIcon /> : <NPublicIcon />}</span>
-                    <span className={styles.second_part}>{item.ws_info.is_public ? '公开' : '私密'}</span>
+                    <span className={styles.second_part}>{item.ws_info.is_public ? <FormattedMessage id="workspace.public" /> : <FormattedMessage id="workspace.private" />}</span>
                 </Space>
                 <Space>
-                    <span className={styles.text_label}>workspace显示名：</span>
+                    <span className={styles.text_label}><FormattedMessage id="workspace.ws.name" />：</span>
                     <span className={styles.second_part}>{item.ws_info.show_name || '-'}</span>
                 </Space>
             </>
@@ -146,15 +147,15 @@ export default (props: any) => {
             <div className={styles.approve_info} key={item.id}>
                 <div>{firstRowFn(item)}</div>
                 <div style={{ display: type ? 'block' : 'none' }}>{secondRowFn(item)}</div>
-                <div style={{ display: type ? 'block' : 'none' }}>{descriptionFn('简介', item.ws_info.description)}</div>
+                <div style={{ display: type ? 'block' : 'none' }}>{descriptionFn('description', item.ws_info.description)}</div>
                 <div style={{ display: type ? 'block' : 'none' }}>{thirdRowFn(item)}</div>
-                <div>{descriptionFn('申请理由', item.reason)}</div>
-                <div className={`${styles.approve_info_colum} ${styles.approve_refuse_reason}`} style={{ display: refuseReason ? 'block' : 'none' }}>{descriptionFn('拒绝理由', item.refuse_reason)}</div>
-                <div style={{ display: approveTime ? 'block' : 'none' }}>{descriptionFn('审批时间', item.gmt_modified)}</div>
-                <div>{approveUsersFn('审批人员', item.approve_users)}</div>
+                <div>{descriptionFn('reason', item.reason)}</div>
+                <div className={`${styles.approve_info_colum} ${styles.approve_refuse_reason}`} style={{ display: refuseReason ? 'block' : 'none' }}>{descriptionFn('refuse_reason', item.refuse_reason)}</div>
+                <div style={{ display: approveTime ? 'block' : 'none' }}>{descriptionFn('gmt_modified', item.gmt_modified)}</div>
+                <div>{approveUsersFn(formatMessage({id: 'person.center.approver'}), item.approve_users)}</div>
                 {item.status === 'refused' && <JoinPopover handleTabClick={handleTabClick} wsInfo={item} />}
-                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}>进入Workspace</Button>}
-            </div >
+                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}><FormattedMessage id="workspace.enter" />{enLocale? ' ': ''}Workspace</Button>}
+            </div>
         )
     }
 

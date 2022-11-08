@@ -8,9 +8,11 @@ import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
 import { enterWorkspaceHistroy } from '@/services/Workspace'
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
+
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const { workspaceList, loading, userId } = props
     const { height: layoutHeight } = useClientSize()
     const workspaceDataList = _.isArray(workspaceList.workspace_list) ? workspaceList.workspace_list : []
@@ -59,11 +61,11 @@ export default (props: any) => {
 
     const handleWs_Role = (title_type: any) => {
         const dict = {
-            ws_member: 'workspace成员',
-            ws_test_admin: '测试管理员',
-            ws_admin: '管理员',
-            ws_tester: '测试人员',
-            ws_owner: '所有者'
+            ws_member: formatMessage({ id: 'member.type.ws_member' }), //'workspace成员',
+            ws_test_admin: formatMessage({ id: 'member.type.ws_test_admin' }), //'测试管理员',
+            ws_admin: formatMessage({ id: 'member.type.ws_admin' }), //'管理员',
+            ws_tester: formatMessage({ id: 'member.type.ws_tester' }), //'测试人员',
+            ws_owner: formatMessage({ id: 'member.type.ws_owner' }), // '所有者'
         }
         return dict[title_type]
     }
@@ -74,19 +76,20 @@ export default (props: any) => {
                 <EllipsisRect
                     text={item.description}
                     ellipsis={desEllipsis}
-                    children={<span className={styles.ws_description} ref={desEllipsis}><span className={`${styles.text_label}`} style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}> 简介： </span>{item.description}</span>} />
+                    children={<span className={styles.ws_description} ref={desEllipsis}>
+                        <span className={`${styles.text_label}`} style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="person.center.introduction" />： </span>{item.description}</span>} />
             </div>
             <div className={styles.ws_info_colum}>
                 <Space>
                     <span className={styles.is_public}>{item.is_public ? <PublicIcon /> : <NPublicIcon />}</span>
-                    <span className={styles.second_part}>{item.is_public ? '公开' : '私密'}</span>
+                    <span className={styles.second_part}>{item.is_public ? <FormattedMessage id="workspace.public" /> : <FormattedMessage id="workspace.private" />}</span>
                 </Space>
                 <Space>
-                    <span style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}>角色：</span>
+                    <span style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="person.center.role" />：</span>
                     <span className={styles.second_part}>{handleWs_Role(item.ws_role)}</span>
                 </Space>
                 <Space>
-                    <span style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}>人数：</span>
+                    <span style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="person.center.member_count" />：</span>
                     <span className={styles.second_part}>{`${item.member_count}人`}</span>
                 </Space>
             </div>

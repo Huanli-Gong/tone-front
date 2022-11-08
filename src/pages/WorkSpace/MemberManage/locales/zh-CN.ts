@@ -29,4 +29,6 @@ export default {
   'member.type.ws_admin': '管理员',
   'member.type.all': '全部',
   'member.type.ws_owner': '所有者',
+
+  'member.type.super_admin': '超级管理员',
 }

@@ -1,5 +1,5 @@
 import { useClientSize } from '@/utils/hooks';
-import { Col, Layout, Row, Statistic, Typography, Space, message, Spin, Skeleton } from 'antd';
+import { Col, Layout, Row, Statistic, Typography, Space, message, Spin, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 
@@ -15,7 +15,7 @@ import { ReactComponent as TeamQuantity } from '@/assets/svg/dashboard/team_quan
 import { ReactComponent as WorkspaceQuantity } from '@/assets/svg/dashboard/ws_quantity.svg'
 import { requestCodeMessage } from '@/utils/utils';
 
-import { useRequest } from 'umi'
+import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 
 interface CommentProps {
     height?: number;
@@ -114,6 +114,8 @@ const ItemIcon = styled.div<ItemIconProps>`
 const dataSet = ["workspace", "group", "benchmark", "baseline"]
 
 export default () => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
     const { height: layoutHeight } = useClientSize()
 
     const [workspace, setWorkspace] = useState<any>({})
@@ -141,16 +143,28 @@ export default () => {
         getWorkspaceData()
     }, [])
 
+    /**
+     * @params { text } 国际化包裹后的内容
+     **/ 
+    const EllipsisDiv = ({ text, width, placement='top' }: any)=> {
+        return enLocale ?
+        <Popover content={text} placement={placement}>
+            <div style={{ overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap', cursor: 'pointer',paddingRight: 10, width: width }}>
+                {text}
+            </div>
+        </Popover>
+        :
+        text
+    }
+
     return (
         <Container height={layoutHeight - 50}>
-            <RealtimeDataRow >
-                {/* <Skeleton loading={loading} paragraph={{ rows: 2 }} active>
-                    <> */}
-                <DashBoardTitle span={24}><Typography.Text strong>实时数据</Typography.Text></DashBoardTitle>
+            <RealtimeDataRow>
+                <DashBoardTitle span={24}><Typography.Text strong><FormattedMessage id="sys.dashboard.real-time.data"/></Typography.Text></DashBoardTitle>
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={'Job总数（个）'} value={realtime?.job_total_num || "-"} />
+                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.job.total"/>} value={realtime?.job_total_num || "-"} />
                         </Col>
                         <Col span={12}>
                             <SmailStatistic title={'Running'} value={realtime?.job_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
@@ -160,89 +174,74 @@ export default () => {
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={'Test Run(次)'} value={realtime?.test_run_total_num || "-"} />
+                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.test.run"/>} value={realtime?.test_run_total_num || "-"} />
                         </Col>
                         <Col span={12}>
-                            <SmailStatistic title={'当前运行'} value={realtime?.test_run_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
-                        </Col>
-                    </Row>
-                </RealtimeDataItem>
-                <RealtimeDataItem>
-                    <Row>
-                        <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={'机器调度(次)'} value={realtime?.server_alloc_num || "-"} />
-                        </Col>
-                        <Col span={12}>
-                            <SmailStatistic title={'当前运行'} value={realtime?.server_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                            <SmailStatistic title={<FormattedMessage id="sys.dashboard.current.run"/>} value={realtime?.test_run_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
                         </Col>
                     </Row>
                 </RealtimeDataItem>
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={'总数据量(万)'} value={realtime?.result_total_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} />
+                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.server.scheduling"/>} value={realtime?.server_alloc_num || "-"} />
+                        </Col>
+                        <Col span={12}>
+                            <SmailStatistic title={<FormattedMessage id="sys.dashboard.current.run"/>} value={realtime?.server_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
+                        </Col>
+                    </Row>
+                </RealtimeDataItem>
+                <RealtimeDataItem>
+                    <Row>
+                        <Col span={12}>
+                            <UnMarginStatistic groupSeparator=""
+                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.total.data"})} />}
+                                value={realtime?.result_total_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} />
                         </Col>
                         <Col span={12}>
                             <Space>
-                                <SmailStatistic title={'功能'} value={realtime?.func_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
-                                <SmailStatistic title={'性能'} value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
+                                <SmailStatistic title={<FormattedMessage id="functional"/>} value={realtime?.func_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
+                                <SmailStatistic title={<FormattedMessage id="performance"/>} value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
                             </Space>
                         </Col>
                     </Row>
                 </RealtimeDataItem>
                 <RealtimeDataItem>
-                    <UnMarginStatistic title={'累计测试时长（天）'} value={realtime?.total_duration || "-"} precision={2} />
+                    <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.accumulative.total"/>} value={realtime?.total_duration || "-"} precision={2} />
                 </RealtimeDataItem>
-                {/* </>
-                </Skeleton> */}
             </RealtimeDataRow>
             <MarginBottomRow gutter={16}>
                 <Col span={6} >
                     <WitheBlock height={166}>
-                        {/* {
-                            workspace.workspace_num || "-" ?
-                                <> */}
                         <Col span={24}>
-                            <UnMarginStatistic title={'Workspace数(个)'} value={workspace?.workspace_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.workspaces.num"/>} value={workspace?.workspace_num || "-"} />
                         </Col>
                         <Col span={24}>
                             <Space size={48}>
-                                <SmailStatistic title={'产品数'} value={workspace?.product_num || "-"} />
-                                <SmailStatistic title={'项目数'} value={workspace?.project_num || "-"} />
+                                <SmailStatistic title={<FormattedMessage id="sys.dashboard.product_num"/>} value={workspace?.product_num || "-"} />
+                                <SmailStatistic title={<FormattedMessage id="sys.dashboard.project_num"/>} value={workspace?.project_num || "-"} />
                             </Space>
                         </Col>
                         <ItemIcon background={'rgba(181,39,207,0.10)'} >
                             <WorkspaceQuantity />
                         </ItemIcon>
-                        {/* </> :
-                                <Skeleton active />
-                        } */}
                     </WitheBlock>
                 </Col>
                 <Col span={6} >
                     <WitheBlock height={166}>
-                        {/* {
-                            workspace.team_num || "-" ?
-                                <> */}
                         <Col span={24}>
-                            <UnMarginStatistic title={'团队数(个)'} value={workspace?.team_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.team_num"/>} value={workspace?.team_num || "-"} />
                         </Col>
-                        <SmailStatistic title={'用户数'} value={workspace?.user_total_num || "-"} />
+                        <SmailStatistic title={<FormattedMessage id="sys.dashboard.user_total_num"/>} value={workspace?.user_total_num || "-"} />
                         <ItemIcon background={'rgba(243,97,94,0.10)'} >
                             <TeamQuantity />
                         </ItemIcon>
-                        {/* </> :
-                                <Skeleton active />
-                        } */}
                     </WitheBlock>
                 </Col>
                 <Col span={6} >
                     <WitheBlock height={166}>
-                        {/* {
-                            workspace.test_conf_num || "-" ?
-                                <> */}
                         <Col span={24}>
-                            <UnMarginStatistic title={'Benchmark数(个)'} value={workspace?.benchmark_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.benchmark_num"/>} value={workspace?.benchmark_num || "-"} />
                         </Col>
                         <Space size={48}>
                             <SmailStatistic title={'TestConf'} value={workspace?.test_conf_num || "-"} />
@@ -252,29 +251,22 @@ export default () => {
                         <ItemIcon background={'rgba(235,162,62,0.10)'} >
                             <BenchmarkQuantity />
                         </ItemIcon>
-                        {/* </> :
-                                <Skeleton active />
-                        } */}
                     </WitheBlock>
                 </Col>
                 <Col span={6} >
                     <WitheBlock height={166}>
-                        {/* {
-                            workspace.baseline_total_num || "-" ?
-                                <> */}
                         <Col span={24}>
-                            <UnMarginStatistic title={'总基线数(个)'} value={workspace?.baseline_total_num || "-"} />
+                            <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.baseline_total_num"/>} value={workspace?.baseline_total_num || "-"} />
                         </Col>
                         <Space size={48}>
-                            <SmailStatistic title={'功能数据'} value={workspace?.func_baseline_res_num || "-"} />
-                            <SmailStatistic title={'性能数据'} value={workspace?.perf_baseline_res_num || "-"} />
+                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.func_baseline_res_num"})} width={100}/>}
+                                value={workspace?.func_baseline_res_num || "-"} />
+                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.perf_baseline_res_num"})} width={100} placement="topRight"/>}
+                                value={workspace?.perf_baseline_res_num || "-"} />
                         </Space>
                         <ItemIcon background={'rgba(104,203,158,0.10)'} >
                             <BaselineQuantity />
                         </ItemIcon>
-                        {/*  </> :
-                                <Skeleton active />
-                        } */}
                     </WitheBlock>
                 </Col>
             </MarginBottomRow>

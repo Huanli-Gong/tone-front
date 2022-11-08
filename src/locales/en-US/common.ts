@@ -13,8 +13,10 @@ export default {
   'request.delete.success': 'The deletion was successful',  
   'request.delete.failed': 'The deletion was failed',
   'request.update.success': 'The update was successful',
-  'request.copy.success': 'The copy was successful', // Copy successful
-	'request.save.success': 'The save was successful', 
+  'request.reset.failed': 'The reset was failed',
+  'request.reset.success': 'The reset was successful',
+  'request.copy.success': 'The copy was successful',
+	'request.save.success': 'The save was successful',
   'validator.failed': 'The verification was failed',
   'sorry, the page cannot be accessed': 'Sorry, the page cannot be accessed…',
   'page links may have expired or been deleted': 'Page links may have expired or been deleted.',
