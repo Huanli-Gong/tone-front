@@ -213,16 +213,17 @@
     padding-right: 10px;
     
     span:first-child {
-        width : 70px
+        // width : 70px
+        flex-shrink: 0;
     }
     span:last-child {
-        width: calc( 100% - 70px - 8px );
+        // width: calc( 100% - 70px - 8px );
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    &:last-child span:first-child{
-        width: 42px;
-    }
+    // &:last-child span:first-child{
+    //     width: 42px;
+    // }
 }

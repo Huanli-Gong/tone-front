@@ -15,7 +15,6 @@ import { requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const enLocale = getLocale() === 'en-US'
     const PAGE_DEFAULT_PARAMS = { config_type: 'script' }
 
     const [current, setCurrent] = useState<any>({})
@@ -249,7 +248,7 @@ export default (props: any) => {
                                         <Col span={24}>
                                             <Row>
                                                 <Col span={ 8 } className={ styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 108 }: {}}><FormattedMessage id="basic.script_name"/>：</span>
+                                                    <span className={ styles.script_right_name }><FormattedMessage id="basic.script_name"/>：</span>
                                                     <Typography.Text>
                                                         <Tooltip title={ transformKey( current.config_key ) } placement="bottomLeft">
                                                             { transformKey( current.config_key ) }
@@ -257,11 +256,11 @@ export default (props: any) => {
                                                     </Typography.Text>
                                                 </Col>
                                                 <Col span={ 6 } className={ styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 126 }: {}}><FormattedMessage id="basic.atomic_step"/>：</span>
+                                                    <span className={ styles.script_right_name } ><FormattedMessage id="basic.atomic_step"/>：</span>
                                                     <Typography.Text>{ bindStage || '-' }</Typography.Text>
                                                 </Col>
                                                 <Col span={ 10 } className={styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 100 }: {}}><FormattedMessage id="basic.desc"/>：</span>
+                                                    <span className={ styles.script_right_name }><FormattedMessage id="basic.desc"/>：</span>
                                                     <Typography.Text className={ styles.desc_content_style }>
                                                         <Tooltip title={ current.description } placement="bottomLeft">
                                                             { current.description }
