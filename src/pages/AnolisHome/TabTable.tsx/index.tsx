@@ -1,6 +1,6 @@
 import React from "react"
 import { Tabs, Row, Space, Input, Button, Spin, Empty } from "antd"
-import { useIntl, useAccess, Access, history } from "umi"
+import { useIntl, useAccess, Access, history, useModel } from "umi"
 
 import styled from "styled-components"
 import { TSpace, Whiteboard } from "../styled"
@@ -24,7 +24,6 @@ const BaseBoard = styled.div`
     justify-content: center;
 `
 
-const DEFAULT_TAB_KEY = { scope: "history" }
 const DEFAULT_PAGE_QUERY = { page_size: 50, page_num: 1 }
 
 type DefaultListQuery = {
@@ -34,17 +33,22 @@ type DefaultListQuery = {
     data?: any[]
 } & Record<string, any>
 
-const tabsKeys = ['all', 'history', 'joined', 'created']
-
 const WorkspaceTabs: React.FC = () => {
     const intl = useIntl()
     const access = useAccess()
+    const { initialState } = useModel("@@initialState")
+    const { user_id } = initialState?.authList || {}
+
+    const DEFAULT_TAB_KEY = { scope: !user_id ? "all" : "history" }
 
     const [loading, setLoading] = React.useState(true)
     const [params, setParams] = React.useState<DefaultListQuery>({ ...DEFAULT_TAB_KEY, ...DEFAULT_PAGE_QUERY })
     const [tabkey, setTabkey] = React.useState(DEFAULT_TAB_KEY.scope)
 
     const [dataSource, setDataSource] = React.useState<DefaultListQuery>({})
+
+    const userTabs = ['history', 'joined', 'created']
+    const tabsKeys = ['all'].concat(user_id ? userTabs : [])
 
     const onSearch = (value: string) => {
         setParams(p => ({ ...p, keyword: value, ...DEFAULT_PAGE_QUERY }))

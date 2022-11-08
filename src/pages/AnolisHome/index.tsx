@@ -1,5 +1,5 @@
 import React from "react"
-import { FullSpace, HomeContainer, TSpace } from "./styled"
+import { HomeContainer, TSpace } from "./styled"
 import { queryHelpDocList } from '../HelpDocument/services'
 import HomeBanner from "./components/Banner"
 import TopWorkspaces from "./components/TopWorkspace"

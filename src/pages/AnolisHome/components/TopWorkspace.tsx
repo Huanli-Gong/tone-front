@@ -7,10 +7,10 @@ import { useIntl } from "umi"
 import { Empty, Row, Spin } from "antd"
 
 const WokspacesContainer = styled.div`
-    display: flex;
+    /* display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 12px; */
     width: 100%;
     height: 100%;
 `

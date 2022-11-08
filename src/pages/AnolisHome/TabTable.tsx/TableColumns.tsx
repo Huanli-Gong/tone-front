@@ -25,10 +25,9 @@ const TableCellColumn = styled.div`
     &:hover {
         box-shadow: 0 3px 20px 0 rgba(0,0,0,0.20);
         z-index: 20;
-        .ant-btn {
-            /* visibility: visible; */
+        /* .ant-btn {
             display: block;
-        }
+        } */
     }
 `
 
@@ -61,8 +60,7 @@ const Operations = styled.div`
     align-items: center;
     justify-content: end;
     .ant-btn {
-        display: none;
-        /* visibility: hidden; */
+        /* display: none; */
         margin: 0 !important;
     }
     
@@ -92,7 +90,7 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
     const access = useAccess()
     const intl = useIntl()
     const { initialState } = useModel("@@initialState")
-    const { user_id } = initialState?.authList || {}
+    const { user_id, login_url } = initialState?.authList || {}
 
     const ref = React.useRef<any>(null)
 
@@ -101,7 +99,26 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
         path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
     }
 
+    const handleLogin = () => {
+        if (BUILD_APP_ENV === 'openanolis') {
+            return window.location.href = login_url
+        }
+        return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
+    }
+
     const renderOperationButton = () => {
+        /* 公开ws 未登录跳登录 */
+        //私密ws 未登录跳转登录
+        if (!user_id && !is_public) {
+            return (
+                <Button type="primary" onClick={handleLogin}>
+                    {
+                        intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })
+                    }
+                </Button>
+            )
+        }
+
         if (access.IsAdmin() || is_member)
             return (
                 <Button onClick={handleJumpWs}>
@@ -121,6 +138,7 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
     }
 
     const handleClick = () => {
+        if (!user_id && !is_public) return handleLogin()
         if (is_member || is_public) return handleJumpWs()
         return ref.current?.show()
     }
