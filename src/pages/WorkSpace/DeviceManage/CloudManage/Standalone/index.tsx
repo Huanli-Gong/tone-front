@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Button, Pagination, Space, Tag, message, Tooltip, Tabs, Modal, Row } from 'antd';
+import { Button, Space, Tag, message, Tooltip, Tabs, Modal, Row } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
@@ -10,7 +10,7 @@ import SearchInput from '@/components/Public/SearchInput';
 import SelectUser from '@/components/Public/SelectUser';
 import SelectTags from '@/components/Public/SelectTags';
 import Log from '@/components/Public/Log';
-import AloneMachine from './AloneMachine'
+import AloneMachine from '../AddMachinePubilc/index'
 import { StateBadge } from '../../GroupManage/Components'
 import { cloudList, delCloud, stateRefresh } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
@@ -19,14 +19,14 @@ import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable';
 import { useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import _ from 'lodash'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
 import { Access, useAccess } from 'umi'
 import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectCheck'
 import SelectRadio from '@/components/Public/SelectRadio';
-import OverflowList from '@/components/TagOverflow/index'
+import OverflowList from '@/components/TagOverflow/index';
+import CommonPagination from '@/components/CommonPagination'
 
-// import PermissionTootip from '@/components/Public/Permission/index';
 /**
  * 云上单机
  *
@@ -55,19 +55,14 @@ const isEmpty = (d: any) => {
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-
     const { ws_id }: any = useParams()
     const access = useAccess();
     const aloneMachine = useRef<any>(null)
+    const [isInstance, setIsInstance] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
-    const [data, setData] = useState<any>({ data: [] });
-    const [params, setParams] = useState<MachineParams>({
-        type: '0',
-        page_num: 1,
-        page_size: 10,
-    })
-    const [total, setTotal] = useState(0)
+    const [data, setData] = useState<any>({});
+    const [params, setParams] = useState<MachineParams>({ page_num: 1, page_size: 10 })
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
@@ -75,12 +70,13 @@ export default (props: any) => {
     const logDrawer: any = useRef()
     const deployModal: any = useRef(null);
     const viewDetailRef: any = useRef(null)
+    const pageCurrent = useStateRef(params)
 
     const inputFilterCommonFields = (dataIndex: string) => ({
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, page_num: 1, [dataIndex]: dataIndex === 'private_ip' ? val.trim() : val })}
+                onConfirm={(val: string) => setParams({ ...params, [dataIndex]: dataIndex === 'private_ip' ? val.trim() : val })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {
@@ -97,7 +93,7 @@ export default (props: any) => {
             <SelectCheck
                 list={list}
                 confirm={confirm}
-                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val })}
             />
         ),
     })
@@ -108,10 +104,25 @@ export default (props: any) => {
             <SelectRadio
                 list={list}
                 confirm={confirm}
-                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val })}
             />
         ),
     })
+
+    const getList = async () => {
+        const { name } = params
+        const obj = {
+            ...params,
+            is_instance: Boolean(+ isInstance),
+            server_conf: name,
+        }
+        setLoading(true)
+        const data: any = await cloudList({ ...obj, ws_id })
+        data && setData(data)
+        setLoading(false)
+    };
+    const totalCurrent = useStateRef(data)
+
     const paramTransform = (val: any) => {
         const dict = {
             0: formatMessage({ id: 'operation.not.release' }),
@@ -120,9 +131,12 @@ export default (props: any) => {
         }
         return dict[val] || ''
     }
+
+    const $insdance = + isInstance
+
     const tableColumns: any = useMemo(() => {
         return [{
-            title: params.type == '0' ? <FormattedMessage id="device.config.name" /> : <FormattedMessage id="device.instance.name" />,
+            title: !$insdance ? <FormattedMessage id="device.config.name" /> : <FormattedMessage id="device.instance.name" />,
             dataIndex: 'name',
             width: 140,
             fixed: 'left',
@@ -141,11 +155,12 @@ export default (props: any) => {
                 </EllipsisPulic>
             )
         },
+        !!$insdance &&
         {
             title: 'IP',
-            dataIndex: 'private_ip', // private_ip
-            width: params.type == '0' ? 0 : 140,
-            ...inputFilterCommonFields("private_ip"),
+            dataIndex: BUILD_APP_ENV ? 'private_ip' : "pub_ip", // private_ip
+            width: 140,
+            ...inputFilterCommonFields(BUILD_APP_ENV ? 'private_ip' : "pub_ip"),
             ellipsis: {
                 showTitle: false
             },
@@ -158,30 +173,32 @@ export default (props: any) => {
                 />
             )
         },
+        !!$insdance &&
         {
             title: 'SN',
             dataIndex: 'sn',
             ...inputFilterCommonFields("sn"),
-            width: params.type == '0' ? 0 : 140,
+            width: 140,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
         },
-        BUILD_APP_ENV && {
+        (BUILD_APP_ENV && !!$insdance) && {
             title: 'TSN',
             dataIndex: 'tsn',
-            width: params.type == '0' ? 0 : 140,
+            width: 140,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any, row: any) => <EllipsisPulic title={row.tsn} />
         },
+        !!$insdance &&
         {
             title: 'InstanceId',
             dataIndex: 'instance_id',
             ...inputFilterCommonFields("instance_id"),
-            width: params.type == '0' ? 0 : 140,
+            width: 140,
             ellipsis: {
                 showTitle: false
             },
@@ -286,14 +303,15 @@ export default (props: any) => {
                 <SelectCheck
                     list={channelTypeList}
                     confirm={confirm}
-                    onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
+                    onConfirm={(channel_type: any) => setParams({ ...params, channel_type })}
                 />
             ),
         },
+        !!$insdance &&
         {
             title: <><FormattedMessage id="device.usage.state" /> <Tooltip title={formatMessage({ id: 'device.usage.state.Tooltip' })}><QuestionCircleOutlined /></Tooltip></>,
             dataIndex: 'state',
-            width: params.type == '0' ? 0 : (enLocale ? 150 : 120),
+            width: (enLocale ? 150 : 120),
             ellipsis: {
                 showTitle: false
             },
@@ -305,14 +323,15 @@ export default (props: any) => {
                     onConfirm={(val: string) =>
                         setParams({ ...params, state: val })}
                     stateVal={params.state}
-                    tabType={params.type}
+                    tabType={$insdance}
                     dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
                 />
             )
         },
+        !!$insdance &&
         {
             title: <><FormattedMessage id="device.real_state" /> <Tooltip title={formatMessage({ id: 'device.real_state.Tooltip' })}><QuestionCircleOutlined /></Tooltip></>,
-            width: params.type == '0' ? 0 : (enLocale ? 150 : 120),
+            width: (enLocale ? 150 : 120),
             ellipsis: {
                 showTitle: false
             },
@@ -325,7 +344,7 @@ export default (props: any) => {
                     onConfirm={(val: string) =>
                         setParams({ ...params, real_state: val })}
                     stateVal={params.real_state}
-                    tabType={params.type}
+                    tabType={$insdance}
                     dataArr={['Available', 'Broken']}
                 />
             )
@@ -341,7 +360,7 @@ export default (props: any) => {
             filterDropdown: ({ confirm }: any) =>
                 <SelectUser
                     confirm={confirm}
-                    onConfirm={(val: number) => { setParams({ ...params, page_num: 1, owner: val }) }}
+                    onConfirm={(val: number) => { setParams({ ...params, owner: val }) }}
                 />,
         },
         {
@@ -358,7 +377,7 @@ export default (props: any) => {
                     run_mode={'standalone'}
                     autoFocus={autoFocus}
                     confirm={confirm}
-                    onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }}
+                    onConfirm={(val: number) => { setParams({ ...params, tags: val }) }}
                 />,
             render: (_: any, row: any) => (
                 <OverflowList list={row.tag_list.map((item: any, index: number) => {
@@ -390,77 +409,62 @@ export default (props: any) => {
             fixed: 'right',
             valueType: 'option',
             dataIndex: 'id',
-            width: params.type == '0' ? 180 : (enLocale ? 380 : 310),
+            width: !$insdance ? 180 : (enLocale ? 380 : 310),
             ellipsis: {
                 showTitle: false
             },
             render: (_: any, row: any) =>
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, params.type)}><FormattedMessage id="operation.detail" /></Button>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, $insdance)}><FormattedMessage id="operation.detail" /></Button>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
-                                {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
+                                {BUILD_APP_ENV && !!$insdance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} ><FormattedMessage id="operation.edit" /></Button>
-                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.deploy" /></Button>}
-                                {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>}
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>{params.type === '0' ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}</Button>
+                                {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.deploy" /></Button>}
+                                {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>}
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>
+                                    {(!$insdance) ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}
+                                </Button>
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state" /></Button>}
+                            {(BUILD_APP_ENV && !!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state" /></Button>}
                             <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} ><FormattedMessage id="operation.edit" /></Button>
-                            {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}><FormattedMessage id="device.deploy" /></Button>}
-                            {String(params.type) !== '0' && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}><FormattedMessage id="operation.delete" /></Button>}
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, String(params.type) !== '0')}>{params.type === '0' ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}</Button>
+                            {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}><FormattedMessage id="device.deploy" /></Button>}
+                            {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}><FormattedMessage id="operation.delete" /></Button>}
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, !!$insdance)}>
+                                {(!$insdance) ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}
+                            </Button>
                         </Space>
                     </Access>
                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
                 </Space>,
         },
         ].filter(Boolean)
-    }, [params, enLocale])
+    }, [params, $insdance, enLocale])
 
     // 部署Agent
     const deployClick = (row: any) => {
         deployModal.current?.show({ ...row, detailData: [row.private_ip] || [], radio_type: 'cloudManage' });
     }
-    // 部署回调
-    const deployCallback = (info: any) => {
-        // case1. 部署结果信息
-    }
+   
     const handleOpenLogDrawer = useCallback(
         (id) => {
             logDrawer.current.show(id)
         }, []
     )
-    const handlePage = (page_num: number, page_size: any) => {
-        setParams({ ...params, page_num: page_num, page_size: page_size })
-    }
-    const getList = async () => {
-        const { type, name } = params
-        const obj = {
-            ...params,
-            is_instance: !!(type - 0),
-            server_conf: name,
-        }
-        setLoading(true)
-        setData({ data: [] })
-        const data: any = await cloudList({ ...obj, ws_id })
-        data && setData(data)
-        setTotal(data.total)
-        setLoading(false)
-    };
+   
     const removeCloud = _.debounce(
         async (id: number, is_release: boolean) => {
             setBtnLoad(true)
-            let data = { ws_id, is_release }
-            const res = await delCloud(id, data)
-            setBtnLoad(false)
+            const { page_size } = pageCurrent.current
+            let obj = { ws_id, is_release }
+            const res = await delCloud(id, obj)
             if (res.code == 200) {
-                setParams({ ...params, page_num: Math.round((total - 1) / params.page_size) || 1 })
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size})
                 message.success(formatMessage({ id: 'operation.success' }));
                 setDeleteVisible(false)
                 setDeleteDefault(false)
@@ -472,9 +476,9 @@ export default (props: any) => {
                 }, 300);
             }
             setBtnLoad(false)
-            //setRefresh(!refresh)
         }, 300
     )
+
     const handleDelServer = async (row: any, type: boolean) => {
         setDeleteObj({ ...row, is_release: type })
         const data = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aliyun' })
@@ -499,49 +503,46 @@ export default (props: any) => {
     }
     useEffect(() => {
         getList()
-    }, [params]);
+    }, [params, isInstance]);
 
     const RadioChange = (val: any) => {
-        setParams({
-            type: val,
-            page_num: 1,
-            page_size: 10,
-        })
+        setIsInstance(val)
+        setParams({ ...params, page_num: 1 })
     }
     const addMachine = () => {
-        aloneMachine.current?.newMachine()
+        aloneMachine.current?.newMachine(undefined)
     }
 
     const editMachine = (row: any) => {
         aloneMachine.current?.editMachine(row)
     }
     const onSuccess = (is_instance: any, id: number) => {
-        if (params.type == is_instance) {
+        if ($insdance == is_instance) {
             getList()
         } else {
-            setParams({ ...params, type: is_instance ? '1' : '0' })
+            setParams({ ...params, is_instance })
         }
     }
 
-    const localeStr = deleteObj[params.type == '0' ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
-
+    const localeStr = deleteObj[!$insdance ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
+    
     return (
         <div className={styles.warp}>
             <Tabs
                 type="card"
-                //tab={type}
                 onTabClick={RadioChange}
                 tabBarExtraContent={
                     <Button type="primary" onClick={addMachine}>
-                        {params.type == '0' ? <FormattedMessage id="device.add.server.config" /> : <FormattedMessage id="device.add.server.instance" />}
+                        {(!$insdance) ? <FormattedMessage id="device.add.server.config" /> : <FormattedMessage id="device.add.server.instance" />}
                     </Button>
                 }
             >
-                <Tabs.TabPane tab={<FormattedMessage id="device.server.config" />} key={'0'} />
-                <Tabs.TabPane tab={<FormattedMessage id="device.server.instance" />} key={'1'} />
+                <Tabs.TabPane tab={<FormattedMessage id="device.server.config" />} key={0} />
+                <Tabs.TabPane tab={<FormattedMessage id="device.server.instance" />} key={1} />
             </Tabs>
             <ResizeTable
                 size={'small'}
+                key={tableColumns}
                 loading={loading}
                 scroll={{ x: "100%" }}
                 columns={tableColumns}
@@ -549,38 +550,35 @@ export default (props: any) => {
                 rowKey={'id'}
                 pagination={false}
             />
-            <div className={!loading ? styles.pagination : styles.hidden} >
-                <div className={data.total == 0 ? styles.hidden : ''} >
-                    {formatMessage({ id: 'pagination.total.strip' }, { data: data.total })}
-                </div>
-                <Pagination
-                    className={data.total == 0 ? styles.hidden : ''}
-                    showQuickJumper
-                    showSizeChanger
-                    current={params.page_num}
-                    defaultCurrent={1}
-                    onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
-                    onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
+            {
+                <CommonPagination
                     total={data.total}
+                    pageSize={params.page_size}
+                    currentPage={params.page_num}
+                    onPageChange={
+                        (page_num:any, page_size:any) => {
+                            setParams({ ...params, page_num, page_size })
+                        }
+                    }
                 />
-            </div>
+            }
             <Log ref={logDrawer} operation_object="machine_cloud_server" />
             <AloneMachine
                 onRef={aloneMachine}
-                run_mode={'standalone'}
-                type={params.type}
+                is_instance={$insdance}
                 onSuccess={onSuccess}
+                type='standalone'
             />
-            <DeployModal ref={deployModal} callback={deployCallback} />
+            <DeployModal ref={deployModal} />
             <CloudDetail ref={viewDetailRef} />
             <Modal
-                title={<div><FormattedMessage id={params.type ? 'device.tips' : 'delete.tips'} /></div>}
+                title={<div><FormattedMessage id={!$insdance ? 'device.tips' : 'delete.tips'} /></div>}
                 centered={true}
                 visible={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
-                        {params.type && <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />}
+                        {!$insdance && <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />}
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
                         <FormattedMessage id="operation.cancel" />
@@ -596,13 +594,13 @@ export default (props: any) => {
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.quote.details" /></div>
             </Modal>
             <Modal
-                title={<div><FormattedMessage id={params.type === '0' ? 'delete.tips' : 'device.tips'} /></div>}
+                title={<div><FormattedMessage id={!$insdance ? 'delete.tips' : 'device.tips'} /></div>}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" type={"danger" as any} onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
-                        {params.type == '0' || !deleteObj.is_release ? <FormattedMessage id="operation.confirm.delete" /> : <FormattedMessage id="operation.release" />}
+                        {!$insdance || !deleteObj.is_release ? <FormattedMessage id="operation.confirm.delete" /> : <FormattedMessage id="operation.release" />}
                     </Button>,
                     <Button key="back" onClick={() => setDeleteDefault(false)}>
                         <FormattedMessage id="operation.cancel" />
@@ -614,16 +612,16 @@ export default (props: any) => {
                     <Row align="middle">
                         <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
                         <div>
-                            {((params.type === '0' || !deleteObj.is_release) && params.type === '0') ?
+                            {((!$insdance || !deleteObj.is_release) && !$insdance) ?
                                 formatMessage({ id: 'device.delete.config' }, { data: localeStr }) : null
                             }
-                            {((params.type === '0' || !deleteObj.is_release) && params.type !== '0') ?
+                            {((!$insdance || !deleteObj.is_release) && !!$insdance) ?
                                 formatMessage({ id: 'device.delete.instance' }, { data: localeStr }) : null
                             }
-                            {(!(params.type === '0' || !deleteObj.is_release) && params.type === '0') ?
+                            {(!(!$insdance || !deleteObj.is_release) && !$insdance) ?
                                 formatMessage({ id: 'device.release.config' }, { data: localeStr }) : null
                             }
-                            {(!(params.type === '0' || !deleteObj.is_release) && params.type !== '0') ?
+                            {(!(!$insdance || !deleteObj.is_release) && !!$insdance) ?
                                 formatMessage({ id: 'device.release.instance' }, { data: localeStr }) : null
                             }
                         </div>

@@ -29,4 +29,11 @@ export const dataSetMethod = (dict:any, formatMessage: any) => {
     return obj[dict]
 }
 
+export const displayRender = (label: any) => {
+    if(label[label.length - 1] !== 'latest'){
+        return label[label.length - 1];
+    }
+    return `${label[1].props?.children}:${label[2].props?.children}:latest`
+}
+
 export default DataSetPulic;
