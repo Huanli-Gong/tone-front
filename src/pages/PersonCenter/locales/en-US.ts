@@ -15,4 +15,21 @@ export default {
   'person.center.approver': 'Approver',
 
   'person.center.login.password': 'Login password',
+
+  'approve.again': 'Approve Again',
+  'log.off.reason': 'Reason for cancellation',
+  'apply.to.join': 'Apply to join',
+  'apply.to.join.reason': 'Reason for application',
+
+  'enter.apply.to.join.reason': 'Please enter the application reason',
+  'enter.log.off.reason': 'Please enter the reason for cancellation',
+  'change.login.password': 'Change Login Password',
+  'please.input.a.password': 'Please input a password',
+  'password.length.limit': 'Password length {min}-{max}',
+
+  'please.input.old_password': 'Old password',
+  'please.input.new_password': 'New password',
+  'please.input.new_password.confirm': 'Please enter the confirmation password',
+  'password.is.inconsistent': 'Password is inconsistent!',
+  'confirm.password': 'Confirm Password',
 };

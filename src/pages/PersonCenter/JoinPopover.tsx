@@ -2,15 +2,16 @@ import React, { useState } from 'react'
 import { Button, Space, Row, Input, Typography, Col, Divider, Popover, message } from 'antd'
 
 import { reApprove } from './services'
-import { history } from 'umi'
+import { history, useIntl, FormattedMessage } from 'umi'
 const JoinPopover = (props: any) => {
+    const { formatMessage } = useIntl()
     const [reason, setReason] = useState('')
     return (
         <Row>
             <Col span={24} style={{ marginBottom: 8 }}>
                 <Space>
                     <Typography.Text>{props.resonText}</Typography.Text>
-                    <Typography.Text disabled>(选填)</Typography.Text>
+                    <Typography.Text disabled><FormattedMessage id="pages.home.join.popover.optional" /></Typography.Text>
                 </Space>
             </Col>
             <Col span={24}>
@@ -18,7 +19,7 @@ const JoinPopover = (props: any) => {
                     value={reason}
                     rows={3}
                     maxLength={200}
-                    placeholder={props.action === 'join' ? '请输入申请理由': '请输入注销理由'}
+                    placeholder={props.action === 'join' ? formatMessage({id: 'enter.apply.to.join.reason'}) : formatMessage({id: 'enter.log.off.reason'}) }
                     onChange={evt => setReason(evt.target.value)}
                 />
             </Col>
@@ -33,26 +34,31 @@ const JoinPopover = (props: any) => {
                                 }
                             }
                         >
-                            取消
+                            <FormattedMessage id="pages.home.popover.btn.cancel" />
                         </Button>
-                        <Button type="primary" onClick={() => props.handleSubmit(reason,setReason)}>提交申请</Button>
+                        <Button type="primary" onClick={() => props.handleSubmit(reason,setReason)}>
+                            <FormattedMessage id="pages.home.popover.btn.submit" />
+                        </Button>
                     </Space>
                 </Row>
             </Col>
         </Row>
     )
 }
-const getText = (action:string) => {
-    if(action === 'delete') {
-        return{ title: '注销',resonText: '注销理由'}
-    }
-    return{ title: '申请加入',resonText: '申请理由'}
-}
+
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
     const disabled = props.wsInfo.is_disabled
     const [visible, setVisible] = useState(false)
     const [padding, setPadding] = useState(disabled)
+
+    const getText = (action:string) => {
+        if(action === 'delete') {
+            return { title: formatMessage({id: 'operation.log.off'}), resonText: formatMessage({id: 'log.off.reason'}) }
+        }
+        return { title: formatMessage({id: 'apply.to.join'}), resonText: formatMessage({id: 'apply.to.join.reason'}) }
+    }
     
     const handleSubmit = async (reason: string,setReason:any) => {
         setPadding(true)
@@ -60,7 +66,7 @@ export default (props: any) => {
             id: props.wsInfo.id,
             reason
         })
-        message.success('操作成功！')
+        message.success(formatMessage({id: 'operation.success'}) )
         props.handleTabClick('approve')
         setVisible(false)
         setPadding(false)
@@ -78,7 +84,7 @@ export default (props: any) => {
         }
     }
     if(disabled) {
-        return <Button disabled={padding}>再次申请</Button>
+        return <Button disabled={padding}><FormattedMessage id="approve.again" /></Button>
     }
     return (
         <Popover
@@ -98,7 +104,7 @@ export default (props: any) => {
                 />
             }
         >
-            <Button disabled={padding} onClick={handleClick} >再次申请</Button>
+            <Button disabled={padding} onClick={handleClick}><FormattedMessage id="approve.again" /></Button>
         </Popover>
     )
 }

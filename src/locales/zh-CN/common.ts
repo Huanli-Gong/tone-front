@@ -17,6 +17,7 @@ export default {
   'request.reset.success': '重置成功',
   'request.copy.success': '复制成功',
 	'request.save.success': '保存成功', 
+  'request.modify.success': '修改成功', 
   'validator.failed': '校验失败',
   'sorry, the page cannot be accessed': '抱歉，页面无法访问…',
   'page links may have expired or been deleted': '页面链接可能已失效或被删除',

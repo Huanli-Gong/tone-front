@@ -17,6 +17,7 @@ export default {
   'request.reset.success': 'The reset was successful',
   'request.copy.success': 'The copy was successful',
 	'request.save.success': 'The save was successful',
+  'request.modify.success': 'The modify was successful', 
   'validator.failed': 'The verification was failed',
   'sorry, the page cannot be accessed': 'Sorry, the page cannot be accessed…',
   'page links may have expired or been deleted': 'Page links may have expired or been deleted.',
