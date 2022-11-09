@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { message, Breadcrumb, Row, Input, Space, Button, Spin, Checkbox, Form, Select, Radio, Layout } from 'antd'
 
-import { history, useRequest, request } from 'umi'
+import { history, useRequest, request, useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from '../index.less'
 import { queryHelpDocList, createHelpDoc, updateHelpDoc } from '../services'
 import wangEditor from 'wangeditor'
@@ -24,6 +24,8 @@ let allallCatalogArr: any = []
 
 
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+
     const { help_id } = props.match.params
     const operationType = props.match.path === '/help_doc/:help_id/edit' || props.match.path === '/notice/:help_id/edit' ? 'edit' : 'new'
     const typePath = /^\/help_doc/.test(props.match.path) ? 'help_doc' : 'notice'
@@ -81,14 +83,14 @@ export default (props: any) => {
         if (data && data[0]) {
             setTitle(data[0].title)
             if (!data[0].title) {
-                otitle.placeholder = '请输入标题(1~30字)'
+                otitle.placeholder = formatMessage({ id: 'please.enter.title1~30'})
                 otitle.focus()
             }
         }
         if (editor && data && !data[0]) {
             editor.txt.html('')
             editor.txt.text('')
-            otitle.placeholder = '请输入标题(1~30字)'
+            otitle.placeholder = formatMessage({ id: 'please.enter.title1~30'})
             otitle.focus()
         }
 
@@ -218,7 +220,7 @@ export default (props: any) => {
             if (!box) return
             box.innerHTML = "";
 
-            const aa = `<div style='font-size: 20px;padding-bottom: 10px; border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 15px' >大纲</div>`
+            const aa = `<div style='font-size: 20px;padding-bottom: 10px; border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 15px' >${formatMessage({ id: 'document.outline' })}</div>`
             box.innerHTML = aa
 
             let level = 1,
@@ -589,17 +591,18 @@ export default (props: any) => {
                     <div>
                         <Breadcrumb style={{ marginBottom: '20px' }}>
                             <Breadcrumb.Item >
-                                <span style={{ cursor: 'pointer' }} onClick={() => history.push('/')}>首页</span>
+                                <span style={{ cursor: 'pointer' }} onClick={() => history.push('/')}><FormattedMessage id="home" /></span>
                             </Breadcrumb.Item>
-                            <Breadcrumb.Item><span style={{ cursor: 'pointer' }} onClick={() => history.push(`/${typePath}`)}>{typePath === 'help_doc' ? '使用帮助' : '公告'}</span></Breadcrumb.Item>
+                            <Breadcrumb.Item><span style={{ cursor: 'pointer' }} onClick={() => history.push(`/${typePath}`)}>{typePath === 'help_doc' ? <FormattedMessage id="using.help" />: <FormattedMessage id="notice" />}</span></Breadcrumb.Item>
                             {
-                                typePath === 'help_doc' && <Breadcrumb.Item>{operationType === 'new' ? (title || '新建文档') : (title || '编辑文档')}</Breadcrumb.Item>
+                                typePath === 'help_doc' && <Breadcrumb.Item>{operationType === 'new' ? (title || <FormattedMessage id="new.document" />) : (title || <FormattedMessage id="edit.document" />)}</Breadcrumb.Item>
                             }
                             {
-                                typePath !== 'help_doc' && <Breadcrumb.Item>{operationType === 'new' ? (title || '新建公告') : (title || '编辑公告')}</Breadcrumb.Item>
+                                typePath !== 'help_doc' && <Breadcrumb.Item>{operationType === 'new' ? (title || <FormattedMessage id="new.notice" />) : (title || <FormattedMessage id="edit.notice" />)}</Breadcrumb.Item>
                             }
                         </Breadcrumb>
                     </div>
+
                     <div className={styles.container_box}>
                         {/* 左侧表单 */}
                         <div
@@ -607,16 +610,16 @@ export default (props: any) => {
                             className={styles.new_script_left}>
                             <Form layout="vertical" form={form}>
                                 <Form.Item
-                                    label="是否生效"
+                                    label={<FormattedMessage id="effective" />}
                                     name="active"
                                     rules={[{ required: true }]}>
                                     <Radio.Group onChange={_.partial(changeFormValues, _, 'active')} >
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={0}>否</Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.yes" /></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                                 <Form.Item
-                                    label="类型"
+                                    label={<FormattedMessage id="tags" />}
                                     name="tags"
                                     // validateStatus={(!nameStatus || !queryStatus) && 'error'}
                                     // help={!lableStatus && `类型不能为空`}
@@ -625,7 +628,7 @@ export default (props: any) => {
                                         showSearch
                                         allowClear
                                         // defaultValue={defaultValue}
-                                        placeholder="请选择类型"
+                                        placeholder={<FormattedMessage id="please.select.type" />}
                                         optionFilterProp="children"
                                         style={{ width: '100%' }}
                                         onChange={_.partial(changeFormValues, _, 'tags')}
@@ -635,12 +638,12 @@ export default (props: any) => {
                                         }
                                     >
                                         {
-                                            optionData.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)
+                                            optionData.map((item: any) => <Option value={item.id} key={item.id}>{formatMessage({ id: `pages.home.${item.id}`})}</Option>)
                                         }
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="" name="is_top">
-                                    <Checkbox onChange={_.partial(changeFormValues, _, 'is_top')} checked={isCheck} disabled={!isActive}>置顶该文档</Checkbox>
+                                    <Checkbox onChange={_.partial(changeFormValues, _, 'is_top')} checked={isCheck} disabled={!isActive}><FormattedMessage id="top.document" /></Checkbox>
                                 </Form.Item>
                             </Form>
                         </div>
@@ -665,7 +668,7 @@ export default (props: any) => {
                                     className={styles.text_title}>
                                     <TextArea
                                         id='text_title'
-                                        placeholder="请输入标题"
+                                        placeholder={formatMessage({id: 'please.enter.title'})}
                                         rows={1}
                                         // autoFocus={true}
                                         maxLength={30}
@@ -696,8 +699,8 @@ export default (props: any) => {
                 <div className={styles.footer_part}>
                     <div className={styles.bottom}>
                         <Space>
-                            <Button onClick={handleCancle}>取消</Button>
-                            <Button type="primary" onClick={handlePublish}>发布</Button>
+                            <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
+                            <Button type="primary" onClick={handlePublish}><FormattedMessage id="release" /></Button>
                         </Space>
                     </div>
                 </div>

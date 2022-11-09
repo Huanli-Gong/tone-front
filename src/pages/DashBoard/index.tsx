@@ -146,10 +146,10 @@ export default () => {
     /**
      * @params { text } 国际化包裹后的内容
      **/ 
-    const EllipsisDiv = ({ text, width, placement='top' }: any)=> {
+    const EllipsisDiv = ({ text, placement='top', style={} }: any)=> {
         return enLocale ?
         <Popover content={text} placement={placement}>
-            <div style={{ overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap', cursor: 'pointer',paddingRight: 10, width: width }}>
+            <div style={{ overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap', cursor: 'pointer', ...style }}>
                 {text}
             </div>
         </Popover>
@@ -164,7 +164,9 @@ export default () => {
                 <RealtimeDataItem>
                     <Row>
                         <Col span={12}>
-                            <UnMarginStatistic groupSeparator="" title={<FormattedMessage id="sys.dashboard.job.total"/>} value={realtime?.job_total_num || "-"} />
+                            <UnMarginStatistic groupSeparator=""
+                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.job.total"})} style={{ paddingRight: 10 }}/>}
+                                value={realtime?.job_total_num || "-"} />
                         </Col>
                         <Col span={12}>
                             <SmailStatistic title={'Running'} value={realtime?.job_running_num || "-"} valueStyle={{ color: '#2B7EF7' }} />
@@ -195,14 +197,22 @@ export default () => {
                     <Row>
                         <Col span={12}>
                             <UnMarginStatistic groupSeparator=""
-                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.total.data"})} />}
+                                title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.total.data"})} style={{ paddingRight: 10 }} />}
                                 value={realtime?.result_total_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} />
                         </Col>
                         <Col span={12}>
-                            <Space>
-                                <SmailStatistic title={<FormattedMessage id="functional"/>} value={realtime?.func_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
-                                <SmailStatistic title={<FormattedMessage id="performance"/>} value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
-                            </Space>
+                            <Row>
+                                <Col span={14}>
+                                    <SmailStatistic
+                                        title={<EllipsisDiv text={formatMessage({ id: "functional"})} />} 
+                                        value={realtime?.func_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} />
+                                </Col>
+                                <Col span={10}>
+                                    <SmailStatistic
+                                        title={<EllipsisDiv text={formatMessage({ id: "performance"})} />}
+                                        value={realtime?.perf_result_num || "-"} formatter={(val: any) => typeof val === "number" ? (val / 10000).toFixed(2) : val} valueStyle={{ color: '#0FB966' }} /> 
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
                 </RealtimeDataItem>
@@ -259,9 +269,9 @@ export default () => {
                             <UnMarginStatistic title={<FormattedMessage id="sys.dashboard.baseline_total_num"/>} value={workspace?.baseline_total_num || "-"} />
                         </Col>
                         <Space size={48}>
-                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.func_baseline_res_num"})} width={100}/>}
+                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.func_baseline_res_num"})} style={{ width: 100 }} />}
                                 value={workspace?.func_baseline_res_num || "-"} />
-                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.perf_baseline_res_num"})} width={100} placement="topRight"/>}
+                            <SmailStatistic title={<EllipsisDiv text={formatMessage({ id: "sys.dashboard.perf_baseline_res_num"})} style={{ width: 100 }} placement="topRight"/>}
                                 value={workspace?.perf_baseline_res_num || "-"} />
                         </Space>
                         <ItemIcon background={'rgba(104,203,158,0.10)'} >

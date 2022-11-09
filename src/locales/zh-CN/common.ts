@@ -20,6 +20,8 @@ export default {
   'validator.failed': '校验失败',
   'sorry, the page cannot be accessed': '抱歉，页面无法访问…',
   'page links may have expired or been deleted': '页面链接可能已失效或被删除',
+  'reference.details': '引用详情',
+  'template.list': '模版列表',
   'no.use.case': '暂无用例',
   'select.suite.random': '随机',
 
