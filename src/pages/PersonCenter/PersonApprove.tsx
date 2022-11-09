@@ -81,7 +81,8 @@ export default (props: any) => {
         return (
             <div className={styles.description_box}>
                 <span className={`${styles.text_label} ${styles.description_label}`}> {formatMessage({ id: `person.center.${label}`})}: </span>
-                <div className={`${styles.description_value}`} style={{ marginLeft: label === 'description' ? '44px' : '72px' }}>{value || '-'} </div>
+                <div className={`${styles.description_value}`} // style={{ marginLeft: label === 'description' ? '44px' : '72px' }}
+                 >{value || '-'} </div>
             </div>
         )
     }
@@ -154,7 +155,7 @@ export default (props: any) => {
                 <div style={{ display: approveTime ? 'block' : 'none' }}>{descriptionFn('gmt_modified', item.gmt_modified)}</div>
                 <div>{approveUsersFn(formatMessage({id: 'person.center.approver'}), item.approve_users)}</div>
                 {item.status === 'refused' && <JoinPopover handleTabClick={handleTabClick} wsInfo={item} />}
-                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}><FormattedMessage id="workspace.enter" />{enLocale? ' ': ''}Workspace</Button>}
+                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}>{enLocale? `${<FormattedMessage id="workspace.enter" />} Workspace`: `${<FormattedMessage id="workspace.enter" />}Workspace`}</Button>}
             </div>
         )
     }

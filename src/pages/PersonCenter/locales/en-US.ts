@@ -9,7 +9,7 @@ export default {
   'person.center.not.public': 'Not Public',
 
   'person.center.description': 'description',
-  'person.center.reason': 'reason',
+  'person.center.reason': 'Reason',
   'person.center.refuse_reason': 'Refuse Reason',
   'person.center.gmt_modified': 'Approval Time',
   'person.center.approver': 'Approver',
