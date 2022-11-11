@@ -535,11 +535,14 @@ export const aliyunServer_cluster_en = isOpenSource ? list_en['elastic_pool.clus
 
 
 // 分页删除一页最后一条跳转到前一页逻辑处理
-export const handlePageNum = (total: number, page_num: number, page_size: number) => {
+export const handlePageNum = (pageCurrent: any, totalCurrent: any) => {
+  let page_current = 1
+  const { page_num, page_size } = pageCurrent.current
+  const { total } = totalCurrent.current
   let totalPage = Math.ceil((total - 1) / page_size)
   let currentPage = page_num > totalPage ? totalPage : page_num
-  page_num = currentPage < 1 ? 1 : currentPage
-  return page_num
+  page_current = currentPage < 1 ? 1 : currentPage
+  return page_current
 }
 
 export const useStateRef = (state: any) => {

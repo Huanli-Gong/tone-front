@@ -5,8 +5,9 @@ import styles from './index.less'
 import CommentModal from './CommentModal'
 import { queryBaselineDetail, deletefuncsDetail } from '../services'
 import _ from 'lodash'
-import { AccessTootip, requestCodeMessage } from '@/utils/utils';
+import { AccessTootip, requestCodeMessage, handlePageNum, useStateRef } from '@/utils/utils';
 import { useParams, useIntl, useAccess, FormattedMessage, Access } from 'umi';
+import CommonPagination from '@/components/CommonPagination';
 
 export default forwardRef(
     (props: any, ref: any) => {
@@ -31,7 +32,7 @@ export default forwardRef(
         const { current = {}, test_suite_name } = props;
 
         const [source, setSource] = useState<{ data: any[]; total: number }>({ data: [], total: 0 })
-        const [pageParams, setPageParams] = useState<{ page_num: number; page_size: number }>({ page_num: 1, page_size: 20 })
+        const [pageParams, setPageParams] = useState<any>({ page_num: 1, page_size: 20 })
         const [loading, setLoading] = useState(true)
 
         const getLastDetail = async (params: any) => {
@@ -43,13 +44,12 @@ export default forwardRef(
             setLoading(false)
         }
 
+        const pageCurrent = useStateRef(pageParams)
+        const totalCurrent = useStateRef(source)
+
         useEffect(() => {
             getLastDetail({ ...PAGE_DEFAULT_PARAMS, ...pageParams })
         }, [currentObj, pageParams])
-
-        const handlePageChange = (page_num: number, page_size: number | undefined = 20) => {
-            setPageParams({ page_num, page_size })
-        }
 
         const threeLevelDetailData = useMemo(() => {
             return source.data.map((item: any) => {
@@ -218,14 +218,14 @@ export default forwardRef(
         }, [threeLevelDetailData])
 
         const defaultOption = (code: number, msg: string) => {
+            const { page_size } = pageCurrent.current
             if (code === 200) {
                 message.success(formatMessage({id: 'operation.success'}) )
                 if (threeLevelDetailDataCopy.length < 2) {
                     props.secondRefresh()
                     props.oneRefresh()
                 }
-                // refresh()
-                getLastDetail(PAGE_DEFAULT_PARAMS)
+                setPageParams({ ...pageParams, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
             }
             else {
                 requestCodeMessage(code, msg)
@@ -267,16 +267,18 @@ export default forwardRef(
                         <Table
                             columns={columns}
                             dataSource={threeLevelDetailDataCopy}
-                            pagination={{
-                                total: source.total,
-                                pageSize: pageParams.page_size,
-                                current: pageParams.page_num,
-                                // hideOnSinglePage: true,
-                                onChange: handlePageChange,
-                                
-                                showTotal: (total) => total ? formatMessage({id: 'pagination.total.strip'}, {data: total}): undefined,
-                            }}
+                            pagination={false}
                             size="small"
+                        />
+                        <CommonPagination
+                            total={source.total}
+                            pageSize={pageParams.page_size}
+                            currentPage={pageParams.page_num}
+                            onPageChange={
+                                (page_num, page_size) => {
+                                    setPageParams({ ...pageParams, page_num, page_size })
+                                }
+                            }
                         />
                     </Spin>
                 </Drawer>
