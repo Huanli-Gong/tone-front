@@ -99,46 +99,57 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
         path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
     }
 
-    const handleLogin = () => {
+    /* const handleLogin = () => {
         if (BUILD_APP_ENV === 'openanolis') {
             return window.location.href = login_url
         }
         return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
-    }
+    } */
 
     const renderOperationButton = () => {
         /* 公开ws 未登录跳登录 */
         //私密ws 未登录跳转登录
+        /* 未登录，私密不显示按钮 */
         if (!user_id && !is_public) {
-            return (
+            return <></>
+            /* return (
                 <Button type="primary" onClick={handleLogin}>
                     {
                         intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })
                     }
                 </Button>
-            )
+            ) */
         }
 
         if (access.IsAdmin() || is_member)
             return (
                 <Button onClick={handleJumpWs}>
-                    {intl.formatMessage({ id: `pages.anolis_home.button.start_test` })}
+                    {intl.formatMessage({ id: `pages.anolis_home.button.enter` })}
                 </Button>
             )
-        else {
+        /* else {
             if (is_public)
                 return (
                     <Button type="primary" onClick={handleJumpWs}>
                         {intl.formatMessage({ id: `pages.anolis_home.button.tourist_test` })}
                     </Button>
                 )
-        }
+        } */
 
-        return <ApplyJoinWorkspace onRef={ref} ws_id={id} />
+        return (
+            <ApplyJoinWorkspace
+                onRef={ref}
+                ws_id={id}
+                btnText={intl.formatMessage({ id: `pages.anolis_home.button.join` })}
+            />
+        )
     }
 
     const handleClick = () => {
-        if (!user_id && !is_public) return handleLogin()
+        if (BUILD_APP_ENV) {
+            if (!user_id && !is_public) return
+        }
+        // if (!user_id && !is_public) return handleLogin()
         if (is_member || is_public) return handleJumpWs()
         return ref.current?.show()
     }

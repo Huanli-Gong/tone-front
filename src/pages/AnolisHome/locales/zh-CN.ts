@@ -30,9 +30,9 @@ const locales = {
     "process_support.child.2": "快速搭建CI/CD流程",
     "process_support.child.3": "自定义测试计划，自定义测试报告生成",
 
-    "button.start_test": "进入Workspace",
+    "button.join": "加入",
+    "button.enter": "进入",
     "button.apply_join": "申请加入",
-    "button.tourist_test": "游客试用",
 }
 
 export default Object.keys(locales).reduce((p, key) => {
