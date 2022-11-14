@@ -150,6 +150,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	return (
 		<div className={styles.warp} key={id}>
 			<CommonTable
+				key={refresh}
 				columns={columns}
 				// scrollType={670}
 				scroll={{ x: 670 }}
