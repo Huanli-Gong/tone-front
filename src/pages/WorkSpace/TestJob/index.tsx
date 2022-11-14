@@ -6,6 +6,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
+import NotLoggedIn from '@/components/Public/NotLoggedIn'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
 
@@ -43,6 +44,7 @@ const TestJob: React.FC<any> = (props) => {
     const hasNav = ["TemplatePreview", "TemplateEdit", "JobTypePreview"].includes(name)
 
     const { initialState, setInitialState } = useModel('@@initialState')
+    const { authList } = initialState;
     const { ws_id, jt_id } = props.match.params
     const { query, state } = props.location
     writeDocumentTitle(`Workspace.${name}`)
@@ -863,7 +865,11 @@ const TestJob: React.FC<any> = (props) => {
     )
 
     return (
-        <div style={layoutCss} >
+        <div style={layoutCss}>
+            {/** 用户未登录提示 */}
+            {(!loading && !authList?.user_id) ?
+                <div className={styles.not_logged_in}><div style={{width: '1240px'}}><NotLoggedIn /></div></div>: null}
+
             {
                 hasNav &&
                 <Row align="middle" className={styles.page_preview_nav} justify="space-between">

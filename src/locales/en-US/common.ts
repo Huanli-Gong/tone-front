@@ -20,6 +20,9 @@ export default {
   'page links may have expired or been deleted': 'Page links may have expired or been deleted.',
   'no.use.case': 'No test case',
   'select.suite.random': 'Random',
+  'you.haven.not.signed.in': "You haven't signed in yet. Please sign in and use this function. ",
+  'go.to.login': 'Go to login',
+  'back.to.home': 'Back to Home',
   
 	'system.image': 'Public Image',
   'self.image': 'Custom Image',
