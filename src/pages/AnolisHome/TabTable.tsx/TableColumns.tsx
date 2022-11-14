@@ -121,12 +121,13 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
             ) */
         }
 
-        if (access.IsAdmin() || is_member)
+        if (access.IsAdmin() || is_member || is_public)
             return (
                 <Button onClick={handleJumpWs}>
                     {intl.formatMessage({ id: `pages.anolis_home.button.enter` })}
                 </Button>
             )
+
         /* else {
             if (is_public)
                 return (
@@ -141,6 +142,7 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
                 onRef={ref}
                 ws_id={id}
                 btnText={intl.formatMessage({ id: `pages.anolis_home.button.join` })}
+                btnType="default"
             />
         )
     }
@@ -150,7 +152,7 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
             if (!user_id && !is_public) return
         }
         // if (!user_id && !is_public) return handleLogin()
-        if (is_member || is_public) return handleJumpWs()
+        if (access.IsAdmin() || is_member || is_public) return handleJumpWs()
         return ref.current?.show()
     }
 

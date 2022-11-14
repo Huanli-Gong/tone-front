@@ -5,7 +5,7 @@ import styles from './index.less'
 import { useIntl } from 'umi'
 
 export default (props: any) => {
-    const { ws_id, onRef, btnText } = props
+    const { ws_id, onRef, btnText, btnType } = props
     const intl = useIntl()
     const [visible, setVisible] = useState(false)
     const [reason, setReason] = useState('')
@@ -76,7 +76,7 @@ export default (props: any) => {
                 </Row>
             }
         >
-            <Button type="primary" style={{ marginRight: 10 }} onClick={() => setVisible(true)}>
+            <Button type={btnType || "primary"} style={{ marginRight: 10 }} onClick={() => setVisible(true)}>
                 {btnText ?? intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })}
             </Button>
         </Popover>
