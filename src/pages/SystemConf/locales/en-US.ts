@@ -18,14 +18,4 @@ export default {
   "SystemConf.menuLayout.KernelManage"     : 'Kernel Management',
   "SystemConf.menuLayout.BasicSetting" : 'Basic Setting',
   "SystemConf.menuLayout.TestParmSetting": 'Master Setting',
-  
-  'JoinApprove.tab.pending':'待办',
-  'JoinApprove.tab.record':'审批记录',
-  'JoinApprove.table.category':'申请类别',
-  'JoinApprove.table.applicant':'申请人',
-  'JoinApprove.table.reason':'申请原因',
-  'JoinApprove.table.start':'申请时间',
-  'JoinApprove.table.operation':'操作',
-  'JoinApprove.table.end':'审批时间',
-  'JoinApprove.table.result':'审批结果',
 };
