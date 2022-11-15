@@ -283,7 +283,7 @@ export default (props: any) => {
                             }))
                         },
                         showTotal(total, range) {
-                            return `共 ${total} 条`
+                            return formatMessage({ id: 'pagination.total.strip' }, { data: total })
                         },
                     }}
                     columns={columns}
