@@ -179,7 +179,7 @@ export default {
   'device.create.tag': 'Create Tag',
   'device.edit.tag': 'Edit Tag',
   'device.tag.name': 'Tag Name',
-  'device.tag.name.message': 'Tag Name cannot be empty.',
+  'device.tag.name.message': 'Tag Name cannot be empty',
   'device.create_user': 'Created By',
   'device.update_user': 'Modified By',
   'device.gmt_created': 'Creation Time',

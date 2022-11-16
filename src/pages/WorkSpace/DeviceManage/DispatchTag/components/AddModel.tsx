@@ -113,7 +113,7 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
                     ]}
                 >
                     <Input
-                        placeholder={formatMessage({id: 'please.select'}) }
+                        placeholder={formatMessage({id: 'please.enter'}) }
                         autoComplete="off"
                     />
                 </Form.Item>
