@@ -51,11 +51,10 @@ const ReportListTable = (props: any) => {
     
     const totalCurrent = useStateRef(dataSource)
     const handleReportDel = async (id: any) => {
-        const { page_num, page_size } = pageCurrent.current
-        const { total } = totalCurrent.current
+        const { page_size } = pageCurrent.current
         const { code, msg } = await delReportList({ report_id: id })
         if (code === 200) {
-            setPageParam({ ...pageParam, page_num: handlePageNum(total, page_num, page_size) })
+            setPageParam({ ...pageParam, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
             message.success(formatMessage({ id: 'request.delete.success' }))
         } else {
             requestCodeMessage(code, msg)
