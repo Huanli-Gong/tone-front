@@ -256,7 +256,14 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
 
     const RadioChange = (val: any) => {
         setIsInstance(val)
-        setParams({ ...params, page_num: 1 })
+        setParams({ 
+            ...params, 
+            page_num: 1, 
+            name: '',
+            owner: '',
+            tags: '',
+            description: ''
+        })
     }
     const $insdance = + isInstance
 

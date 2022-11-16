@@ -89,7 +89,7 @@ const GroupTree: React.FC<any> = (props) => {
             },
             render: (_: number, row: any) => <EllipsisPulic title={row.tsn} />
         },
-        !BUILD_APP_ENV &&
+        !BUILD_APP_ENV && !!is_instance &&
         {
             title: <FormattedMessage id="device.pub_ip"/>,
             width: 130,
@@ -235,7 +235,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id,'not_real')
         },
         !!is_instance &&
         {
@@ -244,7 +244,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id,'real')
         },
         {
             title: <FormattedMessage id="device.description"/>,

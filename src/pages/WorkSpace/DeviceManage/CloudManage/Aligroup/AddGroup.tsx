@@ -20,7 +20,8 @@ const AddCluster = (props: any) => {
         form.resetFields()
         if(JSON.stringify(outParam) !== '{}'){
             setTimeout(function () {
-                form.setFieldsValue({ ...outParam })
+                let tags =  outParam.tag_list?.map((item: any) => { return item.id }) || []
+                form.setFieldsValue({ ...outParam, tags })
             }, 1)
         }
     },[ outParam ])
@@ -30,7 +31,7 @@ const AddCluster = (props: any) => {
             setVisible(true)
         }
     },[ tagFlag ])
-
+    
     const submit = async (param: any) => {
         if (JSON.stringify(outParam) !== '{}') {
             let obj: any = {

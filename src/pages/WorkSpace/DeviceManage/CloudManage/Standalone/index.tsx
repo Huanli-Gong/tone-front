@@ -315,7 +315,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id,'not_real'),
             filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
@@ -336,7 +336,7 @@ export default (props: any) => {
                 showTitle: false
             },
             dataIndex: 'real_state',
-            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id,'real'),
             filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
@@ -409,7 +409,7 @@ export default (props: any) => {
             fixed: 'right',
             valueType: 'option',
             dataIndex: 'id',
-            width: !$insdance ? 180 : (enLocale ? 380 : 310),
+            width: !$insdance ? 180 : (enLocale ? 380 : BUILD_APP_ENV ? 310 : 270),
             ellipsis: {
                 showTitle: false
             },

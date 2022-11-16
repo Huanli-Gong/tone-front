@@ -55,12 +55,12 @@ const RenderMachineItem = (props: any) => {
         {
             title: <FormattedMessage id="ws.result.details.use_state" />,
             dataIndex: 'state',
-            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id,'not_real'),
         },
         {
             title: <FormattedMessage id="ws.result.details.real_state" />,
             dataIndex: 'real_state',
-            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id,'real'),
         }
     ]
     return (

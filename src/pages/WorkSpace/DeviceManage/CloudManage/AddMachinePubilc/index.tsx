@@ -519,7 +519,14 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={<FormattedMessage id={editData.id ? 'device.device.edit' : 'device.add.btn'} />}
+            title={<FormattedMessage id=
+                {
+                    editData.id 
+                    ? !is_instance ? 'device.config.edit' :'device.device.edit' 
+                    : !is_instance ? 'device.config.btn' :'device.add.btn'
+                } 
+                />
+            }
             width={724}
             onClose={onClose}
             visible={visible}
