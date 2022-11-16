@@ -1172,12 +1172,15 @@ const TestJob: React.FC<any> = (props) => {
                             >
                                 <Button><FormattedMessage id="ws.test.job.reset" /></Button>
                             </Popconfirm>
-                            <Access accessible={access.IsWsSetting()}>
+
+                            {/* <Access accessible={access.IsWsSetting()}>
                                 <Button onClick={handleOpenTemplate}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
                             </Access>
                             <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" onClick={handleSubmit} ><FormattedMessage id="ws.test.job.submit.test" /></Button>
-                            </Access>
+                            </Access> */}
+                            <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                            <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
                         </Space>
                     </Row>
                 }

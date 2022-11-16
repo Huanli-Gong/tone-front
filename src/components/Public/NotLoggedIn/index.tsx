@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert } from 'antd';
-import { history, useIntl, FormattedMessage } from 'umi'
+import { history, useModel, useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components';
 
 const SpanText = styled.span`
@@ -14,12 +14,21 @@ const SpanText = styled.span`
 `
 export default (props: any) => {
   const { formatMessage } = useIntl()
+  const { initialState, setInitialState } = useModel('@@initialState')
+
+  const notLoginToLogin = () => {
+    const { login_url } = initialState?.authList || {}
+    if (BUILD_APP_ENV === 'openanolis') {
+        return window.location.href = login_url
+    }
+    return history.push(`/login?redirect_url=${window.location.pathname}`)
+  }
 
   return (
     <Alert message={
       <div>
         <span>{formatMessage({id: 'you.haven.not.signed.in'})}</span>
-        <SpanText onClick={()=> { history.push(`/login?redirect_url=${window.location.pathname}`) }}>
+        <SpanText onClick={notLoginToLogin}>
           {formatMessage({id: 'go.to.login'})}
         </SpanText>
       </div>

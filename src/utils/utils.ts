@@ -479,8 +479,8 @@ const list_cn = {
 const list_en = {
   'fixed_pool': 'Reserved Server Pool',
   'elastic_pool': 'Elastic Server Pool',
-  'aligroup': 'IntranetServer',
-  'aliyun': 'CloudServer',
+  'aligroup': 'Reserved',
+  'aliyun': 'Elastic',
   // 机器
   'fixed_pool.server': 'Machine from Reserved Machine Pool',
   'elastic_pool.server': 'Machine from Elastic Machine Pool',

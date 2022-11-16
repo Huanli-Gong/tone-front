@@ -1,4 +1,6 @@
-import { aligroupServer_en, aliyunServer_en,
+import {
+  aligroupServer_en, // '内网' | '固定机器池'
+  aliyunServer_en,   // '云上' | '弹性机器池'
   aligroupServer_baseline_en, aliyunServer_baseline_en,
   aligroupServer_standalone_en,
   aliyunServer_standalone_en,
@@ -45,11 +47,10 @@ export default {
   'added': 'Added',
 
   // server_provider
-  'aligroup': '固定机器池',
-  'aliyun': 'Elastic machine pool',
-
-
-  'aligroupServer': aligroupServer_en, //这是引用变量不用翻译
+  'aligroup': aligroupServer_en, // '内网' | '固定机器池'
+  'aliyun': aliyunServer_en,     // '云上' | '弹性机器池'
+  // server_type
+  'aligroupServer': aligroupServer_en,
   'aliyunServer': aliyunServer_en,
   // 基线
   'aligroupServer.baseline': aligroupServer_baseline_en,
