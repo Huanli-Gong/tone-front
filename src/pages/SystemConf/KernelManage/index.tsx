@@ -1,12 +1,10 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react'
-import { Badge, Layout, message, Table, Tabs, Typography, Space, Button, Spin, Tooltip, Popconfirm } from 'antd'
-import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
+import React, { useState, useEffect, useRef } from 'react'
+import { Badge, message, Table, Typography, Space, Button, Spin, Tooltip, Popconfirm } from 'antd'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryKernelList, deleteKernel, updateSyncKernel } from './services'
 import CommonPagination from '@/components/CommonPagination'
 import { getRadioFilter, getSearchFilter, getUserFilter } from '@/components/TableFilters'
-
 import DrawerForm from './components/Form'
-import styles from '@/pages/SystemConf/MenuLayout/style.less'
 import { SingleTabCard } from '@/components/UpgradeUI'
 import { requestCodeMessage } from '@/utils/utils'
 
@@ -106,11 +104,11 @@ export default (props: any) => {
     }, {
         title: <FormattedMessage id="kernel.creator"/>,
         dataIndex: 'creator_name',
-        ...getUserFilter({ name: 'creator', data: pageParams, setDate: setPageParams })
+        ...getUserFilter(pageParams, setPageParams, 'creator')
     }, {
         title: <FormattedMessage id="kernel.update_user"/>,
         dataIndex: 'update_user',
-        ...getUserFilter({ name: 'update_user', data: pageParams, setDate: setPageParams })
+        ...getUserFilter(pageParams, setPageParams, 'update_user')
     }, {
         title: <FormattedMessage id="kernel.desc"/>,
         dataIndex: 'description',
@@ -177,7 +175,7 @@ export default (props: any) => {
             extra={<Button type="primary" onClick={handleCreate}><FormattedMessage id="kernel.new.kernel"/></Button>}>
             <Spin spinning={loading} >
                 <Table
-                    columns={columns}
+                    columns={columns as any}
                     dataSource={dataSource}
                     pagination={false}
                     rowKey="id"

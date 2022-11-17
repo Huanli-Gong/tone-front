@@ -16,7 +16,7 @@ export default (props: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = props.match.params
     const access = useAccess();
-    const PAGE_DEFAULT_PARAMS = { page_num: 1, page_size: 10, ws_id, name: '' }
+    const PAGE_DEFAULT_PARAMS = { page_num: 1, page_size: 10, ws_id }
     const { initialState, setInitialState } = useModel<any>('@@initialState')
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -28,8 +28,9 @@ export default (props: any) => {
     const { action } = props.history
     const resizeTableRef = useRef<any>()
     const [scrollX, setScrollX] = useState(0)
-    const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
+    const [params, setParams] = useState<any>(state && JSON.stringify(state) !== "{}" ? { ...PAGE_DEFAULT_PARAMS, ...state } : PAGE_DEFAULT_PARAMS)
     const paramCurrent = useStateRef(params)
+
     const queryTemplateList = async () => {
         setLoading(true)
         const data = await queryTestTemplateList(params)
@@ -44,10 +45,6 @@ export default (props: any) => {
     const handleCopyModalOk = () => {
         queryTemplateList()
     }
-    useEffect(() => {
-        // action !== 'POP' 区分是否是当前页刷新
-        if (state && action !== 'POP') setParams({ ...params, ...state })
-    }, [state])
 
     useEffect(() => {
         queryTemplateList()
@@ -107,6 +104,7 @@ export default (props: any) => {
         copyModal.current.show('copy', _)
     }
 
+
     const columns: any = [{
         title: <FormattedMessage id="job.templates.name" />,
         dataIndex: 'name',
@@ -134,9 +132,8 @@ export default (props: any) => {
         ...getRadioFilter(
             params,
             setParams,
-            [
-                { name: formatMessage({ id: 'job.templates.enable' }), value: 1 },
-                { name: formatMessage({ id: 'job.templates.stop' }), value: 0 }],
+            [{ name: formatMessage({ id: 'job.templates.enable' }), value: 1 },
+            { name: formatMessage({ id: 'job.templates.stop' }), value: 0 }],
             'enable'
         )
     }, {
@@ -149,20 +146,20 @@ export default (props: any) => {
             setParams,
             initialState?.jobTypeList.map(({ id, name }: any) => ({ name, value: id })),
             'job_type_id',
-            { marginTop: 70 }
+            { marginTop: 80 }
         )
     }, {
         width: 90,
         title: <FormattedMessage id="job.templates.creator_name" />,
         ellipsis: true,
         dataIndex: 'creator_name',
-        ...getUserFilter({ name: 'creator', data: params, setDate: setParams, flag: true })
+        ...getUserFilter(params, setParams, 'creator')
     }, {
         width: 90,
         ellipsis: true,
         title: <FormattedMessage id="job.templates.update_user" />,
         dataIndex: 'update_user',
-        ...getUserFilter({ name: 'update_user', data: params, setDate: setParams, flag: true })
+        ...getUserFilter(params, setParams, 'update_user')
     }, {
         title: <FormattedMessage id="job.templates.gmt_created" />,
         width: 120,
@@ -220,12 +217,11 @@ export default (props: any) => {
             <Spin spinning={loading}>
                 <div ref={resizeTableRef}>
                     <ResizeTable
-                        rowKey="id"
                         size="small"
-                        key={columns}
                         dataSource={dataSource.data}
                         columns={columns}
                         pagination={false}
+                        key={Date.now()}
                         scroll={{ x: scrollX }}
                     />
                 </div>
@@ -250,7 +246,6 @@ export default (props: any) => {
                 title={<FormattedMessage id="job.templates.delete.prompt" />}
                 centered={true}
                 visible={deleteVisible}
-                //onOk={remOuter}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={handleDelete}>
