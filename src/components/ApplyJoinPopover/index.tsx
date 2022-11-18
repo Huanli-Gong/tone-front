@@ -2,80 +2,83 @@ import React, { useState } from 'react'
 import { Button, Space, Row, Input, Typography, Col, Divider, Popover, message } from 'antd'
 import { applyWorkspaceMember } from '@/services/Workspace'
 import styles from './index.less'
-import { useParams } from 'umi'
-
-const JoinPopover = (props: any) => {
-    const [reason, setReason] = useState('')
-
-    return (
-        <Row>
-            <Col span={24} style={{ marginBottom: 8 }}>
-                <Space>
-                    <Typography.Text>申请理由</Typography.Text>
-                    <Typography.Text disabled>(选填)</Typography.Text>
-                </Space>
-            </Col>
-            <Col span={24}>
-                <Input.TextArea
-                    value={reason}
-                    rows={3}
-                    maxLength={200}
-                    onChange={evt => setReason(evt.target.value)}
-                />
-            </Col>
-            <Divider style={{ marginTop: 20, marginBottom: 10 }} />
-            <Col span={24}>
-                <Row justify="end">
-                    <Space>
-                        <Button
-                            onClick={
-                                () => {
-                                    setReason('')
-                                    props.handleCancel()
-                                }
-                            }
-                        >
-                            取消
-                        </Button>
-                        <Button type="primary" onClick={() => props.handleSubmit(reason)}>提交申请</Button>
-                    </Space>
-                </Row>
-            </Col>
-        </Row>
-    )
-}
+import { useIntl } from 'umi'
 
 export default (props: any) => {
-    const { ws_id } = props
+    const { ws_id, onRef, btnText, btnType } = props
+    const intl = useIntl()
     const [visible, setVisible] = useState(false)
+    const [reason, setReason] = useState('')
 
-    const handleSubmit = async (reason: string) => {
+    React.useImperativeHandle(onRef, () => ({
+        show() {
+            setVisible(true)
+        }
+    }))
+
+    const handleSubmit = async () => {
         await applyWorkspaceMember({
             ws_id,
             reason
         })
-        message.success('操作成功！')
+        message.success(intl.formatMessage({ id: `operation.success` }))
         setVisible(false)
+    }
+
+    const handleCancle = async () => {
+        setTimeout(() => setVisible(false), 0)
     }
 
     return (
         <Popover
-            title="申请加入"
+            destroyTooltipOnHide
+            title={intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })}
             trigger="click"
             visible={visible}
             placement={'topRight'}
-            overlayClassName={ styles.applyInner }
-            onVisibleChange={visible => setVisible(visible)}
+            overlayClassName={styles.applyInner}
+            onVisibleChange={visible => {
+                setVisible(visible)
+            }}
             content={
-                <JoinPopover
-                    handleCancel={
-                        () => setVisible(false)
-                    }
-                    handleSubmit={handleSubmit}
-                />
+                <Row>
+                    <Col span={24} style={{ marginBottom: 8 }}>
+                        <Space>
+                            <Typography.Text>
+                                {intl.formatMessage({ id: `application.reason` })}
+                            </Typography.Text>
+                            <Typography.Text disabled>
+                                {intl.formatMessage({ id: `pages.home.join.popover.optional` })}
+                            </Typography.Text>
+                        </Space>
+                    </Col>
+                    <Col span={24}>
+                        <Input.TextArea
+                            value={reason}
+                            rows={3}
+                            maxLength={200}
+                            onChange={evt => setReason(evt.target.value)}
+                        />
+                    </Col>
+                    <Divider style={{ marginTop: 20, marginBottom: 10 }} />
+                    <Col span={24}>
+                        <Row justify="end">
+                            <Space>
+                                <Button onClick={() => handleCancle()} >
+                                    {intl.formatMessage({ id: `operation.cancel` })}
+                                </Button>
+                                <Button type="primary" onClick={() => handleSubmit()}>
+                                    {intl.formatMessage({ id: `pages.home.popover.btn.submit`, defaultMessage: "提交申请" })}
+                                </Button>
+                            </Space>
+                        </Row>
+                    </Col>
+                </Row>
             }
         >
-            <Button type="primary" style={{ marginRight: 10 }}>申请加入</Button>
+            <Button type={btnType || "primary"} style={{ marginRight: 10 }} onClick={() => setVisible(true)}>
+                {btnText ?? intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })}
+            </Button>
         </Popover>
     )
 }
