@@ -371,7 +371,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id,'not_real'),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: totalParam })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
@@ -385,7 +385,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: any, row: any) => StateBadge(_, row, ws_id),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id,'real'),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: totalParam })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
@@ -420,7 +420,7 @@ const Standalone = (props: any, ref: any) => {
             title: <FormattedMessage id="device.tag"/>,
             // align: 'center',
             dataIndex: 'tag_list',
-            width: 160,
+            width: 240,
             ellipsis: {
                 showTitle: false,
             },
