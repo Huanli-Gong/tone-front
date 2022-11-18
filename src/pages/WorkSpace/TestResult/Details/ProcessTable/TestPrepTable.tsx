@@ -181,7 +181,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 showTitle: false
             },
             width: 80,
-            render:(_:any) => <TidDetail tid={_} /> 
+            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'gmt_created',
