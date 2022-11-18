@@ -162,7 +162,7 @@ const ViewDetailDrawer = forwardRef(
                         <Typography.Text strong><FormattedMessage id="device.usage.state"/></Typography.Text>
                         <Row gutter={20} className={styles.row}>
                             <Col span={6}><FormattedMessage id="device.server.state"/>:</Col>
-                            <Col span={18}>{StateBadge(details?.state, details, ws_id)}</Col>
+                            <Col span={18}>{StateBadge(details?.state, details, ws_id,'not_real')}</Col>
                         </Row>
                     </Layout.Content>
                     <Layout.Content style={{ marginBottom: 30 }}>
