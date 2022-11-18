@@ -420,7 +420,7 @@ const Standalone = (props: any, ref: any) => {
             title: <FormattedMessage id="device.tag"/>,
             // align: 'center',
             dataIndex: 'tag_list',
-            width: 160,
+            width: 240,
             ellipsis: {
                 showTitle: false,
             },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, useMemo, useCallback } from 'react';
 import { Button, Space, Popconfirm, message } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh } from '../../service';
@@ -11,17 +11,19 @@ import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
-import GroupMachine from '../../AddMachinePubilc/index'
+import GroupMachine from '../../AddMachinePubilc/index';
+import Log from '@/components/Public/Log';
 const GroupTree: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
-    const { cluster_id, width, onRef, size, top, handleOpenLogDrawer, is_instance } = props
+    const { cluster_id, width, onRef, size, top, is_instance } = props
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>([]);
     const [refresh, setRefresh] = useState<boolean>(true)
     const aloneMachine = useRef<any>(null)
     const access = useAccess();
+    const logDrawer: any = useRef();
 
     // step1.请求列表数据
     const getList = async () => {
@@ -39,6 +41,12 @@ const GroupTree: React.FC<any> = (props) => {
         setLoading(false)
     };
 
+    const handleOpenLogDrawer = useCallback(
+        (id) => {
+            logDrawer.current.show(id)
+        },
+        []
+    )
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
         if (!row.machineId) return
@@ -289,7 +297,7 @@ const GroupTree: React.FC<any> = (props) => {
                             </Popconfirm>
                         </Space>
                     </Access>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>
                         <FormattedMessage id="operation.log"/>
                     </Button>
                 </Space>
@@ -357,6 +365,7 @@ const GroupTree: React.FC<any> = (props) => {
                     rowKey={'id'}
                     pagination={false}
                 /> 
+                <Log ref={logDrawer} operation_object={'machine_cloud_server'} />
                 <GroupMachine onRef={aloneMachine} is_instance={is_instance} onSuccess={onSuccess} type='cluster' cluster_id={cluster_id}/>
         </div>
     )

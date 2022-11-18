@@ -1,13 +1,25 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
 import { Table, Drawer, Divider, Row } from 'antd'
 import { queryServerHistory } from './service'
+import { FormattedMessage } from 'umi';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import styles from './style.less'
-
+import { isArray } from 'lodash';
 // 内网单机: 字段名匹配
 const matchFieldName = (params: string) => {
     // 表单字段名 对应的 中文
     const listName = [
+        { fieldName: 'template_name', text: '配置名称' },
+        { fieldName: 'release_rule', text: '用完释放' },
+        { fieldName: 'manufacturer', text: '云厂商/Ak' },
+        { fieldName: 'zone', text: 'Region/Zone' },
+        { fieldName: 'instance_type', text: '规格' },
+        { fieldName: 'storage_type', text: '数据盘' },
+        { fieldName: 'image', text: '镜像' },
+        { fieldName: 'system_disk_category', text: '系统盘' },
+        { fieldName: 'bandwidth', text: '带宽' },
+        { fieldName: 'extra_param', text: '扩展字段' },
+        { fieldName: 'image_name', text: '镜像' },
         { fieldName: 'channel_type', text: '控制通道' },
         { fieldName: 'ips', text: '机器' },
         { fieldName: 'ip', text: '机器' },
@@ -17,14 +29,20 @@ const matchFieldName = (params: string) => {
         { fieldName: 'owner', text: 'Owner' },
         { fieldName: 'tag', text: '标签' },
         { fieldName: 'private_ip', text: '私网IP' },
+        /** 数组值 */
     ];
     const listItem = listName.filter((item) => params === item.fieldName);
-    return listItem.length ? listItem[0].text : params;
+    return listItem.length ? listItem[0].text : handleCategoryType(params);
 }
 
 // 遍历单元格内变更的字段名。
 const renderCell = (vals: any) => vals.map((key: any, index: number) => {
-    let val = String(key)
+    let val = ''
+    if(isArray(key) && !!key.length){
+        val = JSON.stringify(key)
+    } else {
+        val = String(key)
+    }
     return (
         <Row justify="center" key={index}>
             <Row justify="center" className={styles.cell}>
@@ -39,6 +57,16 @@ const renderCell = (vals: any) => vals.map((key: any, index: number) => {
     )
 })
 
+const handleCategoryType = (key: any) => {
+    if (key === '0') return <FormattedMessage id='operation.not.release' />
+    if (key === '1') return <FormattedMessage id='operation.release' />
+    if (key === '2') return <FormattedMessage id='device.failed.save' />
+    if (key === 'cloud') return <FormattedMessage id='device.cloud' />
+    if (key === 'cloud_efficiency') return <FormattedMessage id="device.cloud_efficiency" />
+    if (key === 'cloud_ssd') return <FormattedMessage id="device.cloud_ssd" />
+    if (key === 'cloud_essd') return <FormattedMessage id="device.cloud_essd" />
+    return key
+}
 // 'machine_server_tag':'调度标签'
 
 // 'machine_test_server': '集团单机',

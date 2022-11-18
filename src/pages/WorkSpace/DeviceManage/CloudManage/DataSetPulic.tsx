@@ -16,7 +16,7 @@ const DataSetPulic: React.FC<DataSet> = (props) => {
     } else if (name == 'cloud_essd') {
         return <div>{formatMessage({id: 'device.cloud_essd'})}</div>
     } else {
-        return <div>-</div>;
+        return <div>-</div>
     }
 }
 export const dataSetMethod = (dict:any, formatMessage: any) => {

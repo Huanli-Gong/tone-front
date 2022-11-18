@@ -100,7 +100,14 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
 
     const getCategoriesList = async (param: any) => {
         const { data } = await queryCategories(param)
-        setCategories(data || [])
+        /**  重组数据适配数据盘的默认值 */
+        let newData = data.slice(0)
+        let result = newData.some((v: any) => {
+            return v.value === 'cloud_efficiency'
+        })
+        const params = [{ title: '高效云盘', value: 'cloud_efficiency' }]
+        if (!result) newData = newData.concat(params)
+        setCategories(newData || [])
     }
     const getSeverList = async (param: any) => {
         const { data } = await querysServer(param)
@@ -479,7 +486,17 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     }
 
     const onSubmit = () => {
-        form.validateFields().then(val => submit(val))
+        form.validateFields().then(val => {
+            let arr = val.extra_param
+            let names = arr.map((item:any) => item["param_key"]);
+            let nameSet = new Set(names);
+            if (nameSet.size == names.length) {
+                submit(val)
+            } else {
+                message.warn('扩展字段重名，请修改后提交!!!')
+                form.scrollToField('extra_param')
+            }
+        })
     }
     const onClose = () => {
         // 初始化状态
@@ -489,43 +506,22 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         setVisible(false)
         setBtnLoading(false)
     }
-    /**
-     * @function 1.校验名称输入字符串
-     */
-    function checkName(rule: any, value: string, callback: any) {
-        if (!value) {
-            callback()
-        } else if (value && value.length <= 32) {
-            // 校验名称是否重复
-            const q = { is_instance: 0, name: value, ws_id }
-            const query = editData.id ? { ...q, cloud_server_id: editData.id } : { ...q }
-            queryName(query).then(res => {
-                if (res.code === 200) {
-                    callback()
-                } else {
-                    callback(res.msg || formatMessage({ id: 'validator.failed' }))
-                }
-            })
-        } else {
-            callback()
-        }
-    }
 
     const disabledState = useMemo(() => {
         return editData && editData.state === 'Occupied'
     }, [editData])
-    
+
     return (
         <Drawer
             maskClosable={false}
             keyboard={false}
             title={<FormattedMessage id=
                 {
-                    editData.id 
-                    ? !is_instance ? 'device.config.edit' :'device.device.edit' 
-                    : !is_instance ? 'device.config.btn' :'device.add.btn'
-                } 
-                />
+                    editData.id
+                        ? !is_instance ? 'device.config.edit' : 'device.device.edit'
+                        : !is_instance ? 'device.config.btn' : 'device.add.btn'
+                }
+            />
             }
             width={724}
             onClose={onClose}
@@ -558,6 +554,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         release_rule: 1,
                         kernel_install: 1,
                         bandwidth: 10,
+                        storage_type: 'cloud_efficiency',
                         extra_param: [{ param_key: '', param_value: '' }]
                     }}
                 >
@@ -589,12 +586,24 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     rules={[
                                         {
                                             required: true,
-                                            min: 1,
-                                            max: 32,
-                                            pattern: /^[A-Za-z][A-Za-z0-9\._-]*$/g,
-                                            message: formatMessage({ id: 'device.name.message' })
+                                            validator: async (rule, value) => {
+                                                if (!value)
+                                                    return Promise.reject(formatMessage({ id: 'device.name.message' }))
+
+                                                if (!/^[A-Za-z][A-Za-z0-9\._-]{1,32}$/.test(value))
+                                                    return Promise.reject(formatMessage({ id: 'device.name.message' }))
+
+                                                const q = { is_instance: 0, name: value, ws_id }
+                                                const query = editData.id ? { ...q, cloud_server_id: editData.id } : { ...q }
+                                                queryName(query).then(res => {
+                                                    if (res.code !== 200) {
+                                                        return Promise.reject(formatMessage({ id: 'validator.failed' }))
+                                                    }
+                                                    return
+                                                })
+                                                return Promise.resolve()
+                                            }
                                         },
-                                        { validator: checkName },
                                     ]}
                                 >
                                     <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
@@ -630,7 +639,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Cascader
-                                        disabled={(type ==='cluster' && !firstAddDataFlag)}
+                                        disabled={(type === 'cluster' && !firstAddDataFlag)}
                                         options={options}
                                         loadData={loadAkData}
                                         onChange={onAkChange}
@@ -652,7 +661,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                         rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
                                         <Cascader
-                                            disabled={region?.length === 0 || (type ==='cluster' && !firstAddDataFlag)}
+                                            disabled={region?.length === 0 || (type === 'cluster' && !firstAddDataFlag)}
                                             options={region}
                                             loadData={loadRegionData}
                                             onChange={onRegionChange}
@@ -756,7 +765,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                         name="image"
                                         rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
-                                        <Cascader placeholder={formatMessage({ id: 'please.select' })} 
+                                        <Cascader placeholder={formatMessage({ id: 'please.select' })}
                                             disabled={image.length === 0}
                                             options={resetECI(image, 'platform')}
                                             displayRender={displayRender}
@@ -908,7 +917,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     style={{ marginBottom: 0 }}
                                 >
                                     {
-                                        <Form.List name="extra_param" >
+                                        <Form.List name="extra_param">
                                             {
                                                 (fields, { add, remove }) => {
                                                     return fields.map(
@@ -964,7 +973,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                                                     </Space>
                                                                 </Col>
                                                             </Row>
-
                                                         )
                                                     )
                                                 }

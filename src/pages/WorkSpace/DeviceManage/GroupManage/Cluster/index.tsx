@@ -123,6 +123,7 @@ const Cluster = (props: any, ref: any) => {
         {
             title: <FormattedMessage id="device.tag"/>,
             dataIndex: 'tag_list',
+            width: 240,
             render: (record: any) => (
                 <OverflowList list={
                     record.map((item: any, index: number) => {

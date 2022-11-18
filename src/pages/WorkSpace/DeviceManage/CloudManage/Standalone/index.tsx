@@ -51,7 +51,27 @@ const isEmpty = (d: any) => {
     const t = Object.prototype.toString.call(d)
     return ['[object Null]', '[object Undefined]'].includes(t)
 }
-
+const DEFAULT_PARAM = {
+    page_num: 1,
+    page_size: 10,
+    name: '',
+    manufacturer:'',
+    region:'',
+    instance_type:'',
+    image:'',
+    bandwidth:'',
+    storage_type:'',
+    release_rule:'',
+    channel_type:'',
+    owner: '',
+    tags: '',
+    description: '',
+    private_ip:'',
+    sn:'',
+    instance_id:'',
+    state:'',
+    real_state:'',
+}
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
@@ -62,7 +82,7 @@ export default (props: any) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [data, setData] = useState<any>({});
-    const [params, setParams] = useState<MachineParams>({ page_num: 1, page_size: 10 })
+    const [params, setParams] = useState<MachineParams>(DEFAULT_PARAM)
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
@@ -160,7 +180,7 @@ export default (props: any) => {
             title: 'IP',
             dataIndex: BUILD_APP_ENV ? 'private_ip' : "pub_ip", // private_ip
             width: 140,
-            ...inputFilterCommonFields(BUILD_APP_ENV ? 'private_ip' : "pub_ip"),
+            ...inputFilterCommonFields('private_ip'),  //显示区分环境，过滤不区分
             ellipsis: {
                 showTitle: false
             },
@@ -207,7 +227,7 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="device.manufacturer/ak" />,
             dataIndex: 'manufacturer',
-            ...inputFilterCommonFields("manufacturer_ak_name"),
+            ...inputFilterCommonFields("manufacturer"),
             width: 160,
             ellipsis: {
                 showTitle: false
@@ -218,7 +238,7 @@ export default (props: any) => {
             title: 'Region/Zone',
             width: 160,
             dataIndex: 'region',
-            ...inputFilterCommonFields("region_zone"),
+            ...inputFilterCommonFields("region"),
             ellipsis: {
                 showTitle: false
             },
@@ -252,6 +272,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
+            render: (_:any) => <EllipsisPulic title={_} />
         },
         {
             title: <FormattedMessage id="device.storage_type" />,
@@ -366,7 +387,7 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="device.tag" />,
             dataIndex: 'tags',
-            width: 140,
+            width: 240,
             ellipsis: {
                 showTitle: false
             },
@@ -507,7 +528,7 @@ export default (props: any) => {
 
     const RadioChange = (val: any) => {
         setIsInstance(val)
-        setParams({ ...params, page_num: 1 })
+        setParams(DEFAULT_PARAM)
     }
     const addMachine = () => {
         aloneMachine.current?.newMachine(undefined)

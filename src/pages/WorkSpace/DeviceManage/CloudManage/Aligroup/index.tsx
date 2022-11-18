@@ -64,13 +64,11 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
-    const [operation, setOperation] = useState<string>('machine_cluster_aliyun')
     const logDrawer: any = useRef()
 
     const pageCurrent = useStateRef(params)
     const handleOpenLogDrawer = useCallback(
-        (id, type) => {
-            setOperation(type)
+        (id) => {
             logDrawer.current.show(id)
         },
         []
@@ -197,7 +195,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             ellipsis: {
                 showTitle: false
             },
-            width: 250,
+            width: 240,
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) =>
                 <SelectTags
@@ -249,21 +247,14 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete" /></Button>
                     </Space>
                 </Access>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cluster_aliyun')}><FormattedMessage id="operation.log" /></Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
             </Space>,
         },
     ];
 
     const RadioChange = (val: any) => {
         setIsInstance(val)
-        setParams({ 
-            ...params, 
-            page_num: 1, 
-            name: '',
-            owner: '',
-            tags: '',
-            description: ''
-        })
+        setParams(DEFAULT_PARAM)
     }
     const $insdance = + isInstance
 
@@ -294,7 +285,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                     expandedRowRender: (record) => (
                         <GroupTree
                             onRef={tree}
-                            handleOpenLogDrawer={handleOpenLogDrawer}
                             size={size}
                             top={top}
                             is_instance={$insdance}
@@ -327,7 +317,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             {/* 添加集群配置 集群实例 */}
             <AddCluster outParam={outParam} tagFlag={tagFlag} is_instance={$insdance} params={params} setParams={setParams} />
             {/** 云上集群 - 操作日志 */}
-            <Log ref={logDrawer} operation_object={operation} />
+            <Log ref={logDrawer} operation_object={'machine_cluster_aliyun'} />
             {/** 云上集群 - 添加 */}
             <GroupMachine onRef={aloneMachine} is_instance={$insdance} onSuccess={successCallback} type='cluster' />
             <Modal
