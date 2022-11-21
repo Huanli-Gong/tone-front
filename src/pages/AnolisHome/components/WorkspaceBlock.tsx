@@ -6,6 +6,7 @@ import { useModel, history } from "umi"
 import styled from "styled-components"
 import { getEnterWorkspaceState } from "../TabTable.tsx/TableColumns"
 import { useSize } from "ahooks"
+import { jumpWorkspace } from '@/utils/utils'
 
 const Container = styled.div`
     height: 96px;
@@ -28,15 +29,21 @@ const Container = styled.div`
 `
 
 const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
-    const { show_name, owner_name, avatar, description } = props
+    const { show_name, owner_name, avatar, description, is_public, id } = props
 
     const { initialState } = useModel("@@initialState")
-    const { user_id } = initialState?.authList || {}
+    const { user_id, login_url } = initialState?.authList || {}
 
     const ref = React.useRef(null)
     const size = useSize(ref)
 
     const handleEnterWs = async () => {
+        if (!user_id && !is_public) {
+            if (BUILD_APP_ENV === 'openanolis') {
+                return window.location.href = login_url
+            }
+            return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
+        }
         const path = await getEnterWorkspaceState(props, user_id)
         path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
     }
@@ -53,7 +60,7 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
                             size={42}
                             style={{
                                 borderRadius: 6,
-                                fontSize: 40,
+                                fontSize: 24,
                                 width: 42,
                                 height: 42,
                                 lineHeight: '42px',
