@@ -88,7 +88,7 @@ export default (props: any) => {
 		dataSource.map((item: any) => {
 			if (item.isAdvancedConfig) {
 				setChecked(true)
-			} 
+			}
 		})
 	}, [dataSource])
 
@@ -109,7 +109,7 @@ export default (props: any) => {
 	};
 
 
-	const setSelectedCaseKeysFn = (obj:any) => {
+	const setSelectedCaseKeysFn = (obj: any) => {
 		let selectedCaseObjCopy = _.cloneDeep(selectedCaseObj) || {}
 		selectedCaseObjCopy = { ...selectedCaseObjCopy, ...obj }
 		setSelectedCaseObj(selectedCaseObjCopy)
@@ -237,13 +237,17 @@ export default (props: any) => {
 		<div style={run_mode === 'standalone' ? { marginBottom: 10, position: 'relative' } : { position: 'relative' }}>
 			<Row justify="space-between" align="middle">
 				<span className={styles.title}>
-					{run_mode === 'standalone'? <FormattedMessage id="select.suite.standalone" /> : <FormattedMessage id="select.suite.cluster"/>}
+					{
+						run_mode === 'standalone' ?
+							<FormattedMessage id="select.suite.standalone" /> :
+							<FormattedMessage id="select.suite.cluster" />
+					}
 				</span>
 				{
 					(dataSource.length > 0 && !disabled) &&
 					<Space style={{ height: '32px' }}>
 						<span className={styles.title}>
-						  <FormattedMessage id="select.suite.advanced.config" />
+							<FormattedMessage id="select.suite.advanced.config" />
 						</span>
 						<Switch size="small" onChange={onChange} />
 					</Space>
@@ -281,12 +285,12 @@ export default (props: any) => {
 						visible={!hasCases}
 					>
 						<Button size="small" type="primary" onClick={handleBatchSetting} onMouseLeave={handleLeaveSettingBtn}>
-						  <FormattedMessage id="select.suite.batch.config" />
+							<FormattedMessage id="select.suite.batch.config" />
 						</Button>
 					</Tooltip>
 				</Row>
 			}
-			<Card bodyStyle={{ width:'100%' }}>
+			<Card bodyStyle={{ width: '100%' }}>
 				<Table
 					rowClassName='outter'
 					style={{ width: width - 2 }}
@@ -328,9 +332,9 @@ export default (props: any) => {
 				run_mode={run_mode}
 				contrl={control}
 				checked={checked}
-				onDataSourceChange={ onDataSourceChange }
-				testSuiteData={ dataSource }
-				onOk={ hanldeSettingOk }
+				onDataSourceChange={onDataSourceChange}
+				testSuiteData={dataSource}
+				onOk={hanldeSettingOk}
 			/>
 		</div>
 	)

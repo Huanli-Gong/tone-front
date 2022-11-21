@@ -9,20 +9,18 @@ import SuiteTable from './SuiteTable'
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage } from 'umi';
 
-const SelectSuite: React.FC<any> = (
-	{
-		handleData,
-		contrl,
-		test_type,
-		business_type,
-		template = {},
-		disabled = false,
-		onRef,
-		server_type,
-		setPageLoading,
-		caseDataRef
-	}
-) => {
+const SelectSuite: React.FC<any> = ({
+	handleData,
+	contrl,
+	test_type,
+	business_type,
+	template = {},
+	disabled = false,
+	onRef,
+	server_type,
+	setPageLoading,
+	caseDataRef
+}) => {
 	const { formatMessage } = useIntl()
 	const { ws_id } = useParams<any>()
 	const outTable = useRef<any>(null)

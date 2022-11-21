@@ -10,6 +10,7 @@ import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { deepObject } from '@/utils/utils';
 
 import zhCn from "antd/lib/locale/zh_CN"
+import 'animate.css';
 
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
 
