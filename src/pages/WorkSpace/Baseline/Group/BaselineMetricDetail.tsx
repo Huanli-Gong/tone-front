@@ -5,17 +5,18 @@ import styles from './index.less'
 import { queryBaselineDetail, deletePerfsDetail } from '../services'
 import _ from 'lodash'
 import Clipboard from 'clipboard'
-import { AccessTootip, requestCodeMessage } from '@/utils/utils';
+import { AccessTootip, requestCodeMessage, handlePageNum, useStateRef } from '@/utils/utils';
 import { useParams, useIntl, useAccess, Access, FormattedMessage } from 'umi';
+import CommonPagination from '@/components/CommonPagination';
 
 export default forwardRef(
     (props: any, ref: any) => {
         const { ws_id }: any = useParams()
         const access = useAccess();
         const { formatMessage } = useIntl()
-        let { test_suite_name, test_case_name } = props;
+        const [pageParam, setPageParam] = useState<any>({ page_size: 10, page_num: 1 })
+        let { test_suite_name, test_case_name, test_suite_id, test_case_id, server_sn } = props;
         const { server_provider, test_type, id } = props.currentBaseline
-        const { test_suite_id, test_case_id, server_sn } = props;
         const PAGE_DEFAULT_PARAMS: any = {
             server_provider,
             test_type,
@@ -26,34 +27,26 @@ export default forwardRef(
         }  // 有用
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
         const [title, setTitle] = useState(formatMessage({id: 'pages.workspace.baseline.failDetail'})) // 弹框顶部title
-        const [data, setData] = useState<[]>([])
+        const [data, setData] = useState<any>()
         const [loading, setLoading] = useState(true)
         const [testCaseName, setTestCaseName] = useState(test_case_name)
         const [testCaseId, setTestCaseId] = useState('')
-
-        // const { data, loading, run, refresh } = useRequest(
-        //     (data) => queryBaselineDetail(data),
-        //     {
-        //         formatResult: response => response,
-        //         initialData: { data: [], total: 0 },
-        //         defaultParams: [PAGE_DEFAULT_PARAMS]
-        //     }
-        // )
+        
+        const pageCurrent = useStateRef(pageParam)
+        
         const getLastDetail = async (params: any) => {
             if (params && params.test_case_id === undefined) return
-            let { data, code } = await queryBaselineDetail(params)
+            let data = await queryBaselineDetail(params)
+            const { code } = data
             if (code === 200) {
                 setData(data)
             }
             setLoading(false)
         }
-        // useEffect(() => {
-        //     // run(PAGE_DEFAULT_PARAMS)
-        //     getLastDetail(PAGE_DEFAULT_PARAMS)
-        // }, [server_provider,test_type,id,test_case_id,test_suite_id, threeLevelId])
+        const totalCurrent = useStateRef(data)
 
         useEffect(() => {
-            data.forEach((record: any) => {
+            data && data.data.forEach((record: any) => {
                 const clipboard = new Clipboard(`#copy_link_${record.id}`)
                 clipboard.on('success', function (e) {
                     message.success(formatMessage({id: 'request.copy.success'}), 1)
@@ -63,10 +56,13 @@ export default forwardRef(
                     clipboard.destroy()
                 }
             })
-
         }, [data])
 
-        let threeLevelDetailData: any = data && _.isArray(data) ? data : []; // 有用
+        useEffect(()=> {
+            getLastDetail({ ...pageParam, ...PAGE_DEFAULT_PARAMS })
+        },[ pageParam ])
+
+        let threeLevelDetailData: any = data && _.isArray(data.data) ? data.data : []; // 有用
         threeLevelDetailData = threeLevelDetailData.map((item: any) => {
             if (!item) return item;
             const baseline_value: any = {
@@ -100,6 +96,7 @@ export default forwardRef(
         )
 
         const defaultOption = (code: number, msg: string) => {
+            const { page_size } = pageCurrent.current
             if (code === 200) {
                 message.success(formatMessage({id: 'operation.success'}) )
                 if (threeLevelDetailData.length < 2) {
@@ -112,18 +109,21 @@ export default forwardRef(
                     setVisible(false)
                     return;
                 }
-                // refresh()
                 PAGE_DEFAULT_PARAMS.test_case_id = testCaseId
-                getLastDetail(PAGE_DEFAULT_PARAMS)
+                setPageParam({ ...pageParam, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
+                // getLastDetail(PAGE_DEFAULT_PARAMS)
             }
             else {
                 requestCodeMessage(code, msg)
             }
         }
+        
         const handleDelete = function* (current: any) {
             const currentObject = threeLevelDetailData.filter((item: any) => item && current && item.id === current.id)[0] || {};
             yield deletePerfsDetail({ id: currentObject.id, ws_id });
         }
+
+       
 
         const reactNode = (record: any) => {
             const { baseline_value, value_list, metric } = record;
@@ -185,6 +185,7 @@ export default forwardRef(
                 dataIndex: 'metric',
                 title: 'Metric',
                 key: 'metric',
+                width: 140,
                 ellipsis: {
                     showTitle: false
                 },
@@ -210,6 +211,7 @@ export default forwardRef(
             {
                 title: <FormattedMessage id={'pages.workspace.baseline.metricDetail.table.action'} />, // '操作',
                 key: 'id',
+                width: 80,
                 render: (record: any) => {
                     return (
                         <Access
@@ -286,6 +288,17 @@ export default forwardRef(
                             dataSource={threeLevelDetailData}
                             pagination={false}
                             size="small"
+                            scroll={{ x: '100%' }}
+                        />
+                        <CommonPagination
+                            total={data?.total}
+                            pageSize={pageParam.page_size}
+                            currentPage={pageParam.page_num}
+                            onPageChange={
+                                (page_num, page_size) => {
+                                    setPageParam({ ...pageParam, page_num, page_size })
+                                }
+                            }
                         />
                     </Spin>
                 </Drawer>

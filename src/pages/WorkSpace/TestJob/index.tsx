@@ -57,7 +57,6 @@ const TestJob: React.FC<any> = (props) => {
     const [modifyTemplate, setModifyTemplate] = useState(false)
     const [templateDatas, setTemplateDatas] = useState<any>({})
     const [templateBtnVisible, setTemplateBtnVisible] = useState(false)
-
     const moreForm: any = useRef(null)
     const envForm: any = useRef(null)
     const basicForm: any = useRef(null)
@@ -559,7 +558,7 @@ const TestJob: React.FC<any> = (props) => {
             setTemplateEnable(data.enable)
             message.success(formatMessage({ id: 'operation.success' }))
             if (name !== 'TemplatePreview')
-                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
         }
         else
             requestCodeMessage(code, msg)

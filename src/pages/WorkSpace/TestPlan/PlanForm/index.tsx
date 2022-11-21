@@ -12,10 +12,10 @@ import {
     CreateContainer, ContainerBody, ContainerBreadcrumb, LeftWrapper,
     RightBody, RightNav, RightWrapper, SuccessDescriptionContainer
 } from './styles'
-import { history, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale, Access, useAccess } from 'umi'
 import { runningTestPlan, creatTestPlan, queryTestPlanDetails, updateTestPlan } from '@/pages/WorkSpace/TestPlan/services'
 import styles from './index.less'
-import { requestCodeMessage } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import _ from 'lodash'
 
 /** 
@@ -24,7 +24,7 @@ import _ from 'lodash'
 const TestPlan = (props: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-
+    const access = useAccess();
     const { height: layoutHeight } = useClientSize()
 
     const { route } = props
@@ -44,7 +44,7 @@ const TestPlan = (props: any) => {
 
     const [dataSource, setDataSource] = useState<any>({ basic: {}, pipline: {}, touch: {} })
 
-    const [template, setTemplate] = useState(null)
+    const [template, setTemplate] = useState<any>(null)
 
     const [successData, setSuccessData] = useState<any>(null)
 
@@ -238,7 +238,7 @@ const TestPlan = (props: any) => {
         return new Promise((resolve: any, reject: any) => {
             const pipline = dataSource.pipline
             const { env_prep = {}, test_config = [] } = pipline || {}
-            const localStr = formatMessage({ id: 'plan.cannot.be.empty' })   
+            const localStr = formatMessage({ id: 'plan.cannot.be.empty' })
             if (env_prep.machine_info && !env_prep.machine_info.length) {
                 message.error(`${env_prep.name}${localStr}`)
                 reject()
@@ -248,8 +248,8 @@ const TestPlan = (props: any) => {
                 test_config.forEach((item: any) => {
                     const { name, template = [] } = item
                     if (!template.length) {
-                       message.error(`${name}${localStr}`)
-                       reject()
+                        message.error(`${name}${localStr}`)
+                        reject()
                     }
                 })
             } else {
@@ -259,7 +259,6 @@ const TestPlan = (props: any) => {
             resolve()
         })
     }
-
     return (
         <Spin spinning={loading} >
             <CreateContainer height={layoutHeight}>
@@ -281,7 +280,7 @@ const TestPlan = (props: any) => {
                                 <LeftWrapper state={route.name !== 'Create'} enLocale={enLocale}>
                                     <Steps current={current} direction="vertical" style={{ height: 201 }} onChange={handleStepChange} >
                                         <Steps.Step title={<FormattedMessage id="plan.basic.configuration" />} key={0} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_1' : 'stepsWrapper']} />
-                                        <Steps.Step title={<FormattedMessage id="plan.test.configuration" />}  key={1} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_2' : 'stepsWrapper']} />
+                                        <Steps.Step title={<FormattedMessage id="plan.test.configuration" />} key={1} className={styles[['Run', 'Edit'].includes(route.name) ? 'stepsWrapper_2' : 'stepsWrapper']} />
                                         <Steps.Step title={<FormattedMessage id="plan.report.configuration" />} key={2} />
                                         <Steps.Step title={<FormattedMessage id="plan.trigger.configuration" />} key={3} />
                                     </Steps>
@@ -312,14 +311,21 @@ const TestPlan = (props: any) => {
                                                     route.name === 'Edit' &&
                                                     <>
                                                         <Button onClick={hanldeUpdatePlan} type="primary"><FormattedMessage id="plan.save" /></Button>
-                                                        <Button onClick={() => handleTestPlanOption(true)}><FormattedMessage id="plan.save.and.run" /></Button>
+                                                        <Access accessible={access.WsTourist()}>
+                                                            <Access
+                                                                accessible={access.WsMemberOperateSelf(template?.creator)}
+                                                                fallback={<Button onClick={() => AccessTootip()}><FormattedMessage id="plan.save.and.run" /></Button>}
+                                                            >
+                                                               <Button onClick={() => handleTestPlanOption(true)}><FormattedMessage id="plan.save.and.run" /></Button>
+                                                            </Access>
+                                                        </Access>
                                                     </>
                                                 }
                                                 <div className={styles.plan_step_btn} onClick={() => hanleStepNext('NextStep')}>
                                                     {
                                                         current < 3 &&
                                                         <>
-                                                            <span style={{fontSize: 14 }}><FormattedMessage id="operation.next" /></span>
+                                                            <span style={{ fontSize: 14 }}><FormattedMessage id="operation.next" /></span>
                                                             <ArrowRightOutlined />
                                                         </>
                                                     }
