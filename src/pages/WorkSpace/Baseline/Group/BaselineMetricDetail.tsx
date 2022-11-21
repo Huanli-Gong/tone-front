@@ -1,12 +1,13 @@
 import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Form, Popover, Divider } from 'antd';
+import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Popover, Divider } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './index.less'
 import { queryBaselineDetail, deletePerfsDetail } from '../services'
 import _ from 'lodash'
 import Clipboard from 'clipboard'
-import { AccessTootip, requestCodeMessage } from '@/utils/utils';
+import { AccessTootip, requestCodeMessage, handlePageNum, useStateRef } from '@/utils/utils';
 import { useParams, useIntl, useAccess, Access, FormattedMessage } from 'umi';
+import CommonPagination from '@/components/CommonPagination';
 
 export default forwardRef(
     (props: any, ref: any) => {
@@ -23,40 +24,39 @@ export default forwardRef(
             test_case_id,
             server_sn,
             baseline_id: id,
+            page_num: 1,
+            page_size: 10
         }  // 有用
+        const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState(formatMessage({id: 'pages.workspace.baseline.failDetail'})) // 弹框顶部title
-        const [data, setData] = useState<[]>([])
-        const [loading, setLoading] = useState(true)
+        const [title, setTitle] = useState(formatMessage({ id: 'pages.workspace.baseline.failDetail' })) // 弹框顶部title
+        const [data, setData] = useState<any>()
+        const [loading, setLoading] = useState(false)
         const [testCaseName, setTestCaseName] = useState(test_case_name)
         const [testCaseId, setTestCaseId] = useState('')
-
-        // const { data, loading, run, refresh } = useRequest(
-        //     (data) => queryBaselineDetail(data),
-        //     {
-        //         formatResult: response => response,
-        //         initialData: { data: [], total: 0 },
-        //         defaultParams: [PAGE_DEFAULT_PARAMS]
-        //     }
-        // )
-        const getLastDetail = async (params: any) => {
+        const pageCurrent = useStateRef(params)
+        const getLastDetail = async () => {
+            setLoading(true)
             if (params && params.test_case_id === undefined) return
-            let { data, code } = await queryBaselineDetail(params)
+            let data = await queryBaselineDetail(params)
+            const { code, msg } = data
             if (code === 200) {
                 setData(data)
+            } else {
+                requestCodeMessage(code, msg)
             }
             setLoading(false)
-        }
-        // useEffect(() => {
-        //     // run(PAGE_DEFAULT_PARAMS)
-        //     getLastDetail(PAGE_DEFAULT_PARAMS)
-        // }, [server_provider,test_type,id,test_case_id,test_suite_id, threeLevelId])
+        }   
+        const totalCurrent = useStateRef(data)
+        useEffect(()=> {
+            getLastDetail()
+        },[ params ])
 
         useEffect(() => {
-            data.forEach((record: any) => {
+            data && data.data?.forEach((record: any) => {
                 const clipboard = new Clipboard(`#copy_link_${record.id}`)
                 clipboard.on('success', function (e) {
-                    message.success(formatMessage({id: 'request.copy.success'}), 1)
+                    message.success(formatMessage({ id: 'request.copy.success' }), 1)
                     e.clearSelection();
                 })
                 return () => {
@@ -66,7 +66,7 @@ export default forwardRef(
 
         }, [data])
 
-        let threeLevelDetailData: any = data && _.isArray(data) ? data : []; // 有用
+        let threeLevelDetailData: any = data && !!data.data.length && _.isArray(data.data) ? data.data : []; // 有用
         threeLevelDetailData = threeLevelDetailData.map((item: any) => {
             if (!item) return item;
             const baseline_value: any = {
@@ -91,30 +91,18 @@ export default forwardRef(
                 show: (title: string = formatMessage({ id: 'pages.workspace.baseline.mertricDetail' }), data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
-                    PAGE_DEFAULT_PARAMS.test_case_id = data.test_case_id
                     setTestCaseName(data.test_case_name)
                     setTestCaseId(data && data.test_case_id)
-                    getLastDetail(PAGE_DEFAULT_PARAMS)
+                    setParams({ ...params, test_case_id: data.test_case_id })
                 }
             })
         )
 
         const defaultOption = (code: number, msg: string) => {
+            const { page_size } = pageCurrent.current
             if (code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
-                if (threeLevelDetailData.length < 2) {
-                    props.secondRefresh()
-                    props.oneRefresh()
-                    props.twePersRefresh()
-                }
-                if (threeLevelDetailData.length === 1) {
-                    setLoading(false)
-                    setVisible(false)
-                    return;
-                }
-                // refresh()
-                PAGE_DEFAULT_PARAMS.test_case_id = testCaseId
-                getLastDetail(PAGE_DEFAULT_PARAMS)
+                message.success(formatMessage({ id: 'operation.success' }))
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size, test_case_id: testCaseId })
             }
             else {
                 requestCodeMessage(code, msg)
@@ -196,7 +184,6 @@ export default forwardRef(
                         </Tooltip>
                     )
                 }
-
             },
             {
                 dataIndex: 'baseline_data',
@@ -217,7 +204,7 @@ export default forwardRef(
                             fallback={
                                 <Space size='small'>
                                     <span className={styles.fail_detail_operation} onClick={() => AccessTootip()}>
-                                        <FormattedMessage id="operation.delete"/>
+                                        <FormattedMessage id="operation.delete" />
                                     </span>
                                 </Space>
                             }
@@ -225,7 +212,7 @@ export default forwardRef(
                             <Space size='small'>
                                 {/* 删除的弹框 */}
                                 <Popconfirm
-                                    title={<FormattedMessage id="delete.prompt"/>}
+                                    title={<FormattedMessage id="delete.prompt" />}
                                     onConfirm={() => {
                                         const generObj = handleDelete(record);
                                         const excuteResult: any = generObj.next();
@@ -234,10 +221,10 @@ export default forwardRef(
                                             defaultOption(code, msg);
                                         })
                                     }}
-                                    okText={<FormattedMessage id="operation.confirm"/>}
-                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                    okText={<FormattedMessage id="operation.confirm" />}
+                                    cancelText={<FormattedMessage id="operation.cancel" />}
                                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-                                    <span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
+                                    <span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete" /></span>
                                 </Popconfirm>
                             </Space>
                         </Access>
@@ -280,14 +267,21 @@ export default forwardRef(
                     <div className={styles.detal_drawer_text}>
                         <FormattedMessage id="pages.workspace.baseline.mertricDetail" />
                     </div>
-                    <Spin spinning={loading}>
-                        <Table
-                            columns={columns}
-                            dataSource={threeLevelDetailData}
-                            pagination={false}
-                            size="small"
-                        />
-                    </Spin>
+                    <Table
+                        columns={columns}
+                        loading={loading}
+                        dataSource={threeLevelDetailData}
+                        pagination={false}
+                        size="small"
+                    />
+                    <CommonPagination
+                        pageSize={params.page_size}
+                        total={data?.total}
+                        currentPage={params.page_num}
+                        onPageChange={
+                            (page_num, page_size) => { setParams({ ...params, page_num, page_size }) }
+                        }
+                    />
                 </Drawer>
             </>
         );

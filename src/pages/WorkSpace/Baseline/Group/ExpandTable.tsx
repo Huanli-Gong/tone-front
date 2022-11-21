@@ -90,6 +90,7 @@ export default (props: any) => {
                             rowKey={'test_case_id'}
                             pagination={false}
                             size="small"
+                            scroll={{ x: '100%' }}
                             onHeaderRow={column => {
                                 return {
                                     onClick: () => { }, // 点击表头行
@@ -105,7 +106,6 @@ export default (props: any) => {
                                             record,
                                         )
                                     }, // 点击行
-
                                 };
                             }}
                         />
