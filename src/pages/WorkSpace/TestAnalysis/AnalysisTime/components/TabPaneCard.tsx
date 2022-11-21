@@ -257,14 +257,16 @@ const TabPaneCard: React.FC<any> = (props) => {
                                     >
                                         <Select.Option value=""><FormattedMessage id="analysis.indistinguishable" /></Select.Option>
                                         {
-                                            tagList.map((i: any) => (
-                                                <Select.Option
-                                                    key={i.id}
-                                                    value={i.id}
-                                                >
-                                                    {i.name}
-                                                </Select.Option>
-                                            ))
+                                            tagList
+                                                .filter(({ creator }: any) => Object.prototype.toString.call(creator) === "[object Number]")
+                                                .map((i: any) => (
+                                                    <Select.Option
+                                                        key={i.id}
+                                                        value={i.id}
+                                                    >
+                                                        {i.name}
+                                                    </Select.Option>
+                                                ))
                                         }
                                     </Select>
                                 </Form.Item>
