@@ -5,14 +5,16 @@ import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
-import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
 import TidDetail from './QueryTidList';
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
 
-export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name, creator }: any) => {
+const TestConfTable: React.FC<Record<string, any>> = (props) => {
+    const { test_suite_name, test_suite_id, testType, provider_name, creator } = props
+    const { id: job_id } = useParams() as any
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const PAGE_DEFAULT_PARAMS: any = {
@@ -46,8 +48,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         queryTestListTableData(pageParams)
     }, [pageParams])
 
-
-    const columns = React.useMemo(() => [
+    const columns = [
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
@@ -56,7 +57,9 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             dataIndex: 'server',
-            title: ['business_business'].includes(testType) ? <FormattedMessage id="ws.result.details.the.server" /> : <FormattedMessage id="ws.result.details.test.server" />,
+            title: ['business_business'].includes(testType) ?
+                <FormattedMessage id="ws.result.details.the.server" /> :
+                <FormattedMessage id="ws.result.details.test.server" />,
             width: 100,
             ellipsis: {
                 showTitle: false
@@ -69,7 +72,6 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                     description={row.server_description}
                 />
             )
-
         },
         {
             title: <FormattedMessage id="ws.result.details.env.preparation" />,
@@ -136,7 +138,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                         return <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
                 }
                 // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
-                return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
+                return <Button size="small" type="link" style={{ padding: 0 }}>{strLocals}</Button>
             }
         }, {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -166,9 +168,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
         const { user_id } = initialState?.authList
-        const q = user_id ? { user_id } : {}
-        const { code, msg } = await updateSuiteCaseOption({
-            ...q,
+        const params = {
             editor_obj: 'test_job_conf',
             test_job_conf_id: _.id,
             state
@@ -183,7 +183,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
     }
     
     return (
-        <>
+        <div>
             <ResizeTable
                 columns={columns}
                 dataSource={dataSource.data}
@@ -191,7 +191,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 rowKey='id'
                 size="small"
                 pagination={false}
-                scroll={{ x: 1350 }}
+                scroll={{ x: "100%" }}
             />
             <CommonPagination
                 style={{ marginTop: 8, marginBottom: 0 }}
@@ -204,6 +204,8 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                     }
                 }
             />
-        </>
+        </div>
     )
 }
+
+export default TestConfTable
