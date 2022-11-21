@@ -5,14 +5,16 @@ import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
-import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
 import ResizeTable from '@/components/ResizeTable'
 import TidDetail from './QueryTidList';
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
 
-export default ({ test_suite_name, test_suite_id, job_id, testType, provider_name }: any) => {
+const TestConfTable: React.FC<Record<string, any>> = (props) => {
+    const { test_suite_name, test_suite_id, testType, provider_name } = props
+    const { id: job_id } = useParams() as any
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const PAGE_DEFAULT_PARAMS: any = {
@@ -44,8 +46,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         queryTestListTableData(pageParams)
     }, [pageParams])
 
-
-    const columns = React.useMemo(() => [
+    const columns = [
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
@@ -54,29 +55,30 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             dataIndex: 'server',
-            title: ['business_business'].includes(testType) ? <FormattedMessage id="ws.result.details.the.server"/> : <FormattedMessage id="ws.result.details.test.server"/>,
+            title: ['business_business'].includes(testType) ?
+                <FormattedMessage id="ws.result.details.the.server" /> :
+                <FormattedMessage id="ws.result.details.test.server" />,
             width: 100,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any, row: any) => (
-                <ServerLink 
-                    val={_} 
+                <ServerLink
+                    val={_}
                     param={row.server_id}
                     provider={provider_name} 
                     description={row.server_description}
                 />
             )
-            
         },
         {
-            title: <FormattedMessage id="ws.result.details.env.preparation"/>,
-            width: locale ? 200: 80,
+            title: <FormattedMessage id="ws.result.details.env.preparation" />,
+            width: locale ? 200 : 80,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => {
-                const strLocals = formatMessage({id: 'ws.result.details.env.preparation.details'})
+                const strLocals = formatMessage({ id: 'ws.result.details.env.preparation.details' })
                 return (
                     <ConfPopoverTable
                         {..._}
@@ -87,7 +89,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             dataIndex: 'state',
-            title: <FormattedMessage id="ws.result.details.state"/>,
+            title: <FormattedMessage id="ws.result.details.state" />,
             width: 80,
             render: evnPrepareState
         },
@@ -102,54 +104,55 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
         },
         {
             dataIndex: 'result',
-            title: <FormattedMessage id="ws.result.details.output.results"/>,
+            title: <FormattedMessage id="ws.result.details.output.results" />,
             width: 150,
             ...tooltipTd('Nothing to do'),
         },
         {
             dataIndex: 'start_time',
             width: 160,
-            title: <FormattedMessage id="ws.result.details.start_time"/>,
+            title: <FormattedMessage id="ws.result.details.start_time" />,
             ...tooltipTd('-'),
         },
         {
             dataIndex: 'end_time',
             width: 160,
-            title: <FormattedMessage id="ws.result.details.end_time"/>,
+            title: <FormattedMessage id="ws.result.details.end_time" />,
             ...tooltipTd('-'),
         }, {
-            title: <FormattedMessage id="ws.result.details.view.log"/>,
+            title: <FormattedMessage id="ws.result.details.view.log" />,
             width: 80,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => {
-                const strLocals = formatMessage({id: 'ws.result.details.log'})
+                const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
                 if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
                     if (_.log_file)
                         // return <PermissionTootip>
                         //     <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
                         // </PermissionTootip>
-                        return  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
+                        return <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
                 }
                 // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
                 return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
             }
-        }, {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+        },
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
             width: 80,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => (
                 <Access accessible={access.WsTourist()}>
-                    <Access 
-                        accessible={access.WsMemberOperateSelf(_.creator)} 
+                    <Access
+                        accessible={access.WsMemberOperateSelf(_.creator)}
                         fallback={
                             <span>
-                                { _.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.suspension"/></Button> }
-                                { _.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.skip"/></Button> }
+                                {_.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.suspension" /></Button>}
+                                {_.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.skip" /></Button>}
                             </span>
                         }
                     >
@@ -164,9 +167,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
     const doConfServer = async (_: any, state: any, params:any) => {
         // 添加用户id
         const { user_id } = initialState?.authList
-        const q = user_id ? { user_id } : {}
-        const { code, msg } = await updateSuiteCaseOption({
-            ...q,
+        const params = {
             editor_obj: 'test_job_conf',
             test_job_conf_id: _.id,
             state
@@ -180,7 +181,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
     }
 
     return (
-        <>
+        <div>
             <ResizeTable
                 columns={columns}
                 dataSource={dataSource}
@@ -188,7 +189,7 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                 rowKey='id'
                 size="small"
                 pagination={false}
-                scroll={{ x: 1350 }}
+                scroll={{ x: "100%" }}
             />
             <CommonPagination
                 style={{ marginTop: 8, marginBottom: 0 }}
@@ -201,6 +202,8 @@ export default ({ test_suite_name, test_suite_id, job_id, testType, provider_nam
                     }
                 }
             />
-        </>
+        </div>
     )
 }
+
+export default TestConfTable
