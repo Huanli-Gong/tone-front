@@ -25,8 +25,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
     }
     const [pageParams, setPageParams] = useState<any>(PAGE_DEFAULT_PARAMS)
     const [loading, setLoading] = useState<boolean>(false)
-    const [total, setTotal] = useState<number>(0)
-    const [dataSource, setDataSource] = useState<any>({ data: [], total: 0 })
+    const [dataSource, setDataSource] = useState<any>({})
     const { initialState } = useModel('@@initialState');
     const access = useAccess();
 
@@ -36,7 +35,6 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
         const { code, msg } = data
         if (code === 200) {
             setDataSource(data)
-            setTotal(total)
             setLoading(false)
         } else {
             requestCodeMessage(code, msg)
@@ -163,12 +161,14 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 </Access>
             )
         },
-    ], [testType, locale, pageParams])
+    ]
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
         const { user_id } = initialState?.authList
-        const params = {
+        const q = user_id ? { user_id } : {}
+        const { code, msg } = await updateSuiteCaseOption({
+            ...q,
             editor_obj: 'test_job_conf',
             test_job_conf_id: _.id,
             state
@@ -186,7 +186,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
         <div>
             <ResizeTable
                 columns={columns}
-                dataSource={dataSource.data}
+                dataSource={dataSource.data || []}
                 loading={loading}
                 rowKey='id'
                 size="small"
@@ -195,7 +195,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             />
             <CommonPagination
                 style={{ marginTop: 8, marginBottom: 0 }}
-                total={dataSource.total}
+                total={dataSource.total || []}
                 currentPage={pageParams.page_num}
                 pageSize={pageParams.page_size}
                 onPageChange={

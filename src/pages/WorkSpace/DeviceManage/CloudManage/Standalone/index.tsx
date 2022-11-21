@@ -47,30 +47,9 @@ interface MachineParams {
 
 const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
-const isEmpty = (d: any) => {
-    const t = Object.prototype.toString.call(d)
-    return ['[object Null]', '[object Undefined]'].includes(t)
-}
 const DEFAULT_PARAM = {
     page_num: 1,
     page_size: 10,
-    name: '',
-    manufacturer:'',
-    region:'',
-    instance_type:'',
-    image:'',
-    bandwidth:'',
-    storage_type:'',
-    release_rule:'',
-    channel_type:'',
-    owner: '',
-    tags: '',
-    description: '',
-    private_ip:'',
-    sn:'',
-    instance_id:'',
-    state:'',
-    real_state:'',
 }
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -119,7 +98,7 @@ export default (props: any) => {
     })
 
     const radioFilterCommonFields = (dataIndex: string, list: any[]) => ({
-        filterIcon: () => <FilterFilled style={{ color: !isEmpty(params[dataIndex]) ? '#1890ff' : undefined }} />,
+        filterIcon: () => <FilterFilled style={{ color: params[dataIndex] ? '#1890ff' : undefined }} />,
         filterDropdown: ({ confirm }: any) => (
             <SelectRadio
                 list={list}
@@ -295,7 +274,11 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="device.release_rule" />,
             align: 'center',
-            ...radioFilterCommonFields("release_rule", [{ id: 0, name: formatMessage({ id: 'operation.not.release' }) }, { id: 1, name: formatMessage({ id: 'operation.release' }) }, { id: 2, name: formatMessage({ id: 'device.failed.save' }) }]),
+            ...radioFilterCommonFields("release_rule", [
+                { id: 0, name: formatMessage({ id: 'operation.not.release' }) }, 
+                { id: 1, name: formatMessage({ id: 'operation.release' }) }, 
+                { id: 2, name: formatMessage({ id: 'device.failed.save' }) }
+            ]),
             dataIndex: 'release_rule',
             width: enLocale ? 150 : 110,
             ellipsis: {
@@ -366,7 +349,7 @@ export default (props: any) => {
                         setParams({ ...params, real_state: val })}
                     stateVal={params.real_state}
                     tabType={$insdance}
-                    dataArr={['Available', 'Broken']}
+                    dataArr={['Alive', 'Broken']}
                 />
             )
         },
