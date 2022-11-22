@@ -144,8 +144,8 @@ const GroupTree: React.FC<any> = (props) => {
         },
         {
             title: <FormattedMessage id="device.bandwidth"/>,
-            width: 80,
-                dataIndex: 'bandwidth',
+            width: 100,
+            dataIndex: 'bandwidth',
         },
         {
             title: <FormattedMessage id="device.storage_type"/>,

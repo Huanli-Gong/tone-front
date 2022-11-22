@@ -248,7 +248,7 @@ export default (props: any) => {
                             >
                                 <Button style={{ padding: 0 }} size="small" type="link"><FormattedMessage id="operation.delete"/></Button>
                             </Popconfirm>
-                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>}
+                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}><FormattedMessage id="operation.synchronize"/></Button>}
                         </Space>
                     </Access>
                     <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>
