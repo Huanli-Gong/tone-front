@@ -15,7 +15,7 @@ import {
 } from '../services'
 import styled from "styled-components"
 import ResizeColumnTable from "@/components/ResizeTable"
-import { transQuery } from "./utils"
+// import { transQuery } from "./utils"
 import CompareBar from '../CompareBar'
 import ReRunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import ViewReport from '../CompareBar/ViewReport'
@@ -66,7 +66,7 @@ const ListTable: React.FC<IProps> = (props) => {
 
     const queryTestList = async () => {
         setLoading(true)
-        const { code, msg, ...rest } = await queryTestResultList(transQuery(pageQuery))
+        const { code, msg, ...rest } = await queryTestResultList(pageQuery)
         setLoading(false)
         if (code !== 200) return
         setSource(rest)

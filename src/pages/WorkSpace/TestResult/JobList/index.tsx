@@ -72,7 +72,7 @@ const BaseTab: React.FC<IProps> = (props) => {
     const access = useAccess()
 
     const [tab, setTab] = React.useState(query.tab ?? "all")
-    const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, ...query, tab, ws_id, state: query.state || "" })
+    const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, ...query, tab, ws_id, state: query.state || undefined })
     const [selectionType, setSelectionType] = React.useState()
     const [filter, setFilter] = React.useState(false)
 
@@ -96,7 +96,7 @@ const BaseTab: React.FC<IProps> = (props) => {
 
     const hanldeTabClick = (tabKey: string) => {
         setTab(tabKey)
-        setPageQuery((p: any) => ({ tab: tabKey, ...DEFAULT_PAGE_QUERY, state: "", ws_id }))
+        setPageQuery((p: any) => ({ tab: tabKey, ...DEFAULT_PAGE_QUERY, ws_id }))
     }
 
     return (
@@ -144,7 +144,7 @@ const BaseTab: React.FC<IProps> = (props) => {
                                                 )
                                             }
                                             pageQuery={pageQuery}
-                                            onChange={(vals) => setPageQuery((p: any) => ({ tab, ws_id, state: p.state, ...vals, ...DEFAULT_PAGE_QUERY }))}
+                                            onChange={(vals) => setPageQuery((p: any) => ({ tab, ws_id, ...vals, ...DEFAULT_PAGE_QUERY }))}
                                         />
                                     }
 
