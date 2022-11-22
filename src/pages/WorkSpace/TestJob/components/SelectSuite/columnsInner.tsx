@@ -75,23 +75,24 @@ export default (props: ColumnsProp) => {
         width: 150,
         render: (_: any, row: any) => {
             const random = formatMessage({ id: "select.suite.random" })
-            const { server_tag_id } = row
+            const { server_tag_id, ip: $ip, customer_server, } = row
             if (server_tag_id && server_tag_id.length > 0) {
-                const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : random
+                const tagList = $ip ? $ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : random
                 return (
                     <Tooltip placement="topLeft" title={tagList}>{tagList}</Tooltip>
                 )
             }
 
-            if (isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}') {
+            if (isNull($ip) && customer_server && JSON.stringify(customer_server) !== '{}') {
                 return (
-                    <Tooltip placement="topLeft" title={row.customer_server?.custom_ip || ''}>
-                        {row.customer_server?.custom_ip || ''}
+                    <Tooltip placement="topLeft" title={customer_server?.custom_ip || ''}>
+                        {customer_server?.custom_ip || ''}
                     </Tooltip>
                 )
             }
-            const tempIp = !['随机'].includes(row.ip) ? row.ip : random
-            return <Tooltip placement="topLeft" title={tempIp}>{tempIp}</Tooltip>
+
+            const tempIp = !['随机'].includes($ip) ? $ip : random
+            return <Tooltip placement="topLeft" title={tempIp}>{tempIp || "-"}</Tooltip>
         },
     }
 
@@ -173,7 +174,7 @@ export default (props: ColumnsProp) => {
     }
 
     if (checked) {
-        let columns = [{
+        let columns: any = [{
             ...name,
             fixed: 'left',
         }, ip, repeat]

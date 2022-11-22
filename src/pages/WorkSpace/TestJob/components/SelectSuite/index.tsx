@@ -107,6 +107,83 @@ const SelectSuite: React.FC<any> = ({
 		getList()
 	}, [])
 
+	const transConfData = ($case: any, conf: any) => {
+		const { var: confVar, title, name } = $case
+		const {
+			server_is_deleted, test_case_id,
+			repeat, need_reboot, is_instance, server_deleted,
+			priority, console: $console, monitor_info
+		} = conf
+		let conf_var = [];
+		if (confVar) conf_var = JSON.parse(confVar)
+		const { env_info } = conf
+
+		const envs: any = env_info ? Object.keys(env_info).map(
+			key => ({ name: key, val: env_info[key] })
+		) : []
+
+		const setup_info = conf.setup_info === '[]' ? '' : conf.setup_info
+		const cleanup_info = conf.cleanup_info === '[]' ? '' : conf.cleanup_info
+		const $env_info = envs.length > 0 ? envs : conf_var
+
+		/* conf 基本数据结构 */
+		const $data = {
+			setup_info,
+			cleanup_info,
+			env_info: $env_info,
+			title: title,
+			name: name,
+			id: test_case_id,
+			repeat,
+			need_reboot,
+			is_instance, priority,
+			console: $console,
+			monitor_info,
+			server_is_deleted,
+			server_deleted,
+			server_object_id: null,
+			custom_channel: null,
+			custom_ip: null,
+			server_tag_id: [],
+			ip: null
+		}
+
+		if (server_is_deleted) return $data
+
+		const { customer_server, server_tag_id, ip, server_object_id } = conf
+		let custom_channel = undefined, custom_ip = undefined;
+
+		if (customer_server) {
+			custom_channel = customer_server.custom_channel
+			custom_ip = customer_server.custom_ip
+		}
+
+		let obj = {
+			...conf,
+			...$data,
+			custom_channel,
+			custom_ip,
+			ip,
+			server_object_id
+		}
+
+		if (server_tag_id) {
+			if (_.isArray(server_tag_id)) {
+				obj.server_tag_id = _.filter(server_tag_id)
+			}
+			else if (typeof server_tag_id === 'string' && server_tag_id.indexOf(',') > -1) {
+				obj.server_tag_id = server_tag_id.split(',').map((i: any) => i - 0)
+			}
+			else {
+				obj.server_tag_id = []
+			}
+		}
+		else {
+			obj.server_tag_id = []
+		}
+		return obj
+	}
+
 	const handleTestConfig = (testConfigData: any[]) => {
 		let keys: any = []
 		let confs: any = []
@@ -125,56 +202,15 @@ const SelectSuite: React.FC<any> = ({
 						(conf: any) => {
 							if (treeData[suiteIdx]) {
 								const caseList = treeData[suiteIdx].test_case_list
-								const { test_case, test_case_id } = conf || {}
+								const {
+									test_case, test_case_id
+								} = conf || {}
 								const confId = test_case || test_case_id
 								const idx = caseList.findIndex(({ id }: any) => id === confId)
 								if (idx > -1) {
 									const caseItem = caseList[idx]
-									const { var: confVar } = caseItem
-									let conf_var = [];
-									if (confVar) conf_var = JSON.parse(confVar)
 									keys.push(confId)
-									const { env_info } = conf
-
-									const envs: any = env_info ? Object.keys(env_info).map(
-										key => ({ name: key, val: env_info[key] })
-									) : []
-									const { customer_server, server_tag_id } = conf
-									let custom_channel = undefined, custom_ip = undefined;
-
-									if (customer_server) {
-										custom_channel = customer_server.custom_channel
-										custom_ip = customer_server.custom_ip
-									}
-
-									let obj = {
-										...conf,
-										setup_info: conf.setup_info === '[]' ? '' : conf.setup_info,
-										cleanup_info: conf.cleanup_info === '[]' ? '' : conf.cleanup_info,
-										id: confId,
-										env_info: envs.length > 0 ? envs : conf_var,
-										title: caseItem.title,
-										name: caseItem.name,
-										custom_channel,
-										custom_ip,
-									}
-
-									if (server_tag_id) {
-										if (_.isArray(server_tag_id)) {
-											obj.server_tag_id = _.filter(server_tag_id)
-										}
-										else if (typeof server_tag_id === 'string' && server_tag_id.indexOf(',') > -1) {
-											obj.server_tag_id = server_tag_id.split(',').map((i: any) => i - 0)
-										}
-										else {
-											obj.server_tag_id = []
-										}
-									}
-									else {
-										obj.server_tag_id = []
-									}
-
-									testCaseList.push(obj)
+									testCaseList.push(transConfData(caseItem, conf))
 								}
 							}
 							isAdvancedConfig = JSON.stringify(conf.env_info) !== '{}'
