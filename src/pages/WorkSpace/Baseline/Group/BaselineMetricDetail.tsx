@@ -14,9 +14,9 @@ export default forwardRef(
         const { ws_id }: any = useParams()
         const access = useAccess();
         const { formatMessage } = useIntl()
-        let { test_suite_name, test_case_name } = props;
+        const [pageParam, setPageParam] = useState<any>({ page_size: 10, page_num: 1 })
+        let { test_suite_name, test_case_name, test_suite_id, test_case_id, server_sn } = props;
         const { server_provider, test_type, id } = props.currentBaseline
-        const { test_suite_id, test_case_id, server_sn } = props;
         const PAGE_DEFAULT_PARAMS: any = {
             server_provider,
             test_type,
@@ -63,7 +63,6 @@ export default forwardRef(
                     clipboard.destroy()
                 }
             })
-
         }, [data])
 
         let threeLevelDetailData: any = data && !!data.data.length && _.isArray(data.data) ? data.data : []; // 有用
@@ -108,10 +107,13 @@ export default forwardRef(
                 requestCodeMessage(code, msg)
             }
         }
+        
         const handleDelete = function* (current: any) {
             const currentObject = threeLevelDetailData.filter((item: any) => item && current && item.id === current.id)[0] || {};
             yield deletePerfsDetail({ id: currentObject.id, ws_id });
         }
+
+       
 
         const reactNode = (record: any) => {
             const { baseline_value, value_list, metric } = record;
@@ -173,6 +175,7 @@ export default forwardRef(
                 dataIndex: 'metric',
                 title: 'Metric',
                 key: 'metric',
+                width: 140,
                 ellipsis: {
                     showTitle: false
                 },
@@ -197,6 +200,7 @@ export default forwardRef(
             {
                 title: <FormattedMessage id={'pages.workspace.baseline.metricDetail.table.action'} />, // '操作',
                 key: 'id',
+                width: 80,
                 render: (record: any) => {
                     return (
                         <Access

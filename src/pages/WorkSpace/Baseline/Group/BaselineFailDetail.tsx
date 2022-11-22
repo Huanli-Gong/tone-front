@@ -45,6 +45,9 @@ export default forwardRef(
         }
         const totalCurrent = useStateRef(source)
 
+        const pageCurrent = useStateRef(pageParams)
+        const totalCurrent = useStateRef(source)
+
         useEffect(() => {
             getLastDetail()
         }, [ params ])

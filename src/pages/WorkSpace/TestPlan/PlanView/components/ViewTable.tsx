@@ -62,16 +62,15 @@ const ViewTable = (props: ViewTableProps) => {
     }, [])
 
     const hanldeDeletePlan = async (row: any) => {
-        const { page_num, page_size } = pageCurrent.current
-        const { total } = totalCurrent.current
+        const { page_size } = pageCurrent.current
         const { code, msg } = await deletePlanInstance({ plan_instance_id: row.id, ws_id })
         if (code !== 200) {
             requestCodeMessage(code, msg)
             return
         }
         callBackViewTotal()
-        setPageParam({ ...pageParam, page_num: handlePageNum(total, page_num, page_size)})
-        message.success( formatMessage({id: 'plan.operation.success'}) )
+        setPageParam({ ...pageParam, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
+        message.success(formatMessage({ id: 'plan.operation.success' }))
     }
 
     let columns = [
@@ -160,7 +159,7 @@ const ViewTable = (props: ViewTableProps) => {
                         <Access accessible={access.WsTourist()}>
                             <Access
                                 accessible={access.WsMemberOperateSelf(row.creator)}
-                                fallback={<OptionButton className="option-delete" onClick={()=> AccessTootip()}><FormattedMessage id="operation.delete" /></OptionButton>}
+                                fallback={<OptionButton className="option-delete" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptionButton>}
                             >
                                 <Popconfirm
                                     title={<FormattedMessage id="delete.prompt" />}
@@ -175,7 +174,7 @@ const ViewTable = (props: ViewTableProps) => {
                         <ViewReport
                             className={'option-detail'}
                             dreType="left"
-                            title={formatMessage({id: 'plan.report'}) }
+                            title={formatMessage({ id: 'plan.report' })}
                             ws_id={ws_id}
                             jobInfo={row}
                             origin={'jobList'}
