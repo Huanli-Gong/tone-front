@@ -27,6 +27,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 	const StateBadge = ( state : string  ) => {
 		switch( state ) {
 			case 'Available' : return <Badge status="success" text="Available"/>
+			case 'Alive' : return <Badge status="success" text="Alive"/>
 			case 'Occupied' : return <Badge status="processing" text="Occupied"/>
 			case 'Reserved' : return <Badge status="default" text="Reserved"/>
 			case 'Broken' : return <Badge status="error" text="Broken"/>

@@ -210,11 +210,11 @@ const SuiteManagement = (props: any, ref: any) => {
     const synchro = async (row: any) => {
         setSync(true)
         const hide = message.loading({ content: formatMessage({id: 'operation.synchronizing'}), duration: 0 })
-        const { code } = await syncSuite(row.id)
+        const { code, msg } = await syncSuite(row.id)
         setSync(false)
         hide()
         if (code !== 200) {
-            message.warning(formatMessage({id: 'request.synchronize.failed'}) )
+            message.warning(`${formatMessage({id: 'request.synchronize.failed'})}，${msg}`)
             return
         }
         message.success(formatMessage({id: 'request.synchronize.success'}) )
