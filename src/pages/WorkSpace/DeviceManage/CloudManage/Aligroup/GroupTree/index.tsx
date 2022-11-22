@@ -59,6 +59,7 @@ const GroupTree: React.FC<any> = (props) => {
             requestCodeMessage(res.code, res.msg)
         }
     }
+
     const columns = useMemo(() => {
         return [{
             title: !!is_instance ? <FormattedMessage id="device.server.instance"/> : <FormattedMessage id="device.server.config"/>,
@@ -290,7 +291,7 @@ const GroupTree: React.FC<any> = (props) => {
                                 okText={<FormattedMessage id="operation.cancel"/>}
                                 cancelText={<FormattedMessage id="operation.confirm.delete"/>}
                                 onCancel={() => { remMachine(row) }}
-                                overlayStyle={{ width: '224px' }}
+                                overlayStyle={{ width: '280px' }}
                                 icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                             >
                                 <Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>

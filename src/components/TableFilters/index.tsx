@@ -38,7 +38,7 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
                                 style={{
                                     background: index % 2 === 0 ? 'rgba(0,0,0,0.02)' : '#fff'
                                 }}
-                                key={item.name}
+                                key={item.value}
                                 value={item.value}
                             >{item.name}</Radio>
                         )
