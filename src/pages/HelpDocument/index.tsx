@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Breadcrumb, Row, Spin, Space, Layout } from 'antd'
 
-import { history, useRequest, useModel, useAccess, Access } from 'umi'
+import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from './index.less'
 import { EditOutlined } from '@ant-design/icons'
 import { queryHelpDocList } from './services'
@@ -21,6 +21,9 @@ let openNextElementSibling: any = null
 let timeout: any = null;
 let odivContenteditable: any = null
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { help_id } = props.match.params
     const [helps, setHelps] = useState<Array<any>>([])
     const [helpId, setHelpId] = useState(help_id)
@@ -399,9 +402,9 @@ export default (props: any) => {
                     <div>
                         <Breadcrumb style={{ marginBottom: '19px' }}>
                             <Breadcrumb.Item >
-                                <span style={{ cursor: 'pointer' }} onClick={() => history.push('/')}>首页</span>
+                                <span style={{ cursor: 'pointer' }} onClick={() => history.push('/')}><FormattedMessage id="home" /></span>
                             </Breadcrumb.Item>
-                            <Breadcrumb.Item>{typePath === 'help_doc' ? '使用帮助' : '公告'}</Breadcrumb.Item>
+                            <Breadcrumb.Item>{typePath === 'help_doc' ? <FormattedMessage id="using.help" />: <FormattedMessage id="notice" />}</Breadcrumb.Item>
                         </Breadcrumb>
                     </div>
                     <div >
@@ -411,7 +414,7 @@ export default (props: any) => {
                                 style={{ height: layoutHeight - 112 }}
                                 className={styles.script_left}>
                                 <div className={styles.use_help}>
-                                    {typePath === 'help_doc' ? '使用帮助' : '公告'}
+                                    {typePath === 'help_doc' ? <FormattedMessage id="using.help" />: <FormattedMessage id="notice" />}
                                     <Access accessible={access.IsAdmin()}>
                                         <AddDoc className={styles.add_help} onClick={_.partial(handleClick, 'new')} />
                                     </Access>
@@ -432,6 +435,7 @@ export default (props: any) => {
                                         helpId={helpId} />
                                 </div>
                             </div>
+                            
                             {/*右侧 */}
                             <div
                                 style={{
@@ -444,13 +448,13 @@ export default (props: any) => {
                                     <div className={styles.edit_doc} id="edit_doc">
                                         <div className={styles.edit_doc_title} style={{ opacity: helps.length ? 1 : 0 }} id='edit_doc_title'>
                                             {currentDoc && currentDoc.title}
-                                            <div className={styles.create_time}>{`创建时间：${currentDoc && currentDoc.gmt_created}`}</div>
+                                            <div className={styles.create_time}><FormattedMessage id="common.createTime" />：{currentDoc && currentDoc.gmt_created}</div>
                                         </div>
                                         <div className={styles.edit_doc_botton} style={{ opacity: helps.length ? 1 : 0 }} >
                                             <Access accessible={access.IsAdmin()}>
                                                 <Space>
                                                     <EditOutlined />
-                                                    <span className={styles.edit_doc_span} onClick={handleEdit}>编辑文档</span>
+                                                    <span className={styles.edit_doc_span} onClick={handleEdit}><FormattedMessage id="edit.document" /></span>
                                                 </Space>
                                             </Access>
                                         </div>

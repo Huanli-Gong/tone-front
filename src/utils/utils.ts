@@ -70,8 +70,10 @@ export const switchUserRole2 = (name: string, formatMessage: any) => {
     ['ws_admin', formatMessage({ id: 'member.type.ws_admin' })],
     ['all', formatMessage({ id: 'member.type.all' })],
     ['ws_owner', formatMessage({ id: 'member.type.ws_owner' })],
+    ['super_admin', formatMessage({ id: 'member.type.super_admin' })],
   ]).get(name);
 };
+
 
 export const switchBusinessType = (business_type: string) => {
   switch (business_type) {

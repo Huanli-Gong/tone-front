@@ -32,7 +32,7 @@ const text =  {
   'popover.title': '申请加入',
   'join.popover.reason': '申请理由',
   'join.popover.optional': '(选填)',
-  'popover.btn.cancel': '(选填)',
+  'popover.btn.cancel': '取消',
   'popover.btn.submit': '提交申请',
   'popover.btn.join': '加入',
 };

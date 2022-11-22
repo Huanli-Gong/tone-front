@@ -23,6 +23,7 @@ export default {
   'operation.add': '添加',
   'operation.create': '创建',
   'operation.edit': '编辑',
+  'operation.modify': '修改',
   'operation.delete': '删除',
   'operation.view': '查看',
   'operation.yes': '是',
