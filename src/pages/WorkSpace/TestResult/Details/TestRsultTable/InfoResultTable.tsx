@@ -47,7 +47,7 @@ export default (props: any) => {
     const { data, refresh, loading } = useRequest(
         (params = interfaceSearchKeys) => queryCaseResult(params),
         {
-            initialData: [], refreshDeps: [interfaceSearchKeys], formatResult(res) {
+            initialData: [], formatResult(res) {
                 return res
             },
         }
@@ -283,8 +283,8 @@ export default (props: any) => {
                     rowClassName={styles.result_info_table_row}
                     dataSource={data.data || []}
                 />
-            }
-            <EditRemarks ref={editRemark} onOk={refresh} />
+            } 
+            <EditRemarks ref={editRemark} onOk={refresh}/>
             <JoinBaseline
                 ref={joinBaseline}
                 onOk={refresh}

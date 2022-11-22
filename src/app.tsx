@@ -10,6 +10,7 @@ import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { deepObject } from '@/utils/utils';
 
 import zhCn from "antd/lib/locale/zh_CN"
+import 'animate.css';
 
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
 
@@ -37,19 +38,29 @@ export async function getInitialState(): Promise<any> {
 
         const { data } = await person_auth({ ws_id })
         const accessList: any = deepObject(data)
-        const { ws_is_exist, ws_role_title, sys_role_title } = accessList
+        const { ws_is_exist, ws_is_public, user_id, ws_role_title, sys_role_title } = accessList
 
         if (!accessList) {
             history.push('/500')
             return initialState
         }
         if (isWs) {
-            //这个ws是否存在
+            // 这个ws是否存在
             if (!ws_is_exist) {
                 history.push('/404')
                 return initialState
             }
 
+            /** 用户进入ws：case1.首先判断是公开ws还是私密ws；case2.判断进入私密ws时，未登录跳登录。 */
+            if ( !ws_is_public && !user_id) {
+                if (BUILD_APP_ENV === 'openanolis') {
+                    const { login_url } = data?.login_info || {}
+                    return window.location.href = login_url
+                }
+                return history.push(`/login?redirect_url=${window.location.pathname}`) 
+            }
+
+            /** 有无权限：case1.用户已登录，要查看私密ws时(分享的私密ws链接)，判断有无访问权限。  */
             if (sys_role_title !== 'sys_admin' && !ws_role_title) {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState

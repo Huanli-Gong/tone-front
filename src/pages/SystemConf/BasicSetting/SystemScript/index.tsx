@@ -16,7 +16,7 @@ import { requestCodeMessage } from '@/utils/utils'
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-    const PAGE_DEFAULT_PARAMS = { config_type: 'script' }
+    const PAGE_DEFAULT_PARAMS = { config_type: 'script', page_num:1, page_size:500 }
 
     const [current, setCurrent] = useState<any>({})
     const [hover, setHover] = useState(null)
@@ -82,7 +82,7 @@ export default (props: any) => {
     }
 
     const handleDelete = async (item: any) => {
-        const { code, msg } = await deleteConfig({ ...PAGE_DEFAULT_PARAMS, config_id: item.id })
+        const { code, msg } = await deleteConfig({ config_type: 'script', config_id: item.id })
         fetchFinally(code, msg)
     }
 
@@ -207,7 +207,7 @@ export default (props: any) => {
                                 </Col>
                             </Row>
                         </Row>
-                        <Row className={styles.all_script}>
+                        <Row className={styles.all_script} >
                             {
                                 data?.map(
                                     (item: any) => (
@@ -221,7 +221,7 @@ export default (props: any) => {
                                         >
                                             <Row justify="space-between">
                                                 <Typography.Text>
-                                                    <EllipsisPulic width={220} title={transformKey(item.config_key)}>{ transformKey( item.config_key ) }</EllipsisPulic>
+                                                    <EllipsisPulic width={200} title={transformKey(item.config_key)}>{ transformKey( item.config_key ) }</EllipsisPulic>
                                                 </Typography.Text>
                                                 <Popconfirm
                                                     title={<div style={{ color:'red', width:'280px' }}><FormattedMessage id="basic.delete.the.script.warning"/></div>}
@@ -249,7 +249,7 @@ export default (props: any) => {
                                         <Col span={24}>
                                             <Row>
                                                 <Col span={ 8 } className={ styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 108 }: {}}><FormattedMessage id="basic.script_name"/>：</span>
+                                                    <span className={ styles.script_right_name }><FormattedMessage id="basic.script_name"/>：</span>
                                                     <Typography.Text>
                                                         <Tooltip title={ transformKey( current.config_key ) } placement="bottomLeft">
                                                             { transformKey( current.config_key ) }
@@ -257,11 +257,11 @@ export default (props: any) => {
                                                     </Typography.Text>
                                                 </Col>
                                                 <Col span={ 6 } className={ styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 122 }: {}}><FormattedMessage id="basic.atomic_step"/>：</span>
-                                                    <Typography.Text>{ bindStage }</Typography.Text>
+                                                    <span className={ styles.script_right_name } ><FormattedMessage id="basic.atomic_step"/>：</span>
+                                                    <Typography.Text>{ bindStage || '-' }</Typography.Text>
                                                 </Col>
                                                 <Col span={ 10 } className={styles.history_top_info }>
-                                                    <span className={ styles.script_right_name } style={enLocale ? { width: 100 }: {}}><FormattedMessage id="basic.desc"/>：</span>
+                                                    <span className={ styles.script_right_name }><FormattedMessage id="basic.desc"/>：</span>
                                                     <Typography.Text className={ styles.desc_content_style }>
                                                         <Tooltip title={ current.description } placement="bottomLeft">
                                                             { current.description }

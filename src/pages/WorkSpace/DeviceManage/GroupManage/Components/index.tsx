@@ -10,9 +10,9 @@ export const getMembers = async (keyword: string = '', callback?: any) => {
     else return data
 }
 
-export const StateBadge = (state: any, row: any, ws_id: string) => {
+export const StateBadge = (state: any, row: any, ws_id: string, flag: string) => {
     switch (state) {
-        case 'Available': return <Badge status="success" text="Available" />
+        case 'Available': return <Badge status="success" text={flag === 'real' ? 'Alive' : 'Available'} />
         case 'Occupied': return (
             <Popover
                 placement="right"

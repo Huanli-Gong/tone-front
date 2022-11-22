@@ -29,4 +29,6 @@ export default {
   'member.type.ws_admin': 'Administrator',
   'member.type.all': 'All',
   'member.type.ws_owner': 'Owner',
+
+  'member.type.super_admin': 'Super Administrator',
 }

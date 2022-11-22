@@ -37,7 +37,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
 
     useEffect(() => {
         refresh()
-    }, [page,size]);
+    }, [page, size]);
 
     const onChange = (page_num: any, page_size: any) => {
         setPage(page_num)
@@ -68,7 +68,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         }
         const data = await roleChange(params)
         if (data.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) );
+            message.success(formatMessage({ id: 'operation.success' }));
             refresh()
         } else {
             message.error(data.msg);
@@ -76,7 +76,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
     }
 
     const columns: any[] = [{
-        title: <FormattedMessage id="user.last_name"/>,
+        title: <FormattedMessage id="user.last_name" />,
         dataIndex: 'last_name',
         width: 200,
         ellipsis: {
@@ -109,14 +109,14 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             />
         </Space>,
     }, {
-        title: <FormattedMessage id="user.email"/>,
+        title: <FormattedMessage id="user.email" />,
         dataIndex: 'email',
         ellipsis: {
             showTitle: false
         },
         render: (_: number, row: UserTable) => <PopoverEllipsis title={row.email}></PopoverEllipsis>,
     }, {
-        title: <FormattedMessage id="user.role_list"/>,
+        title: <FormattedMessage id="user.role_list" />,
         dataIndex: 'role_list',
         render: (_: number, row: any) => (
             (select && select.length > 0) &&
@@ -137,22 +137,22 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         },
         width: 200,
     }, {
-        title: <FormattedMessage id="user.gmt_created"/>,
+        title: <FormattedMessage id="user.gmt_created" />,
         dataIndex: 'gmt_created',
         width: 145,
     },
     BUILD_APP_ENV === 'opensource' &&
     {
-        title: <FormattedMessage id="Table.columns.operation"/>,
+        title: <FormattedMessage id="Table.columns.operation" />,
         render: (_: any, row: any) => (
             <Popconfirm
-                title={<FormattedMessage id="user.Popconfirm.title"/>}
+                title={<FormattedMessage id="user.Popconfirm.title" />}
                 onConfirm={() => resetPasswordConfirm(row)}
                 okButtonProps={{ type: "primary", danger: true }}
-                okText={<FormattedMessage id="operation.confirm.reset"/>}
+                okText={<FormattedMessage id="operation.confirm.reset" />}
                 onVisibleChange={() => console.log('visible change')}
             >
-                <Typography.Link><FormattedMessage id="operation.reset.password"/></Typography.Link>
+                <Typography.Link><FormattedMessage id="operation.reset.password" /></Typography.Link>
             </Popconfirm>
         )
     }].filter(Boolean);
@@ -173,6 +173,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
     return (
         <div>
             <CommonTable
+                key={rolelist}
                 size="small"
                 columns={columns}
                 list={list}

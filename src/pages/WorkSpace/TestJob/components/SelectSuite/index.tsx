@@ -9,20 +9,18 @@ import SuiteTable from './SuiteTable'
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage } from 'umi';
 
-const SelectSuite: React.FC<any> = (
-	{
-		handleData,
-		contrl,
-		test_type,
-		business_type,
-		template = {},
-		disabled = false,
-		onRef,
-		server_type,
-		setPageLoading,
-		caseDataRef
-	}
-) => {
+const SelectSuite: React.FC<any> = ({
+	handleData,
+	contrl,
+	test_type,
+	business_type,
+	template = {},
+	disabled = false,
+	onRef,
+	server_type,
+	setPageLoading,
+	caseDataRef
+}) => {
 	const { formatMessage } = useIntl()
 	const { ws_id } = useParams<any>()
 	const outTable = useRef<any>(null)
@@ -64,10 +62,10 @@ const SelectSuite: React.FC<any> = (
 	}, [test_config])
 
 	const memoDeleteIp = useMemo(() => {
-		let list:any = []
+		let list: any = []
 		test_config.map((item: any) => {
-			item.test_case_list.map((l:any) => {
-				if(l.server_is_deleted){
+			item.test_case_list.map((l: any) => {
+				if (l.server_is_deleted) {
 					list = list.concat(l.server_deleted)
 				}
 			})
@@ -122,7 +120,7 @@ const SelectSuite: React.FC<any> = (
 				const suiteIdx = treeData.findIndex(({ id }: any) => id === suiteId)
 				if (suiteIdx > -1) {
 					let testCaseList: any = []
-					let isAdvancedConfig:Boolean = false
+					let isAdvancedConfig: Boolean = false
 					cases.forEach(
 						(conf: any) => {
 							if (treeData[suiteIdx]) {
@@ -299,7 +297,7 @@ const SelectSuite: React.FC<any> = (
 							<Space>
 								<>
 									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>
-									  <FormattedMessage id="select.suite.selected" />
+										<FormattedMessage id="select.suite.selected" />
 									</Typography.Text>
 									<Badge
 										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
@@ -321,13 +319,13 @@ const SelectSuite: React.FC<any> = (
 				</div>
 			</div>
 			{
-				!!memoDeleteIp.length && 
+				!!memoDeleteIp.length &&
 				<div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>
-					<Row style={{ padding:'10px' }}>
+					<Row style={{ padding: '10px' }}>
 						<Col span={24}>
-							<ExclamationCircleOutlined style={{ color: '#FAAD14',paddingRight: 5 }} />
+							<ExclamationCircleOutlined style={{ color: '#FAAD14', paddingRight: 5 }} />
 							{
-								memoDeleteIp.map((item:any) => (
+								memoDeleteIp.map((item: any) => (
 									<span style={{ marginRight: 20 }}>
 										{item.ip}/{item.sn}
 									</span>

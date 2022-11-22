@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef } from 'react'
+import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { Drawer, Typography, Row, Col, Layout, Spin, Tag } from 'antd'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './style.less'
 import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal';
 import { dataSetMethod } from '../DataSetPulic';
-import { queryTestServerDetail, queryChannelState } from '../../GroupManage/services'
+import { queryChannelState } from '../../GroupManage/services'
 // import { StateBadge } from './index'
 
 // import DeployServer from './DeployServer'
@@ -31,15 +31,12 @@ const ViewDetailDrawer = forwardRef(
         }))
         const initDetails = async (row: any) => {
             setLoading(true)
-            // const { data = {} } = await queryTestServerDetail(id)
-            // setDetails(data)
             const { code, data: detailData } = await queryChannelState({ ip: row.private_ip, channel_type: row.channel_type })
             if (code === 200) {
                 setChannelState(detailData)
             } else {
                 setChannelState(row.channel_state)
             }
-
             setLoading(false)
         }
 
@@ -70,22 +67,18 @@ const ViewDetailDrawer = forwardRef(
                 <Spin spinning={loading}>
                     <Layout.Content style={{ marginBottom: 30 }}>
                         <Typography.Text strong><FormattedMessage id="device.hardware"/></Typography.Text>
-                        {type !== '0' &&
+                        {!!type &&
                             <Row gutter={20} className={styles.row} >
                                 <Col span={6}><FormattedMessage id="device.instance.id"/>:</Col>
                                 <Col span={18}>{details?.instance_id}</Col>
                             </Row>
                         }
-                        {type !== '0' &&
+                        {!!type &&
                             <Row gutter={20} className={styles.row} >
                                 <Col span={6}><FormattedMessage id="device.ip.address"/>:</Col>
                                 <Col span={18}>{details?.private_ip}</Col>
                             </Row>
                         }
-                        {/* <Row gutter={20} className={styles.row} >
-                            <Col span={6}>SN:</Col>
-                            <Col span={18}>{details?.sn}</Col>
-                        </Row> */}
                         <Row gutter={20} className={styles.row}>
                             <Col span={6}>Region/Zone:</Col>
                             <Col span={18}>{details?.region_zone}</Col>
@@ -120,19 +113,16 @@ const ViewDetailDrawer = forwardRef(
                         </Row>
                     </Layout.Content>
                     {
-                        type !== '0' && <Layout.Content style={{ marginBottom: 30 }}>
+                        !!type && <Layout.Content style={{ marginBottom: 30 }}>
                             <Typography.Text strong><FormattedMessage id="device.usage.state"/></Typography.Text>
                             <Row gutter={20} className={styles.row}>
                                 <Col span={6}><FormattedMessage id="device.server.state"/>:</Col>
                                 <Col span={18}>{details?.real_state}</Col>
                             </Row>
-                            {/* <Row gutter={ 20 }>
-                            <Col offset={ 5 }><Button type="link" onClick={ handleOpenDeployServerDrawer }>部署</Button></Col>
-                        </Row>  */}
                         </Layout.Content>
                     }
                     {
-                        type !== '0' && <Layout.Content style={{ marginBottom: 30 }}>
+                        !!type && <Layout.Content style={{ marginBottom: 30 }}>
                             <Typography.Text strong><FormattedMessage id="device.channel_type"/></Typography.Text>
                             <Row gutter={20} className={styles.row}>
                                 <Col span={6}>Channel:</Col>
@@ -145,9 +135,6 @@ const ViewDetailDrawer = forwardRef(
                                 <Col span={6}><FormattedMessage id="device.state"/>:</Col>
                                 <Col span={18}>{channelState?.toString()}</Col>
                             </Row>
-                            {/* <Row gutter={ 20 }>
-                                <Col offset={ 5 }><Button type="link" onClick={ handleOpenDeployServerDrawer }>部署</Button></Col>
-                            </Row>  */}
                         </Layout.Content>
                     }
                     {
@@ -178,24 +165,6 @@ const ViewDetailDrawer = forwardRef(
                             }
                         </Row>
                     </Layout.Content>
-                    {/* <Layout.Content style={{ marginBottom: 30 }}>
-                        <Typography.Text strong>其他信息</Typography.Text>
-                        <Row gutter={20} className={styles.row}>
-                            <Col span={6}>Channel:</Col>
-                            <Col span={18}>
-                                <span>{details?.channel_type}</span>
-                                {details?.channel_type === 'toneagent' && <span className={styles.btn_style} onClick={()=> deployClick([details?.ip])}>重新部署</span> }
-                            </Col>
-                        </Row>
-                        <Row gutter={20} className={styles.row}>
-                            <Col span={6}>状态:</Col>
-                            <Col span={18}>{channelState?.toString()}</Col>
-                        </Row>
-                        <Row gutter={ 20 }>
-                            <Col offset={ 5 }><Button type="link" onClick={ handleOpenDeployServerDrawer }>部署</Button></Col>
-                        </Row> 
-                    </Layout.Content> */}
-
                     <Layout.Content>
                         <Typography.Text strong><FormattedMessage id="device.others.info"/></Typography.Text>
                         <Row gutter={20} className={styles.row}>
@@ -220,10 +189,6 @@ const ViewDetailDrawer = forwardRef(
                         </Row>
                     </Layout.Content>
                 </Spin>
-                {/* <DeployServer
-                    handleOk={handleDeployOk}
-                    ref={deployServerRef}
-                /> */}
                 <DeployModal ref={deployModal} callback={deployCallback} />
             </Drawer>
         )

@@ -40,11 +40,11 @@ const JoinPopover = (props: any) => {
                             }
                         >
                             {/* 取消 */}
-                            <FormattedMessage id="pages.home.join.popover.btn.cancel" />
+                            <FormattedMessage id="pages.home.popover.btn.cancel" />
                         </Button>
                         <Button type="primary" onClick={() => props.handleSubmit(reason)}>
                             {/* 提交申请 */}
-                            <FormattedMessage id="pages.home.join.popover.btn.submit" />
+                            <FormattedMessage id="pages.home.popover.btn.submit" />
                         </Button>
                     </Space>
                 </Row>

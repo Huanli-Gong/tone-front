@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { Drawer, Row, Col, Space, Button, message, Badge } from 'antd'
 
 import { queryTestPlanDetails } from '@/pages/WorkSpace/TestPlan/services'
-import { history, useIntl, FormattedMessage  } from 'umi'
-import { requestCodeMessage } from '@/utils/utils'
+import { history, useIntl, FormattedMessage, Access, useAccess } from 'umi'
+import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 
 const leftWidth = `160px`
 
@@ -99,6 +99,7 @@ const SettingRow: React.FC<any> = ({ name = '', children }) => (
 const ViewPlanDetail = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = props
+    const access = useAccess()
     const [visible, setVisible] = useState(false)
     const [dataSource, setDataSource] = useState<any>(undefined)
     // console.log('dataSource:', dataSource)
@@ -127,7 +128,7 @@ const ViewPlanDetail = (props: any, ref: any) => {
     const hanldeRunning = () => {
         history.push(`/ws/${ws_id}/test_plan/${dataSource.id}/run`)
     }
-
+    
     return (
         <Drawer
             maskClosable={false}
@@ -140,7 +141,16 @@ const ViewPlanDetail = (props: any, ref: any) => {
             footer={
                 <Row justify="end">
                     <Space>
-                        <Button onClick={hanldeOpenEdit}><FormattedMessage id="plan.edit.configuration" /></Button>
+                        <Access accessible={access.WsTourist()}>
+                            <Access
+                                accessible={access.WsMemberOperateSelf(dataSource?.creator)}
+                                fallback={
+                                    <Button onClick={() => AccessTootip()}><FormattedMessage id="plan.edit.configuration" /></Button>
+                                }
+                            >
+                                <Button onClick={hanldeOpenEdit}><FormattedMessage id="plan.edit.configuration" /></Button>
+                            </Access>
+                        </Access>
                         <Button onClick={hanldeRunning} type="primary"><FormattedMessage id="plan.run.plan" /></Button>
                     </Space>
                 </Row>

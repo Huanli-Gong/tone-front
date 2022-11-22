@@ -1,3 +1,8 @@
+import {
+  aligroupServer, // '内网' | '固定机器池'
+  aliyunServer,   // '云上' | '弹性机器池'
+} from '@/utils/utils';
+
 const defaultKey = 'header'
 
 const text =  {
@@ -11,8 +16,9 @@ const text =  {
   'business': '业务测试',
   'stability': '稳定性测试',
   // Server Type
-  'aligroup': '内网',
-  'aliyun': '云上',
+  'aligroup': aligroupServer, // '内网',
+  'aliyun': aliyunServer,     // '云上',
+
   // Test Type
   'test_type.functional': '功能',
   'test_type.performance': '性能',

@@ -3,7 +3,7 @@ import { Breadcrumb, Collapse,message,Table } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks'
 import CommonPagination from '@/components/CommonPagination'
-import { history } from 'umi';
+import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import styled from 'styled-components';
 import { JobListStateTag } from '../WorkSpace/TestResult/Details/components/index'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -61,10 +61,12 @@ const Refenerce = ( props:any ) => {
     const BreadcrumbItem: React.FC<any> = () => (
         <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item >
-                <span style={{ cursor: 'pointer' }} onClick={() => history.push(`/system/suite`)}>Test Suite管理</span>
+                <span style={{ cursor: 'pointer' }} onClick={() => history.push(`/system/suite`)}>
+                    <FormattedMessage id="SystemConf.menuLayout.suiteManagement" />
+                </span>
             </Breadcrumb.Item>
             <Breadcrumb.Item >
-                <span style={{ cursor: 'pointer',color:'rgba(0,0,0,0.85)' }}>{type == 1 ? 'Suite' : 'Conf'}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({name})</span>引用详情</span>
+                <span style={{ cursor: 'pointer',color:'rgba(0,0,0,0.85)' }}>{type == 1 ? 'Suite' : 'Conf'}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({name})</span> <FormattedMessage id="reference.details" /></span>
             </Breadcrumb.Item>
         </Breadcrumb>
     )
@@ -110,7 +112,7 @@ const Refenerce = ( props:any ) => {
     
     const JobColumns = [
         {
-            title: 'Workspace名称',
+            title: <FormattedMessage id="workspace.ws.name" />,
             dataIndex: 'ws_show_name',
             key: 'ws_show_name',
         },
@@ -120,7 +122,7 @@ const Refenerce = ( props:any ) => {
             key: 'id',
         },
         {
-            title: 'Job名称',
+            title: <FormattedMessage id="analysis.job.name" />,
             dataIndex: 'name',
             key: 'name',
             render:( _:any,row:any )=>(
@@ -132,30 +134,30 @@ const Refenerce = ( props:any ) => {
             )
         },
         {
-            title: '状态',
+            title: <FormattedMessage id="ws.dashboard.job.state" />,
             dataIndex: 'state',
             key: 'state',
             render:( _:any,row:any ) => <JobListStateTag {...row} />
         },
         {
-            title: '创建人',
+            title: <FormattedMessage id="device.create_user" />,
             dataIndex: 'creator_name',
             key: 'creator_name',
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="common.createTime" />,
             dataIndex: 'gmt_created',
             key: 'gmt_created',
         },
     ];
     const TempColumns = [
         {
-            title: 'Workspace名称',
+            title: <FormattedMessage id="workspace.ws.name" />,
             dataIndex: 'ws_show_name',
             key: 'ws_show_name',
         },
         {
-            title: '模板名称',
+            title: <FormattedMessage id="ws.test.job.template.name" />,
             dataIndex: 'name',
             key: 'name',
             render:( _:any,row:any )=>(
@@ -167,12 +169,12 @@ const Refenerce = ( props:any ) => {
             )
         },
         {
-            title: '创建人',
+            title: <FormattedMessage id="device.create_user" />,
             dataIndex: 'creator_name',
             key: 'creator_name',
         },
         {
-            title: '创建时间',
+            title: <FormattedMessage id="common.createTime" />,
             dataIndex: 'gmt_created',
             key: 'gmt_created',
         },
@@ -193,7 +195,7 @@ const Refenerce = ( props:any ) => {
                     expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                     className="site-collapse-custom-collapse"
                 >
-                    <Panel header={<div>Job列表<span className="total">{JobTotal}</span></div>} key="1" className="site-collapse-custom-panel">
+                    <Panel header={<div><FormattedMessage id="analysis.job.table" /><span className="total">{JobTotal}</span></div>} key="1" className="site-collapse-custom-panel">
                         <Table dataSource={JobData} columns={JobColumns} size='small' loading={loading} rowKey="id" pagination={false}/>
                         <CommonPagination
                             pageSize={params.page_size}
@@ -218,7 +220,7 @@ const Refenerce = ( props:any ) => {
                     expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                     className="site-collapse-custom-collapse"
                 >
-                <Panel header={<div>模版列表<span className="total">{TempTotal}</span></div>} key="1" className="site-collapse-custom-panel">
+                <Panel header={<div><FormattedMessage id="template.list" /><span className="total">{TempTotal}</span></div>} key="1" className="site-collapse-custom-panel">
                     <Table dataSource={TempData} columns={TempColumns} size='small' loading={loading} rowKey="id" pagination={false}/>
                     <CommonPagination
                         pageSize={tempParams.page_size}

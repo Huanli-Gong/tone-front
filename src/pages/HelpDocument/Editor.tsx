@@ -6,7 +6,7 @@ import arrayMove from 'array-move';
 import _ from 'lodash';
 import styles from './index.less';
 import { deleteHelpDoc, updateHelpDoc } from './services'
-import { history, useAccess, Access } from 'umi'
+import { history, useAccess, Access, useIntl, FormattedMessage, getLocale } from 'umi'
 import { ReactComponent as Ellipsis } from '@/assets/svg/ellipsis.svg'
 import { requestCodeMessage } from '@/utils/utils';
 
@@ -92,6 +92,7 @@ const EllipsisRect = ({ record, text, helpId, reactNode, handleClick, index }: a
         </div>
     )
 }
+
 const DragHandle = sortableHandle(() => (
     <Tooltip title='拖拽排序'>
         <MenuOutlined style={{ cursor: 'pointer', color: '#999' }} className={styles.doc_drag} />
@@ -119,6 +120,9 @@ const getAllDocs = (data: any, id: any) => {
     return arr
 }
 const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightLoading, typePath, isPermier, handleGetDocDetailFn }: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+    
     const [dataSource, getDataSource] = useState<any>([])
 
     useEffect(() => {
@@ -152,11 +156,22 @@ const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightL
     }
     const reactNode = (record: any) => (
         <div className={styles.doc_del_parent}>
-            <p onClick={_.partial(handleDel, record)} className={styles.doc_del} >删除</p>
+            <p onClick={_.partial(handleDel, record)} className={styles.doc_del} ><FormattedMessage id="operation.delete" /></p>
         </div>
     );
-    const docType = typePath === 'help_doc' ? { 'mustRead': '必看', 'course': '教程', 'docs': '文档' }
-        : { 'maintain': '维护', 'notice': '通知', 'upgrade': '升级', 'stop': '暂停' }
+    const docType = typePath === 'help_doc' ?
+        {
+            'mustRead': formatMessage({ id: 'pages.home.mustRead', defaultMessage: "" }),
+            'course': formatMessage({ id: 'pages.home.course' }),
+            'docs': formatMessage({ id: 'pages.home.docs' }),
+        }
+        :
+        {
+            'maintain': formatMessage({ id: 'pages.home.maintain' }),
+            'notice': formatMessage({ id: 'pages.home.notice' }),
+            'upgrade': formatMessage({ id: 'pages.home.upgrade' }),
+            'stop': formatMessage({ id: 'pages.home.stop' }),
+        }
 
     const columns: any = [
         {
@@ -170,7 +185,7 @@ const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightL
         {
             title: 'Tags',
             dataIndex: 'tags',
-            width: 62,
+            width: enLocale ? (typePath === 'help_doc'? 102: 152): 62,
             className: styles.type,
             render: (text: any, record: any) => {
                 return (
@@ -192,7 +207,7 @@ const SortableTable = ({ getHelpDocs, allHelpsData, helpId, setHelpId, setRightL
             title: 'Name',
             dataIndex: 'name',
             ellipsis: true,
-            width: 240,
+            width: enLocale ? (typePath === 'help_doc'? 200: 140): 240,
             height: 20,
             textWrap: 'word-break',
             render: (text: any, record: any, index: number) => {

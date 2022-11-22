@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { queryChartData } from '../services';
 import { message } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { Container , Title } from './styled'
 import * as antv from '@antv/g2';
 import { gblen , gblenStr, requestCodeMessage } from '@/utils/utils'
@@ -49,7 +50,7 @@ const ClassUsers = (props: any) => {
 
     return (
         <Container >
-            <Title >部门用户数</Title>
+            <Title><FormattedMessage id="sys.dashboard.department.users"/></Title>
             <div style={{ height : 'calc(100% - 25px - 8px)'}} ref={myChart} />
         </Container>
     )

@@ -23,6 +23,7 @@ export default {
   'operation.add': 'Add',
   'operation.create': 'Create',
   'operation.edit': 'Edit',
+  'operation.modify': 'Modify',
   'operation.delete': 'Delete',
   'operation.view': 'View',
   'operation.yes': 'Yes',
