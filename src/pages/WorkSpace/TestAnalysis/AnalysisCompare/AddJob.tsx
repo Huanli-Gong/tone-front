@@ -260,7 +260,7 @@ export default ( props : any ) => {
                 shwoTitle: false,
             },
             dataIndex: 'creator_name',
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} mode="" confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creators')} page_size={9999} />,
+            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} mode="" confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val)} page_size={9999} />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
