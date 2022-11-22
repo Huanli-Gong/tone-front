@@ -326,8 +326,6 @@ export default (props: any) => {
                             <Radio value="aliyun">
                                 {formatMessage({id: 'aliyunServer'})}
                             </Radio>
-                            {/* <Radio value="aligroup">内网环境</Radio>
-                            <Radio value="aliyun">云上环境</Radio> */}
                         </Radio.Group>
                     </Form.Item>
 

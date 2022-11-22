@@ -1,17 +1,17 @@
 import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect, useMemo } from 'react';
-import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Spin, Popconfirm, Form, Divider } from 'antd';
+import { Tooltip, Drawer, Col, Row, Space, Typography, Table, message, Popconfirm, Divider } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './index.less'
 import CommentModal from './CommentModal'
 import { queryBaselineDetail, deletefuncsDetail } from '../services'
 import _ from 'lodash'
-import { AccessTootip, requestCodeMessage } from '@/utils/utils';
+import { AccessTootip, requestCodeMessage, handlePageNum, useStateRef } from '@/utils/utils';
 import { useParams, useIntl, useAccess, FormattedMessage, Access } from 'umi';
+import CommonPagination from '@/components/CommonPagination';
 
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
-
         const { ws_id }: any = useParams()
         const access = useAccess();
         const { server_provider, test_type, id } = props.currentBaseline
@@ -21,47 +21,48 @@ export default forwardRef(
             baseline_id: id,
             test_suite_id: props.test_suite_id,
             test_case_id: props.current.test_case_id,
+            page_num: 1, 
+            page_size: 20
         }  // 有用
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
         const [title, setTitle] = useState(formatMessage({id: 'pages.workspace.baseline.failDetail'}) ) // 弹框顶部title
         const [currentObj, setCurrentObj] = useState<any>({});
-
         const commentModal: any = useRef(null)
-
         const { current = {}, test_suite_name } = props;
+        const [source, setSource] = useState<any>()
+        const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
+        const [loading, setLoading] = useState(false)
+        const pageCurrent = useStateRef(params)
 
-        const [source, setSource] = useState<{ data: any[]; total: number }>({ data: [], total: 0 })
-        const [pageParams, setPageParams] = useState<{ page_num: number; page_size: number }>({ page_num: 1, page_size: 20 })
-        const [loading, setLoading] = useState(true)
-
-        const getLastDetail = async (params: any) => {
+        const getLastDetail = async () => {
             if (params && params.test_case_id === undefined) return
             setLoading(true)
-            const { data, code, total } = await queryBaselineDetail(params)
-            if (code === 200)
-                setSource({ data, total })
+            const data = await queryBaselineDetail(params)
+            const { code, msg } = data
+            if (code === 200) setSource(data)
+            else requestCodeMessage(code,msg)
             setLoading(false)
         }
+        const totalCurrent = useStateRef(source)
+
+        const pageCurrent = useStateRef(pageParams)
+        const totalCurrent = useStateRef(source)
 
         useEffect(() => {
-            getLastDetail({ ...PAGE_DEFAULT_PARAMS, ...pageParams })
-        }, [currentObj, pageParams])
-
-        const handlePageChange = (page_num: number, page_size: number | undefined = 20) => {
-            setPageParams({ page_num, page_size })
-        }
+            getLastDetail()
+        }, [ params ])
 
         const threeLevelDetailData = useMemo(() => {
-            return source.data.map((item: any) => {
+            return source && source.data?.map((item: any) => {
                 if (item && item.id === currentObj.id) return currentObj
                 return item
             })
-        }, [source.data, currentObj])
+        }, [source, currentObj])
 
         const onClose = () => {
             setVisible(false);
-            setPageParams({ page_size: 20, page_num: 1 })
-            setSource({ data: [], total: 0 })
+            setParams(PAGE_DEFAULT_PARAMS)
+            setSource({})
         };
 
         useImperativeHandle(
@@ -70,9 +71,7 @@ export default forwardRef(
                 show: (title: string = "", data: any = {}) => {
                     setVisible(true)
                     setTitle(title)
-                    // const params = 
-                    PAGE_DEFAULT_PARAMS.test_case_id = data.test_case_id
-                    getLastDetail({ ...PAGE_DEFAULT_PARAMS, test_case_id: data.test_case_id, ...pageParams })
+                    setParams({ ...params, test_case_id: data.test_case_id })
                 }
             })
         )
@@ -88,7 +87,6 @@ export default forwardRef(
         }
 
         const handleDelete = async(record:any) => {
-            // const currentObject = threeLevelDetailData.filter((item: any) => item && item.test_case_id === current.test_case_id)[0] || {};
             const { code, msg } = await deletefuncsDetail({ id: record.id, ws_id });
             defaultOption(code, msg);
         }
@@ -211,21 +209,17 @@ export default forwardRef(
         ]
 
         const threeLevelDetailDataCopy = useMemo(() => {
-            return _.cloneDeep(threeLevelDetailData).map((item: any) => {
+            return _.cloneDeep(threeLevelDetailData)?.map((item: any) => {
                 item.impact_result = item.impact_result ? formatMessage({id: 'operation.yes'}): formatMessage({id: 'operation.no'});
                 return item;
             })
         }, [threeLevelDetailData])
 
         const defaultOption = (code: number, msg: string) => {
+            const { page_size } = pageCurrent.current
             if (code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
-                if (threeLevelDetailDataCopy.length < 2) {
-                    props.secondRefresh()
-                    props.oneRefresh()
-                }
-                // refresh()
-                getLastDetail(PAGE_DEFAULT_PARAMS)
+                message.success(formatMessage({id: 'operation.success'}))
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
             }
             else {
                 requestCodeMessage(code, msg)
@@ -263,22 +257,21 @@ export default forwardRef(
                         }} />
                     </div>
                     <div className={styles.detal_drawer_text}>{'FailCase'}</div>
-                    <Spin spinning={loading}>
-                        <Table
-                            columns={columns}
-                            dataSource={threeLevelDetailDataCopy}
-                            pagination={{
-                                total: source.total,
-                                pageSize: pageParams.page_size,
-                                current: pageParams.page_num,
-                                // hideOnSinglePage: true,
-                                onChange: handlePageChange,
-                                
-                                showTotal: (total) => total ? formatMessage({id: 'pagination.total.strip'}, {data: total}): undefined,
-                            }}
-                            size="small"
-                        />
-                    </Spin>
+                    <Table
+                        columns={columns}
+                        loading={loading}
+                        dataSource={threeLevelDetailDataCopy}
+                        pagination={false}
+                        size="small"
+                    />
+                    <CommonPagination
+                        pageSize={params.page_size}
+                        total={source?.total}
+                        currentPage={params.page_num}
+                        onPageChange={
+                            (page_num, page_size) => { setParams({ ...params, page_num, page_size }) }
+                        }
+                    />
                 </Drawer>
                 <CommentModal ref={commentModal} onOk={handleSubmit} setCurrentObj={setCurrentObj} />
             </>
