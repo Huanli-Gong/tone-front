@@ -16,7 +16,7 @@ import { requestCodeMessage } from '@/utils/utils'
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-    const PAGE_DEFAULT_PARAMS = { config_type: 'script' }
+    const PAGE_DEFAULT_PARAMS = { config_type: 'script', page_num:1, page_size:500 }
 
     const [current, setCurrent] = useState<any>({})
     const [hover, setHover] = useState(null)
@@ -82,7 +82,7 @@ export default (props: any) => {
     }
 
     const handleDelete = async (item: any) => {
-        const { code, msg } = await deleteConfig({ ...PAGE_DEFAULT_PARAMS, config_id: item.id })
+        const { code, msg } = await deleteConfig({ config_type: 'script', config_id: item.id })
         fetchFinally(code, msg)
     }
 
@@ -207,7 +207,7 @@ export default (props: any) => {
                                 </Col>
                             </Row>
                         </Row>
-                        <Row className={styles.all_script}>
+                        <Row className={styles.all_script} >
                             {
                                 data?.map(
                                     (item: any) => (

@@ -163,12 +163,14 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 </Access>
             )
         },
-    ], [testType, locale, pageParams])
+    ]
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
         const { user_id } = initialState?.authList
-        const params = {
+        const q = user_id ? { user_id } : {}
+        const { code, msg } = await updateSuiteCaseOption({
+            ...q,
             editor_obj: 'test_job_conf',
             test_job_conf_id: _.id,
             state
