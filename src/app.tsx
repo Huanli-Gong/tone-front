@@ -16,7 +16,7 @@ const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' 
 
 const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
 
-const AD_WS_ID = "qorjejwq"
+const AD_WS_ID = ""
 
 export async function getInitialState(): Promise<any> {
     const isShowAd = localStorage[`ad_str_${AD_WS_ID}_display`] ? undefined : AD_WS_ID
