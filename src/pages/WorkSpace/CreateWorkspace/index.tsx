@@ -253,7 +253,7 @@ export default (props: any): React.ReactElement => {
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
-                                label={<FormattedMessage id="workspace.show_name.s"/>}
+                                label={<FormattedMessage id="workspace.description"/>}
                                 name="description"
                             >
                                 <Input.TextArea

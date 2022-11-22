@@ -164,7 +164,7 @@ const GroupTree: React.FC<any> = (props) => {
         // },
         {
             title: <FormattedMessage id="device.console_conf"/>,
-            width: enLocale ? 170: 100,
+            width:  enLocale ? 170: 100,
             ellipsis: {
                 showTitle: false,
             },
@@ -213,7 +213,7 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="device.baseline_server"/>,
             dataIndex: 'baseline_server',
-            width: enLocale ? 170: 120,
+            width: 140, // enLocale ? 170: 120,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {text ?
@@ -268,7 +268,7 @@ const GroupTree: React.FC<any> = (props) => {
             fixed: 'right',
             valueType: 'option',
             dataIndex: 'id',
-            width: BUILD_APP_ENV ? 160 : 120,
+            width: BUILD_APP_ENV ? 222 : 182,
             render: (_: number, row: any) => (
                 <Space>
                     <Access

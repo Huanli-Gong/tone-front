@@ -4,6 +4,7 @@ import { useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from './style.less';
 
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
+
 	const [val, setVal] = useState<number[]>([])
 	const [all, setAll] = useState<boolean>(false)
 	const [init, setInit] = useState<boolean>(false)

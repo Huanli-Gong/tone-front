@@ -103,13 +103,14 @@ export default memo(
                                         value={serverObjectType}
                                         onChange={handleServerObjectTypeChange}
                                         placeholder={formatMessage({ id: 'select.suite.multiple.values' })}
+                                        title={formatMessage({id: `select.suite.${serverObjectType === 'ip'? 'random': serverObjectType}`})}
                                     >
                                         <Select.Option value={'ip'}><FormattedMessage id="select.suite.random" /></Select.Option>
                                         {
                                             (server_type === 'aliyun' && run_mode === 'standalone') ?
                                                 <>
-                                                    <Select.Option value={'instance'}><FormattedMessage id="select.suite.instance" /></Select.Option>
-                                                    <Select.Option value={'setting'}><FormattedMessage id="select.suite.setting" /></Select.Option>
+                                                    <Select.Option value={'instance'} title={formatMessage({id: 'select.suite.instance'})}><FormattedMessage id="select.suite.instance" /></Select.Option>
+                                                    <Select.Option value={'setting'} title={formatMessage({id: 'select.suite.setting'})}><FormattedMessage id="select.suite.setting" /></Select.Option>
                                                 </> :
                                                 <Select.Option value={'server_object_id'}><FormattedMessage id="select.suite.server_object_id" /></Select.Option>
                                         }

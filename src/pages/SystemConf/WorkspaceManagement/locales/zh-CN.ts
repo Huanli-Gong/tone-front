@@ -31,7 +31,7 @@ export default {
   'workspace.submit.desc2': '查看审批进度',
 
   'workspace.ws.create': '创建Workspace',
-  'workspace.show_name.s': 'Workspace简介',
+  'workspace.show_name.s': 'Workspace显示名',
   'workspace.show_name.rules1': 'Workspace显示名不能为空',
   'workspace.show_name.rules2': '仅允许包含汉字、字母、数字、下划线、中划线、点，最多30个字符',
   'workspace.show_name.placeholder': 'workspace对外的展示名称，允许中文',
