@@ -1,4 +1,6 @@
-import { aligroupServer, aliyunServer,
+import {
+  aligroupServer, // '内网' | '固定机器池'
+  aliyunServer,   // '云上' | '弹性机器池'
   aligroupServer_baseline, aliyunServer_baseline,
   aligroupServer_standalone,
   aliyunServer_standalone,
@@ -20,6 +22,9 @@ export default {
   'page links may have expired or been deleted': '页面链接可能已失效或被删除',
   'no.use.case': '暂无用例',
   'select.suite.random': '随机',
+  'you.haven.not.signed.in': '你还未登录，请登录后使用该功能。',
+  'go.to.login': '去登录',
+  'back.to.home': '返回首页',
 
   'system.image': '公共镜像',
   'self.image': '自定义镜像',
@@ -42,11 +47,9 @@ export default {
   'added': '已添加',
 
   // server_provider
-  // 'aligroup': '内网环境',
-  // 'aliyun': '云上环境',
-  'aligroup': '固定机器池',
-  'aliyun': '弹性机器池',
-
+  'aligroup': aligroupServer,  // '内网环境' | '固定机器池',
+  'aliyun': aliyunServer,      // '云上环境' | '弹性机器池',
+  // server_type
   'aligroupServer': aligroupServer,
   'aliyunServer': aliyunServer,
   // 基线
