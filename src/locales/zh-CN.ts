@@ -61,7 +61,7 @@ export default {
   'operation.pass': '通过',  
   'operation.refuse': '拒绝',  
 
-  'pagination.total.strip': '共{data}条',
+  'pagination.total.strip': '共 {data} 条',
   'all': '全部',
   'selected': '已选择',
   'selected.item': '已选择{data}项',
