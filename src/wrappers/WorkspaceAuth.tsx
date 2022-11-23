@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { history, useModel, useParams, useLocation } from 'umi'
 import { person_auth } from '@/services/user';
-import { deepObject } from '@/utils/utils';
 import { enterWorkspaceHistroy } from '@/services/Workspace';
 
 export default (props: any) => {
@@ -17,22 +16,15 @@ export default (props: any) => {
 
         if (!old_ws_id || old_ws_id !== ws_id) {
             const { data } = await person_auth({ ws_id })
-            const accessData = deepObject(data)
-            setInitialState({ ...initialState, authList: { ...accessData, ws_id } })
-            flag = accessData
+            enterWorkspaceHistroy({ ws_id })
+            setInitialState({ ...initialState, authList: { ...data, ws_id }})
+            flag = data
 
+            /* 历史记录接口调取 */
             if (!data) {
-                history.push('/500')
+                history.push(`/500?page={location.href}`)
                 return
             }
-        }
-
-        const { state } = locationHistory as any
-        /* 没有history state && fetchWorkspaceHistoryRecord 未请求记录history接口*/
-        if (state?.fetchWorkspaceHistoryRecord) {
-            history.replace(locationHistory.pathname, undefined)
-        } else {
-            enterWorkspaceHistroy({ ws_id })
         }
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
@@ -44,6 +36,11 @@ export default (props: any) => {
 
         if (sys_role_title !== 'sys_admin' && !ws_role_title) {
             history.push({ pathname: '/401', state: ws_id })
+            return
+        }
+
+        if (ws_id && flag.first_entry) {
+            history.push(`/ws/${ws_id}/workspace/initSuccess`)
             return
         }
     }
