@@ -82,6 +82,9 @@ const text =  {
   'callback_api.icons': 'the T-One carries the Job information and proactively requests the API in POST mode when the Job status changes.',
   'callback_api.tips': 'Check the callback  help docs for details',
   'callback_api.help.document': 'help docs for details',
+  'job_timeout.label': 'Job Timeout',
+  'job_timeout.placeholder': 'Enter the URL of the Job Timeout',
+  
 };
 
 export default Object.keys(text).reduce((p, key) => {
