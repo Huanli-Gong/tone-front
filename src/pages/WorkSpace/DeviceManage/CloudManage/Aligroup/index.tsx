@@ -88,7 +88,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     }
 
     useEffect(() => {
-        getList({ ...params, cluster_type: 'aliyun', is_instance: + isInstance })
+        getList({ ...params, cluster_type: 'aliyun', is_instance: + isInstance, ws_id })
     }, [params, isInstance]);
 
     const { width: windowWidth } = useClientSize()

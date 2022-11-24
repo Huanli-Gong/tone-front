@@ -5,7 +5,7 @@ import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined, DownOu
 import DeviceDetail from '../Components/DeviceDetail'
 import AddDevice from './Components/AddDevice'
 import { StateBadge } from '../Components'
-import SearchInput from '@/pages/WorkSpace/TestSuiteManage/components/SearchInput'
+import SearchInput from '@/components/Public/SearchInput';
 import SelectTags from '@/components/Public/SelectTags';
 import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectCheck'
 import CommonPagination from '@/components/CommonPagination'
@@ -242,7 +242,7 @@ const Standalone = (props: any, ref: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: urlParmas.ip ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip: ip.trim(), page_num: 1 })} />
+                <SearchInput confirm={confirm} onConfirm={(ip: string) => setUrlParams({ ...urlParmas, ip, page_num: 1 })} />
             )
         },
         {
