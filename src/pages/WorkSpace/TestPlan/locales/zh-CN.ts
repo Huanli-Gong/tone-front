@@ -163,6 +163,7 @@ export default {
   'plan.success': '成功',
   'plan.fail': '失败',
   'plan.next_time': '下次触发时间',
+  'plan.last_time': '最近一次触发时间',
   //
   'plan.build.stage': 'Build阶段',
   'plan.build.detail': 'Build详情',
