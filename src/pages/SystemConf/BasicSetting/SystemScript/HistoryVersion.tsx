@@ -1,8 +1,6 @@
 import React , { useState , useEffect, forwardRef , useImperativeHandle , useMemo } from 'react'
 import { Modal, Row , Col , Space , Typography, Button, Spin, Empty , Tooltip } from 'antd'
 import { useRequest, useIntl, FormattedMessage } from 'umi'
-import 'highlight.js/styles/default.css'
-import 'highlight.js/styles/railscasts.css'
 
 import styles from './index.less'
 import Highlight from 'react-highlight'

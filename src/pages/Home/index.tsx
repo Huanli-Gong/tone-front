@@ -10,7 +10,7 @@ import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
 import LogoEllipsis from '@/components/LogoEllipsis/index'
 import _ from 'lodash'
-import { queryHelpDocList } from '../HelpDocument/services'
+import { queryDocList } from '@/pages/DOC/services'
 import HomePush from './Component/HomePush'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
@@ -153,7 +153,7 @@ export default (): React.ReactNode => {
     }
 
     const wsHelpDoc = async () => {
-        const { data } = await queryHelpDocList()
+        const { data } = await queryDocList()
         if (Array.isArray(data)) {
             setHelps(data)
         }

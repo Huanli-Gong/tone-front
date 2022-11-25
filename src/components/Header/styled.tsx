@@ -13,7 +13,7 @@ export const HeaderContainer = styled(Row)`
 export const LogoWrapper = styled(Row)`
     cursor:pointer;
     h3 {
-        color:#fff;
+        color:#fff!important;
         margin-bottom:0;
         font-weight: normal;
     }

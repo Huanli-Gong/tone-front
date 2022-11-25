@@ -2,7 +2,6 @@ import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
-import zhCN from 'antd/lib/locale/zh_CN';
 
 const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list } = process.env;
 
@@ -48,11 +47,13 @@ export default defineConfig({
         // ...darkTheme,
         'primary-color': defaultSettings.primaryColor,
     },
-    // chainWebpack,
     favicon: '/favicon.ico',
     esbuild: {},
-    // webpack5: {},
+    webpack5: {},
     fastRefresh: {},
+    nodeModulesTransform: {
+        type: 'none',
+    },
     runtimePublicPath: true,
     ignoreMomentLocale: true,
     proxy: proxy[REACT_APP_ENV || 'dev'],

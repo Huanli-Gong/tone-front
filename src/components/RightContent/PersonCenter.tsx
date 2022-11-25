@@ -2,9 +2,8 @@ import React, { useCallback } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin, Dropdown } from 'antd';
 import ClickParam from 'antd/es/menu';
-import { useModel, useIntl, FormattedMessage } from 'umi';
+import { useModel, useIntl, FormattedMessage, request } from 'umi';
 import styles from './index.less';
-import request from 'umi-request';
 import AvatarCover from '../AvatarCover';
 
 /**
