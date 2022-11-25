@@ -56,7 +56,8 @@ const text =  {
   'please.add.comparison.group': '请添加对比组数据',
 
   'reRun.Modal.title': '导入配置',
-  'reRun.checked.suite': '同时导入测试用例',
+  'reRun.checked.suite': '同时导入所有测试用例',
+  'reRun.checked.fail_case': '仅导入TestCase测试结果为失败的用例',
   'reRun.checked.notice': '同时导入通知配置',
   'reRun.checked.inheriting_machine': '使用原Job使用的机器',
 };
