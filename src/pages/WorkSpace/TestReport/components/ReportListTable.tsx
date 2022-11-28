@@ -104,7 +104,7 @@ const ReportListTable = (props: any) => {
         dataIndex: 'project',
         filterDropdown: ({ confirm }: any) => <SelectProject 
             confirm={confirm} 
-            onConfirm={ (val: any) => setPageParam({ ...pageParam, project_id: val })} 
+            onConfirm={ (val: any) => setPageParam({ ...pageParam, project_id: val, page_num: 1 })} 
             page_size={9999} 
             ws_id={ws_id} 
         />,
@@ -119,7 +119,7 @@ const ReportListTable = (props: any) => {
         title: <FormattedMessage id="report.columns.product_version" />,
         filterDropdown: ({ confirm }: any) => <SelectProductVersion 
             confirm={confirm} 
-            onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val })} 
+            onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val, page_num: 1 })} 
             page_size={9999} 
             ws_id={ws_id} 
         />,

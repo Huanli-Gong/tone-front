@@ -188,7 +188,7 @@ export const getSearchFilter = (props: any, setProps: any, name: string, desc?: 
     filterDropdown: ({ confirm }: any) => (
         <SearchInput
             confirm={confirm}
-            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
             initVal={props[name]}
             placeholder={[desc]}
             styleObj={styleObj}
@@ -214,7 +214,7 @@ export const getUserFilter = (params: any, setParams: any, name: string) => ({
         <SelectDrop
             initVal={{ id: params[name], name: params.userName }}
             confirm={confirm}
-            onConfirm={(val: string, valName: string) => setParams({ ...params, [name]: val, userName: valName })}
+            onConfirm={(val: string, valName: string) => setParams({ ...params, [name]: val, userName: valName, page_num: 1 })}
         />
     ),
     filterIcon: <FilterFilled style={{ color: params[name] ? '#1890ff' : undefined }} />
