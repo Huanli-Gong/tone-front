@@ -1,37 +1,30 @@
-import React, { memo, useEffect, useState, useMemo } from 'react'
-import { Space, Popconfirm, message, Spin, DatePicker, Row, Col } from 'antd'
+import React, { memo, useEffect, useState } from 'react'
+import { Space, Popconfirm, message, Spin, DatePicker, Table, Divider, Button } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
 import { Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
-import SearchInput from '@/components/Public/SearchInput'
 import SelectProject from '@/components/Public/SelectProject'
-import SelectUser from '@/components/Public/SelectUser'
 import SelectProductVersion from '@/components/Public/SelectProductVersion'
 import CommonPagination from '@/components/CommonPagination'
 import { queryReportList, delReportList, } from '../services'
 import _ from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
+import { getSearchFilter, getUserFilter } from '@/components/TableFilters'
 
 const { RangePicker } = DatePicker
 const ReportListTable = (props: any) => {
     const { formatMessage } = useIntl()
     const access = useAccess()
-    const { ws_id, tab } = props
+    const { ws_id } = props
     const [pageParam, setPageParam] = useState<any>({
-        name: '',
-        project_id: [],  //创建人id
-        product_version: '',
-        creator: [],
         page_num: 1,
         page_size: 10,
-        gmt_modified:'',
         ws_id,
     })
     const [loading, setLoading] = useState<boolean>(false)
     const [dataSource, setDataSource] = useState<any>({})
-    const [autoFocus, setFocus] = useState(true)
     const pageCurrent = useStateRef(pageParam)
 
     const queryReport = async () => {
@@ -81,20 +74,13 @@ const ReportListTable = (props: any) => {
             shwoTitle: false,
         },
         className: 'no_tourist',
-        filterDropdown: ({ confirm }: any) => <SearchInput
-            confirm={confirm}
-            autoFocus={autoFocus}
-            styleObj={styleObj}
-            onConfirm={(val: any) => { setPageParam({ ...pageParam, name: val }) }}
-            currentData={{ tab }}
-            placeholder={formatMessage({ id: 'report.columns.name.placeholder' })}
-        />,
-        onFilterDropdownVisibleChange: (visible: any) => {
-            if (visible) {
-                setFocus(!autoFocus)
-            }
-        },
-        filterIcon: () => <FilterFilled style={{ color: pageParam.name ? '#1890ff' : undefined }} />,
+        ...getSearchFilter(
+            pageParam, 
+            setPageParam, 
+            'name', 
+            formatMessage({ id: 'report.columns.name.placeholder' }),
+            styleObj,
+        ),
         render: (_: any, row: any) => {
             return (
                 <PopoverEllipsis title={_ || '-'} >
@@ -116,13 +102,13 @@ const ReportListTable = (props: any) => {
         },
         width: 150,
         dataIndex: 'project',
-        filterDropdown: ({ confirm }: any) => <SelectProject autoFocus={autoFocus} confirm={confirm} onConfirm={ (val: any) => setPageParam({ ...pageParam, project_id: val })} page_size={9999} ws_id={ws_id} />,
-        onFilterDropdownVisibleChange: (visible: any) => {
-            if (visible) {
-                setFocus(!autoFocus)
-            }
-        },
-        filterIcon: () => <FilterFilled style={{ color: pageParam.project_id.length ? '#1890ff' : undefined }} />,
+        filterDropdown: ({ confirm }: any) => <SelectProject 
+            confirm={confirm} 
+            onConfirm={ (val: any) => setPageParam({ ...pageParam, project_id: val })} 
+            page_size={9999} 
+            ws_id={ws_id} 
+        />,
+        filterIcon: () => <FilterFilled style={{ color: pageParam.project_id ? '#1890ff' : undefined }} />,
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'product_version',
@@ -131,25 +117,19 @@ const ReportListTable = (props: any) => {
         },
         width: 150,
         title: <FormattedMessage id="report.columns.product_version" />,
-        filterDropdown: ({ confirm }: any) => <SelectProductVersion autoFocus={autoFocus} confirm={confirm} onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val })} page_size={9999} ws_id={ws_id} />,
-        onFilterDropdownVisibleChange: (visible: any) => {
-            if (visible) {
-                setFocus(!autoFocus)
-            }
-        },
+        filterDropdown: ({ confirm }: any) => <SelectProductVersion 
+            confirm={confirm} 
+            onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val })} 
+            page_size={9999} 
+            ws_id={ws_id} 
+        />,
         filterIcon: () => <FilterFilled style={{ color: pageParam.product_version ? '#1890ff' : undefined }} />,
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'creator',
         width: 150,
         title: <FormattedMessage id="report.columns.creator" />,
-        filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val:any) => setPageParam({ ...pageParam, creator: val })} page_size={9999} />,
-        onFilterDropdownVisibleChange: (visible: any) => {
-            if (visible) {
-                setFocus(!autoFocus)
-            }
-        },
-        filterIcon: () => <FilterFilled style={{ color: pageParam.creator && pageParam.creator.length ? '#1890ff' : undefined }} />,
+        ...getUserFilter(pageParam, setPageParam, 'creator'),
         render: (_: any) => <PopoverEllipsis title={_ || '-'} />
     }, {
         dataIndex: 'description',
@@ -163,17 +143,26 @@ const ReportListTable = (props: any) => {
         dataIndex: 'gmt_modified',
         width: 200,
         title: <FormattedMessage id="report.columns.gmt_modified" />,
-        filterDropdown: ({ confirm }: any) => <RangePicker
-            size="middle"
-            showTime={{ format: 'HH:mm:ss' }}
-            format="YYYY-MM-DD HH:mm:ss"
-            onChange={_.partial(handleSelectTime, _, _, confirm)}
-        />,
-        onFilterDropdownVisibleChange: (visible: any) => {
-            if (visible) {
-                setFocus(!autoFocus)
-            }
-        },
+        filterDropdown: ({ confirm }: any) => (
+            <>
+                <RangePicker
+                    size="middle"
+                    showTime={{ format: 'HH:mm:ss' }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    onChange={_.partial(handleSelectTime, _, _, confirm)}
+                />,
+                <Divider style={{ marginTop: '10px', marginBottom: '4px' }} />
+                <Button
+					type="text"
+					onClick={() => setPageParam({ ...pageParam, gmt_modified: undefined })}
+					size="small"
+					style={{ width: 75, border: 'none' }}
+				>
+					<FormattedMessage id="operation.reset" />
+				</Button>
+            </>
+        ),
+        
         filterIcon: () => <FilterFilled style={{ color: pageParam.gmt_modified ? '#1890ff' : undefined }} />,
         ellipsis: true,
         render: (record: any) => {
@@ -215,9 +204,10 @@ const ReportListTable = (props: any) => {
 
     return (
         <Spin spinning={loading}>
-            <ClsResizeTable
+            <Table
                 size="small"
-                rowKey="id"
+                rowKey={record => record.id}
+                key={Date.now()}
                 columns={columns}
                 pagination={false}
                 dataSource={dataSource.data || []}
