@@ -58,6 +58,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         if (code === 200) {
             getBaselinePerfData()
             message.success('添加基线成功!!!')
+            setPerfChangeVal(undefined)
         } else {
             requestCodeMessage(code, msg)
         }
@@ -85,6 +86,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 if (_) {
                     setData(_)
                 }
+                setPerfChangeVal(undefined)
             }
         }),
     )
@@ -198,11 +200,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const handlePerfBaselineSelectBlur = () => {
-        if (funcsSelectVal) {
+        if (perfChangeVal) {
             const baseline_id = form.getFieldValue('baseline_id') || []
-            requestJoinBaseline(funcsSelectVal)
-            form.setFieldsValue({ baseline_id: baseline_id.concat(funcsSelectVal) })
-            setFuncsSelectVal('')
+            requestJoinBaseline(perfChangeVal)
+            form.setFieldsValue({ baseline_id: baseline_id.concat(perfChangeVal) })
             setCheckedList([])
             perBaselineSelect.current.blur()
         }
