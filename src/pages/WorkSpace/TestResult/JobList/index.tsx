@@ -72,7 +72,7 @@ const BaseTab: React.FC<IProps> = (props) => {
     const access = useAccess()
 
     const [tab, setTab] = React.useState(query.tab ?? "all")
-    const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, ...query, tab, ws_id, state: query.state || undefined })
+    const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, tab, ws_id, ...query })
     const [selectionType, setSelectionType] = React.useState()
     const [filter, setFilter] = React.useState(false)
 

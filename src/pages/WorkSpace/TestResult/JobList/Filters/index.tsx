@@ -6,7 +6,7 @@ import moment from "moment"
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from "clipboard"
 import { stringify } from "querystring"
-import { useLocation, useIntl, FormattedMessage } from "umi"
+import { useIntl, FormattedMessage } from "umi"
 import { transQuery } from "../utils"
 
 const TimerPick: React.FC = (props) => (
@@ -61,8 +61,6 @@ const transTime = (str: string) => {
 const FilterForm: React.FC<IProps> = (props) => {
     const { formatMessage } = useIntl()
     const { onChange, pageQuery } = props
-
-    const { query } = useLocation() as any
 
     const [values, setValues] = React.useState<any>(undefined)
     const [left, setLeft] = React.useState<any>({})
@@ -141,8 +139,7 @@ const FilterForm: React.FC<IProps> = (props) => {
     }, [left, right])
 
     const queryValue = React.useMemo(() => {
-        const pagesParams = { ...query, ...pageQuery }
-        const { ws_id, page_size, page_num, tab, search, ...rest } = pagesParams
+        const { ws_id, page_size, page_num, tab, search, ...rest } = pageQuery
         const { completion_time, creation_time, ...leftValues } = rest
         const transObj = (vals: any) => {
             const v = Object.keys(vals).filter((k: any) => !!vals[k]).map((name) => {
@@ -173,7 +170,7 @@ const FilterForm: React.FC<IProps> = (props) => {
         setLeft(leftValues)
         setRight({ completion_time, creation_time })
         return { r, l }
-    }, [query, pageQuery])
+    }, [pageQuery])
 
     const { r, l } = queryValue
 
