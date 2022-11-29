@@ -139,7 +139,7 @@ const FilterForm: React.FC<IProps> = (props) => {
     }, [left, right])
 
     const queryValue = React.useMemo(() => {
-        const pagesParams = { ...pageQuery, ...query }
+        const pagesParams = { ...query, ...pageQuery }
         const { ws_id, page_size, page_num, tab, ...rest } = pagesParams
         const { completion_time, creation_time, ...leftValues } = rest
         const transObj = (vals: any) => {
