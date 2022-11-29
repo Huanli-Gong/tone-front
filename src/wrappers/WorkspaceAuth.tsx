@@ -17,12 +17,12 @@ export default (props: any) => {
         if (!old_ws_id || old_ws_id !== ws_id) {
             const { data } = await person_auth({ ws_id })
             enterWorkspaceHistroy({ ws_id })
-            setInitialState({ ...initialState, authList: { ...data, ws_id }})
+            setInitialState({ ...initialState, authList: { ...data, ws_id } })
             flag = data
 
             /* 历史记录接口调取 */
             if (!data) {
-                history.push(`/500?page={location.href}`)
+                history.push(`/500?page=${location.href}`)
                 return
             }
         }

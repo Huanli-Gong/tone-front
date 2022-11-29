@@ -133,7 +133,7 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
     if (response) {
         const { status, statusText, url } = response
         if (status >= 500) {
-            history.push(`/500`)
+            history.push(`/500?page=${location.href}`)
         }
         else if (status === 401) {
             const { pathname } = location
