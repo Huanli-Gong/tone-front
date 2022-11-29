@@ -155,7 +155,12 @@ const ListTable: React.FC<IProps> = (props) => {
             render: (_: any, row: any) => {
                 return (
                     <span>
-                        {row.created_from === 'offline' && <Offline><FormattedMessage id="ws.result.list.offline" /></Offline>}
+                        {
+                            row.created_from === 'offline' &&
+                            <Offline>
+                                <FormattedMessage id="ws.result.list.offline" />
+                            </Offline>
+                        }
                         <Tooltip placement="topLeft" title={_}>
                             <Typography.Text
                                 className="result_job_hover_span"

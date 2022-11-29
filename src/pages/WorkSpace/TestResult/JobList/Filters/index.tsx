@@ -111,6 +111,7 @@ const FilterForm: React.FC<IProps> = (props) => {
     const reset = () => {
         timeRef.current?.reset(RIGHT_FILTER)
         domRef.current?.reset(LEFT_FILTER)
+
         setLeft({})
         setRight({})
     }
@@ -135,12 +136,13 @@ const FilterForm: React.FC<IProps> = (props) => {
     }
 
     useEffect(() => {
-        setValues({ ...left, ...right })
+        const { search } = pageQuery
+        setValues({ ...left, ...right, search })
     }, [left, right])
 
     const queryValue = React.useMemo(() => {
         const pagesParams = { ...query, ...pageQuery }
-        const { ws_id, page_size, page_num, tab, ...rest } = pagesParams
+        const { ws_id, page_size, page_num, tab, search, ...rest } = pagesParams
         const { completion_time, creation_time, ...leftValues } = rest
         const transObj = (vals: any) => {
             const v = Object.keys(vals).filter((k: any) => !!vals[k]).map((name) => {
