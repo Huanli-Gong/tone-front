@@ -27,6 +27,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const [baselinePerfList, setBaselinePerfList] = useState([])
 
     const [funcsSelectVal, setFuncsSelectVal] = useState<any>('')
+    const [perfChangeVal, setPerfChangeVal] = useState<any>()
     const baselineCreateModal: any = useRef(null)
     const funcsBaselineSelect: any = useRef(null)
     const perBaselineSelect: any = useRef(null)
@@ -184,7 +185,9 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const handleFuncsBaselineSelectSearch = (val: any) => {
         setFuncsSelectVal(val)
     }
-
+    const handlePerfBaselineVal = (val: any) => {
+        setPerfChangeVal(val)
+    }
     const handleFuncsBaselineSelectBlur = () => {
         const baselineNames = form.getFieldValue('baseline_name_list') || []
         if (funcsSelectVal) {
@@ -257,8 +260,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     // className={styles.pers_select}
                                     listHeight={160}
                                     getPopupContainer={node => node.parentNode}
-                                    onSearch={handleFuncsBaselineSelectSearch}
-                                    // onBlur={handlePerfBaselineSelectBlur}
+                                    onSearch={handlePerfBaselineVal}
                                     ref={perBaselineSelect}
                                     defaultActiveFirstOption={false}
                                     filterOption={
@@ -269,20 +271,24 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     dropdownRender={menu => (
                                         <>
                                             {menu}
-                                            <Divider style={{ margin: '8px 0' }} />
                                             {
-                                                accessible &&
-                                                <div
-                                                    style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
-                                                    onClick={handlePerfBaselineSelectBlur}
-                                                >
-                                                    <span>
-                                                        <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
-                                                        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
-                                                            <FormattedMessage id="ws.result.details.create.baseline" />
-                                                        </span>
-                                                    </span>
-                                                </div>
+                                                perfChangeVal && !!perfChangeVal.length && <>
+                                                    <Divider style={{ margin: '8px 0' }} />
+                                                    {
+                                                        accessible &&
+                                                        <div
+                                                            style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
+                                                            onClick={handlePerfBaselineSelectBlur}
+                                                        >
+                                                            <span>
+                                                                <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                                <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                                    <FormattedMessage id="ws.result.details.create.baseline" />
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                </>
                                             }
                                         </>
                                     )}
