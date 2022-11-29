@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, message } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
-import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
+import { evnPrepareState, tooltipTd } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
@@ -102,7 +102,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'result',
@@ -183,7 +183,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             requestCodeMessage(code, msg)
         }
     }
-    
+
     return (
         <div>
             <ResizeTable

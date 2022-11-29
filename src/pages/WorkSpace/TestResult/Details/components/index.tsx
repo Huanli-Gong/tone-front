@@ -1,11 +1,12 @@
-import React, { useRef, useEffect, useState, useLayoutEffect } from 'react'
-import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb, Typography } from 'antd'
+import React, { useRef, useEffect, useState } from 'react'
+import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Clipboard from 'clipboard'
-import { history, useParams, useIntl, FormattedMessage  } from 'umi'
+import { history, useParams, useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import { AccessTootip } from '@/utils/utils';
+import { useCopyText } from '@/utils/hooks'
 
 export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
     const { ws_id }: any = useParams()
@@ -61,48 +62,13 @@ export const copyHook = ({ className }: CopyHookProps) => {
     useEffect(() => {
         const clipboard = new Clipboard(className)
         clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}) )
+            message.success(formatMessage({ id: 'request.copy.success' }))
             e.clearSelection();
         })
         return () => {
             clipboard.destroy()
         }
     }, [])
-}
-
-// 与copy hook配合使用 className btn name
-export const ellipsisCopyColumn = (_: any, width: any = '100%') => {
-    if (!_) return '-'
-
-    const boxRef: any = useRef()
-    const [show, setShow] = useState(false)
-
-    useEffect(() => {
-        const clientWidth = boxRef.current.clientWidth
-        const scrollWidth = boxRef.current.scrollWidth
-        setShow(clientWidth < scrollWidth)
-    }, [])
-
-    return (
-        show ?
-            <Row className={styles.ellips_copy_column} style={{ width }}>
-                <div style={{ width: 'calc( 100% - 28px)' }} className={styles.ellips_copy_column}>{_}</div>
-                <span
-                    className="ellips_copy_btn"
-                    style={{ color: '#4B88DD', cursor: 'pointer' }}
-                    data-clipboard-text={_}
-                >
-                    <FormattedMessage id="operation.copy" />
-                </span>
-            </Row> :
-            <div
-                ref={boxRef}
-                style={{ width }}
-                className={styles.ellips_copy_column}
-            >
-                {_}
-            </div>
-    )
 }
 
 export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit, access }) => {
@@ -121,49 +87,59 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
             {
                 <Row style={{ width }} justify="start" align="middle">
                     <Tooltip placement="topLeft" title={title}>
-                        <span 
-                            style={{ maxWidth:54, overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap' }}
+                        <span
+                            style={{ maxWidth: 54, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                         >
                             {title || '-'}
                         </span>
                     </Tooltip>
                     {edit}
-                </Row> 
+                </Row>
             }
         </div >
     )
 }
 
-export const copyTooltipColumn = (defaultText: string = '-', formatMessage?: any) => ({
+export const CopyTextBtn: React.FC<{ text: string }> = ({ text }) => {
+    const intl = useIntl()
+
+    const copyText = useCopyText(intl.formatMessage({ id: 'request.copy.success' }))
+    return (
+        <span
+            style={{ cursor: 'pointer', color: '#1890ff' }}
+            onClick={() => copyText(text)}
+        >
+            {intl.formatMessage({ id: 'operation.copy', defaultMessage: "复制" })}
+        </span>
+    )
+}
+
+export const copyTooltipColumn = (defaultText: string = '-') => ({
     ellipsis: {
         showTitle: false,
     },
-    render: (_: any) => (
-        _ ?
-            <Tooltip
-                overlayClassName={styles.tootip_overflow}
-                placement='topLeft'
-                title={
-                    <Row>
-                        <Col span={24}>{_}</Col>
-                        <Col span={24}>
-                            <Row justify="center">
-                                <span
-                                    className="test_result_tooptip_btn"
-                                    style={{ cursor: 'pointer', color: '#1890ff' }}
-                                    data-clipboard-text={_}
-                                >
-                                    {formatMessage ? formatMessage({id: 'operation.copy'}) : '复制'}
-                                </span>
-                            </Row>
-                        </Col>
-                    </Row>
-                }
-            >
-                {_}
-            </Tooltip> :
-            defaultText
-    )
+    render: (_: any) => {
+        return (
+            _ ?
+                <Tooltip
+                    overlayClassName={styles.tootip_overflow}
+                    placement='topLeft'
+                    title={
+                        <Row>
+                            <Col span={24}>{_}</Col>
+                            <Col span={24}>
+                                <Row justify="center">
+                                    <CopyTextBtn text={_} />
+                                </Row>
+                            </Col>
+                        </Row>
+                    }
+                >
+                    {_}
+                </Tooltip> :
+                defaultText
+        )
+    }
 })
 
 export const compareResultFontColor = (result: string) => {
@@ -174,9 +150,9 @@ export const compareResultFontColor = (result: string) => {
 }
 
 export const compareResultSpan = (track_result: string, result: string, formatMessage: any) => {
-    if (track_result === 'decline') return <span style={{ color: '#C84C5A' }}>{formatMessage({id: `ws.result.details.${track_result}`})}</span>
-    if (track_result === 'normal') return <span style={{ color: '#000000' }}>{formatMessage({id: `ws.result.details.${track_result}`})}</span>
-    if (track_result === 'increase') return <span style={{ color: '#81BF84' }}>{formatMessage({id: `ws.result.details.${track_result}`})}</span>
+    if (track_result === 'decline') return <span style={{ color: '#C84C5A' }}>{formatMessage({ id: `ws.result.details.${track_result}` })}</span>
+    if (track_result === 'normal') return <span style={{ color: '#000000' }}>{formatMessage({ id: `ws.result.details.${track_result}` })}</span>
+    if (track_result === 'increase') return <span style={{ color: '#81BF84' }}>{formatMessage({ id: `ws.result.details.${track_result}` })}</span>
     return result || '-'
 
 }
@@ -201,7 +177,7 @@ const TooltipStateTag: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     return (
         <Tooltip
-            title={formatMessage({ id: 'ws.result.details.job_state'})} // "Job状态"
+            title={formatMessage({ id: 'ws.result.details.job_state' })} // "Job状态"
             placement="bottom"
         >
             <StateTagCls
@@ -259,13 +235,13 @@ export const JobListStateTag: React.FC<any> = (props) => {
             return (
                 <Space size={0}>
                     <CustomStateTag {...props}>{state}</CustomStateTag>
-                    <QuestionPopover title={formatMessage({ id: 'ws.result.details.not.assigned.server'})} />
+                    <QuestionPopover title={formatMessage({ id: 'ws.result.details.not.assigned.server' })} />
                 </Space>
             )
         return (
             <Space size={0}>
                 <CustomStateTag {...props}>{state}</CustomStateTag>
-                <QuestionPopover title={formatMessage({ id: 'ws.result.details.running,please.wait'})} />
+                <QuestionPopover title={formatMessage({ id: 'ws.result.details.running,please.wait' })} />
             </Space>
         )
     }
@@ -333,22 +309,10 @@ export const ResultTdPopver: React.FC<any> = (
         min_value,
         metric,
         result,
-        rowkey
     }
 ) => {
     const { formatMessage } = useIntl()
-    const id = `copyColumnTd${rowkey || ''}`
-    useEffect(() => {
-        const clipboard = new Clipboard('#' + id)
-        clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}) )
-            e.clearSelection();
-        })
-        return () => {
-            clipboard && clipboard.destroy()
-        }
-    }, [])
-
+    const handleCopyText = useCopyText(formatMessage({ id: 'request.copy.success' }))
     const fixedNum = (num: any) => num ? new Number(num).toFixed(2) : null
 
     const max = fixedNum(max_value)
@@ -382,9 +346,8 @@ CV:  ${cv}`
                 <Row justify="space-between">
                     <b>{title}</b>
                     <span
-                        id={id}
+                        onClick={() => handleCopyText(copyText)}
                         style={{ color: '#1890FF', cursor: 'pointer', marginLeft: '8px' }}
-                        data-clipboard-text={copyText}
                     >
                         <FormattedMessage id="operation.copy" />
                     </span>

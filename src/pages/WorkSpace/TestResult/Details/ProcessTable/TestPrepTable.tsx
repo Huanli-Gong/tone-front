@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import { Table, Card, message, Button } from 'antd'
+import { Table, Card, Button } from 'antd'
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
-import Clipboard from 'clipboard'
 import ServerLink from '@/components/MachineWebLink/index';
 import { queryProcessPrepareList } from '../service'
 import { useRequest, useIntl, FormattedMessage } from 'umi'
@@ -107,33 +106,22 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         return source
     }
 
-    useEffect(() => {
-        const clipboard = new Clipboard('.test_result_tooptip_btn')
-        clipboard.on('success', function (e) {
-            message.success(formatMessage({id: 'request.copy.success'}))
-            e.clearSelection();
-        })
-        return () => {
-            clipboard.destroy()
-        }
-    }, [])
-
     const columns = [
         {
             dataIndex: 'mode',
-            title: <FormattedMessage id="ws.result.details.mode"/>,
-            width: 80,
+            title: <FormattedMessage id="ws.result.details.mode" />,
             ellipsis: {
                 showTitle: false
             },
+            width: 80,
             render: (_: any) => {
                 return <FormattedMessage id={matchMode(_)} defaultMessage={_ || '-'} />
             },
         },
         {
             dataIndex: 'server',
-            title: <FormattedMessage id="ws.result.details.test.server"/>,
             width: 120,
+            title: <FormattedMessage id="ws.result.details.test.server" />,
             ellipsis: {
                 showTitle: false
             },
@@ -141,10 +129,10 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 if (row.mode === '集群') {
                     return <EllipsisPulic title={_} />
                 } else {
-                    return <ServerLink 
-                        val={_} 
+                    return <ServerLink
+                        val={_}
                         param={row.server_id}
-                        provider={provider_name} 
+                        provider={provider_name}
                         description={row.server_description}
                     />
                 }
@@ -152,26 +140,28 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         },
         {
             dataIndex: 'stage',
-            title: <FormattedMessage id="ws.result.details.stage"/>,
-            width: 80,
+            title: <FormattedMessage id="ws.result.details.stage" />,
             ellipsis: {
                 showTitle: false
             },
+            width: 80,
             render: (_: any) => _ || '-'
         },
         {
             dataIndex: 'state',
-            title: <FormattedMessage id="ws.result.details.state"/>,
-            width: 80,
+            title: <FormattedMessage id="ws.result.details.state" />,
             ellipsis: {
                 showTitle: false
             },
             render: evnPrepareState
         },
+    ]
+    const childColumns = [
+        ...columns,
         {
             dataIndex: 'result',
-            title: <FormattedMessage id="ws.result.details.output.results"/>,
-            width: 130,
+            title: <FormattedMessage id="ws.result.details.output.results" />,
+            width: 100,
             ...tooltipTd('Nothing to do'),
         },
         {
@@ -181,32 +171,30 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 showTitle: false
             },
             width: 80,
-            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'gmt_created',
-            title: <FormattedMessage id="ws.result.details.start_time"/>,
-            width: 130,
+            title: <FormattedMessage id="ws.result.details.start_time" />,
             ...tooltipTd(),
         },
         {
             dataIndex: 'gmt_modified',
-            title: <FormattedMessage id="ws.result.details.finish_time"/>,
-            width: 130,
+            title: <FormattedMessage id="ws.result.details.finish_time" />,
             ...tooltipTd(),
         },
         {
-            title: <FormattedMessage id="ws.result.details.view.log"/>,
+            title: <FormattedMessage id="ws.result.details.view.log" />,
             width: 80,
             ellipsis: {
                 showTitle: false
             },
             render: (_: any) => {
-                const strLocals = formatMessage({id: 'ws.result.details.log'})
+                const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
                 if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
                     if (_.log_file)
-                        return  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
+                        return <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
                 }
                 return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
             }
@@ -217,14 +205,14 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         {},
         {
             dataIndex: 'server',
-            title: <FormattedMessage id="ws.result.details.test.server"/>,
+            title: <FormattedMessage id="ws.result.details.test.server" />,
             width: 120,
             render: (_: any, row: any) => (
                 _ ?
-                    <ServerLink 
-                        val={_} 
+                    <ServerLink
+                        val={_}
                         param={row.items[0]?.server_id}
-                        provider={provider_name} 
+                        provider={provider_name}
                     />
                     : '-'
             )
@@ -234,7 +222,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
 
     return (
         <Card
-            title={<FormattedMessage id="ws.result.details.test.preparation"/>}
+            title={<FormattedMessage id="ws.result.details.test.preparation" />}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none', borderTop: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}
@@ -249,6 +237,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                 pagination={false}
                 scroll={{ x: '100%' }}
                 expandable={{
+                    columnWidth: 47,
                     expandedRowClassName: () => 'expanded-row-padding-no',
                     expandedRowKeys: expandedKeys,
                     onExpand: (expanded: any, record) => {
@@ -281,7 +270,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
                             return (
                                 <ResizeTable
                                     dataSource={record.items}
-                                    columns={columns}
+                                    columns={childColumns}
                                     rowKey="rowKey"
                                     size="small"
                                     showHeader={false}
