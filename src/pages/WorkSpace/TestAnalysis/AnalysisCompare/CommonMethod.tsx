@@ -120,7 +120,7 @@ const getSelectedDataFn = (
         } else {
             arr.push(item.id)
         }
-        group_jobs.push({ job_list: arr })
+        group_jobs.push({ job_list: arr, is_baseline: item.type === 'job' ? 0 : 1 })
     })
     Object.values(suite).forEach((obj: any) => {
         obj.base_index = baseIndex

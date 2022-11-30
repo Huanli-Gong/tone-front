@@ -353,8 +353,16 @@
             margin-bottom: 20px;
             
         } 
-        .job_text{
-            margin-top: 26px;
+        .job_text { 
+            margin-top: 20px;
+        }
+        .job_test{
+            margin-top: 20px;
+            :global {
+                .ant-tabs-nav > .ant-tabs-nav-wrap {
+                    padding-left: 0px !important;
+                }
+            }
         }
     }
     .footer{

@@ -134,7 +134,7 @@ export default (props: any) => {
                         product_version: obj.product_version || name,
                         members: obj.members,
                         name,
-                        type: 'job',
+                        type: '',
                         id: +new Date() + groupDataCopy.length
                     }
                     groupDataCopy.push(addGroup)
@@ -174,7 +174,7 @@ export default (props: any) => {
                         product_version: obj.product_version || name,
                         members: obj.members,
                         name,
-                        type: 'job',
+                        type: '',
                         id: +new Date() + groupDataCopy.length
                     }
                     groupDataCopy.push(addGroup)
@@ -212,7 +212,7 @@ export default (props: any) => {
         }
         return ''
     }
-    const handleAddJobGroup = (type = 'job') => {
+    const handleAddJobGroup = (type = '') => {
         const arr = _.cloneDeep(groupData)
         const name = addGroupNameFn() || `对比组${groupData.length + 1}`
         const addGroup = {
@@ -349,15 +349,21 @@ export default (props: any) => {
     const handleStartAnalysis = () => {
         if (isSureOk()) return;
         let num = 0
+        let flag = false
         groupData.forEach((item: any) => {
             if (item.members.length > 0) num++
+            flag = item.type === 'baseline'
         })
         if (num > 1 && baselineGroupIndex === -1) {
             setLabelBlinking(true)
             const localStr = formatMessage({id: 'analysis.please.set.the.benchmark.group'})
             return message.warning(localStr)
         }
+        if(num === 1 && flag){
+            return message.warning('请添加对比组')
+        }
         setVisibleBaseGroup(true)
+        return
         // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
     }
 
@@ -613,9 +619,9 @@ export default (props: any) => {
 
     const addGroupTypeFn = () => {
         if (!currentEditGroup) return
-        if (currentEditGroup.type === 'baseline') {
-            return <AddBaseline ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
-        }
+        // if (currentEditGroup.type === 'baseline') {
+        //     return <AddBaseline ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
+        // }
         if (currentEditGroup.type === 'plan') {
             return <AddPlan ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
         }
@@ -923,13 +929,12 @@ export default (props: any) => {
                                 </div>
                             </div>
                             <Divider className={styles.line} />
-                            <div className={styles.addJobBtn} onClick={handleAddNoVersionJob}>
+                            <div className={styles.addJobBtn} onClick={handleAddNoVersionJob} >
                                 <Space>
                                     添加Job
                                     <CaretDownOutlined />
                                 </Space>
                             </div>
-                            <div style={{ height: layoutHeight - 50 - 56 - 94 - 43 }}></div>
                             {provided.placeholder}
                         </div>
                     )}
@@ -1011,10 +1016,15 @@ export default (props: any) => {
                                     {provided.placeholder}
                                 </div>
                             )}
-
                         </Droppable>
                     </Scrollbars>
                 </ul>
+                <div className={styles.addJobBtn} onClick={handleAddNoVersionJob} >
+                    <Space>
+                        添加Job
+                        <CaretDownOutlined />
+                    </Space>
+                </div>
             </>
         )
     }
@@ -1076,7 +1086,7 @@ export default (props: any) => {
                                                 )
                                             }}
                                         </Draggable>
-                                        <div>添加job</div>
+                                        <div>添加数据</div>
                                     </div>
 
                                     <div style={{ marginLeft: originType === 'test_result' ? 0 : 20 }} className={styles.group_content}>
@@ -1111,24 +1121,21 @@ export default (props: any) => {
                                                                             style={{ left: `${index * 312}px` }}
                                                                         >
                                                                             {groupItemReact(item, index)}
+                                                                            <div
+                                                                                style={{ cursor: 'pointer' }}
+                                                                                onClick={_.partial(handleAddGroupItem, groupData[index], index)}
+                                                                                className={styles.create_job_type}>
+                                                                                {  item.type === 'baseline' ? <FormattedMessage id="analysis.add.baseline" /> : <FormattedMessage id="analysis.add.job" />}
+                                                                            </div>
                                                                             {
-                                                                                item.type === 'baseline' ?
-                                                                                    <div
-                                                                                        style={{ cursor: 'pointer' }}
-                                                                                        onClick={_.partial(handleAddBaseline, _, groupData[index], index)}
-                                                                                        className={styles.create_job_type}>
-                                                                                        <FormattedMessage id="analysis.add.baseline" />
-                                                                                    </div> :
-                                                                                    <div
-                                                                                        style={{ cursor: 'pointer' }}
-                                                                                        onClick={_.partial(handleAddGroupItem, groupData[index], index)}
-                                                                                        className={styles.create_job_type}>
-                                                                                        <FormattedMessage id="analysis.add.job" />
-                                                                                    </div>
+                                                                                // <div
+                                                                                //     style={{ cursor: 'pointer' }}
+                                                                                //     onClick={_.partial(handleAddBaseline, _, groupData[index], index)}
+                                                                                //     className={styles.create_job_type}>
+                                                                                //     <FormattedMessage id="analysis.add.baseline" />
+                                                                                // </div> 
                                                                             }
-
                                                                         </div>
-
                                                                     </div>
                                                                 )
                                                             }}
