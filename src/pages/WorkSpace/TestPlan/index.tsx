@@ -132,6 +132,13 @@ const TestPlanManage = (props: any) => {
             showTitle: false
         },
         width: 170,
+    },{
+        dataIndex: 'gmt_modified',
+        title: <FormattedMessage id="plan.table.gmt_modified" />,
+        ellipsis: {
+            showTitle: false
+        },
+        width: 170,
     }, {
         title: <FormattedMessage id="Table.columns.operation" />,
         ellipsis: {
