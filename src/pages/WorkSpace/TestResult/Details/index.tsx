@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react'
-import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert } from 'antd'
+import React, { useRef, useState } from 'react'
+import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert, Popconfirm } from 'antd'
 import styles from './index.less'
-import { useRequest, history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
-import { addMyCollection, deleteMyCollection } from '@/pages/WorkSpace/TestResult/services'
+import { addMyCollection, deleteMyCollection, queryJobState } from '@/pages/WorkSpace/TestResult/services'
 import { StarOutlined, StarFilled, EditOutlined } from '@ant-design/icons'
 import Chart from './components/Chart'
 import TestResultTable from './TestRsultTable'
@@ -18,93 +18,167 @@ import NotFound from './components/404'
 import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
-import { useClientSize } from '@/utils/hooks';
-import { requestCodeMessage, AccessTootip, aligroupServer, aliyunServer, matchTestType } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, matchTestType } from '@/utils/utils';
 import _, { isNull } from 'lodash'
 
+const CAN_STOP_JOB_STATES = ['running', 'pending', 'pending_q']
+const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => {
+    const locale = getLocale() === 'en-US';
+    const widthStyle = locale ? 120 : 58
+
+    return (
+        <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
+            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>{name}</Typography.Text>
+            {
+                isLink ?
+                    <Typography.Text
+                        className={styles.test_summary_item_right}
+                        style={{ cursor: 'pointer', color: '#1890FF', width: `calc(100% - ${widthStyle}px - 16px)` }}
+                    >
+                        <span onClick={onClick}>{dataIndex || '-'}</span>
+                    </Typography.Text> :
+                    <Typography.Text className={styles.test_summary_item_right}
+                        style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}
+                    >{dataIndex || '-'}</Typography.Text>
+            }
+        </Col>
+    )
+}
+
+
+const BreadcrumbItem: React.FC<any> = (d: any) => {
+    const { ws_id } = useParams() as any
+    return (
+        <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
+            <Breadcrumb.Item >
+                <span
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => history.push(`/ws/${ws_id}/test_result`)}
+                >
+                    <FormattedMessage id="ws.result.details.test.result" />
+                </span>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item><FormattedMessage id="ws.result.details.result.details" /></Breadcrumb.Item>
+        </Breadcrumb>
+    )
+}
+
+const EditNoteBtn: React.FC<any> = (props) => {
+    const access = useAccess()
+    const { creator_id, note, refresh } = props;
+    const { id: job_id } = useParams() as any
+    const ref: any = useRef()
+
+    const handleOpenEditRemark = () => {
+        ref.current?.show({ editor_obj: 'job', job_id, note })
+    }
+
+    const noteStyle: any = {
+        paddingTop: 5,
+        marginRight: 10,
+    }
+
+    return (
+        <>
+            <Access
+                accessible={access.WsMemberOperateSelf(creator_id)}
+                fallback={
+                    <EditOutlined
+                        onClick={() => AccessTootip()}
+                        style={{ ...noteStyle }}
+                    />
+                }
+            >
+                <EditOutlined
+                    onClick={handleOpenEditRemark}
+                    style={{ ...noteStyle }}
+                />
+            </Access>
+            <EditRemarks ref={ref} onOk={refresh} />
+        </>
+
+    )
+}
 const TestResultDetails: React.FC = (props: any) => {
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
-    const widthStyle = locale ? 120: 58
-
+    const widthStyle = locale ? 120 : 58
     const { ws_id, id: job_id } = useParams() as any
 
     const access = useAccess()
     const [tab, setTab] = useState('testResult')
-    const [key, setKey] = useState(1)
     const rerunModalRef: any = useRef()
-    const editRemarkDrawer: any = useRef()
     const processTableRef: any = useRef()
-    const [collection, setCollection] = useState(false)
     const [fetching, setFetching] = React.useState(false)
     const [refreshResult, setRefreshResult] = React.useState(false)
     const allReport: any = useRef(null)
     const veiwReportHeight: any = useRef(null)
-    const timer: any = useRef(null)
     const { initialState } = useModel('@@initialState');
 
-    const { data, loading, refresh } = useRequest(
-        () => querySummaryDetail({ job_id, ws_id }),
-        {
-            formatResult: (response: any) => {
-                if (response.code === 200) {
-                    return response?.data[0] || {}
-                }
-                return {}
-            },
-            initialData: {},
+    const [loading, setLoading] = React.useState(true)
+    const [details, setDetails] = React.useState<any>({})
+
+    const timer = React.useRef<any>(null)
+
+    const queryJobDetails = async () => {
+        setLoading(true)
+        const { data, code, msg } = await querySummaryDetail({ job_id, ws_id })
+        setLoading(false)
+        if (code !== 200 || Object.prototype.toString.call(data) !== "[object Array]" || data.length === 0)
+            return setDetails({})
+
+        const [dataSource] = data
+        if (!dataSource) return setDetails({})
+        if (dataSource?.state === 'running')
+            setTab('testProgress')
+        setDetails(dataSource)
+    }
+
+    React.useEffect(() => {
+        queryJobDetails()
+        return () => {
+            timer.current && clearTimeout(timer.current)
+            setDetails({})
         }
-    )
+    }, [])
+
+    const getJobState = async () => {
+        const { state } = details
+        if (!CAN_STOP_JOB_STATES.includes(state)) return
+        const { data: { job_state }, code } = await queryJobState({ job_id, ws_id })
+        if (code !== 200) return
+        if (CAN_STOP_JOB_STATES.includes(job_state)) {
+            timer.current = setTimeout(getJobState, 5000)
+        }
+        setDetails((p: any) => ({ ...p, state: job_state }))
+    }
+
+    React.useEffect(() => {
+        const { state } = details
+        if (timer.current) setTimeout(timer.current)
+        if (state) getJobState()
+    }, [details?.state])
 
     const handleTabClick = (t: string) => {
         setTab(t)
     }
 
-    useEffect(() => {
-        data && setCollection(data.collection)
-    }, [data])
-
-    useEffect(() => {
-        if (data && JSON.stringify(data) !== '{}' && data.id) {
-            timer.current = setTimeout(() => {
-                let title = `#${data.id} ${data.name} - T-One`
-                window.document.title = title
-            }, 2000)
-        }
-        return () => {
-            clearTimeout(timer.current)
-        }
-    }, [data])
-
-    useEffect(
-        () => {
-            if (data && data.state === 'running') {
-                setTab('testProgress')
-                setKey(+ new Date())
-            }
-        }, [data]
-    )
-
-    const handleOpenEditRemark = () => {
-        editRemarkDrawer.current.show({ editor_obj: 'job', job_id, note: data.note })
-    }
-
     const handleEditTagsOk = () => {
-        message.success(formatMessage({id: 'operation.success'}) )
-        refresh()
+        message.success(formatMessage({ id: 'operation.success' }))
+        queryJobDetails()
     }
 
-    const conversion = (data: any) => {
-        if (!isNull(data.baseline_job_id)) {
-            return <a href={`/ws/${ws_id}/test_result/${data.baseline_job_id}`}># {data.baseline_job_id}</a>
+    const conversion = () => {
+        if (!isNull(details?.baseline_job_id)) {
+            return <a href={`/ws/${ws_id}/test_result/${details?.baseline_job_id}`}># {details?.baseline_job_id}</a>
         }
-        return data.baseline_name
+        return details?.baseline_name
     }
 
     const handleCollection = async () => {
-        const { msg, code } = !data.collection ? await addMyCollection({ job_id }) : await deleteMyCollection({ job_id })
+        const { msg, code } = !details.collection ? await addMyCollection({ job_id }) : await deleteMyCollection({ job_id })
         if (code !== 200) return requestCodeMessage(code, msg)
-        setCollection(!collection)
+        setDetails((p: any) => ({ ...p, collection: !p.collection, }))
     }
 
     const handleStopJob = async () => {
@@ -119,55 +193,15 @@ const TestResultDetails: React.FC = (props: any) => {
             setFetching(false)
             return
         }
-        message.success(formatMessage({id: 'operation.success'}) )
-        refresh()
-        if(tab === 'testResult'){
+        message.success(formatMessage({ id: 'operation.success' }))
+        queryJobDetails()
+        if (tab === 'testResult') {
             setRefreshResult(true)
         }
-        if(tab === 'testProgress'){
+        if (tab === 'testProgress') {
             processTableRef.current.refresh()
         }
         setFetching(false)
-    }
-
-    
-    const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => {
-        return (
-            <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
-                <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>{name}</Typography.Text>
-                {
-                    isLink ?
-                        <Typography.Text
-                            className={styles.test_summary_item_right}
-                            style={{ cursor: 'pointer', color: '#1890FF', width: `calc(100% - ${widthStyle}px - 16px)` }}
-                        >
-                            <span onClick={onClick}>{dataIndex || '-'}</span>
-                        </Typography.Text> :
-                        <Typography.Text className={styles.test_summary_item_right}
-                        style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}
-                        >{dataIndex || '-'}</Typography.Text>
-                }
-            </Col>
-        )
-    }
-
-    const EditNoteBtn: React.FC<any> = (props: any) => {
-        const { creator_id } = props;
-        let noteStyle: any = {
-            paddingTop: 5,
-            marginRight: 10,
-        }
-        return (
-            <Access
-                accessible={access.WsMemberOperateSelf(creator_id)}
-                fallback={<EditOutlined onClick={() => AccessTootip()} style={{ ...noteStyle }} />}
-            >
-                <EditOutlined
-                    onClick={handleOpenEditRemark}
-                    style={{ ...noteStyle }}
-                />
-            </Access>
-        )
     }
 
     let TextStyle: any = {
@@ -181,34 +215,23 @@ const TestResultDetails: React.FC = (props: any) => {
         WebkitLineClamp: 2,
     }
 
-    const BreadcrumbItem: React.FC<any> = (d: any) => (
-        <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
-            <Breadcrumb.Item >
-                <span style={{ cursor: 'pointer' }} onClick={() => history.push(`/ws/${ws_id}/test_result`)}><FormattedMessage id="ws.result.details.test.result"/></span>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item><FormattedMessage id="ws.result.details.result.details"/></Breadcrumb.Item>
-        </Breadcrumb>
-    )
-
     const handleReplay = () => {
-        rerunModalRef.current.show(data)
+        rerunModalRef.current.show(details)
     }
     // const { height: windowHeight } = useClientSize()
     // !["success", "fail", "skip", "stop"].includes(data.state)
-    const isShowStopButton = data && data.state !== 'success' && data.state !== 'fail' && data.state !== 'skip' && data.state !== 'stop'
 
-    const buttonType = data?.report_li?.length ? "default" : "primary"
+    const buttonType = details?.report_li?.length ? "default" : "primary"
     // 判断是"离线上传"的数据
-    const buttonDisable = data?.created_from === 'offline'
+    const buttonDisable = details?.created_from === 'offline'
     // 判断是"执行过程tab"
-    const testProgressTab = tab === 'testProgress' && isShowStopButton
 
     const getProviderName = (name: string) => new Map(
         [
-            ["内网机器", formatMessage({id: 'aligroupServer'})],
-            ["云上机器", formatMessage({id: 'aliyunServer'})],
-            ["aligroup", formatMessage({id: 'aligroupServer'})],
-            ["aliyun", formatMessage({id: 'aliyunServer'})],
+            ["内网机器", formatMessage({ id: 'aligroupServer' })],
+            ["云上机器", formatMessage({ id: 'aliyunServer' })],
+            ["aligroup", formatMessage({ id: 'aligroupServer' })],
+            ["aliyun", formatMessage({ id: 'aliyunServer' })],
         ]
     ).get(name)
 
@@ -222,55 +245,77 @@ const TestResultDetails: React.FC = (props: any) => {
     ).get(name)
 
     return (
-        <>
-            <Spin spinning={loading} className={styles.spin_style}>
-                {
-                    JSON.stringify(data) === '{}' &&
-                    <NotFound />
-                }
-                {
-                    JSON.stringify(data) !== '{}' &&
-                    <div
-                        style={{ background: '#F5F5F5', width: "100%", overflowX: "hidden", overflowY: "auto" }}
-                    >
+        <Spin spinning={loading} className={styles.spin_style}>
+            <Helmet>
+                <title>{`#${job_id} ${details?.name} - T-One`}</title>
+            </Helmet>
+            {
+                JSON.stringify(details) === '{}' ?
+                    <NotFound /> :
+                    <div style={{ background: '#F5F5F5', width: "100%", overflowX: "hidden", overflowY: "auto" }} >
                         <div style={{ minHeight: 270, marginBottom: 10, background: '#fff', padding: 20 }}>
                             <BreadcrumbItem bottomHeight={4} />
                             <div style={{ paddingLeft: 20, position: 'relative' }}>
                                 <Access accessible={access.WsTourist()}>
-                                    {!collection && <StarOutlined style={{ color: '#4F4F4F' }} className={styles.detail_collection} onClick={handleCollection} />}
-                                    {collection && <StarFilled style={{ color: '#F7B500' }} className={styles.detail_collection} onClick={handleCollection} />}
+                                    {
+                                        !details?.collection ?
+                                            <StarOutlined
+                                                style={{ color: '#4F4F4F' }}
+                                                className={styles.detail_collection}
+                                                onClick={handleCollection}
+                                            /> :
+                                            <StarFilled
+                                                style={{ color: '#F7B500' }}
+                                                className={styles.detail_collection}
+                                                onClick={handleCollection}
+                                            />
+                                    }
                                 </Access>
                                 <Row className={styles.test_result_name} align="middle">
-                                    {`#${data.id} ${data.name}`}
-                                    {data.created_from === 'offline' && <span className={styles.offline_flag}><FormattedMessage id="ws.result.list.offline"/></span>}
+                                    {`#${details?.id} ${details?.name}`}
+                                    {
+                                        details?.created_from === 'offline' &&
+                                        <span className={styles.offline_flag}>
+                                            <FormattedMessage id="ws.result.list.offline" />
+                                        </span>
+                                    }
                                 </Row>
                                 <Row >
                                     <Col span={17} >
-                                        <Row style={{ marginBottom: data.state !== 'pending' || isNull(data.pending_state_desc) ? 26 : 0 }}>
+                                        <Row style={{ marginBottom: details?.state !== 'pending' || isNull(details?.pending_state_desc) ? 26 : 0 }}>
                                             <Space>
-                                                <StateTag state={data.state} />
-                                                {data.provider_name && <Tooltip title={formatMessage({id: 'ws.result.details.provider_name'})} placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>
-                                                        {getProviderName(data.provider_name)}
-                                                    </Tag>
-                                                </Tooltip>}
-                                                {data.test_type && <Tooltip title={formatMessage({id: 'ws.result.details.test_type'})} placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>
-                                                        <FormattedMessage id={`${matchTestType(data.test_type)}.test`} defaultMessage={data.test_type} />
-                                                    </Tag>
-                                                </Tooltip>}
-                                                {data.job_type && <Tooltip title={formatMessage({id: 'ws.result.details.job_type'})} placement="bottom">
-                                                    <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{data.job_type}</Tag>
-                                                </Tooltip>}
+                                                <StateTag state={details?.state} />
+                                                {
+                                                    details?.provider_name &&
+                                                    <Tooltip title={formatMessage({ id: 'ws.result.details.provider_name' })} placement="bottom">
+                                                        <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>
+                                                            {getProviderName(details?.provider_name)}
+                                                        </Tag>
+                                                    </Tooltip>
+                                                }
+                                                {
+                                                    details?.test_type &&
+                                                    <Tooltip title={formatMessage({ id: 'ws.result.details.test_type' })} placement="bottom">
+                                                        <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>
+                                                            <FormattedMessage id={`${matchTestType(details?.test_type)}.test`} defaultMessage={details?.test_type} />
+                                                        </Tag>
+                                                    </Tooltip>
+                                                }
+                                                {
+                                                    details?.job_type &&
+                                                    <Tooltip title={formatMessage({ id: 'ws.result.details.job_type' })} placement="bottom">
+                                                        <Tag color="#F2F4F6" style={{ color: '#515B6A', margin: 0 }}>{details?.job_type}</Tag>
+                                                    </Tooltip>
+                                                }
                                             </Space>
                                         </Row>
                                         {
-                                            data.state === 'pending' && data.pending_state_desc &&
+                                            details?.state === 'pending' && details?.pending_state_desc &&
                                             <Row style={{ marginBottom: 26, marginTop: 6 }}>
                                                 <Alert
                                                     message={
                                                         <span dangerouslySetInnerHTML={{
-                                                            __html: data.pending_state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
+                                                            __html: details?.pending_state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
                                                         }} />
                                                     }
                                                     type="warning"
@@ -281,151 +326,199 @@ const TestResultDetails: React.FC = (props: any) => {
                                             </Row>
                                         }
                                         <Row className={styles.test_summary_row} >
-                                            <RenderDesItem name={formatMessage({id: 'ws.result.details.creator_name'})} dataIndex={data.creator_name} />
-                                            <RenderDesItem name={formatMessage({id: 'ws.result.details.gmt_created'})} dataIndex={data.gmt_created} />
-                                            <RenderDesItem name={formatMessage({id: 'ws.result.details.finish_time'})} dataIndex={data.end_time} />
+                                            <RenderDesItem
+                                                name={formatMessage({ id: 'ws.result.details.creator_name' })}
+                                                dataIndex={details?.creator_name}
+                                            />
+                                            <RenderDesItem
+                                                name={formatMessage({ id: 'ws.result.details.gmt_created' })}
+                                                dataIndex={details?.gmt_created}
+                                            />
+                                            <RenderDesItem
+                                                name={formatMessage({ id: 'ws.result.details.finish_time' })}
+                                                dataIndex={details?.end_time}
+                                            />
                                         </Row>
                                         <Row className={styles.test_summary_row} >
-                                            <RenderDesItem name={formatMessage({id: 'ws.result.details.project_name'})} dataIndex={data.project_name} />
-                                            <RenderDesItem name={!isNull(data.baseline_job_id)? formatMessage({id: 'ws.result.details.baseline_job'}): formatMessage({id: 'ws.result.details.baseline_test'})} dataIndex={conversion(data)} />
+                                            <RenderDesItem
+                                                name={formatMessage({ id: 'ws.result.details.project_name' })}
+                                                dataIndex={details?.project_name}
+                                            />
+                                            <RenderDesItem
+                                                name={
+                                                    !isNull(details?.baseline_job_id) ?
+                                                        formatMessage({ id: 'ws.result.details.baseline_job' }) :
+                                                        formatMessage({ id: 'ws.result.details.baseline_test' })
+                                                }
+                                                dataIndex={conversion()}
+                                            />
                                             <Col span={8} >
                                                 <Row>
-                                                    <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}><FormattedMessage id="ws.result.details.produce.version"/></Typography.Text>
-                                                    <Typography.Text className={styles.test_summary_item_right_unellipsis} style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}>{data.product_version || '-'}</Typography.Text>
+                                                    <Typography.Text
+                                                        className={styles.test_summary_item}
+                                                        style={{ width: widthStyle }}
+                                                    >
+                                                        <FormattedMessage id="ws.result.details.produce.version" />
+                                                    </Typography.Text>
+                                                    <Typography.Text
+                                                        className={styles.test_summary_item_right_unellipsis}
+                                                        style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}
+                                                    >
+                                                        {details?.product_version || '-'}
+                                                    </Typography.Text>
                                                 </Row>
                                             </Col>
                                         </Row>
                                         {
-                                            (data.plan_instance_name && data.plan_instance_id) &&
+                                            (details?.plan_instance_name && details?.plan_instance_id) &&
                                             <Row className={styles.test_summary_row} >
                                                 <RenderDesItem
-                                                    name={formatMessage({id: 'ws.result.details.plan_instance_name'})}
-                                                    dataIndex={data.plan_instance_name}
+                                                    name={formatMessage({ id: 'ws.result.details.plan_instance_name' })}
+                                                    dataIndex={details?.plan_instance_name}
                                                     isLink
-                                                    onClick={() => history.push(`/ws/${ws_id}/test_plan/view/detail/${data.plan_instance_id}`)}
+                                                    onClick={() => history.push(`/ws/${ws_id}/test_plan/view/detail/${details?.plan_instance_id}`)}
                                                 />
                                             </Row>
                                         }
                                         <Row className={styles.test_summary_row}>
-                                            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}><FormattedMessage id="ws.result.details.job.tag"/></Typography.Text>
+                                            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}><FormattedMessage id="ws.result.details.job.tag" /></Typography.Text>
                                             <TagsEditer
                                                 onOk={handleEditTagsOk}
                                                 ws_id={ws_id}
                                                 job_id={job_id}
-                                                tags={data.tags}
-                                                creator_id={data.creator}
+                                                tags={details?.tags}
+                                                creator_id={details?.creator}
                                                 accessLabel={access.WsMemberOperateSelf()}
                                             />
                                         </Row>
                                         <Row style={{ position: 'relative' }}>
                                             <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>
-                                                <FormattedMessage id="ws.result.details.test_summary"/>
+                                                <FormattedMessage id="ws.result.details.test_summary" />
                                             </Typography.Text>
-                                            <Access accessible={access.WsTourist()}>
-                                                <EditNoteBtn note={data.note} creator_id={data.creator} />
-                                            </Access>
-                                            <div style={{...TextStyle, width: `calc(100% - ${widthStyle}px - 60px)` }}>
+                                            <EditNoteBtn
+                                                note={details?.note}
+                                                creator_id={details?.creator}
+                                                refrech={queryJobDetails}
+                                            />
+                                            <div style={{ ...TextStyle, width: `calc(100% - ${widthStyle}px - 60px)` }}>
                                                 <Tooltip
-                                                    title={<span style={{ whiteSpace: 'pre-wrap' }}>{data.note}</span>}
+                                                    title={<span style={{ whiteSpace: 'pre-wrap' }}>{details?.note}</span>}
                                                     placement="topLeft"
                                                     overlayStyle={{ minWidth: 800 }}
                                                 >
-                                                    {data.note || '-'}
+                                                    {details?.note || '-'}
                                                 </Tooltip>
                                             </div>
                                         </Row>
                                     </Col>
                                     <Col span={7} style={{ position: 'relative' }}>
                                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'fix-end', width: '100%' }}>
-                                            <Chart test_type={data.test_type} data={data.case_result} plan={(data.plan_instance_name && data.plan_instance_id)} />
+                                            <Chart
+                                                test_type={details.test_type}
+                                                data={details.case_result}
+                                                plan={(details.plan_instance_name && details.plan_instance_id)}
+                                            />
                                         </div>
                                     </Col>
                                 </Row>
                             </div>
                         </div>
                         <RenderMachineItem job_id={job_id} />
-                        <RenderMachinePrompt {...data} />
+                        <RenderMachinePrompt {...details} />
                         <div style={{ background: '#fff' }}>
                             <Tabs
                                 defaultActiveKey={tab}
                                 onTabClick={handleTabClick}
                                 className={styles.result_tab_nav}
-                                key={key}
                                 tabBarExtraContent={
                                     <div style={{ display: 'flex', marginRight: 12 }}>
                                         <ViewReport
                                             viewAllReport={allReport}
                                             dreType="bottomRight"
                                             ws_id={ws_id}
-                                            jobInfo={data}
+                                            jobInfo={details}
                                             origin={'jobDetail'}
                                             stylesButton={veiwReportHeight.current}
                                         />
                                         <Access accessible={access.IsWsSetting()}>
-                                            <Button type={buttonType} onClick={handleReplay} disabled={buttonDisable} style={{ marginRight: 8 }}>
-                                                <FormattedMessage id="ws.result.details.rerun"/>
+                                            <Button
+                                                type={buttonType}
+                                                onClick={handleReplay}
+                                                disabled={buttonDisable}
+                                                style={{ marginRight: 8 }}
+                                            >
+                                                <FormattedMessage id="ws.result.details.rerun" />
                                             </Button>
                                         </Access>
-                                        <Access accessible={access.WsTourist()}>
-                                            <Access
-                                                accessible={access.WsMemberOperateSelf(data.creator)}
-                                                fallback={['running','pending','pending_q'].includes(data.state) &&  
-                                                    <Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>
-                                                        <FormattedMessage id="ws.result.details.stop"/>
+                                        <Access
+                                            accessible={access.WsMemberOperateSelf(details?.creator)}
+                                            fallback={
+                                                CAN_STOP_JOB_STATES.includes(details?.state) &&
+                                                <Button onClick={() => AccessTootip()} style={{ marginRight: 8 }}>
+                                                    <FormattedMessage id="ws.result.details.stop" />
+                                                </Button>
+                                            }
+                                        >
+                                            {CAN_STOP_JOB_STATES.includes(details?.state) &&
+                                                <Popconfirm
+                                                    placement="topRight"
+                                                    title={
+                                                        formatMessage({
+                                                            id: "ws.result.details.job.confirm.stop",
+                                                            defaultMessage: "确定要停止job吗？"
+                                                        })
+                                                    }
+                                                    onConfirm={handleStopJob}
+                                                >
+
+                                                    <Button style={{ marginRight: 8 }}>
+                                                        <FormattedMessage id="ws.result.details.stop" />
                                                     </Button>
-                                                }
-                                            >
-                                                {['running','pending','pending_q'].includes(data.state) && 
-                                                    <Button onClick={handleStopJob} style={{ marginRight: 8 }}>
-                                                        <FormattedMessage id="ws.result.details.stop"/>
-                                                    </Button>
-                                                }
-                                            </Access>
+                                                </Popconfirm>
+                                            }
                                         </Access>
                                     </div>
                                 }
                             >
                                 <Tabs.TabPane
-                                    tab={<FormattedMessage id="ws.result.details.tab.testResult"/>}
+                                    tab={<FormattedMessage id="ws.result.details.tab.testResult" />}
                                     key="testResult"
                                     style={{ overflow: "hidden" }}
                                 >
                                     <TestResultTable
-                                        creator={data.creator}
-                                        test_type={data.test_type}
+                                        creator={details.creator}
+                                        test_type={details.test_type}
                                         job_id={job_id}
-                                        cases={data.case_result}
-                                        caseResult={data.case_result}
-                                        provider_name={transProvider(data.provider_name)}
+                                        cases={details.case_result}
+                                        caseResult={details.case_result}
+                                        provider_name={transProvider(details.provider_name)}
                                         ws_id={ws_id}
                                         refreshResult={refreshResult}
                                     />
                                 </Tabs.TabPane>
-                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testProgress"/>}
-                                    key="testProgress" disabled={data.created_from === 'offline'} >
+                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testProgress" />}
+                                    key="testProgress" disabled={details?.created_from === 'offline'} >
                                     <ProcessTable
                                         job_id={job_id}
                                         onRef={processTableRef}
-                                        test_type={data.test_type}
-                                        provider_name={transProvider(data.provider_name)}
+                                        test_type={details?.test_type}
+                                        provider_name={transProvider(details?.provider_name)}
                                     />
                                 </Tabs.TabPane>
-                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testConfig"/>}
+                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testConfig" />}
                                     key="testConfig" >
                                     <TestSettingTable
-                                        jt_id={data.job_type_id}
-                                        provider_name={transProvider(data.provider_name)}
-                                        test_type={data.test_type}
+                                        jt_id={details?.job_type_id}
+                                        provider_name={transProvider(details?.provider_name)}
+                                        test_type={details?.test_type}
                                     />
                                 </Tabs.TabPane>
                             </Tabs>
                         </div>
                     </div>
-                }
-            </Spin>
-            <EditRemarks ref={editRemarkDrawer} onOk={refresh} />
+            }
             <ReRunModal ref={rerunModalRef} />
-        </>
+        </Spin >
     )
 }
 
