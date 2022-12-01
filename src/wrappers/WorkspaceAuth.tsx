@@ -16,10 +16,20 @@ export default (props: any) => {
 
         if (!old_ws_id || old_ws_id !== ws_id) {
             const { data } = await person_auth({ ws_id })
-            enterWorkspaceHistroy({ ws_id })
             setInitialState({ ...initialState, authList: { ...data, ws_id } })
             flag = data
 
+            enterWorkspaceHistroy({ ws_id })
+                .then((res) => {
+                    const { code } = res
+                    if (code === 200)
+                        setInitialState((p: any) => ({ ...p, authList: { ...p.authList, first_entry: false } }))
+                })
+
+            if (data.first_entry) {
+                history.push(`/ws/${ws_id}/workspace/initSuccess`)
+                return
+            }
             /* 历史记录接口调取 */
             if (!data) {
                 history.push(`/500?page=${location.href}`)
@@ -36,11 +46,6 @@ export default (props: any) => {
 
         if (sys_role_title !== 'sys_admin' && !ws_role_title) {
             history.push({ pathname: '/401', state: ws_id })
-            return
-        }
-
-        if (ws_id && flag.first_entry) {
-            history.push(`/ws/${ws_id}/workspace/initSuccess`)
             return
         }
     }

@@ -6,7 +6,6 @@ import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
-import { enterWorkspaceHistroy } from '@/services/Workspace';
 import 'animate.css';
 
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
@@ -32,10 +31,9 @@ export async function getInitialState(): Promise<any> {
         const matchArr = pathname.match(wsReg)
         const ws_id = matchArr ? matchArr[1] : undefined
 
-        const { data, code, msg } = await person_auth({ ws_id })
+        const { data, code } = await person_auth(ws_id && { ws_id })
         if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
             history.push(`/500?page=${location.href}`)
-            console.log(msg)
             return initialState
         }
 
@@ -62,16 +60,11 @@ export async function getInitialState(): Promise<any> {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState
             }
-
-            enterWorkspaceHistroy({ ws_id })
         }
 
         return {
             ...initialState,
-            authList: {
-                ws_id,
-                ...data,
-            },
+            authList: data
         }
     }
 
