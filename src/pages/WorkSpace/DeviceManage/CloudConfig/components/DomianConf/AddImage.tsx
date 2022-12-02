@@ -168,7 +168,7 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title}
+                title={title === 'new' ? <FormattedMessage id="device.new.image"/>: <FormattedMessage id="device.edit.image"/>}
                 width="375"
                 onClose={handleClose}
                 visible={visible}

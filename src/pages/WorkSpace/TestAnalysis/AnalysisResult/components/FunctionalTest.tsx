@@ -35,7 +35,6 @@ const ReportTestFunc: React.FC<any> = (props) => {
     const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
-    const [btnName, setBtnName] = useState<string>('')
     const [num, setNum] = useState(0)
     const [btn, setBtn] = useState<boolean>(false)
     const [filterName, setFilterName] = useState('All')
@@ -139,7 +138,6 @@ const ReportTestFunc: React.FC<any> = (props) => {
         setBtn(!btn)
     }
     useEffect(() => {
-        setBtnName(btn ? formatMessage({ id: 'analysis.folded.all' }) : formatMessage({ id: 'analysis.expand.all' }))
         setExpandKeys([])
         setExpandKeys(
             btn ?
@@ -181,7 +179,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
         return (
             <TestItemFunc>
                 <Space>
-                    <Button onClick={OpenSubCase}>{btnName}</Button>
+                    <Button onClick={OpenSubCase}><FormattedMessage id={btn ? 'analysis.folded.all': 'analysis.expand.all'}/></Button>
                     <Space>
                         <Typography.Text><FormattedMessage id="analysis.filter" />: </Typography.Text>
                         <Select defaultValue="All" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
@@ -254,7 +252,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                             rotate={expand ? 90 : 0}
                                                                             onClick={() => hanldeExpand(conf.conf_id)}
                                                                         />
-                                                                        <Typography.Text>{conf.conf_name}</Typography.Text>
+                                                                        <Typography.Text style={{marginLeft: '12px'}}>{conf.conf_name}</Typography.Text>
                                                                     </EllipsisPulic>
                                                                 </CaseTitle>
                                                                 {

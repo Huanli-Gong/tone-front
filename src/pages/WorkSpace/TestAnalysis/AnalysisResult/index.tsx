@@ -280,7 +280,7 @@ const Report = (props: any) => {
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
                                 {!form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
-                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="analysis.share" />
+                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="operation.share" />
                                 </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
@@ -290,6 +290,7 @@ const Report = (props: any) => {
                                 </Access>
                             </span>
                         </ResultTitle>
+
                         <ResultContent >
                             {
                                 (environmentResult && JSON.stringify(environmentResult) !== '{}') &&
