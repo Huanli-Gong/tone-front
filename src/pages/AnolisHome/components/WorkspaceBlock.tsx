@@ -4,8 +4,8 @@ import React from "react"
 import { useModel, history } from "umi"
 
 import styled from "styled-components"
-import { getEnterWorkspaceState } from "../TabTable.tsx/TableColumns"
 import { useSize } from "ahooks"
+import { jumpWorkspace } from "@/utils/utils"
 
 const Container = styled.div`
     height: 96px;
@@ -28,7 +28,7 @@ const Container = styled.div`
 `
 
 const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
-    const { show_name, owner_name, avatar, description } = props
+    const { show_name, owner_name, avatar, description, id } = props
 
     const { initialState } = useModel("@@initialState")
     const { user_id } = initialState?.authList || {}
@@ -37,8 +37,8 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
     const size = useSize(ref)
 
     const handleEnterWs = async () => {
-        const path = await getEnterWorkspaceState(props, user_id)
-        path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
+        if (!user_id) return
+        history.push(jumpWorkspace(id))
     }
 
     return (

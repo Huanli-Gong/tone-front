@@ -26,7 +26,7 @@ export default (props: any) => {
                         setInitialState((p: any) => ({ ...p, authList: { ...p.authList, first_entry: false } }))
                 })
 
-            if (data.first_entry) {
+            if (data.first_entry && data.ws_role_title === "ws_owner") {
                 history.push(`/ws/${ws_id}/workspace/initSuccess`)
                 return
             }
