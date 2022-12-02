@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Table } from 'antd'
-import { useRequest, useIntl, FormattedMessage } from 'umi'
+import { useRequest, useIntl, FormattedMessage, useParams } from 'umi'
 import _ from 'lodash'
 import { queryPlanResultList } from '../services'
 
@@ -14,9 +14,10 @@ const styleObj = {
 }
 const ViewTable = (props: any) => {
     const { formatMessage } = useIntl()
-    const { planId, wsId, setSelectedRowFn, selectedRow, } = props
-    const selectedPlanId = window.sessionStorage.getItem('selectedPlanId') || '' // 已选的计划Id
-    const page_default_params = { plan_id: planId, ws_id: wsId, page_num: 1, page_size: 9999 }
+    const { ws_id } = useParams() as any
+    const { planId, setSelectedRowFn, selectedRow, } = props
+    // const selectedPlanId = window.sessionStorage.getItem('selectedPlanId') || '' // 已选的计划Id
+    const page_default_params = { plan_id: planId, ws_id, page_num: 1, page_size: 9999 }
     let [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [autoFocus, setFocus] = useState(true)
     const [params, setParams] = useState(page_default_params)
@@ -87,7 +88,7 @@ const ViewTable = (props: any) => {
             autoFocus={autoFocus}
             styleObj={styleObj}
             onConfirm={(val: any) => { setParams({ ...params, name: val }); run({ ...params, name: val }) }}
-            placeholder={formatMessage({id: 'analysis.plan.name.placeholder'})}
+            placeholder={formatMessage({ id: 'analysis.plan.name.placeholder' })}
         />,
         onFilterDropdownVisibleChange: (visible: any) => {
             if (visible) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Collapse, Spin, Row, Divider, Space, Button, message } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import styled from 'styled-components'
 import CommonPagination from '@/components/CommonPagination';
 import { RenderDataRow } from './'
@@ -30,10 +30,11 @@ const defaultResult = {
 }
 
 const ViewCollapse = (props: any) => {
+    const { ws_id } = useParams() as any
     const { formatMessage } = useIntl()
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
-    const { ws_id, onCancel, onOk, currentGroup } = props
+    const { onCancel, onOk, currentGroup } = props
     const defaultVersion = currentGroup && _.get(currentGroup, 'members[0].product_version')
     const page_default_params: any = { page_num: 1, page_size: 10, ws_id, product_version: defaultVersion || '' }
     const [dataSource, setDataSource] = useState(defaultResult)
@@ -137,7 +138,7 @@ const ViewCollapse = (props: any) => {
                                             </Row>
                                         }
                                     >
-                                        <ViewTable selectedRow={selectedRow} planId={String(item.id)} wsId={ws_id} setSelectedRowFn={setSelectedRowFn} />
+                                        <ViewTable selectedRow={selectedRow} planId={String(item.id)} setSelectedRowFn={setSelectedRowFn} />
                                     </Collapse.Panel>
                                 )
                             })
