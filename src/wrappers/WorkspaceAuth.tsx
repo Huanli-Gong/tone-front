@@ -8,7 +8,18 @@ export default (props: any) => {
     const locationHistory = useLocation()
     const { ws_id } = useParams() as any
     const { initialState, setInitialState } = useModel('@@initialState')
-    const { authList } = initialState
+    const { authList, fetchHistory } = initialState
+
+    const getHistoryFetcher = () => enterWorkspaceHistroy({ ws_id })
+        .then((res) => {
+            const { code } = res
+            if (code === 200)
+                setInitialState((p: any) => ({
+                    ...p,
+                    authList: { ...p.authList, first_entry: false },
+                    fetchHistory: true
+                }))
+        })
 
     const checkAccess = async () => {
         let flag = authList
@@ -19,12 +30,8 @@ export default (props: any) => {
             setInitialState({ ...initialState, authList: { ...data, ws_id } })
             flag = data
 
-            enterWorkspaceHistroy({ ws_id })
-                .then((res) => {
-                    const { code } = res
-                    if (code === 200)
-                        setInitialState((p: any) => ({ ...p, authList: { ...p.authList, first_entry: false } }))
-                })
+            /* 切换ws请求记录历史接口 */
+            getHistoryFetcher()
 
             if (data.first_entry && data.ws_role_title === "ws_owner") {
                 history.push(`/ws/${ws_id}/workspace/initSuccess`)
@@ -36,6 +43,9 @@ export default (props: any) => {
                 return
             }
         }
+
+        /* 刷新直接进入ws，有ws_id但无记录，没有请求过history，请求记录历史接口 */
+        if (!fetchHistory) getHistoryFetcher()
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
 

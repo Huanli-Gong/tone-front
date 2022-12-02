@@ -60,11 +60,18 @@ export async function getInitialState(): Promise<any> {
                 history.push({ pathname: '/401', state: ws_id })
                 return initialState
             }
+
+            return {
+                ...initialState,
+                authList: { ...data, ws_id },
+                fetchHistory: false
+            }
         }
 
         return {
             ...initialState,
-            authList: data
+            fetchHistory: true,
+            authList: data,
         }
     }
 
