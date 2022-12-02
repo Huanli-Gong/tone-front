@@ -27,6 +27,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const [baselinePerfList, setBaselinePerfList] = useState([])
 
     const [funcsSelectVal, setFuncsSelectVal] = useState<any>('')
+    const [perfChangeVal, setPerfChangeVal] = useState<any>()
     const baselineCreateModal: any = useRef(null)
     const funcsBaselineSelect: any = useRef(null)
     const perBaselineSelect: any = useRef(null)
@@ -57,6 +58,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         if (code === 200) {
             getBaselinePerfData()
             message.success('添加基线成功!!!')
+            setPerfChangeVal(undefined)
         } else {
             requestCodeMessage(code, msg)
         }
@@ -84,6 +86,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 if (_) {
                     setData(_)
                 }
+                setPerfChangeVal(undefined)
             }
         }),
     )
@@ -184,7 +187,9 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const handleFuncsBaselineSelectSearch = (val: any) => {
         setFuncsSelectVal(val)
     }
-
+    const handlePerfBaselineVal = (val: any) => {
+        setPerfChangeVal(val)
+    }
     const handleFuncsBaselineSelectBlur = () => {
         const baselineNames = form.getFieldValue('baseline_name_list') || []
         if (funcsSelectVal) {
@@ -195,11 +200,10 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }
 
     const handlePerfBaselineSelectBlur = () => {
-        if (funcsSelectVal) {
+        if (perfChangeVal) {
             const baseline_id = form.getFieldValue('baseline_id') || []
-            requestJoinBaseline(funcsSelectVal)
-            form.setFieldsValue({ baseline_id: baseline_id.concat(funcsSelectVal) })
-            setFuncsSelectVal('')
+            requestJoinBaseline(perfChangeVal)
+            form.setFieldsValue({ baseline_id: baseline_id.concat(perfChangeVal) })
             setCheckedList([])
             perBaselineSelect.current.blur()
         }
@@ -257,8 +261,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     // className={styles.pers_select}
                                     listHeight={160}
                                     getPopupContainer={node => node.parentNode}
-                                    onSearch={handleFuncsBaselineSelectSearch}
-                                    // onBlur={handlePerfBaselineSelectBlur}
+                                    onSearch={handlePerfBaselineVal}
                                     ref={perBaselineSelect}
                                     defaultActiveFirstOption={false}
                                     filterOption={
@@ -269,20 +272,24 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     dropdownRender={menu => (
                                         <>
                                             {menu}
-                                            <Divider style={{ margin: '8px 0' }} />
                                             {
-                                                accessible &&
-                                                <div
-                                                    style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
-                                                    onClick={handlePerfBaselineSelectBlur}
-                                                >
-                                                    <span>
-                                                        <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
-                                                        <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
-                                                            <FormattedMessage id="ws.result.details.create.baseline" />
-                                                        </span>
-                                                    </span>
-                                                </div>
+                                                perfChangeVal && !!perfChangeVal.length && <>
+                                                    <Divider style={{ margin: '8px 0' }} />
+                                                    {
+                                                        accessible &&
+                                                        <div
+                                                            style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '0 0 8px 8px' }}
+                                                            onClick={handlePerfBaselineSelectBlur}
+                                                        >
+                                                            <span>
+                                                                <PlusOutlined style={{ marginRight: 6, color: '#1890FF' }} />
+                                                                <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>
+                                                                    <FormattedMessage id="ws.result.details.create.baseline" />
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                </>
                                             }
                                         </>
                                     )}
