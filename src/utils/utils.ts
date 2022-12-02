@@ -153,7 +153,8 @@ export const matchType = (params: any, formatMessage?: any) => {
   //
   if (params === 'functional') return formatMessage({ id: 'functional' });
   if (params === 'performance') return formatMessage({ id: 'performance' });
-  return '';
+  if (params === 'business') return formatMessage({ id: 'business' });
+  return params
 };
 
 /** pipLine组件：根据状态 匹配 颜色 */
