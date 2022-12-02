@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Popover, Tooltip, Space, message, Popconfirm } from 'antd';
+import { Popover, Tooltip, Space, message, Table, Pagination } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage, getLocale } from 'umi';
 import moment from 'moment';
@@ -115,15 +115,19 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 	let list = data.data, total = data.total, pageNum = data.page_num
 	return (
 		<div>
-			<CommonTable className={styles.businessList_root}
-				columns={columns}
-				list={list}
+			<Table 
+			  className={styles.businessList_root}
+				size='small'
 				loading={loading}
-				page={pageNum}
-				pageSize={pageSize}
-				total={total}
-				handlePage={onChange}
+				rowKey={(record)=> record.id}
+				columns={columns}
+				dataSource={list}
+				// page={pageNum}
+				// pageSize={pageSize}
+				// total={total}
+				// handlePage={onChange}
 				expandable={{
+          expandedRowKeys: expandKeys, 
 					expandedRowRender: (record: any) => {
 						const { test_suite_list = [] } = record
 						return <SuiteList business_id={record.id} dataSource={test_suite_list} />
@@ -131,13 +135,33 @@ export default forwardRef(({ callback=()=>{}, ws_id }: any, ref : any) => {
 					onExpand: (_: any, record: any) => {
 							_ ? setExpandKeys([record.id]) : setExpandKeys([])
 					},
-					expandedRowKeys: expandKeys,
 					expandIcon: ({ expanded, onExpand, record }: any) =>
 							expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 									(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
-				scroll={undefined}
+				scroll={{ x: 'auto'}}
+				pagination={false}
 			/>
+			{!!total && (
+				<div className={styles.common_pagination}>
+					<div>{formatMessage({id: 'pagination.total.strip'}, {data: total})}</div>
+					<Pagination
+							showQuickJumper
+							showSizeChanger
+							defaultCurrent={1}
+							current={pageNum}
+							pageSize={pageSize}
+							total={total}
+							// size="small"
+							onChange={(page_num: number, page_size: any) => {
+								onChange(page_num, page_size)
+							}}
+							onShowSizeChange={(page_num: number, page_size: any) => {
+								onChange(page_num, page_size)
+							}}
+					/>
+				</div>
+			)}
 		</div>
   )
 

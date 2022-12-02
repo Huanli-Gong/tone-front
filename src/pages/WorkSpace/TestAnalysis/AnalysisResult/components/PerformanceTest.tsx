@@ -103,7 +103,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 // }
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
@@ -138,7 +138,7 @@ const ReportTestPref: React.FC<any> = (props) => {
     }
 
     useEffect(() => {
-        setBtnName(btn ? 'chart': 'list')
+        setBtnName(btn ? 'chart' : 'list')
     }, [btn])
 
     // 右侧功能按钮
@@ -146,16 +146,16 @@ const ReportTestPref: React.FC<any> = (props) => {
         return (
             <TestItemFunc>
                 <Space>
-                    <Button onClick={switchMode}><FormattedMessage id={btnName === 'chart' ? 'analysis.chart.mode': 'analysis.list.mode'} /></Button>
+                    <Button onClick={switchMode}><FormattedMessage id={btnName === 'chart' ? 'analysis.chart.mode' : 'analysis.list.mode'} /></Button>
                     {btn && <Space>
-                        <Typography.Text><FormattedMessage id="analysis.filter"/>: </Typography.Text>
+                        <Typography.Text><FormattedMessage id="analysis.filter" />: </Typography.Text>
                         <Select defaultValue="all" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="all"><FormattedMessage id="analysis.all"/></Option>
-                            <Option value="invalid"><FormattedMessage id="analysis.invalid"/></Option>
-                            <Option value="volatility" title={formatMessage({id: 'analysis.volatility'})}><FormattedMessage id="analysis.volatility"/></Option>
-                            <Option value="increase"><FormattedMessage id="analysis.increase"/></Option>
-                            <Option value="decline"><FormattedMessage id="analysis.decline"/></Option>
-                            <Option value="normal"><FormattedMessage id="analysis.normal"/></Option>
+                            <Option value="all"><FormattedMessage id="analysis.all" /></Option>
+                            <Option value="invalid"><FormattedMessage id="analysis.invalid" /></Option>
+                            <Option value="volatility" title={formatMessage({ id: 'analysis.volatility' })}><FormattedMessage id="analysis.volatility" /></Option>
+                            <Option value="increase"><FormattedMessage id="analysis.increase" /></Option>
+                            <Option value="decline"><FormattedMessage id="analysis.decline" /></Option>
+                            <Option value="normal"><FormattedMessage id="analysis.normal" /></Option>
                         </Select>
                     </Space>
                     }
@@ -206,7 +206,7 @@ const ReportTestPref: React.FC<any> = (props) => {
             })
         )
     }
-    
+
     //筛选过滤
     const handleConditions = (value: any) => {
         setFilterName(value)
@@ -233,7 +233,7 @@ const ReportTestPref: React.FC<any> = (props) => {
         return (
             obj.map((item: any, idx: number) => (
                 <PrefDataText gLen={group} key={idx}>
-                    <JumpResult ws_id={wsId} job_id={item.obj_id || item}/>
+                    <JumpResult job_id={item.obj_id || item} />
                 </PrefDataText>
             ))
         )
@@ -243,7 +243,7 @@ const ReportTestPref: React.FC<any> = (props) => {
         <>
             <Summary ref={groupRowRef}>
                 <Group style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
-                    <PerfGroupTitle gLen={group}><FormattedMessage id="analysis.comparison.group.name"/></PerfGroupTitle>
+                    <PerfGroupTitle gLen={group}><FormattedMessage id="analysis.comparison.group.name" /></PerfGroupTitle>
                     <Identify envData={envData} group={group} isData={true} />
                 </Group>
             </Summary>
@@ -255,7 +255,7 @@ const ReportTestPref: React.FC<any> = (props) => {
             />
             <Row style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
                 <Col span={12}>
-                    <TestDataTitle id="perf_item"><FormattedMessage id="performance.test"/></TestDataTitle>
+                    <TestDataTitle id="perf_item"><FormattedMessage id="performance.test" /></TestDataTitle>
                 </Col>
                 <Col span={12}>
                     <ItemFunc />
@@ -277,7 +277,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                 (item.conf_list && item.conf_list.length) ? item.conf_list.map((conf: any, cid: number) => (
                                                     !!conf.metric_list.length && <div key={cid}>
                                                         <TestConf>
-                                                            <ConfTitle gLen={group}><FormattedMessage id="analysis.TestConf/metric"/></ConfTitle>
+                                                            <ConfTitle gLen={group}><FormattedMessage id="analysis.TestConf/metric" /></ConfTitle>
                                                             {
                                                                 allGroupData?.map((cont: any, i: number) => (
                                                                     <ConfData gLen={group} key={i}>
@@ -285,18 +285,18 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                             i !== baseIndex ?
                                                                                 <Row justify="space-between">
                                                                                     <Col span={12}>
-                                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="analysis.result"/></Typography.Text>
+                                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}><FormattedMessage id="analysis.result" /></Typography.Text>
                                                                                     </Col>
                                                                                     <Col span={12}>
                                                                                         <RightResult>
-                                                                                            <FormattedMessage id="analysis.comparison/tracking.results"/>
-                                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor:'pointer' }}>
+                                                                                            <FormattedMessage id="analysis.comparison/tracking.results" />
+                                                                                            <span onClick={() => handleArrow(item, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle', cursor: 'pointer' }}>
                                                                                                 {arrowStyle == item.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                                                                             </span>
                                                                                             <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
                                                                                                 title={
                                                                                                     <span style={{ color: 'rgba(0,0,0,0.65)' }}>
-                                                                                                        <FormattedMessage id="analysis.the.greater.difference"/><br /><FormattedMessage id="analysis.rules"/>：<br /><FormattedMessage id="analysis.decline"/>&gt;<FormattedMessage id="analysis.increase"/>&gt;<FormattedMessage id="analysis.fluctuation"/>&gt;<FormattedMessage id="analysis.invalid"/>
+                                                                                                        <FormattedMessage id="analysis.the.greater.difference" /><br /><FormattedMessage id="analysis.rules" />：<br /><FormattedMessage id="analysis.decline" />&gt;<FormattedMessage id="analysis.increase" />&gt;<FormattedMessage id="analysis.fluctuation" />&gt;<FormattedMessage id="analysis.invalid" />
                                                                                                     </span>
                                                                                                 }>
                                                                                                 <QuestionCircleOutlined />
@@ -304,7 +304,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                                                         </RightResult>
                                                                                     </Col>
                                                                                 </Row>
-                                                                                : <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{allGroupData.length > 1 ? <FormattedMessage id="analysis.benchmark"/>: <FormattedMessage id="analysis.result"/>}</Typography.Text>
+                                                                                : <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{allGroupData.length > 1 ? <FormattedMessage id="analysis.benchmark" /> : <FormattedMessage id="analysis.result" />}</Typography.Text>
                                                                         }
                                                                     </ConfData>
                                                                 ))

@@ -304,7 +304,14 @@ const TestPlan = (props: any) => {
                                                     route.name === 'Run' &&
                                                     <>
                                                         <Button onClick={() => handleTestPlanOption()}><FormattedMessage id="plan.run.only" /></Button>
-                                                        <Button onClick={() => handleTestPlanOption(true)} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>
+                                                        <Access accessible={access.WsTourist()}>
+                                                            <Access
+                                                                accessible={access.WsMemberOperateSelf(template?.creator)}
+                                                                fallback={<Button onClick={() => AccessTootip()}  type="primary"><FormattedMessage id="plan.run.and.save" /></Button>}
+                                                            >
+                                                               <Button onClick={() => handleTestPlanOption(true)} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>
+                                                            </Access>
+                                                        </Access>
                                                     </>
                                                 }
                                                 {

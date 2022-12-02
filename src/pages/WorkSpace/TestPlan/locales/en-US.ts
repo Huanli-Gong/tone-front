@@ -5,6 +5,7 @@ export default {
   'plan.table.enable': 'Enable',
   'plan.table.creator_name': 'Created By',
   'plan.table.gmt_created': 'Creation Time',
+  'plan.table.gmt_modified': 'Modify Time',
 
   'plan.configuration': 'Plan Configuration',
   'plan.edit.configuration': 'Edit',

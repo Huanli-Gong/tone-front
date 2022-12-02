@@ -5,6 +5,8 @@ export default {
   'plan.table.enable': '启用',
   'plan.table.creator_name': '创建人',
   'plan.table.gmt_created': '创建时间',
+  'plan.table.gmt_modified': '修改时间',
+
 
   'plan.configuration': '计划配置',
   'plan.edit.configuration': '编辑配置',

@@ -1,5 +1,5 @@
 import React, { useImperativeHandle, useEffect, useState } from 'react'
-import { Form, Input, Select } from 'antd'
+import { Form, Input, Select, InputNumber } from 'antd'
 import styles from './index.less'
 import { FormProps } from './index'
 import { tagList } from '@/pages/WorkSpace/TagManage/service'
@@ -76,7 +76,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
             let notice_subject, email, ding_token
-            const { cleanup_info, tags, notice_info, report_name, callback_api } = template
+            const { cleanup_info, tags, notice_info, report_name, callback_api, job_timeout } = template
             // debugger
             let report_template = template.report_template || template.report_template_id
             if (_.isArray(notice_info)) {
@@ -100,7 +100,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 ding_token,
                 report_template,
                 report_name,
-                callback_api
+                callback_api,
+                job_timeout
             })
             setCheckedList(report_name)
             setCallbackUrl(callback_api)
@@ -254,7 +255,6 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                     </Select>
                 </Form.Item>
             }
-
             {
                 'callback_api' in contrl &&
                 <Form.Item
@@ -277,6 +277,21 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                             </div>
                         }
                     />
+                </Form.Item>
+            }
+            {/* 先在内网环境使用 **/}
+            {
+                !BUILD_APP_ENV && 'job_timeout' in contrl &&
+                <Form.Item
+                    name="job_timeout"
+                    label={contrl.job_timeout.alias || formatMessage({id: 'job.form.job_timeout.label'})}
+                >
+                    <InputNumber
+                        autoComplete="off"
+                        style={{ width: '100%' }}
+                        addonAfter="h"
+                        min={0}
+                        placeholder={formatMessage({id: 'job.form.job_timeout.placeholder'})} />
                 </Form.Item>
             }
         </Form>

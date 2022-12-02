@@ -1,7 +1,6 @@
-import { Space, Row } from 'antd';
+import { Space } from 'antd';
 import React from 'react'
 import styled from 'styled-components'
-import moment from 'moment'
 import _ from 'lodash'
 interface StateTagprop {
     color: string;
@@ -60,7 +59,6 @@ export const RenderCountTags = ({ count, complate, fail }: any) => (
 const DataRowSpace = styled(Space)`
     span { font-size : 12px; }
 `
-
 export const RenderDataRow = (props: any) => (
     <DataRowSpace>
         <div>

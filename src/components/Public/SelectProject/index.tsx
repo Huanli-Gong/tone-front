@@ -4,7 +4,7 @@ import { useIntl, FormattedMessage } from 'umi';
 import { projectList } from './service';
 import styles from './style.less';
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, ws_id }) => {
+const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, ws_id }) => {
 	const [project, setProject] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>()
@@ -38,7 +38,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, w
 			>
 			</div>
 			<Select
-				mode="multiple"
+				// mode="multiple"
 				allowClear
 				notFoundContent={fetching ? <Spin size="small" /> : null}
 				filterOption={false}

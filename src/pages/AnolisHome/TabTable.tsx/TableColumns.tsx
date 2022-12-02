@@ -99,26 +99,14 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
         path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
     }
 
-    /* const handleLogin = () => {
-        if (BUILD_APP_ENV === 'openanolis') {
-            return window.location.href = login_url
-        }
-        return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
-    } */
-
     const renderOperationButton = () => {
         /* 公开ws 未登录跳登录 */
         //私密ws 未登录跳转登录
         /* 未登录，私密不显示按钮 */
-        if (!user_id && !is_public) {
-            return <></>
-            /* return (
-                <Button type="primary" onClick={handleLogin}>
-                    {
-                        intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })
-                    }
-                </Button>
-            ) */
+
+        if (!is_public) {
+            if (!user_id) return <></>
+            if (BUILD_APP_ENV === "openanolis" && !is_member) return <></>
         }
 
         if (access.IsAdmin() || is_member || is_public)
@@ -127,15 +115,6 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
                     {intl.formatMessage({ id: `pages.anolis_home.button.enter` })}
                 </Button>
             )
-
-        /* else {
-            if (is_public)
-                return (
-                    <Button type="primary" onClick={handleJumpWs}>
-                        {intl.formatMessage({ id: `pages.anolis_home.button.tourist_test` })}
-                    </Button>
-                )
-        } */
 
         return (
             <ApplyJoinWorkspace
@@ -148,10 +127,10 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
     }
 
     const handleClick = () => {
-        if (BUILD_APP_ENV) {
-            if (!user_id && !is_public) return
+        if (!is_public) {
+            if (!user_id) return <></>
+            if (BUILD_APP_ENV === "openanolis" && !is_member) return <></>
         }
-        // if (!user_id && !is_public) return handleLogin()
         if (access.IsAdmin() || is_member || is_public) return handleJumpWs()
         return ref.current?.show()
     }
@@ -205,12 +184,18 @@ const HeaderRow = styled.div`
 `
 
 export const TableHeader: React.FC = () => {
-
+    const intl = useIntl()
     return (
         <HeaderRow>
-            <Intr >Workspace名称</Intr>
-            <Owner >所有者</Owner>
-            <Desc >简介</Desc>
+            <Intr >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_name` })}
+            </Intr>
+            <Owner >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_owner` })}
+            </Owner>
+            <Desc >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_desc` })}
+            </Desc>
         </HeaderRow>
     )
 }

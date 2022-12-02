@@ -100,9 +100,8 @@ export default forwardRef(
                         help={msg}
                         rules={[{
                             required: true,
-                            max: 32,
                             message: formatMessage({ id: 'product.name.message'}),
-                            pattern: /^[A-Za-z0-9\._-]*$/g
+                            pattern: /^[A-Za-z0-9\._-]{1,32}$/g
                         }]}>
                         <Input placeholder={formatMessage({ id: 'product.please.enter.name'}) } />
                     </Form.Item>

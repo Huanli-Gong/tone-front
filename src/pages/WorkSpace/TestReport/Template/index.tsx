@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
 
-import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Tooltip, Button, Spin, Input, Divider } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Row, Typography, Checkbox, Radio, Space, Col, Card, message, Button, Spin, Input, Divider, Modal } from 'antd'
+import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons'
 import { useClientSize } from '@/utils/hooks'
 import SuiteSelectDrawer from './components/SuiteSelectDrawer'
 import { createReportTemplate, queryReportTemplateDetails, updateReportTemplate } from './services'
@@ -36,7 +36,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
     const { dataSource, setDataSource, contrl } = useProvider()
 
     let bodyProps: any = { name: 'performance', testRadioName: 'need_perf_data', dataItem: 'perf_item', conf: 'perf_conf' }
-    
+
     if (testType !== 'performance')
         bodyProps = { name: 'functional', testRadioName: 'need_func_data', dataItem: 'func_item', conf: 'func_conf' }
 
@@ -44,7 +44,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
         setDataSource(
             produce(dataSource, (draftState: any) => {
                 draftState[name] = dataSource[name].concat({
-                    name: formatMessage({id: 'report.test.item.num'}, {data: `${dataSource[name].length - 0 + 1}`}),
+                    name: formatMessage({ id: 'report.test.item.num' }, { data: `${dataSource[name].length - 0 + 1}` }),
                     rowkey: uuidv4(),
                     list: [{
                         test_suite_id: null,
@@ -61,7 +61,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
         setDataSource(
             produce(dataSource, (draftState: any) => {
                 draftState[name] = dataSource[name].concat({
-                    name: `${formatMessage({id: 'report.test.group'})}${dataSource[name].length - 0 + 1}`,
+                    name: `${formatMessage({ id: 'report.test.group' })}${dataSource[name].length - 0 + 1}`,
                     list: [],
                     is_group: true,
                     rowkey: uuidv4()
@@ -124,7 +124,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                     style={{ width: "100%" }}
                                 >
                                     <Space>
-                                        <Typography.Text><FormattedMessage id="report.basic.information"/></Typography.Text>
+                                        <Typography.Text><FormattedMessage id="report.basic.information" /></Typography.Text>
                                     </Space>
                                     <Space
                                         style={{ width: "100%" }}
@@ -132,9 +132,9 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                         {
                                             [
                                                 // ["测试工具", "need_test_suite_description"],
-                                                [formatMessage({ id: 'report.test_env'}), "need_test_env"], 
-                                                [formatMessage({ id: 'report.test.description'}), "need_test_description"],
-                                                [formatMessage({ id: 'report.test.conclusion'}), "need_test_conclusion"],
+                                                [formatMessage({ id: 'report.test_env' }), "need_test_env"],
+                                                [formatMessage({ id: 'report.test.description' }), "need_test_description"],
+                                                [formatMessage({ id: 'report.test.conclusion' }), "need_test_conclusion"],
                                             ].map((item: any) => {
                                                 const [title, name, text] = item
                                                 return (
@@ -149,16 +149,16 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                                             })
                                         }
                                     </Space>
-                                    <div style={{display: 'flex'}}>
-                                        <div style={{marginRight: 12}}><FormattedMessage id="report.data.view.style"/></div>
+                                    <div style={{ display: 'flex' }}>
+                                        <div style={{ marginRight: 12 }}><FormattedMessage id="report.data.view.style" /></div>
                                         <div>
                                             <Radio.Group
                                                 disabled={!contrl}
                                                 value={dataSource[bodyProps.conf].show_type}
                                                 onChange={({ target }) => handleConfItemChange(target.value, 'show_type', bodyProps.conf)}
                                             >
-                                                <Radio value={'list'}><FormattedMessage id="report.list.view"/></Radio>
-                                                <Radio value={'chart'}><FormattedMessage id="report.chart.view"/></Radio>
+                                                <Radio value={'list'}><FormattedMessage id="report.list.view" /></Radio>
+                                                <Radio value={'chart'}><FormattedMessage id="report.chart.view" /></Radio>
                                             </Radio.Group>
                                         </div>
                                     </div>
@@ -183,7 +183,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                             <Typography.Link >
                                 <Space>
                                     <PlusOutlined />
-                                    <FormattedMessage id="report.test.item"/>
+                                    <FormattedMessage id="report.test.item" />
                                 </Space>
                             </Typography.Link>
                         </span>
@@ -192,7 +192,7 @@ const RenderTestBody: React.FC<any> = ({ testType }) => {
                             <Typography.Link >
                                 <Space>
                                     <PlusOutlined />
-                                    <FormattedMessage id="report.test.group"/>
+                                    <FormattedMessage id="report.test.group" />
                                 </Space>
                             </Typography.Link>
                         </span>
@@ -238,7 +238,7 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
                 text &&
                 <Input.TextArea
                     allowClear
-                    placeholder={formatMessage({id: 'please.enter'})}
+                    placeholder={formatMessage({ id: 'please.enter' })}
                     value={dataSource[field][text]}
                     autoSize={{ minRows: 3, maxRows: 3 }}
                     disabled={!dataSource[field][name]}
@@ -253,7 +253,7 @@ const ConfigCheckbox: React.FC<any> = ({ field, name, title, text }) => {
 
 
 const RenderCheckbox: React.FC<any> = (props) => {
-    
+
     const { formatMessage } = useIntl()
     const { name, title, desc } = props
     const { dataSource, setDataSource, contrl } = useProvider()
@@ -283,7 +283,7 @@ const RenderCheckbox: React.FC<any> = (props) => {
             {
                 desc &&
                 <Input.TextArea
-                    placeholder={formatMessage({id: 'please.enter'})}
+                    placeholder={formatMessage({ id: 'please.enter' })}
                     allowClear
                     disabled={!dataSource[name]}
                     value={dataSource[desc]}
@@ -380,7 +380,7 @@ const TemplatePage = (props: any) => {
     useEffect(() => {
         if (route.name === 'TemplateEdit') editPageSetData()
         else {
-            document.title = `${formatMessage({id: 'report.create.report.template'})} - T-One`
+            document.title = `${formatMessage({ id: 'report.create.report.template' })} - T-One`
             setLoading(false)
         }
         return () => {
@@ -453,7 +453,7 @@ const TemplatePage = (props: any) => {
     const queryItemData = (cur: any, idx: number) => {
         const len = cur.list.length
         return {
-            name: formatMessage({id: 'report.test.item.num'}, {data: `${idx + 1}-${len + 1}`}),
+            name: formatMessage({ id: 'report.test.item.num' }, { data: `${idx + 1}-${len + 1}` }),
             rowkey: uuidv4(),
             list: [{
                 test_suite_id: null,
@@ -570,7 +570,7 @@ const TemplatePage = (props: any) => {
         for (let x = 0, len = data.length; x < len; x++) {
             const { name } = data[x]
             if (obj[name])
-                throw formatMessage({id: 'report.please.check'})
+                throw formatMessage({ id: 'report.please.check' })
             obj[name] = name
         }
     }
@@ -602,37 +602,76 @@ const TemplatePage = (props: any) => {
         return result
     }
 
+    const handleFormSave = async (params: any) => {
+        setLoading(true)
+
+        const data = route.name === 'TemplateEdit' ?
+            await updateReportTemplate({ ws_id, id: temp_id, ...params }) :
+            await createReportTemplate(params)
+
+        if (data.code === 200)
+            history.push(`/ws/${ws_id}/test_report?t=template`)
+        else requestCodeMessage(data.code, data.message)
+        setLoading(false)
+    }
+
+    const hasSuiteCheck = (conf_list: any[]) => {
+        for (let x of conf_list) {
+            const { is_group, list } = x
+            if (is_group) {
+                const $boolean = hasSuiteCheck(list)
+                if ($boolean) return true
+            }
+            else
+                if (list.length > 0) return true
+        }
+        return false
+    }
+
     const hanldeSaveOk = async () => {
         if (loading) return
         const { perf_item, func_item, name } = dataSource
         // if (!need_perf_data && !need_func_data)
         //     return message.warning('未添加测试数据！')
         if (!name)
-            return message.warning(formatMessage({id: 'report.template.cannot.be.empty'}) )
+            return message.warning(formatMessage({ id: 'report.template.cannot.be.empty' }))
 
         try {
-            setLoading(true)
             const perfs = await compare(perf_item)
             const funcs = await compare(func_item)
+
+            const isHasSuite = hasSuiteCheck(perfs.concat(funcs))
 
             const params = {
                 ...dataSource,
                 perf_item: perfs,
                 func_item: funcs
             }
+            if (isHasSuite) return handleFormSave(params)
 
-            const data = route.name === 'TemplateEdit' ?
-                await updateReportTemplate({ ws_id, id: temp_id, ...params }) :
-                await createReportTemplate(params)
-
-            if (data.code === 200)
-                history.push(`/ws/${ws_id}/test_report?t=template`)
-            else requestCodeMessage(data.code, data.message)
+            Modal.confirm({
+                title: formatMessage({
+                    id: `report.template.confirm.title`,
+                    defaultMessage: "提示"
+                }),
+                centered: true,
+                content: formatMessage({
+                    id: `report.template.confirm.content`,
+                    defaultMessage: "测试项缺少用例，是否继续保存？"
+                }),
+                icon: <ExclamationCircleFilled />,
+                async onOk() {
+                    handleFormSave(params)
+                },
+                onCancel() {
+                    setLoading(false)
+                },
+            });
         }
         catch (err: any) {
             message.warning(err)
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     const [collapsed, setCollapsed] = useState(false)
@@ -688,7 +727,7 @@ const TemplatePage = (props: any) => {
                                 <Space direction="vertical" style={{ width: '100%' }}>
                                     <Input
                                         style={{ width: '100%' }}
-                                        placeholder={formatMessage({id: 'report.name.input'})}
+                                        placeholder={formatMessage({ id: 'report.name.input' })}
                                         value={dataSource.name}
                                         onChange={({ target }) => hanldeEditIssueInput('name', target.value)}
                                     />
@@ -697,7 +736,7 @@ const TemplatePage = (props: any) => {
                                         style={{ width: '100%' }}
                                         value={dataSource.description}
                                         autoSize={{ minRows: 3, maxRows: 6 }}
-                                        placeholder={formatMessage({id: 'report.description.textArea'})}
+                                        placeholder={formatMessage({ id: 'report.description.textArea' })}
                                     />
                                 </Space>
                             </ReportIssue>
@@ -709,12 +748,12 @@ const TemplatePage = (props: any) => {
                             >
                                 {
                                     [
-                                        [formatMessage({ id: 'report.test.background'}), "need_test_background", "background_desc"],
-                                        [formatMessage({ id: 'report.test.method'}), "need_test_method", "test_method_desc"],
-                                        [formatMessage({ id: 'report.test.conclusion'}), "need_test_conclusion", "test_conclusion_desc"],
+                                        [formatMessage({ id: 'report.test.background' }), "need_test_background", "background_desc"],
+                                        [formatMessage({ id: 'report.test.method' }), "need_test_method", "test_method_desc"],
+                                        [formatMessage({ id: 'report.test.conclusion' }), "need_test_conclusion", "test_conclusion_desc"],
                                         ["Summary", "need_test_summary"],
-                                        [formatMessage({ id: 'report.env.description'}), "need_env_description", "env_description_desc"],
-                                        [formatMessage({ id: 'report.server.env'}), "need_test_env"],
+                                        [formatMessage({ id: 'report.env.description' }), "need_env_description", "env_description_desc"],
+                                        [formatMessage({ id: 'report.server.env' }), "need_test_env"],
                                     ].map((item: any) => {
                                         const [title, name, desc] = item
                                         return (
@@ -731,7 +770,7 @@ const TemplatePage = (props: any) => {
                             {/* 测试数据 */}
                             <div style={{ padding: 20, background: '#fff', marginTop: 20 }} >
                                 <ProjectTitle id="test_data">
-                                    <FormattedMessage id="report.test.data"/>
+                                    <FormattedMessage id="report.test.data" />
                                 </ProjectTitle>
                                 {
                                     ["performance", "functional"].map((i) => (
@@ -744,12 +783,12 @@ const TemplatePage = (props: any) => {
 
                     <TemplateBar justify="end" align="middle">
                         <Space>
-                            <Button onClick={() => setIsPreview(true)}><FormattedMessage id="operation.preview"/></Button>
+                            <Button onClick={() => setIsPreview(true)}><FormattedMessage id="operation.preview" /></Button>
                             {
                                 !dataSource.is_default &&
                                 <Access accessible={contrl}>
                                     <Button type="primary" onClick={hanldeSaveOk}>
-                                        {route.name === 'TemplateEdit' ? <FormattedMessage id="report.update.report.template"/>: <FormattedMessage id="report.save.report.template"/>}
+                                        {route.name === 'TemplateEdit' ? <FormattedMessage id="report.update.report.template" /> : <FormattedMessage id="report.save.report.template" />}
                                     </Button>
                                 </Access>
                             }

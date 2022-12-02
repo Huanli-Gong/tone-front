@@ -1,23 +1,20 @@
 import React, { memo, useEffect, useState, useRef, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
-import { useRequest, useAccess, Access, useIntl, FormattedMessage  } from 'umi'
+import { useAccess, Access, useIntl, FormattedMessage  } from 'umi'
 import { queryReportTemplateList, delReportTemplateList } from '../services'
-import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
-import SearchInput from '@/components/Public/SearchInput'
-import SelectUser from '@/components/Public/SelectUser'
 import CopyTemplateDrawer from './CopyComplate'
 import CommonPagination from '@/components/CommonPagination'
 import _ from 'lodash'
-import { requestCodeMessage, targetJump, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, targetJump, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
+import { getSearchFilter, getUserFilter } from '@/components/TableFilters'
 
 const ReportTemplateTable: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { ws_id, tab } = props
     const access = useAccess()
-    const [autoFocus, setFocus] = useState(true)
     const defaultParmas = {
         name: '',
         creator: '',  //创建人id
@@ -26,43 +23,38 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         page_size: 10,
         ws_id,
     }
-    // const access = useAccess()
-    const [fetchParams, setFetchParams] = useState<any>()
-    const fetchParamsData = fetchParams || defaultParmas
+    const [params,setParams] = useState<any>(defaultParmas)
+    const [data, setData] = useState<any>({})
+    const [loading, setLoading] = useState<boolean>(false)
     const copyTemplate: any = useRef(null)
-    const { data, loading, run, refresh, params } = useRequest(
-        (data: any) => queryReportTemplateList(data),
-        {
-            formatResult: (response: any) => response,
-            initialData: { data: [], total: 0 },
-            defaultParams: [{ ws_id: ws_id }]
+    const pageCurrent = useStateRef(params)
+    const queryList = async() => {
+        setLoading(true)
+        const res = await queryReportTemplateList(params)
+        const { code, msg } = res
+        if( code === 200 ){
+            setData(res)
+            setLoading(false)
+        } else {
+            requestCodeMessage(code, msg)
         }
-    )
-
-    const updateFetchParams = (obj = {}) => {
-        setFetchParams({ ...fetchParamsData, ...obj })
-        run({ ...fetchParamsData, ...obj })
     }
+    const totalCurrent = useStateRef(data)
+    useEffect(()=> {
+        queryList()
+    },[ params ])
 
     useEffect(() => {
-        setFetchParams(defaultParmas)
+        setParams(defaultParmas)
     }, [tab])
 
     const handleTemplateDel = async (id: any) => {
+        const { page_size } = pageCurrent.current
         try {
             const { code, msg } = await delReportTemplateList({ id })
             if (code === 200) {
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size})
                 message.success(formatMessage({id: 'request.delete.success'}) )
-                const num = data.total % data.page_size
-                if (Math.ceil(data.total / data.page_size) === data.page_num && num === 1) // 删除的是最后一页的最后一条且最后一页只有一条
-                {
-                    updateFetchParams({ page_num: data.page_num - 1 > 1 ? data.page_num - 1 : 1 })
-                }
-
-                else {
-                    refresh()
-                }
-
             } else {
                 requestCodeMessage(code, msg)
             }
@@ -74,13 +66,6 @@ const ReportTemplateTable: React.FC<any> = (props) => {
     const handleAddScript = (currentRow: any) => {
         copyTemplate.current?.show(currentRow)
     }
-    const handleMemberFilter = (val: [], name: string) => {
-        let searchVal: any = val || ''
-        if (_.isArray(searchVal)) searchVal = searchVal.join(',')
-        const obj = {}
-        obj[name] = searchVal;
-        updateFetchParams({ ...obj })
-    }
 
     const dataSource = useMemo(() => {
         return data && _.isArray(data.data) ? data.data : []
@@ -90,6 +75,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         container: 180,
         button_width: 90
     }
+
     let columns: any = [
         {
             dataIndex: 'name',
@@ -98,30 +84,21 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             width: 200,
-            // className: 'no_tourist',
-            filterDropdown: ({ confirm }: any) => (
-                <SearchInput
-                    confirm={confirm}
-                    autoFocus={autoFocus}
-                    styleObj={styleObj}
-                    onConfirm={(val: any) => updateFetchParams({ name: val })}
-                    currentData={{ tab }}
-                    placeholder={formatMessage({id: 'report.columns.template.placeholder'}) }
-                />
+            ...getSearchFilter(
+                params, 
+                setParams, 
+                'name', 
+                formatMessage({id: 'report.columns.template.placeholder'}),
+                styleObj,
             ),
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) setFocus(!autoFocus)
-            },
-            filterIcon: () => <FilterFilled style={{ color: fetchParamsData.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
                     <PopoverEllipsis title={_ || '-'} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                            searchWords={[fetchParamsData.name || '']}
+                            searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={_ || '-'}
-                        // onClick={() => history.push(`/ws/${ws_id}/test_report/template/${row.id}${row.is_default ? '/preview' : ''}`)}
                         />
                     </PopoverEllipsis>
                 )
@@ -134,13 +111,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             width: 180,
             title: <FormattedMessage id="report.columns.creator_name" />,
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator')} page_size={9999} />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                    setFocus(!autoFocus)
-                }
-            },
-            filterIcon: () => <FilterFilled style={{ color: fetchParamsData.creator ? '#1890ff' : undefined }} />,
+            ...getUserFilter(params, setParams, 'creator'),
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
         },
         {
@@ -150,13 +121,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.update_user_name" />,
-            filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'update_user')} page_size={9999} />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
-                    setFocus(!autoFocus)
-                }
-            },
-            filterIcon: () => <FilterFilled style={{ color: fetchParamsData.update_user ? '#1890ff' : undefined }} />,
+            ...getUserFilter(params, setParams, 'update_user'),
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
 
         }, {
@@ -249,23 +214,23 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         <Spin spinning={loading}>
             <ClsResizeTable
                 size="small"
-                rowKey="id"
+                rowKey={record => record.id}
+                key={Date.now()}
                 columns={columns}
+                loading={loading}
                 dataSource={dataSource}
                 pagination={false}
-                scroll={{
-                    x: '100%'
-                }}
+                scroll={{ x: '100%' }}
             />
             <CommonPagination
                 total={data.total}
-                currentPage={params[0] && params[0].page_num}
-                pageSize={params[0] && params[0].page_size}
+                currentPage={params.page_num}
+                pageSize={params.page_size}
                 onPageChange={
-                    (page_num, page_size) => updateFetchParams({ page_num, page_size })
+                    (page_num, page_size) => setParams({ ...params, page_num, page_size })
                 }
             />
-            <CopyTemplateDrawer ref={copyTemplate} onOk={refresh} ws_id={ws_id} />
+            <CopyTemplateDrawer ref={copyTemplate} onOk={queryList} ws_id={ws_id} />
         </Spin>
     )
 }

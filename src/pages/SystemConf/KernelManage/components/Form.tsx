@@ -95,8 +95,7 @@ export default forwardRef(
                     <Form.Item
                         rules={[{
                             required: true,
-                            max:64,
-                            pattern: /^[A-Za-z0-9\._-]+$/g,
+                            pattern: /^[A-Za-z0-9\._-]{1,64}$/g,
                             message: formatMessage({id: 'kernel.version.message'})
                         }]} 
                         label={<FormattedMessage id="kernel.version"/>}

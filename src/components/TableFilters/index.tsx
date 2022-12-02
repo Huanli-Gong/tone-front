@@ -38,7 +38,7 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
                                 style={{
                                     background: index % 2 === 0 ? 'rgba(0,0,0,0.02)' : '#fff'
                                 }}
-                                key={item.name}
+                                key={item.value}
                                 value={item.value}
                             >{item.name}</Radio>
                         )
@@ -184,12 +184,14 @@ export const getCheckboxFilter = (props: any, setProps: any, list: any, name: st
     filterIcon: <FilterFilled style={{ color: props[name] && props[name].length ? '#1890ff' : undefined }} />
 })
 // Input框过滤
-export const getSearchFilter = (props: any, setProps: any, name: string) => ({
+export const getSearchFilter = (props: any, setProps: any, name: string, desc?: string, styleObj?: any) => ({
     filterDropdown: ({ confirm }: any) => (
         <SearchInput
             confirm={confirm}
-            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
             initVal={props[name]}
+            placeholder={[desc]}
+            styleObj={styleObj}
         />
     ),
     filterIcon: () => <FilterFilled style={{ color: props[name] ? '#1890ff' : undefined }} />,
@@ -212,7 +214,7 @@ export const getUserFilter = (params: any, setParams: any, name: string) => ({
         <SelectDrop
             initVal={{ id: params[name], name: params.userName }}
             confirm={confirm}
-            onConfirm={(val: string, valName: string) => setParams({ ...params, [name]: val, userName: valName })}
+            onConfirm={(val: string, valName: string) => setParams({ ...params, [name]: val, userName: valName, page_num: 1 })}
         />
     ),
     filterIcon: <FilterFilled style={{ color: params[name] ? '#1890ff' : undefined }} />

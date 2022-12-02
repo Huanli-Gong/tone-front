@@ -106,7 +106,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         } else {
             setDeleteDefault(true)
         }
-    } 
+    }
     
     const removeGroup = async (id: number) => {
         let data = { ws_id: ws_id }
