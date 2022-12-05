@@ -1,14 +1,12 @@
 import React from "react"
 import { Select, SelectProps, Spin, Tag, Empty, Input } from "antd"
-import { useRequest, useParams, request, useIntl, FormattedMessage } from "umi"
+import { useRequest, useParams, request, FormattedMessage } from "umi"
 import {
     queryCreators,
     queryTag,
-    queryTestServer,
     queryTestSuite,
     queryJobType,
     queryProjectId,
-    queryTestCloudServer
 } from '../../services'
 import styled from "styled-components"
 
@@ -198,7 +196,7 @@ const ServerSelect: React.FC<any> = (props) => {
             mode="multiple"
             onSelect={onChange}
             options={options}
-            filterOption={(input, option: any) => 
+            filterOption={(input, option: any) =>
                 option.value?.indexOf(input.trim()) >= 0
             }
 
@@ -209,21 +207,21 @@ const ServerSelect: React.FC<any> = (props) => {
 export const columns = [
     {
         name: "job_id",
-        label: <FormattedMessage id="ws.result.list.job_id"/>,
+        label: <FormattedMessage id="ws.result.list.job_id" />,
         placeholder: "请输入JobID",
     },
     {
         name: "name",
-        label: <FormattedMessage id="ws.result.list.name"/>,
+        label: <FormattedMessage id="ws.result.list.name" />,
         placeholder: "请输入Job名称",
     },
     {
-        label: <FormattedMessage id="ws.result.list.fail_case"/>,
+        label: <FormattedMessage id="ws.result.list.fail_case" />,
         name: 'fail_case',
         placeholder: "请输入多个失败case,多个以英文逗号分隔",
     }, // 可输入多个
     {
-        label: <FormattedMessage id="ws.result.list.creators"/>,
+        label: <FormattedMessage id="ws.result.list.creators" />,
         name: 'creators',
         placeholder: "请选择创建人",
         searchKey: "keyword",
@@ -237,25 +235,25 @@ export const columns = [
         dataSet: (item: any) => ({ value: item.id, label: item.last_name })
     }, // 可选择多个 // 
     {
-        label: <FormattedMessage id="ws.result.list.tags"/>,
+        label: <FormattedMessage id="ws.result.list.tags" />,
         name: 'tags',
         placeholder: "请选择标签",
         render: <TagSelect />,
     }, // 可选择多个 // /api/job/tag/ws_id=xxx  标签
     {
-        label: <FormattedMessage id="ws.result.list.state"/>,
+        label: <FormattedMessage id="ws.result.list.state" />,
         name: 'state',
         placeholder: "请选择状态",
         render: <StateSelect />
     },  // Pending（pending）、Running（running）、Success、Fail、Stop  状态
     {
-        label: <FormattedMessage id="ws.result.list.server"/>,
+        label: <FormattedMessage id="ws.result.list.server" />,
         name: 'server',
         placeholder: "请选择测试机",
         render: <ServerSelect />
     }, // api/server/test_server//? ws_id=4
     {
-        label: <FormattedMessage id="ws.result.list.test_suite"/>,
+        label: <FormattedMessage id="ws.result.list.test_suite" />,
         name: 'test_suite',
         placeholder: "请选择TestSuite",
         render: (
@@ -269,7 +267,7 @@ export const columns = [
         dataSet: (item: any) => ({ ...item, value: item.id, label: item.name })
     }, // 可选择多个 // api/case/test_suite/? page_num=4 & page_size=1000
     {
-        label: <FormattedMessage id="ws.result.list.job_type_id"/>,
+        label: <FormattedMessage id="ws.result.list.job_type_id" />,
         name: 'job_type_id',
         placeholder: "请选择Job类型",
         render: (
@@ -281,21 +279,21 @@ export const columns = [
         dataSet: (item: any) => ({ label: item.name, value: item.id })
     }, // api/job/type/?ws_id=xxx
     {
-        label: <FormattedMessage id="ws.result.list.test_type"/>,
+        label: <FormattedMessage id="ws.result.list.test_type" />,
         name: 'test_type',
         placeholder: "请选择测试类型",
         render: (
             <BasicSelect
                 options={[
-                    { value: 'functional', label: <FormattedMessage id="functional.test"/> },
-                    { value: 'performance', label: <FormattedMessage id="performance.test"/> },
-                    { value: 'business', label: <FormattedMessage id="business.test"/> },]
+                    { value: 'functional', label: <FormattedMessage id="functional.test" /> },
+                    { value: 'performance', label: <FormattedMessage id="performance.test" /> },
+                    { value: 'business', label: <FormattedMessage id="business.test" /> },]
                 }
             />
         )
     }, // 功能测试（functional）、性能测试（performance）
     {
-        label: <FormattedMessage id="ws.result.list.project_id"/>,
+        label: <FormattedMessage id="ws.result.list.project_id" />,
         name: 'project_id',
         placeholder: "请选择所属项目",
         render: <BasicSelect api={queryProjectId} />,

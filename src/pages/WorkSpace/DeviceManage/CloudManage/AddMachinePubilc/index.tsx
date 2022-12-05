@@ -487,14 +487,18 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
 
     const onSubmit = () => {
         form.validateFields().then(val => {
-            let arr = val.extra_param
-            let names = arr.map((item:any) => item["param_key"]);
-            let nameSet = new Set(names);
-            if (nameSet.size == names.length) {
-                submit(val)
+            let arr = val.extra_param || []
+            if(!!arr.length){
+                let names = arr.map((item:any) => item["param_key"]);
+                let nameSet = new Set(names);
+                if (nameSet.size == names.length) {
+                    submit(val)
+                } else {
+                    message.warn('扩展字段重名，请修改后提交!!!')
+                    form.scrollToField('extra_param')
+                }
             } else {
-                message.warn('扩展字段重名，请修改后提交!!!')
-                form.scrollToField('extra_param')
+                submit(val)
             }
         })
     }
@@ -909,7 +913,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                             </Col> :
                             null
                         }
-                        {type === 'standalone' && !is_instance ?
+                        { !is_instance ?
                             <Col span={24} className={styles.warp}>
                                 <Form.Item
                                     label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={formatMessage({ id: 'device.aliyun.params' })} />}

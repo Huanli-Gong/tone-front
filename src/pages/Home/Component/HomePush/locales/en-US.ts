@@ -4,8 +4,8 @@ const text =  {
   // page1
   'system.introduction': 'T-One Platform Introduction',
   'brief.introduction': "There are many categories of testing and test environment is extremely complex, so how can it be easily automated? The answer is T-one, which is the first one-stop quality collaboration platform of all scenarios in the industry, can meet all your automation testing requirements.",
-  'li.use1': 'Support multi CPU hybrid architecture (X86/Arm/Loogarch/Risc-v)',
-  'li.use2': 'Support multi operating system categories (AnolisOS/CentOS/Debian/Ubuntu/Uniontech/KylinOS)',
+  'li.use1': 'Support multi CPU hybrid architecture (X86/Arm/Loongarch/Risc-v)',
+  'li.use2': 'Support multi operating system categories (AnolisOS/CentOS/Debian/Ubuntu/Uniontech/KylinOS/Other Derivative Versions)',
   'li.use3': 'Support complex testing environment (Enterprise intranet/Network isolation environment/Elastic cloud virtual machine/Container/Application cluster/multiple hybrid environment)',
   // page2
   'platform': 'Platform Architecture',

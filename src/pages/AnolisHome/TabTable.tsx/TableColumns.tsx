@@ -86,8 +86,10 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
         /* 公开ws 未登录跳登录 */
         //私密ws 未登录跳转登录
         /* 未登录，私密不显示按钮 */
-        if (!user_id && !is_public) {
-            return <></>
+
+        if (!is_public) {
+            if (!user_id) return <></>
+            if (BUILD_APP_ENV === "openanolis" && !is_member) return <></>
         }
 
         if (access.IsAdmin() || is_member || is_public)
@@ -108,8 +110,9 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
     }
 
     const handleClick = () => {
-        if (BUILD_APP_ENV) {
-            if (!user_id && !is_public) return
+        if (!is_public) {
+            if (!user_id) return <></>
+            if (BUILD_APP_ENV === "openanolis" && !is_member) return <></>
         }
         if (access.IsAdmin() || is_member || is_public) return handleJumpWs()
         return ref.current?.show()
@@ -164,12 +167,18 @@ const HeaderRow = styled.div`
 `
 
 export const TableHeader: React.FC = () => {
-
+    const intl = useIntl()
     return (
         <HeaderRow>
-            <Intr >Workspace名称</Intr>
-            <Owner >所有者</Owner>
-            <Desc >简介</Desc>
+            <Intr >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_name` })}
+            </Intr>
+            <Owner >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_owner` })}
+            </Owner>
+            <Desc >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_desc` })}
+            </Desc>
         </HeaderRow>
     )
 }

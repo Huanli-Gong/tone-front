@@ -88,7 +88,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     }
 
     useEffect(() => {
-        getList({ ...params, cluster_type: 'aliyun', is_instance: + isInstance })
+        getList({ ...params, cluster_type: 'aliyun', is_instance: + isInstance, ws_id })
     }, [params, isInstance]);
 
     const { width: windowWidth } = useClientSize()
@@ -106,7 +106,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         } else {
             setDeleteDefault(true)
         }
-    } 
+    }
     
     const removeGroup = async (id: number) => {
         let data = { ws_id: ws_id }

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
-import { Layout, Menu, Space } from 'antd'
+import { Layout, Menu, Space, Popover } from 'antd'
 import styles from './index.less'
-import { FormattedMessage, history, useIntl, useParams } from 'umi'
+import { FormattedMessage, history, useIntl, useParams, getLocale } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 import AdCompoent from './components/Ad'
@@ -10,6 +10,9 @@ const { document }: any = window
 
 const WorkspaceLayout = (props: any) => {
     // const { initialState } = useModel('@@initialState')
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id }: any = useParams()
     const { pathname } = props.location
     const { routes } = props.route
@@ -112,6 +115,20 @@ const WorkspaceLayout = (props: any) => {
             </div>
         )
 
+    // 国际化英文模式，菜单项内容过长缩略问题
+    const EllipsisDiv = ({ placement='top', style={}, item={}, child={} }: any)=> {
+        const caseRoute = ["TestTemplateManage", "GroupBaseline", "ClusterBaseline", "GroupManage"].includes(child.name)
+        const text = formatMessage({id: `Workspace.${item.name}.${child.name}`})
+        return caseRoute && enLocale ?
+        <Popover content={text} placement={placement}>
+            <div style={{ overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap', cursor: 'pointer', ...style }}>
+                {text}
+            </div>
+        </Popover>
+        :
+        <div>{text}</div>
+    }
+
     return (
         <Layout key={timeStampKey} className={styles.layout} >
             <Layout.Sider theme="light" className={styles.ws_slider}>
@@ -137,7 +154,8 @@ const WorkspaceLayout = (props: any) => {
                                                 if (!child.hideInMenu && !child.unaccessible) {
                                                     return (
                                                         <Menu.Item key={child.path} onClick={() => onMenuClick(child)}>
-                                                            <FormattedMessage id={`Workspace.${item.name}.${child.name}`} />
+                                                            {/* {formatMessage({id: `Workspace.${item.name}.${child.name}`})} */}
+                                                            <EllipsisDiv item={item} child={child} />
                                                         </Menu.Item>
                                                     )
                                                 }

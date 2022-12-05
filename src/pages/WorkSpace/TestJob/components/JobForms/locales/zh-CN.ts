@@ -82,6 +82,8 @@ const text =  {
   'callback_api.icons': 'T-one平台会在Job状态发生变化时携带该Job信息并以POST方式主动请求该API。',
   'callback_api.tips': '详细信息请查看',
   'callback_api.help.document': '回调接口帮助文档',
+  'job_timeout.label': 'Job超时时间',
+  'job_timeout.placeholder': '请输入Job超时时间',
 };
 
 export default Object.keys(text).reduce((p, key) => {

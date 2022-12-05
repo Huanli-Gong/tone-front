@@ -82,8 +82,8 @@ const text =  {
   // Drawer
   'bug': '缺陷记录',
   'bug.placeholder': '请输入缺陷记录',
-  'baseline_id': '选择基线',
-  'baseline_id.placeholder': '请选择基线',
+  'baseline_id': '基线名称',
+  'baseline_id.placeholder': '搜索或创建基线',
   'create.baseline': '新建基线',
   'impact_result': '影响结果',
   'description': '问题描述',

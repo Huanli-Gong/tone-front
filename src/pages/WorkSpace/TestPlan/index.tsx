@@ -112,8 +112,8 @@ const TestPlanManage = (props: any) => {
             pageParams,
             setPageParams,
             [
-                { name: formatMessage({id: 'operation.yes'}), value: 'True' }, 
-                { name: formatMessage({id: 'operation.no'}), value: 'False' }
+                { name: <FormattedMessage id="operation.yes" />, value: 'True' }, 
+                { name: <FormattedMessage id="operation.no" />, value: 'False' }
             ],
             'enable'
         )
@@ -128,6 +128,13 @@ const TestPlanManage = (props: any) => {
     }, {
         dataIndex: 'gmt_created',
         title: <FormattedMessage id="plan.table.gmt_created" />,
+        ellipsis: {
+            showTitle: false
+        },
+        width: 170,
+    },{
+        dataIndex: 'gmt_modified',
+        title: <FormattedMessage id="plan.table.gmt_modified" />,
         ellipsis: {
             showTitle: false
         },

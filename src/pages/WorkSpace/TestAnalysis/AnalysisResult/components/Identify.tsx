@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip, Space, Typography } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as BaseLine } from '@/assets/svg/Report/BaseLine.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -16,22 +16,22 @@ const Identify: React.FC<any> = (props) => {
             <>
                 <Space>
                     {
-                        is_job ? 
-                        is_base && <Tooltip title={<FormattedMessage id="analysis.benchmark.group" />}>
-                            <BaseIcon
-                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                            />
-                        </Tooltip>
-                        :
-                        is_base && <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
-                            <BaseLine
-                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                            />
-                            <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
-                        </Tooltip>
+                        is_job ?
+                            is_base && <Tooltip title={<FormattedMessage id="analysis.benchmark.group" />}>
+                                <BaseIcon
+                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                />
+                            </Tooltip>
+                            :
+                            is_base && <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
+                                <BaseLine
+                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                />
+                                <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
+                            </Tooltip>
                     }
                 </Space>
-                <EllipsisPulic title={tag} width={'calc(100% - 100px)'}/>
+                <EllipsisPulic title={tag} width={'calc(100% - 100px)'} />
             </>
         )
     }

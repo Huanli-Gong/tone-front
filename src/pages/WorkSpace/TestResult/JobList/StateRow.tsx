@@ -46,7 +46,7 @@ const StateRow: React.FC<IProps> = (props) => {
     }, [keyType])
 
     const jobStateKeys = [
-        { name: formatMessage({ id: 'all' }), key: 'all_job', val: '', },
+        { name: formatMessage({ id: 'all' }), key: 'all_job', val: undefined, },
         { name: 'Pending', key: 'pending_job', val: 'pending' },
         { name: 'Running', key: 'running_job', val: 'running' },
         { name: 'Complete', key: 'success_job', val: 'success' },
@@ -73,13 +73,13 @@ const StateRow: React.FC<IProps> = (props) => {
 
             <Space>
                 <Space>
-                    <Typography.Text><FormattedMessage id="ws.result.list.selection.function"/>：</Typography.Text>
+                    <Typography.Text><FormattedMessage id="ws.result.list.selection.function" />：</Typography.Text>
                     <Radio.Group
                         onChange={({ target }: RadioChangeEvent) => setKeyType(target.value)}
                         value={keyType}
                     >
-                        <Radio value={1}><FormattedMessage id="ws.result.list.report.and.analysis"/></Radio>
-                        {access.WsMemberOperateSelf() && <Radio value={2}><FormattedMessage id="ws.result.list.batch.delete"/></Radio>}
+                        <Radio value={1}><FormattedMessage id="ws.result.list.report.and.analysis" /></Radio>
+                        {access.WsMemberOperateSelf() && <Radio value={2}><FormattedMessage id="ws.result.list.batch.delete" /></Radio>}
                     </Radio.Group>
                 </Space>
                 <Input.Search
@@ -93,8 +93,8 @@ const StateRow: React.FC<IProps> = (props) => {
                 <div onClick={() => setFilter(!filter)} style={{ cursor: 'pointer' }}>
                     {
                         filter ?
-                            <Space><FormattedMessage id="ws.result.list.collapse.filter"/><UpOutlined /></Space> :
-                            <Space><FormattedMessage id="ws.result.list.expand.filter"/><DownOutlined /></Space>
+                            <Space><FormattedMessage id="ws.result.list.collapse.filter" /><UpOutlined /></Space> :
+                            <Space><FormattedMessage id="ws.result.list.expand.filter" /><DownOutlined /></Space>
                     }
                 </div>
             </Space>

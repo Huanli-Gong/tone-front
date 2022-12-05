@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Tabs, Tooltip, Drawer } from 'antd';
+import { Tabs, Tooltip, Drawer, Typography } from 'antd';
 import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage } from 'umi'
 import styles from '../../style.less';
@@ -34,8 +34,8 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
         },
         { title: <FormattedMessage id="suite.alias"/>, dataIndex: 'alias', width: 100, ellipsis: true },
         { title: <FormattedMessage id="suite.domain"/>, dataIndex: 'domain_name_list', width: 100,
-            render: (t: any) => {
-                return t || '-'
+            render: (_: any) => {
+                return _ ? <Tooltip placement={'bottomLeft'} title={_}><Typography.Text style={{ width: 100 }} ellipsis>{_ || '-'}</Typography.Text></Tooltip> : '-'
             }
         },
         { title: 'Timeout(s)', dataIndex: 'timeout', width: 100 },

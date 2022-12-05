@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo, useRef, useMemo, useCallback } from 'react';
 import { Col, Button, message, Spin } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
-import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi';
+import { history, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi';
 import { useScroll } from 'ahooks';
 import { UpOutlined } from '@ant-design/icons';
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport';
@@ -20,7 +20,7 @@ import { requestCodeMessage } from '@/utils/utils';
 
 const Report = (props: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id, form_id } = props.match.params
+    const { ws_id, form_id } = useParams() as any
     const local = props.history.location
     const access = useAccess();
     const testDataRef = useRef(null)
@@ -55,7 +55,7 @@ const Report = (props: any) => {
         } else if( data.code === 500){
             history.push(`/500?page=${location.href}`)
         } else {
-            requestCodeMessage(data.code,data.msg)
+            requestCodeMessage(data.code, data.msg)
         }
     }
 
@@ -95,7 +95,7 @@ const Report = (props: any) => {
             setEnvironmentResult(res.data)
         }
         if (res.code === 1358) {
-            message.error(formatMessage({id: 'analysis.please.add.comparison.group'}) )
+            message.error(formatMessage({ id: 'analysis.please.add.comparison.group' }))
             return
         }
         if (res.code !== 200) {
@@ -154,33 +154,33 @@ const Report = (props: any) => {
     }, [testDataParam, paramEenvironment])
 
     const handleReportId = async () => {
-        let arr = allGroupData.map((item:any) => {
-            let members = item.members.map((i:any) => i.id)
+        let arr = allGroupData.map((item: any) => {
+            let members = item.members.map((i: any) => i.id)
             return {
                 ...item,
                 members
             }
         })
         let form_data: any = {
-            allGroupData:arr,
+            allGroupData: arr,
             baselineGroupIndex,
             testDataParam,
             envDataParam: paramEenvironment
         }
         const { data, code, msg } = await compareForm({ form_data })
-        if(code === 200) {
+        if (code === 200) {
             setShareId(data)
         } else {
-            requestCodeMessage(code,msg)
+            requestCodeMessage(code, msg)
         }
     }
 
-    useEffect(()=> {
-        if(!!allGroupData.length){
+    useEffect(() => {
+        if (!!allGroupData.length) {
             handleReportId()
         }
-    },[allGroupData, baselineGroupIndex])
-    
+    }, [allGroupData, baselineGroupIndex])
+
     const handleShare = useCallback(
         () => {
             if (shareId) {
@@ -191,7 +191,7 @@ const Report = (props: any) => {
                 });
 
                 clipboard.on('success', function (e: any) {
-                    message.success(formatMessage({id: 'analysis.copy.sharing.link.succeeded'}) )
+                    message.success(formatMessage({ id: 'analysis.copy.sharing.link.succeeded' }))
                     e.clearSelection();
                 });
 
@@ -241,7 +241,7 @@ const Report = (props: any) => {
             setEnvData(compare)
         }
     }, [environmentResult.compare_groups])
-    
+
     return (
         <ReportContext.Provider
             value={{
@@ -280,16 +280,17 @@ const Report = (props: any) => {
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
                                 {!form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
-                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="analysis.share" />
+                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="operation.share" />
                                 </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
                                     {!form_id && <Button type="primary" loading={compareLen !== suiteLen} onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>
-                                    <FormattedMessage id="analysis.create.report" />
-                                </Button>}
+                                        <FormattedMessage id="analysis.create.report" />
+                                    </Button>}
                                 </Access>
                             </span>
                         </ResultTitle>
+
                         <ResultContent >
                             {
                                 (environmentResult && JSON.stringify(environmentResult) !== '{}') &&
@@ -315,7 +316,6 @@ const Report = (props: any) => {
                 <SaveReport
                     ref={saveReportDraw}
                     onOk={creatReportCallback}
-                    ws_id={ws_id}
                     allGroup={allGroupData}
                 />
             </div>
