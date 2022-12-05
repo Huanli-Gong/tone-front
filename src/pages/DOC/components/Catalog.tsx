@@ -5,9 +5,13 @@ import { Typography } from 'antd';
 import cls from 'classnames'
 
 const Wrapper = styled.div`
+    position: absolute;
+    right: 0;
+    top: 20px;
     width: 230px;
     height: 100%;
     padding: 10px;
+    overflow: auto;
     .item-active {
         border-left: 1px solid #1890ff;
         span {
@@ -16,12 +20,11 @@ const Wrapper = styled.div`
     }
 `
 
-const CatalogItem = styled.div<{ level: number }>`
+const CatalogItem = styled.div`
     width: 100%;
     border-left: 1px solid rgba(0, 0, 0, 0.1);
     cursor: pointer;
     padding: 4px 0 4px 20px;
-    ${({ level }) => level ? 'text-indent:' + (level - 1) + 'em;' : ''}
 `
 type IProps = {
     source: any[],
@@ -57,7 +60,6 @@ const Catalog: React.FC<IProps> = ({ source, position, setPosition }) => {
                     <CatalogItem
                         key={l.index}
                         onClick={() => hanldeClick(l)}
-                        level={l.level}
                         className={
                             cls(
                                 setActiveClass(idx) && 'item-active'
@@ -65,8 +67,8 @@ const Catalog: React.FC<IProps> = ({ source, position, setPosition }) => {
                         }
                     >
                         <Typography.Text
-                            style={{ width: '100%' }}
-                            ellipsis
+                            style={{ textIndent: l.level + "em" }}
+                            ellipsis={{ tooltip: true }}
                         >
                             {l.text}
                         </Typography.Text>

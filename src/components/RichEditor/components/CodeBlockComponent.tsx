@@ -36,13 +36,19 @@ export default ({ node, updateAttributes, extension, editor }: any) => {
                         className="lang-selecter"
                         size="small"
                         onChange={value => updateAttributes({ language: value })}
-                    >
-                        {extension.options.lowlight.listLanguages().map((lang: string, index: number) => (
-                            <Select.Option key={index} value={lang}>
-                                {lang}
-                            </Select.Option>
-                        ))}
-                    </Select> :
+                        optionFilterProp="children"
+                        showSearch
+                        filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        }
+                        options={
+                            extension.options?.lowlight?.listLanguages()?.map((lang: string, index: number) => ({
+                                key: index,
+                                value: lang,
+                                label: lang
+                            }))
+                        }
+                    /> :
                     <span className='copy-outline' onClick={() => handleCopyText(textContent)}>
                         <CopyOutline />
                     </span>

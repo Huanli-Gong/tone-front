@@ -10,7 +10,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import DocListItem from './DocsListItem';
 import Loading from './Loading';
 import Empty from './Empty'
-import { useDocProvider } from '../Provider'
 
 const DocsWrapper = styled(Row)`
     height: 100%;
@@ -30,11 +29,7 @@ const Title = styled(Row)`
 const List = styled(Row)`
     width: 100%;
     padding: 8px 0;
-    height: calc(100% - 48px);
-    overflow-y: auto;
-    overflow-x: hidden;
     position: relative;
-    flex-direction: column !important;
 `
 
 type DocItem = {
@@ -122,30 +117,32 @@ const Docs: React.FC<IProps> = ({ onChange }) => {
                 </Access>
             </Title>
 
-            <DndProvider backend={HTML5Backend}>
-                <List>
-                    {
-                        docs.map(
-                            (item: DocItem, idx: number) => (
-                                <DocListItem
-                                    key={item.id}
-                                    {...item}
-                                    index={idx}
-                                    className={current?.id === item.id && 'doc_active'}
-                                    onClick={() => handleClick(item)}
-                                    onMove={handleMove}
-                                    refresh={getDocs}
-                                />
+            <div style={{ height: "calc(100% - 48px)", position: "relative", width: "100%", overflowY: "auto" }}>
+                <DndProvider backend={HTML5Backend}>
+                    <List>
+                        {
+                            docs.map(
+                                (item: DocItem, idx: number) => (
+                                    <DocListItem
+                                        key={item.id}
+                                        {...item}
+                                        index={idx}
+                                        className={current?.id === item.id && 'doc_active'}
+                                        onClick={() => handleClick(item)}
+                                        onMove={handleMove}
+                                        refresh={getDocs}
+                                    />
+                                )
                             )
-                        )
-                    }
-                    {
-                        docs.length === 0 &&
-                        <Empty />
-                    }
-                    <Loading loading={loading} />
-                </List>
-            </DndProvider>
+                        }
+                    </List>
+                </DndProvider>
+                {
+                    docs.length === 0 &&
+                    <Empty />
+                }
+                <Loading loading={loading} />
+            </div>
         </DocsWrapper>
     )
 }

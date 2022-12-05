@@ -12,6 +12,13 @@ export const HeaderContainer = styled(Row)`
 `
 export const LogoWrapper = styled(Row)`
     cursor:pointer;
+    flex-wrap: nowrap;
+    width: 115px;
+    .ant-typography {
+        margin: 0;
+        font-weight: normal;
+        display: inline-flex;
+    }
     h3 {
         color:#fff!important;
         margin-bottom:0;

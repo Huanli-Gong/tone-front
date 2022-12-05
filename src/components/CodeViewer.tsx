@@ -1,8 +1,5 @@
-import React from 'react'
 import styled from 'styled-components'
-
-import hljs from "highlight.js"
-import classNames from 'classnames'
+import { marked } from "marked"
 
 const Viewer = styled.div`
     background:#fff!important;
@@ -32,17 +29,10 @@ const Viewer = styled.div`
 const CodeViewer = (props: any) => {
     const { code } = props
     if (!code) return <></>
-    const { language, value } = hljs.highlightAuto(code)
     return (
         <Viewer
-            className={classNames(`hljs language-${language}`)}
-        >
-            <pre>
-                <code
-                    dangerouslySetInnerHTML={{ __html: value }}
-                />
-            </pre>
-        </Viewer>
+            dangerouslySetInnerHTML={{ __html: marked.parse(code) }}
+        />
     )
 }
 

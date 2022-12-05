@@ -197,7 +197,7 @@ const DocListItem: React.FC<IProps> = (props) => {
                     >
                         {tagsWords(tags)}
                     </Tag>
-                    <DrageText ellipsis>
+                    <DrageText ellipsis={{ tooltip: true }}>
                         {title}
                     </DrageText>
                 </DragTitle>

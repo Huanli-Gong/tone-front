@@ -1,9 +1,8 @@
 import React from "react";
 import DorpdownMenu from "./DropdownMenu";
-import { TooltipMenu } from "../components/TooltipMenu"
 import cls from "classnames"
 import { Editor } from "@tiptap/react";
-import { ToolMenuList, ToolMenuItem, ToolMenuItemActive } from "../styled"
+import { ToolMenuList, ToolMenuItem } from "../styled"
 
 import { ReactComponent as Horizontal } from "../assets/horizontal.svg"
 import { ReactComponent as HardBreak } from "../assets/hard-break.svg"

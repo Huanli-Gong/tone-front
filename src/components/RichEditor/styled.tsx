@@ -136,6 +136,16 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             padding: 0 1rem;
         }
 
+        ul {
+            list-style: disc;
+            ul {
+                list-style: circle;
+            }
+        }
+        ol {
+            list-style: auto;
+        }
+
         h1,
         h2,
         h3,

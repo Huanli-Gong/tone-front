@@ -25,7 +25,7 @@ const Editer = styled.div`
     background-color: #ffffff;
     box-shadow: 0 2px 10px rgb(0 0 0 / 12%);
     padding: 20px;
-    overflow: auto;
+    /* overflow: auto; */
 `
 
 const TitleWrapper = styled.div`
@@ -59,8 +59,8 @@ const CreateDoc: React.FC = () => {
     const [title, setTtitle] = useState('')
     const [loading, setLoading] = useState(true)
     const [text, setText] = React.useState("")
-    const [contentJson, setContentJson] = React.useState({})
     const [vm, setVm] = React.useState<Editor>()
+    const [json, setJson] = React.useState<any>()
 
     const setting = useRef<FormInstance | undefined>()
     const ele = useRef() as any
@@ -101,7 +101,6 @@ const CreateDoc: React.FC = () => {
 
     React.useEffect(() => {
         return () => {
-            setContentJson({})
             setVm(undefined)
         }
     }, [])
@@ -126,13 +125,16 @@ const CreateDoc: React.FC = () => {
                     doc_type,
                     ...values,
                 }
-                const { code, msg, data } = !doc_id ? await createDoc(param) : await updateDoc({ ...param, id: doc_id })
+                const { code, msg, data } = !doc_id ?
+                    await createDoc(param) :
+                    await updateDoc({ ...param, id: doc_id })
                 if (code !== 200) {
                     message.error(msg)
                     return
                 }
 
-                const isEdit = doc_id ? `/${doc_id}` : `/${data.id}`
+                const $id = doc_id ? `/${doc_id}` : `/${data.id}`
+                const isEdit = `/${doc_type}${$id}`
                 history.push(isEdit)
             })
             .catch(error => {
@@ -157,22 +159,28 @@ const CreateDoc: React.FC = () => {
                     >
                         <ArrowLeftOutlined style={{ fontSize: 20 }} />
                     </span>
-                    <Button type="primary" onClick={handlePublish}>发布</Button>
+                    <Button type="primary" onClick={handlePublish}>
+                        {
+                            doc_id ? "更新" : "发布"
+                        }
+                    </Button>
                 </ToolBarWrapper>
 
                 <Editer ref={editWrapper}>
                     <TitleWrapper>
                         <Input value={title} placeholder="请输入标题" onChange={handleTitleChange} />
                     </TitleWrapper>
-                    <EditerWrapper
-                        ref={ele}
-                    >
+                    <EditerWrapper ref={ele} >
                         <RichEditor
                             content={text}
-                            onCreate={({ editor }) => setVm(editor)}
+                            placeholder="说点什么？"
+                            onCreate={({ editor }) => {
+                                setVm(editor)
+                                setJson(editor.getJSON())
+                            }}
                             onUpdate={({ editor }) => {
                                 setVm(editor)
-                                setContentJson(editor.getJSON())
+                                setJson(editor.getJSON())
                             }}
                         />
                     </EditerWrapper>
@@ -180,10 +188,7 @@ const CreateDoc: React.FC = () => {
 
                 <Setting ref={setting} />
 
-                <Outline
-                    editor={vm}
-                    contentJson={contentJson}
-                />
+                <Outline json={json} />
             </Content>
 
             <Loading loading={loading} />

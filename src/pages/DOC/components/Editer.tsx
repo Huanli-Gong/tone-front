@@ -10,7 +10,6 @@ import Empty from './Empty'
 import Catalog from './Catalog'
 import moment from 'moment';
 import lodash from 'lodash'
-import { Editor } from '@tiptap/react';
 
 const Wrapper = styled(Row)`
     height: 100%;
@@ -66,7 +65,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
     const access = useAccess()
 
     const [loading, setLoading] = useState(true)
-    const [editor, setEditor] = useState<Editor>()
+    const [editor, setEditor] = useState<any>()
     const [position, setPosition] = useState<number>(0)
     const [isEmpty, setIsEmpty] = useState(false)
     const [text, setText] = React.useState("")
@@ -95,42 +94,36 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
     const catalogSource = useMemo(() => {
         if (!editor) return []
 
-        const editorScrollHeight = document.querySelector(".ProseMirror")?.scrollHeight
         const { content } = editor.getJSON()
         return content?.filter(({ type }: any) => type === "heading")
             .reduce((p: any, l: any, index: any) => {
                 const { attrs } = l
-                const { text } = l.content && l.content.length > 0 ? l.content[0] : {}
+                if (!l.content) return p
+                const { text }: any = l.content && l.content.length > 0 ? l.content[0] : {}
                 const { level } = attrs
-                if (level < 4) {
-                    let dom = undefined
-                    document.querySelectorAll(`h${level}`).forEach((ele) => {
-                        if (ele.innerHTML === text)
-                            dom = ele
+                let dom = undefined
+                document.querySelectorAll(`h${level}`).forEach((ele) => {
+                    if (ele.innerHTML === text)
+                        dom = ele
+                })
+                if (dom) {
+                    const { offsetTop }: any = dom
+
+                    return p.concat({
+                        level, text, node: l, index,
+                        dom,
+                        position: offsetTop
                     })
-                    if (dom) {
-                        const { parentNode, offsetTop }: any = dom
-                        const $pos = editorScrollHeight - parentNode?.offsetHeight + offsetTop
-                        return p.concat({
-                            level, text, node: l, index,
-                            dom,
-                            position: $pos
-                        })
-                    }
-                    return p
                 }
                 return p
             }, [])
     }, [editor])
 
-    const hanldeEditorContainerScroll = (evt: any) => {
-        // console.log('target.scrollTop', evt.target.scrollTop)
-        setPosition(evt.target.scrollTop)
-    }
+    const hanldeEditorContainerScroll = (evt: any) => setPosition(evt.target.scrollTop)
 
     useEffect(() => {
         if (!editor) return
-        const _dom: HTMLElement = document.querySelector(".ProseMirror")
+        const _dom: any = document.querySelector(".ProseMirror")
         _dom.addEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
         return () => {
             _dom.removeEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
@@ -156,7 +149,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
                                 </Access>
                             </EditorTitle>
                             <Typography.Text type="secondary">
-                                发布时间：{gmt_modified && moment(gmt_modified).format('YYYY-MM-DD hh:mm:ss')}
+                                更新时间：{gmt_modified && moment(gmt_modified).format('YYYY-MM-DD hh:mm:ss')}
                             </Typography.Text>
                         </>
                     }

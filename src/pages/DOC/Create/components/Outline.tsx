@@ -1,6 +1,6 @@
 
 import { Row, Space, Typography, Divider } from 'antd'
-import React, { memo, useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import scrollIntoView from 'scroll-into-view-if-needed';
 
@@ -21,27 +21,27 @@ const TitleWrap = styled.span<{ textIndent: number }>`
 `
 
 type IProps = {
-    editor?: any;
-    contentJson?: any;
+    json?: any;
 }
 
 type OutlineItem = { level: number; text: string; index: number; node: any[] }
 
-const Outline: React.FC<IProps> = ({ editor, contentJson }) => {
-    if (!contentJson) return <></>
-    const { content } = contentJson
+const Outline: React.FC<IProps> = ({ json }) => {
+    if (!json) return <></>
+    const { content } = json
+    if (!content) return <></>
 
     const result = content?.filter(({ type }: any) => type === "heading")
         .reduce((p: any, l: any, index: any) => {
             const { attrs } = l
             const { level } = attrs
-            if (level < 4) {
-                const text = l.content[0].text
-                return p.concat({ level, text, node: l, index })
-            }
-            return p
+            if (!l.content) return p
+            const text = l.content[0].text
+
+            return p.concat({ level, text, node: l, index })
         }, [])
 
+    // console.log(result)
     const hanldeClick = React.useCallback((node: any) => {
         const { content, attrs } = node
         const { text } = content[0]
@@ -54,7 +54,7 @@ const Outline: React.FC<IProps> = ({ editor, contentJson }) => {
                     inline: 'start',
                 })
         })
-    }, [editor]);
+    }, [json]);
 
     return (
         <Wrapper >
@@ -68,7 +68,7 @@ const Outline: React.FC<IProps> = ({ editor, contentJson }) => {
                             textIndent={level}
                             onClick={() => hanldeClick(node)}
                         >
-                            <Typography.Text ellipsis>
+                            <Typography.Text ellipsis={{ tooltip: true }} style={{ width: 250 }}>
                                 {text}
                             </Typography.Text>
                         </TitleWrap>
