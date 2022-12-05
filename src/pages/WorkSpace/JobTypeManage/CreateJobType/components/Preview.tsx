@@ -10,7 +10,7 @@ import styles from '@/pages/WorkSpace/TestJob/index.less'
 
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { switchServerType, switchTestType } from '@/utils/utils'
-import { useParams, FormattedMessage, useIntl  } from 'umi'
+import { useParams, FormattedMessage, useIntl } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 
 interface PreviewProps {
@@ -124,7 +124,7 @@ export default forwardRef(
                                         <div className={styles.page_body_nav}>
                                             <span><FormattedMessage id="job.types.base" /></span>
                                         </div>
-                                        <BasicForm disabled={false} contrl={items.basic}  callBackProjectId={queryProjectId}/>
+                                        <BasicForm disabled={false} contrl={items.basic} callBackProjectId={queryProjectId} />
                                     </Row>
                                 }
                                 {
@@ -133,7 +133,7 @@ export default forwardRef(
                                         <div className={styles.page_body_nav}>
                                             <span><FormattedMessage id="job.types.env" /></span>
                                         </div>
-                                        <EnvForm disabled={false} contrl={items.env} project_id={projectId}/>
+                                        <EnvForm disabled={false} contrl={items.env} project_id={projectId} />
                                     </Row>
                                 }
                                 {
@@ -144,6 +144,7 @@ export default forwardRef(
                                         <Col span={21} offset={3}>
                                             <SelectSuite
                                                 handleData={() => { }}
+                                                server_type={server_type}
                                                 test_type={test_type}
                                                 contrl={items.server}
                                                 disabled={false}

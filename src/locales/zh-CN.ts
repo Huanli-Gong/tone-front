@@ -23,6 +23,7 @@ export default {
   'operation.add': '添加',
   'operation.create': '创建',
   'operation.edit': '编辑',
+  'operation.modify': '修改',
   'operation.delete': '删除',
   'operation.view': '查看',
   'operation.yes': '是',
@@ -60,7 +61,7 @@ export default {
   'operation.pass': '通过',  
   'operation.refuse': '拒绝',  
 
-  'pagination.total.strip': '共{data}条',
+  'pagination.total.strip': '共 {data} 条',
   'all': '全部',
   'selected': '已选择',
   'selected.item': '已选择{data}项',

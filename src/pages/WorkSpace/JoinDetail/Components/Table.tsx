@@ -31,16 +31,16 @@ export default ( props : any ) => {
     } : undefined
 
     const SwitchApproveClass = ( _ : any ) => {
-        return (<JoinWorkspace />)
+        // return (<JoinWorkspace />)
         switch ( _.object_type ) {
             case 'workspace' : return (
-                <Space>
+                <div>
                     <Tag color="#1890FF"><FormattedMessage id="add"/></Tag>
                     <Typography.Text><FormattedMessage id="join.workspace"/></Typography.Text>
-                </Space>
+                </div>
             )
             default : return (<Space></Space>)
-        } 
+        }
     }
 
     const hanldeOption = async (action : {

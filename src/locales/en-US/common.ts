@@ -1,4 +1,6 @@
-import { aligroupServer_en, aliyunServer_en,
+import {
+  aligroupServer_en, // '内网' | '固定机器池'
+  aliyunServer_en,   // '云上' | '弹性机器池'
   aligroupServer_baseline_en, aliyunServer_baseline_en,
   aligroupServer_standalone_en,
   aliyunServer_standalone_en,
@@ -13,11 +15,16 @@ export default {
   'request.delete.success': 'The deletion was successful',  
   'request.delete.failed': 'The deletion was failed',
   'request.update.success': 'The update was successful',
-  'request.copy.success': 'The copy was successful', // Copy successful
-	'request.save.success': 'The save was successful', 
+  'request.reset.failed': 'The reset was failed',
+  'request.reset.success': 'The reset was successful',
+  'request.copy.success': 'The copy was successful',
+	'request.save.success': 'The save was successful',
+  'request.modify.success': 'The modify was successful', 
   'validator.failed': 'The verification was failed',
   'sorry, the page cannot be accessed': 'Sorry, the page cannot be accessed…',
   'page links may have expired or been deleted': 'Page links may have expired or been deleted.',
+  'reference.details': 'Reference Details',
+  'template.list': 'Template List',
   'no.use.case': 'No test case',
   'select.suite.random': 'Random',
   'you.haven.not.signed.in': "You haven't signed in yet. Please sign in and use this function. ",
@@ -45,11 +52,10 @@ export default {
   'added': 'Added',
 
   // server_provider
-  'aligroup': '固定机器池',
-  'aliyun': 'Elastic machine pool',
-
-
-  'aligroupServer': aligroupServer_en, //这是引用变量不用翻译
+  'aligroup': aligroupServer_en, // '内网' | '固定机器池'
+  'aliyun': aliyunServer_en,     // '云上' | '弹性机器池'
+  // server_type
+  'aligroupServer': aligroupServer_en,
   'aliyunServer': aliyunServer_en,
   // 基线
   'aligroupServer.baseline': aligroupServer_baseline_en,

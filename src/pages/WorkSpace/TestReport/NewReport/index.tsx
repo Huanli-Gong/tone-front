@@ -205,7 +205,7 @@ const Report = (props: any) => {
                     <ReportBodyContainer id={'report-body-container'} collapsed={collapsed}>
                         <ReportWarpper ref={bodyRef}>
                             <Col span={24}>
-                                <BreadcrumbItem />
+                                {!!ws_id && <BreadcrumbItem /> }
                                 <ReportHeader />
                                 <ReportBasicInfo />
                                 <div style={{ width: 1200 }}>

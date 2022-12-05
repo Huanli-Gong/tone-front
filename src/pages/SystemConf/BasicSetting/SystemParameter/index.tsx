@@ -81,11 +81,11 @@ const SystemParameter = (props: any, ref: any) => {
     }, {
         dataIndex: 'creator_name',
         title: <FormattedMessage id="basic.creator"/>,
-        ...getUserFilter({ name: 'creator', data: params, setDate: setParams })
+        ...getUserFilter(params, setParams, 'creator')
     }, {
         dataIndex: 'update_user',
         title: <FormattedMessage id="basic.update_user"/>,
-        ...getUserFilter({ name: 'update_user', data: params, setDate: setParams })
+        ...getUserFilter(params, setParams, 'update_user')
     }, {
         dataIndex: 'description',
         title: <FormattedMessage id="basic.desc"/>,
@@ -150,7 +150,7 @@ const SystemParameter = (props: any, ref: any) => {
                 <Table
                     rowKey="id"
                     dataSource={dataSource?.data}
-                    columns={columns}
+                    columns={columns as any}
                     pagination={false}
                     size="small"
                     scroll={enLocale? { x: 1200 } : undefined}

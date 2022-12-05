@@ -122,7 +122,7 @@ export default {
   'menu.Workspace.TestPlan.Create': 'Create Plan',
   'menu.Workspace.TestPlan.Run': 'Run Plan',
   'menu.Workspace.TestPlan.Edit': 'Edit Plan',
-  'menu.Workspace.TestPlan.View': 'View Plan',
+  'menu.Workspace.TestPlan.View': 'Plan View',
   'menu.Workspace.TestPlan.Summary': 'Results Summary',
   'menu.Workspace.TestPlan.Detail': 'Plan Detail',
 

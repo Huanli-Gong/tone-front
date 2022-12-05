@@ -209,12 +209,12 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="device.usage.state"/>,
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id,'not_real')
         },
         {
             title: <FormattedMessage id="device.real_state"/>,
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id,'real')
         },
         {
             title: <FormattedMessage id="Table.columns.operation"/>,
@@ -248,7 +248,7 @@ export default (props: any) => {
                             >
                                 <Button style={{ padding: 0 }} size="small" type="link"><FormattedMessage id="operation.delete"/></Button>
                             </Popconfirm>
-                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}>同步</Button>}
+                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}><FormattedMessage id="operation.synchronize"/></Button>}
                         </Space>
                     </Access>
                     <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>

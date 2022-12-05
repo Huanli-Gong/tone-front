@@ -33,12 +33,15 @@ const UserManagement: React.FC<{}> = () => {
 	const getRoleFilterSysList = async () => {
 		const { data } = await roleList({ role_type: 'system', is_filter: '0' }) // is_filter: '1':不过滤，获取全量
 		let all = [{ id: '', name: "all", title: "all" }]
-		data && setRolelist(all.concat(data.list))
+		data && setRolelist(all.concat(data.list || []))
 	};
 	useEffect(() => {
 		getRoleList()
 		getRoleSysList()
 		getRoleFilterSysList()
+		return () => {
+			setRolelist([])
+		}
 	}, []);
 
 

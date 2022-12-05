@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
+import {useClientSize} from '@/utils/hooks';
 
 const TextWarp = styled.div`
     overflow: hidden;
@@ -20,10 +21,11 @@ const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
     const { title, children, width, color, placement='topLeft', style, ...rest } = props
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
+    const { width: innerWidth } = useClientSize()
 
     useEffect(() => {
         setEllipsis();
-    }, [title])
+    }, [title, innerWidth])
 
     const setEllipsis = () => {
         const clientWidth = ellipsis?.current?.clientWidth

@@ -25,5 +25,10 @@
         .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
             box-shadow: unset!important;
         }
+
+        /* 覆盖组件样式 */
+        .ant-table-wrapper:only-child .ant-table {
+            margin: 0 !important;
+        }
     }
 }

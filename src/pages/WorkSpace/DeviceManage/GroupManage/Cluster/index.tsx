@@ -9,7 +9,7 @@ import CreateGroupServer from './Components/CreateGroupServer'
 import AddClusterServer from './Components/addClusterServer'
 import ClusterChildTable from './Components/ClusterChildTable'
 import OperationLog from '@/components/Public/Log'
-import SearchInput from '@/pages/WorkSpace/TestSuiteManage/components/SearchInput'
+import SearchInput from '@/components/Public/SearchInput';
 import SelectTags from '@/components/Public/SelectTags';
 import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
@@ -123,6 +123,7 @@ const Cluster = (props: any, ref: any) => {
         {
             title: <FormattedMessage id="device.tag"/>,
             dataIndex: 'tag_list',
+            width: 240,
             render: (record: any) => (
                 <OverflowList list={
                     record.map((item: any, index: number) => {

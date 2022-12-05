@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Popover, Tooltip, Drawer, Space, message, Button, Modal, Affix, Row, Checkbox, Typography, Popconfirm } from 'antd';
+import { Popover, Tooltip, Drawer, Table } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage, useModel } from 'umi';
 import moment from 'moment';
@@ -140,16 +140,16 @@ const List = ({ business_id, dataSource }:any) => {
 	];
 
 	return (
-		<div>
-			<CommonTable className={styles.suitList_root}
-				columns={columns}
-				list={dataSource}
+		<>
+			<Table 
+			  className={styles.suitList_root}
+				size='small'
 				loading={loading}
-				// page={pageNum}
-				// pageSize={pageSize}
-				// total={total}
-				// handlePage={onChange}
+				rowKey={(record)=> record.id}
+				columns={columns}
+				dataSource={dataSource}
 				expandable={{
+					expandedRowKeys: expandKeys,
 					expandedRowRender: (record: any) => {
 						// 根据"测试类型"区分不同的conf列表
 						const { test_type, test_case_list } = record
@@ -163,12 +163,12 @@ const List = ({ business_id, dataSource }:any) => {
 					onExpand: (_: any, record: any) => {
 							_ ? setExpandKeys([record.id]) : setExpandKeys([])
 					},
-					expandedRowKeys: expandKeys,
 					expandIcon: ({ expanded, onExpand, record }: any) =>
 							expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
 									(<CaretRightFilled onClick={e => onExpand(record, e)} />)
 				}}
-				scroll={{ x: '100%' }}
+				scroll={{ x: 'auto'}}
+				pagination={false}
 			/>
 
       <Drawer
@@ -181,7 +181,7 @@ const List = ({ business_id, dataSource }:any) => {
 			>
 				<CodeViewer code={showDoc.doc} />
 			</Drawer>
-		</div>
+		</>
   )
 };
 

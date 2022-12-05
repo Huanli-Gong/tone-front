@@ -32,7 +32,7 @@ export default (props: ColumnsProp) => {
         width,
         formatMessage,
     } = props
-    
+
     const onRemove = (key: string) => {
         const list = dataSource.filter(
             (item: any) => {
@@ -74,24 +74,25 @@ export default (props: ColumnsProp) => {
         },
         width: 150,
         render: (_: any, row: any) => {
-            const random = formatMessage({id: "select.suite.random" })
-            const { server_tag_id } = row
+            const random = formatMessage({ id: "select.suite.random" })
+            const { server_tag_id, ip: $ip, customer_server, } = row
             if (server_tag_id && server_tag_id.length > 0) {
-                const tagList = row.ip ? row.ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : random
+                const tagList = $ip ? $ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : random
                 return (
                     <Tooltip placement="topLeft" title={tagList}>{tagList}</Tooltip>
                 )
             }
 
-            if (isNull(row.ip) && JSON.stringify(row.customer_server) !== '{}') {
+            if (isNull($ip) && customer_server && JSON.stringify(customer_server) !== '{}') {
                 return (
-                    <Tooltip placement="topLeft" title={row.customer_server?.custom_ip || ''}>
-                        {row.customer_server?.custom_ip || ''}
+                    <Tooltip placement="topLeft" title={customer_server?.custom_ip || ''}>
+                        {customer_server?.custom_ip || ''}
                     </Tooltip>
                 )
             }
-            const tempIp = !['随机'].includes(row.ip) ? row.ip : random
-            return <Tooltip placement="topLeft" title={tempIp}>{tempIp}</Tooltip>
+
+            const tempIp = !['随机'].includes($ip) ? $ip : random
+            return <Tooltip placement="topLeft" title={tempIp}>{tempIp || "-"}</Tooltip>
         },
     }
 
@@ -102,32 +103,32 @@ export default (props: ColumnsProp) => {
     }
 
     const reboot = {
-        title: <FormattedMessage id="select.suite.restart"/>,
+        title: <FormattedMessage id="select.suite.restart" />,
         dataIndex: 'reboot',
         // className: styles.action,
-        render: (_: any, row: any) => row.need_reboot ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
+        render: (_: any, row: any) => row.need_reboot ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
         width: 80,
     }
 
     const script = {
-        title: <FormattedMessage id="select.suite.script"/>,
+        title: <FormattedMessage id="select.suite.script" />,
         width: 100,
         dataIndex: 'script',
         // className: styles.var,
         render: (_: any, row: any) => row.setup_info || row.cleanup_info ?
-            <PopoverEllipsis title={`${formatMessage({id: 'select.suite.before.restart'})}:${row.setup_info || '-'}，${formatMessage({id: 'select.suite.after.restart'})}:${row.cleanup_info || '-'}`} width={'150px'}></PopoverEllipsis>
+            <PopoverEllipsis title={`${formatMessage({ id: 'select.suite.before.restart' })}:${row.setup_info || '-'}，${formatMessage({ id: 'select.suite.after.restart' })}:${row.cleanup_info || '-'}`} width={'150px'}></PopoverEllipsis>
             : '-'
     }
 
     const monitor = {
-        title: <FormattedMessage id="select.suite.monitor"/>,
+        title: <FormattedMessage id="select.suite.monitor" />,
         dataIndex: 'monitor',
-        render: (_: any, row: any) => row.console === undefined ? '-' : row.console ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
+        render: (_: any, row: any) => row.console === undefined ? '-' : row.console ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
         width: 100,
     }
 
     const variable = {
-        title: <FormattedMessage id="select.suite.variable"/>,
+        title: <FormattedMessage id="select.suite.variable" />,
         dataIndex: 'variable',
         width: 150,
         render: (_: number, row: any) => {
@@ -136,7 +137,7 @@ export default (props: ColumnsProp) => {
                     return item.name ? `${item.name || ''}=${item.val || ''};` : '-'
                 })
                 return (
-                    <EllipsisPulic title={str} width={150}/>
+                    <EllipsisPulic title={str} width={150} />
                 )
             }
             return '-'
@@ -144,13 +145,13 @@ export default (props: ColumnsProp) => {
     }
 
     const priority = {
-        title: <FormattedMessage id="select.suite.priority"/>,
+        title: <FormattedMessage id="select.suite.priority" />,
         dataIndex: 'priority',
         width: 80,
     }
 
     const option = {
-        title: <FormattedMessage id="Table.columns.operation"/>,
+        title: <FormattedMessage id="Table.columns.operation" />,
         dataIndex: 'title',
         width: 100,
         fixed: 'right',
@@ -162,7 +163,7 @@ export default (props: ColumnsProp) => {
                     style={{ padding: 0, height: 'auto' }}
                     onClick={() => openCase(index, row)}
                 >
-                    <FormattedMessage id="select.suite.config"/>
+                    <FormattedMessage id="select.suite.config" />
                 </Button>
                 <MinusCircleOutlined
                     className={styles.remove}
@@ -173,7 +174,7 @@ export default (props: ColumnsProp) => {
     }
 
     if (checked) {
-        let columns = [{
+        let columns: any = [{
             ...name,
             fixed: 'left',
         }, ip, repeat]

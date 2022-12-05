@@ -198,7 +198,7 @@ const SelectDrawer: React.FC<any> = ({
         >
             <Spin spinning={loading} wrapperClassName={styles.spinWrapper}>
                 <Search
-                    placeholder={formatMessage({id: 'please.enter' })}
+                    placeholder={formatMessage({ id: 'please.enter' })}
                     onSearch={(value: any) => setName(value.replace(/\s+/g, ""))}
                     style={{ width: 420 }}
                     allowClear

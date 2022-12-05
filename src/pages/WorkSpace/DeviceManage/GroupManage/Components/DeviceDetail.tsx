@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef } from 'react'
+import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { Drawer, Typography, Row, Col, Layout, Spin, Tag } from 'antd'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
@@ -6,8 +6,6 @@ import DeployModal from '../Standalone/Components/DeployModal'
 import { queryTestServerDetail, queryChannelState } from '../services'
 import { StateBadge } from './index'
 import { useParams } from "umi"
-
-import DeployServer from './DeployServer'
 
 const ViewDetailDrawer = forwardRef(
     (props, ref) => {
@@ -162,7 +160,7 @@ const ViewDetailDrawer = forwardRef(
                         <Typography.Text strong><FormattedMessage id="device.usage.state"/></Typography.Text>
                         <Row gutter={20} className={styles.row}>
                             <Col span={6}><FormattedMessage id="device.server.state"/>:</Col>
-                            <Col span={18}>{StateBadge(details?.state, details, ws_id)}</Col>
+                            <Col span={18}>{StateBadge(details?.state, details, ws_id,'not_real')}</Col>
                         </Row>
                     </Layout.Content>
                     <Layout.Content style={{ marginBottom: 30 }}>
@@ -224,10 +222,6 @@ const ViewDetailDrawer = forwardRef(
                         </Row>
                     </Layout.Content>
                 </Spin>
-                {/* <DeployServer
-                    handleOk={handleDeployOk}
-                    ref={deployServerRef}
-                /> */}
                 <DeployModal ref={deployModal} callback={deployCallback} />
             </Drawer>
         )

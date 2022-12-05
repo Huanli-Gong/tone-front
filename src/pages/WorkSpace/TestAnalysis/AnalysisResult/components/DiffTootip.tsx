@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip, Row, Col } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import _ from 'lodash';
 import styled from 'styled-components';
 
@@ -32,7 +32,7 @@ const TextPublic = styled.div`
     height: 150px;
     padding-left: 12px;
 `
-export const DiffTootip : React.FC<any> = () => {
+export const DiffTootip: React.FC<any> = () => {
     return (
         <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
             title={
