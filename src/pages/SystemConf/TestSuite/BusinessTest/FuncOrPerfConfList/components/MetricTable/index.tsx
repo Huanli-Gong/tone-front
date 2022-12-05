@@ -61,11 +61,14 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	}
 
 	const doMetricModalFn = (params: any) => {
+		const title = formatMessage({ id: "TestSuite.is_synchronize.all.conf" })
+		const okText = formatMessage({ id: "operation.yes" })
+		const cancelText = formatMessage({ id: "operation.no" })
 		Modal.confirm({
-			title: <FormattedMessage id="TestSuite.is_synchronize.all.conf"/>,
+			title,
 			icon: <ExclamationCircleOutlined />,
-			okText: <FormattedMessage id="operation.yes"/>,
-			cancelText: <FormattedMessage id="operation.no"/>,
+			okText,
+			cancelText,
 			maskClosable: false,
 			onOk() {
 				metricSubmit({ ...params, is_sync: 1 })

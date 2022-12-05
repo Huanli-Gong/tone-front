@@ -29,8 +29,6 @@ export default (props: any) => {
     const joinBaseline: any = useRef(null)
 
     const searchInput: any = useRef(null)
-    // const [searchText, setSearchText] = useState('')
-    // const [searchedColumn, setSearchedColumn] = useState('')
 
     const defaultKeys = {
         job_id,
@@ -47,7 +45,11 @@ export default (props: any) => {
     const { data, refresh, loading } = useRequest(
         (params = interfaceSearchKeys) => queryCaseResult(params),
         {
-            initialData: [], refreshDeps: [interfaceSearchKeys], formatResult(res) {
+            initialData: [],
+            refreshDeps: [interfaceSearchKeys],
+            /* 解决请求重复的问题 */
+            debounceInterval: 200,
+            formatResult(res) {
                 return res
             },
         }
@@ -273,18 +275,23 @@ export default (props: any) => {
                         showQuickJumper: true,
                         showSizeChanger: true,
                         onChange(page_num, page_size) {
-                            setInterfaceSearchKeys((p: any) => ({ ...p, page_num, page_size }))
+                            /* 解决page_size切换，page_num不变的问题 */
+                            setInterfaceSearchKeys((p: any) => ({
+                                ...p,
+                                page_num: p.page_size === page_size ? page_num : 1,
+                                page_size
+                            }))
                         },
                         showTotal(total, range) {
-                            return `共 ${total} 条`
+                            return formatMessage({ id: 'pagination.total.strip' }, { data: total })
                         },
                     }}
                     columns={columns}
                     rowClassName={styles.result_info_table_row}
                     dataSource={data.data || []}
                 />
-            }
-            <EditRemarks ref={editRemark} onOk={refresh} />
+            } 
+            <EditRemarks ref={editRemark} onOk={refresh}/>
             <JoinBaseline
                 ref={joinBaseline}
                 onOk={refresh}

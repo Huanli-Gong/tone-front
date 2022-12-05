@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, useMemo, useCallback } from 'react';
 import { Button, Space, Popconfirm, message } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh } from '../../service';
-import GroupMachine from '../GroupMachine'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
-// import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
-
+import GroupMachine from '../../AddMachinePubilc/index';
+import Log from '@/components/Public/Log';
 const GroupTree: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
-    const { cluster_id, width, onRef, size, top, handleOpenLogDrawer } = props
+    const { cluster_id, width, onRef, size, top, is_instance } = props
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>([]);
     const [refresh, setRefresh] = useState<boolean>(true)
     const aloneMachine = useRef<any>(null)
     const access = useAccess();
+    const logDrawer: any = useRef();
 
     // step1.请求列表数据
     const getList = async () => {
@@ -41,6 +41,12 @@ const GroupTree: React.FC<any> = (props) => {
         setLoading(false)
     };
 
+    const handleOpenLogDrawer = useCallback(
+        (id) => {
+            logDrawer.current.show(id)
+        },
+        []
+    )
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
         if (!row.machineId) return
@@ -53,10 +59,10 @@ const GroupTree: React.FC<any> = (props) => {
             requestCodeMessage(res.code, res.msg)
         }
     }
+
     const columns = useMemo(() => {
-        const instance = !!data.length && data[0].is_instance
         return [{
-            title: instance ? <FormattedMessage id="device.server.instance"/> : <FormattedMessage id="device.server.config"/>,
+            title: !!is_instance ? <FormattedMessage id="device.server.instance"/> : <FormattedMessage id="device.server.config"/>,
             dataIndex: 'name',
             width: 160,
             fixed: 'left',
@@ -64,7 +70,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             render: (_: any, row: any) => (
-                instance ?
+                !!is_instance ?
                     <ServerLink
                         val={_}
                         param={row.id}
@@ -74,7 +80,7 @@ const GroupTree: React.FC<any> = (props) => {
                     : <EllipsisPulic title={row.name} />
             )
         },
-        instance && {
+        !!is_instance && {
             title: 'SN',
             dataIndex: 'sn',
             width: 150,
@@ -83,7 +89,7 @@ const GroupTree: React.FC<any> = (props) => {
             },
             render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
         },
-        BUILD_APP_ENV && instance && {
+        BUILD_APP_ENV && !!is_instance && {
             title: 'TSN',
             dataIndex: 'tsn',
             width: 150,
@@ -92,7 +98,7 @@ const GroupTree: React.FC<any> = (props) => {
             },
             render: (_: number, row: any) => <EllipsisPulic title={row.tsn} />
         },
-        !BUILD_APP_ENV &&
+        !BUILD_APP_ENV && !!is_instance &&
         {
             title: <FormattedMessage id="device.pub_ip"/>,
             width: 130,
@@ -139,8 +145,8 @@ const GroupTree: React.FC<any> = (props) => {
         },
         {
             title: <FormattedMessage id="device.bandwidth"/>,
-            width: 80,
-                dataIndex: 'bandwidth',
+            width: 100,
+            dataIndex: 'bandwidth',
         },
         {
             title: <FormattedMessage id="device.storage_type"/>,
@@ -159,7 +165,7 @@ const GroupTree: React.FC<any> = (props) => {
         // },
         {
             title: <FormattedMessage id="device.console_conf"/>,
-            width: enLocale ? 170: 100,
+            width:  enLocale ? 170: 100,
             ellipsis: {
                 showTitle: false,
             },
@@ -208,7 +214,7 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="device.baseline_server"/>,
             dataIndex: 'baseline_server',
-            width: enLocale ? 170: 120,
+            width: 140, // enLocale ? 170: 120,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {text ?
@@ -231,23 +237,23 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
         },
-        instance &&
+        !!is_instance &&
         {
             title: <FormattedMessage id="device.server.state"/>,
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id,'not_real')
         },
-        instance &&
+        !!is_instance &&
         {
             title: <FormattedMessage id="device.real_state"/>,
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id,'real')
         },
         {
             title: <FormattedMessage id="device.description"/>,
@@ -263,21 +269,21 @@ const GroupTree: React.FC<any> = (props) => {
             fixed: 'right',
             valueType: 'option',
             dataIndex: 'id',
-            width: BUILD_APP_ENV ? 160 : 120,
+            width: BUILD_APP_ENV ? 222 : 182,
             render: (_: number, row: any) => (
                 <Space>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                {BUILD_APP_ENV && instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state"/></Button> }
+                                {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state"/></Button> }
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
                                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && instance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state"/></Button>}
+                            {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state"/></Button>}
                             <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }}><FormattedMessage id="operation.edit"/></Button>
                             <Popconfirm
                                 title={<div style={{ color: 'red' }}><FormattedMessage id="delete.prompt"/></div>}
@@ -285,21 +291,21 @@ const GroupTree: React.FC<any> = (props) => {
                                 okText={<FormattedMessage id="operation.cancel"/>}
                                 cancelText={<FormattedMessage id="operation.confirm.delete"/>}
                                 onCancel={() => { remMachine(row) }}
-                                overlayStyle={{ width: '224px' }}
+                                overlayStyle={{ width: '280px' }}
                                 icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                             >
                                 <Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
                             </Popconfirm>
                         </Space>
                     </Access>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id, 'machine_cloud_server')}>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>
                         <FormattedMessage id="operation.log"/>
                     </Button>
                 </Space>
             )
         }
         ].filter(Boolean)
-    },[ data, enLocale ])
+    },[ data, is_instance, enLocale ])
 
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
@@ -337,7 +343,6 @@ const GroupTree: React.FC<any> = (props) => {
     const onSuccess = () => {
         setRefresh(!refresh)
     }
-
     return (
         <div className={styles.warp}>
             <div
@@ -345,7 +350,7 @@ const GroupTree: React.FC<any> = (props) => {
                 style={{ backgroundSize: `40px ${size}px`, height: top, backgroundPosition: 'left center' }}
             />
             {
-                data.length > 0 &&
+                !!data.length &&
                 <div
                     className={styles.tree}
                     style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
@@ -355,13 +360,14 @@ const GroupTree: React.FC<any> = (props) => {
                     style={{ width: width - 79 }}
                     loading={loading}
                     scroll={{ x: '100%' }}
-                    columns={columns}
-                    showHeader={data.length > 0 ? true : false}
+                    columns={columns as any}
+                    showHeader={!!data.length}
                     dataSource={data}
                     rowKey={'id'}
                     pagination={false}
                 /> 
-            <GroupMachine onRef={aloneMachine} run_mode={'standalone'} onSuccess={onSuccess} />
+                <Log ref={logDrawer} operation_object={'machine_cloud_server'} />
+                <GroupMachine onRef={aloneMachine} is_instance={is_instance} onSuccess={onSuccess} type='cluster' cluster_id={cluster_id}/>
         </div>
     )
 }

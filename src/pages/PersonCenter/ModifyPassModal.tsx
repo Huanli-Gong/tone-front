@@ -1,10 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { Modal, Form, Input, message } from 'antd'
 import { requestModifyPassword } from './services'
-import { useModel } from 'umi'
+import { useModel, useIntl, FormattedMessage  } from 'umi'
 // import ResetModal from '@/pages/SystemConf/UserManagement/components/ResetModal'
 
 const ModifyPassModal: React.ForwardRefRenderFunction<{}, {}> = (props, ref) => {
+    const { formatMessage } = useIntl()
     const [intro, setIntro] = useState<any>({})
     const [visible, setVisible] = useState(false)
     const { initialState, setInitialState } = useModel('@@initialState')
@@ -36,7 +37,7 @@ const ModifyPassModal: React.ForwardRefRenderFunction<{}, {}> = (props, ref) => 
                     authList: data.user_info,
                 })
                 handleCancel()
-                message.success("修改成功")
+                message.success(formatMessage({ id: 'request.modify.success'}) )
             })
     }
 
@@ -48,10 +49,10 @@ const ModifyPassModal: React.ForwardRefRenderFunction<{}, {}> = (props, ref) => 
 
     return (
         <Modal
-            title="修改登录密码"
+            title={<FormattedMessage id="change.login.password" />}
             visible={visible}
             onCancel={handleCancel}
-            okText="确定"
+            okText={<FormattedMessage id="operation.ok" />}
             onOk={handleOk}
             width={'40%'}
         >
@@ -60,30 +61,30 @@ const ModifyPassModal: React.ForwardRefRenderFunction<{}, {}> = (props, ref) => 
                     rules={[
                         {
                             required: true,
-                            message: '请输入密码',
+                            message: formatMessage({ id: 'please.input.a.password'}),
                         },
                         {
                             pattern: /^.{6,18}$/,
-                            message: '密码长度6-18位'
+                            message: formatMessage({ id: 'password.length.limit'}, {min: 6, max: 18} )
                         }
                     ]}
                 >
-                    <Input.Password placeholder="旧密码" />
+                    <Input.Password placeholder={formatMessage({ id: 'please.input.old_password'})} />
                 </Form.Item>
                 <Form.Item label="" name="new_password"
                     rules={[
                         {
                             required: true,
-                            message: '请输入密码',
+                            message: formatMessage({ id: 'please.input.a.password'}),
                         },
                         {
                             pattern: /^.{6,18}$/,
-                            message: '密码长度6-18位'
+                            message: formatMessage({ id: 'password.length.limit'}, {min: 6, max: 18} )
                         }
                     ]}
                     hasFeedback
                 >
-                    <Input.Password placeholder="新密码" />
+                    <Input.Password placeholder={formatMessage({ id: 'please.input.new_password'})} />
                 </Form.Item>
                 <Form.Item label="" name="new_password_repeat"
                     dependencies={['password']}
@@ -91,20 +92,20 @@ const ModifyPassModal: React.ForwardRefRenderFunction<{}, {}> = (props, ref) => 
                     rules={[
                         {
                             required: true,
-                            message: '请输入确认密码!',
+                            message: formatMessage({ id: 'please.input.new_password.confirm'}),
                         },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (!value) return Promise.resolve()
-                                if (!/^.{6,18}$/.test(value)) return Promise.reject(new Error('密码长度6-18位'))
+                                if (!/^.{6,18}$/.test(value)) return Promise.reject(new Error( formatMessage({ id: 'password.length.limit'}, {min: 6, max: 18} ) ))
                                 if (!value || getFieldValue('new_password') === value)
                                     return Promise.resolve();
-                                return Promise.reject(new Error('确认密码不一致!'));
+                                return Promise.reject(new Error( formatMessage({ id: 'password.is.inconsistent'}) ));
                             },
                         }),
                     ]}
                 >
-                    <Input.Password placeholder="确认密码" />
+                    <Input.Password placeholder={formatMessage({ id: 'confirm.password'})} />
                 </Form.Item>
             </Form>
             {/* <ResetModal ref={resetModalRef} /> */}

@@ -2,21 +2,24 @@ import { Button, Layout, Row, Col, Typography, Space, Spin, Popconfirm, Dropdown
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styles from './index.less'
 import { MinusCircleOutlined, MoreOutlined, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
-import { useRequest, useParams, useLocation, FormattedMessage, useIntl } from 'umi'
+import { useParams, useLocation, FormattedMessage, useIntl, getLocale } from 'umi'
 import { deleteBaseline, queryBaselineList } from '../services'
 import AddScripotDrawer from './AddScript'
 import { ReactComponent as BaselineSvg } from '@/assets/svg/baseline.svg'
 import BaselineDetail from './BaselineDetail'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import _ from 'lodash';
-import { requestCodeMessage, AccessTootip } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 import { useClientSize } from '@/utils/hooks'
 import { Access, useAccess } from 'umi'
+import CommonPagination from '@/components/CommonPagination'
 
 const { Search } = Input;
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { ws_id }: any = useParams()
     const access = useAccess();
     const { query }: any = useLocation()
@@ -37,26 +40,31 @@ export default (props: any) => {
     const [search, setSearch] = useState<string>('')
     const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
     const [visible, setVisible] = useState(false);
-    const [deleteObj, setDeleteObj] = useState<any>({});
+    const [data, setData] = useState<any>({})
+    const [loading, setLoading] = useState<boolean>(true)
     const [isOpen, setIsOpen] = useState(false)
     const addScript: any = useRef(null)
     const input: any = useRef(null);
-
-    const { data, loading, run, refresh } = useRequest(
-        (data) => queryBaselineList(data),
-        {
-            formatResult: response => response,
-            initialData: { data: [], total: 0 },
-            defaultLoading: true,
-            manual: true
+    const pageCurrent = useStateRef(params)
+    const queryData = async () => {
+        const data = await queryBaselineList(params)
+        const { code, msg } = data
+        if (code === 200) {
+            setData(data)
+        } else {
+            requestCodeMessage(code, msg)
         }
-    )
+        setLoading(false)
+    }
+    const totalCurrent = useStateRef(data)
+    useEffect(() => {
+        queryData()
+    }, [params])
 
     //改变当前数据
     const handleCurrentChange = (item: any) => {
         setCurrent(item)
     }
-
 
     const baselineData = useMemo(() => {
         return data.data && Array.isArray(data.data) ? data.data : []
@@ -99,18 +107,11 @@ export default (props: any) => {
     }, []);
 
     useEffect(() => {
-        run({ ...params, test_type: baselineType })
         setSearch('')
         setCurrent({})
         setFilterVisible(false)
-        setParams({ ...params, test_type: baselineType })
+        setParams({ ...params, test_type: baselineType, page_num: 1 })
     }, [baselineType])
-
-    const handleChange = (page_num: number) => {
-        setParams({ ...params, page_num })
-        setCurrent({})
-        run({ ...params, page_num });
-    }
 
     const handleAddScript = () => {
         addScript.current?.show('add')
@@ -118,12 +119,11 @@ export default (props: any) => {
 
     const handleDelete = async (item: any) => {
         const { code, msg } = await deleteBaseline({ baseline_id: item.id, ws_id: props.ws_id })
-        //fetchFinally(code, msg)
+        const { page_size } = pageCurrent.current
         if (code == 200) {
             if (item.id === current.id) setCurrent({})
-            message.success(formatMessage({id: 'operation.success'}) )
-
-            refresh()
+            message.success(formatMessage({ id: 'operation.success' }))
+            setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
         }
         else requestCodeMessage(code, msg)
     }
@@ -141,7 +141,7 @@ export default (props: any) => {
 
     const handleSearchScript = () => {
         setCurrent({})
-        run({ ...params, name: search, page_num: 1 })
+        setParams({ ...params, name: search, page_num: 1 })
         setFilterVisible(!filterVisible)
     }
 
@@ -149,15 +149,13 @@ export default (props: any) => {
         setCurrent({})
         setSearch('')
         setParams({ ...params, page_num: 1 })
-        run({ ...params, page_num: 1 })
         setFilterVisible(!filterVisible)
     }
 
-    const showModal = (deleteData: any) => {
-        //e.stopPropagation();
-        setVisible(true);
-        setDeleteObj(deleteData)
-    };
+    const handleResetPaging = () => {
+        setCurrent({})
+        setParams({ ...params, page_num: 1 })
+    }
 
     const handleCancel = () => {
         setVisible(false);
@@ -171,7 +169,7 @@ export default (props: any) => {
         <Dropdown
             overlay={
                 <Menu>
-                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="baseline.edit.info"/></Menu.Item>
+                    <Menu.Item onClick={hanldeEdit}><FormattedMessage id="baseline.edit.info" /></Menu.Item>
                 </Menu>
             }
         >
@@ -186,13 +184,10 @@ export default (props: any) => {
     )
 
     let server_provider = serverProvider || '--'
-    server_provider = server_provider === "aligroup" ? formatMessage({id: 'aligroupServer'}) : formatMessage({id: 'aliyunServer'})
-    // server_provider = server_provider === 'aligroup' ? '内网环境' : '云上环境'
-    const baelineTotal = data && data.total ? data.total : 0
-
+    server_provider = server_provider === "aligroup" ? formatMessage({ id: 'aligroupServer' }) : formatMessage({ id: 'aliyunServer' })
     const clientSize = useClientSize()
 
-    const layoutHeight = clientSize.height - 90 - 48 - 48;
+    const layoutHeight = clientSize.height - 50 - 48 - 100;
 
     return (
         <Layout.Content>
@@ -201,12 +196,12 @@ export default (props: any) => {
                     <div className={styles.script_left} style={{ height: layoutHeight }}>
                         <div className={styles.create_button_wrapper}>
                             <Button type="primary" onClick={handleAddScript}>
-                                <FormattedMessage id="baseline.create.btn"/>
+                                <FormattedMessage id="baseline.create.btn" />
                             </Button>
                         </div>
                         <Row justify="space-between" className={styles.left_title}>
                             <Typography.Text className={styles.all_baseline_title} strong={true}>
-                                <FormattedMessage id="baseline.all.baseline"/> {`(${baelineTotal})`}
+                                <FormattedMessage id="baseline.all.baseline" /> {`(${data?.total || 0})`}
                             </Typography.Text>
                             <div className={styles.filter_icon} onClick={handleClickFilter}>
                                 <FilterFilled style={{ color: 'rgba(0 , 0 , 0 ,.45)' }} />
@@ -222,17 +217,17 @@ export default (props: any) => {
                                         value={search}
                                         onChange={(e: any) => setSearch(e.target.value)}
                                         onPressEnter={() => handleSearchScript()}
-                                        placeholder={formatMessage({id: 'baseline.search.baseline.name'}) }
+                                        placeholder={formatMessage({ id: 'baseline.search.baseline.name' })}
                                         onSearch={handleSearchScript} />
                                 </Col>
                                 <Divider style={{ margin: 0 }} />
                                 <Col span={24}>
                                     <Row justify="space-between">
                                         <Col span={12} onClick={handleSearchScript} className={`${styles.filter_dropdown_opt} ${styles.filter_search_btn}`}>
-                                            <FormattedMessage id="baseline.search"/>
+                                            <FormattedMessage id="baseline.search" />
                                         </Col>
                                         <Col span={12} onClick={handleResetSearch} className={styles.filter_dropdown_opt}>
-                                            <FormattedMessage id="operation.reset"/>
+                                            <FormattedMessage id="operation.reset" />
                                         </Col>
                                     </Row>
                                 </Col>
@@ -264,11 +259,11 @@ export default (props: any) => {
                                                 }
                                             >
                                                 <Popconfirm
-                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="baseline.delete.prompt1"/><br /><FormattedMessage id="baseline.delete.prompt2"/></div>}
+                                                    title={<div style={{ color: 'red' }}><FormattedMessage id="baseline.delete.prompt1" /><br /><FormattedMessage id="baseline.delete.prompt2" /></div>}
                                                     onCancel={() => handleDelete(item)}
-                                                    cancelText={<FormattedMessage id="operation.confirm.delete"/>}
+                                                    cancelText={<FormattedMessage id="operation.confirm.delete" />}
                                                     cancelButtonProps={{ disabled: data.is_first ? true : false }}
-                                                    okText={<FormattedMessage id="operation.cancel"/>}
+                                                    okText={<FormattedMessage id="operation.cancel" />}
                                                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                                                 >
                                                     <MinusCircleOutlined
@@ -281,46 +276,31 @@ export default (props: any) => {
                                 )
                             }
                         </Row>
-                        <Row className={`${styles.all_script} ${styles.pagination_style}`}>
-                            {
-                                baelineTotal ?
-                                    <Pagination
-                                        current={params.page_num}
-                                        pageSize={20}
-                                        showQuickJumper
-                                        size="small"
-                                        defaultCurrent={1}
-                                        total={baelineTotal}
-                                        onChange={handleChange}
-                                    /> :
-                                    ''
-                            }
-                        </Row>
                     </div>
                     <div className={styles.script_right} style={{ height: layoutHeight }}>
                         <Row className={styles.script_right_detail} align="middle">
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={`${styles.script_right_name}`} strong><FormattedMessage id="baseline.baseline_name"/>：</Typography.Text>
-                                    <EllipsisPulic title={current?.name} style={{ width: 318 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 115}: {}}><FormattedMessage id="baseline.baseline_name"/>：</span>
+                                    <EllipsisPulic title={current?.name} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong><FormattedMessage id="baseline.product_version"/>：</Typography.Text>
-                                    <EllipsisPulic title={current?.version} style={{ width: 318 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 122}: {}}><FormattedMessage id="baseline.product_version"/>：</span>
+                                    <EllipsisPulic title={current?.version} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong ><FormattedMessage id="baseline.test.env"/>：</Typography.Text>
-                                    <EllipsisPulic title={baselineData.length ? server_provider : '-'} style={{ width: 230 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 132}: {}}><FormattedMessage id="baseline.test.env"/>：</span>
+                                    <EllipsisPulic title={baselineData.length ? server_provider : '-'} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <Typography.Text className={styles.script_right_name} strong><FormattedMessage id="baseline.baseline_desc"/>：</Typography.Text>
-                                    <EllipsisPulic title={current?.description} style={{ width: 318 }} />
+                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 155}: {}}><FormattedMessage id="baseline.baseline_desc"/>：</span>
+                                    <EllipsisPulic title={current?.description} />
                                 </div>
                             </Col>
                             <Access accessible={access.WsMemberOperateSelf(current?.creator)}>
@@ -335,17 +315,26 @@ export default (props: any) => {
                                 layoutHeight={layoutHeight}
                             />
                         </Row>
+
                     </div>
                 </Row>
+                <CommonPagination
+                    pageSize={params.page_size}
+                    total={data?.total}
+                    currentPage={params.page_num}
+                    onPageChange={
+                        (page_num, page_size) => { setParams({ ...params, page_num, page_size }), setCurrent({}) }
+                    }
+                />
             </Spin>
             <AddScripotDrawer
                 ref={addScript}
-                onOk={refresh}
+                onOk={handleResetPaging}
                 baselineType={params.test_type}
                 setCurrent={setCurrent}
             />
             <Modal
-                title={<FormattedMessage id="delete.prompt"/>}
+                title={<FormattedMessage id="delete.prompt" />}
                 visible={visible}
                 width={480}
                 className={styles.baseline_del_modal}
@@ -354,17 +343,17 @@ export default (props: any) => {
                 footer={
                     <Row justify="end">
                         <Space>
-                            <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
                             {
                                 data.is_first ?
-                                    <Button disabled={true} ><FormattedMessage id="operation.delete"/></Button> :
-                                    <Button onClick={handleDelete} type="primary" danger><FormattedMessage id="operation.delete"/></Button>
+                                    <Button disabled={true} ><FormattedMessage id="operation.delete" /></Button> :
+                                    <Button onClick={handleDelete} type="primary" danger><FormattedMessage id="operation.delete" /></Button>
                             }
                         </Space>
                     </Row>
                 }
             >
-                <span><FormattedMessage id="baseline.delete.prompt3"/></span>
+                <span><FormattedMessage id="baseline.delete.prompt3" /></span>
             </Modal>
         </Layout.Content>
     )

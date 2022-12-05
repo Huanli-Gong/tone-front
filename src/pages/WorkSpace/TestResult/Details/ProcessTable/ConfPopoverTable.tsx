@@ -4,6 +4,7 @@ import { useIntl, FormattedMessage } from 'umi'
 import { evnPrepareState , tooltipTd } from '../components/index'
 import styles from './index.less';
 import TidDetail from './QueryTidList';
+import EllipsisPulic from '@/components/Public/EllipsisPulic'
 
 export default ( { title = '' , need_reboot , setup_info , cleanup_info , step } : any ) => {
     const { formatMessage } = useIntl()
@@ -29,7 +30,7 @@ export default ( { title = '' , need_reboot , setup_info , cleanup_info , step }
             ellipsis: {
                 showTitle: false
             },
-            render:(_:any) => <TidDetail tid={_} />
+            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} />  : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex : 'start_time',

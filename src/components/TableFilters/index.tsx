@@ -1,57 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-
-import { Row, Col, Input, Divider, Typography, Radio, Checkbox, } from 'antd'
+import { Row, Col, Divider, Typography, Radio, Checkbox } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import SelectDrop from '@/components/Public/SelectDrop'
 import { useClientSize } from '@/utils/hooks';
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import SearchInput from '@/components/Public/SearchInput';
-const SearchTableFilter: React.FC<any> = ({ confirm, onConfirm, initVal }) => {
-    const [val, setVal] = useState(initVal || '')
-    const handleSearch = () => {
-        confirm()
-        onConfirm(val)
-    }
-
-    const handleReset = () => {
-        confirm()
-        onConfirm()
-        setVal('')
-    }
-
-    const handleChange = ({ target }: any) => {
-        setVal(target.value)
-    }
-
-    return (
-        <Row style={{ width: 144 }}>
-            <Col span={24} style={{ padding: 12 }}>
-                <Input.Search size="small" value={val} onChange={handleChange} />
-            </Col>
-            <Divider style={{ margin: 0 }} />
-            <Col span={24} >
-                <Row style={{ height: 32 }} justify="center" align="middle">
-                    <Col
-                        span={12}
-                        style={{ textAlign: 'center', cursor: 'pointer' }}
-                        onClick={handleSearch}
-                    >
-                        <Typography.Text style={{ color: '#008dff' }}><FormattedMessage id="operation.search" /></Typography.Text>
-                    </Col>
-                    <Col
-                        span={12}
-                        style={{ textAlign: 'center', cursor: 'pointer' }}
-                        onClick={handleReset}
-                    >
-                        <Typography.Text><FormattedMessage id="operation.reset" /></Typography.Text>
-                    </Col>
-                </Row>
-            </Col>
-        </Row>
-    )
-}
 
 const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVal }) => {
     const [val, setVal] = useState<any>(initVal === undefined ? '' : initVal)
@@ -83,7 +38,7 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
                                 style={{
                                     background: index % 2 === 0 ? 'rgba(0,0,0,0.02)' : '#fff'
                                 }}
-                                key={item.name}
+                                key={item.value}
                                 value={item.value}
                             >{item.name}</Radio>
                         )
@@ -215,73 +170,52 @@ const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, styleObj
         </Row>
     )
 }
-
+// 复选框过滤
 export const getCheckboxFilter = (props: any, setProps: any, list: any, name: string, styleObj?: any) => ({
-    filterIcon: <FilterFilled style={{ color: props[name] && props[name].length ? '#1890ff' : undefined }} />,
-    filterDropdown: ({ confirm }: any) => {
-        const handleSetProps = (val: string) => {
-            let obj = { ...props }
-            obj[name] = val
-            setProps(obj)
-        }
-        return (
-            <CheckboxTableFilter
-                initVal={props[name]}
-                list={list}
-                confirm={confirm}
-                onConfirm={handleSetProps}
-                styleObj={styleObj}
-            />
-        )
-    }
+    filterDropdown: ({ confirm }: any) => (
+        <CheckboxTableFilter
+            initVal={props[name]}
+            list={list}
+            confirm={confirm}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+            styleObj={styleObj}
+        />
+    ),
+    filterIcon: <FilterFilled style={{ color: props[name] && props[name].length ? '#1890ff' : undefined }} />
 })
-
-export const getSearchFilter = (props: any, setProps: any, name: string) => ({
+// Input框过滤
+export const getSearchFilter = (props: any, setProps: any, name: string, desc?: string, styleObj?: any) => ({
     filterDropdown: ({ confirm }: any) => (
         <SearchInput
             confirm={confirm}
-            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
+            initVal={props[name]}
+            placeholder={[desc]}
+            styleObj={styleObj}
         />
     ),
     filterIcon: () => <FilterFilled style={{ color: props[name] ? '#1890ff' : undefined }} />,
 })
-
+// Radio框过滤
 export const getRadioFilter = (props: any, setProps: any, list: any, name: string) => ({
-    filterIcon: <FilterFilled style={{ color: props[name] || props[name] === 0 ? '#1890ff' : undefined }} />,
-    filterDropdown: ({ confirm }: any) => {
-        const handleSetProps = (val: string) => {
-            let obj = { ...props }
-            obj[name] = val
-            setProps(obj)
-        }
-        return (
-            <RadioGroupTableFilter
-                initVal={props[name]}
-                list={list}
-                confirm={confirm}
-                onConfirm={handleSetProps}
-            />
-        )
-    }
+    filterDropdown: ({ confirm }: any) => (
+        <RadioGroupTableFilter
+            initVal={props[name]}
+            list={list}
+            confirm={confirm}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+        />
+    ),
+    filterIcon: <FilterFilled style={{ color: props[name] || props[name] === 0 ? '#1890ff' : undefined }} />
 })
-
-export const getUserFilter = ({ name, data, setDate, flag }: any) => (
-    {
-        filterIcon: <FilterFilled style={{ color: data[name] ? '#1890ff' : undefined }} />,
-        filterDropdown: ({ confirm }: any) => {
-            const handleSetProps = (val: string, valName: string) => {
-                let obj = { ...data }
-                obj[name] = val
-                if (flag) obj.userName = valName
-                setDate(obj)
-            }
-            return (
-                <SelectDrop
-                    initVal={flag ? { id: data[name], name: data.userName } : null}
-                    confirm={confirm}
-                    onConfirm={handleSetProps}
-                />
-            )
-        }
-    }
-)
+// 创建人下拉框过滤
+export const getUserFilter = (params: any, setParams: any, name: string) => ({
+    filterDropdown: ({ confirm }: any) => (
+        <SelectDrop
+            initVal={{ id: params[name], name: params.userName }}
+            confirm={confirm}
+            onConfirm={(val: string, valName: string) => setParams({ ...params, [name]: val, userName: valName, page_num: 1 })}
+        />
+    ),
+    filterIcon: <FilterFilled style={{ color: params[name] ? '#1890ff' : undefined }} />
+})

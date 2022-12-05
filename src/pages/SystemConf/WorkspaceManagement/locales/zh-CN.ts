@@ -14,6 +14,7 @@ export default {
   'workspace.recommended1': '状态为“是”，展示在首页“推荐Worksapce”模块',
   'workspace.recommended2': '可通过上下拖动调整显示顺序，首页显示顺序同该表格',
   'workspace.configure.up.to.9.recommended': '最多配置9个推荐Workspace',
+  'workspace.configure.up.to.12.recommended': '最多配置12个推荐Workspace',
   // Modal
   'workspace.ws.details': 'Workspace详情',
   'workspace.ws.log.out': '注销workspace',
@@ -30,17 +31,17 @@ export default {
   'workspace.submit.desc2': '查看审批进度',
 
   'workspace.ws.create': '创建Workspace',
-  'workspace.show_name.s': 'Workspace简介',
+  'workspace.show_name.s': 'Workspace显示名',
   'workspace.show_name.rules1': 'Workspace显示名不能为空',
   'workspace.show_name.rules2': '仅允许包含汉字、字母、数字、下划线、中划线、点，最多30个字符',
   'workspace.show_name.placeholder': 'workspace对外的展示名称，允许中文',
-  
+
   'workspace.ws.name': 'Workspace名称',
   'workspace.ws.tip': '【Workspace名称】会用在测试结果文件的目录树中',
   'workspace.ws.name.rules1': 'Workspace名称不能为空',
   'workspace.ws.name.rules2': '只允许英文小写、下划线和数字，最多30个字符',
   'workspace.ws.name.placeholder': '只允许英文小写、下划线和数字，最多30个字符',
-  
+
   'workspace.description': 'Workspace简介',
   'workspace.description.placeholder': '请描述workspace的用途，例如产品/项目相关的测试介绍',
   'workspace.reason': '申请理由',
@@ -63,10 +64,10 @@ export default {
   'workspace.create.job': '创建Job',
   'workspace.create_now': '立即创建',
   'workspace.to_set': '去设置',
-  'workspace.add_now': '立即添加',  
+  'workspace.add_now': '立即添加',
   'workspace.ws.set': 'Workspace设置',
   'workspace.add.member': '添加成员',
   'workspace.create_now.desc': '准备好了吗，创建你的测试Job吧',
   'workspace.to_set.desc': '机器，Job类型，Test Suit，产品项目等配置',
-  'workspace.add_now.desc': '添加成员到你的Workspace吧',  
+  'workspace.add_now.desc': '添加成员到你的Workspace吧',
 };

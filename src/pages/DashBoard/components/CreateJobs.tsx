@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { queryChartData } from '../services';
 import { message } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import * as antv from '@antv/g2';
 import { Container, Title } from './styled'
 
@@ -48,7 +49,7 @@ const CreateJobs = (props: any) => {
 
     return (
         <Container >
-            <Title >WorkSpaces创建Job数</Title>
+            <Title><FormattedMessage id="sys.dashboard.create.jobs"/></Title>
             <div style={{ height: 'calc(100% - 25px - 8px)' }} ref={myChart} />
         </Container>
     )

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Typography, Tooltip } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { ReactComponent as Statistical } from '@/assets/svg/dashboard/statistical.svg'
 import { ReactComponent as NoStatistical } from '@/assets/svg/dashboard/noStatistical.svg'
@@ -19,6 +19,8 @@ const Card = ({
   hanldeProjectDetail
 }: any) => {
   const { formatMessage } = useIntl()
+  const enLocale = getLocale() === 'en-US'
+
   const { id, name, product_version, is_default, is_show, description } = data
   const ref: any = useRef(null)
   
@@ -82,7 +84,7 @@ const Card = ({
   return (
     <>
       <div ref={ref} style={{ opacity }} data-handler-id={handlerId} className={styles.project_warpper}>
-        <div className={is_default ? styles.project_default_icon : styles.project_icon} onClick={() => handleProjecIcon(id)} />
+        <div className={is_default ? styles[`project_default_icon${enLocale? '_en': ''}`] : styles.project_icon} onClick={() => handleProjecIcon(id)} />
         <div className={styles.project_child} onClick={() => hanldeProjectDetail(data)}>
           <EllipsisPulic title={name}>
             <Typography.Text className={styles.project_name}>{name}</Typography.Text>

@@ -6,6 +6,7 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
+import NotLoggedIn from '@/components/Public/NotLoggedIn'
 import { queryJobTypeItems } from '@/pages/WorkSpace/JobTypeManage/CreateJobType/services'
 import { queryJobTypeList } from '@/pages/WorkSpace/JobTypeManage/services'
 
@@ -43,6 +44,7 @@ const TestJob: React.FC<any> = (props) => {
     const hasNav = ["TemplatePreview", "TemplateEdit", "JobTypePreview"].includes(name)
 
     const { initialState, setInitialState } = useModel('@@initialState')
+    const { authList } = initialState;
     const { ws_id, jt_id } = props.match.params
     const { query, state } = props.location
     writeDocumentTitle(`Workspace.${name}`)
@@ -57,7 +59,6 @@ const TestJob: React.FC<any> = (props) => {
     const [modifyTemplate, setModifyTemplate] = useState(false)
     const [templateDatas, setTemplateDatas] = useState<any>({})
     const [templateBtnVisible, setTemplateBtnVisible] = useState(false)
-
     const moreForm: any = useRef(null)
     const envForm: any = useRef(null)
     const basicForm: any = useRef(null)
@@ -420,7 +421,7 @@ const TestJob: React.FC<any> = (props) => {
                 requestCodeMessage(code, msg)
             }
             else
-                requestCodeMessage(code, msg)
+                requestCodeMessage(code, formatMessage({ id: 'ws.test.job.operation.success' }))
             // setFetching(false)
         }
         catch (error) {
@@ -559,7 +560,7 @@ const TestJob: React.FC<any> = (props) => {
             setTemplateEnable(data.enable)
             message.success(formatMessage({ id: 'operation.success' }))
             if (name !== 'TemplatePreview')
-                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
         }
         else
             requestCodeMessage(code, msg)
@@ -863,7 +864,11 @@ const TestJob: React.FC<any> = (props) => {
     )
 
     return (
-        <div style={layoutCss} >
+        <div style={layoutCss}>
+            {/** 用户未登录提示 */}
+            {(!loading && !authList?.user_id) ?
+                <div className={styles.not_logged_in}><div style={{width: '1240px'}}><NotLoggedIn /></div></div>: null}
+
             {
                 hasNav &&
                 <Row align="middle" className={styles.page_preview_nav} justify="space-between">
@@ -1166,12 +1171,15 @@ const TestJob: React.FC<any> = (props) => {
                             >
                                 <Button><FormattedMessage id="ws.test.job.reset" /></Button>
                             </Popconfirm>
-                            <Access accessible={access.IsWsSetting()}>
+
+                            {/* <Access accessible={access.IsWsSetting()}>
                                 <Button onClick={handleOpenTemplate}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
                             </Access>
                             <Access accessible={access.IsWsSetting()}>
                                 <Button type="primary" onClick={handleSubmit} ><FormattedMessage id="ws.test.job.submit.test" /></Button>
-                            </Access>
+                            </Access> */}
+                            <Button onClick={handleOpenTemplate} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.save.as.template" /></Button>
+                            <Button type="primary" onClick={handleSubmit} disabled={!access.IsWsSetting()}><FormattedMessage id="ws.test.job.submit.test" /></Button>
                         </Space>
                     </Row>
                 }

@@ -200,16 +200,19 @@
             .description_box{
                 position: relative;
                 min-height: 22px;
+                display: flex;
                 .description_value{
                     text-align: justify;
                     text-justify: newspaper;
                     word-break: break-all;
                 }
                 .description_label{
-                    position: absolute;
-                    left:0;
-                    max-width: 60px;
+                    // position: absolute;
+                    // left:0;
+                    // max-width: 60px;
                     margin-right: 12px;
+                    flex-shrink: 0;
+                    white-space: nowrap;
                 }
             }
             .approve_users{

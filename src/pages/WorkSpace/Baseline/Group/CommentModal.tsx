@@ -70,8 +70,8 @@ export default forwardRef(
                 visible={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                okText={<FormattedMessage id="pages.workspace.baseline.comment.modal.okText" />}
-                cancelText={<FormattedMessage id="pages.workspace.baseline.comment.modal.cancelText" />}
+                okText={<FormattedMessage id="operation.confirm" />}
+                cancelText={<FormattedMessage id="operation.cancel" />}
                 maskClosable={false}
                 wrapClassName={'editFailCaseModal'}
             >
@@ -90,17 +90,17 @@ export default forwardRef(
                     /*hideRequiredMark*/
                 >
                     {/* <Form.Item rules={[{ required : true, pattern: /^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/ }]} label="缺陷记录" name="bug"> // 有用 */}
-                    <Form.Item label={<FormattedMessage id="pages.workspace.baseline.comment.modal.label.bug" />}
+                    <Form.Item label={<FormattedMessage id="pages.workspace.baseline.failDetail.table.bug" />}
                         name="bug"
                         rules={[{ required: true }]}
                     >
                         <Input autoComplete="off" onChange={((e)=> setVal(e.target.value))} title={val} />
                     </Form.Item>
-                    <Form.Item label={<FormattedMessage id="pages.workspace.baseline.comment.modal.label.description" />}
+                    <Form.Item label={<FormattedMessage id="pages.workspace.baseline.failDetail.table.description" />}
                         name="description">
                         <Input.TextArea rows={4} />
                     </Form.Item>
-                    <Form.Item label={<FormattedMessage id="pages.workspace.baseline.comment.modal.label.impact_result" />}
+                    <Form.Item label={<FormattedMessage id="pages.workspace.baseline.failDetail.table.impact_result" />}
                         name="impact_result"
                         initialValue={info.impact_result}
                     >

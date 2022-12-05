@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Radio, Button, Divider, Space } from 'antd';
 import styles from './style.less';
-import { switchUserRole } from '@/utils/utils';
+import { switchUserRole2 } from '@/utils/utils';
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 
 const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 	// console.log(list,confirm, onConfirm, roleType)
+	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<number>()
 	const handleDomainRadio = (e: any) => {
 		setVal(e.target.value)
@@ -22,7 +23,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 								value={item.id}
 								key={item.id}
 							>
-								{roleType === 'role' ? switchUserRole(item.name) : item.name}
+								{roleType === 'role' ? switchUserRole2(item.name, formatMessage) : item.name}
 							</Radio>
 						))
 					}

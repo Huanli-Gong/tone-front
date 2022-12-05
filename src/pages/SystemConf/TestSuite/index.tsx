@@ -60,6 +60,7 @@ const TestSuite = (props: any) => {
                     <Tabs defaultActiveKey={ query.test_type || 'functional' } onChange={handleTab} activeKey={testType} >
                         <Tabs.TabPane tab={<FormattedMessage id="functional.test"/>} key="functional" />
                         <Tabs.TabPane tab={<FormattedMessage id="performance.test"/>} key="performance" />
+                        {!BUILD_APP_ENV ? <Tabs.TabPane tab={<FormattedMessage id="business.test"/>} key="business" /> : null}
                         <Tabs.TabPane tab={<FormattedMessage id="TestSuite.domain.conf"/>} key="domainconf" />
                     </Tabs>
                 }

@@ -1,0 +1,25 @@
+export default {
+  'sys.dashboard.real-time.data': 'Real-time Data',
+  'sys.dashboard.job.total': 'Total number of Job',
+  'sys.dashboard.test.run': 'Test Run',
+  'sys.dashboard.current.run': 'Current Run',
+  'sys.dashboard.server.scheduling': 'Scheduling',
+  'sys.dashboard.total.data': 'Total Data Volume (10,000)',
+  'sys.dashboard.accumulative.total': 'Cumulative Test Duration',
+  
+  'sys.dashboard.workspaces.num': 'Number of Workspaces',
+  'sys.dashboard.product_num': 'Number of Products',
+  'sys.dashboard.project_num': 'Number of Projects',
+  'sys.dashboard.team_num': 'Number of Teams',
+  'sys.dashboard.user_total_num': 'Number of Users',
+  'sys.dashboard.benchmark_num': 'Number of Benchmarks',
+  'sys.dashboard.baseline_total_num': 'Total Number of Baseline',
+  'sys.dashboard.func_baseline_res_num': 'Number of Functional tests',
+  'sys.dashboard.perf_baseline_res_num': 'Number of Performance tests',
+
+  'sys.dashboard.trend.chart': 'Task Execution Trend View',
+  'sys.dashboard.create.jobs': 'Job of each WorkSpaces',
+  'sys.dashboard.department.users': 'Number of Users in Department',
+  'sys.dashboard.personal.ranking': 'Create Job Rankings',
+  'sys.dashboard.ws.ranking': 'Create Job in ws Rankings',
+};

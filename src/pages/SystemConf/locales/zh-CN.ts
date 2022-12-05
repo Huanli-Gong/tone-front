@@ -10,8 +10,6 @@ export default {
   "menu.systemConf.TestParmSetting": 'Master配置',
   "menu.systemConf.DirectRoute" : 'DirectRoute',
 
-  'menu.helpDoc':'帮助文档',
-
   // 系统级菜单
   'SystemConf.menuLayout.joinApprove':'申请审批',
   'SystemConf.menuLayout.workspaceManagement':'Workspace管理',
@@ -20,5 +18,4 @@ export default {
   "SystemConf.menuLayout.KernelManage"     : '内核管理',
   "SystemConf.menuLayout.BasicSetting" : '基础配置',
   "SystemConf.menuLayout.TestParmSetting": 'Master配置',
-
 };

@@ -13,7 +13,8 @@ export default {
   'workspace.home.recommended': 'Home Page Recommendation',
   'workspace.recommended1': 'It will be displayed on the home page in the Recommended Worksapce module if choose "Yes" ',
   'workspace.recommended2': 'Drag up and down to adjust the display order. The home page displays the table in the same order',
-  'workspace.configure.up.to.9.recommended': 'A max of nine recommended workspaces can be configured',
+  'workspace.configure.up.to.9.recommended': 'A max of 9 recommended workspaces can be configured',
+  'workspace.configure.up.to.12.recommended': 'A max of 12 recommended workspaces can be configured',
   // Modal
   'workspace.ws.details': 'Workspace Details',
   'workspace.ws.log.out': 'Cancellate workspace',
@@ -30,7 +31,7 @@ export default {
   'workspace.submit.desc2': 'View Approval Progress',
 
   'workspace.ws.create': 'Create Workspace',
-  'workspace.show_name.s': 'Workspace Infomation',
+  'workspace.show_name.s': 'Workspace Showname',
   'workspace.show_name.rules1': 'Workspace showname cannot be empty',
   'workspace.show_name.rules2': 'The value can contain a maximum of 30 characters, including Chinese characters, letters, digits, underscores (_), hyphens (-), and dots (.)',
   'workspace.show_name.placeholder': 'Chinese is allowed for workspace showname',
@@ -41,7 +42,7 @@ export default {
   'workspace.ws.name.rules2': 'The value contains a maximum of 30 lowercase characters, underscores (_), and digits',
   'workspace.ws.name.placeholder': 'The value contains a maximum of 30 lowercase characters, underscores (_), and digits',
   
-  'workspace.description': 'Workspace desc',
+  'workspace.description': 'Workspace Description',
   'workspace.description.placeholder': 'Describe the purpose of the workspace, such as product/project-related testing',
   'workspace.reason': 'Apple Reason',
   'workspace.reason.placeholder': 'Example: Facilitate efficient collaboration and team management',

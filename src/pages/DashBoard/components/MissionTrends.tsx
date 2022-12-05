@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { queryChartData } from '../services';
 import { message, DatePicker, Row } from 'antd'
+import { useIntl, FormattedMessage } from 'umi'
 import { Container, Title } from './styled'
 import * as antv from '@antv/g2';
 import moment from 'moment'
@@ -100,7 +101,7 @@ const MissionTrends = (props: any) => {
         <Container >
             <Title >
                 <Row justify="space-between">
-                    <span>任务执行趋势图</span>
+                    <span><FormattedMessage id="sys.dashboard.trend.chart"/></span>
                     <DatePicker.RangePicker
                         value={timer}
                         onChange={handleTimerChange}

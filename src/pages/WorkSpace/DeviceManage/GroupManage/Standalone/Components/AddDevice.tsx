@@ -332,7 +332,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                             rules={[{ 
                                 required: true,
                                 // pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
-                                message:`请输入正确的${BUILD_APP_ENV ? "机器IP" : '机器'}!`
+                                message: formatMessage({id: BUILD_APP_ENV ? 'device.please.enter.correct.server.IP': 'device.please.enter.correct.server' })
                             }]}
                         >
                             <Select

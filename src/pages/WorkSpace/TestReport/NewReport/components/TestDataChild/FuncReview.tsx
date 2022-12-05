@@ -69,9 +69,9 @@ const FuncDataIndex: React.FC<any> = (props) => {
             data.list.map((item: any) => {
                 let conf_list: any = []
                 item.conf_list.map((conf: any) => {
-                    let sub_case_list = isOldReport 
-                    ? conf.sub_case_list.filter((i: any) => i.result == value)
-                    : conf.sub_case_list.filter((i: any) => i.compare_data.includes(value))
+                    let sub_case_list = isOldReport
+                        ? conf.sub_case_list.filter((i: any) => i.result == value)
+                        : conf.sub_case_list.filter((i: any) => i.compare_data.includes(value))
                     conf_list.push({
                         ...conf,
                         sub_case_list
@@ -131,11 +131,11 @@ const FuncDataIndex: React.FC<any> = (props) => {
         }
         setFuncData(obj)
     }
-    
+
     useEffect(() => {
-        const expand = formatMessage({id: 'report.btn.expand.all' })
-        const collapse = formatMessage({id: 'report.btn.collapse.all' })
-        setBtnName(btn? expand : collapse)
+        const expand = formatMessage({ id: 'report.btn.expand.all' })
+        const collapse = formatMessage({ id: 'report.btn.collapse.all' })
+        setBtnName(btn ? expand : collapse)
         setExpandKeys([])
         let ExpandObj: any = []
         dataSource?.map((item: any) => {
@@ -156,7 +156,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 []
         )
     }, [btn, dataSource])
-   
+
     const handleDelete = (name: string, row: any, rowKey: any) => {
         setDataSource(reportDelete(dataSource, name, row, rowKey))
     }
@@ -168,13 +168,13 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 <Space>
                     <Button onClick={OpenSubCase}>{btnName}</Button>
                     <Space>
-                        <Typography.Text><FormattedMessage id="report.filter"/>: </Typography.Text>
+                        <Typography.Text><FormattedMessage id="report.filter" />: </Typography.Text>
                         <Select defaultValue="All" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
-                            <Option value="All"><FormattedMessage id="report.all.s"/></Option>
-                            <Option value="Pass"><FormattedMessage id="report.pass"/></Option>
-                            <Option value="Fail"><FormattedMessage id="report.fail"/></Option>
-                            <Option value="Warn"><FormattedMessage id="ws.result.details.warn"/></Option>
-                            <Option value="Skip"><FormattedMessage id="report.skip"/></Option>
+                            <Option value="All"><FormattedMessage id="report.all.s" /></Option>
+                            <Option value="Pass"><FormattedMessage id="report.pass" /></Option>
+                            <Option value="Fail"><FormattedMessage id="report.fail" /></Option>
+                            <Option value="Warn"><FormattedMessage id="ws.result.details.warn" /></Option>
+                            <Option value="Skip"><FormattedMessage id="report.skip" /></Option>
                         </Select>
                     </Space>
                 </Space>
@@ -186,10 +186,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
         const { conf, cid } = props;
         return (
             <Popconfirm
-                title={<FormattedMessage id="delete.prompt"/>}
+                title={<FormattedMessage id="delete.prompt" />}
                 onConfirm={() => handleDelete('conf', conf, cid)}
-                cancelText={<FormattedMessage id="operation.cancel"/>}
-                okText={<FormattedMessage id="operation.delete"/>}
+                cancelText={<FormattedMessage id="operation.cancel" />}
+                okText={<FormattedMessage id="operation.delete" />}
             >
                 {
                     btnState && <PrefDataDel empty={false}>
@@ -260,10 +260,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 <SuiteName>
                     {suite.suite_name}
                     <Popconfirm
-                        title={<FormattedMessage id="delete.prompt"/>}
+                        title={<FormattedMessage id="delete.prompt" />}
                         onConfirm={() => handleDelete('suite', suite, idx)}
-                        cancelText={<FormattedMessage id="operation.cancel"/>}
-                        okText={<FormattedMessage id="operation.delete"/>}
+                        cancelText={<FormattedMessage id="operation.cancel" />}
+                        okText={<FormattedMessage id="operation.delete" />}
                     >
                         {btnState && <CloseBtn />}
                     </Popconfirm>
@@ -275,11 +275,11 @@ const FuncDataIndex: React.FC<any> = (props) => {
                             <ConfData gLen={groupLen} btnState={btnState} key={i}>
                                 <Row>
                                     <Col span={12}>
-                                        <FormattedMessage id="report.total/pass/fail"/>
+                                        <FormattedMessage id="report.total/pass/fail" />
                                     </Col>
                                     {
                                         i !== baseIndex && <Col span={12} style={{ textAlign: 'right', paddingRight: 10 }}>
-                                            <FormattedMessage id="report.comparison.results"/>
+                                            <FormattedMessage id="report.comparison.results" />
                                             <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
                                                 {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
                                             </span>
@@ -293,7 +293,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 </TestConf>
                 <TestConfWarpper>
                     {
-                        suite.conf_list.map((conf: any, cid: number) => {
+                        suite?.conf_list?.map((conf: any, cid: number) => {
                             const expand = expandKeys.includes(conf.conf_id)
                             let metricList: any = []
                             if (isOldReport) {
@@ -393,10 +393,10 @@ const FuncDataIndex: React.FC<any> = (props) => {
                 {
                     btnState &&
                     <Popconfirm
-                        title={<FormattedMessage id="delete.prompt"/>}
+                        title={<FormattedMessage id="delete.prompt" />}
                         onConfirm={() => onDelete(name, funcData.name, funcData.rowKey)}
-                        cancelText={<FormattedMessage id="operation.cancel"/>}
-                        okText={<FormattedMessage id="operation.delete"/>}
+                        cancelText={<FormattedMessage id="operation.cancel" />}
+                        okText={<FormattedMessage id="operation.delete" />}
                     >
                         <CloseBtn />
                     </Popconfirm>

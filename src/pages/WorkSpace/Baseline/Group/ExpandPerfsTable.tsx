@@ -196,6 +196,7 @@ export default (props: any) => {
                             rowKey={record => record.server_sn + ''}
                             loading={loading}
                             pagination={false}
+                            scroll={{ x: '100%' }}
                             size="small"
                             expandable={{
                                 expandedRowRender: (record: any) => (

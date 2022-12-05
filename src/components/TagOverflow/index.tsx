@@ -27,7 +27,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
                 if (ww) {
                     const rw = reduceCoutWidth(entries, index)
                     if (ww - rw > 0 && index === entries.length) return pre += 1
-                    if (rw < (ww - 40))
+                    if (rw < (ww - 20))
                         return pre += 1
                 }
                 return pre

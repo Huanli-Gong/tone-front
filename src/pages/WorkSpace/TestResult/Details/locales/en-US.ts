@@ -82,8 +82,8 @@ const text =  {
   // Drawer
   'bug': 'Bug Record',
   'bug.placeholder': 'Enter bug record',
-  'baseline_id': 'Choose Baseline',
-  'baseline_id.placeholder': 'Choose Baseline',
+  'baseline_id': 'Baseline Name',
+  'baseline_id.placeholder': 'Choose Baseline or Create Baseline',
   'create.baseline': 'Create Baseline',
   'impact_result': 'Impact Result',
   'description': 'Description',

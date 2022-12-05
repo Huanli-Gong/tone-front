@@ -6,6 +6,7 @@ import { updatePutToken } from './services'
 import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import ModifyPassModal from './ModifyPassModal'
+import { useIntl, FormattedMessage, getLocale } from 'umi'
 
 let flag = true
 
@@ -15,6 +16,9 @@ const forFn = () => {
     return str
 }
 export default (props: any) => {
+    const { formatMessage } = useIntl()
+    const enLocale = getLocale() === 'en-US'
+
     const { tokenData, loading } = props
     const initTokenData = forFn()
     const [tokenValue, setTokenValue] = useState<any>(initTokenData)
@@ -31,7 +35,7 @@ export default (props: any) => {
         let { data, code } = await updatePutToken()
         if (code === 200) {
             message.success({
-                content: '重置成功',
+                content: formatMessage({ id: 'request.reset.success' }),
                 onClose: () => { flag = true },
                 onClick: () => { flag = true },
             })
@@ -40,7 +44,7 @@ export default (props: any) => {
         // message.error('重置失败')
         if (code !== 200) {
             message.error({
-                content: '重置失败',
+                content: formatMessage({ id: 'request.reset.failed' }),
                 onClose: () => { flag = true },
                 onClick: () => { flag = true },
             })
@@ -58,13 +62,13 @@ export default (props: any) => {
                         BUILD_APP_ENV === 'opensource' &&
                         <div>
                             <div className={styles.first_row}>
-                                <span className={styles.token_label}> 登录密码 </span>
-                                <span className={styles.operate}> 操作 </span>
+                                <span className={styles.token_label}><FormattedMessage id="person.center.login.password"/> </span>
+                                <span className={styles.operate}><FormattedMessage id="Table.columns.operation"/> </span>
                             </div>
                             <div className={styles.second_row}>
                                 <span >{forFn()} </span>
                                 <Space align="start">
-                                    <span className={styles.reset} onClick={modifyPassword}>修改</span>
+                                    <span className={styles.reset} onClick={modifyPassword}><FormattedMessage id="operation.modify"/></span>
                                 </Space>
                             </div>
                         </div>
@@ -72,13 +76,13 @@ export default (props: any) => {
                     <div>
                         <div className={styles.first_row}>
                             <span className={styles.token_label}> Token </span>
-                            <span className={styles.operate}> 操作 </span>
+                            <span className={styles.operate}><FormattedMessage id="Table.columns.operation"/> </span>
                         </div>
                         <div className={styles.second_row}>
                             <span >{tokenValue} </span>
                             <div>
-                                <span className={styles.show} onClick={handleShow}>查看</span>
-                                <span className={styles.reset} onClick={handleReset}>重置</span>
+                                <span className={styles.show} onClick={handleShow}><FormattedMessage id="operation.view"/></span>
+                                <span className={styles.reset} onClick={handleReset}><FormattedMessage id="operation.reset"/></span>
                             </div>
                         </div>
                     </div>

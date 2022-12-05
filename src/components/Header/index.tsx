@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, useAccess, useParams, FormattedMessage } from 'umi'
+import { history, useModel, useRequest, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
 import { Typography, Row, Menu, Col, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
@@ -29,6 +29,7 @@ const AdShowBtn = styled.div`
 const defaultParams = { enable: "True", page_num: 1, page_size: 999 }
 
 const Header: React.FC<Record<string, any>> = (props: any) => {
+    const { formatMessage } = useIntl()
     const { initialState, setInitialState } = useModel('@@initialState')
     const { pathname } = location
     const access = useAccess()
@@ -154,7 +155,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                     onMouseLeave={() => setBackLogo(false)}
                                 >
                                     {
-                                        <Popover style={{ marginRight: 20 }} content={"返回首页"}>
+                                        <Popover style={{ marginRight: 20 }} content={formatMessage({id: 'back.to.home'})}>
                                             {
                                                 backLogo ?
 

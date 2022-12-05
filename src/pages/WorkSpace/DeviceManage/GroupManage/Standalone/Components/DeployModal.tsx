@@ -38,9 +38,9 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     // 1.请求数据
-    const getVersionData = async () => {
+    const getVersionData = async (val: any) => {
         try {
-            const { code, msg, data = [] } = await queryVersionList({ arch }); // { page_num: 1, page_size: 100000  }
+            const { code, msg, data = [] } = await queryVersionList({ arch: val }); // { page_num: 1, page_size: 100000  }
             if (code === 200) {
                 if (isString(data)) {
                     setData([])
@@ -156,8 +156,10 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     useEffect(() => {
-        getVersionData()
-    }, [arch])
+        if(visible){
+            getVersionData(arch)
+        }
+    }, [visible,arch])
 
     return (
         <div>
@@ -184,7 +186,7 @@ export default forwardRef((props: any, ref: any) => {
                             channel: 'common',
                             mode: getDeployMode(),
                             user: 'root',
-                            arch
+                            arch: 'x86_64'
                         }}
                     >
                         {
@@ -248,7 +250,7 @@ export default forwardRef((props: any, ref: any) => {
                             name="arch"
                             required
                         >
-                            <Select onChange={(val: string) => setArch(val)}>
+                            <Select onSelect={(val: any) => setArch(val)}>
                                 <Select.Option value="x86_64">x86_64</Select.Option>
                                 <Select.Option value="aarch64">aarch64</Select.Option>
                             </Select>

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { message, Select, Spin, Tag } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, getLocale } from 'umi';
 import { roleChange } from '../../service'
 import styles from './index.less';
 import { requestCodeMessage, switchUserRole2 } from '@/utils/utils';
@@ -8,6 +8,8 @@ import { requestCodeMessage, switchUserRole2 } from '@/utils/utils';
 
 const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number[], row: any) => void }> = ({ row, select, handleChange }: any) => {
     const { formatMessage } = useIntl()
+    const locale = getLocale()
+
     const defaultName = row.role_list.map((item: any) => (item.name))
     //const [ roleName, setRoleName ] = useState<string>(handleRole(defaultName))
     const [loading, setLoading] = useState<boolean>(false)
@@ -18,10 +20,18 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
         setLoading(false)
         if (data.code === 200) {
             message.success(formatMessage({id: 'user.role.edit.successfully'}) )
+            setSelectValue(value)
         } else {
             requestCodeMessage(data.code, data.msg)
         }
     }
+
+    const [selectValue, setSelectValue] = useState<any>(undefined)
+    useEffect(()=> {
+        setSelectValue( row.role_list.map((item: any) => (item.id))[0] )
+    }, [row.role_list])
+
+	// console.log('selectValue:', selectValue)
    
     return (
         <Spin spinning={loading} >
@@ -50,11 +60,12 @@ const RoleSelect: React.FC<{ row: any, select: any[], handleChange: (val: number
                     )
                 }
             )} */}
+            
             <Select
                 size='small'
                 placeholder={<FormattedMessage id="user.please.select.role"/>}
-                defaultValue={switchUserRole2(defaultName[0], formatMessage)}
-                //value={roleName}
+                // defaultValue={defaultName}
+                value={selectValue}
                 style={{ marginLeft: -10 }}
                 dropdownMatchSelectWidth={false}
                 bordered={false}

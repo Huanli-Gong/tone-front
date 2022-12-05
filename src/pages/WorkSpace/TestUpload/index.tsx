@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { FormattedMessage, useIntl, useAccess, Access } from 'umi';
-import { Layout, message, Tabs, Badge, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Spin } from 'antd';
+import React, { useState, useRef } from 'react';
+import { FormattedMessage, useIntl, useAccess, Access, useModel } from 'umi';
+import { message, Button, Spin } from 'antd';
+import NotLoggedIn from '@/components/Public/NotLoggedIn'
 import UploadTable from './components/OfflineUploadTable';
 import { querySummary } from './services';
 import styles from './index.less'
@@ -15,6 +16,9 @@ export default (props: any) => {
   const [tab, setTab] = useState('record');
   const [itemTotal, setItemTotal] = useState(0);
   const uploadTable: any = useRef(null)
+
+  const { initialState, setInitialState } = useModel('@@initialState')
+  const { authList } = initialState;
 
   const access = useAccess()
 
@@ -71,6 +75,10 @@ export default (props: any) => {
 
   return (
     <div className={styles.TestUpload_root}>
+      {/** 用户未登录提示 */}
+      {(!spinning && !authList?.user_id) ?
+        <div className={styles.not_logged_in}><NotLoggedIn /></div> : null}
+
       <div className={styles.content_header}>
         <div className={styles.item1}>{tabList[0].name}</div>
         {operations}
