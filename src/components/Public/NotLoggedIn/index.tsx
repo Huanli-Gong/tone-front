@@ -32,7 +32,7 @@ export default (props: any) => {
           {formatMessage({id: 'go.to.login'})}
         </SpanText>
       </div>
-      }
+    }
       type="info"
       showIcon 
       closable />
