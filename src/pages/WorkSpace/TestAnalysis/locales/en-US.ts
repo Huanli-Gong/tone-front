@@ -41,6 +41,7 @@ export default {
     'analysis.baseline.placeholder': 'Search Baseline Name',
     'analysis.job.name': 'Job Name',
     'analysis.job.name.placeholder': 'Search Job Name',
+    'analysis.baseline_name': 'Baseline Name',
     'analysis.test_type': 'Test Type',
     'analysis.creator_name': 'Creator',
     'analysis.test_time': 'Test Time',

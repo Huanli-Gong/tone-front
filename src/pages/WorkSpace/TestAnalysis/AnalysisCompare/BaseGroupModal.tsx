@@ -224,7 +224,7 @@ export default (props: any) => {
             groupAll.map((item: any) => {
                 group_jobs.push({
                     group_name: item.product_version,
-                    is_baseline: item.type === 'job' ? 0 : 1,
+                    is_baseline: item.type === 'baseline' ? 1 : 0,
                     test_job_id: [].concat(item.members.map((i: any) => i.id))
                 })
             })
@@ -267,7 +267,7 @@ export default (props: any) => {
                                 })
                                 brr.push({
                                     conf_id: conf.conf_id,
-                                    job_id: conf.job_list[0].job_id,
+                                    job_id: conf.job_list[0]?.job_id || '',
                                     key: groupIndex
                                 })
                                 return {

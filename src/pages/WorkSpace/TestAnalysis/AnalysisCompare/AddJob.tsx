@@ -329,7 +329,7 @@ export default (props: any) => {
 
     const baselineColumns = [
         {
-            title: '基线名称',
+            title: <FormattedMessage id="analysis.baseline_name" />,
             dataIndex: 'name',
             width: 100,
             ellipsis: {
