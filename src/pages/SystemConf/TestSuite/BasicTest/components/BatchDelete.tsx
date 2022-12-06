@@ -7,12 +7,6 @@ import { delBentch } from '../../service';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import styled from 'styled-components'
 
-const Warpper = styled.div`
-    position:fixed;
-    bottom:16px;
-    width: 1115px;
-    height: 64px;
-`
 const BatchRow = styled(Row)`
     padding-right : 20px;
     margin-top: 16px;

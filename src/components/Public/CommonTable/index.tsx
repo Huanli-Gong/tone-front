@@ -1,9 +1,10 @@
 import React, { useRef } from 'react';
 import { UserTable } from './data.d';
-import { Table, Pagination, Spin } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { Pagination, Spin } from 'antd';
+import { useIntl } from 'umi'
 import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable'
+
 const CommonTable: React.FC<UserTable> = ({
     list, columns,
     loading,
@@ -62,7 +63,7 @@ const CommonTable: React.FC<UserTable> = ({
                         total >= 1 &&
                         <>
                             <div className={total == 0 ? styles.hidden : ''}>
-                               {formatMessage({id: 'pagination.total.strip'}, {data: total})}
+                                {formatMessage({ id: 'pagination.total.strip' }, { data: total })}
                             </div>
                             <Pagination
                                 className={total == 0 ? styles.hidden : ''}

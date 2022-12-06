@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef, useMemo } from 'react';
-import { Button, Space, Drawer, message, Pagination, Modal, Tooltip, Row, Alert, Table, Spin } from 'antd';
-import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync } from '../service';
+import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { Space, Drawer, message, Pagination, Tooltip, Row, Alert, Table, Spin, Typography } from 'antd';
+import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Highlighter from 'react-highlight-words';
@@ -25,10 +25,14 @@ import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { requestCodeMessage } from '@/utils/utils';
 import { useSuiteProvider } from '../hooks';
 
+import DeleteTips from "./components/DeleteTips"
+import DeleteDefault from "./components/DeleteDefault"
+import MetricBatchDelete from './components/MetricTable/MetricBatchDelete';
+
 let timeout: any = null;
 let timer: any = null;
 
-const SuiteManagement = (props: any, ref: any) => {
+const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
 
@@ -46,26 +50,24 @@ const SuiteManagement = (props: any, ref: any) => {
     const [loading, setLoading] = useState<boolean>(true)
     const [sync, setSync] = useState<boolean>(false)
     const [expandKey, setExpandKey] = useState<string[]>([])
-    const [deleteVisible, setDeleteVisible] = useState(false);
-    const [deleteDefault, setDeleteDefault] = useState(false)
-    const [deleteObj, setDeleteObj] = useState<any>({});
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [selectedRow, setSelectedRow] = useState<any>([])
     const [confRefresh, setConfRefresh] = useState<boolean>(true)
-
     const [dataSource, setDataSource] = useState<any>([])
+    const [asyncTime, setAsyncTime] = useState(new Date().getTime())
+
+    const [metricDelInfo, setMetricDelInfo] = React.useState<AnyType>({})
 
     const defaultList = [
-        { id: 1, name: formatMessage({id: 'operation.yes'}) }, 
-        { id: 0, name: formatMessage({id: 'operation.no'}) },
+        { id: 1, name: formatMessage({ id: 'operation.yes' }) },
+        { id: 0, name: formatMessage({ id: 'operation.no' }) },
     ]
 
     const confDrawer: any = useRef(null)
-
     const suiteEditDrawer: any = useRef(null)
+    const deleteTipsRef = React.useRef<any>(null)
     const edscFastEditer: any = useRef(null)
-
-    const [asyncTime, setAsyncTime] = useState(new Date().getTime())
+    const defaultDeleteRef = React.useRef<AnyType>(null)
 
     const getList = async () => {
         setLoading(true)
@@ -97,16 +99,16 @@ const SuiteManagement = (props: any, ref: any) => {
                         let len = valid.length
                         for (var i = 0; i < len; i++) {
                             if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                                message.error(formatMessage({id: 'TestSuite.data.format.error'}) );
+                                message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                                 return
                             }
                         }
                     } else {
-                        message.error(formatMessage({id: 'TestSuite.data.format.error'}) );
+                        message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                         return
                     }
                 } catch (e) {
-                    message.error(formatMessage({id: 'TestSuite.data.format.error'}) );
+                    message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                     return
                 }
             }
@@ -124,7 +126,7 @@ const SuiteManagement = (props: any, ref: any) => {
             const params = { ...param, ...{ test_suite_id } }
             const { code, msg } = id ? await editCase(id, params) : await addCase(params)
             if (code == 201) {
-                message.error(formatMessage({id: 'TestSuite.repeated.suite.name'}) );
+                message.error(formatMessage({ id: 'TestSuite.repeated.suite.name' }));
                 return
             }
             if (code == 202) {
@@ -134,7 +136,7 @@ const SuiteManagement = (props: any, ref: any) => {
         }
 
         confDrawer.current.hide()
-        message.success(formatMessage({id: 'operation.success'}) );
+        message.success(formatMessage({ id: 'operation.success' }));
         setConfRefresh(!confRefresh)
     }
 
@@ -164,13 +166,13 @@ const SuiteManagement = (props: any, ref: any) => {
         for (var i = 0; i < arr.length; i++) newArr.push(Number.parseInt(arr[i]))
         row.domain_list_str = newArr
         domainList.forEach((item: any) => { if (item.name == row.domain) row.domain = item.id })
-        
+
         suiteEditDrawer.current.show('edit', row) // 编辑Test Suite
     }
 
     const onDesSubmit = async ({ doc, id }: any) => {
         await editSuite(id, { doc })
-        message.success(formatMessage({id: 'operation.success'}) );
+        message.success(formatMessage({ id: 'operation.success' }));
         edscFastEditer.current.hide()
         pageParams.page_num === 1 ?
             getList() :
@@ -184,40 +186,34 @@ const SuiteManagement = (props: any, ref: any) => {
             await addSuite(params)
         if (code !== 200) return requestCodeMessage(code, msg);
         suiteEditDrawer.current.hide()
-        message.success(formatMessage({id: 'operation.success'}) );
+        message.success(formatMessage({ id: 'operation.success' }));
         getList()
     }
 
     const deleteOuter = async (row: any) => {
-        const data = await queryConfirm({ flag: 'pass', suite_id: row.id })
-        if (data.code === 200) setDeleteVisible(true)
-        else setDeleteDefault(true)
-        setDeleteObj(row)
+        const { code } = await queryConfirm({ flag: 'pass', suite_id: row.id })
+        if (code === 200)
+            return deleteTipsRef.current?.show(row)
+        defaultDeleteRef.current?.show(row)
     }
 
-    const handleDetail = () => {
-        window.open(`/refenerce/suite/?name=${deleteObj.name}&id=${deleteObj.id}`)
-    }
-
-    const remOuter = async () => {
-        setDeleteVisible(false)
-        setDeleteDefault(false)
-        await delSuite(deleteObj.id)
-        message.success(formatMessage({id: 'operation.success'}) );
+    const remOuter = async (row: any) => {
+        await delSuite(row.id)
+        message.success(formatMessage({ id: 'operation.success' }));
         getList()
     }
 
     const synchro = async (row: any) => {
         setSync(true)
-        const hide = message.loading({ content: formatMessage({id: 'operation.synchronizing'}), duration: 0 })
+        const hide = message.loading({ content: formatMessage({ id: 'operation.synchronizing' }), duration: 0 })
         const { code, msg } = await syncSuite(row.id)
         setSync(false)
         hide()
         if (code !== 200) {
-            message.warning(`${formatMessage({id: 'request.synchronize.failed'})}，${msg}`)
+            message.warning(`${formatMessage({ id: 'request.synchronize.failed' })}，${msg}`)
             return
         }
-        message.success(formatMessage({id: 'request.synchronize.success'}) )
+        message.success(formatMessage({ id: 'request.synchronize.success' }))
         getList()
         setAsyncTime(new Date().getTime())
     }
@@ -249,10 +245,10 @@ const SuiteManagement = (props: any, ref: any) => {
             )
         },
         {
-            title: <FormattedMessage id="TestSuite.run_mode"/>,
+            title: <FormattedMessage id="TestSuite.run_mode" />,
             dataIndex: 'run_mode',
-            render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone"/> : <FormattedMessage id="cluster"/>,
-            width: enLocale? 150: 100,
+            render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone" /> : <FormattedMessage id="cluster" />,
+            width: enLocale ? 150 : 100,
             filterIcon: () => <FilterFilled style={{ color: pageParams.run_mode ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectCheck
@@ -265,7 +261,7 @@ const SuiteManagement = (props: any, ref: any) => {
             ),
         },
         {
-            title: <FormattedMessage id="TestSuite.domain"/>,
+            title: <FormattedMessage id="TestSuite.domain" />,
             dataIndex: 'domain_name_list',
             width: 90,
             ellipsis: true,
@@ -283,13 +279,13 @@ const SuiteManagement = (props: any, ref: any) => {
                 testType === 'functional' ?
                     <></> :
                     <Space>
-                        <FormattedMessage id="TestSuite.view_type"/>
+                        <FormattedMessage id="TestSuite.view_type" />
                         <Tooltip
                             title={
                                 <div>
-                                    <div><FormattedMessage id="TestSuite.view_type.1"/></div>
-                                    <div><FormattedMessage id="TestSuite.view_type.2"/></div>
-                                    <div><FormattedMessage id="TestSuite.view_type.3"/></div>
+                                    <div><FormattedMessage id="TestSuite.view_type.1" /></div>
+                                    <div><FormattedMessage id="TestSuite.view_type.2" /></div>
+                                    <div><FormattedMessage id="TestSuite.view_type.3" /></div>
                                 </div>
                             }
                             placement="bottomLeft"
@@ -304,7 +300,7 @@ const SuiteManagement = (props: any, ref: any) => {
             ellipsis: true,
         },
         {
-            title: <FormattedMessage id="TestSuite.desc"/>,
+            title: <FormattedMessage id="TestSuite.desc" />,
             dataIndex: 'doc',
             width: 130,
             ellipsis: true,
@@ -322,9 +318,9 @@ const SuiteManagement = (props: any, ref: any) => {
             )
         },
         {
-            title: <FormattedMessage id="TestSuite.default.case"/>,
-            width: enLocale? 130: 110,
-            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
+            title: <FormattedMessage id="TestSuite.default.case" />,
+            width: enLocale ? 130 : 110,
+            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
             filterIcon: () => <FilterFilled style={{ color: pageParams.is_default === 1 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
@@ -337,9 +333,9 @@ const SuiteManagement = (props: any, ref: any) => {
         {
             title: (
                 <Space>
-                    <FormattedMessage id="TestSuite.is_certified"/>
+                    <FormattedMessage id="TestSuite.is_certified" />
                     <Tooltip
-                        title={<div><FormattedMessage id="TestSuite.is_certified.title"/></div>}
+                        title={<div><FormattedMessage id="TestSuite.is_certified.title" /></div>}
                         placement="bottomLeft"
                     >
                         <QuestionCircleOutlined />
@@ -347,7 +343,7 @@ const SuiteManagement = (props: any, ref: any) => {
                 </Space>
             ),
             width: 120,
-            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
+            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
             filterIcon: () => <FilterFilled style={{ color: pageParams.certificated === 1 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
@@ -373,36 +369,42 @@ const SuiteManagement = (props: any, ref: any) => {
             ),
         },
         {
-            title: <FormattedMessage id="TestSuite.remarks"/>,
+            title: <FormattedMessage id="TestSuite.remarks" />,
             dataIndex: 'description',
             width: 100,
             ellipsis: true,
         },
         {
-            title: <FormattedMessage id="TestSuite.gmt_created"/>,
+            title: <FormattedMessage id="TestSuite.gmt_created" />,
             dataIndex: 'gmt_created',
             width: 200,
             sorter: true,
             render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: <FormattedMessage id="TestSuite.gmt_modified"/>,
+            title: <FormattedMessage id="TestSuite.gmt_modified" />,
             dataIndex: 'gmt_modified',
             sorter: true,
             width: 200,
             render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_modified} />
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             valueType: 'option',
             dataIndex: 'id',
-            width: enLocale? 190: 140,
+            width: enLocale ? 190 : 140,
             fixed: 'right',
             render: (_: any, row: any) => (
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => synchro(row)}><FormattedMessage id="operation.synchronize"/></Button>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}><FormattedMessage id="operation.edit"/></Button>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteOuter(row)}><FormattedMessage id="operation.delete"/></Button>
+                    <Typography.Link onClick={() => synchro(row)}>
+                        <FormattedMessage id="operation.synchronize" />
+                    </Typography.Link>
+                    <Typography.Link onClick={() => editOuter(row)}>
+                        <FormattedMessage id="operation.edit" />
+                    </Typography.Link>
+                    <Typography.Link onClick={() => deleteOuter(row)}>
+                        <FormattedMessage id="operation.delete" />
+                    </Typography.Link>
                 </Space>
             )
         },
@@ -416,7 +418,7 @@ const SuiteManagement = (props: any, ref: any) => {
     const handleSynchronous = async () => {
         const data = await manual()
         if (data.code === 200) {
-            message.success(formatMessage({id: 'request.synchronize.command.success'}) )
+            message.success(formatMessage({ id: 'request.synchronize.command.success' }))
         } else if (data.code === 201) {
             message.warning(data.msg)
         } else {
@@ -431,23 +433,21 @@ const SuiteManagement = (props: any, ref: any) => {
             message.error(data.msg)
     }
 
-    const defaultOption = (code: number, msg: string) => {
-        if (code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) )
-            const pageNum = Math.ceil((dataSource.total - 1) / pageParams.page_size) || 1
-            let index = pageParams.page_num
-            if (pageParams.page_num > pageNum) {
-                index = pageNum
-            }
-            setPageParams({ ...pageParams, page_num: index })
-        }
-        else {
-            requestCodeMessage(code, msg)
-        }
-    }
-
     const totalPaginationClass = (total: any) => {
         return !total || total <= 0 ? styles.hidden : ''
+    }
+
+    const handleBatchDelete = async (selectRowKeys: React.Key[], is_sync?: any) => {
+        const { code, msg } = await batchDeleteMetric({
+            id_list: selectRowKeys,
+            is_sync,
+            object_id: metricDelInfo?.object_id,
+            object_type: metricDelInfo?.innerkey === "1" ? "case" : "suite"
+        })
+        if (code !== 200) return
+        message.success(formatMessage({ id: 'operation.success' }));
+        metricDelInfo?.refresh()
+        setMetricDelInfo({})
     }
 
     return (
@@ -460,18 +460,31 @@ const SuiteManagement = (props: any, ref: any) => {
                 setConfRefresh,
                 setSelectedRowKeys,
                 setSelectedRow,
+                metricDelInfo,
+                setMetricDelInfo,
             }}
         >
             <Spin spinning={loading}>
-
                 <Alert type="success"
                     showIcon
                     style={{ marginBottom: 16, height: 32 }}
-                    message={<span className={styles.synchronousTime}><FormattedMessage id="TestSuite.synchronize.time"/>{time}</span>}
-                    action={<span className={styles.synchronous} onClick={handleSynchronous}><FormattedMessage id="operation.synchronize"/></span>}
+                    message={
+                        <span className={styles.synchronousTime}>
+                            <FormattedMessage id="TestSuite.synchronize.time" />{time}
+                        </span>
+                    }
+                    action={
+                        <span
+                            className={styles.synchronous}
+                            onClick={handleSynchronous}
+                        >
+                            <FormattedMessage id="operation.synchronize" />
+                        </span>
+                    }
                 />
 
                 <Table
+                    className={styles.suiteTable}
                     size={'small'}
                     onChange={
                         (pagination: any, filters: any, sorter: any) => {
@@ -498,6 +511,7 @@ const SuiteManagement = (props: any, ref: any) => {
                     rowKey={record => record.id + ''}
                     pagination={false}
                     expandable={{
+                        indentSize: 0,
                         expandedRowRender: (record) => <CaseTable key={asyncTime} id={record.id} type={testType} />,
                         onExpand: (_, record) => _ ? onExpand(record) : setExpandKey([]),
                         expandedRowClassName: () => 'case_expand_row',
@@ -515,7 +529,7 @@ const SuiteManagement = (props: any, ref: any) => {
                     dataSource.total &&
                     <Row justify="space-between" style={{ padding: '16px 20px 0' }}>
                         <div>
-                            {formatMessage({id: 'pagination.total.strip'}, {data: dataSource.total || 0 })}
+                            {formatMessage({ id: 'pagination.total.strip' }, { data: dataSource.total || 0 })}
                         </div>
                         <Pagination
                             className={totalPaginationClass(dataSource.total)}
@@ -537,65 +551,25 @@ const SuiteManagement = (props: any, ref: any) => {
                 width={0}
                 getContainer={false}
             />
+
             <SuiteEditer
                 test_type={testType}
                 ref={suiteEditDrawer}
                 onOk={submitSuite}
             />
+
             <DesFastEditDrawer
                 ref={edscFastEditer}
                 onOk={onDesSubmit}
             />
-            <Modal
-                title={<FormattedMessage id="delete.tips"/>}
-                centered={true}
-                className={styles.modalChange}
-                visible={deleteVisible}
-                //onOk={remOuter}
-                onCancel={() => setDeleteVisible(false)}
-                footer={[
-                    <Button key="submit" onClick={remOuter}>
-                        <FormattedMessage id="operation.confirm.delete"/>
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        <FormattedMessage id="operation.cancel"/>
-                    </Button>
-                ]}
-                width={600}
-                maskClosable={false}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    {formatMessage({id: 'TestSuite.suite.delete.warning'}, {data: deleteObj.name })}
-                </div>
-                <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    <FormattedMessage id="TestSuite.suite.delete.range"/>
-                </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
-                    <FormattedMessage id="view.reference.details"/>
-                </div>
-            </Modal>
-            <Modal
-                title={<FormattedMessage id="delete.tips"/>}
-                centered={true}
-                className={styles.modalChange}
-                visible={deleteDefault}
-                onCancel={() => setDeleteDefault(false)}
-                footer={[
-                    <Button key="submit" onClick={remOuter}>
-                        <FormattedMessage id="operation.confirm.delete"/>
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel"/>
-                    </Button>
-                ]}
-                width={300}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt"/>
-                </div>
-            </Modal>
+
+            <MetricBatchDelete
+                {...metricDelInfo}
+                setMetricDelInfo={setMetricDelInfo}
+                onOk={handleBatchDelete}
+            />
+            <DeleteDefault ref={defaultDeleteRef} onOk={remOuter} />
+            <DeleteTips ref={deleteTipsRef} onOk={remOuter} />
             <ConfEditDrawer ref={confDrawer} onOk={submitCase} />
         </TestContext.Provider>
     );
