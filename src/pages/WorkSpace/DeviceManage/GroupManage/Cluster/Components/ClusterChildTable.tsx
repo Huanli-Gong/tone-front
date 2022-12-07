@@ -43,7 +43,7 @@ export default (props: any) => {
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aligroup' })
         if (code === 200) {
-            message.success(formatMessage({id: 'device.synchronization.state.success'}) )
+            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
             setRefrush(!refrush)
         }
         else requestCodeMessage(code, msg)
@@ -58,7 +58,7 @@ export default (props: any) => {
     const defaultFetchOption = (ret: any) => {
         if (ret.code === 200) {
             setRefrush(!refrush)
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
         }
         else requestCodeMessage(ret.code, ret.msg)
     }
@@ -99,7 +99,7 @@ export default (props: any) => {
         const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
         const res = await editGroupMachine(row.id, query);
         if (res.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) );
+            message.success(formatMessage({ id: 'operation.success' }));
             setRefrush(!refrush)
         } else {
             requestCodeMessage(res.code, res.msg)
@@ -142,7 +142,7 @@ export default (props: any) => {
             render: (record: any) => <EllipsisPulic title={record.test_server.tsn} />
         },
         !BUILD_APP_ENV && {
-            title: <FormattedMessage id="device.machine.name"/>,
+            title: <FormattedMessage id="device.machine.name" />,
             width: 150,
             ellipsis: {
                 showTitle: false
@@ -150,17 +150,17 @@ export default (props: any) => {
             render: (record: any) => <EllipsisPulic title={record.test_server.name} color={'#1890ff'} />
         },
         {
-            title: <FormattedMessage id="device.private_ip.s"/>,
+            title: <FormattedMessage id="device.private_ip.s" />,
             width: 100,
             render: (record: any) => record.test_server.private_ip || '-'
         },
         !BUILD_APP_ENV && {
             width: 100,
-            title: <FormattedMessage id="device.console_conf"/>,
+            title: <FormattedMessage id="device.console_conf" />,
             render: (record: any) => record.test_server.console_conf || '-'
         },
         {
-            title: <FormattedMessage id="device.channel_type"/>,
+            title: <FormattedMessage id="device.channel_type" />,
             width: 100,
             //dataIndex: 'channel_type',
             render: (record: any) => (record.test_server.channel_type || '-')
@@ -171,7 +171,7 @@ export default (props: any) => {
         //     render: (record: any) => (record || '-')
         // },
         {
-            title: <FormattedMessage id="device.local.server"/>,
+            title: <FormattedMessage id="device.local.server" />,
             dataIndex: 'role',
             width: 120,
             align: 'center',
@@ -183,9 +183,9 @@ export default (props: any) => {
             </span>
         },
         {
-            title: <FormattedMessage id="device.baseline_server"/>,
+            title: <FormattedMessage id="device.baseline_server" />,
             dataIndex: 'baseline_server',
-            width: enLocale ? 150: 120,
+            width: enLocale ? 150 : 120,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {text ?
@@ -195,63 +195,63 @@ export default (props: any) => {
             </span>
         },
         {
-            title: <FormattedMessage id="device.kernel_install"/>,
+            title: <FormattedMessage id="device.kernel_install" />,
             dataIndex: 'kernel_install',
             width: 130,
-            render: (record: any) => (record ? <FormattedMessage id="operation.yes"/>: <FormattedMessage id="operation.no"/>)
+            render: (record: any) => (record ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />)
         },
         {
-            title: <FormattedMessage id="device.var_name"/>,
+            title: <FormattedMessage id="device.var_name" />,
             dataIndex: 'var_name',
-            width: enLocale ? 160: 120,
+            width: enLocale ? 160 : 120,
             render: (record: any) => (record || '-')
         },
         {
-            title: <FormattedMessage id="device.usage.state"/>,
+            title: <FormattedMessage id="device.usage.state" />,
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id,'not_real')
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         {
-            title: <FormattedMessage id="device.real_state"/>,
+            title: <FormattedMessage id="device.real_state" />,
             width: 120,
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id,'real')
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
-            width: BUILD_APP_ENV ? (enLocale ? 260: 185) : (enLocale ? 200: 120),
+            width: BUILD_APP_ENV ? (enLocale ? 260 : 185) : (enLocale ? 200 : 120),
             align: 'center',
             render: (_: any, row: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>
-                        <FormattedMessage id="operation.detail"/>
+                        <FormattedMessage id="operation.detail" />
                     </Button>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state"/></Button>}
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
-                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
-                                {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization"/></Button>}
+                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
+                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
+                                {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization" /></Button>}
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state"/></Button>}
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}><FormattedMessage id="operation.edit"/></Button>
+                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state" /></Button>}
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}><FormattedMessage id="operation.edit" /></Button>
                             <Popconfirm
-                                title={<FormattedMessage id="delete.prompt"/>}
-                                okText={<FormattedMessage id="operation.ok"/>}
-                                cancelText={<FormattedMessage id="operation.cancel"/>}
+                                title={<FormattedMessage id="delete.prompt" />}
+                                okText={<FormattedMessage id="operation.ok" />}
+                                cancelText={<FormattedMessage id="operation.cancel" />}
                                 onConfirm={() => handleDeleteServer(_.id)}
                             >
-                                <Button style={{ padding: 0 }} size="small" type="link"><FormattedMessage id="operation.delete"/></Button>
+                                <Button style={{ padding: 0 }} size="small" type="link"><FormattedMessage id="operation.delete" /></Button>
                             </Popconfirm>
-                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}><FormattedMessage id="operation.synchronize"/></Button>}
+                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}><FormattedMessage id="operation.synchronize" /></Button>}
                         </Space>
                     </Access>
-                    <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>
+                    <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log" /></Button>
                 </Space>
             )
         }
@@ -297,7 +297,7 @@ export default (props: any) => {
                 <div
                     style={{ width: "calc(100% - 47px)" }}
                 >
-                   <ResizeTable
+                    <ResizeTable
                         rowKey="id"
                         columns={columns}
                         loading={loading}
@@ -306,7 +306,7 @@ export default (props: any) => {
                         pagination={false}
                         scroll={{ x: '100%' }}
                         rowClassName={() => styles.row_class}
-                    /> 
+                    />
                 </div>
             </div>
             <OperationLog ref={logDrawer} operation_object="machine_cluster_aligroup_server" />

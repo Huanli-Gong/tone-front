@@ -213,7 +213,7 @@ const text =  {
   'failed.server': '故障机器',
   'channel_type': '控制通道',
   'use_state': '使用状态',
-  'real_state': '实际状态',
+  'real_state': '心跳状态',
   'not.assigned.server': '未分配到测试机器',
   'running,please.wait': '正在运行中，请耐心等待',
 
