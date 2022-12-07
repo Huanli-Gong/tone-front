@@ -176,7 +176,7 @@ const TypeChart = (props: any) => {
                     let result = ''
                     for (let i = 0; i < params.length; i++) {
                         result += `
-                            <div style="display:flex;flex-wrap:wrap;width:264px;">
+                            <div style="display:flex;flex-wrap:wrap;">
                                 <div style="width:8px;height:8px;border-radius:50%;background:${params[i].color};margin-top:5px;"></div>
                                 <div style="padding-left:9px;width:155px;word-break:break-all;white-space:normal;">${params[i].seriesName}</div>
                                 <div style="padding-left:16px;width:52px;word-break:break-all;white-space:normal;">${params[i].value || '-'}</div>
@@ -190,32 +190,38 @@ const TypeChart = (props: any) => {
                             `
                     }
                     if (chartType == '1') {
-                        return `<div>
-                                    <span style="font-weight:bold">${data.metric}</span>
-                                    (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
-                                </div>
-                                <div style="display:flex;flex-warp:wrap;width:264px;">
-                                    <div style="width:8px;height:8px;border-radius:50%;background:${params.color};display:inline-block;margin-top:5px;"></div>
-                                    <div style="padding-left:9px;width:155px;word-break:break-all;white-space:normal;">${params.seriesName}</div>
-                                    <div style="padding-left:16px;width:52px;word-break:break-all;white-space:normal;">${params.value || '-'}</div>
-                                    <div style="padding-left:9px;width:15px;">
-                                        <i style="font-style:normal;color:${handleColor(params.data.compare_result) || ''}">
-                                        ${params.data.compare_value || ''}
-                                        ${handleIcon(params.data.compare_result) || ''}
-                                        </i>
+                        return `
+                                <div style="width:260px;">
+                                    <div style="display:flex;flex-warp:wrap">
+                                        <span style="font-weight:bold;padding-right:5px">${data.metric}</span>
+                                        (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
+                                    </div>
+                                    <div style="display:flex;flex-warp:wrap">
+                                        <div style="width:8px;height:8px;border-radius:50%;background:${params.color};margin-top:5px;"></div>
+                                        <div style="padding-left:9px;width:140px;word-break:break-all;white-space:normal;">${params.seriesName}</div>
+                                        <div style="padding-left:16px;width:50px;word-break:break-all;white-space:normal;">${params.value || '-'}</div>
+                                        <div style="padding-left:9px;width:20px;">
+                                            <i style="font-style:normal;color:${handleColor(params.data.compare_result) || ''}">
+                                            ${params.data.compare_value || ''}
+                                            ${handleIcon(params.data.compare_result) || ''}
+                                            </i>
+                                        </div>
                                     </div>
                                 </div>`
                     } else if (chartType == '2') {
-                        return `<div>
-                                    <span style="font-weight:bold">${params[0].name}</span>
-                                </div>
-                                ${result}`
+                        return `<div style="width:260px;">
+                                    <div style="font-weight:bold">${params[0].name}</div>
+                                    ${result}
+                                </div>`
                     } else {
-                        return `<div>
-                                    <span style="font-weight:bold">${params[0].name}</span>
-                                    (${`${toPercentage(params[0].data.cv_threshold)}/${toPercentage(params[0].data.cmp_threshold)}`})
+                        return `<div style="width:260px;">
+                                    <div>
+                                        <span style="font-weight:bold;padding-right:5px">${params[0].name}</span>
+                                        (${`${toPercentage(params[0].data.cv_threshold)}/${toPercentage(params[0].data.cmp_threshold)}`})
+                                    </div>
+                                    ${result}
                                 </div>
-                                ${result}`
+                               `
                     }
                 }
             },
