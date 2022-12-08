@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useIntl, FormattedMessage, getLocale } from 'umi'
-import { Space, Button, message, Typography, Popconfirm, Tooltip } from 'antd'
+import { Space, Button, message, Popconfirm } from 'antd'
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
-import { updateTestServer, deleteClusterServer, queryClusterServer, editGroupMachine, stateRefresh } from '../../services'
+import { updateTestServer, deleteClusterServer, queryClusterServer, updateClusterServer, stateRefresh } from '../../services'
 import DeviceDetail from '../../Components/DeviceDetail'
 import { StateBadge } from '../../Components'
 import ClusterEditServer from './ClusterEditServer'
 import OperationLog from '@/components/Public/Log'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import PermissionTootip from '@/components/Public/Permission/index';
 import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
@@ -97,7 +96,7 @@ export default (props: any) => {
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
         const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
-        const res = await editGroupMachine(row.id, query);
+        const res = await updateClusterServer(row.id, query);
         if (res.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
             setRefrush(!refrush)

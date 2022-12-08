@@ -33,8 +33,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     let arr: any = []
                     !!res.data.length && res.data.map((item: any) => {
                         arr.push({ value: item.ip })
-                        if(!!item.sub_server_list.length){
-                            item.sub_server_list.map((i:any) => arr.push({ value: i.ip }))
+                        if (!!item.sub_server_list.length) {
+                            item.sub_server_list.map((i: any) => arr.push({ value: i.ip }))
                         }
                     })
                     setOptions(arr)
@@ -69,7 +69,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         setPoolFlag(false)
                     }
                 })
-        } 
+        }
     }
 
     const onSelect = (val: string) => {
@@ -88,7 +88,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     const data: any = await addServerGroup({ ...values, ws_id, cluster_id: source.id, cluster_type: 'aligroup' })
                     if (data.code === 200) {
                         onFinish(source.id)
-                        message.success(formatMessage({id: 'operation.success'}) )
+                        message.success(formatMessage({ id: 'operation.success' }))
                         handleCancel()
                     }
                     else {
@@ -113,7 +113,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info"/></span></Tooltip>
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info" /></span></Tooltip>
         </Space>
     )
 
@@ -148,7 +148,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={<FormattedMessage id="device.add.btn"/>}
+            title={<FormattedMessage id="device.add.btn" />}
             forceRender={true}
             visible={visible}
             width="376"
@@ -156,8 +156,8 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right' }} >
                     <Space>
-                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
-                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok"/></Button>
+                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }
@@ -174,18 +174,18 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                         <Row style={{ marginBottom: 10 }}>
                             <Col>
                                 <span style={{ color: 'red', marginRight: 10 }}>*</span>
-                                <FormattedMessage id="device.poolFlag"/>
+                                <FormattedMessage id="device.poolFlag" />
                             </Col>
                         </Row>
                     }
                     <Form.Item
                         name="ip"
-                        label={<FormattedMessage id="device.machine"/>} 
+                        label={<FormattedMessage id="device.machine" />}
                         validateStatus={ips.errors.length > 0 ? 'error' : ''}
                         help={ips.errors.length > 0 ? validateMsg : undefined}
                         rules={[{
                             required: true,
-                            message:`请输入或选择IP${!BUILD_APP_ENV ? "/SN" : ""}`
+                            message: `请输入或选择IP${!BUILD_APP_ENV ? "/SN" : ""}`
                         }]}>
                         <AutoComplete
                             options={options}
@@ -193,61 +193,61 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                             onSelect={onSelect}
                             onSearch={onSearch}
                             onBlur={(e: any) => handleBlurIp(e)}
-                            placeholder={formatMessage({id: 'device.machine.select.message'})}
+                            placeholder={formatMessage({ id: 'device.machine.select.message' })}
                         />
                     </Form.Item>
                     <Form.Item
                         name="channel_type"
                         initialValue={'toneagent'}
-                        label={<FormattedMessage id="device.channel_type"/>}
-                        rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}
+                        label={<FormattedMessage id="device.channel_type" />}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.channel_type.message' }) }]}
                     >
                         <AgentSelect disabled={BUILD_APP_ENV || (!BUILD_APP_ENV && poolFlag)} />
                     </Form.Item>
-                    <Form.Item label={<FormattedMessage id="device.usage.state"/>}
+                    <Form.Item label={<FormattedMessage id="device.usage.state" />}
                         name="state"
                         // hasFeedback
-                        rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
                         initialValue={'Available'}
                     >
-                        <Select placeholder={<FormattedMessage id="device.usage.state.message"/>} disabled={poolFlag}>
-                            <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                            <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
-                            <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
+                        <Select placeholder={<FormattedMessage id="device.usage.state.message" />} disabled={poolFlag}>
+                            <Select.Option value="Available"><Badge status="success" text={"Available"} /></Select.Option>
+                            <Select.Option value="Reserved"><Badge status="success" text={"Reserved"} /></Select.Option>
+                            <Select.Option value="Unusable"><Badge status="default" text={"Unusable"} /></Select.Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip"/>}>
-                        <Input autoComplete="off" placeholder={formatMessage({id: 'device.private_ip.placeholder'}) } />
+                    <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip" />}>
+                        <Input autoComplete="off" placeholder={formatMessage({ id: 'device.private_ip.placeholder' })} />
                     </Form.Item>
-                    <Form.Item name="role" label={<FormattedMessage id="device.role"/>} rules={[{ required: true }]}>
-                        <Select getPopupContainer={node => node.parentNode} placeholder={<FormattedMessage id="device.role.placeholder"/>}>
+                    <Form.Item name="role" label={<FormattedMessage id="device.role" />} rules={[{ required: true }]}>
+                        <Select getPopupContainer={node => node.parentNode} placeholder={<FormattedMessage id="device.role.placeholder" />}>
                             <Select.Option value="local">local</Select.Option>
                             <Select.Option value="remote">remote</Select.Option>
                         </Select>
                     </Form.Item>
                     <Owner />
-                    <Form.Item name="baseline_server" label={<FormattedMessage id="device.baseline_server"/>} initialValue={false}>
+                    <Form.Item name="baseline_server" label={<FormattedMessage id="device.baseline_server" />} initialValue={false}>
                         <Radio.Group>
-                            <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                            <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                            <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                            <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                         </Radio.Group>
                     </Form.Item>
-                    <Form.Item name="kernel_install" label={<FormattedMessage id="device.kernel_install"/>} initialValue={false}>
+                    <Form.Item name="kernel_install" label={<FormattedMessage id="device.kernel_install" />} initialValue={false}>
                         <Radio.Group>
-                            <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                            <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                            <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                            <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         name="var_name"
-                        label={<FormattedMessage id="device.var_name"/>}
+                        label={<FormattedMessage id="device.var_name" />}
                         rules={[{
                             required: true,
                             // pattern: /^[A-Za-z0-9]+$/g,
                             // message: '仅允许包含字母、数字'
                         }]}
                     >
-                        <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'}) } />
+                        <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                     </Form.Item>
                 </Form>
             </Spin>
