@@ -202,7 +202,7 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="device.local.server" />,
             dataIndex: 'role',
-            width: 280,
+            width: 120,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {row.role === "local" ?
