@@ -27,20 +27,20 @@ const PushForm: React.FC<IProps> = (props) => {
                 kernel: kernelList[idx].kernel_link,
                 headers: kernelList[idx].headers_link,
                 devel: kernelList[idx].devel_link,
-                
+
             })
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         const obj = form.getFieldValue('kernel_info')
-        if(obj && JSON.stringify(obj) !== '{}'){
+        if (obj && JSON.stringify(obj) !== '{}') {
             form.setFieldsValue({
-                hotfix_install:obj?.hotfix_install,
-                scripts:obj?.scripts
+                hotfix_install: obj?.hotfix_install,
+                scripts: obj?.scripts
             })
         }
-    },[ form ])
+    }, [form])
 
     return (
         <Form.Item label=" ">
@@ -96,6 +96,7 @@ const PushForm: React.FC<IProps> = (props) => {
                 {
                     needScriptList &&
                     <ScriptsListForm
+                        form={form}
                         disabled={disabled}
                     />
                 }
