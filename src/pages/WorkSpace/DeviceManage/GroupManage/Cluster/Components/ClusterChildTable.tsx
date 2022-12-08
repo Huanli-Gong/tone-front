@@ -150,7 +150,7 @@ export default (props: any) => {
         },
         {
             title: <FormattedMessage id="device.private_ip.s" />,
-            width: 100,
+            width: 160,
             render: (record: any) => record.test_server.private_ip || '-'
         },
         !BUILD_APP_ENV && {
@@ -212,13 +212,13 @@ export default (props: any) => {
         },
         {
             title: <FormattedMessage id="device.real_state" />,
-            width: 120,
+            width: 160,
             render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
-            width: BUILD_APP_ENV ? (enLocale ? 260 : 185) : (enLocale ? 200 : 120),
+            width: enLocale ? 260 : 230,
             align: 'center',
             render: (_: any, row: any) => (
                 <Space>

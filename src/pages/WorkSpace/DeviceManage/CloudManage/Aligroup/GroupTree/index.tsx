@@ -174,7 +174,7 @@ const GroupTree: React.FC<any> = (props) => {
         },
         {
             title: <FormattedMessage id="device.private_ip" />,
-            width: 100,
+            width: 160,
             ellipsis: {
                 showTitle: false,
             },
@@ -202,7 +202,7 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="device.local.server" />,
             dataIndex: 'role',
-            width: 140,
+            width: 280,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {row.role === "local" ?
@@ -249,7 +249,7 @@ const GroupTree: React.FC<any> = (props) => {
         !!is_instance &&
         {
             title: <FormattedMessage id="device.real_state" />,
-            width: 120,
+            width: 160,
             ellipsis: {
                 showTitle: false,
             },
