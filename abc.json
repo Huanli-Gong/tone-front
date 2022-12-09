@@ -4,7 +4,7 @@
         "command": {
             "cmd": [
                 "yarn install",
-                "yarn run build",
+                "yarn run build:tone",
                 "mv ./dist $BUILD_DEST"
             ]
         }
