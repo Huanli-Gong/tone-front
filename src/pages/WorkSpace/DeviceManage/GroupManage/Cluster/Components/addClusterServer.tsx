@@ -17,7 +17,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     const [loading, setLoading] = useState(true)
     const [poolFlag, setPoolFlag] = useState<boolean>(false)
     const [visible, setVisible] = useState(false)
-    const defaultParam = { ws_id, page_num: 1, page_size: 20 }
+    const defaultParam = { ws_id, page_num: 1, page_size: 500 }
     const [source, setSource] = useState<any>(null)
 
     const queryServerList = async (params: any) => {
