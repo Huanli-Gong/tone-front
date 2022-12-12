@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from './services'
-import { history, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { message, Layout, Row, Select, Modal, Space, Divider, Button, Alert, Spin, Tooltip, Popconfirm, Typography } from 'antd';
 import styles from './index.less'
 import { PlusOutlined, CaretDownOutlined } from '@ant-design/icons'
@@ -21,15 +21,15 @@ import { ReactComponent as CompareExpand } from '@/assets/svg/compare_expand.svg
 import SaveReport from '../../TestReport/components/SaveReport'
 import { getJobRefSuit, handleDomainList, getSelectedDataFn } from './CommonMethod'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
-import { 
-    transformFn, 
-    transformIdFn, 
-    transformNoGroupIdFn, 
-    EllipsisRect, 
+import {
+    transformFn,
+    transformIdFn,
+    transformNoGroupIdFn,
+    EllipsisRect,
     groupToLocale,
     getListStyle,
     getItemStyle,
-    getJobItemStyle 
+    getJobItemStyle
 } from './PublicMethod';
 import AllJobTable from './AllJobTable';
 
@@ -48,7 +48,7 @@ export default (props: any) => {
     noGroupJob = noGroupJob && _.isArray(JSON.parse(noGroupJob)) ? JSON.parse(noGroupJob) : []
     const originType = _.get(state, 'originType') || ''
     const { height: layoutHeight } = useClientSize()
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
     const [groupData, setGroupData] = useState<any>(selectedJob)
     const [noGroupData, setNoGroupData] = useState<any>(noGroupJob)
     const [currentEditGroup, setCurrentEditGroup] = useState<any>({})
@@ -277,10 +277,10 @@ export default (props: any) => {
     }
 
     const handleEditMark = () => {
-        const localStr = formatMessage({id: 'analysis.edit.mark.name'})
+        const localStr = formatMessage({ id: 'analysis.edit.mark.name' })
         editGroupMark.current?.show(
-            localStr, 
-            _.cloneDeep(currentEditGroup), 
+            localStr,
+            _.cloneDeep(currentEditGroup),
             groupData[currentEditGroupIndex].members[0]?.product_version
         )
     }
@@ -354,7 +354,7 @@ export default (props: any) => {
         })
         if (num > 1 && baselineGroupIndex === -1) {
             setLabelBlinking(true)
-            const localStr = formatMessage({id: 'analysis.please.set.the.benchmark.group'})
+            const localStr = formatMessage({ id: 'analysis.please.set.the.benchmark.group' })
             return message.warning(localStr)
         }
         setVisibleBaseGroup(true)
@@ -413,7 +413,7 @@ export default (props: any) => {
             })
             .catch((e) => {
                 setLoading(false)
-                message.error(formatMessage({id: 'request.failed'}) )
+                message.error(formatMessage({ id: 'request.failed' }))
                 console.log(e)
             })
     }
@@ -463,7 +463,7 @@ export default (props: any) => {
                     return
                 }
                 if (result[1].code === 1358) {
-                    const localStr = formatMessage({id: 'analysis.please.add.comparison.group'})
+                    const localStr = formatMessage({ id: 'analysis.please.add.comparison.group' })
                     message.error(localStr)
                     return
                 }
@@ -477,7 +477,7 @@ export default (props: any) => {
             })
             .catch((e) => {
                 setLoading(false)
-                message.error(formatMessage({id: 'request.failed'}) )
+                message.error(formatMessage({ id: 'request.failed' }))
                 console.log(e)
             })
     }
@@ -614,18 +614,18 @@ export default (props: any) => {
     const addGroupTypeFn = () => {
         if (!currentEditGroup) return
         if (currentEditGroup.type === 'baseline') {
-            return <AddBaseline ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
+            return <AddBaseline onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
         }
         if (currentEditGroup.type === 'plan') {
-            return <AddPlan ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
+            return <AddPlan onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
         }
-        return <AddJob ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} allGroup={groupData} allNoGroupData={noGroupData} />
+        return <AddJob onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} allGroup={groupData} allNoGroupData={noGroupData} />
     }
 
     const contentMark = (
         <div>
-            <p onClick={_.partial(handleEditMark)}><FormattedMessage id="analysis.editMark"/></p>
-            <p onClick={_.partial(showModal)}><FormattedMessage id="analysis.deleteMark"/></p>
+            <p onClick={_.partial(handleEditMark)}><FormattedMessage id="analysis.editMark" /></p>
+            <p onClick={_.partial(showModal)}><FormattedMessage id="analysis.deleteMark" /></p>
         </div>
     )
     const handleMouseOver = (e: any) => {
@@ -795,7 +795,7 @@ export default (props: any) => {
 
     const newGroupData = transformIdFn(_.cloneDeep(groupData))
     const newNoGroupData = transformNoGroupIdFn(noGroupData)
-    
+
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条
         height: layoutHeight - 329 + 8 - 22 - 5,
@@ -814,7 +814,7 @@ export default (props: any) => {
                                     <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
                                 </span>
                                 {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
-                                    <FormattedMessage id="analysis.set.benchmark.group"/>
+                                    <FormattedMessage id="analysis.set.benchmark.group" />
                                 </span>}
                             </div>
                             <Divider className={styles.line} />
@@ -832,7 +832,7 @@ export default (props: any) => {
                         <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
                     </span>
                     {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
-                        <FormattedMessage id="analysis.set.benchmark.group"/>
+                        <FormattedMessage id="analysis.set.benchmark.group" />
                     </span>}
                 </div>
 
@@ -870,10 +870,10 @@ export default (props: any) => {
                                                                 <span>{`#${obj.job_id}`}</span>
                                                                 <span>{obj.creator_name}</span>
                                                                 <Popconfirm
-                                                                    title={<FormattedMessage id="analysis.delete.job.prompt"/>}
+                                                                    title={<FormattedMessage id="analysis.delete.job.prompt" />}
                                                                     onConfirm={_.partial(handleJobDelClick, _, index, num)}
-                                                                    okText={<FormattedMessage id="operation.confirm"/>}
-                                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                                                    okText={<FormattedMessage id="operation.confirm" />}
+                                                                    cancelText={<FormattedMessage id="operation.cancel" />}
                                                                     arrowPointAtCenter={true}
                                                                     trigger="click"
                                                                     onVisibleChange={_.partial(handleVisibleChange, _, index, num)}
@@ -881,7 +881,7 @@ export default (props: any) => {
                                                                     <span
                                                                         style={{ opacity: currentDelJobDom === `${index}${num}` ? 1 : 0 }}
                                                                         className={styles.compare_job_delete} onClick={_.partial(handleJobDel, index, num)}>
-                                                                            <FormattedMessage id="operation.delete"/>
+                                                                        <FormattedMessage id="operation.delete" />
                                                                     </span>
                                                                 </Popconfirm>
                                                             </div>
@@ -909,16 +909,16 @@ export default (props: any) => {
                     {(provided: any, snapshot: any) => (
                         <div ref={provided.innerRef} {...provided.droppableProps} {...provided.dragHandleProps} style={getJobItemStyle(provided.droppableProps.style)}>
                             <div className={styles.group_type}>
-                                <div><FormattedMessage id="analysis.auto.group"/>
+                                <div><FormattedMessage id="analysis.auto.group" />
                                     <span className={styles.cancle_group} onClick={cancleGrouping} style={{ display: groupingButton ? 'inline-block' : 'none' }}>
-                                       <FormattedMessage id="analysis.revoke"/>
+                                        <FormattedMessage id="analysis.revoke" />
                                     </span>
                                 </div>
                                 <div className={styles.button}>
-                                    <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} 
-                                    placeholder={<FormattedMessage id="analysis.select.group.placeholder"/>}>
-                                        <Option value="version"><FormattedMessage id="analysis.product.version"/></Option>
-                                        <Option value="sn"><FormattedMessage id="analysis.by.machine"/></Option>
+                                    <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton}
+                                        placeholder={<FormattedMessage id="analysis.select.group.placeholder" />}>
+                                        <Option value="version"><FormattedMessage id="analysis.product.version" /></Option>
+                                        <Option value="sn"><FormattedMessage id="analysis.by.machine" /></Option>
                                     </Select>
                                 </div>
                             </div>
@@ -939,15 +939,15 @@ export default (props: any) => {
         return (
             <>
                 <div className={styles.group_type}>
-                    <div><FormattedMessage id="analysis.auto.group"/>
+                    <div><FormattedMessage id="analysis.auto.group" />
                         <span className={styles.cancle_group} onClick={cancleGrouping} style={{ display: groupingButton ? 'inline-block' : 'none' }}>
-                            <FormattedMessage id="analysis.revoke"/>
+                            <FormattedMessage id="analysis.revoke" />
                         </span>
                     </div>
                     <div className={styles.button}>
-                        <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} placeholder={formatMessage({id: 'analysis.select.group.placeholder'})}>
-                            <Option value="version"><FormattedMessage id="analysis.product.version"/></Option>
-                            <Option value="sn"><FormattedMessage id="analysis.by.machine"/></Option>
+                        <Select onChange={handleGrouping} value={groupMethod} disabled={groupingButton} placeholder={formatMessage({ id: 'analysis.select.group.placeholder' })}>
+                            <Option value="version"><FormattedMessage id="analysis.product.version" /></Option>
+                            <Option value="sn"><FormattedMessage id="analysis.by.machine" /></Option>
                         </Select>
                     </div>
 
@@ -987,10 +987,10 @@ export default (props: any) => {
                                                                 <span>{`#${obj.job_id}`}</span>
                                                                 <span>{obj.creator_name}</span>
                                                                 <Popconfirm
-                                                                    title={<FormattedMessage id="analysis.delete.job.prompt"/>}
+                                                                    title={<FormattedMessage id="analysis.delete.job.prompt" />}
                                                                     onConfirm={_.partial(handleNoGroupJobDelClick, _, num)}
-                                                                    okText={<FormattedMessage id="operation.confirm"/>}
-                                                                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                                                                    okText={<FormattedMessage id="operation.confirm" />}
+                                                                    cancelText={<FormattedMessage id="operation.cancel" />}
                                                                     arrowPointAtCenter={true}
                                                                     trigger="click"
                                                                     onVisibleChange={_.partial(handleVisibleChange)}
@@ -998,7 +998,7 @@ export default (props: any) => {
                                                                     <span
                                                                         style={{ opacity: currentDelJobDom === `ongroup${num}` ? 1 : 0 }}
                                                                         className={styles.compare_job_delete} onClick={_.partial(handleNoGroupJobDel, num)}>
-                                                                            <FormattedMessage id="operation.delete"/>
+                                                                        <FormattedMessage id="operation.delete" />
                                                                     </span>
                                                                 </Popconfirm>
                                                             </div>
@@ -1021,7 +1021,7 @@ export default (props: any) => {
     const handleAlertClose = () => {
         setIsAlertClose(false)
     }
-    
+
     const getContainerWidth = () => {
         if (originType === 'test_result') return isExpand ? innerWidth - 276 - 20 : innerWidth - 16 - 20
         if (newGroupData.length > 4) return '100%'
@@ -1067,7 +1067,7 @@ export default (props: any) => {
                                                                 {isExpand ? <CompareCollapse /> : <CompareExpand />}
                                                             </div>
                                                             <div className={styles.first_part}>
-                                                                <FormattedMessage id="analysis.area.to.grouped"/>({noGroupData.length})
+                                                                <FormattedMessage id="analysis.area.to.grouped" />({noGroupData.length})
                                                             </div>
                                                             <Divider className={styles.line} />
                                                             {noGroupReact()}
@@ -1147,7 +1147,7 @@ export default (props: any) => {
                                                                 ...getItemStyle(provided.draggableProps.style),
                                                             }
                                                         }>
-                                                        <div className={styles.create_group} style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local? 220: 110 }}>
+                                                        <div className={styles.create_group} style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local ? 220 : 110 }}>
                                                             <div onClick={_.partial(handleAddJobGroup, 'job')} className={styles.popover}>
                                                                 <PlusOutlined style={{ fontSize: 14, marginRight: 8 }} /><FormattedMessage id="analysis.create.comparison.group" />
                                                             </div>
@@ -1207,7 +1207,7 @@ export default (props: any) => {
                                 setDisabled(true)
                             }}
                         >
-                            {currentEditGroup && groupToLocale(currentEditGroup.product_version) }
+                            {currentEditGroup && groupToLocale(currentEditGroup.product_version)}
                         </div>
                     }
                     centered={true}
@@ -1268,10 +1268,10 @@ export default (props: any) => {
                     footer={null}
                     onOk={handleOk}
                     onCancel={handleJobCancel}
-                >   
+                >
                     <AllJobTable onOk={handleOk} onCancel={handleJobCancel} />
                 </Modal>
-                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id={ws_id} allGroup={groupData} />
+                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={groupData} />
             </Spin>
         </Layout>
     )

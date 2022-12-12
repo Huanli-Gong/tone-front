@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect, useCallback } from 'react'
 import { ReactComponent as IconLink } from '@/assets/svg/Report/IconLink.svg';
-import { useIntl } from 'umi'
+import { useIntl, useParams } from 'umi'
 import { Tooltip, message } from 'antd'
 import Clipboard from 'clipboard'
 
@@ -85,7 +85,6 @@ type ListProps = {
 }
 
 type ResultProps = {
-    ws_id: string | number,
     job_id: string | number,
     style?: React.CSSProperties;
 }
@@ -117,7 +116,8 @@ export const getTextByJs = (obj: any) => {
     return str;
 }
 
-export const JumpResult: React.FC<ResultProps> = ({ ws_id, job_id, style }) => {
+export const JumpResult: React.FC<ResultProps> = ({ job_id, style }) => {
+    const { ws_id } = useParams() as any
     if (job_id) {
         return (
             <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">

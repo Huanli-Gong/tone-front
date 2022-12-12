@@ -1,7 +1,7 @@
 export default {
   'job.types.manage': 'Job Type Management',
   'job.types.create': 'Create Job Type',
-  'job.types.default': 'default',
+  'job.types.default': 'Default',
   'job.types.sort': 'Sort',
 	'job.types.sort.ps1': 'Sort value must be greater than 0',
   'job.types.sort.ps2': 'Sort value must be numeric',

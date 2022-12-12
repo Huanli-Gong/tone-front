@@ -23,6 +23,9 @@ export default {
   // copy template
   'report.template.already.exists': '模板名称已存在',
   'report.template.copy': '模板复制',
+  'report.template.confirm.title': "提示",
+  'report.template.confirm.content': "测试项缺少用例，是否继续保存？",
+
   'report.original.template': '原模板名称',
   'report.new.template': '新建模板名称',
   'report.new.template.message': '仅允许包含中文、字母、数字、下划线、中划线、点，最长64个字',
@@ -119,7 +122,7 @@ export default {
   'report.name.input': '请输入报告模板名称',
   'report.description.textArea': '请输入报告描述，例如：本测试报告为XXX项目的测试报告，目的在于总结测试阶段的测试以及分析测试结果，描述系统是否符合需求（或达到XXX功能目标）。预期参考人员包括用户、测试人员、、开发人员、项目管理者、其他质量管理人员和需要阅读本报告的高层经理。',
   'report.test.background.ps': '【测试背景】【测试方法】【测试结论】【测试环境(文字描述)】需生成报告后手动填写',
-  'report.test.summary.ps': '【Summary】【测试环境(机器)】将会自动生成',  
+  'report.test.summary.ps': '【Summary】【测试环境(机器)】将会自动生成',
   'report.update.report.template': '更新报告模版',
   'report.save.report.template': '保存报告模版',
 
@@ -130,8 +133,8 @@ export default {
   'report.template.preview': '报告模板预览',
   'report.take.3.control.groups': '（以3个对比组为例）',
   'report.content.needs.to.generate': '此处内容需生成报告后手动填写',
-  'report.comparison.group1': '对比组1',  
-  'report.comparison.group2': '对比组2', 
+  'report.comparison.group1': '对比组1',
+  'report.comparison.group2': '对比组2',
   'report.content.get.from.suite': '此处内容将会自动从Test Suite中获取',
   'report.list.view': '列表视图',
   'report.chart.view': '图表视图',

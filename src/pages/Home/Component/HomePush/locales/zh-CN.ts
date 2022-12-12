@@ -1,11 +1,11 @@
 const defaultKey = 'pages.home.push'
 
-const text =  {
+const text = {
   // page1
   'system.introduction': 'T-One系统介绍',
   'brief.introduction': '测试类型众多，测试环境异常复杂，怎么能轻松自动化起来？业内首个一站式、全场景质量协作平台 T-One 能满足你的一切自动化测试需求：',
-  'li.use1': '支持多CPU混合架构（x86、arm、loogarch、risc-v）',
-  'li.use2': '支持多操作系统类型（龙蜥OS、centos、debian、ubuntu、统信、麒麟）',
+  'li.use1': '支持多CPU混合架构（x86、arm、loongarch、risc-v）',
+  'li.use2': '支持多操作系统类型（龙蜥OS、Centos、Debian、Ubuntu、统信、麒麟、其他衍生版）',
   'li.use3': '支持复杂环境测试（企业内网、网络隔离环境、弹性云虚拟机/容器、应用集群及多种混合环境）',
   // page2
   'platform': '平台架构',
@@ -65,7 +65,7 @@ const text =  {
   'custom.test.info': '自定义测试，社区开发者根据自己的需求可以在T-One平台进行测试，可以通过页面直接提交测试任务，或者使用API提交测试任务。',
   'offline.test': '离线测试',
   'offline.test.info': '离线测试，对于网络不可达的测试环境，用户可以使用离线测试模式测试并上传数据。',
-  'independent.deploy': '独立部署', 
+  'independent.deploy': '独立部署',
   'independent.deploy.info': '独立部署，外部用户也可以在自己环境下独立部署平台，测试并上传数据到Testfarm。',
   // 'test.plan': '测试计划',
   'test.plan.info': '对于周期性的，或者期望按约定计划执行的大批量测试任务，可以使用测试计划功能提前做计划，平台会按给定计划执行测试。',

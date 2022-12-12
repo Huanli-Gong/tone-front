@@ -1,61 +1,10 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
 import { Table, Drawer, Divider, Row } from 'antd'
 import { queryServerHistory } from './service'
-import { FormattedMessage } from 'umi';
+import { FormattedMessage, useIntl } from 'umi';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import styles from './style.less'
 import { isArray } from 'lodash';
-// 内网单机: 字段名匹配
-const matchFieldName = (params: string) => {
-    // 表单字段名 对应的 中文
-    const listName = [
-        { fieldName: 'template_name', text: '配置名称' },
-        { fieldName: 'release_rule', text: '用完释放' },
-        { fieldName: 'manufacturer', text: '云厂商/Ak' },
-        { fieldName: 'zone', text: 'Region/Zone' },
-        { fieldName: 'instance_type', text: '规格' },
-        { fieldName: 'storage_type', text: '数据盘' },
-        { fieldName: 'image', text: '镜像' },
-        { fieldName: 'system_disk_category', text: '系统盘' },
-        { fieldName: 'bandwidth', text: '带宽' },
-        { fieldName: 'extra_param', text: '扩展字段' },
-        { fieldName: 'image_name', text: '镜像' },
-        { fieldName: 'channel_type', text: '控制通道' },
-        { fieldName: 'ips', text: '机器' },
-        { fieldName: 'ip', text: '机器' },
-        { fieldName: 'name', text: '机器名称' },
-        { fieldName: 'state', text: '使用状态' },
-        { fieldName: 'description', text: '备注' },
-        { fieldName: 'owner', text: 'Owner' },
-        { fieldName: 'tag', text: '标签' },
-        { fieldName: 'private_ip', text: '私网IP' },
-        /** 数组值 */
-    ];
-    const listItem = listName.filter((item) => params === item.fieldName);
-    return listItem.length ? listItem[0].text : handleCategoryType(params);
-}
-
-// 遍历单元格内变更的字段名。
-const renderCell = (vals: any) => vals.map((key: any, index: number) => {
-    let val = ''
-    if(isArray(key) && !!key.length){
-        val = JSON.stringify(key)
-    } else {
-        val = String(key)
-    }
-    return (
-        <Row justify="center" key={index}>
-            <Row justify="center" className={styles.cell}>
-                {
-                    val && !!val.length ?
-                        <EllipsisPulic title={matchFieldName(val)} width={160}>{matchFieldName(val)}</EllipsisPulic>
-                        : '-'
-                }
-            </Row>
-            {index !== vals.length - 1 && <Divider className={styles.no_margin_line} />}
-        </Row>
-    )
-})
 
 const handleCategoryType = (key: any) => {
     if (key === '0') return <FormattedMessage id='operation.not.release' />
@@ -83,6 +32,7 @@ interface LogDrawerProps {
 
 export default forwardRef(
     ({ operation_object }: LogDrawerProps, ref: any) => {
+        const { formatMessage } = useIntl()
         const [dataSource, setDataSource] = useState<any>({})
         const [visible, setVisible] = useState(false)
         const [loading, setLoading] = useState(true)
@@ -104,6 +54,59 @@ export default forwardRef(
             })
         )
 
+        // 内网单机: 字段名匹配
+        const matchFieldName = (params: string) => {
+            // 表单字段名 对应的 中文
+            const listName = [
+                { fieldName: 'template_name', text: '配置名称' },
+                { fieldName: 'release_rule', text: '用完释放' },
+                { fieldName: 'manufacturer', text: '云厂商/Ak' },
+                { fieldName: 'zone', text: 'Region/Zone' },
+                { fieldName: 'instance_type', text: '规格' },
+                { fieldName: 'storage_type', text: '数据盘' },
+                { fieldName: 'image', text: '镜像' },
+                { fieldName: 'system_disk_category', text: '系统盘' },
+                { fieldName: 'bandwidth', text: '带宽' },
+                { fieldName: 'extra_param', text: '扩展字段' },
+                { fieldName: 'image_name', text: '镜像' },
+                { fieldName: 'channel_type', text: '控制通道' },
+                { fieldName: 'ips', text: '机器' },
+                { fieldName: 'ip', text: '机器' },
+                { fieldName: 'name', text: '机器名称' },
+                { fieldName: 'state', text: '使用状态' },
+                { fieldName: 'description', text: '备注' },
+                { fieldName: 'owner', text: 'Owner' },
+                { fieldName: 'tag', text: '标签' },
+                { fieldName: 'private_ip', text: '私网IP' },
+                /** 数组值 */
+            ];
+            const listItem = listName.filter((item) => params === item.fieldName);
+            return listItem.length ? formatMessage({ id: `log.listName.${listItem[0].fieldName}`}) : handleCategoryType(params); // listItem[0].text
+        }
+
+        // 遍历单元格内变更的字段名。
+        const renderCell = (vals: any) => vals.map((key: any, index: number) => {
+            let val = ''
+            if(isArray(key) && !!key.length){
+                val = JSON.stringify(key)
+            } else {
+                val = String(key)
+            }
+            return (
+                <Row justify="center" key={index}>
+                    <Row justify="center" className={styles.cell}>
+                        {
+                            val && !!val.length ?
+                                <EllipsisPulic title={matchFieldName(val)} width={160}>{matchFieldName(val)}</EllipsisPulic>
+                                : '-'
+                        }
+                    </Row>
+                    {index !== vals.length - 1 && <Divider className={styles.no_margin_line} />}
+                </Row>
+            )
+        })
+
+
         const logColumnsProps = {
             align: 'center',
             className: 'log_td',
@@ -111,38 +114,38 @@ export default forwardRef(
 
         const columns: any = [
             {
-                title: '变更含义',
+                title: <FormattedMessage id="log.columns.operation_type" />,
                 align: 'center',
                 dataIndex: 'operation_type'
             },
             {
-                title: '编辑内容',
+                title: <FormattedMessage id="log.columns.edit.content" />,
                 align: 'center',
                 children: [
                     {
-                        title: '变更字段',
+                        title: <FormattedMessage id="log.columns.fieldName" />,
                         render: (_: any) => renderCell(Object.keys(JSON.parse(_.new_values))),
                         ...logColumnsProps
                     },
                     {
-                        title: '变更前值',
+                        title: <FormattedMessage id="log.columns.old_values" />,
                         render: (_: any) => renderCell(Object.values(JSON.parse(_.old_values))),
                         ...logColumnsProps
                     },
                     {
-                        title: '变更后值',
+                        title: <FormattedMessage id="log.columns.new_values" />,
                         render: (_: any) => renderCell(Object.values(JSON.parse(_.new_values))),
                         ...logColumnsProps
                     },
                 ]
             },
             {
-                title: '操作人',
+                title: <FormattedMessage id="log.columns.creator" />,
                 align: 'center',
                 dataIndex: 'creator'
             },
             {
-                title: '操作时间',
+                title: <FormattedMessage id="log.columns.gmt_created" />,
                 align: 'center',
                 dataIndex: 'gmt_created'
             },
@@ -159,7 +162,7 @@ export default forwardRef(
                 keyboard={false}
                 visible={visible}
                 forceRender={true}
-                title="操作日志"
+                title={<FormattedMessage id="log.operation.title" />} // "操作日志"
                 onClose={handleClose}
                 width="910"
             >

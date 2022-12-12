@@ -1,78 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { queryBaelineList, queryProductList } from './services'
 import styles from './index.less'
 import CommonPagination from '@/components/CommonPagination';
 import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash'
-import { Table,message, Select, Divider,Space,Button } from 'antd';
-import {resizeDocumentHeight} from './CommonMethod'
+import { Table, Select, Divider, Space, Button } from 'antd';
+import { resizeDocumentHeight } from './CommonMethod'
 import { requestCodeMessage } from '@/utils/utils';
 
 const { Option } = Select;
 const defaultResult = {
-                all_job: 0,
-                data: [],
-                fail_job: 0,
-                my_job: 0,
-                pending_job: 0,
-                running_job: 0,
-                stop_job: 0,
-                success_job: 0,
-            }
-export default ( props : any ) => {
+    all_job: 0,
+    data: [],
+    fail_job: 0,
+    my_job: 0,
+    pending_job: 0,
+    running_job: 0,
+    stop_job: 0,
+    success_job: 0,
+}
+export default (props: any) => {
+    const { ws_id } = useParams() as any
     const { formatMessage } = useIntl()
-    const {height: layoutHeight} = useClientSize()
+    const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const scollMaxHeight = maxHeight - 339 > 430 ? 430 : maxHeight - 339
     resizeDocumentHeight(scollMaxHeight)
-    const { ws_id, onCancel, onOk,currentGroup} = props
-    const defaultVersion = currentGroup && _.get(currentGroup,'members[0].version')
-    const selectedId:any = []
+    const { onCancel, onOk, currentGroup } = props
+    const defaultVersion = currentGroup && _.get(currentGroup, 'members[0].version')
+    const selectedId: any = []
     if (currentGroup && _.isArray(currentGroup.members)) {
         currentGroup.members.forEach((value: any) => selectedId.push(value.id))
     }
-    const page_default_params: any = { page_num: 1, page_size: 10, ws_id, filter_version: defaultVersion || '',filter_id: selectedId.join(',')}
+    const page_default_params: any = { page_num: 1, page_size: 10, ws_id, filter_version: defaultVersion || '', filter_id: selectedId.join(',') }
 
     const [dataSource, setDataSource] = useState(defaultResult)
-    const [loading,setLoading] = useState(false)
-    const [params,setParams] = useState(page_default_params)
-    const [pruductVersion,setPruductVersion] = useState(defaultVersion || '')
-    const [allVersion,setAllVersion] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [params, setParams] = useState(page_default_params)
+    const [pruductVersion, setPruductVersion] = useState(defaultVersion || '')
+    const [allVersion, setAllVersion] = useState([])
     let [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     let [selectRowData, setSelectRowData] = useState<any>([])
 
-    const getBaseList = async (params:any) => {
+    const getBaseList = async (params: any) => {
         let data = await queryBaelineList(params)
         defaultOption(data)
     }
     const getProductList = async () => {
-        let result = await queryProductList({ws_id})
+        let result = await queryProductList({ ws_id })
         if (result.code === 200) {
-            let data = result.data.filter((val:any) => val.trim())
-            data = data.map((item:any,index:number) => ({label: index,value:item}))
+            let data = result.data.filter((val: any) => val.trim())
+            data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
-            if(data.length) setPruductVersion(data[0].value)
-            
+            if (data.length) setPruductVersion(data[0].value)
+
         } else {
-            requestCodeMessage( result.code , result.msg )
+            requestCodeMessage(result.code, result.msg)
         }
         defaultOption(result)
     }
 
     useEffect(() => {
         setLoading(true)
-        if(pruductVersion) {
-            getBaseList(params) 
+        if (pruductVersion) {
+            getBaseList(params)
         } else {
             getProductList()
         }
-             
+
     }, [params])
     useEffect(() => {
         let paramsCopy = _.cloneDeep(params)
-        paramsCopy = {...paramsCopy,ws_id}
+        paramsCopy = { ...paramsCopy, ws_id }
         setParams(paramsCopy)
     }, [ws_id])
 
@@ -96,13 +97,13 @@ export default ( props : any ) => {
             setDataSource(ret)
         } else {
             setDataSource(defaultResult)
-            requestCodeMessage( ret.code , ret.msg )
+            requestCodeMessage(ret.code, ret.msg)
         }
     }
-    const onChange = (value:any) => {
+    const onChange = (value: any) => {
         setPruductVersion(value)
         setSelectedRowKeys([]);
-        setSelectRowData([]); 
+        setSelectRowData([]);
     }
 
     const columns = [
@@ -113,27 +114,27 @@ export default ( props : any ) => {
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
-            width:100,
+            width: 100,
             dataIndex: 'test_type',
-            render:(record:any) => {
-                return  record === 'performance' ? <FormattedMessage id="header.test_type.performance" />: <FormattedMessage id="header.test_type.functional" />
+            render: (record: any) => {
+                return record === 'performance' ? <FormattedMessage id="header.test_type.performance" /> : <FormattedMessage id="header.test_type.functional" />
             }
         },
         {
             title: <FormattedMessage id="analysis.creator_name" />,
-            width:80,
+            width: 80,
             dataIndex: 'creator_name',
-            render:(record:any) => {
-                return  record || '-'
+            render: (record: any) => {
+                return record || '-'
             }
         },
         {
             title: <FormattedMessage id="analysis.gmt_created" />,
-            width:180,
+            width: 180,
             dataIndex: 'gmt_created',
             ellipsis: true,
-            render:(record:any) => {
-                return  record || '-'
+            render: (record: any) => {
+                return record || '-'
             }
         },
     ]
@@ -141,36 +142,36 @@ export default ( props : any ) => {
         // 去掉未选组的job 开始
         let arrKeys = _.cloneDeep(selectedRowKeys)
         let arrData = _.cloneDeep(selectRowData)
-        if(selected) {
-            arrKeys = [...arrKeys,record.id]
-            arrData = [...arrData,record]
+        if (selected) {
+            arrKeys = [...arrKeys, record.id]
+            arrData = [...arrData, record]
         } else {
-            arrKeys = arrKeys.filter((keys:any) => Number(keys) !== Number(record.id))
-            arrData = arrData.filter((obj:any) => obj && Number(obj.id) !== Number(record.id))
+            arrKeys = arrKeys.filter((keys: any) => Number(keys) !== Number(record.id))
+            arrData = arrData.filter((obj: any) => obj && Number(obj.id) !== Number(record.id))
         }
         setSelectedRowKeys(arrKeys);
-        setSelectRowData(arrData);  
+        setSelectRowData(arrData);
     }
-    const handleSelectCancle = () =>{
+    const handleSelectCancle = () => {
         setSelectedRowKeys([]);
-        setSelectRowData([]);  
+        setSelectRowData([]);
     }
-    const handleCancle = () =>{
+    const handleCancle = () => {
         onCancel()
     }
-    const handleOk = () =>{
+    const handleOk = () => {
         const groupData = _.cloneDeep(currentGroup)
-        groupData.members = _.isArray(groupData.members) ?  [...groupData.members,...selectRowData] : selectRowData
+        groupData.members = _.isArray(groupData.members) ? [...groupData.members, ...selectRowData] : selectRowData
         onOk(groupData)
     }
-    const allSelectFn = (allData:any) => {
+    const allSelectFn = (allData: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
         arr.forEach((item: any) => keysArr.push(item.id))
-        setSelectedRowKeys([...selectedRowKeys,...keysArr])
-        setSelectRowData([...selectRowData,...arr])
+        setSelectedRowKeys([...selectedRowKeys, ...keysArr])
+        setSelectRowData([...selectRowData, ...arr])
     }
-    const cancleAllSelectFn = (allData:any) => {
+    const cancleAllSelectFn = (allData: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
         arr.forEach((item: any) => keysArr.push(item.id))
@@ -203,7 +204,7 @@ export default ( props : any ) => {
                 <Select
                     showSearch
                     style={{ width: 'calc(100% - 70px)' }}
-                    placeholder={formatMessage({id: 'analysis.version.placeholder'})}
+                    placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
                     defaultValue={pruductVersion}
                     value={pruductVersion}
                     optionFilterProp="children"
@@ -214,22 +215,22 @@ export default ( props : any ) => {
                     }
                 >
                     {
-                        allVersion.map((item:any) => <Option value={item.value} key={item.label}>{item.value}</Option>)
+                        allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)
                     }
                 </Select>
                 <div className={styles.job_text}><FormattedMessage id="analysis.baseline.table" /></div>
                 <Divider className={styles.line} />
             </div>
             <Scrollbars style={scroll}>
-            <Table
-                rowSelection={rowSelection}
-                rowKey='id'
-                columns={columns}
-                loading={loading}
-                dataSource={_.isArray(dataSource.data) ? dataSource.data : []}
-                pagination={false}
-                size="small"
-            />
+                <Table
+                    rowSelection={rowSelection}
+                    rowKey='id'
+                    columns={columns}
+                    loading={loading}
+                    dataSource={_.isArray(dataSource.data) ? dataSource.data : []}
+                    pagination={false}
+                    size="small"
+                />
             </Scrollbars>
             <CommonPagination
                 total={dataSource.total}

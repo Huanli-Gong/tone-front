@@ -878,7 +878,10 @@ const TestJob: React.FC<any> = (props) => {
                             onClick={
                                 () => {
                                     if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
-                                    else history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                                    else access.IsWsSetting() ? 
+                                            history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                                            : 
+                                            history.push('./')
                                 }
                             }
                         >

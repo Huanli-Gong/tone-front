@@ -2,11 +2,10 @@ import React from 'react';
 import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layout';
 
 import { notification, ConfigProvider, version } from 'antd';
-import { history, RequestConfig, useModel } from 'umi';
+import { history, RequestConfig } from 'umi';
 import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
-import { deepObject } from '@/utils/utils';
 import { marked } from "marked"
 
 import 'animate.css';
@@ -30,7 +29,6 @@ marked.setOptions({
 });
 
 const ignoreRoutePath = ['/500', '/401', '/404', BUILD_APP_ENV === 'opensource' && '/login'].filter(Boolean)
-
 const wsReg = /^\/ws\/([a-zA-Z0-9]{8})\/.*/
 
 const AD_WS_ID = ""
@@ -53,14 +51,14 @@ export async function getInitialState(): Promise<any> {
         const matchArr = pathname.match(wsReg)
         const ws_id = matchArr ? matchArr[1] : undefined
 
-        const { data } = await person_auth({ ws_id })
-        const accessList: any = deepObject(data)
-        const { ws_is_exist, ws_is_public, user_id, ws_role_title, sys_role_title } = accessList
-
-        if (!accessList) {
-            history.push('/500')
+        const { data, code } = await person_auth(ws_id && { ws_id })
+        if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
+            history.push(`/500?page=${location.href}`)
             return initialState
         }
+
+        const { ws_is_exist, ws_is_public, user_id, ws_role_title, sys_role_title } = data
+
         if (isWs) {
             // 这个ws是否存在
             if (!ws_is_exist) {
@@ -83,15 +81,17 @@ export async function getInitialState(): Promise<any> {
                 return initialState
             }
 
-            // enterWorkspaceHistroy({ ws_id })  //
+            return {
+                ...initialState,
+                authList: { ...data, ws_id },
+                fetchHistory: false
+            }
         }
 
         return {
             ...initialState,
-            authList: {
-                ws_id,
-                ...accessList,
-            },
+            fetchHistory: true,
+            authList: data,
         }
     }
 
@@ -153,7 +153,7 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
     if (response) {
         const { status, statusText, url } = response
         if (status >= 500) {
-            history.push(`/500`)
+            history.push(`/500?page=${location.href}`)
         }
         else if (status === 401) {
             const { pathname } = location

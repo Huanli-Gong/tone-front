@@ -1,15 +1,14 @@
-import { Space , Row } from 'antd';
+import { Space } from 'antd';
 import React from 'react'
 import styled from 'styled-components'
-import moment from 'moment'
 import _ from 'lodash'
 interface StateTagprop {
-    color : string;
+    color: string;
 }
 
 const StateTag = styled.span<StateTagprop>`
     color:${props => props.color};
-    background : ${props => hex2rgb( props.color )};
+    background : ${props => hex2rgb(props.color)};
     height: 24px;
     width: 64px;
     font-size: 14px;
@@ -18,7 +17,7 @@ const StateTag = styled.span<StateTagprop>`
     border-radius: 12px;
     padding:0 7px;
 `
-function hex2rgb( a: string ) {
+function hex2rgb(a: string) {
     if (a == "") {
         return ""
     }
@@ -39,36 +38,47 @@ export const failColr = '#C84C5A'
 export const complateColr = '#39C15B'
 export const runningColr = '#649FF6'
 
-export const StateTagRender : React.FC<any>= ( { state } ) => {
-    switch ( state ) {
-        case 'Running':  return <StateTag color={ failColr } >Running</StateTag>
-        case 'Complete':  return <StateTag color={ complateColr } >Complete</StateTag>
-        case 'Fail':  return <StateTag color={ runningColr } >Fail</StateTag>
-        default : return <>-</>
+export const StateTagRender: React.FC<any> = ({ state }) => {
+    switch (state) {
+        case 'Running': return <StateTag color={failColr} >Running</StateTag>
+        case 'Complete': return <StateTag color={complateColr} >Complete</StateTag>
+        case 'Fail': return <StateTag color={runningColr} >Fail</StateTag>
+        default: return <>-</>
     }
     return <>-</>
 }
 
-export const RenderCountTags = ( { count , complate , fail } : any ) => (
+export const RenderCountTags = ({ count, complate, fail }: any) => (
     <Space>
-        <StateTag color={ failColr } >{ count || '-' }</StateTag>
-        <StateTag color={ complateColr } >{ complate || '-'}</StateTag>
-        <StateTag color={ runningColr } >{ fail || '-'}</StateTag>
+        <StateTag color={failColr} >{count || '-'}</StateTag>
+        <StateTag color={complateColr} >{complate || '-'}</StateTag>
+        <StateTag color={runningColr} >{fail || '-'}</StateTag>
     </Space>
 )
 
-const DataRowSpace = styled( Space )`
+const DataRowSpace = styled(Space)`
     span { font-size : 12px; }
 `
-export const RenderDataRow = ( props : any ) => (
+export const RenderDataRow = (props: any) => (
     <DataRowSpace>
         <div>
-            <span>触发次数：</span><span style={{ marginRight: 8, color: runningColr }}>{_.get(props,'itemData.trigger_count')}</span>
-            <span>成功：</span><span style={{ marginRight: 8, color: complateColr }}>{_.get(props,'itemData.success_count')}</span>
-            <span>失败：</span><span style={{ marginRight: 8, color: failColr }}>{_.get(props,'itemData.fail_count')}</span>
+            <span>触发次数：</span><span style={{ marginRight: 8, color: runningColr }}>{_.get(props, 'itemData.trigger_count')}</span>
+            <span>成功：</span><span style={{ marginRight: 8, color: complateColr }}>{_.get(props, 'itemData.success_count')}</span>
+            <span>失败：</span><span style={{ marginRight: 8, color: failColr }}>{_.get(props, 'itemData.fail_count')}</span>
         </div>
-        <span>下次触发时间：</span>
-        {/* <span>{moment().format('YYYY-MM-DD hh:mm:ss')}</span> */}
-        <span>{_.get(props,'itemData.next_time') || '-'}</span>
+        {
+            _.get(props, 'itemData.last_time') &&
+            <>
+                <span>最近一次触发时间：</span>
+                <span>{_.get(props, 'itemData.last_time') || '-'}</span>
+            </>
+        }
+        {
+            _.get(props, 'itemData.next_time') &&
+            <>
+                <span>下次触发时间：</span>
+                <span>{_.get(props, 'itemData.next_time') || '-'}</span>
+            </>
+        }
     </DataRowSpace>
 )

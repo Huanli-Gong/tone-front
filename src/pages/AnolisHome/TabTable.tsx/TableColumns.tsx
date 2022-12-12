@@ -5,11 +5,9 @@ import styled from "styled-components"
 import { history, useModel, useIntl, useAccess } from "umi"
 import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 
-import { enterWorkspaceHistroy } from '@/services/Workspace'
-
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
-import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace } from '@/utils/utils'
 
 const TableCellColumn = styled.div`
     background-color: #FFFFFF;
@@ -70,55 +68,28 @@ const Desc = styled(Typography.Text)`
     width: calc(100% - ${intrWidth} - ${ownerWidth} - ${OperateWidth});
 `
 
-export const getEnterWorkspaceState = async (record: any, user_id: any) => {
-    const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: record.id })
-    if (code === 200) {
-        const path = first_entry && record.creator === user_id ?
-            `/ws/${record.id}/workspace/initSuccess` :
-            jumpWorkspace(record.id)
-
-        return path
-    }
-    else requestCodeMessage(code, msg)
-    history.push('/500')
-    return ''
-}
-
 export const TableRow: React.FC<Record<string, any>> = (props) => {
     const { show_name, is_public, description, avatar, owner_name, id, is_member } = props
 
     const access = useAccess()
     const intl = useIntl()
     const { initialState } = useModel("@@initialState")
-    const { user_id, login_url } = initialState?.authList || {}
+    const { user_id } = initialState?.authList || {}
 
     const ref = React.useRef<any>(null)
 
     const handleJumpWs = async () => {
-        const path: string = await getEnterWorkspaceState(props, user_id)
-        path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
+        history.push(jumpWorkspace(id))
     }
-
-    /* const handleLogin = () => {
-        if (BUILD_APP_ENV === 'openanolis') {
-            return window.location.href = login_url
-        }
-        return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
-    } */
 
     const renderOperationButton = () => {
         /* 公开ws 未登录跳登录 */
         //私密ws 未登录跳转登录
         /* 未登录，私密不显示按钮 */
-        if (!user_id && !is_public) {
-            return <></>
-            /* return (
-                <Button type="primary" onClick={handleLogin}>
-                    {
-                        intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })
-                    }
-                </Button>
-            ) */
+
+        if (!is_public) {
+            if (!user_id) return <></>
+            if (BUILD_APP_ENV === "openanolis" && !is_member) return <></>
         }
 
         if (access.IsAdmin() || is_member || is_public)
@@ -127,15 +98,6 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
                     {intl.formatMessage({ id: `pages.anolis_home.button.enter` })}
                 </Button>
             )
-
-        /* else {
-            if (is_public)
-                return (
-                    <Button type="primary" onClick={handleJumpWs}>
-                        {intl.formatMessage({ id: `pages.anolis_home.button.tourist_test` })}
-                    </Button>
-                )
-        } */
 
         return (
             <ApplyJoinWorkspace
@@ -148,10 +110,10 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
     }
 
     const handleClick = () => {
-        if (BUILD_APP_ENV) {
-            if (!user_id && !is_public) return
+        if (!is_public) {
+            if (!user_id) return <></>
+            if (BUILD_APP_ENV === "openanolis" && !is_member) return <></>
         }
-        // if (!user_id && !is_public) return handleLogin()
         if (access.IsAdmin() || is_member || is_public) return handleJumpWs()
         return ref.current?.show()
     }
@@ -205,12 +167,18 @@ const HeaderRow = styled.div`
 `
 
 export const TableHeader: React.FC = () => {
-
+    const intl = useIntl()
     return (
         <HeaderRow>
-            <Intr >Workspace名称</Intr>
-            <Owner >所有者</Owner>
-            <Desc >简介</Desc>
+            <Intr >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_name` })}
+            </Intr>
+            <Owner >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_owner` })}
+            </Owner>
+            <Desc >
+                {intl.formatMessage({ id: `pages.anolis_home.column.ws_desc` })}
+            </Desc>
         </HeaderRow>
     )
 }

@@ -5,6 +5,7 @@ export default {
   'plan.table.enable': 'Enable',
   'plan.table.creator_name': 'Created By',
   'plan.table.gmt_created': 'Creation Time',
+  'plan.table.gmt_modified': 'Modify Time',
 
   'plan.configuration': 'Plan Configuration',
   'plan.edit.configuration': 'Edit',
@@ -162,6 +163,7 @@ export default {
   'plan.success': 'Success',
   'plan.fail': 'Fail',
   'plan.next_time': 'Next trigger time',
+  'plan.last_time': 'Latest trigger time',
   //
   'plan.build.stage': 'Build Stage',
   'plan.build.detail': 'Build Details',

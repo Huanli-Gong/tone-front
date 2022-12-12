@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Avatar, Spin, Space, message } from 'antd'
+import { Avatar, Spin, Space } from 'antd'
 import styles from './index.less'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
@@ -7,9 +7,8 @@ import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
-import { enterWorkspaceHistroy } from '@/services/Workspace'
 import { history, useIntl, FormattedMessage } from 'umi'
-import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace } from '@/utils/utils'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -47,16 +46,7 @@ export default (props: any) => {
     }
 
     const handleEnterWs = async (id: any, creator: number) => {
-        const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: id })
-        if (code === 200) {
-            if (first_entry && creator === userId) {
-                history.push(`/ws/${id}/workspace/initSuccess`, { fetchWorkspaceHistoryRecord: true })
-            } else {
-                // history.push(`/ws/${id}/dashboard`)
-                history.push(jumpWorkspace(id), { fetchWorkspaceHistoryRecord: true })
-            }
-        }
-        else requestCodeMessage(code, msg)
+        history.push(jumpWorkspace(id))
     }
 
     const handleWs_Role = (title_type: any) => {
