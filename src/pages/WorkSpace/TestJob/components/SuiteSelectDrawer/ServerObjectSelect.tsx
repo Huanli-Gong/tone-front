@@ -1,9 +1,9 @@
 import { Select, Space, Badge, Tooltip, Typography, Form } from 'antd'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';
 import { DrawerProvider } from './Provider'
 import { RenderSelectItems } from '../untils'
-import { useParams, useIntl, FormattedMessage } from 'umi'
+import { useParams, useIntl } from 'umi'
 
 const ServerObjectSelect = (props: any) => {
     const { formatMessage } = useIntl()
@@ -66,6 +66,7 @@ const ServerObjectSelect = (props: any) => {
     }
 
     const handleServerPopupScroll = ({ target }: any) => { //server
+        if (server_type !== 'aligroup') return
         const { clientHeight, scrollHeight, scrollTop } = target
         if (clientHeight + scrollTop === scrollHeight) {
             const num = pageNum + 1
@@ -77,9 +78,9 @@ const ServerObjectSelect = (props: any) => {
     const switchServerMessage = useMemo(
         () => {
             switch (serverObjectType) {
-                case 'server_object_id': return formatMessage({id: 'select.suite.server_object_id.message'});
-                case 'instance': return formatMessage({id: 'select.suite.instance.message'});
-                case 'setting': return formatMessage({id: 'select.suite.setting.message'});
+                case 'server_object_id': return formatMessage({ id: 'select.suite.server_object_id.message' });
+                case 'instance': return formatMessage({ id: 'select.suite.instance.message' });
+                case 'setting': return formatMessage({ id: 'select.suite.setting.message' });
                 default: return ''
             }
         }, [serverObjectType]

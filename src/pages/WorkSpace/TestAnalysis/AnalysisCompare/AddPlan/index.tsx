@@ -66,8 +66,19 @@ export const RenderDataRow = (props: any) => (
             <span>成功：</span><span style={{ marginRight: 8, color: complateColr }}>{_.get(props, 'itemData.success_count')}</span>
             <span>失败：</span><span style={{ marginRight: 8, color: failColr }}>{_.get(props, 'itemData.fail_count')}</span>
         </div>
-        <span>下次触发时间：</span>
-        {/* <span>{moment().format('YYYY-MM-DD hh:mm:ss')}</span> */}
-        <span>{_.get(props, 'itemData.next_time') || '-'}</span>
+        {
+            _.get(props, 'itemData.last_time') &&
+            <>
+                <span>最近一次触发时间：</span>
+                <span>{_.get(props, 'itemData.last_time') || '-'}</span>
+            </>
+        }
+        {
+            _.get(props, 'itemData.next_time') &&
+            <>
+                <span>下次触发时间：</span>
+                <span>{_.get(props, 'itemData.next_time') || '-'}</span>
+            </>
+        }
     </DataRowSpace>
 )

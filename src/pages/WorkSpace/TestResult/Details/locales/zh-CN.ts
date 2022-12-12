@@ -1,11 +1,11 @@
 const defaultKey = 'ws.result.details'
 
-const text =  {
+const text = {
   'test.result': '测试结果',
   'result.details': '结果详情',
   'provider_name': '机器类型',
   'test_type': '测试类型',
-  'job_state': 'Job状态', 
+  'job_state': 'Job状态',
   'job_type': 'Job类型',
   'creator_name': '创建人',
   'gmt_created': '创建时间',
@@ -19,7 +19,7 @@ const text =  {
   'test_summary': '备注',
   'test.result.view.log.file': '测试结果详情请查看日志文件',
   'baseline.description': '基线说明',
-  'baseline.description.ps': '在这里可以记录对问题的一些官方的比较正式的分析说明，基线说明和基线关联',  
+  'baseline.description.ps': '在这里可以记录对问题的一些官方的比较正式的分析说明，基线说明和基线关联',
   'result.remarks': '结果备注',
   'result.remarks.ps': '在这里可以记录对此次结果的说明，和对基线问题一些修正意见，结果备注和当前结果关联',
   'rerun': '重跑',
@@ -41,7 +41,7 @@ const text =  {
   'machine.config.error': '集群机器配置错误',
   'machine.occupied.by.job': '机器被Job占用',
   'occupy.job': '占用Job',
-  
+
   // Tab
   'tab.testResult': '测试结果',
   'tab.testProgress': '执行过程',
@@ -114,7 +114,7 @@ const text =  {
 
 
   // ProcessTable
-  'build.kernel': 'Build内核',  
+  'build.kernel': 'Build内核',
   'package': '包',
   'name': '名称',
   'state': '状态',
@@ -137,7 +137,7 @@ const text =  {
   'stop.suite': '停止Suite',
   'skip.suite': '跳过suite',
   'restart.server': '重启机器',
-  'execute.script': '执行脚本',  
+  'execute.script': '执行脚本',
   'view.log': '查看日志',
   'log': '日志',
   'suspension': '中止',
@@ -146,13 +146,14 @@ const text =  {
   'monitor_link': '链接',
   'failed.info': '失败信息',
 
+  'job.confirm.stop': "停止Job运行后将无法恢复运行，确定要停止吗？",
 
   // TestSettingTable
   'env.prepare.config': '环境准备配置',
   //----后端返的字段----
   'reclone': '重装机器',
   'kernel_install': '重装内核',
-  'reboot': '重启机器',  
+  'reboot': '重启机器',
   'global_variable': '全局变量',
   'rpm': '安装RPM',
   'script': '执行脚本',
@@ -173,7 +174,7 @@ const text =  {
   'script.add': '+ 添加执行脚本',
   'please.enter.script': '请输入脚本内容',
 
-  'test.cases.and.config': '测试用例及机器配置',  
+  'test.cases.and.config': '测试用例及机器配置',
   'restart': '重启',
   'setup_info': '脚本',
   'restart.before': '重启前',

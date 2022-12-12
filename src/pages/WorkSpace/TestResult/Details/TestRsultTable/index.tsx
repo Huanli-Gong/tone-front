@@ -244,7 +244,7 @@ const TestResultTable: React.FC<any> = (props) => {
         ].filter(Boolean)
         
     },[testType, access, locale, filterData])
-console.log(columns)
+
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, job_id })
     }

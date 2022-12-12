@@ -1,10 +1,5 @@
-import React from 'react'
 import styled from 'styled-components'
-
-import { marked } from 'marked';
-
-import 'highlight.js/styles/default.css'
-import 'highlight.js/styles/github.css'
+import { marked } from "marked"
 
 const Viewer = styled.div`
     background:#fff!important;
@@ -30,29 +25,12 @@ const Viewer = styled.div`
     code, pre { background-color: #f9f9f9; }
     pre { padding : 8px }
 `
-marked.setOptions({
-    renderer: new marked.Renderer(),
-    highlight: function (code, lang) {
-        const hljs = require('highlight.js');
-        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-        return hljs.highlight(code, { language }).value;
-    },
-    langPrefix: 'hljs language-', // highlight.js css expects a top-level 'hljs' class.
-    pedantic: false,
-    gfm: true,
-    breaks: false,
-    sanitize: false,
-    smartLists: true,
-    smartypants: false,
-    xhtml: false
-});
 
 const CodeViewer = (props: any) => {
     const { code } = props
-    if (!code) return <span></span>
+    if (!code) return <></>
     return (
         <Viewer
-            className="hljs"
             dangerouslySetInnerHTML={{ __html: marked.parse(code) }}
         />
     )

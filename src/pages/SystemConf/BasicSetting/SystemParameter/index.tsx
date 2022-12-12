@@ -6,7 +6,6 @@ import { deleteConfig, queryConfigList } from '../services'
 import { getRadioFilter, getSearchFilter, getUserFilter } from '@/components/TableFilters'
 import CommonPagination from '@/components/CommonPagination'
 import AddConfig from './AddConfig'
-import { request } from 'express'
 import { requestCodeMessage } from '@/utils/utils'
 
 const SystemParameter = (props: any, ref: any) => {
@@ -85,11 +84,17 @@ const SystemParameter = (props: any, ref: any) => {
     }, {
         dataIndex: 'creator_name',
         title: <FormattedMessage id="basic.creator" />,
-        ...getUserFilter(params, setParams, 'creator')
+        ...getUserFilter(params, setParams, 'creator'),
+        render(text: string) {
+            return <>{text || "-"}</>
+        }
     }, {
         dataIndex: 'update_user',
         title: <FormattedMessage id="basic.update_user" />,
-        ...getUserFilter(params, setParams, 'update_user')
+        ...getUserFilter(params, setParams, 'update_user'),
+        render(text: string) {
+            return <>{text || "-"}</>
+        }
     }, {
         dataIndex: 'description',
         title: <FormattedMessage id="basic.desc" />,
@@ -98,7 +103,7 @@ const SystemParameter = (props: any, ref: any) => {
         },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
-                {_}
+                {_ || "-"}
             </Tooltip>
         ),
     }, {

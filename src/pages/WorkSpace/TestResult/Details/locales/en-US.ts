@@ -146,6 +146,7 @@ const text = {
   'monitor_link': 'Link',
   'failed.info': 'Failed Info',
 
+  'job.confirm.stop': "The Job cannot be resumed after it is stopped. Are you sure to stop it?",
 
   // TestSettingTable
   'env.prepare.config': 'Environmental Preparation Configurations',
