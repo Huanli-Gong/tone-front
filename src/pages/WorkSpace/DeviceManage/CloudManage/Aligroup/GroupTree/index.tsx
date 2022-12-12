@@ -53,7 +53,7 @@ const GroupTree: React.FC<any> = (props) => {
         const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
         const res = await editGroupMachine(row.machineId, query);
         if (res.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) );
+            message.success(formatMessage({ id: 'operation.success' }));
             getList();
         } else {
             requestCodeMessage(res.code, res.msg)
@@ -62,7 +62,7 @@ const GroupTree: React.FC<any> = (props) => {
 
     const columns = useMemo(() => {
         return [{
-            title: !!is_instance ? <FormattedMessage id="device.server.instance"/> : <FormattedMessage id="device.server.config"/>,
+            title: !!is_instance ? <FormattedMessage id="device.server.instance" /> : <FormattedMessage id="device.server.config" />,
             dataIndex: 'name',
             width: 160,
             fixed: 'left',
@@ -100,7 +100,7 @@ const GroupTree: React.FC<any> = (props) => {
         },
         !BUILD_APP_ENV && !!is_instance &&
         {
-            title: <FormattedMessage id="device.pub_ip"/>,
+            title: <FormattedMessage id="device.pub_ip" />,
             width: 130,
             ellipsis: {
                 showTitle: false,
@@ -108,7 +108,7 @@ const GroupTree: React.FC<any> = (props) => {
             dataIndex: 'pub_ip',
         },
         {
-            title: <FormattedMessage id="device.manufacturer/ak"/>,
+            title: <FormattedMessage id="device.manufacturer/ak" />,
             dataIndex: 'manufacturer',
             width: 120,
             ellipsis: {
@@ -126,7 +126,7 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: number, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
         },
         {
-            title: <FormattedMessage id="device.instance_type"/>,
+            title: <FormattedMessage id="device.instance_type" />,
             dataIndex: 'instance_type',
             width: 120,
             ellipsis: {
@@ -135,7 +135,7 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: number, row: any) => <EllipsisPulic title={row.instance_type} />
         },
         {
-            title: <FormattedMessage id="device.image"/>,
+            title: <FormattedMessage id="device.image" />,
             width: 120,
             ellipsis: {
                 showTitle: false,
@@ -144,18 +144,18 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: number, row: any) => <EllipsisPulic title={row.image}>{row.image_name}</EllipsisPulic>
         },
         {
-            title: <FormattedMessage id="device.bandwidth"/>,
+            title: <FormattedMessage id="device.bandwidth" />,
             width: 100,
             dataIndex: 'bandwidth',
         },
         {
-            title: <FormattedMessage id="device.storage_type"/>,
+            title: <FormattedMessage id="device.storage_type" />,
             dataIndex: 'storage_type',
             ellipsis: {
                 showTitle: false,
             },
             width: 100,
-            render: (_: number, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage}/>
+            render: (_: number, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage} />
         },
         // {
         //     title: '用完释放',
@@ -164,8 +164,8 @@ const GroupTree: React.FC<any> = (props) => {
         //     render: (_: number, row: any) => <div style={{ width: 100 }}>{row.release_rule ? '是' : '否'}</div>
         // },
         {
-            title: <FormattedMessage id="device.console_conf"/>,
-            width:  enLocale ? 170: 100,
+            title: <FormattedMessage id="device.console_conf" />,
+            width: enLocale ? 170 : 100,
             ellipsis: {
                 showTitle: false,
             },
@@ -173,8 +173,8 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: number, row: any) => <EllipsisPulic title={row.console_conf} />
         },
         {
-            title: <FormattedMessage id="device.private_ip"/>,
-            width: 100,
+            title: <FormattedMessage id="device.private_ip" />,
+            width: 160,
             ellipsis: {
                 showTitle: false,
             },
@@ -182,7 +182,7 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: number, row: any) => <EllipsisPulic title={row.private_ip} />
         },
         {
-            title: <FormattedMessage id="device.channel_type"/>,
+            title: <FormattedMessage id="device.channel_type" />,
             dataIndex: 'channel_type',
             width: 100,
             ellipsis: {
@@ -200,9 +200,9 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: any, row: any) => <EllipsisPulic title={row.owner_name} />
         },
         {
-            title: <FormattedMessage id="device.local.server"/>,
+            title: <FormattedMessage id="device.local.server" />,
             dataIndex: 'role',
-            width: 140,
+            width: 120,
             align: 'center',
             render: (text: number, row: any) => <span>
                 {row.role === "local" ?
@@ -212,7 +212,7 @@ const GroupTree: React.FC<any> = (props) => {
             </span>
         },
         {
-            title: <FormattedMessage id="device.baseline_server"/>,
+            title: <FormattedMessage id="device.baseline_server" />,
             dataIndex: 'baseline_server',
             width: 140, // enLocale ? 170: 120,
             align: 'center',
@@ -224,39 +224,39 @@ const GroupTree: React.FC<any> = (props) => {
             </span>
         },
         {
-            title: <FormattedMessage id="device.install.kernel"/>,
+            title: <FormattedMessage id="device.install.kernel" />,
             dataIndex: 'kernel_install',
             width: 120,
-            render: (text: number, row: any) => <span>{text ? <FormattedMessage id="operation.yes"/>: <FormattedMessage id="operation.no"/>}</span>
+            render: (text: number, row: any) => <span>{text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />}</span>
         },
         {
-            title: <FormattedMessage id="device.var_name"/>,
+            title: <FormattedMessage id="device.var_name" />,
             dataIndex: 'var_name',
-            width: enLocale ? 170: 110,
+            width: enLocale ? 170 : 110,
             ellipsis: {
                 showTitle: false,
             },
         },
         !!is_instance &&
         {
-            title: <FormattedMessage id="device.server.state"/>,
+            title: <FormattedMessage id="device.server.state" />,
             width: 120,
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id,'not_real')
+            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         !!is_instance &&
         {
-            title: <FormattedMessage id="device.real_state"/>,
-            width: 120,
+            title: <FormattedMessage id="device.real_state" />,
+            width: 160,
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id,'real')
+            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
-            title: <FormattedMessage id="device.description"/>,
+            title: <FormattedMessage id="device.description" />,
             width: 120,
             ellipsis: {
                 showTitle: false,
@@ -265,7 +265,7 @@ const GroupTree: React.FC<any> = (props) => {
             render: (_: number, row: any) => <EllipsisPulic title={row.description} width={100} />
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
             valueType: 'option',
             dataIndex: 'id',
@@ -276,41 +276,41 @@ const GroupTree: React.FC<any> = (props) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state"/></Button> }
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
+                                {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
+                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
                             </Space>
                         }
                     >
                         <Space>
-                            {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state"/></Button>}
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }}><FormattedMessage id="operation.edit"/></Button>
+                            {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state" /></Button>}
+                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }}><FormattedMessage id="operation.edit" /></Button>
                             <Popconfirm
-                                title={<div style={{ color: 'red' }}><FormattedMessage id="delete.prompt"/></div>}
+                                title={<div style={{ color: 'red' }}><FormattedMessage id="delete.prompt" /></div>}
                                 placement="topRight"
-                                okText={<FormattedMessage id="operation.cancel"/>}
-                                cancelText={<FormattedMessage id="operation.confirm.delete"/>}
+                                okText={<FormattedMessage id="operation.cancel" />}
+                                cancelText={<FormattedMessage id="operation.confirm.delete" />}
                                 onCancel={() => { remMachine(row) }}
                                 overlayStyle={{ width: '280px' }}
                                 icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                             >
-                                <Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
+                                <Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete" /></Button>
                             </Popconfirm>
                         </Space>
                     </Access>
                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>
-                        <FormattedMessage id="operation.log"/>
+                        <FormattedMessage id="operation.log" />
                     </Button>
                 </Space>
             )
         }
         ].filter(Boolean)
-    },[ data, is_instance, enLocale ])
+    }, [data, is_instance, enLocale])
 
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
         if (code === 200) {
-            message.success(formatMessage({id: 'device.synchronization.state.success'}) )
+            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
             getList()
         }
         else requestCodeMessage(code, msg)
@@ -323,7 +323,7 @@ const GroupTree: React.FC<any> = (props) => {
         const { code, msg } = await delGroupMachine(row.machineId)
         if (code === 200) {
             getList()
-            message.success(formatMessage({id: 'request.delete.success'}) );
+            message.success(formatMessage({ id: 'request.delete.success' }));
         } else {
             message.success(msg);
         }
@@ -356,18 +356,18 @@ const GroupTree: React.FC<any> = (props) => {
                     style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
                 />
             }
-                <ResizeTable
-                    style={{ width: width - 79 }}
-                    loading={loading}
-                    scroll={{ x: '100%' }}
-                    columns={columns as any}
-                    showHeader={!!data.length}
-                    dataSource={data}
-                    rowKey={'id'}
-                    pagination={false}
-                /> 
-                <Log ref={logDrawer} operation_object={'machine_cloud_server'} />
-                <GroupMachine onRef={aloneMachine} is_instance={is_instance} onSuccess={onSuccess} type='cluster' cluster_id={cluster_id}/>
+            <ResizeTable
+                style={{ width: width - 79 }}
+                loading={loading}
+                scroll={{ x: '100%' }}
+                columns={columns as any}
+                showHeader={!!data.length}
+                dataSource={data}
+                rowKey={'id'}
+                pagination={false}
+            />
+            <Log ref={logDrawer} operation_object={'machine_cloud_server'} />
+            <GroupMachine onRef={aloneMachine} is_instance={is_instance} onSuccess={onSuccess} type='cluster' cluster_id={cluster_id} />
         </div>
     )
 }

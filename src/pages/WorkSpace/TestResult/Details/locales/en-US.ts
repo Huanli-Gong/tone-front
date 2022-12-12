@@ -214,7 +214,7 @@ const text = {
   'failed.server': 'Broken Server',
   'channel_type': 'Control Channel',
   'use_state': 'Using Status',
-  'real_state': 'Actual Status',
+  'real_state': "Heartbeat Status",//'Actual Status',
   'not.assigned.server': 'Not assigned to test server',
   'running,please.wait': 'Running, please wait patiently',
 

@@ -65,11 +65,11 @@ const SystemParameter = (props: any, ref: any) => {
         render: (_: any) => (
             <Badge
                 status={_ ? 'success' : 'error'}
-                text={
-                    <Typography.Text>
-                        {_ ? <FormattedMessage id="basic.enable" /> : <FormattedMessage id="basic.stop" />}
-                    </Typography.Text>
-                }
+                text={<Typography.Text>
+                    {
+                        _ ? <FormattedMessage id="basic.enable" /> :
+                            <FormattedMessage id="basic.stop" />}
+                </Typography.Text>}
             />
         ),
         ...getRadioFilter(params, setParams, [{ name: <FormattedMessage id="basic.enable" />, value: 1 }, { name: <FormattedMessage id="basic.stop" />, value: 0 }], 'enable'),
