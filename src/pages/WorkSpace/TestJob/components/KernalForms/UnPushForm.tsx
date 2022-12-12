@@ -12,7 +12,7 @@ type IProps = {
 }
 
 const UnPush: React.FC<IProps> = (props) => {
-    const { disabled = false, needScriptList = true } = props
+    const { disabled = false, needScriptList = true, form } = props
 
     return (
         <Form.Item label=" ">
@@ -26,6 +26,7 @@ const UnPush: React.FC<IProps> = (props) => {
                 {
                     needScriptList &&
                     <ScriptsListForm
+                        form={form}
                         disabled={disabled}
                     />
                 }

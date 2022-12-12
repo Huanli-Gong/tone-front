@@ -7,7 +7,6 @@ import { evnPrepareState, tooltipTd } from '../components/index'
 import Clipboard from 'clipboard'
 import { queryBuildList } from '../service'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
-//import styles from './index.less'
 import styled from 'styled-components';
 
 const BuildTable = styled(Table)`
@@ -32,7 +31,7 @@ const CopyLink: React.FC<{ name: string, link: string }> = ({ name, link }) => {
         })
 
         cp.on("success", () => {
-            message.success(formatMessage({id: 'ws.result.details.copied'}))
+            message.success(formatMessage({ id: 'ws.result.details.copied' }))
         })
 
         dom.click()
@@ -45,7 +44,7 @@ const CopyLink: React.FC<{ name: string, link: string }> = ({ name, link }) => {
     return (
         <Row gutter={16} style={{ width: "100%" }}>
             <Col span={2} xs={3} md={2} style={{ textAlign: "right" }}>
-                <Typography.Text strong>{name}<FormattedMessage id="ws.result.details.package"/></Typography.Text>
+                <Typography.Text strong>{name}<FormattedMessage id="ws.result.details.package" /></Typography.Text>
             </Col>
             <Col span={18}>
                 <Space>
@@ -87,17 +86,17 @@ const BuildKernelTable: React.FC<IProps> = (props) => {
     const columns = [
         {
             dataIndex: 'name',
-            title: <FormattedMessage id="ws.result.details.name"/>,
+            title: <FormattedMessage id="ws.result.details.name" />,
             ...tooltipTd(),
         },
         {
             dataIndex: 'state',
-            title: <FormattedMessage id="ws.result.details.state"/>,
+            title: <FormattedMessage id="ws.result.details.state" />,
             render: evnPrepareState
         },
         {
             dataIndex: 'git_repo',
-            title: <FormattedMessage id="ws.result.details.git_repo"/>,
+            title: <FormattedMessage id="ws.result.details.git_repo" />,
             ellipsis: true,
             render: (_: string) => (
                 _ ?
@@ -107,7 +106,7 @@ const BuildKernelTable: React.FC<IProps> = (props) => {
         },
         {
             dataIndex: 'git_branch',
-            title: <FormattedMessage id="ws.result.details.git_branch"/>,
+            title: <FormattedMessage id="ws.result.details.git_branch" />,
             ...tooltipTd(),
         },
         {
@@ -117,7 +116,7 @@ const BuildKernelTable: React.FC<IProps> = (props) => {
         },
         {
             dataIndex: 'cbp_link',
-            title: <FormattedMessage id="ws.result.details.cbp_link"/>,
+            title: <FormattedMessage id="ws.result.details.cbp_link" />,
             ellipsis: true,
             render: (_: string) => (
                 _ ?
@@ -127,12 +126,12 @@ const BuildKernelTable: React.FC<IProps> = (props) => {
         },
         {
             dataIndex: 'start_timne',
-            title: <FormattedMessage id="ws.result.details.start_time"/>,
+            title: <FormattedMessage id="ws.result.details.start_time" />,
             ...tooltipTd(),
         },
         {
             dataIndex: 'end_time',
-            title: <FormattedMessage id="ws.result.details.end_time"/>,
+            title: <FormattedMessage id="ws.result.details.end_time" />,
             ...tooltipTd(),
         },
     ]
@@ -140,38 +139,38 @@ const BuildKernelTable: React.FC<IProps> = (props) => {
 
     return (
         dataSource && dataSource.length ?
-        <Card
-            title={<FormattedMessage id="ws.result.details.build.kernel"/>}
-            bodyStyle={{ paddingTop: 0 }}
-            headStyle={{ borderBottom: 'none', borderTop: 'none' }}
-            style={{ marginBottom: 10, borderTop: 'none' }}
-        >
-            <BuildTable
-                dataSource={dataSource}
-                columns={columns}
-                rowKey="name"
-                loading={loading}
-                size="small"
-                //className={ styles.buildTable }
-                pagination={false}
-                expandable={{
-                    expandedRowClassName: () => 'expanded-row-padding-no',
-                    expandedRowRender: (record: any) => (
-                        <Space direction="vertical" style={{ width: "100%", padding: 16 }}>
-                            <CopyLink name="kernel" link={record.kernel_package} />
-                            <CopyLink name="devel" link={record.devel_package} />
-                            <CopyLink name="headers" link={record.headers_package} />
-                        </Space>
-                    ),
-                    expandIcon: ({ expanded, onExpand, record }: any) => (
-                        expanded ?
-                            (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
-                            (<CaretRightFilled onClick={e => onExpand(record, e)} />)
-                    )
-                }}
-            />
-        </Card> 
-        : <></>
+            <Card
+                title={<FormattedMessage id="ws.result.details.build.kernel" />}
+                bodyStyle={{ paddingTop: 0 }}
+                headStyle={{ borderBottom: 'none', borderTop: 'none' }}
+                style={{ marginBottom: 10, borderTop: 'none' }}
+            >
+                <BuildTable
+                    dataSource={dataSource}
+                    columns={columns}
+                    rowKey="name"
+                    loading={loading}
+                    size="small"
+                    //className={ styles.buildTable }
+                    pagination={false}
+                    expandable={{
+                        expandedRowClassName: () => 'expanded-row-padding-no',
+                        expandedRowRender: (record: any) => (
+                            <Space direction="vertical" style={{ width: "100%", padding: 16 }}>
+                                <CopyLink name="kernel" link={record.kernel_package} />
+                                <CopyLink name="devel" link={record.devel_package} />
+                                <CopyLink name="headers" link={record.headers_package} />
+                            </Space>
+                        ),
+                        expandIcon: ({ expanded, onExpand, record }: any) => (
+                            expanded ?
+                                (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
+                                (<CaretRightFilled onClick={e => onExpand(record, e)} />)
+                        )
+                    }}
+                />
+            </Card>
+            : <></>
     )
 }
 
