@@ -14,7 +14,7 @@ const WorkspaceTitle = styled(Row)`
     width:210px;
     height:38px;
     background:rgba(255,255,255,.04);
-    color:#fff;
+    color:#fff !important;
     line-height:38px;
     padding:0 8px;
     border-radius: 4px;
