@@ -52,8 +52,8 @@ const Report = (props: any) => {
             setAllGroupData(shareData.allGroupData)
             setBaselineGroupIndex(shareData.baselineGroupIndex)
             setShareWsId(shareData.allGroupData[0]?.members[0]?.ws_id)
-        } else if (data.code === 500) {
-            history.push('/500')
+        } else if( data.code === 500){
+            history.push(`/500?page=${location.href}`)
         } else {
             requestCodeMessage(data.code, data.msg)
         }
@@ -127,8 +127,8 @@ const Report = (props: any) => {
                 setCompareResult({
                     ...compareResult
                 })
-                if (res.code === 500) {
-                    history.push('/500')
+                if(res.code === 500){
+                    history.push(`/500?page=${location.href}`)
                     return
                 }
                 if (res.code !== 200) {

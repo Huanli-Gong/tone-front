@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 import { Dropdown, Menu, Space, Avatar, Typography, Row, Spin } from 'antd'
 import { CaretDownOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons'
-import { queryWorkspaceHistory, enterWorkspaceHistroy } from '@/services/Workspace'
+import { queryWorkspaceHistory } from '@/services/Workspace'
 import styles from './index.less'
 import { history, useModel, Redirect } from 'umi'
 import _ from 'lodash'
@@ -147,7 +147,6 @@ export const HearderDropdown: React.FC<any> = (props) => {
                                             key={index}
                                             onClick={() => {
                                                 setWs(workspace)
-                                                // enterWorkspaceHistroy({ ws_id: workspace.id })
                                                 history.push(jumpWorkspace(workspace.id))
                                             }}
                                             className={isActive ? 'current_ws' : ''}

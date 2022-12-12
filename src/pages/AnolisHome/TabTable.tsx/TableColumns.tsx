@@ -5,11 +5,9 @@ import styled from "styled-components"
 import { history, useModel, useIntl, useAccess } from "umi"
 import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 
-import { enterWorkspaceHistroy } from '@/services/Workspace'
-
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
-import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace } from '@/utils/utils'
 
 const TableCellColumn = styled.div`
     background-color: #FFFFFF;
@@ -70,33 +68,18 @@ const Desc = styled(Typography.Text)`
     width: calc(100% - ${intrWidth} - ${ownerWidth} - ${OperateWidth});
 `
 
-export const getEnterWorkspaceState = async (record: any, user_id: any) => {
-    const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: record.id })
-    if (code === 200) {
-        const path = first_entry && record.creator === user_id ?
-            `/ws/${record.id}/workspace/initSuccess` :
-            jumpWorkspace(record.id)
-
-        return path
-    }
-    else requestCodeMessage(code, msg)
-    history.push('/500')
-    return ''
-}
-
 export const TableRow: React.FC<Record<string, any>> = (props) => {
     const { show_name, is_public, description, avatar, owner_name, id, is_member } = props
 
     const access = useAccess()
     const intl = useIntl()
     const { initialState } = useModel("@@initialState")
-    const { user_id, login_url } = initialState?.authList || {}
+    const { user_id } = initialState?.authList || {}
 
     const ref = React.useRef<any>(null)
 
     const handleJumpWs = async () => {
-        const path: string = await getEnterWorkspaceState(props, user_id)
-        path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
+        history.push(jumpWorkspace(id))
     }
 
     const renderOperationButton = () => {
