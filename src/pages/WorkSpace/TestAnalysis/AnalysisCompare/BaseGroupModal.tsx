@@ -165,9 +165,9 @@ export default (props: any) => {
     }, [suitData, tab])
 
     const onExpand = async (expanded: boolean, record: any) => {
-        const { test_job_id, suite_id } = record
+        const { test_job_id, suite_id, is_baseline } = record
         if (expanded) {
-            const data = await queryConfList({ test_job_id, suite_id })
+            const data = await queryConfList({ test_job_id, suite_id, is_baseline })
             if (data.code === 200) {
                 const { conf_dic } = data.data
                 if (tab === 'functional') {

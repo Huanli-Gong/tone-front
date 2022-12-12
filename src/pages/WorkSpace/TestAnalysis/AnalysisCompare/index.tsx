@@ -134,7 +134,7 @@ export default (props: any) => {
                         product_version: obj.product_version || name,
                         members: obj.members,
                         name,
-                        type: '',
+                        type: 'job',
                         id: +new Date() + groupDataCopy.length
                     }
                     groupDataCopy.push(addGroup)
@@ -174,7 +174,7 @@ export default (props: any) => {
                         product_version: obj.product_version || name,
                         members: obj.members,
                         name,
-                        type: '',
+                        type: 'job',
                         id: +new Date() + groupDataCopy.length
                     }
                     groupDataCopy.push(addGroup)
@@ -195,14 +195,17 @@ export default (props: any) => {
 
     const cancleGrouping = () => {
         let noGroupDataCopy = _.cloneDeep(noGroupData)
-        groupData.forEach((item: any) => noGroupDataCopy = [...noGroupDataCopy, ...item.members])
+        let groupDataCopy = _.cloneDeep(groupData)
+        groupDataCopy.filter((item:any) => item.type !== 'baseline')
+        .forEach((item: any) =>  noGroupDataCopy = [...noGroupDataCopy, ...item.members])
         setGroupMethod(null)
-        setGroupData([])
+        setGroupData(groupDataCopy.filter((item:any) => item.type === 'baseline'))
         setBaselineGroupIndex(-1)
         setBaselineGroup({})
         setNoGroupData(noGroupDataCopy)
         window.sessionStorage.setItem('compareData', JSON.stringify([]))
         window.sessionStorage.setItem('noGroupJobData', JSON.stringify(noGroupDataCopy))
+        
     }
 
     const addGroupNameFn = (arrGroup = groupData) => {
@@ -523,8 +526,9 @@ export default (props: any) => {
         })
         return brr;
     }
+
     const handlEenvironment = (selData: any) => {
-        const { obj: baseObj, trr: compareArr } = getJobRefSuit(selData)
+        const { baseArr, compareArr } = getJobRefSuit(selData)
         let groupDataCopy = _.cloneDeep(groupData).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
         let newGroup: any = []
         if (groupDataCopy.length) {
@@ -539,34 +543,20 @@ export default (props: any) => {
         if (array.length === 1) {
             base_group = {
                 tag: newGroup[0]?.product_version || '',
-                base_objs: baseAssemble(baseObj, arr[0]),
+                base_objs: baseArr
             }
         } else {
             const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
             base_group = {
                 tag: newGroup.length ? newGroup[baseIndex]?.product_version : '',
-                base_objs: baseAssemble(baseObj, baselineGroup),
+                base_objs: baseArr,
             }
 
-            compare_groups = _.reduce(arr, (groups: any, obj, num: number) => {
-                const compare_objs: any = []
-                let members = _.get(obj, 'members')
-                members = _.isArray(members) ? members : []
-                members = members.filter((val: any) => val)
-
-                const flag = obj.type === 'baseline'
-                members.forEach((item: any) => {
-                    if (!flag) {
-                        compare_objs.push({ is_job: 1, obj_id: item.id || {} })
-                    }
-                    if (flag) {
-                        compare_objs.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
-                    }
-                })
+            compare_groups = _.reduce(arr, (groups: any, obj) => {
                 const index = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(obj.id) });
                 const groupItem: any = {
                     tag: newGroup[index]?.product_version,
-                    base_objs: compare_objs
+                    base_objs: compareArr
                 }
                 groups.push(groupItem)
                 return groups
@@ -578,6 +568,62 @@ export default (props: any) => {
         }
         return paramData
     }
+    // const handlEenvironment = (selData: any) => {
+    //     console.log('selData',selData)
+    //     const { obj: baseObj, trr: compareArr } = getJobRefSuit(selData)
+    //     let groupDataCopy = _.cloneDeep(groupData).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
+    //     let newGroup: any = []
+    //     if (groupDataCopy.length) {
+    //         changeTag(groupDataCopy, [])
+    //         newGroup = newProductVersionGroup.current.flat()
+    //     }
+
+    //     const arr = groupData.filter((item: any, index: any) => index !== baselineGroupIndex).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
+    //     const array = groupData.filter((item: any, index: any) => _.get(item, 'members') && _.get(item, 'members').length)
+    //     let base_group = {}
+    //     let compare_groups = []
+    //     if (array.length === 1) {
+    //         base_group = {
+    //             tag: newGroup[0]?.product_version || '',
+    //             base_objs: baseAssemble(baseObj, arr[0]),
+    //         }
+    //     } else {
+    //         const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
+    //         base_group = {
+    //             tag: newGroup.length ? newGroup[baseIndex]?.product_version : '',
+    //             base_objs: baseAssemble(baseObj, baselineGroup),
+    //         }
+
+    //         compare_groups = _.reduce(arr, (groups: any, obj, num: number) => {
+    //             const compare_objs: any = []
+    //             let members = _.get(obj, 'members')
+    //             members = _.isArray(members) ? members : []
+    //             members = members.filter((val: any) => val)
+
+    //             const flag = obj.type === 'baseline'
+    //             members.forEach((item: any) => {
+    //                 if (!flag) {
+    //                     compare_objs.push({ is_job: 1, obj_id: item.id || {} })
+    //                 }
+    //                 if (flag) {
+    //                     compare_objs.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
+    //                 }
+    //             })
+    //             const index = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(obj.id) });
+    //             const groupItem: any = {
+    //                 tag: newGroup[index]?.product_version,
+    //                 base_objs: compare_objs
+    //             }
+    //             groups.push(groupItem)
+    //             return groups
+    //         }, []);
+    //     }
+    //     const paramData = {
+    //         base_group,
+    //         compare_groups
+    //     }
+    //     return paramData
+    // }
 
     const handleAddBaseline = (e: any, obj: any, index: number) => {
         // e.stopPropagation();

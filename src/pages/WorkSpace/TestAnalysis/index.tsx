@@ -11,7 +11,7 @@ const addGroup = {
     members: [],
     name: "Group1",
     product_version: "Group1",
-    type: "",
+    type: "job",
     disabled: false
 }
 export default (props: any) => {

@@ -167,49 +167,74 @@ const handleDomainList = (data: any) => {
 }
 
 const getJobRefSuit = (suiteData: any) => {
-    const obj = {}
-    const trr: any = []
+    const baseArr: any = []
+    const compareArr: any = []
     const allData = [...Object.values(suiteData.func_suite_dic), ...Object.values(suiteData.perf_suite_dic)]
     allData.forEach((suit: any) => {
-        if (suit.conf_dic) {
-            Object.values(suit.conf_dic).forEach((conf: any) => {
-                const base_obj_li = _.get(conf, 'base_obj_li') || []
-                const compare_groups = _.get(conf, 'compare_groups') || []
-                base_obj_li.forEach((item: any) => {
-                    const job_id = _.get(item, 'obj_id')
-                    const suite_id = suit.suite_id
-                    const conf_id = conf.conf_id
-                    if (obj[job_id] && obj[job_id][suite_id]) {
-                        obj[job_id][suite_id].push(conf_id)
-                    } else {
-                        obj[job_id] = {}
-                        obj[job_id][suite_id] = [conf_id]
-                    }
-
-                })
-                compare_groups.forEach((arr: any, index: number) => {
-                    const everyGroup = trr[index] || {}
-                    arr.forEach((item: any) => {
-                        const job_id = _.get(item, 'obj_id')
-                        const suite_id = suit.suite_id
-                        const conf_id = conf.conf_id
-                        if (everyGroup[job_id] && everyGroup[job_id][suite_id]) {
-                            everyGroup[job_id][suite_id].push(conf_id)
-                        } else {
-                            everyGroup[job_id] = {}
-                            everyGroup[job_id][suite_id] = [conf_id]
-                        }
+        suit.group_jobs.forEach((item: any, idx: number) => {
+            const obj_li = _.get(item, 'job_list') || []
+            obj_li.forEach((arr: any) => {
+                if (suit.base_index === idx) {
+                    baseArr.push({
+                        is_baseline: item.is_baseline,
+                        obj_id: arr,
                     })
-                    trr[index] = everyGroup
-                })
+                } else {
+                    compareArr.push({
+                        is_baseline: item.is_baseline,
+                        obj_id: arr,
+                    })
+                }
             })
-        } else {
-            // console.log('suite',suit)
-        }
-
+        });
     })
-    return { obj, trr }
+    return { baseArr, compareArr }
 }
+
+// const getJobRefSuit = (suiteData: any) => {
+//     const obj = {}
+//     const trr: any = []
+//     const allData = [...Object.values(suiteData.func_suite_dic), ...Object.values(suiteData.perf_suite_dic)]
+//     allData.forEach((suit: any) => {
+//         if (suit.conf_dic) {
+//             Object.values(suit.conf_dic).forEach((conf: any) => {
+//                 const base_obj_li = _.get(conf, 'base_obj_li') || []
+//                 const compare_groups = _.get(conf, 'compare_groups') || []
+//                 base_obj_li.forEach((item: any) => {
+//                     const job_id = _.get(item, 'obj_id')
+//                     const suite_id = suit.suite_id
+//                     const conf_id = conf.conf_id
+//                     if (obj[job_id] && obj[job_id][suite_id]) {
+//                         obj[job_id][suite_id].push(conf_id)
+//                     } else {
+//                         obj[job_id] = {}
+//                         obj[job_id][suite_id] = [conf_id]
+//                     }
+
+//                 })
+//                 compare_groups.forEach((arr: any, index: number) => {
+//                     const everyGroup = trr[index] || {}
+//                     arr.forEach((item: any) => {
+//                         const job_id = _.get(item, 'obj_id')
+//                         const suite_id = suit.suite_id
+//                         const conf_id = conf.conf_id
+//                         if (everyGroup[job_id] && everyGroup[job_id][suite_id]) {
+//                             everyGroup[job_id][suite_id].push(conf_id)
+//                         } else {
+//                             everyGroup[job_id] = {}
+//                             everyGroup[job_id][suite_id] = [conf_id]
+//                         }
+//                     })
+//                     trr[index] = everyGroup
+//                 })
+//             })
+//         } else {
+//             // console.log('suite',suit)
+//         }
+
+//     })
+//     return { obj, trr }
+// }
 
 export {
     resizeDocumentHeight,

@@ -159,7 +159,7 @@ export default (props: any) => {
             members: allSelectRowData,
             name: 'Group1',
             product_version: version,
-            type: ''
+            type: 'job'
         }
         return baselineGroup
     }

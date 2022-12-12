@@ -42,16 +42,13 @@ const AllJobTable = (props: any) => {
         page_num: 1,
         page_size: 10,
         ws_id,
-        creators: null,
-        creation_time: null,
         state: 'success,fail,skip,stop,running',
-        filter_id: '',
     }
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [allProduct, setAllProduct] = useState([])
-    const [allVersion, setAllVersion] = useState([])
+    const [allVersion, setAllVersion] = useState<any>([])
     const [selectRowData, setSelectRowData] = useState<any>([])
     const [loading, setLoading] = useState<any>(false)
     const { formatMessage } = useIntl()
@@ -74,12 +71,12 @@ const AllJobTable = (props: any) => {
     }
     const getProductList = async () => {
         setLoading(true)
-        let result = await queryProductList({ product_id: pruductId })
+        let result = await queryProductList({ ws_id, product_id: pruductId })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
-            if (!!data.length) setPruductVersion('All')
+            if (!!data.length) setPruductVersion(undefined)
         } else {
             requestCodeMessage(result.code, result.msg)
         }
@@ -91,17 +88,14 @@ const AllJobTable = (props: any) => {
         if (result.code === 200) {
             let data = _.isArray(result.data) ? result.data : []
             setAllProduct(data)
-            if (!!data.length) {
-                setPruductId('All')
-                return
-            }
+            if (!!data.length) setPruductId(undefined)
         } else {
             requestCodeMessage(result.code, result.msg)
         }
         setLoading(false)
     }
 
-    const getJobList = async (params: any) => {
+    const getJobList = async () => {
         setLoading(true)
         let data = await queryJobList(params)
         if (data.code === 200) {
@@ -231,7 +225,7 @@ const AllJobTable = (props: any) => {
     ]
 
     useEffect(() => {
-       getJobList(params)
+       getJobList()
     }, [params])
 
     useEffect(() => {
@@ -245,11 +239,24 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
+
     const onProductChange = (value: any) => {
         setPruductId(value)
-        setParams({ ...params, product_id: value })
+        setPruductVersion(allVersion[0].value)
+        setParams({ ...params, product_id: value, product_version: allVersion[0].value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
+    }
+
+    const handleClearVersion = () => {
+        setPruductVersion(undefined)
+        setParams({ ...params, product_version: undefined })
+    }
+
+    const handleClearProduct = () => {
+        setPruductId(undefined)
+        setPruductVersion(undefined)
+        setParams(page_default_params)
     }
 
     const selectedChange = (record: any, selected: any) => {
@@ -310,6 +317,7 @@ const AllJobTable = (props: any) => {
         // 最大高度，内容超出该高度会出现滚动条
         height: maxHeight - 339 > 430 ? 430 : maxHeight - 339,
     }
+
     return (
         <div className={styles.list_container} id="list_container">
             <div className={styles.select_product}>
@@ -318,12 +326,13 @@ const AllJobTable = (props: any) => {
                         <span><FormattedMessage id="analysis.product.label" /></span>
                         <Select
                             showSearch
+                            allowClear={true}
                             style={{ width: 'calc(100% - 75px)' }}
                             placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                            defaultValue={pruductId}
                             value={pruductId}
                             optionFilterProp="children"
-                            onChange={onProductChange}
+                            onSelect={onProductChange}
+                            onClear={handleClearProduct}
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
@@ -335,13 +344,13 @@ const AllJobTable = (props: any) => {
                         <span><FormattedMessage id="analysis.version.label" /></span>
                         <Select
                             showSearch
+                            allowClear={true}
                             style={{ width: `calc(100% - ${getLocale() === 'en-US' ? 120 : 75}px)` }}
                             placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                            defaultValue={pruductVersion}
                             value={pruductVersion}
                             optionFilterProp="children"
-                            onChange={onVersionChange}
-                            // disabled={currentGroup && _.get(currentGroup, 'members').length}
+                            onSelect={onVersionChange}
+                            onClear={handleClearVersion}
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
