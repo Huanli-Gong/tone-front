@@ -36,7 +36,7 @@ const styleObj = {
 }
 
 const AllJobTable = (props: any) => {
-    const { onOk, onCancel } = props
+    const { onOk, onCancel, noGroupData } = props
     const { ws_id }: any = useParams();
     const page_default_params: any = {
         page_num: 1,
@@ -69,19 +69,22 @@ const AllJobTable = (props: any) => {
         if (start_time && end_time) setParams({ ...params, creation_time: JSON.stringify({ start_time, end_time }) })
         confirm()
     }
-    const getProductList = async () => {
+    
+    const getProductList = async (id: any) => {
         setLoading(true)
-        let result = await queryProductList({ ws_id, product_id: pruductId })
+        let result = await queryProductList({ ws_id, product_id: id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
-            if (!!data.length) setPruductVersion(undefined)
+            if (!!data.length && pruductId) setPruductVersion(data[0].value)
+            else setPruductVersion(undefined)
         } else {
             requestCodeMessage(result.code, result.msg)
         }
         setLoading(false)
     }
+    
     const getProductData = async () => {
         setLoading(true)
         let result = await queryProduct({ ws_id })
@@ -106,6 +109,14 @@ const AllJobTable = (props: any) => {
             requestCodeMessage(data.code, data.msg)
         }
     }
+
+    useEffect(()=> {
+        if(!!noGroupData.length){
+            setSelectedRowKeys(noGroupData.map((i:any) => i.id));
+            setSelectRowData(noGroupData);
+        }
+    },[noGroupData])
+
     const columns = [
         {
             title: 'Job ID',
@@ -225,25 +236,37 @@ const AllJobTable = (props: any) => {
     ]
 
     useEffect(() => {
-       getJobList()
+        getProductData()
+        getProductList(undefined)
+    }, [])
+
+    useEffect(() => {
+        if (pruductId) getProductList(pruductId)
+    }, [pruductId])
+
+    useEffect(() => {
+        getJobList()
     }, [params])
 
     useEffect(() => {
-        getProductData()
-        getProductList()
-    }, [])
+        if (pruductId && !pruductVersion) {
+            setParams({ ...params, product_id: pruductId, product_version: undefined })
+        }
+        if (pruductId && pruductVersion) {
+            setParams({ ...params, product_version: pruductVersion, product_id: pruductId })
+        }
+    }, [pruductId, pruductVersion])
 
     const onVersionChange = (value: any) => {
         setPruductVersion(value)
-        setParams({ ...params, product_version: value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
 
     const onProductChange = (value: any) => {
         setPruductId(value)
-        setPruductVersion(allVersion[0].value)
-        setParams({ ...params, product_id: value, product_version: allVersion[0].value })
+        // setPruductVersion(allVersion[0]?.value)
+        // setParams({ ...params, product_id: value, product_version: allVersion[0]?.value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
@@ -281,6 +304,7 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys([...selectedRowKeys, ...keysArr])
         setSelectRowData([...selectRowData, ...arr])
     }
+    
     const cancleAllSelectFn = (allData: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
@@ -337,7 +361,7 @@ const AllJobTable = (props: any) => {
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                         >
-                            { allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>) }
+                            {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
                         </Select>
                     </Col>
                     <Col span={12} >
@@ -355,7 +379,7 @@ const AllJobTable = (props: any) => {
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                         >
-                            { allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>) }
+                            {allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)}
                         </Select>
                     </Col>
                 </Row>

@@ -215,7 +215,7 @@ export default (props: any) => {
         }
         return ''
     }
-    const handleAddJobGroup = (type = '') => {
+    const handleAddJobGroup = (type = 'job') => {
         const arr = _.cloneDeep(groupData)
         const name = addGroupNameFn() || `对比组${groupData.length + 1}`
         const addGroup = {
@@ -1092,6 +1092,7 @@ export default (props: any) => {
     const handleJobCancel = () => {
         setIsModalOpen(false);
     }
+
     return (
         <Layout style={{ paddingRight: 20, paddingBottom: 20, height: layoutHeight - 50, minHeight: 0, overflow: 'auto', background: '#f5f5f5' }} className={styles.compare_job}>
             <Spin spinning={loading}>
@@ -1322,7 +1323,7 @@ export default (props: any) => {
                     onOk={handleOk}
                     onCancel={handleJobCancel}
                 >   
-                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} />
+                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} noGroupData={noGroupData}/>
                 </Modal>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id={ws_id} allGroup={groupData} />
             </Spin>

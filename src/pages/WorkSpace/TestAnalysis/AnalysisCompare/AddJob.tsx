@@ -64,37 +64,30 @@ export default (props: any) => {
     const [tabKey, setTabKey] = useState<string>('1')
     allNoGroupData = _.isArray(allNoGroupData) ? allNoGroupData : []
     const selectedId: any = getSelJobFn(allGroup, allNoGroupData)
-    const defaultVersion = currentGroup && _.get(currentGroup, 'members[0].product_version')
-    const product_id = currentGroup && _.get(currentGroup, 'members[0].product_id')
-    const pruductName = currentGroup && _.get(currentGroup, 'members[0].product_name')
+   
     const page_default_params: any = {
         ...DEFAULTPARAM,
         ws_id,
-        creators: null,
-        creation_time: null,
         state: 'success,fail,skip,stop,running',
         filter_id: selectedId.join(','),
-        product_version: defaultVersion,
-        product_id: product_id,
     }
-
     const [dataSource, setDataSource] = useState(defaultResult)
     const [baselineData, setBaselineData] = useState<any>([])
     const [loading, setLoading] = useState(false)
     const [params, setParams] = useState(page_default_params)
     const [baselineParam, setBaselineParam] = useState<any>(DEFAULTPARAM)
-    const [pruductVersion, setPruductVersion] = useState(defaultVersion || '')
-    const [allVersion, setAllVersion] = useState([])
+    const [pruductVersion, setPruductVersion] = useState()
+    const [allVersion, setAllVersion] = useState<any>([])
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [selectRowData, setSelectRowData] = useState<any>([])
     const [selectedBaselineKeys, setSelectedBaselineKeys] = useState<any>([])
     const [selectedBaselineData, setSelectedBaselineData] = useState<any>([])
     const [autoFocus, setFocus] = useState(true)
     const [allProduct, setAllProduct] = useState([])
-    const [pruductId, setPruductId] = useState<any>(product_id)
-    // 获取产品列表数据
-    const getProductList = async () => {
-        let result = await queryProductList({ product_id: pruductId })
+    const [pruductId, setPruductId] = useState<any>()
+    // 获取产品版本数据
+    const getProductList = async (id:any) => {
+        let result = await queryProductList({ product_id: id, ws_id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
@@ -106,17 +99,15 @@ export default (props: any) => {
         }
         setLoading(false)
     }
-    // 获取产品版本数据
+    // 获取产品列表数据
     const getProductData = async () => {
         setLoading(true)
         let result = await queryProduct({ ws_id })
         if (result.code === 200) {
             let data = _.isArray(result.data) ? result.data : []
             setAllProduct(data)
-            if (data.length) {
-                setPruductId(data[0].id)
-                return
-            }
+            if (data.length) setPruductId(data[0].id)
+            return
         } else {
             requestCodeMessage(result.code, result.msg)
         }
@@ -135,10 +126,9 @@ export default (props: any) => {
         setLoading(false)
     }
     useEffect(()=> {
-        if(currentGroup.type === 'baseline'){
-            setTabKey('2')
-        }
+        if(currentGroup.type === 'baseline') setTabKey('2')
     },[ currentGroup ])
+
     const handleTabSwitch = (key: any) => {
         setTabKey(key)
     }
@@ -146,54 +136,58 @@ export default (props: any) => {
     useEffect(() => {
         if (tabKey === '1') {
             if (!(currentGroup && _.get(currentGroup, 'members').length)) {
-                if (!pruductId) getProductData()
-                if (pruductId) getProductList()
+                getProductData()
             }
         } 
-    }, [tabKey, pruductId])
+    }, [tabKey])
 
     const getJobList = async (params: any) => {
+        setLoading(true)
         let data = await queryJobList(params)
         defaultOption(data)
     }
-
-    useEffect(() => {
-        setLoading(true)
-        if (pruductVersion) {
-            getJobList(params)
-        } else {
-            setDataSource(defaultResult)
-            setLoading(false)
+    useEffect(()=> {
+        if(!!allNoGroupData.length){
+            setSelectedRowKeys(allNoGroupData.map((i:any) => i.id));
+            setSelectRowData(allNoGroupData);
         }
-    }, [params])
+    },[allNoGroupData])
+    useEffect(() => {
+        if(params.product_version && params.product_id)  getJobList(params)
+    }, [ params])
 
     useEffect(()=> {
         if(tabKey ==='2') getBaselineData()
     },[ tabKey, baselineParam ])
 
     useEffect(() => {
-        const paramsCopy = _.cloneDeep(params)
-        setParams({ ...paramsCopy, product_version: pruductVersion, product_id: pruductId })
+        getJobList({ ...params, product_version: pruductVersion, product_id: pruductId })
     }, [pruductVersion])
 
+    useEffect(()=> {
+        if(pruductId) getProductList(pruductId)
+    },[ pruductId ])
+
     const defaultOption = (ret: any) => {
-        setLoading(false)
         if (ret.code === 200) {
             setDataSource(ret)
         } else {
             setDataSource(defaultResult)
             requestCodeMessage(ret.code, ret.msg)
         }
+        setLoading(false)
     }
 
     const onChange = (value: any) => {
         setPruductVersion(value)
+        setParams({ ...params, product_version: value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
 
     const onProductChange = (value: any) => {
         setPruductId(value)
+        // setParams({ ...params, product_id: value, product_version: allVersion[0].value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
@@ -523,10 +517,10 @@ export default (props: any) => {
                             showSearch
                             style={{ width: 'calc(100% - 75px)' }}
                             placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                            defaultValue={product_id ? pruductName : pruductId}
-                            value={product_id ? pruductName : pruductId}
+                            // defaultValue={product_id ? pruductName : pruductId}
+                            value={pruductId}
                             optionFilterProp="children"
-                            onChange={onProductChange}
+                            onSelect={onProductChange}
                             disabled={flag}
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -541,10 +535,9 @@ export default (props: any) => {
                             showSearch
                             style={{ width: `calc(100% - ${getLocale() === 'en-US' ? 120 : 75}px)` }}
                             placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                            defaultValue={pruductVersion}
                             value={pruductVersion}
                             optionFilterProp="children"
-                            onChange={onChange}
+                            onSelect={onChange}
                             disabled={flag}
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

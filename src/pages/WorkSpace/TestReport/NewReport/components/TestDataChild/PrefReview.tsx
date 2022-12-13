@@ -227,9 +227,9 @@ const Performance = (props: any) => {
         return (
             arr.map((item: any, idx: number) => (
                 _.isUndefined(item) ? <></>
-                    : !item.is_baseline && <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                    : !item.is_baseline ? <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                         <JumpResult ws_id={wsId} job_id={item?.obj_id || item} />
-                    </PrefDataText>
+                    </PrefDataText> : <>-</>
             ))
         )
     }

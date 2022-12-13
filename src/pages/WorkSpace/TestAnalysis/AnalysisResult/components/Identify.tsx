@@ -24,12 +24,12 @@ const Identify: React.FC<any> = (props) => {
                     }
                     {
 
-                        is_baseline && <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
+                        is_baseline ? <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
                             <BaseLine
                                 style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
                             />
                             <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
-                        </Tooltip>
+                        </Tooltip> : null
                     }
 
                 </Space>
