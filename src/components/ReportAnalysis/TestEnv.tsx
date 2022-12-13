@@ -21,6 +21,8 @@ const collapsedAnimate = keyframes`
 `;
 
 const CollapsedSpan = styled.div`
+    align-items: center;
+    justify-content: center;
     height: 40px;
     line-height: 40px;
     display: inline-flex;
