@@ -54,7 +54,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         const { data, code } = await queryBaselineList({
             ws_id,
             test_type,
-            server_provider
+            // server_provider  不区分环境
         })
 
         if (code === 200) {

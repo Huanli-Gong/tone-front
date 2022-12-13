@@ -178,9 +178,9 @@ const TypeChart = (props: any) => {
                         result += `
                             <div style="display:flex;flex-wrap:wrap;">
                                 <div style="width:8px;height:8px;border-radius:50%;background:${params[i].color};margin-top:5px;"></div>
-                                <div style="padding-left:9px;width:155px;word-break:break-all;white-space:normal;">${params[i].seriesName}</div>
-                                <div style="padding-left:16px;width:52px;word-break:break-all;white-space:normal;">${params[i].value || '-'}</div>
-                                <div style="padding-left:9px;width:15px;">
+                                <div style="padding-left:9px;width:120px;word-break:break-all;white-space:normal;">${params[i].seriesName}</div>
+                                <div style="padding-left:16px;">${params[i].value || '-'}</div>
+                                <div style="padding-left:9px;width:30px;">
                                     <i style="font-style:normal;color:${handleColor(params[i].data?.compare_result) || ''}">
                                         ${params[i].data?.compare_value || ''}
                                         ${handleIcon(params[i].data?.compare_result) || ''}
@@ -193,14 +193,14 @@ const TypeChart = (props: any) => {
                         return `
                                 <div style="width:260px;">
                                     <div style="display:flex;flex-warp:wrap">
-                                        <span style="font-weight:bold;padding-right:5px">${data.metric}</span>
+                                        <div style="width:180px;word-break:break-all;white-space:normal;font-weight:bold;padding-right:5px">${data.metric}</div>
                                         (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
                                     </div>
                                     <div style="display:flex;flex-warp:wrap">
                                         <div style="width:8px;height:8px;border-radius:50%;background:${params.color};margin-top:5px;"></div>
-                                        <div style="padding-left:9px;width:140px;word-break:break-all;white-space:normal;">${params.seriesName}</div>
-                                        <div style="padding-left:16px;width:50px;word-break:break-all;white-space:normal;">${params.value || '-'}</div>
-                                        <div style="padding-left:9px;width:20px;">
+                                        <div style="padding-left:9px;width:120px;word-break:break-all;white-space:normal;">${params.seriesName}</div>
+                                        <div style="padding-left:16px;">${params.value || '-'}</div>
+                                        <div style="padding-left:9px;width:30px;">
                                             <i style="font-style:normal;color:${handleColor(params.data.compare_result) || ''}">
                                             ${params.data.compare_value || ''}
                                             ${handleIcon(params.data.compare_result) || ''}
