@@ -1,7 +1,7 @@
-import React, { useContext , memo } from 'react';
+import React, { useContext, memo } from 'react';
 import { ReportContext } from '../Provider';
-import { useIntl, FormattedMessage, getLocale } from 'umi'
-import _ from 'lodash'; 
+import { FormattedMessage, getLocale } from 'umi'
+import _ from 'lodash';
 import Identify from '@/pages/WorkSpace/TestAnalysis/AnalysisResult/components/Identify';
 import {
     ModuleWrapper,
@@ -29,10 +29,10 @@ const ReportTestEnv = () => {
             </SubTitle>
             <EnvGroup>
                 <EnvGroupL enLocale={locale}><FormattedMessage id="analysis.comparison.group.name" /></EnvGroupL>
-                <Identify enLocale={locale} envData={envData} group={group}/>
+                <Identify enLocale={locale} envData={envData} group={group} />
             </EnvGroup>
             {/* 机器信息 */}
-            <TestEnv len={len} envData={envData} environmentResult={environmentResult} group={group}/>
+            <TestEnv len={len} envData={envData} environmentResult={environmentResult} group={group} />
             {/*
                 len.map((item: any, i: number) => (
                     <MachineGroup key={i}>

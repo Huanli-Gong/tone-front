@@ -1,11 +1,10 @@
 import React from "react"
 
-import Clipboard from 'clipboard'
-import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import { itemLayout } from './untils'
-import type { FormInstance } from 'antd'
-import { Form, Input, Row, Col, message } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormInstance } from 'antd'
+import { Form, Input, Row, Col } from 'antd'
+import { FormattedMessage } from 'umi'
+import { CopyLinkSpan } from "@/pages/WorkSpace/TestJob/components/untils"
 
 type PackageProps = {
     name: string;
@@ -17,29 +16,8 @@ type PackageProps = {
 export const PackageFormItem: React.FC<PackageProps> = (props) => {
     const { name, disabled = false, form } = props
 
-    const { formatMessage } = useIntl()
-    const needCopyLink = window.location.pathname.indexOf('test_result') > -1
-    const copyLinkIconStyles = { cursor: 'pointer', position: 'absolute', right: 0, top: 5 }
-
+    const needCopyLink = window.location.pathname.indexOf('/test_result/') > -1
     const disabledStyles = disabled ? { backgroundColor: '#f5f5f5' } : {}
-
-    const handleCopy = (name: string) => {
-        const ele = document.createElement("a")
-        ele.style.height = "0px"
-        ele.style.width = "0px"
-        ele.innerHTML = ""
-        ele.id = "currentCopyLinkEle"
-        document.body.appendChild(ele)
-        const cb = new Clipboard(ele, {
-            text: () => form?.getFieldValue(name)
-        })
-
-        cb.on('success', function (e) {
-            message.success(formatMessage({ id: 'request.copy.success' }))
-        })
-        ele.click()
-        cb.destroy()
-    }
 
     return (
         <Row style={{ position: 'relative' }}>
@@ -55,10 +33,7 @@ export const PackageFormItem: React.FC<PackageProps> = (props) => {
             </Col>
             {
                 needCopyLink &&
-                <CopyLink
-                    onClick={() => handleCopy(name)}
-                    style={copyLinkIconStyles}
-                />
+                <CopyLinkSpan onCopy={() => form?.getFieldValue(name)} />
             }
         </Row>
     )

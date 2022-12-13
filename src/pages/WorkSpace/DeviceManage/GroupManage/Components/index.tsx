@@ -1,7 +1,7 @@
 import React from 'react'
 import { Badge, Tag, Select, Drawer, Space, Button, Form, Popover } from 'antd'
 import { queryMember } from '@/services/Workspace'
-import { useParams, useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
 
 export const getMembers = async (keyword: string = '', callback?: any) => {
@@ -10,9 +10,12 @@ export const getMembers = async (keyword: string = '', callback?: any) => {
     else return data
 }
 
-export const StateBadge = (state: any, row: any, ws_id: string, flag: string) => {
+export const StateBadge = (state: any, row: any, ws_id: string) => {
     switch (state) {
-        case 'Available': return <Badge status="success" text={flag === 'real' ? 'Alive' : 'Available'} />
+        case 'Available': return <Badge status="success" text={'Available'} />
+        case 'Offline': return <Badge status="error" text={'Offline'} />
+        case 'Online': return <Badge status="success" text={'Online'} />
+        case 'Available': return <Badge status="success" text={'Available'} />
         case 'Occupied': return (
             <Popover
                 placement="right"
@@ -57,8 +60,8 @@ export const DrawerForm = (props: any) => {
             footer={
                 <div style={{ textAlign: 'right' }} >
                     <Space>
-                        <Button onClick={onCancel}><FormattedMessage id="operation.cancel"/></Button>
-                        <Button type="primary" onClick={onFinish}><FormattedMessage id="operation.ok"/></Button>
+                        <Button onClick={onCancel}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={onFinish}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 </div>
             }
@@ -75,8 +78,8 @@ export const MemberSelect = ({ members, callback, rules, initialValue }: any) =>
         rules={rules}
         initialValue={initialValue}
     >
-        <Select 
-            placeholder={<FormattedMessage id="please.enter"/>}
+        <Select
+            placeholder={<FormattedMessage id="please.enter" />}
             defaultActiveFirstOption={false}
             filterOption={false}
             showSearch
@@ -112,14 +115,14 @@ export const tagRender = ({ label, closable, onClose, value }: any) => (
 
 export const TagSelect = (props: any) => {
     const { formatMessage } = useIntl()
-    const { 
-        tags , 
-        rules , 
-        initialValue , 
-        label = formatMessage({id: 'device.tag'}), 
-        name = 'tags' , 
-        placeholder = formatMessage({id: 'device.please.select.tag'}), 
-        disabled = false 
+    const {
+        tags,
+        rules,
+        initialValue,
+        label = formatMessage({ id: 'device.tag' }),
+        name = 'tags',
+        placeholder = formatMessage({ id: 'device.please.select.tag' }),
+        disabled = false
     } = props
 
     return (

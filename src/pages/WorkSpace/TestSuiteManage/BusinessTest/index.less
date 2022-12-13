@@ -2,13 +2,18 @@
 .businessList_root {
   // 覆盖别人写的已有样式
   :global(.ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell){
-    padding: 8px 0px;
+    padding: 0px 0px;
   }
 
   //
   :global(.ant-table .ant-table-expanded-row-fixed) {
-    padding: 0px 0px 0px 56px;
-    background: #fff;
+    padding: 0px;
+    margin: 0px;
   }
+}
 
+.common_pagination {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px 0px;
 }

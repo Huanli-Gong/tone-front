@@ -52,7 +52,7 @@ const text =  {
   'monitor.the.server': '请选择监控机器',
   'the.server.one': '机器一',
   'add.group.monitor': '+ 添加一组监控',
-  'priority.desc': '执行优先级范围1-20,数值越大优先级级越高',
+  'priority.desc': '执行优先级范围1-20,数值越大优先级越高',
   'multiple.values': '多个数值',
 
   'the.server': '机器',

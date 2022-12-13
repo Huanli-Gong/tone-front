@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip, Space, Typography } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
 import { ReactComponent as BaseLine } from '@/assets/svg/Report/BaseLine.svg';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';

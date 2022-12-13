@@ -46,12 +46,20 @@ import {
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
 const { Option } = Select;
 
+const getSortNum = (compare_result: string) => new Map([
+    ["decline", 0],
+    ["increase", 1],
+    ["normal", 2],
+    ["invalid", 3],
+    ["na", 4],
+]).get(compare_result) || 5
+
 const Performance = (props: any) => {
     const { formatMessage } = useIntl()
-     
+
     const { child, name, btn, id, onDelete, dataSource, setDataSource } = props
     const { btnState, allGroupData, baselineGroupIndex, domainResult, environmentResult, groupLen, wsId, isOldReport } = useContext(ReportContext)
-   
+
     const [filterName, setFilterName] = useState('all')
     const [perData, setPerData] = useState<any>({})
     const [arrowStyle, setArrowStyle] = useState('')
@@ -131,16 +139,16 @@ const Performance = (props: any) => {
                 <Space>
                     {
                         btn && <Space>
-                            <Typography.Text><FormattedMessage id="report.filter"/>: </Typography.Text>
+                            <Typography.Text><FormattedMessage id="report.filter" />: </Typography.Text>
                             <Select defaultValue="all" style={{ width: enLocale ? 336 : 200 }} value={filterName} onSelect={handleConditions}
                                 getPopupContainer={node => node.parentNode}
                             >
-                                <Option value="all"><FormattedMessage id="report.all.s"/></Option>
-                                <Option value="invalid"><FormattedMessage id="report.invalid"/></Option>
-                                <Option value="volatility" title={formatMessage({id: 'report.volatility'}) }><FormattedMessage id="report.volatility"/></Option>
-                                <Option value="increase"><FormattedMessage id="report.increase"/></Option>
-                                <Option value="decline"><FormattedMessage id="report.decline"/></Option>
-                                <Option value="normal"><FormattedMessage id="report.normal"/></Option>
+                                <Option value="all"><FormattedMessage id="report.all.s" /></Option>
+                                <Option value="invalid"><FormattedMessage id="report.invalid" /></Option>
+                                <Option value="volatility" title={formatMessage({ id: 'report.volatility' })}><FormattedMessage id="report.volatility" /></Option>
+                                <Option value="increase"><FormattedMessage id="report.increase" /></Option>
+                                <Option value="decline"><FormattedMessage id="report.decline" /></Option>
+                                <Option value="normal"><FormattedMessage id="report.normal" /></Option>
                             </Select>
                         </Space>
                     }
@@ -159,19 +167,7 @@ const Performance = (props: any) => {
             let metric_list: any = []
             conf.metric_list.map((metric: any) => {
                 let result = metric.compare_data[i]
-                if (result?.compare_result == 'decline') {
-                    metric.sortNum = 0
-                } else if (result?.compare_result == 'increase') {
-                    metric.sortNum = 1
-                } else if (result?.compare_result == 'normal') {
-                    metric.sortNum = 2
-                } else if (result?.compare_result == 'invalid') {
-                    metric.sortNum = 3
-                } else if (result?.compare_result == 'na') {
-                    metric.sortNum = 4
-                }else {
-                    metric.sortNum = 5
-                }
+                metric.sortNum = getSortNum(result?.compare_result)
 
                 metric_list.push({
                     ...metric
@@ -242,10 +238,10 @@ const Performance = (props: any) => {
                     <SuiteName>
                         {suite.suite_name}
                         <Popconfirm
-                            title={<FormattedMessage id="delete.prompt"/>}
+                            title={<FormattedMessage id="delete.prompt" />}
                             onConfirm={() => handleDelete('suite', suite, id)}
-                            cancelText={<FormattedMessage id="operation.cancel"/>}
-                            okText={<FormattedMessage id="operation.delete"/>}
+                            cancelText={<FormattedMessage id="operation.cancel" />}
+                            okText={<FormattedMessage id="operation.delete" />}
                         >
                             {btnState && <CloseBtn />}
                         </Popconfirm>
@@ -254,178 +250,162 @@ const Performance = (props: any) => {
                     <TestConfWarpper>
                         {!domainResult.is_default &&
                             <Configuration>
-                                {/* {domainResult.perf_conf.need_test_suite_description &&
-                                    <SigleWrapper>
-                                        <TestTitle><FormattedMessage id="report.test.tools"/></TestTitle>
-                                        <TestContent>
-                                            <CodeViewer code={suite.tool || suite.test_suite_description} />
-                                        </TestContent>
-                                    </SigleWrapper>
-                                } */}
-                                {domainResult.perf_conf.need_test_env &&
-                                    <SigleWrapper>
-                                        <TestTitle><FormattedMessage id="report.test.env"/></TestTitle>
-                                        <TestContent>
-                                            <PerfTextArea
-                                                name={suite.test_env}
-                                                field="test_env"
-                                                suite={suite}
-                                            />
-                                        </TestContent>
-                                    </SigleWrapper>
-                                }
-                                {domainResult.perf_conf.need_test_description &&
-                                    <SigleWrapper>
-                                        <TestTitle><FormattedMessage id="report.test.description"/></TestTitle>
-                                        <TestContent>
-                                            <PerfTextArea
-                                                name={suite.test_description}
-                                                field="test_description"
-                                                suite={suite}
-                                            />
-                                        </TestContent>
-                                    </SigleWrapper>
-                                }
-                                {domainResult.perf_conf.need_test_conclusion &&
-                                    <SigleWrapper>
-                                        <TestTitle><FormattedMessage id="report.test.conclusion"/></TestTitle>
-                                        <TestContent>
-                                            <PerfTextArea
-                                                name={suite.test_conclusion}
-                                                field="test_conclusion"
-                                                suite={suite}
-                                            />
-                                        </TestContent>
-                                    </SigleWrapper>
+                                {
+                                    [
+                                        ["need_test_env", "test_env", "env"],
+                                        ["need_test_description", "test_description", "description"],
+                                        ["need_test_conclusion", "test_conclusion", "conclusion"],
+                                    ].map(($item: any) => {
+                                        const [$var, name, $locale] = $item
+                                        if (!domainResult.perf_conf) return
+                                        if (!domainResult.perf_conf[$var]) return
+                                        return (
+                                            <SigleWrapper
+                                                key={$var}
+                                            >
+                                                <TestTitle>
+                                                    <FormattedMessage id={`report.test.${$locale}`} />
+                                                </TestTitle>
+                                                <TestContent>
+                                                    <PerfTextArea
+                                                        name={suite[name]}
+                                                        field={name}
+                                                        suite={suite}
+                                                    />
+                                                </TestContent>
+                                            </SigleWrapper>
+                                        )
+                                    })
                                 }
                             </Configuration>
                         }
                         {
                             btn ?
-                                (suite.conf_list && !!suite.conf_list.length) ? suite.conf_list.map((conf: any, cid: number) => (
-                                    <div key={cid}>
-                                        <TestConf>
-                                            <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}><FormattedMessage id="report.conf/metric"/></ConfTitle>
-                                            {
-                                                allGroupData?.map((cont: any, i: number) => (
-                                                    <ConfData gLen={groupLen} key={i} btnState={btnState}>
-                                                        {
-                                                            i !== baselineGroupIndex ?
-                                                                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-                                                                    <EllipsisPulic title={cont.product_version || cont.tag}>
-                                                                        <Typography.Text
-                                                                            style={{ color: 'rgba(0,0,0,0.45)' }}
-                                                                        >
-                                                                            {cont.product_version || cont.tag}
-                                                                        </Typography.Text>
-                                                                    </EllipsisPulic>
-                                                                    <RightResult>
-                                                                        <FormattedMessage id="report.comparison/tracking.results"/>
-                                                                        <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
-                                                                            {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
-                                                                        </span>
-                                                                        <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
-                                                                            title={
-                                                                                <span style={{ color: 'rgba(0,0,0,0.65)' }}>
-                                                                                    <FormattedMessage id="report.performance.test.and.baseGroup"/><br />
-                                                                                    <FormattedMessage id="report.rules.as.follows"/>：<br />
-                                                                                    <FormattedMessage id="report.decline"/>&gt;<FormattedMessage id="report.increase"/>&gt;<FormattedMessage id="report.little.fluctuation"/>&gt;<FormattedMessage id="report.invalid"/>
-                                                                                </span>
-                                                                            }>
-                                                                            <QuestionCircleOutlined />
-                                                                        </Tooltip>
-                                                                    </RightResult>
-                                                                </div>
-                                                                :
-                                                                <EllipsisPulic title={cont.product_version || cont.tag}>
-                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{cont.product_version || cont.tag}</Typography.Text>
-                                                                </EllipsisPulic>
-
-                                                        }
-                                                    </ConfData>
-                                                ))
-                                            }
-                                        </TestConf>
-                                        <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
-                                            <PrefData>
-                                                <DelBtn conf={conf} cid={cid} />
-                                                <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                {renderShare(conf)}
-                                            </PrefData>
-                                            {
-                                                conf.metric_list.map((metric: any, idx: number) => (
-                                                    <PrefMetric key={idx}>
-                                                        <DelBtn conf={conf} cid={cid} />
-                                                        {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
-                                                        <MetricTitle gLen={groupLen}>
-                                                            <Row justify="space-between">
-                                                                <Col span={16} >
-                                                                    <Row justify="start">
-                                                                        <EllipsisPulic
-                                                                            title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
-                                                                        // width={210}
-                                                                        >
-                                                                            <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
-                                                                                {metric.metric}{metric.unit && <span>({metric.unit})</span>}
+                                (suite.conf_list && !!suite.conf_list.length) ?
+                                    suite.conf_list.map((conf: any, cid: number) => (
+                                        <div key={cid}>
+                                            <TestConf>
+                                                <ConfTitle gLen={groupLen} style={{ marginLeft: btnState ? 39 : 0 }}><FormattedMessage id="report.conf/metric" /></ConfTitle>
+                                                {
+                                                    allGroupData?.map((cont: any, i: number) => (
+                                                        <ConfData gLen={groupLen} key={i} btnState={btnState}>
+                                                            {
+                                                                i !== baselineGroupIndex ?
+                                                                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                                                                        <EllipsisPulic title={cont.product_version || cont.tag}>
+                                                                            <Typography.Text
+                                                                                style={{ color: 'rgba(0,0,0,0.45)' }}
+                                                                            >
+                                                                                {cont.product_version || cont.tag}
                                                                             </Typography.Text>
                                                                         </EllipsisPulic>
-                                                                    </Row>
-                                                                </Col>
-                                                                <Col span={8}>
-                                                                    <Row justify="end">
                                                                         <RightResult>
-                                                                            ({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})
+                                                                            <FormattedMessage id="report.comparison/tracking.results" />
+                                                                            <span onClick={() => handleArrow(suite, i)} style={{ margin: '0 5px 0 3px', verticalAlign: 'middle' }}>
+                                                                                {arrowStyle == suite.suite_id && num == i ? <IconArrowBlue /> : <IconArrow />}
+                                                                            </span>
+                                                                            <Tooltip color="#fff" overlayStyle={{ minWidth: 350 }}
+                                                                                title={
+                                                                                    <span style={{ color: 'rgba(0,0,0,0.65)' }}>
+                                                                                        <FormattedMessage id="report.performance.test.and.baseGroup" /><br />
+                                                                                        <FormattedMessage id="report.rules.as.follows" />：<br />
+                                                                                        <FormattedMessage id="report.decline" />&gt;<FormattedMessage id="report.increase" />&gt;<FormattedMessage id="report.little.fluctuation" />&gt;<FormattedMessage id="report.invalid" />
+                                                                                    </span>
+                                                                                }>
+                                                                                <QuestionCircleOutlined />
+                                                                            </Tooltip>
                                                                         </RightResult>
-                                                                    </Row>
-                                                                </Col>
-                                                            </Row>
-                                                        </MetricTitle>
-                                                        {
-                                                            Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
-                                                            metric.compare_data.map((item: any, i: number) => (
-                                                                <MetricText gLen={groupLen} btnState={btnState} key={i}>
-                                                                    <Row justify="space-between">
-                                                                        <Col span={item && item.compare_result ? 12 : 20}>
-                                                                            <Row justify="start">
-                                                                                <EllipsisPulic
-                                                                                    title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
-                                                                                    width={210}
-                                                                                >
-                                                                                    <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
-                                                                                        {
-                                                                                            !item || JSON.stringify(item) === '{}'
-                                                                                                ? '-'
-                                                                                                : item.test_value && `${item.test_value}±${item.cv_value}`
-                                                                                        }
-                                                                                    </Typography.Text>
-                                                                                </EllipsisPulic>
-                                                                            </Row>
-                                                                        </Col>
-                                                                        {
-                                                                            item && item.compare_result &&
-                                                                            <Col span={12}>
-                                                                                <Row justify="end">
-                                                                                    <RightResult>
-                                                                                        <span className={handleColor(item.compare_result)}>
-                                                                                            {item.compare_value || '-'}
-                                                                                        </span>
-                                                                                        <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 9px ' }}>
-                                                                                            {handleIcon(item.compare_result)}
-                                                                                        </span>
-                                                                                    </RightResult>
+                                                                    </div>
+                                                                    :
+                                                                    <EllipsisPulic title={cont.product_version || cont.tag}>
+                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.45)' }}>{cont.product_version || cont.tag}</Typography.Text>
+                                                                    </EllipsisPulic>
+
+                                                            }
+                                                        </ConfData>
+                                                    ))
+                                                }
+                                            </TestConf>
+                                            <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
+                                                <PrefData>
+                                                    <DelBtn conf={conf} cid={cid} />
+                                                    <PrefDataTitle gLen={groupLen}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
+                                                    {renderShare(conf)}
+                                                </PrefData>
+                                                {
+                                                    conf.metric_list.map((metric: any, idx: number) => (
+                                                        <PrefMetric key={idx}>
+                                                            <DelBtn conf={conf} cid={cid} />
+                                                            {/* <DelBtnEmpty conf={conf} cid={cid} /> */}
+                                                            <MetricTitle gLen={groupLen}>
+                                                                <Row justify="space-between">
+                                                                    <Col span={16} >
+                                                                        <Row justify="start">
+                                                                            <EllipsisPulic
+                                                                                title={`${metric.metric}${metric.unit ? '(' + metric.unit + ')' : ''}`}
+                                                                            // width={210}
+                                                                            >
+                                                                                <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }} >
+                                                                                    {metric.metric}{metric.unit && <span>({metric.unit})</span>}
+                                                                                </Typography.Text>
+                                                                            </EllipsisPulic>
+                                                                        </Row>
+                                                                    </Col>
+                                                                    <Col span={8}>
+                                                                        <Row justify="end">
+                                                                            <RightResult>
+                                                                                ({`${toPercentage(metric.cv_threshold)}/${toPercentage(metric.cmp_threshold)}`})
+                                                                            </RightResult>
+                                                                        </Row>
+                                                                    </Col>
+                                                                </Row>
+                                                            </MetricTitle>
+                                                            {
+                                                                Array.isArray(metric.compare_data) && !!metric.compare_data.length &&
+                                                                metric.compare_data.map((item: any, i: number) => (
+                                                                    <MetricText gLen={groupLen} btnState={btnState} key={i}>
+                                                                        <Row justify="space-between">
+                                                                            <Col span={item && item.compare_result ? 12 : 20}>
+                                                                                <Row justify="start">
+                                                                                    <EllipsisPulic
+                                                                                        title={!item || JSON.stringify(item) === '{}' ? '-' : `${item.test_value}±${item.cv_value}`}
+                                                                                        width={210}
+                                                                                    >
+                                                                                        <Typography.Text style={{ color: 'rgba(0,0,0,0.65)' }}>
+                                                                                            {
+                                                                                                !item || JSON.stringify(item) === '{}'
+                                                                                                    ? '-'
+                                                                                                    : item.test_value && `${item.test_value}±${item.cv_value}`
+                                                                                            }
+                                                                                        </Typography.Text>
+                                                                                    </EllipsisPulic>
                                                                                 </Row>
                                                                             </Col>
-                                                                        }
-                                                                    </Row>
-                                                                </MetricText>
-                                                            ))
-                                                        }
-                                                    </PrefMetric>
-                                                ))
-                                            }
+                                                                            {
+                                                                                item && item.compare_result &&
+                                                                                <Col span={12}>
+                                                                                    <Row justify="end">
+                                                                                        <RightResult>
+                                                                                            <span className={handleColor(item.compare_result)}>
+                                                                                                {item.compare_value || '-'}
+                                                                                            </span>
+                                                                                            <span className={handleColor(item.compare_result)} style={{ padding: ' 0px 9px ' }}>
+                                                                                                {handleIcon(item.compare_result)}
+                                                                                            </span>
+                                                                                        </RightResult>
+                                                                                    </Row>
+                                                                                </Col>
+                                                                            }
+                                                                        </Row>
+                                                                    </MetricText>
+                                                                ))
+                                                            }
+                                                        </PrefMetric>
+                                                    ))
+                                                }
+                                            </div>
                                         </div>
-                                    </div>
-                                )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                                    )) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 :
                                 <ChartsIndex {...suite} envData={environmentResult} base_index={baselineGroupIndex} />
                         }
@@ -449,10 +429,10 @@ const Performance = (props: any) => {
                     />
                 </TestItemText>
                 <Popconfirm
-                    title={<FormattedMessage id="delete.prompt"/>}
+                    title={<FormattedMessage id="delete.prompt" />}
                     onConfirm={() => onDelete(name, perData.name, perData.rowKey)}
-                    cancelText={<FormattedMessage id="operation.cancel"/>}
-                    okText={<FormattedMessage id="operation.delete"/>}
+                    cancelText={<FormattedMessage id="operation.cancel" />}
+                    okText={<FormattedMessage id="operation.delete" />}
                 >
                     {btnState && <CloseBtn />}
                 </Popconfirm>
@@ -463,3 +443,20 @@ const Performance = (props: any) => {
     )
 }
 export default memo(Performance);
+
+
+/* 
+    if (result?.compare_result == 'decline') {
+        metric.sortNum = 0
+    } else if (result?.compare_result == 'increase') {
+        metric.sortNum = 1
+    } else if (result?.compare_result == 'normal') {
+        metric.sortNum = 2
+    } else if (result?.compare_result == 'invalid') {
+        metric.sortNum = 3
+    } else if (result?.compare_result == 'na') {
+        metric.sortNum = 4
+    } else {
+        metric.sortNum = 5
+    }
+*/

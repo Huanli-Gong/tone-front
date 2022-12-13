@@ -6,7 +6,6 @@ import { deleteConfig, queryConfigList } from '../services'
 import { getRadioFilter, getSearchFilter, getUserFilter } from '@/components/TableFilters'
 import CommonPagination from '@/components/CommonPagination'
 import AddConfig from './AddConfig'
-import { request } from 'express'
 import { requestCodeMessage } from '@/utils/utils'
 
 const SystemParameter = (props: any, ref: any) => {
@@ -36,7 +35,7 @@ const SystemParameter = (props: any, ref: any) => {
 
     const columns = [{
         dataIndex: 'config_key',
-        title: <FormattedMessage id="basic.config_key"/>,
+        title: <FormattedMessage id="basic.config_key" />,
         ellipsis: {
             showTitle: false
         },
@@ -48,7 +47,7 @@ const SystemParameter = (props: any, ref: any) => {
         ...getSearchFilter(params, setParams, 'config_key'),
     }, {
         dataIndex: 'config_value',
-        title: <FormattedMessage id="basic.config_value"/>,
+        title: <FormattedMessage id="basic.config_value" />,
         width: 160,
         ellipsis: {
             showTitle: false
@@ -61,44 +60,54 @@ const SystemParameter = (props: any, ref: any) => {
         ...getSearchFilter(params, setParams, 'config_value'),
     }, {
         dataIndex: 'enable',
-        title: <FormattedMessage id="basic.is_enable"/>,
+        title: <FormattedMessage id="basic.is_enable" />,
         width: 100,
         render: (_: any) => (
-            <>
-                <Badge status={_ ? 'success' : 'error'} />
-                <Typography.Text>{_ ? <FormattedMessage id="basic.enable"/> : <FormattedMessage id="basic.stop"/> }</Typography.Text>
-            </>
+            <Badge
+                status={_ ? 'success' : 'error'}
+                text={<Typography.Text>
+                    {
+                        _ ? <FormattedMessage id="basic.enable" /> :
+                            <FormattedMessage id="basic.stop" />}
+                </Typography.Text>}
+            />
         ),
-        ...getRadioFilter(params, setParams, [{ name: <FormattedMessage id="basic.enable"/>, value: 1 }, { name: <FormattedMessage id="basic.stop"/>, value: 0 }], 'enable'),
+        ...getRadioFilter(params, setParams, [{ name: <FormattedMessage id="basic.enable" />, value: 1 }, { name: <FormattedMessage id="basic.stop" />, value: 0 }], 'enable'),
     }, {
         dataIndex: 'gmt_created',
-        title: <FormattedMessage id="basic.gmt_created"/>,
+        title: <FormattedMessage id="basic.gmt_created" />,
         width: 175,
     }, {
         dataIndex: 'gmt_modified',
-        title: <FormattedMessage id="basic.gmt_modified"/>,
+        title: <FormattedMessage id="basic.gmt_modified" />,
         width: 175,
     }, {
         dataIndex: 'creator_name',
-        title: <FormattedMessage id="basic.creator"/>,
-        ...getUserFilter(params, setParams, 'creator')
+        title: <FormattedMessage id="basic.creator" />,
+        ...getUserFilter(params, setParams, 'creator'),
+        render(text: string) {
+            return <>{text || "-"}</>
+        }
     }, {
         dataIndex: 'update_user',
-        title: <FormattedMessage id="basic.update_user"/>,
-        ...getUserFilter(params, setParams, 'update_user')
+        title: <FormattedMessage id="basic.update_user" />,
+        ...getUserFilter(params, setParams, 'update_user'),
+        render(text: string) {
+            return <>{text || "-"}</>
+        }
     }, {
         dataIndex: 'description',
-        title: <FormattedMessage id="basic.desc"/>,
+        title: <FormattedMessage id="basic.desc" />,
         ellipsis: {
             showTitle: false
         },
         render: (_: any) => (
             <Tooltip placement="topLeft" title={_}>
-                {_}
+                {_ || "-"}
             </Tooltip>
         ),
     }, {
-        title: <FormattedMessage id="Table.columns.operation"/>,
+        title: <FormattedMessage id="Table.columns.operation" />,
         width: 100,
         fixed: 'right',
         render: (_: any) => (
@@ -107,20 +116,20 @@ const SystemParameter = (props: any, ref: any) => {
                     onClick={() => handleEdit(_)}
                     style={{ color: '#1890FF', cursor: 'pointer' }}
                 >
-                    <FormattedMessage id="operation.edit"/>
+                    <FormattedMessage id="operation.edit" />
                 </span>
 
                 <Popconfirm
-                    title={<div style={{ color: 'red' }}><FormattedMessage id="basic.delete.popconfirm.title"/></div>}
+                    title={<div style={{ color: 'red' }}><FormattedMessage id="basic.delete.popconfirm.title" /></div>}
                     onCancel={() => handleDelete(_)}
-                    okText={<FormattedMessage id="operation.cancel"/>}
-                    cancelText={<FormattedMessage id="operation.confirm.delete"/>}
+                    okText={<FormattedMessage id="operation.cancel" />}
+                    cancelText={<FormattedMessage id="operation.confirm.delete" />}
                     icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                 >
                     <Typography.Text
                         style={{ color: '#1890FF', cursor: 'pointer' }}
                     >
-                        <FormattedMessage id="operation.delete"/>
+                        <FormattedMessage id="operation.delete" />
                     </Typography.Text>
                 </Popconfirm>
             </Space>
@@ -135,7 +144,7 @@ const SystemParameter = (props: any, ref: any) => {
         const { code, msg } = await deleteConfig({ config_id: _.id })
         if (code === 200) {
             refresh()
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
         }
         else {
             requestCodeMessage(code, msg)
@@ -153,7 +162,7 @@ const SystemParameter = (props: any, ref: any) => {
                     columns={columns as any}
                     pagination={false}
                     size="small"
-                    scroll={enLocale? { x: 1200 } : undefined}
+                    scroll={enLocale ? { x: 1200 } : undefined}
                 />
                 <CommonPagination
                     pageSize={params.page_size}

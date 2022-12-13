@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Badge } from 'antd';
-import { useIntl, FormattedMessage  } from 'umi'
+import { FormattedMessage } from 'umi'
 
 const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dataArr }) => {
-	// const dataArr = stateType === 'real_state' ? ['Available','Broken'] : ['Available', 'Occupied', 'Broken', 'Reserved']
 	const [optionData, setOptionData] = useState<string[]>([])
-	const [val,setVal] = useState<string | undefined>(stateVal)
+	const [val, setVal] = useState<string | undefined>(stateVal)
 
 	const { Option } = Select;
-	useEffect(() =>{
+	useEffect(() => {
 		setOptionData(dataArr)
-	},[])
-	useEffect(() =>{
+	}, [])
+	useEffect(() => {
 		setVal('')
-	},[tabType])
-	const handleSearch = (value:string) =>{
-		const data = dataArr.filter((item:any) => {
+	}, [tabType])
+	const handleSearch = (value: string) => {
+		const data = dataArr.filter((item: any) => {
 			return item.toLowerCase().includes(value)
 		})
-		setOptionData(data) 
-	 }
-	 const handleSelectChange = (value:string) =>{
+		setOptionData(data)
+	}
+	const handleSelectChange = (value: string) => {
 		setVal(value)
-        setOptionData(dataArr)
-    }
-	const StateBadge = ( state : string  ) => {
-		switch( state ) {
-			case 'Available' : return <Badge status="success" text="Available"/>
-			case 'Alive' : return <Badge status="success" text="Alive"/>
-			case 'Occupied' : return <Badge status="processing" text="Occupied"/>
-			case 'Reserved' : return <Badge status="default" text="Reserved"/>
-			case 'Broken' : return <Badge status="error" text="Broken"/>
-			default : return <></>
+		setOptionData(dataArr)
+	}
+
+	const StateBadge = (state: string) => {
+		switch (state) {
+			case 'Available': return <Badge status="success" text="Available" />
+			case 'Alive': return <Badge status="success" text="Alive" />
+			case 'Occupied': return <Badge status="processing" text="Occupied" />
+			case 'Reserved': return <Badge status="default" text="Reserved" />
+			case 'Broken': return <Badge status="error" text="Broken" />
+			case 'Online': return <Badge status="success" text="Online" />
+			case 'Offline': return <Badge status="error" text="Offline" />
+			default: return <></>
 		}
 	}
 

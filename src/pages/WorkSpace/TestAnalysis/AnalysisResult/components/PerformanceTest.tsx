@@ -103,7 +103,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 // }
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)

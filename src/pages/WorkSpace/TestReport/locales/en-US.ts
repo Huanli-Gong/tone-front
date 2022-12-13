@@ -23,6 +23,8 @@ export default {
   // copy template
   'report.template.already.exists': 'Template name already exists.',
   'report.template.copy': 'Copy template',
+  'report.template.confirm.title': "Tips",
+  'report.template.confirm.content': "Test items are missing use cases. Do you want to continue saving?",
   'report.original.template': 'Original Template',
   'report.new.template': 'Create Template',
   'report.new.template.message': 'Only Chinese, letters, numbers, underscores, dashes and dots are allowed. The maximum length is 64 words.',
@@ -119,7 +121,7 @@ export default {
   'report.name.input': 'Please enter a report template name',
   'report.description.textArea': 'Please enter the description of the report',
   'report.test.background.ps': '【Test Background】【Test Method】【Test Conclusion】【Test Environment(description)】They need to be filled in manually after the report is generated',
-  'report.test.summary.ps': '【Summary】【Test Environment】It will be automatically generated',  
+  'report.test.summary.ps': '【Summary】【Test Environment】It will be automatically generated',
   'report.update.report.template': 'Update report template',
   'report.save.report.template': 'Save report template',
 
@@ -130,8 +132,8 @@ export default {
   'report.template.preview': 'Preview Report Template',
   'report.take.3.control.groups': '（Take the comparison of three groups as an example）',
   'report.content.needs.to.generate': 'The content here needs to be filled in manually after generating the report.',
-  'report.comparison.group1': 'Comparison Group 1',  
-  'report.comparison.group2': 'Comparison Group 2', 
+  'report.comparison.group1': 'Comparison Group 1',
+  'report.comparison.group2': 'Comparison Group 2',
   'report.content.get.from.suite': 'The content here will be automatically obtained from the test suite',
   'report.list.view': 'List View',
   'report.chart.view': 'Chart View',

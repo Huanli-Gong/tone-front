@@ -15,7 +15,7 @@ import {
 } from '../services'
 import styled from "styled-components"
 import ResizeColumnTable from "@/components/ResizeTable"
-import { transQuery } from "./utils"
+// import { transQuery } from "./utils"
 import CompareBar from '../CompareBar'
 import ReRunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import ViewReport from '../CompareBar/ViewReport'
@@ -66,7 +66,7 @@ const ListTable: React.FC<IProps> = (props) => {
 
     const queryTestList = async () => {
         setLoading(true)
-        const { code, msg, ...rest } = await queryTestResultList(transQuery(pageQuery))
+        const { code, msg, ...rest } = await queryTestResultList(pageQuery)
         setLoading(false)
         if (code !== 200) return
         setSource(rest)
@@ -155,7 +155,12 @@ const ListTable: React.FC<IProps> = (props) => {
             render: (_: any, row: any) => {
                 return (
                     <span>
-                        {row.created_from === 'offline' && <Offline><FormattedMessage id="ws.result.list.offline" /></Offline>}
+                        {
+                            row.created_from === 'offline' &&
+                            <Offline>
+                                <FormattedMessage id="ws.result.list.offline" />
+                            </Offline>
+                        }
                         <Tooltip placement="topLeft" title={_}>
                             <Typography.Text
                                 className="result_job_hover_span"

@@ -72,7 +72,7 @@ export default {
 
     // AnalysisResult
     'analysis.comparison.result': 'Comparative analysis results',
-    'analysis.share': 'share',
+    'analysis.share': 'Share',
     'analysis.test.env': 'Test Evnironment',
     'analysis.model': 'Model',
     'analysis.test.data': 'Test Data',

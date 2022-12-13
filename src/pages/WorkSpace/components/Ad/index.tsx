@@ -2,8 +2,6 @@ import React from "react"
 import styled from "styled-components"
 import { Carousel, Space, Row, Button, Typography } from "antd"
 import First from './First';
-import { ReactComponent as Close } from "@/assets/svg/close.svg"
-import imgPic from "@/assets/img/image.png"
 import { useParams, history, useModel } from "umi";
 
 const wrapperWidth = `

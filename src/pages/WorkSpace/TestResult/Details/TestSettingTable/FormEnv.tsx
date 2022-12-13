@@ -7,14 +7,16 @@ import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushF
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import MonitorList from '@/pages/WorkSpace/TestJob/components/JobForms/MonitorList'
-import { getTextByJs } from '@/utils/hooks'
+import { getTextByJs, useCopyText } from '@/utils/hooks'
 import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
+import { CopyOutlined } from '@ant-design/icons';
+import { CopyLinkSpan } from '@/pages/WorkSpace/TestJob/components/untils'
 
 /**
  * 环境配置
  */
 export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }: any) => {
-    if  (JSON.stringify(contrl) === '{}' ) return <></>
+    if (JSON.stringify(contrl) === '{}') return <></>
 
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
@@ -48,6 +50,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
         () => queryKernelList({ enable: 'True' }) // , release : 'True'
     )
 
+    const handleCopyText = useCopyText(formatMessage({ id: 'request.copy.success' }))
+
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
             const {
@@ -80,11 +84,11 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
             }
 
             const hasBuildKernel = !!build_pkg_info && JSON.stringify(build_pkg_info) !== '{}'
-            
+
             if (kernel_version) setKernal('install_push')
-            if (!kernel_version&& !hasBuildKernel) setKernal('no')
+            if (!kernel_version && !hasBuildKernel) setKernal('no')
             if (hasBuildKernel) setKernal('install_build_kernel')
-            if ( kernel_info && JSON.stringify( kernel_info ) !== '{}' && !kernel_version ) setKernal('install_un_push')
+            if (kernel_info && JSON.stringify(kernel_info) !== '{}' && !kernel_version) setKernal('install_un_push')
             setReboot(need_reboot)
             let moniter_contrl: boolean = false
 
@@ -121,7 +125,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
 
     return (
         <Card
-            title={<FormattedMessage id="ws.result.details.env.prepare.config"/>}
+            className={styles.customCardCls}
+            title={<FormattedMessage id="ws.result.details.env.prepare.config" />}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}
@@ -138,6 +143,9 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 style={{ width: '100%' }}
                 name="env"
                 form={form}
+                labelCol={{
+                    span: 4
+                }}
                 className={`${styles.job_test_form} ${styles[locale ? 'label_style_form_en' : 'label_style_form']}`}
                 initialValues={{
                     rpm_info: [{ rpm: '', pos: 'before' }],
@@ -149,29 +157,29 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                 }}
             >
                 <Row>
-                    <Col span={ 15 }>
+                    <Col span={15}>
                         {
                             'reclone' in contrl &&
                             <Form.Item
-                                label={contrl.reclone.alias || <FormattedMessage id={`ws.result.details.${contrl.reclone.name}`}/> }
+                                label={contrl.reclone.alias || <FormattedMessage id={`ws.result.details.${contrl.reclone.name}`} />}
                                 name="reclone_contrl"
                                 initialValue={false}
                             >
                                 <Radio.Group disabled={disabled} onChange={({ target }) => setReset(target.value)}>
-                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
                         {
                             reset &&
                             <Form.Item label=" ">
-                                <Form.Item label={<FormattedMessage id="ws.result.details.physical"/>}>
+                                <Form.Item label={<FormattedMessage id="ws.result.details.physical" />}>
                                     <Row gutter={10}>
                                         <Col span={12}>
                                             <Form.Item name="os" noStyle>
-                                                <Select getPopupContainer={node => node.parentNode} 
-                                                    placeholder={<FormattedMessage id="ws.result.details.physical.placeholder"/>}
+                                                <Select getPopupContainer={node => node.parentNode}
+                                                    placeholder={<FormattedMessage id="ws.result.details.physical.placeholder" />}
                                                     disabled={disabled}>
                                                     <Select.Option value="AliOS7U2-4.9-x86-64">AliOS7U2-4.9-x86-64</Select.Option>
                                                     <Select.Option value="AliOS7U2-aarch64">AliOS7U2-aarch64</Select.Option>
@@ -181,8 +189,8 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                         </Col>
                                         <Col span={12}>
                                             <Form.Item name="app_name" noStyle>
-                                                <Select getPopupContainer={node => node.parentNode} 
-                                                    placeholder={<FormattedMessage id="ws.result.details.app_name.placeholder"/>}
+                                                <Select getPopupContainer={node => node.parentNode}
+                                                    placeholder={<FormattedMessage id="ws.result.details.app_name.placeholder" />}
                                                     disabled={disabled}>
                                                     <Select.Option value="baseos_server">baseos_server</Select.Option>
                                                     <Select.Option value="app_server">app_server</Select.Option>
@@ -191,21 +199,21 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                         </Col>
                                     </Row>
                                 </Form.Item>
-                                <Form.Item name="vm" label={<FormattedMessage id="ws.result.details.vm"/>}>
-                                    <Select getPopupContainer={node => node.parentNode} 
-                                        placeholder={<FormattedMessage id="ws.result.details.vm.placeholder"/>}
+                                <Form.Item name="vm" label={<FormattedMessage id="ws.result.details.vm" />}>
+                                    <Select getPopupContainer={node => node.parentNode}
+                                        placeholder={<FormattedMessage id="ws.result.details.vm.placeholder" />}
                                         disabled={disabled}></Select>
                                 </Form.Item>
                             </Form.Item>
                         }
                         {
                             'kernel_install' in contrl &&
-                            <Form.Item label={contrl.kernel_install.alias || <FormattedMessage id={`ws.result.details.${contrl.kernel_install.name}`}/> }>
+                            <Form.Item label={contrl.kernel_install.alias || <FormattedMessage id={`ws.result.details.${contrl.kernel_install.name}`} />}>
                                 <Radio.Group value={kernel} disabled={disabled} onChange={handleKernalInstallChange}>
-                                    <Radio value="no"><FormattedMessage id="ws.result.details.install_no"/></Radio>
-                                    <Radio value="install_push"><FormattedMessage id="ws.result.details.install_publish"/></Radio>
-                                    <Radio value="install_un_push"><FormattedMessage id="ws.result.details.install_un"/></Radio>
-                                    <Radio value="install_build_kernel"><FormattedMessage id="ws.result.details.install_build"/></Radio>
+                                    <Radio value="no"><FormattedMessage id="ws.result.details.install_no" /></Radio>
+                                    <Radio value="install_push"><FormattedMessage id="ws.result.details.install_publish" /></Radio>
+                                    <Radio value="install_un_push"><FormattedMessage id="ws.result.details.install_un" /></Radio>
+                                    <Radio value="install_build_kernel"><FormattedMessage id="ws.result.details.install_build" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
@@ -220,7 +228,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                         }
                         {
                             kernel === 'install_un_push' &&
-                            <UnPushForm disabled={disabled} form={form}/>
+                            <UnPushForm disabled={disabled} form={form} />
                         }
                         {
                             kernel === 'install_build_kernel' &&
@@ -229,47 +237,67 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                         {
                             'reboot' in contrl &&
                             <Form.Item
-                                label={contrl.reboot.alias || <FormattedMessage id={`ws.result.details.${contrl.reboot.name}`}/> }
+                                label={contrl.reboot.alias || <FormattedMessage id={`ws.result.details.${contrl.reboot.name}`} />}
                                 name="need_reboot"
                             >
                                 <Radio.Group disabled={disabled} onChange={handleRebootChange}>
-                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
                         {
                             'global_variable' in contrl &&
                             <Form.Item
-                                name="env_info"
-                                // label="全局变量"
-                                label={contrl.global_variable.alias || <FormattedMessage id={`ws.result.details.${contrl.global_variable.name}`}/> }
-                                rules={[
-                                    () => ({
-                                        validator(rule, value) {
-                                            if (value) {
-                                                const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                                return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'format.key.value'}) );
-                                            }
-                                            else
-                                                return Promise.resolve()
-                                        },
-                                    })
-                                ]}
+                                label={contrl.global_variable.alias || <FormattedMessage id={`ws.result.details.${contrl.global_variable.name}`} />}
                             >
-                                <Input.TextArea disabled={disabled} placeholder={formatMessage({id: 'format.key.value'})} />
+                                <Col span={24} style={{ position: "relative" }}>
+                                    <Form.Item
+                                        name="env_info"
+                                        // label="全局变量"
+                                        rules={[
+                                            () => ({
+                                                validator(rule, value) {
+                                                    if (value) {
+                                                        const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
+                                                        return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({ id: 'format.key.value' }));
+                                                    }
+                                                    else
+                                                        return Promise.resolve()
+                                                },
+                                            })
+                                        ]}
+                                    >
+                                        <Input.TextArea
+                                            disabled={disabled}
+                                            placeholder={formatMessage({ id: 'format.key.value' })}
+                                            autoSize={{
+                                                maxRows: 10,
+                                                minRows: 3
+                                            }}
+                                        />
+                                    </Form.Item>
+                                    {
+                                        form.getFieldValue("env_info") &&
+                                        <CopyLinkSpan
+                                            style={{ right: -20 }}
+                                            onCopy={() => form.getFieldValue("env_info")}
+                                        />
+                                    }
+                                </Col>
                             </Form.Item>
                         }
                         {
                             'rpm' in contrl &&
                             <FormList
+                                form={form}
                                 // label="安装RPM"
-                                label={contrl.rpm.alias || <FormattedMessage id={`ws.result.details.${contrl.rpm.name}`}/> }
+                                label={contrl.rpm.alias || <FormattedMessage id={`ws.result.details.${contrl.rpm.name}`} />}
                                 listName="rpm_info"
                                 textName="rpm"
                                 radioName="pos"
-                                buttonText={formatMessage({id: 'ws.result.details.rpm.add'})}
-                                placeholder={formatMessage({id: 'ws.result.details.please.enter.rpm'})}
+                                buttonText={formatMessage({ id: 'ws.result.details.rpm.add' })}
+                                placeholder={formatMessage({ id: 'ws.result.details.please.enter.rpm' })}
                                 buttonShow={reboot}
                                 disabled={disabled}
                             />
@@ -277,13 +305,14 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                         {
                             'script' in contrl &&
                             <FormList
+                                form={form}
                                 // label="执行脚本"
-                                label={contrl.script.alias || <FormattedMessage id={`ws.result.details.${contrl.script.name}`}/> }
+                                label={contrl.script.alias || <FormattedMessage id={`ws.result.details.${contrl.script.name}`} />}
                                 listName="script_info"
                                 textName="script"
                                 radioName="pos"
-                                buttonText={formatMessage({id: 'ws.result.details.script.add'})}
-                                placeholder={formatMessage({id: 'ws.result.details.please.enter.script'})}
+                                buttonText={formatMessage({ id: 'ws.result.details.script.add' })}
+                                placeholder={formatMessage({ id: 'ws.result.details.please.enter.script' })}
                                 buttonShow={reboot}
                                 disabled={disabled}
                             />
@@ -292,7 +321,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                             'monitor' in contrl &&
                             <Form.Item
                                 // label="监控配置"
-                                label={contrl.monitor.alias || <FormattedMessage id={`ws.result.details.${contrl.monitor.name}.config`}/> }
+                                label={contrl.monitor.alias || <FormattedMessage id={`ws.result.details.${contrl.monitor.name}.config`} />}
                                 name="moniter_contrl"
                                 initialValue={false}
                             >
@@ -300,14 +329,14 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
                                     disabled={disabled}
                                     onChange={({ target }) => setMonitor(target.value)}
                                 >
-                                    <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                                    <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                                    <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         }
                         {
                             monitor &&
-                            <MonitorList disabled={disabled} formComponent={form}/>
+                            <MonitorList disabled={disabled} formComponent={form} />
                         }
                     </Col>
                 </Row>

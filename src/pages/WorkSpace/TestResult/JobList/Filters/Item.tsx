@@ -7,7 +7,12 @@ import { useSize } from "ahooks"
 
 const FilterItem: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { onChange, columns = [], defaultValue = [], title } = props
+
     const [filter, setFilter] = React.useState(defaultValue)
+
+    React.useEffect(() => {
+        setFilter(defaultValue)
+    }, [defaultValue])
 
     React.useImperativeHandle(ref, () => (
         {
