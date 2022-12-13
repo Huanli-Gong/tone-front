@@ -1,103 +1,70 @@
 import React from "react";
-import { Tooltip } from 'antd';
 import {
     MachineGroup,
     MachineGroupL,
     MachineGroupR,
 } from './TestEnvUI';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import { Row } from "antd";
 interface EnvType {
-    len: Array<{}>,
-    envData: Array<{}>,
-    environmentResult: any,
-    group: number,
+    len?: any[],
+    envData?: any[],
+    environmentResult?: any,
+    group?: number,
 }
 
-export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, group }) => {
-
-    const RenderItem: React.FC<any> = ({ i, name, style = {} }) => {
-        return (
-            <>
-                {
-                     envData.map((server: any) => {
-                        const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                        return server.server_info.concat(len).map((item: any, idx: number) => (
-                            i === idx && <MachineGroupR style={style} gLen={group} key={idx}>
-                                <EllipsisPulic 
-                                    title={item?.[name] || '-'}
-                                >
-                                        {item?.[name] || '-'}
-                                </EllipsisPulic>
-                            </MachineGroupR>
-                        ))
-                    })
-                }
-            </>
-        )
-    }
-
+export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }) => {
+    const { count } = environmentResult
+    if (!envData) return <></>
     return (
-        Array.isArray(envData) && !!envData.length ? <>
+        <>
             {
-                len.map((item: any, i: number) => (
-                    <MachineGroup key={i}>
-                        <MachineGroupL style={{ background: '#fafafa' }}>IP</MachineGroupL>
-                        <RenderItem i={i} name='ip/sn' style={{ background: '#fafafa' }} />
-                        {/* <MachineGroupL>机型</MachineGroupL>
-                        <RenderItem i={i} name='distro' /> */}
-                        <MachineGroupL>OS</MachineGroupL>
-                        <RenderItem i={i} name='os' />
-                        <MachineGroupL>Kernel</MachineGroupL>
-                        <RenderItem i={i} name='kernel' />
-                        <MachineGroupL>Glibc</MachineGroupL>
-                        <RenderItem i={i} name='glibc' />
-                        {/* <MachineGroupL>内存</MachineGroupL>
-                        <RenderItem i={i} name='memory_info' />
-                        <MachineGroupL>CPU</MachineGroupL>
-                        <RenderItem i={i} name='cpu_info' />
-                        <MachineGroupL>磁盘</MachineGroupL>
-                        <RenderItem i={i} name='disk' />
-                        <MachineGroupL>网卡信息</MachineGroupL>
-                        <RenderItem i={i} name='ether' /> */}
-                        <MachineGroupL>GCC</MachineGroupL>
-                        <RenderItem i={i} name='gcc' />
-                        {/* {
-                            envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            autoAdjustOverflow={false}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                            title={item?.gcc || '-'}>
-                                            <span className="enviroment_child">{item?.gcc || '-'}</span>
-                                        </Tooltip>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        } */}
-                        {/* <MachineGroupL>RPM</MachineGroupL>
+                new Array(count).fill("").map((ctx: any, idx: number) => {
+                    return <MachineGroup key={idx}>
                         {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            autoAdjustOverflow={false}
-                                            title={<div>{item.rpm?.map((i: any, idx: number) => (<span key={idx}>{i}<br /></span>))}</div>}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                        >
-                                            <span className="enviroment_child">{item.rpm || '-'}</span>
-                                        </Tooltip>
-                                    </MachineGroupR>
-                                ))
+                            [
+                                ["IP", "ip/sn"],
+                                ["OS", "os"],
+                                ["Kernel", "kernel"],
+                                ["Glibc", "glibc"],
+                                ["GCC", "gcc"],
+                                // ["机型", "distro"],
+                                // ["RPM", "rpm"],
+                                // ["内存", "memory_info"],
+                                // ["CPU", "cpu_info"],
+                                // ["磁盘", "disk"],
+                                // ["网卡信息", "ether"],
+                            ].map((tm: any, i: number) => {
+                                const [title, field] = tm
+                                return (
+                                    <Row key={i}>
+                                        <MachineGroupL style={{ background: '#fafafa' }}>
+                                            {title}
+                                        </MachineGroupL>
+                                        {
+                                            new Array(group).fill("").map((item: any, index: number) => {
+                                                const title = envData[index]?.server_info?.[idx][field] || "-"
+                                                return (
+                                                    <MachineGroupR
+                                                        gLen={group}
+                                                        key={index}
+                                                    >
+                                                        <EllipsisPulic
+                                                            title={title}
+                                                        >
+                                                            {title}
+                                                        </EllipsisPulic>
+                                                    </MachineGroupR>
+                                                )
+                                            })
+                                        }
+                                    </Row>
+                                )
                             })
-                        } */}
+                        }
                     </MachineGroup>
-                ))
+                })
             }
-        </> : <></>
+        </>
     )
 }

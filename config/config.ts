@@ -3,19 +3,15 @@ import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list } = process.env;
+const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list, NODE_ENV } = process.env;
 
 export default defineConfig({
-    // outputPath : 'build',
     hash: false,
-    antd: {
-        // config: {
-        //   locale: zhCN
-        // }
-    },
+    antd: {},
     dva: {
         hmr: true,
     },
+    devtool: NODE_ENV === "develepment" ? "eval-source-map" : undefined,
     layout: {
         name: 'T-One',
         locale: true,

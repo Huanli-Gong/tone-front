@@ -33,7 +33,8 @@
     "test": "umi test",
     "test:all": "node ./tests/run-tests.js",
     "test:component": "umi test ./src/components",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "use-stash": "git stash apply 0 && git restore --staged .env"
   },
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
