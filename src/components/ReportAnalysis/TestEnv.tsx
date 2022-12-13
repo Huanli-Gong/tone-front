@@ -4,8 +4,7 @@ import {
     MachineGroupL,
     MachineGroupR,
 } from './TestEnvUI';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import { Row, Tooltip } from "antd";
+import { Row, Tooltip, Typography } from "antd";
 import { DoubleRightOutlined } from "@ant-design/icons"
 import styled, { keyframes } from "styled-components"
 import { useIntl } from "umi";
@@ -54,7 +53,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
         return <></>
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {
                 new Array(collapsed ? count : 1).fill("").map((ctx: any, idx: number) => {
                     return (
@@ -99,11 +98,21 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                                             gLen={group}
                                                             key={index}
                                                         >
-                                                            <EllipsisPulic
-                                                                title={title}
+                                                            <Typography.Text
+                                                                ellipsis={{
+                                                                    tooltip: {
+                                                                        title: (
+                                                                            <span
+                                                                                dangerouslySetInnerHTML={{
+                                                                                    __html: title.replace(/\n/g, "<br />")
+                                                                                }}
+                                                                            />
+                                                                        )
+                                                                    }
+                                                                }}
                                                             >
                                                                 {title}
-                                                            </EllipsisPulic>
+                                                            </Typography.Text>
                                                         </MachineGroupR>
                                                     )
                                                 })
