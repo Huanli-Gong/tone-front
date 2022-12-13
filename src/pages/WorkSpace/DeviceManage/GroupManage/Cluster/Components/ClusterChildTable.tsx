@@ -39,6 +39,14 @@ export default (props: any) => {
         }, []
     )
 
+    // 请求页面数据
+    const getClusterServer = async () => {
+        setLoading(true)
+        const { data } = await queryClusterServer(props.id)
+        setDataSoure(data)
+        setLoading(false)
+    }
+
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aligroup' })
         if (code === 200) {
@@ -99,13 +107,13 @@ export default (props: any) => {
         const res = await updateClusterServer(row.id, query);
         if (res.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
-            setRefrush(!refrush)
+            getClusterServer()
         } else {
             requestCodeMessage(res.code, res.msg)
         }
     }
 
-    const columns: any = useMemo(() => [
+    const columns: any = [
         {
             title: 'IP',
             width: 170,
@@ -186,12 +194,16 @@ export default (props: any) => {
             dataIndex: 'baseline_server',
             width: enLocale ? 150 : 120,
             align: 'center',
-            render: (text: number, row: any) => <span>
-                {text ?
-                    <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} />
-                    : <CheckCircleOutlined onClick={() => handleSetDefault(row, 'baseline_server')} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
-                }
-            </span>
+            render: (text: number, row: any) => {
+                return (
+                    text ?
+                        <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> :
+                        <CheckCircleOutlined
+                            onClick={() => handleSetDefault(row, 'baseline_server')}
+                            style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }}
+                        />
+                )
+            }
         },
         {
             title: <FormattedMessage id="device.kernel_install" />,
@@ -250,19 +262,12 @@ export default (props: any) => {
                             {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}><FormattedMessage id="operation.synchronize" /></Button>}
                         </Space>
                     </Access>
-                    <Button style={{ padding: 0 }} disabled={true} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log" /></Button>
+                    {/* 删掉打开log的disabled */}
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log" /></Button>
                 </Space>
             )
         }
-    ].filter(Boolean), [enLocale])
-
-    // 请求页面数据
-    const getClusterServer = async () => {
-        setLoading(true)
-        const { data } = await queryClusterServer(props.id)
-        setDataSoure(data)
-        setLoading(false)
-    }
+    ].filter(Boolean)
 
     // 刷新页面
     useEffect(() => {
@@ -298,6 +303,7 @@ export default (props: any) => {
                 >
                     <ResizeTable
                         rowKey="id"
+                        key={columns}
                         columns={columns}
                         loading={loading}
                         dataSource={dataSource}
