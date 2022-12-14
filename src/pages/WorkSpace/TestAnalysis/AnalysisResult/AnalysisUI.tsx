@@ -90,7 +90,6 @@ export const ResultContent = styled.div`
     overflow-x:scroll;
 `
 export const ModuleWrapper = styled.div`
-    height:auto;
     background:#fff;
     padding:16px 20px;
     margin-bottom:16px;

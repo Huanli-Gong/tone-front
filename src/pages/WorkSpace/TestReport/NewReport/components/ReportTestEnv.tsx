@@ -51,8 +51,6 @@ const ReportTestEnv = () => {
         }
     }
 
-    // 获取最多行展示
-    const len = Array.from(Array(environmentResult?.count)).map(val => ({}))
     return (
         <ModuleWrapper style={{ width: groupLen > 3 ? groupLen * 390 : 1200 }} id="need_test_env" className="position_mark">
             <SubTitle><span className="line"></span><FormattedMessage id="report.test.env" /></SubTitle>
@@ -86,7 +84,7 @@ const ReportTestEnv = () => {
                 <Identify envData={envData} group={groupLen} />
             </EnvGroup>
             {/* 机器信息 */}
-            <TestEnv len={len} envData={envData} environmentResult={environmentResult} group={groupLen} />
+            <TestEnv envData={envData} environmentResult={environmentResult} group={groupLen} />
         </ModuleWrapper>
     )
 }
