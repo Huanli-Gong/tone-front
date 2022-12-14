@@ -1,33 +1,6 @@
 import { aligroupServer_baseline_en, aliyunServer_baseline_en, GROUP_MANAGE_en, CLOUD_MANAGE_en } from '@/utils/utils';
 
 export default {
-  // 'menu.WorkspaceConfig': 'Workspace Config',
-  // 'menu.WorkspaceConfig.BasicConfig': 'Basic Config',
-  // 'menu.WorkspaceConfig.MemberManage': 'Member Manage',
-  // 'menu.WorkspaceConfig.JoinDetail': 'Approval Manage',
-
-  // 'menu.JobConfig': 'Job Config',
-  // 'menu.JobConfig.JobTypeManage': 'Job Type Manage',
-  // 'menu.JobConfig.TagManage': 'Tag Manage',
-  // 'menu.JobConfig.TestTemplateManage': 'Template Manage',
-
-  // 'menu.Baseline': 'Baseline Manage',
-  // 'menu.Baseline.GroupBaseline': aligroupServer_baseline_en, //这是引用变量不用翻译
-  // 'menu.Baseline.ClusterBaseline': aliyunServer_baseline_en, //这是引用变量不用翻译
-
-  // 'menu.TestSuiteManage': 'Test Suite Manage',
-  // 'menu.WorkspaceCreate': 'Create Workbench',
-  // 'menu.TestSuiteCreate': 'Create Test Suite',
-  // 'menu.PersonCenter': 'Person Center',
-
-  // 'menu.DeviceManage': 'Device Manage',
-  // 'menu.DeviceManage.CludeManage': CLOUD_MANAGE_en, //这是引用变量不用翻译
-  // //   'menu.DeviceManage.CludeManage': '云上机器',
-  // 'menu.DeviceManage.GroupManage': GROUP_MANAGE_en, //这是引用变量不用翻译
-  // //   'menu.DeviceManage.GroupManage': '内网机器',
-  // 'menu.DeviceManage.DispatchTag': 'Dispatch Tag',
-  // 'menu.DeviceManage.CloudConfig': 'Cloud Config',
-  // 'menu.Product': '产品管理',
 
   'Workspace.WorkspaceConfig': 'WS Config', // 'Workspace Config',
   'Workspace.WorkspaceConfig.BasicConfig': 'Basic Config',
@@ -45,6 +18,10 @@ export default {
   'Workspace.Baseline': 'Baseline',
   'Workspace.Baseline.GroupBaseline': aligroupServer_baseline_en, //这是引用变量不用翻译
   'Workspace.Baseline.ClusterBaseline': aliyunServer_baseline_en, //这是引用变量不用翻译
+
+  'Workspace.baseline': 'Baseline',
+  'Workspace.baseline.performance': 'Performance Baseline',
+  'Workspace.baseline.functional': 'Functional Baseline',
 
   'Workspace.DevOps': 'Other Config',
 

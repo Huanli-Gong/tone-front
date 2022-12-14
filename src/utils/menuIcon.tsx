@@ -30,7 +30,7 @@ export const SystemMenuIcon = ( name : any ) => {
 
 export const WorkspaceMenuIcon = ( name : any ) => {
     switch (name) {
-        case 'Baseline': return <Baseline />
+        case 'baseline': return <Baseline />
         case 'DeviceManage': return <Device />
         case 'JobConfig': return <Job />
         case 'TestParmSetting': return <Operation />

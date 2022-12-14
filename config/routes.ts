@@ -450,24 +450,25 @@ const routes = [
 					},
 				]
 			},
-			{ //基线管理
-				path: '/ws/:ws_id/baseline',
-				name: 'Baseline',
-				// hideInMenu : true ,
-				component: '@/pages/WorkSpace/Baseline',
-				access: 'IsWsSetting',
+			{
+				path: "/ws/:ws_id/baseline",
+				name: "baseline",
+				access: "IsWsSetting",
 				routes: [
 					{
-						path: '/ws/:ws_id/baseline/group',
-						name: 'GroupBaseline',
-						component: '@/pages/WorkSpace/Baseline/Group',
-						access: 'IsWsSetting',
+						path: "/ws/:ws_id/baseline/functional",
+						component: "@/pages/WorkSpace/BaselineManage",
+						name: "functional",
 					},
 					{
-						path: '/ws/:ws_id/baseline/cluster',
-						name: 'ClusterBaseline',
-						component: '@/pages/WorkSpace/Baseline/Group',
-						access: 'IsWsSetting',
+						path: "/ws/:ws_id/baseline/performance",
+						component: "@/pages/WorkSpace/BaselineManage",
+						name: "performance",
+					},
+					{
+						hideInMenu: true,
+						path: "*",
+						redirect: "/ws/:ws_id/baseline/functional",
 					}
 				]
 			},
