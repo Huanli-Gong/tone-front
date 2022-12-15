@@ -398,16 +398,20 @@ const TestResultDetails: React.FC = (props: any) => {
                                             <EditNoteBtn
                                                 note={details?.note}
                                                 creator_id={details?.creator}
-                                                refrech={queryJobDetails}
+                                                refresh={queryJobDetails}
                                             />
                                             <div style={{ ...TextStyle, width: `calc(100% - ${widthStyle}px - 60px)` }}>
-                                                <Tooltip
-                                                    title={<span style={{ whiteSpace: 'pre-wrap' }}>{details?.note}</span>}
-                                                    placement="topLeft"
-                                                    overlayStyle={{ minWidth: 800 }}
-                                                >
-                                                    {details?.note || '-'}
-                                                </Tooltip>
+                                                {
+                                                    details?.note ?
+                                                        <Tooltip
+                                                            title={<span style={{ whiteSpace: 'pre-wrap' }}>{details?.note}</span>}
+                                                            placement="topLeft"
+                                                            overlayStyle={{ minWidth: 800 }}
+                                                        >
+                                                            {details?.note}
+                                                        </Tooltip> :
+                                                        <span>-</span>
+                                                }
                                             </div>
                                         </Row>
                                     </Col>
