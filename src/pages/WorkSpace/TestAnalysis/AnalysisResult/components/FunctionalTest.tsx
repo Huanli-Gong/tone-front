@@ -264,7 +264,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                                     <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
                                                                                 </Space>
                                                                                 {metric && !metric.is_baseline ?
-                                                                                    <JumpResult ws_id={wsId} job_id={metric.obj_id} style={{ paddingLeft: 10 }}/> : <>-</>
+                                                                                    <JumpResult job_id={metric.obj_id} style={{ paddingLeft: 10 }}/> : <>-</>
                                                                                 }
                                                                             </CaseText>
                                                                         )
