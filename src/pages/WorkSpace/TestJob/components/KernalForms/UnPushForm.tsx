@@ -3,7 +3,8 @@ import { Form } from 'antd'
 import ScriptsListForm from './ScriptsFormList'
 import styles from './index.less'
 import type { FormInstance } from 'antd'
-import { PackageList } from './PackageFormItem'
+import PackagesFormItem from "@/pages/SystemConf/KernelManage/components/PackagesFormItem"
+import { itemLayout } from './untils'
 
 type IProps = {
     disabled?: boolean;
@@ -20,7 +21,8 @@ const UnPush: React.FC<IProps> = (props) => {
 
                 {/* package kernel devel headers */}
                 {/* @ts-ignore */}
-                <PackageList {...props} />
+                {/* <PackageList {...props} /> */}
+                <PackagesFormItem {...props} {...itemLayout} />
                 {/* package kernel devel headers */}
 
                 {

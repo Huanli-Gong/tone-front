@@ -97,7 +97,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             } = template
 
             const { os = '', app_name = '' } = iclone_info || {}
-            const { devel, headers, branch, ...kernels } = kernel_info || {}
+            const { branch, kernel_packages, ...kernels } = kernel_info || {}
 
             let reclone_contrl: boolean = false
             if (os || app_name) {
@@ -108,8 +108,10 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             const hasBuildKernel = build_pkg_info && JSON.stringify(build_pkg_info) !== '{}'
 
             if (kernel_version) setKernal('install_push')
-            if (!kernel_version && !hasBuildKernel) setKernal('install_un_push')
-            if (!kernel_version && !hasBuildKernel && !devel) setKernal('no')
+            if (!kernel_version && !hasBuildKernel) {
+                if (kernel_packages)
+                    setKernal(kernel_packages.length > 0 ? 'install_un_push' : 'no')
+            }
             if (hasBuildKernel) setKernal('install_build_kernel')
 
             setReboot(need_reboot)
@@ -137,7 +139,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 app_name,
                 moniter_contrl,
                 kernel_version,
-                devel, headers,
+                kernel_packages,
                 ...kernels,
                 ...build_pkg_info
             })

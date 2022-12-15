@@ -21,4 +21,9 @@ export default {
   'kernel.headers.path': 'Headers Path',
   'kernel.remarks': 'Remarks',
   'kernel.is_enable': 'Enable',
+
+  "kernel.kernel_packages.label": "Kernel Packages",
+  "kernel.kernel_packages.rules.empty": "The kernel package link cannot be empty.",
+  "kernel.kernel_packages.add": "Add RPM Package ",
+  "kernel.kernel_packages.placeholder": "Place enter",
 };

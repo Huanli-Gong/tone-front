@@ -21,4 +21,10 @@ export default {
   'kernel.headers.path': 'headers包路径',
   'kernel.remarks': '备注',
   'kernel.is_enable': '是否启用',
+
+  "kernel.kernel_packages.label": "内核包路径",
+  "kernel.kernel_packages.rules.empty": "内核包不能为空",
+  "kernel.kernel_packages.add": "添加RPM包",
+  "kernel.kernel_packages.placeholder": "请输入",
+
 };
