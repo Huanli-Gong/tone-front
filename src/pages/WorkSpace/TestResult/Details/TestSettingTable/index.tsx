@@ -30,7 +30,7 @@ export default ({ jt_id, test_type, provider_name }: any) => {
         }
     )
 
-    const { data: items } = useRequest(() => queryJobTypeItems({ jt_id }), { initialData: [] })
+    const { data: items } = useRequest(() => queryJobTypeItems({ jt_id, ws_id }), { initialData: [] })
 
     const contrl = useMemo(() => {
         const basic = {}, env = {}, suite = {}, more = {}

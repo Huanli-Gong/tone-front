@@ -1,5 +1,5 @@
 import React, { useImperativeHandle, useEffect, useState } from 'react'
-import { Form, Input, Card, Row, Col, Popover, Select } from 'antd'
+import { Form, Input, Card, Row, Col, Popover, Select, InputNumber } from 'antd'
 import styles from './index.less'
 import { tagList } from '@/pages/WorkSpace/TagManage/service'
 import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
@@ -83,7 +83,9 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                 const currentTemplate = _.find(reportTemplate, ['id', template.report_template_id])
                 report_template_id = _.get(currentTemplate, 'id')
             }
+
             form.setFieldsValue({
+                ...template,
                 cleanup_info,
                 tags,
                 notice_subject,
@@ -103,10 +105,10 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
         form.setFieldsValue({ ...values, report_name: reportSelectVal })
         setCheckedList(reportSelectVal)
     }
-    
+
     return (
         <Card
-            title={<FormattedMessage id="ws.result.details.more.configurations"/>}
+            title={<FormattedMessage id="ws.result.details.more.configurations" />}
             bodyStyle={{ paddingTop: 0 }}
             headStyle={{ borderBottom: 'none' }}
         >
@@ -117,11 +119,13 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                 colon={false}
                 layout="horizontal"
                 size="small"
+                labelCol={{
+                    span: 4
+                }}
                 /*hideRequiredMark*/
                 style={{ width: '100%' }}
                 name="more"
                 form={form}
-
                 className={`${styles.job_test_form} ${styles[locale ? 'label_style_form_en' : 'label_style_form']}`}
             >
                 <Row>
@@ -131,9 +135,9 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="cleanup_info"
                                 // label="清理脚本"
-                                label={contrl.cleanup.alias || <FormattedMessage id={`ws.result.details.${contrl.cleanup.name}`}/> }
+                                label={contrl.cleanup.alias || <FormattedMessage id={`ws.result.details.${contrl.cleanup.name}`} />}
                             >
-                                <Input.TextArea disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.cleanup.placeholder'})} />
+                                <Input.TextArea disabled={disabled} placeholder={formatMessage({ id: 'ws.result.details.cleanup.placeholder' })} />
                             </Form.Item>
                         }
                         {
@@ -141,7 +145,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <TagSelect
                                 tags={tags}
                                 // label="Job标签"
-                                label={contrl.job_tag.alias || <FormattedMessage id={`ws.result.details.${contrl.job_tag.name}`}/> }
+                                label={contrl.job_tag.alias || <FormattedMessage id={`ws.result.details.${contrl.job_tag.name}`} />}
                                 disabled={disabled}
                             />
                         }
@@ -150,9 +154,9 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="notice_subject"
                                 // label="通知主题"
-                                label={contrl.notice_subject.alias || <FormattedMessage id={`ws.result.details.${contrl.notice_subject.name}`}/> }
+                                label={contrl.notice_subject.alias || <FormattedMessage id={`ws.result.details.${contrl.notice_subject.name}`} />}
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.notice_subject.placeholder'}, { date: '{date}'})} />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({ id: 'ws.result.details.notice_subject.placeholder' }, { date: '{date}' })} />
                             </Form.Item>
                         }
                         {
@@ -160,13 +164,13 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="email"
                                 // label="邮件通知"
-                                label={contrl.email_notice.alias || <FormattedMessage id={`ws.result.details.${contrl.email_notice.name}`}/> }
+                                label={contrl.email_notice.alias || <FormattedMessage id={`ws.result.details.${contrl.email_notice.name}`} />}
                                 rules={[{
                                     pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                    message: formatMessage({id: 'ws.result.details.email.message'})
+                                    message: formatMessage({ id: 'ws.result.details.email.message' })
                                 }]}
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.email.placeholder'})} />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({ id: 'ws.result.details.email.placeholder' })} />
                             </Form.Item>
                         }
                         {
@@ -174,25 +178,25 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             <Form.Item
                                 name="ding_token"
                                 // label="钉钉通知"
-                                label={contrl.ding_notice.alias || <FormattedMessage id={`ws.result.details.${contrl.ding_notice.name}`}/> }
+                                label={contrl.ding_notice.alias || <FormattedMessage id={`ws.result.details.${contrl.ding_notice.name}`} />}
                             >
-                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'ws.result.details.ding_notice.placeholder'})} />
+                                <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({ id: 'ws.result.details.ding_notice.placeholder' })} />
                             </Form.Item>
                         }
                         {
                             'report' in contrl &&
-                            <Form.Item label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report"/>}
+                            <Form.Item label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report" />}
                                 name="report_name">
                                 <Input
                                     value={checkedList || undefined}
                                     onChange={onReportChange}
                                     autoComplete="off"
                                     disabled={disabled}
-                                    placeholder={formatMessage({id: 'ws.result.details.report.placeholder'}, {job_name: '{job_name}', report_seq_id: '{report_seq_id}'})} />
+                                    placeholder={formatMessage({ id: 'ws.result.details.report.placeholder' }, { job_name: '{job_name}', report_seq_id: '{report_seq_id}' })} />
                                 <Popover
                                     content={
                                         <div>
-                                            {formatMessage({id: 'ws.result.details.report.Popover'})}
+                                            {formatMessage({ id: 'ws.result.details.report.Popover' })}
                                             <p>{"{date} {job_name} {job_id} {product_version}"}</p>
                                         </div>
                                     }
@@ -207,12 +211,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             checkedList && 'report' in contrl &&
                             <Form.Item
                                 name="report_template_id"
-                                label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report_template"/>}
+                                label={contrl?.report?.alias || <FormattedMessage id="ws.result.details.report_template" />}
                             >
                                 <Select
                                     showSearch
                                     disabled={disabled}
-                                    placeholder={formatMessage({id: 'ws.result.details.report_template.placeholder'})}
+                                    placeholder={formatMessage({ id: 'ws.result.details.report_template.placeholder' })}
                                     defaultValue={defaultTemplate?.name}
                                     optionFilterProp="children"
                                     filterOption={(input, option) =>
@@ -222,7 +226,6 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                                     {
                                         reportTemplate.map((obj: any) => <Option value={obj.id}>{obj.name}</Option>)
                                     }
-
                                 </Select>
                             </Form.Item>
                         }
@@ -230,15 +233,32 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                             'callback_api' in contrl &&
                             <Form.Item
                                 name="callback_api"
-                                label={contrl?.callback_api?.alias || <FormattedMessage id="ws.result.details.callback_api"/>}
+                                label={contrl?.callback_api?.alias || <FormattedMessage id="ws.result.details.callback_api" />}
                             >
                                 <Input
                                     autoComplete="off"
                                     disabled={disabled}
-                                    placeholder={formatMessage({id: 'ws.result.details.callback_api.placeholder'})} />
+                                    placeholder={formatMessage({ id: 'ws.result.details.callback_api.placeholder' })} />
                             </Form.Item>
                         }
 
+                        {/* 先在内网环境使用 **/}
+                        {
+                            !BUILD_APP_ENV && 'job_timeout' in contrl &&
+                            <Form.Item
+                                name="job_timeout"
+                                label={contrl?.job_timeout?.alias || formatMessage({ id: 'job.form.job_timeout.label' })}
+                            >
+                                <InputNumber
+                                    autoComplete="off"
+                                    disabled={disabled}
+                                    style={{ width: '100%' }}
+                                    addonAfter="h"
+                                    min={0}
+                                    placeholder={formatMessage({ id: 'job.form.job_timeout.placeholder' })}
+                                />
+                            </Form.Item>
+                        }
                     </Col>
                 </Row>
             </Form>

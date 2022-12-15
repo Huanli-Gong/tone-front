@@ -4,7 +4,6 @@ import { workspaceRemove, info } from '@/pages/SystemConf/WorkspaceManagement/se
 
 import AvatarCover from '@/components/AvatarCover'
 import { history, useAccess, useIntl, FormattedMessage } from 'umi'
-import { enterWorkspaceHistroy } from '@/services/Workspace'
 import styles from './style.less';
 
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
@@ -44,14 +43,12 @@ const DetailModal: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     }, [ws_id])
 
     const toWS = async () => {
-        await enterWorkspaceHistroy({ ws_id, system_entry: true })
-        // history.push(`/ws/${ws_id}/dashboard`)
-        ws_id && history.push(jumpWorkspace(ws_id), { fetchWorkspaceHistoryRecord: true })
+        ws_id && history.push(jumpWorkspace(ws_id))
     }
 
     const confirm = async () => {
         await workspaceRemove({ id: ws_id })
-        message.success(formatMessage({id: 'operation.success'}) );
+        message.success(formatMessage({ id: 'operation.success' }));
         handleCancel()
         refresh()
     }

@@ -313,6 +313,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             {
                 'rpm' in contrl &&
                 <FormList
+                    form={form}
                     // label="安装RPM"
                     label={contrl.rpm.alias || <FormattedMessage id={`job.form.${contrl.rpm.name}`} />}
                     listName="rpm_info"
@@ -327,6 +328,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
             {
                 'script' in contrl &&
                 <FormList
+                    form={form}
                     // label="执行脚本"
                     label={contrl.script.alias || <FormattedMessage id={`job.form.${contrl.script.name}`} />}
                     listName="script_info"

@@ -1,9 +1,13 @@
 
 .suitList_root {
-  padding-top: 0;
   // 表格的操作单元格內边距
   & > div > div > div > div > div > table > thead > tr > th:last-child {
     padding: 3px 8px !important;
+  }
+
+  & > div > div > div  {
+    width: calc(100% - 42px);
+    margin: 0 0 -1px 42px !important;
   }
 }
 

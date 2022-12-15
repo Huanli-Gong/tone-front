@@ -1,6 +1,5 @@
 import React from 'react'
-import { message, Space, Avatar, Spin, Button, Tag } from 'antd'
-import { enterWorkspaceHistroy } from '@/services/Workspace'
+import { Space, Avatar, Spin, Button, Tag } from 'antd'
 import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import styles from './index.less'
 import JoinPopover from './JoinPopover'
@@ -10,7 +9,7 @@ import { useClientSize } from '@/utils/hooks'
 import _ from 'lodash'
 import EmptyData from './EmptyData'
 import EllipsisRect from './EllipsisRect'
-import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace } from '@/utils/utils'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -30,14 +29,14 @@ export default (props: any) => {
     }
     const firstRowFn = (item: any) => {
         let actionType = ''
-        if (item.action === 'create') actionType = formatMessage({ id: 'right.content.wait.create'})
-        if (item.action === 'delete') actionType = formatMessage({ id: 'right.content.wait.delete'})
-        if (item.action === 'join') actionType = formatMessage({ id: 'right.content.wait.join'})
+        if (item.action === 'create') actionType = formatMessage({ id: 'right.content.wait.create' })
+        if (item.action === 'delete') actionType = formatMessage({ id: 'right.content.wait.delete' })
+        if (item.action === 'join') actionType = formatMessage({ id: 'right.content.wait.join' })
         return (
             <Space>
-                <span className={styles.action}> {`${actionType}${enLocale? ' ': ''}Workspace`} </span>
+                <span className={styles.action}> {`${actionType}${enLocale ? ' ' : ''}Workspace`} </span>
                 <span className={styles.show_name}> {item.ws_info.show_name}</span>
-                <span className={styles.approv}>{formatMessage({ id: 'right.content.passed.join'})}</span>
+                <span className={styles.approv}>{formatMessage({ id: 'right.content.passed.join' })}</span>
                 <span className={styles.status}> {statusColorFn(item.status)}</span>
                 <span className={styles.create_time}> {item.gmt_created}</span>
             </Space>
@@ -80,9 +79,9 @@ export default (props: any) => {
     const descriptionFn = (label: any, value: any) => {
         return (
             <div className={styles.description_box}>
-                <span className={`${styles.text_label} ${styles.description_label}`}> {formatMessage({ id: `person.center.${label}`})}: </span>
+                <span className={`${styles.text_label} ${styles.description_label}`}> {formatMessage({ id: `person.center.${label}` })}: </span>
                 <div className={`${styles.description_value}`} // style={{ marginLeft: label === 'description' ? '44px' : '72px' }}
-                 >{value || '-'} </div>
+                >{value || '-'} </div>
             </div>
         )
     }
@@ -119,18 +118,9 @@ export default (props: any) => {
             </>
         )
     }
-    
+
     const handleClick = async (id: any, creator: number) => {
-        const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: id })
-        if (code === 200) {
-            if (first_entry && creator === userId) {
-                history.push(`/ws/${id}/workspace/initSuccess`, { fetchWorkspaceHistoryRecord: true })
-            } else {
-                // history.push(`/ws/${id}/dashboard`)
-                history.push(jumpWorkspace(id), { fetchWorkspaceHistoryRecord: true })
-            }
-        }
-        else requestCodeMessage(code, msg)
+        history.push(jumpWorkspace(id))
     }
 
     const approveList = (item: any) => {
@@ -153,9 +143,9 @@ export default (props: any) => {
                 <div>{descriptionFn('reason', item.reason)}</div>
                 <div className={`${styles.approve_info_colum} ${styles.approve_refuse_reason}`} style={{ display: refuseReason ? 'block' : 'none' }}>{descriptionFn('refuse_reason', item.refuse_reason)}</div>
                 <div style={{ display: approveTime ? 'block' : 'none' }}>{descriptionFn('gmt_modified', item.gmt_modified)}</div>
-                <div>{approveUsersFn(formatMessage({id: 'person.center.approver'}), item.approve_users)}</div>
+                <div>{approveUsersFn(formatMessage({ id: 'person.center.approver' }), item.approve_users)}</div>
                 {item.status === 'refused' && <JoinPopover handleTabClick={handleTabClick} wsInfo={item} />}
-                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}><FormattedMessage id="workspace.enter" />{enLocale? <>&nbsp;&nbsp;</>: ''}Workspace</Button>}
+                {item.status === 'passed' && item.action !== 'delete' && <Button onClick={_.partial(handleClick, item.ws_info.id, item.ws_info.creator)}><FormattedMessage id="workspace.enter" />{enLocale ? <>&nbsp;&nbsp;</> : ''}Workspace</Button>}
             </div>
         )
     }

@@ -222,10 +222,13 @@ const SuiteManagement: React.FC<any> = (props) => {
 						tab={<FormattedMessage id="performance.test"/>}
 						key="performance"
 					/>
-					<TabPane
-						tab={<FormattedMessage id="business.test"/>}
-						key="business"
-					/>
+					{
+						!BUILD_APP_ENV && 
+						<TabPane
+							tab={<FormattedMessage id="business.test"/>}
+							key="business"
+						/>
+					}
 				</Tabs>
 			}
 			extra={

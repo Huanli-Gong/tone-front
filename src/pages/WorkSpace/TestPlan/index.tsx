@@ -112,8 +112,8 @@ const TestPlanManage = (props: any) => {
             pageParams,
             setPageParams,
             [
-                { name: formatMessage({id: 'operation.yes'}), value: 'True' }, 
-                { name: formatMessage({id: 'operation.no'}), value: 'False' }
+                { name: <FormattedMessage id="operation.yes" />, value: 'True' }, 
+                { name: <FormattedMessage id="operation.no" />, value: 'False' }
             ],
             'enable'
         )

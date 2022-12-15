@@ -1,9 +1,9 @@
 import { Drawer, Space, Button, Form, Input, Select, message, Divider, Spin } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle,useEffect } from 'react'
-import { queryReportTemplateList, projectList, productVersionList} from '../services'
+import React, { forwardRef, useState, useImperativeHandle, useEffect } from 'react'
+import { queryReportTemplateList, projectList, productVersionList } from '../services'
 import styled from 'styled-components'
 import _, { result } from 'lodash'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 const { Option } = Select;
 const TemplateDrawer = styled(Drawer)`
@@ -22,7 +22,8 @@ const TemplateDrawer = styled(Drawer)`
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
-        const { ws_id, onOk, allGroup } = props
+        const { ws_id } = useParams() as any
+        const { onOk, allGroup } = props
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
@@ -104,8 +105,8 @@ export default forwardRef(
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
                     const templateId = values.template
-                    const selTemplate = _.find(template, { id:templateId});
-                    onOk({ ...values,is_default: _.get(selTemplate,'is_default') }, editer)
+                    const selTemplate = _.find(template, { id: templateId });
+                    onOk({ ...values, is_default: _.get(selTemplate, 'is_default') }, editer)
                     handleClose()
                 })
                 .catch(err => {
@@ -114,7 +115,7 @@ export default forwardRef(
                 })
         }
         const initialValue = (type: string) => {
-            let defaultValue = '' 
+            let defaultValue = ''
             let optionData = template
             if (type === 'template') {
                 const defaultTemplate = _.find(optionData, 'is_default');
@@ -135,15 +136,15 @@ export default forwardRef(
             let text = ''
             let optionData = template
             if (type === 'template') {
-                text = formatMessage({ id: 'report.please.select.template'})
+                text = formatMessage({ id: 'report.please.select.template' })
             }
             if (type === 'productVersion') {
                 optionData = productVersion.filter((val: any) => val)
-                text = formatMessage({ id: 'report.select.productVersion'})
+                text = formatMessage({ id: 'report.select.productVersion' })
             }
             if (type === 'project') {
                 optionData = project
-                text = formatMessage({ id: 'report.select.project'})
+                text = formatMessage({ id: 'report.select.project' })
             }
             return (
                 <Select
@@ -194,16 +195,16 @@ export default forwardRef(
                             layout="vertical" // 表单布局 ，垂直
                             initialValues={{
                                 template: initialValue('template'),
-                                productVersion:initialValue('productVersion'),
-                                project:initialValue('project')
+                                productVersion: initialValue('productVersion'),
+                                project: initialValue('project')
                             }}
                         >
                             <Form.Item
                                 label={<FormattedMessage id="report.columns.name" />}
                                 name="name"
-                                rules={[{ required: true, message: formatMessage({ id: 'report.please.enter.name'}) }]}
+                                rules={[{ required: true, message: formatMessage({ id: 'report.please.enter.name' }) }]}
                             >
-                                <Input autoComplete="auto" placeholder={formatMessage({ id: 'report.please.enter.name'}) } />
+                                <Input autoComplete="auto" placeholder={formatMessage({ id: 'report.please.enter.name' })} />
                             </Form.Item>
                             <Form.Item
                                 label={<FormattedMessage id="report.select.template" />}
@@ -214,7 +215,7 @@ export default forwardRef(
                             <Form.Item
                                 label={<FormattedMessage id="report.columns.product_version" />}
                                 name="productVersion"
-                                rules={[{ required: true, message: formatMessage({ id: 'report.select.productVersion'}) }]}>
+                                rules={[{ required: true, message: formatMessage({ id: 'report.select.productVersion' }) }]}>
                                 {getSelectFn('productVersion')}
                             </Form.Item>
                             <Form.Item
@@ -225,8 +226,8 @@ export default forwardRef(
                             </Form.Item>
                             <Form.Item label={<FormattedMessage id="report.description.input" />}
                                 name="description">
-                                <Input.TextArea 
-                                    placeholder={formatMessage({ id:'report.description.placeholder'}) }
+                                <Input.TextArea
+                                    placeholder={formatMessage({ id: 'report.description.placeholder' })}
                                 />
                             </Form.Item>
                         </Form>

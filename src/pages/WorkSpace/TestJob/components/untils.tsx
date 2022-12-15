@@ -1,9 +1,24 @@
 import React from 'react'
 
-import { Tag, Space, Tooltip, Select } from 'antd'
+import { Tag, Space, Tooltip, Select, Typography } from 'antd'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import cls from 'classnames'
 import styles from './index.less'
+import styled from "styled-components"
+import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
+import { useCopyText } from "@/utils/hooks"
+import { useIntl } from "umi"
+
+const LinkSpan = styled(Typography.Link)`
+    position: absolute;
+    right: 5px;
+    top: 2px;
+    &:hover {
+        svg path{
+            fill: #1890ff;
+        }
+    }
+`
 
 export const tagRender = ({ label, closable, onClose, value }: any) => {
     return (
@@ -15,6 +30,16 @@ export const tagRender = ({ label, closable, onClose, value }: any) => {
         >
             {label.props?.children || value}
         </Tag>
+    )
+}
+
+export const CopyLinkSpan: React.FC<{ onCopy: any, style?: React.CSSProperties }> = ({ onCopy, style }) => {
+    const intl = useIntl()
+    const handleCopyText = useCopyText(intl.formatMessage({ id: 'request.copy.success' }))
+    return (
+        <LinkSpan onClick={() => handleCopyText(onCopy?.())} style={style || {}}>
+            <CopyLink />
+        </LinkSpan>
     )
 }
 

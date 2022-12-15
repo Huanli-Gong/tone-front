@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { FormattedMessage, useIntl, useAccess, Access, useModel } from 'umi';
-import { Layout, message, Tabs, Badge, Row, Input, Divider, Form, Col, Select, DatePicker, Button, Modal, Spin } from 'antd';
+import { message, Button, Spin } from 'antd';
 import NotLoggedIn from '@/components/Public/NotLoggedIn'
 import UploadTable from './components/OfflineUploadTable';
 import { querySummary } from './services';

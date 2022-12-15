@@ -1,6 +1,6 @@
 
 
-import React , { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Form, Input, Select } from 'antd'
 import type { FormInstance } from "antd"
 import ScriptsListForm from './ScriptsFormList'
@@ -15,7 +15,7 @@ type IProps = {
     needScriptList?: boolean;
     form?: FormInstance;
     project_id?: any;
-    isPlan?:boolean;
+    isPlan?: boolean;
 }
 
 const BuildKernelForm: React.FC<IProps> = (props) => {
@@ -105,7 +105,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                             <Form.Item
                                 {...itemLayout}
                                 label={formatMessage({ id: 'kernel.form.cbc.product' })}
-                                name={ isPlan ? "product_name" : "name" }
+                                name={isPlan ? "product_name" : "name"}
                                 rules={[{ required: true, message: formatMessage({ id: 'kernel.form.cbc.product.empty' }) }]}
                             >
                                 <Select
@@ -205,6 +205,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                 {
                     needScriptList &&
                     <ScriptsListForm
+                        form={form}
                         disabled={disabled}
                     />
                 }

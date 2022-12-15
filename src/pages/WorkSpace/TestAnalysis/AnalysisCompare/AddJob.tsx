@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { queryJobList, queryProductList, queryProduct, queryBaelineList } from './services'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -49,6 +49,7 @@ const DEFAULTPARAM = {
 }
 export default (props: any) => {
     const { formatMessage } = useIntl()
+    const { ws_id } = useParams() as any
     const defaultList = [
         { id: 1, name: formatMessage({ id: 'header.test_type.functional' }) },
         { id: 0, name: formatMessage({ id: 'header.test_type.performance' }) },
@@ -58,7 +59,7 @@ export default (props: any) => {
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const scollMaxHeight = maxHeight - 400 > 430 ? 430 : maxHeight - 400
     resizeDocumentHeight(scollMaxHeight)
-    const { ws_id, onCancel, onOk, currentGroup } = props
+    const { onCancel, onOk, currentGroup } = props
     let { allGroup, allNoGroupData } = props
     allGroup = _.isArray(allGroup) ? allGroup : []
     const [tabKey, setTabKey] = useState<string>('1')
@@ -269,15 +270,18 @@ export default (props: any) => {
             },
             render: (_: any, row: any) => row.test_type,
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectRadio
-                list={defaultList}
-                confirm={confirm}
-                onConfirm={(val: any) => {
-                    let value = undefined
-                    if (val === 1) value = 'functional'
-                    if (val === 0) value = 'performance'
-                    setParams({ ...params, test_type: value })
-                }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectRadio
+                    list={defaultList}
+                    confirm={confirm}
+                    onConfirm={(val: any) => {
+                        let value = undefined
+                        if (val === 1) value = 'functional'
+                        if (val === 0) value = 'performance'
+                        setParams({ ...params, test_type: value })
+                    }}
+                />
+            ),
         },
         {
             title: <FormattedMessage id="analysis.creator_name" />,
