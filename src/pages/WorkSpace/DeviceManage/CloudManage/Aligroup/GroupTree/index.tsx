@@ -50,7 +50,8 @@ const GroupTree: React.FC<any> = (props) => {
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
         if (!row.machineId) return
-        const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
+        const { test_server, ...rest } = row
+        const query = fieldName === 'role' ? { ...test_server, ...rest, role: 'local' } : { ...test_server, ...rest, baseline_server: 1 }
         const res = await editGroupMachine(row.machineId, query);
         if (res.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));

@@ -103,7 +103,9 @@ export default (props: any) => {
 
     // 切换
     const handleSetDefault = async (row: any, fieldName: string) => {
-        const query = fieldName === 'role' ? { ...row, role: 'local' } : { ...row, baseline_server: 1 }
+        const { test_server, ...rest } = row
+        const baseParams = { ...rest, ...test_server }
+        const query = fieldName === 'role' ? { ...baseParams, role: 'local' } : { ...baseParams, baseline_server: 1 }
         const res = await updateClusterServer(row.id, query);
         if (res.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
