@@ -356,8 +356,8 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                         </Space>
-                                                        {item &&
-                                                            <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
+                                                        {item && !item.is_baseline ?
+                                                            <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} /> : <>-</>
                                                         }
                                                     </CaseText>
                                                 )

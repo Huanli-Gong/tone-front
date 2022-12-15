@@ -11,27 +11,29 @@ const Identify: React.FC<any> = (props) => {
     const { envData, group, isData, enLocale } = props
 
     const TootipItem: React.FC<any> = (props) => {
-        const { is_base, is_job, tag } = props
+        const { is_group, is_baseline, tag } = props
         return (
             <>
                 <Space>
                     {
-                        is_job ?
-                            is_base && <Tooltip title={<FormattedMessage id="analysis.benchmark.group" />}>
-                                <BaseIcon
-                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                                />
-                            </Tooltip>
-                            :
-                            is_base && <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
-                                <BaseLine
-                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                                />
-                                <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
-                            </Tooltip>
+                        is_group && <Tooltip title={<FormattedMessage id="analysis.benchmark.group" />}>
+                            <BaseIcon
+                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                            />
+                        </Tooltip>
                     }
+                    {
+
+                        is_baseline ? <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
+                            <BaseLine
+                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                            />
+                            <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
+                        </Tooltip> : null
+                    }
+
                 </Space>
-                <EllipsisPulic title={tag} width={'calc(100% - 100px)'} />
+                <EllipsisPulic title={tag} width={'calc(100% - 120px)'} />
             </>
         )
     }
@@ -39,18 +41,16 @@ const Identify: React.FC<any> = (props) => {
     return (
         <>
             {
-                Array.isArray(envData) && envData.map((item: any, idx: number) => {
-                    return (
-                        isData ?
-                            <PerfGroupData gLen={group} key={idx} >
-                                <TootipItem {...item} />
-                            </PerfGroupData>
-                            :
-                            <EnvGroupR gLen={group} enLocale={enLocale} key={idx}>
-                                <TootipItem {...item} />
-                            </EnvGroupR>
-                    )
-                })
+                Array.isArray(envData) && envData.map((item: any, idx: number) =>
+                    isData ?
+                        <PerfGroupData gLen={group} key={idx} >
+                            <TootipItem {...item} />
+                        </PerfGroupData>
+                        :
+                        <EnvGroupR gLen={group} enLocale={enLocale} key={idx}>
+                            <TootipItem {...item} />
+                        </EnvGroupR>
+                )
             }
         </>
     )

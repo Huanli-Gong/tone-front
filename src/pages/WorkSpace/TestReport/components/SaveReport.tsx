@@ -85,6 +85,7 @@ export default forwardRef(
                 })
                 version = _.uniq(version);
                 projectArr = _.uniqWith(projectArr, _.isEqual);
+                projectArr = projectArr.filter((i:any) => i.id !== undefined)
                 setProductVersion(version)
                 setProject(projectArr)
             } catch (e) {
@@ -113,7 +114,6 @@ export default forwardRef(
                     setPadding(false)
                 })
         }
-
         const initialValue = (type: string) => {
             let defaultValue = ''
             let optionData = template

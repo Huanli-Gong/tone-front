@@ -107,16 +107,20 @@ export default (props: any) => {
             const flag = baselineGroup.type === 'baseline'
             arr.forEach((item: any) => {
                 if (!flag && item.test_type === '功能测试') {
+                    paramData.func_data.is_baseline = 0
                     paramData.func_data.base_job.push(item.id)
                 }
                 if (!flag && item.test_type === '性能测试') {
+                    paramData.perf_data.is_baseline = 0
                     paramData.perf_data.base_job.push(item.id)
                 }
                 if (flag && item.test_type === 'functional') {
-                    paramData.func_data.base_job.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
+                    paramData.func_data.is_baseline = 1
+                    paramData.func_data.base_job.push(item.id)
                 }
                 if (flag && item.test_type === 'performance') {
-                    paramData.perf_data.base_obj.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
+                    paramData.perf_data.is_baseline = 1
+                    paramData.perf_data.base_job.push(item.id)
                 }
             })
         }
@@ -134,10 +138,10 @@ export default (props: any) => {
                         brrFers.push(item.id)
                     }
                     if (flag && item.test_type === 'functional') {
-                        brrFun.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
+                        brrFun.push(item.id)
                     }
                     if (flag && item.test_type === 'performance') {
-                        brrFers.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
+                        brrFers.push(item.id)
                     }
                 })
             }
@@ -161,9 +165,9 @@ export default (props: any) => {
     }, [suitData, tab])
 
     const onExpand = async (expanded: boolean, record: any) => {
-        const { test_job_id, suite_id } = record
+        const { test_job_id, suite_id, is_baseline } = record
         if (expanded) {
-            const data = await queryConfList({ test_job_id, suite_id })
+            const data = await queryConfList({ test_job_id, suite_id, is_baseline })
             if (data.code === 200) {
                 const { conf_dic } = data.data
                 if (tab === 'functional') {
@@ -220,6 +224,7 @@ export default (props: any) => {
             groupAll.map((item: any) => {
                 group_jobs.push({
                     group_name: item.product_version,
+                    is_baseline: item.type === 'baseline' ? 1 : 0,
                     test_job_id: [].concat(item.members.map((i: any) => i.id))
                 })
             })
@@ -262,7 +267,7 @@ export default (props: any) => {
                                 })
                                 brr.push({
                                     conf_id: conf.conf_id,
-                                    job_id: conf.job_list[0].job_id,
+                                    job_id: conf.job_list[0]?.job_id || '',
                                     key: groupIndex
                                 })
                                 return {

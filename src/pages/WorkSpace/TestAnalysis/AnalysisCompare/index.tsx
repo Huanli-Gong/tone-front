@@ -195,14 +195,17 @@ export default (props: any) => {
 
     const cancleGrouping = () => {
         let noGroupDataCopy = _.cloneDeep(noGroupData)
-        groupData.forEach((item: any) => noGroupDataCopy = [...noGroupDataCopy, ...item.members])
+        let groupDataCopy = _.cloneDeep(groupData)
+        groupDataCopy.filter((item:any) => item.type !== 'baseline')
+        .forEach((item: any) =>  noGroupDataCopy = [...noGroupDataCopy, ...item.members])
         setGroupMethod(null)
-        setGroupData([])
+        setGroupData(groupDataCopy.filter((item:any) => item.type === 'baseline'))
         setBaselineGroupIndex(-1)
         setBaselineGroup({})
         setNoGroupData(noGroupDataCopy)
         window.sessionStorage.setItem('compareData', JSON.stringify([]))
         window.sessionStorage.setItem('noGroupJobData', JSON.stringify(noGroupDataCopy))
+        
     }
 
     const addGroupNameFn = (arrGroup = groupData) => {
@@ -349,15 +352,21 @@ export default (props: any) => {
     const handleStartAnalysis = () => {
         if (isSureOk()) return;
         let num = 0
+        let flag = false
         groupData.forEach((item: any) => {
             if (item.members.length > 0) num++
+            flag = item.type === 'baseline'
         })
         if (num > 1 && baselineGroupIndex === -1) {
             setLabelBlinking(true)
             const localStr = formatMessage({ id: 'analysis.please.set.the.benchmark.group' })
             return message.warning(localStr)
         }
+        if(num === 1 && flag){
+            return message.warning('请添加对比组')
+        }
         setVisibleBaseGroup(true)
+        return
         // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
     }
 
@@ -517,8 +526,9 @@ export default (props: any) => {
         })
         return brr;
     }
+
     const handlEenvironment = (selData: any) => {
-        const { obj: baseObj, trr: compareArr } = getJobRefSuit(selData)
+        const { baseArr, compareArr } = getJobRefSuit(selData)
         let groupDataCopy = _.cloneDeep(groupData).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
         let newGroup: any = []
         if (groupDataCopy.length) {
@@ -533,34 +543,20 @@ export default (props: any) => {
         if (array.length === 1) {
             base_group = {
                 tag: newGroup[0]?.product_version || '',
-                base_objs: baseAssemble(baseObj, arr[0]),
+                base_objs: baseArr
             }
         } else {
             const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
             base_group = {
                 tag: newGroup.length ? newGroup[baseIndex]?.product_version : '',
-                base_objs: baseAssemble(baseObj, baselineGroup),
+                base_objs: baseArr,
             }
 
-            compare_groups = _.reduce(arr, (groups: any, obj, num: number) => {
-                const compare_objs: any = []
-                let members = _.get(obj, 'members')
-                members = _.isArray(members) ? members : []
-                members = members.filter((val: any) => val)
-
-                const flag = obj.type === 'baseline'
-                members.forEach((item: any) => {
-                    if (!flag) {
-                        compare_objs.push({ is_job: 1, obj_id: item.id || {} })
-                    }
-                    if (flag) {
-                        compare_objs.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
-                    }
-                })
+            compare_groups = _.reduce(arr, (groups: any, obj) => {
                 const index = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(obj.id) });
                 const groupItem: any = {
                     tag: newGroup[index]?.product_version,
-                    base_objs: compare_objs
+                    base_objs: compareArr
                 }
                 groups.push(groupItem)
                 return groups
@@ -572,6 +568,62 @@ export default (props: any) => {
         }
         return paramData
     }
+    // const handlEenvironment = (selData: any) => {
+    //     console.log('selData',selData)
+    //     const { obj: baseObj, trr: compareArr } = getJobRefSuit(selData)
+    //     let groupDataCopy = _.cloneDeep(groupData).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
+    //     let newGroup: any = []
+    //     if (groupDataCopy.length) {
+    //         changeTag(groupDataCopy, [])
+    //         newGroup = newProductVersionGroup.current.flat()
+    //     }
+
+    //     const arr = groupData.filter((item: any, index: any) => index !== baselineGroupIndex).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
+    //     const array = groupData.filter((item: any, index: any) => _.get(item, 'members') && _.get(item, 'members').length)
+    //     let base_group = {}
+    //     let compare_groups = []
+    //     if (array.length === 1) {
+    //         base_group = {
+    //             tag: newGroup[0]?.product_version || '',
+    //             base_objs: baseAssemble(baseObj, arr[0]),
+    //         }
+    //     } else {
+    //         const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
+    //         base_group = {
+    //             tag: newGroup.length ? newGroup[baseIndex]?.product_version : '',
+    //             base_objs: baseAssemble(baseObj, baselineGroup),
+    //         }
+
+    //         compare_groups = _.reduce(arr, (groups: any, obj, num: number) => {
+    //             const compare_objs: any = []
+    //             let members = _.get(obj, 'members')
+    //             members = _.isArray(members) ? members : []
+    //             members = members.filter((val: any) => val)
+
+    //             const flag = obj.type === 'baseline'
+    //             members.forEach((item: any) => {
+    //                 if (!flag) {
+    //                     compare_objs.push({ is_job: 1, obj_id: item.id || {} })
+    //                 }
+    //                 if (flag) {
+    //                     compare_objs.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
+    //                 }
+    //             })
+    //             const index = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(obj.id) });
+    //             const groupItem: any = {
+    //                 tag: newGroup[index]?.product_version,
+    //                 base_objs: compare_objs
+    //             }
+    //             groups.push(groupItem)
+    //             return groups
+    //         }, []);
+    //     }
+    //     const paramData = {
+    //         base_group,
+    //         compare_groups
+    //     }
+    //     return paramData
+    // }
 
     const handleAddBaseline = (e: any, obj: any, index: number) => {
         // e.stopPropagation();
@@ -613,9 +665,9 @@ export default (props: any) => {
 
     const addGroupTypeFn = () => {
         if (!currentEditGroup) return
-        if (currentEditGroup.type === 'baseline') {
-            return <AddBaseline onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
-        }
+        // if (currentEditGroup.type === 'baseline') {
+        //     return <AddBaseline ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
+        // }
         if (currentEditGroup.type === 'plan') {
             return <AddPlan onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
         }
@@ -923,13 +975,12 @@ export default (props: any) => {
                                 </div>
                             </div>
                             <Divider className={styles.line} />
-                            <div className={styles.addJobBtn} onClick={handleAddNoVersionJob}>
+                            <div className={styles.addJobBtn} onClick={handleAddNoVersionJob} >
                                 <Space>
                                     添加Job
                                     <CaretDownOutlined />
                                 </Space>
                             </div>
-                            <div style={{ height: layoutHeight - 50 - 56 - 94 - 43 }}></div>
                             {provided.placeholder}
                         </div>
                     )}
@@ -1011,10 +1062,15 @@ export default (props: any) => {
                                     {provided.placeholder}
                                 </div>
                             )}
-
                         </Droppable>
                     </Scrollbars>
                 </ul>
+                <div className={styles.addJobBtn} onClick={handleAddNoVersionJob} >
+                    <Space>
+                        添加Job
+                        <CaretDownOutlined />
+                    </Space>
+                </div>
             </>
         )
     }
@@ -1036,6 +1092,7 @@ export default (props: any) => {
     const handleJobCancel = () => {
         setIsModalOpen(false);
     }
+
     return (
         <Layout style={{ paddingRight: 20, paddingBottom: 20, height: layoutHeight - 50, minHeight: 0, overflow: 'auto', background: '#f5f5f5' }} className={styles.compare_job}>
             <Spin spinning={loading}>
@@ -1076,7 +1133,7 @@ export default (props: any) => {
                                                 )
                                             }}
                                         </Draggable>
-                                        <div>添加job</div>
+                                        <div>添加数据</div>
                                     </div>
 
                                     <div style={{ marginLeft: originType === 'test_result' ? 0 : 20 }} className={styles.group_content}>
@@ -1111,24 +1168,21 @@ export default (props: any) => {
                                                                             style={{ left: `${index * 312}px` }}
                                                                         >
                                                                             {groupItemReact(item, index)}
+                                                                            <div
+                                                                                style={{ cursor: 'pointer' }}
+                                                                                onClick={_.partial(handleAddGroupItem, groupData[index], index)}
+                                                                                className={styles.create_job_type}>
+                                                                                {  item.type === 'baseline' ? <FormattedMessage id="analysis.add.baseline" /> : <FormattedMessage id="analysis.add.job" />}
+                                                                            </div>
                                                                             {
-                                                                                item.type === 'baseline' ?
-                                                                                    <div
-                                                                                        style={{ cursor: 'pointer' }}
-                                                                                        onClick={_.partial(handleAddBaseline, _, groupData[index], index)}
-                                                                                        className={styles.create_job_type}>
-                                                                                        <FormattedMessage id="analysis.add.baseline" />
-                                                                                    </div> :
-                                                                                    <div
-                                                                                        style={{ cursor: 'pointer' }}
-                                                                                        onClick={_.partial(handleAddGroupItem, groupData[index], index)}
-                                                                                        className={styles.create_job_type}>
-                                                                                        <FormattedMessage id="analysis.add.job" />
-                                                                                    </div>
+                                                                                // <div
+                                                                                //     style={{ cursor: 'pointer' }}
+                                                                                //     onClick={_.partial(handleAddBaseline, _, groupData[index], index)}
+                                                                                //     className={styles.create_job_type}>
+                                                                                //     <FormattedMessage id="analysis.add.baseline" />
+                                                                                // </div> 
                                                                             }
-
                                                                         </div>
-
                                                                     </div>
                                                                 )
                                                             }}
@@ -1268,8 +1322,8 @@ export default (props: any) => {
                     footer={null}
                     onOk={handleOk}
                     onCancel={handleJobCancel}
-                >
-                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} />
+                >   
+                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} noGroupData={noGroupData}/>
                 </Modal>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={groupData} />
             </Spin>

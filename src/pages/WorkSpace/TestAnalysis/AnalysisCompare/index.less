@@ -310,7 +310,7 @@
 }
 .addJobBtn {
     text-align: center;
-    padding-top: 15px;
+    padding-top: 10px;
     color: #1890FF;
     cursor: pointer;
 }
@@ -353,8 +353,16 @@
             margin-bottom: 20px;
             
         } 
-        .job_text{
-            margin-top: 26px;
+        .job_text { 
+            margin-top: 20px;
+        }
+        .job_test{
+            margin-top: 20px;
+            :global {
+                .ant-tabs-nav > .ant-tabs-nav-wrap {
+                    padding-left: 0px !important;
+                }
+            }
         }
     }
     .footer{

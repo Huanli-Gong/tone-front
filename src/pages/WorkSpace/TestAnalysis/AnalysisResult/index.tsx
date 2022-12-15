@@ -234,7 +234,7 @@ const Report = (props: any) => {
     useEffect(() => {
         if (JSON.stringify(environmentResult) !== '{}') {
             const deep = _.cloneDeep(environmentResult)
-            if (!!environmentResult.compare_groups.length) deep.base_group.is_base = true
+            if(deep.base_group) deep.base_group.is_group = true
             let compare = deep.compare_groups
             let base = deep.base_group
             compare.splice(baselineGroupIndex, 0, base)

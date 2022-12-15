@@ -230,13 +230,11 @@ const ReportTestPref: React.FC<any> = (props) => {
     }
     const renderShare = (conf: any) => {
         let obj = conf.conf_compare_data || conf.compare_conf_list || []
-        return (
-            obj.map((item: any, idx: number) => (
-                <PrefDataText gLen={group} key={idx}>
-                    <JumpResult job_id={item.obj_id || item} />
-                </PrefDataText>
-            ))
-        )
+        return obj.map((item: any, idx: number) => (
+            <PrefDataText gLen={group} key={idx}>
+                { !item.is_baseline ? <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> : <>-</> }
+            </PrefDataText>
+        ))
     }
 
     return (
@@ -313,7 +311,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
                                                                 <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                                {renderShare(conf)}
+                                                                { renderShare(conf) }
                                                             </PrefData>
                                                             {
                                                                 conf.metric_list.map((metric: any, idx: number) => (
