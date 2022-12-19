@@ -18,6 +18,10 @@ import Link from '@tiptap/extension-link'
 import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 
 import CodeBlockComponent from './components/CodeBlockComponent'
 
@@ -35,6 +39,12 @@ const RichEditor: React.FC<IProps> = (props) => {
       Color,
       FontFamily,
       FontSize,
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Subscript,
       Superscript,
       CodeBlockLowlight
