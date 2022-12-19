@@ -165,7 +165,7 @@ export default (props: any) => {
     }
 
     const handlEenvironment = (selData: any) => {
-        const { obj: baseObj } = getJobRefSuit(selData)
+        // const { obj: baseObj } = getJobRefSuit(selData)
         const compare_groups: [] = []
         const baselineGroup = getBaselineGroup()
         const brr: any = []
@@ -176,10 +176,10 @@ export default (props: any) => {
         const flag = baselineGroup.type === 'baseline'
         baseMembers.forEach((item: any) => {
             if (!flag) {
-                brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {} })
+                brr.push({ is_baseline: 0, obj_id: item.id,  })
             }
             if (flag) {
-                brr.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: baseObj[item.id] || {} })
+                brr.push({ is_baseline: 1, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
             }
         })
         const base_group = {
