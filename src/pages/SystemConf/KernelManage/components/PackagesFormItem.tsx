@@ -2,7 +2,8 @@ import React from "react"
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons"
 import { Form, Input, Row, Space, Typography } from "antd"
 import type { FormInstance } from "antd"
-import { useIntl } from "umi"
+import { useIntl, useLocation } from "umi"
+import { CopyLinkSpan } from '@/pages/WorkSpace/TestJob/components/untils'
 
 type IProps = {
     form?: FormInstance;
@@ -11,7 +12,9 @@ type IProps = {
 
 const PackagesFormItem: React.FC<IProps> = (props) => {
     const intl = useIntl()
-    const { disabled } = props
+    const { disabled, form } = props
+
+    const { pathname } = useLocation()
 
     return (
         <Form.Item
@@ -31,6 +34,7 @@ const PackagesFormItem: React.FC<IProps> = (props) => {
                 ]}
             >
                 {(fields, { add, remove }, { errors }) => {
+                    console.log(fields)
                     return (
                         <Row style={{ flexDirection: "column", gap: 8, width: "100%" }}>
                             {fields.map((field, index) => (
@@ -39,17 +43,17 @@ const PackagesFormItem: React.FC<IProps> = (props) => {
                                         {...field}
                                         rules={[{
                                             required: true,
-                                            message: intl.formatMessage({ id: "kernel.kernel_packages.rules.empty" })
+                                            message: intl.formatMessage({ id: `kernel.kernel_packages${index !== 0 ? ".other" : ""}.rules.empty` })
                                         }]}
                                     >
                                         <Input
                                             disabled={disabled}
                                             style={{ width: "100%" }}
                                             allowClear
-                                            placeholder={intl.formatMessage({ id: 'kernel.kernel_packages.placeholder' })}
+                                            placeholder={intl.formatMessage({ id: `kernel.kernel_packages${index !== 0 ? ".other" : ""}.placeholder` })}
                                         />
                                     </Form.Item>
-                                    {!disabled && fields.length > 1 ? (
+                                    {!disabled && index !== 0 && fields.length > 1 ? (
                                         <DeleteOutlined
                                             style={{
                                                 position: "absolute",
@@ -59,18 +63,28 @@ const PackagesFormItem: React.FC<IProps> = (props) => {
                                             onClick={() => remove(field.name)}
                                         />
                                     ) : null}
+                                    {
+                                        !!~pathname.indexOf("/test_result/") &&
+                                        <CopyLinkSpan
+                                            style={{ right: -20 }}
+                                            onCopy={() => form?.getFieldValue("kernel_packages")?.[index]}
+                                        />
+                                    }
                                 </div>
                             ))}
-                            <Typography.Link onClick={() => add()} >
-                                <Space>
-                                    <PlusOutlined />
-                                    <Typography.Link>
-                                        {
-                                            intl.formatMessage({ id: "kernel.kernel_packages.add" })
-                                        }
-                                    </Typography.Link>
-                                </Space>
-                            </Typography.Link>
+                            {
+                                !disabled &&
+                                <Typography.Link onClick={() => add()} >
+                                    <Space>
+                                        <PlusOutlined />
+                                        <Typography.Link>
+                                            {
+                                                intl.formatMessage({ id: "kernel.kernel_packages.add" })
+                                            }
+                                        </Typography.Link>
+                                    </Space>
+                                </Typography.Link>
+                            }
                         </Row>
                     )
                 }}

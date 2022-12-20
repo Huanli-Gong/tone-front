@@ -159,9 +159,9 @@ export default (props: any) => {
                                 message.destroy()
                                 const { code } = result;
                                 if (code != 200) {
-                                    message.warning(formatMessage({ id: 'operation.synchronize.failed' }));
+                                    message.warning(formatMessage({ id: 'request.synchronize.failed' }));
                                 } else {
-                                    message.success(formatMessage({ id: 'operation.synchronize.success' }));
+                                    message.success(formatMessage({ id: 'request.synchronize.success' }));
                                 }
                                 initPageList()
 

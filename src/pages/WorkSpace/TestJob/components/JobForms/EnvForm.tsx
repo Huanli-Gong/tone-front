@@ -28,7 +28,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
 
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
-        !disabled && form.resetFields(['kernel', 'devel', 'headers', 'kernel_version', 'scripts'])
+        !disabled && form.resetFields(['kernel_packages', 'kernel_version', 'scripts'])
     }
 
     useImperativeHandle(
@@ -48,13 +48,13 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 script_info = script_info || [{ pos: 'before', script: '' }]
                 form.resetFields()
                 let kernelType = 'no'
-                if (kernel_info && _.get(kernel_info, 'kernel') && _.get(kernel_info, 'devel') && _.get(kernel_info, 'headers') && kernel_version) {
+                if (kernel_info && _.get(kernel_info, 'kernel_packages') && kernel_version) {
                     kernelType = 'install_push'
                     form.setFieldsValue({ ...data, kernel_install: kernelType, rpm_info, script_info })
                     setKernal(kernelType)
                     return
                 }
-                if (kernel_info && _.get(kernel_info, 'kernel') && _.get(kernel_info, 'devel') && _.get(kernel_info, 'headers') && !kernel_version) {
+                if (kernel_info && _.get(kernel_info, 'kernel_packages') && !kernel_version) {
                     kernelType = 'install_un_push'
                     form.setFieldsValue({ ...data, kernel_install: kernelType, rpm_info, script_info })
                     setKernal(kernelType)

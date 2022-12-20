@@ -1,5 +1,5 @@
 export default {
-  'kernel.manage': 'Kernel Manage',  
+  'kernel.manage': 'Kernel Manage',
   'kernel.version': 'Kernel Version',
   'kernel.version.type': 'Version Type',
   'kernel.release.version': 'Release',
@@ -23,7 +23,9 @@ export default {
   'kernel.is_enable': 'Enable',
 
   "kernel.kernel_packages.label": "Kernel Packages",
-  "kernel.kernel_packages.rules.empty": "The kernel package link cannot be empty.",
+  "kernel.kernel_packages.rules.empty": "The kernel package path cannot be empty.",
+  "kernel.kernel_packages.other.rules.empty": "The RPM package path cannot be empty.",
   "kernel.kernel_packages.add": "Add RPM Package ",
-  "kernel.kernel_packages.placeholder": "Place enter",
+  "kernel.kernel_packages.placeholder": "Place enter kernel package path",
+  "kernel.kernel_packages.other.placeholder": "Place enter RPM package path",
 };

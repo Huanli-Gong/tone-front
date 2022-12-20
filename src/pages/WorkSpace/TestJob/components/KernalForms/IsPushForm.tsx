@@ -74,7 +74,7 @@ const PushForm: React.FC<IProps> = (props) => {
 
                 {/* package kernel devel headers */}
                 {/* @ts-ignore */}
-                <PackagesFormItem {...props} {...itemLayout} />
+                <PackagesFormItem {...props} {...itemLayout} disabled={true} />
                 {/* <PackageList {...props} /> */}
                 {/* package kernel devel headers */}
 

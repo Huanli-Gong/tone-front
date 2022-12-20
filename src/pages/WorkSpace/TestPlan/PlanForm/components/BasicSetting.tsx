@@ -11,12 +11,8 @@ import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushF
 import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushForm'
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 
-/* import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
-import QuestionCircleComponent from '@/components/Public/QuestionCircle'
-import { queryReportTemplateList } from '@/pages/TestJob/services' */
 import styled from 'styled-components'
 import _ from 'lodash'
-import { aligroupServer, aliyunServer } from '@/utils/utils'
 const BaselineSpan = styled.span`
     position:absolute;
     right: 30px;
@@ -54,7 +50,7 @@ const BasicSetting = (props: any, ref: any) => {
     const handleKernalInstallChange = (evt: any) => {
         setKernal(evt.target.value)
         form.setFieldsValue({ test_obj: testObject })
-        form.resetFields(['kernel', 'devel', 'headers', 'kernel_version'])
+        form.resetFields(['kernel_packages', 'kernel_version'])
     }
 
     useImperativeHandle(ref, () => ({
@@ -79,7 +75,6 @@ const BasicSetting = (props: any, ref: any) => {
             form.setFieldsValue({ ...kernel_info, ...build_pkg_info, ...template, })
         }
     }, [template])
-
 
     return (
         <div
@@ -111,18 +106,18 @@ const BasicSetting = (props: any, ref: any) => {
             >
                 <Form.Item
                     name="name"
-                    label={<FormattedMessage id="plan.plan.name"/>}
-                    rules={[{ required: true, message: formatMessage({id: 'plan.plan.name.message'}), max: 64 }]}
+                    label={<FormattedMessage id="plan.plan.name" />}
+                    rules={[{ required: true, message: formatMessage({ id: 'plan.plan.name.message' }), max: 64 }]}
                 >
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.plan.name.placeholder'})} />
+                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.plan.name.placeholder' })} />
                 </Form.Item>
-                <Form.Item name="description" label={<FormattedMessage id="plan.plan.description"/>}>
-                    <Input.TextArea autoComplete="off" placeholder={formatMessage({id: 'plan.plan.description.placeholder'})} />
+                <Form.Item name="description" label={<FormattedMessage id="plan.plan.description" />}>
+                    <Input.TextArea autoComplete="off" placeholder={formatMessage({ id: 'plan.plan.description.placeholder' })} />
                 </Form.Item>
                 {/* rules={[{ required: true, message: "请选择Project" }]} */}
                 <Form.Item name="project_id" label={'Project'} >
-                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch 
-                        placeholder={formatMessage({id: 'plan.plan.project_id'})}>
+                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                        placeholder={formatMessage({ id: 'plan.plan.project_id' })}>
                         {
                             projectList.map(
                                 (item: any, idx: any) => (
@@ -134,12 +129,12 @@ const BasicSetting = (props: any, ref: any) => {
                         }
                     </Select>
                 </Form.Item>
-                <Form.Item label={<FormattedMessage id="plan.test.baseline"/>}>
+                <Form.Item label={<FormattedMessage id="plan.test.baseline" />}>
                     <BaselineWrapper>
                         <Form.Item name="func_baseline" >
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
                                 /* placeholder="请选择内网功能基线" */
-                                placeholder={formatMessage({id: 'plan.func_baseline.placeholder'})}
+                                placeholder={formatMessage({ id: 'plan.func_baseline.placeholder' })}
                             >
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aligroup').map(
@@ -152,7 +147,7 @@ const BasicSetting = (props: any, ref: any) => {
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜功能 */}
-                            {formatMessage({id: 'aligroupServer'})}｜<FormattedMessage id="plan.function" />
+                            {formatMessage({ id: 'aligroupServer' })}｜<FormattedMessage id="plan.function" />
                         </BaselineSpan>
                         {/* <div style={{ position : 'absolute' , right : -22 , top : -4 }}>
                             <QusetionIconTootip desc="" title="至少添加一种基线" />
@@ -162,7 +157,7 @@ const BasicSetting = (props: any, ref: any) => {
                         <Form.Item name="perf_baseline">
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
                                 /* placeholder="请选择内网性能基线" */
-                                placeholder={formatMessage({id: 'plan.perf_baseline.placeholder'})}
+                                placeholder={formatMessage({ id: 'plan.perf_baseline.placeholder' })}
                             >
                                 {
                                     baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aligroup').map(
@@ -175,7 +170,7 @@ const BasicSetting = (props: any, ref: any) => {
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜性能 */}
-                            {formatMessage({id: 'aligroupServer'})}｜<FormattedMessage id="plan.performance" />
+                            {formatMessage({ id: 'aligroupServer' })}｜<FormattedMessage id="plan.performance" />
                         </BaselineSpan>
                     </BaselineWrapper>
 
@@ -183,7 +178,7 @@ const BasicSetting = (props: any, ref: any) => {
                     <BaselineWrapper>
                         <Form.Item name="func_baseline_aliyun">
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                                placeholder={formatMessage({id: 'plan.func_baseline.placeholder'})}
+                                placeholder={formatMessage({ id: 'plan.func_baseline.placeholder' })}
                             // placeholder="请选择云上功能基线"
                             >
                                 {
@@ -196,31 +191,30 @@ const BasicSetting = (props: any, ref: any) => {
                             </Select>
                         </Form.Item>
                         <BaselineSpan>
-                            {formatMessage({id: 'aliyunServer'})}｜<FormattedMessage id="plan.function" />
+                            {formatMessage({ id: 'aliyunServer' })}｜<FormattedMessage id="plan.function" />
                             {/* 云上｜功能 */}
                         </BaselineSpan>
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline_aliyun">
                             <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                                placeholder={formatMessage({id: 'plan.perf_baseline.placeholder'})}
+                                placeholder={formatMessage({ id: 'plan.perf_baseline.placeholder' })}
                             // placeholder="请选择云上性能基线"
                             >
                                 {baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aliyun').map(
                                     (item: any) => (
                                         <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
                                     )
-                                )
-                                }
+                                )}
                             </Select>
                         </Form.Item>
                         <BaselineSpan>
-                            {formatMessage({id: 'aliyunServer'})}｜<FormattedMessage id="plan.performance" />
+                            {formatMessage({ id: 'aliyunServer' })}｜<FormattedMessage id="plan.performance" />
                             {/* 云上｜性能 */}
                         </BaselineSpan>
                     </BaselineWrapper>
                 </Form.Item>
-                <Form.Item name="test_obj" 
+                <Form.Item name="test_obj"
                     label={<FormattedMessage id="plan.tested.object" />}
                 >
                     <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
@@ -251,12 +245,12 @@ const BasicSetting = (props: any, ref: any) => {
                             />
                         }
                         {
-                            (kernel === 'install_un_push') && 
+                            (kernel === 'install_un_push') &&
                             <UnPushForm needScriptList={true} form={form} />
                         }
                         {
                             (kernel === 'install_build_kernel') &&
-                            <BuildKernalForm needScriptList={false} form={form} isPlan={true}/>
+                            <BuildKernalForm needScriptList={false} form={form} isPlan={true} />
                         }
                     </>
                 }
@@ -264,7 +258,7 @@ const BasicSetting = (props: any, ref: any) => {
                     name="rpm_info"
                     label={<FormattedMessage id="plan.rpm_info" />}
                 >
-                    <Input.TextArea placeholder={formatMessage({id: 'plan.rpm_info.placeholder'})} />
+                    <Input.TextArea placeholder={formatMessage({ id: 'plan.rpm_info.placeholder' })} />
                 </Form.Item>
                 <Form.Item
                     name="env_info"
@@ -274,18 +268,18 @@ const BasicSetting = (props: any, ref: any) => {
                             validator(rule, value) {
                                 if (value) {
                                     const reg = /^(\w+=((('[^']+'|"[^"]+")|.+)( |\n)))*\w+=(('[^']+'|"[^"]+")|.+)$/
-                                    return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({id: 'plan.env_info.reject'}) );
+                                    return reg.test(value) ? Promise.resolve() : Promise.reject(formatMessage({ id: 'plan.env_info.reject' }));
                                 }
                                 return Promise.resolve()
                             },
                         })
                     ]}
                 >
-                    <Input.TextArea placeholder={formatMessage({id: 'plan.env_info.reject'})} />
+                    <Input.TextArea placeholder={formatMessage({ id: 'plan.env_info.reject' })} />
                 </Form.Item>
                 <Form.Item name="notice_name" label={<FormattedMessage id="plan.notice_name" />}>
-                    <Input autoComplete="off" 
-                        placeholder={formatMessage({id: 'plan.notice_name.placeholder'}, {date: '{date}'})}
+                    <Input autoComplete="off"
+                        placeholder={formatMessage({ id: 'plan.notice_name.placeholder' }, { date: '{date}' })}
                     />
                 </Form.Item>
                 <Form.Item
@@ -300,17 +294,17 @@ const BasicSetting = (props: any, ref: any) => {
                                     const len = arr.filter((str: string) => !reg.test(str)).length
                                     return len === 0 ?
                                         Promise.resolve() :
-                                        Promise.reject(formatMessage({id: 'plan.email_info.reject'}))
+                                        Promise.reject(formatMessage({ id: 'plan.email_info.reject' }))
                                 }
                                 return Promise.resolve()
                             }
                         })
                     ]}
                 >
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.email_info.placeholder'})} />
+                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.email_info.placeholder' })} />
                 </Form.Item>
                 <Form.Item name="ding_talk_info" label={<FormattedMessage id="plan.ding_talk_info" />}>
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.ding_talk_info.placeholder'})} />
+                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.ding_talk_info.placeholder' })} />
                 </Form.Item>
 
                 <Form.Item name="enable" label={<FormattedMessage id="plan.enable" />} initialValue={true} >
