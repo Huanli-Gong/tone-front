@@ -20,12 +20,12 @@
 }
 
 .prepTable {
-    :global(.expanded-row-padding-no>td) {
-        // padding : 0 !important;
-    }
     :global(.ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table) {
-        // margin: -8px -8px -8px 35px;
-        margin: -8px -8px -8px 39px;
+        margin: 0;
+    }
+
+    :global(.expanded-row-padding-no>td) {
+        padding : 0 !important;
     }
 }
 .buildTable {

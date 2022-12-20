@@ -1,6 +1,5 @@
 import React , { useImperativeHandle, useState } from 'react'
 import { matchTestType } from '@/utils/utils'
-import { useIntl, FormattedMessage } from 'umi'
 import TestBuildTable from './TestBuildTable'
 import TestPrepTable from './TestPrepTable'
 import TestSuiteTable from './TestSuiteTable'

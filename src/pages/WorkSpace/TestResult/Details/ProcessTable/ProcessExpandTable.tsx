@@ -7,13 +7,14 @@ import styles from './index.less'
 import ResizeTable from '@/components/ResizeTable'
 import { ReactComponent as ColumnStateLine } from '@/assets/svg/TestResult/line.svg'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
+import { Typography } from "antd"
 
-export default ({ items, mode }: any) => {
+export default ({ dataSource }: any) => {
     const { formatMessage } = useIntl()
     const columns: any = [{
         dataIndex: 'mode',
         title: <FormattedMessage id="ws.result.details.mode" />,
-        width: 80,
+        width: 127,
         ellipsis: {
             showTitle: false
         },
@@ -34,7 +35,10 @@ export default ({ items, mode }: any) => {
         ellipsis: {
             showTitle: false
         },
-        width: 80,
+        width: 150,
+        render(_) {
+            return <Typography.Text ellipsis={{ tooltip: true }}>{_ || "-"}</Typography.Text>
+        }
     },
     {
         dataIndex: 'state',
@@ -48,7 +52,6 @@ export default ({ items, mode }: any) => {
     {
         dataIndex: 'result',
         title: <FormattedMessage id="ws.result.details.output.results" />,
-        width: 130,
         ...copyTooltipColumn('Nothing to do'),
     },
     {
@@ -95,7 +98,7 @@ export default ({ items, mode }: any) => {
     return (
         <ResizeTable
             columns={columns}
-            dataSource={items}
+            dataSource={dataSource}
             showHeader={false}
             rowKey="rowKey" // "id"
             size="small"
