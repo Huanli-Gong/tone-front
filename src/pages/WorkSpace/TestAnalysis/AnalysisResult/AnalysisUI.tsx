@@ -126,12 +126,12 @@ interface EnvGroupLProps {
 }
 
 const setEnvGroupWdith = (l: number, enLocale: boolean) => {
-    if (l == 1) return (`calc( 100% - ${enLocale? 360: 110}px )`)
-    return (`calc( (100% - ${enLocale? 360: 110}px) / ${l})`)
+    if (l == 1) return (`calc( 100% - ${enLocale? 220: 110}px )`)
+    return (`calc( (100% - ${enLocale? 220: 110}px) / ${l})`)
 }
 
 export const EnvGroupL = styled.div<EnvGroupLProps>`
-    width: ${props => props.enLocale ? 360: 110}px;
+    width: ${props => props.enLocale ? 220: 110}px;
     float:left;
     padding-left:16px;
     border-right:1px solid rgba(0,0,0,0.10);
@@ -209,14 +209,14 @@ const setTestConfWdith = (l: number) => {
     if (l == 1) {
         return '50%'
     } else {
-        return '360px'
+        return '220px'
     }
 }
 const setTestNumWdith = (l: number, ) => {
     if (l == 1) {
         return '50%'
     } else {
-       return (`calc( (100% - 360px) / ${l})`)
+       return (`calc( (100% - 220px) / ${l})`)
     }
 }
 export const Group = styled.div`

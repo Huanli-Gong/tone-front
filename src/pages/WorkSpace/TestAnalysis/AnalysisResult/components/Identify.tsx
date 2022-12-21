@@ -23,7 +23,6 @@ const Identify: React.FC<any> = (props) => {
                         </Tooltip>
                     }
                     {
-
                         is_baseline ? <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
                             <BaseLine
                                 style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
@@ -31,9 +30,8 @@ const Identify: React.FC<any> = (props) => {
                             <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
                         </Tooltip> : null
                     }
-
                 </Space>
-                <EllipsisPulic title={tag} width={'calc(100% - 120px)'} />
+                <EllipsisPulic title={tag} width={'calc(100% - 130px)'} />
             </>
         )
     }

@@ -395,10 +395,10 @@ export default (props: any) => {
         return groupData.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
     }
     const handleSureOk = (suiteData: any) => { // suiteData：已选的
-        setVisibleBaseGroup(false);
-        setLoading(true)
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
+        setVisibleBaseGroup(false);
+        setLoading(true)
         Promise.all([queryDomainGroupFn(params)])
             .then((result: any) => {
                 setLoading(false)

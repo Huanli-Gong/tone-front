@@ -3,7 +3,7 @@ export default {
     'analysis.subTitle': 'Provide a variety of data comparison and analysis capabilities, and support online job aggregation and comparison analysis methods',
     'analysis.start': 'Start',
     'analysis.base': 'Base',
-    'analysis.test.baseline': 'Test Baseline',
+    'analysis.test.baseline': 'Baseline',
 
     // AnalysisCompare
     'analysis.area.to.grouped': 'To be grouped',

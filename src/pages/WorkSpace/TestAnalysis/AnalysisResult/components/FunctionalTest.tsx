@@ -257,18 +257,18 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                 </CaseTitle>
                                                                 {
                                                                     conf_data?.map((metric: any, idx: number) => (
-                                                                            <CaseText gLen={group} key={idx}>
-                                                                                <Space size={16}>
-                                                                                    <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(metric.all_case)}</Typography.Text>
-                                                                                    <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(metric.success_case)}</Typography.Text>
-                                                                                    <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
-                                                                                </Space>
-                                                                                {metric && !metric.is_baseline ?
-                                                                                    <JumpResult ws_id={wsId} job_id={metric.obj_id} style={{ paddingLeft: 10 }}/> : <>-</>
+                                                                        <CaseText gLen={group} key={idx}>
+                                                                            <Space size={16}>
+                                                                                <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(metric.all_case)}</Typography.Text>
+                                                                                <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(metric.success_case)}</Typography.Text>
+                                                                                <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
+                                                                                {
+                                                                                    metric && !metric.is_baseline ?
+                                                                                        <JumpResult job_id={metric.obj_id} style={{ paddingLeft: 10 }} /> : <></>
                                                                                 }
-                                                                            </CaseText>
-                                                                        )
-                                                                    )
+                                                                            </Space>
+                                                                        </CaseText>
+                                                                    ))
                                                                 }
                                                             </TestCase>
                                                             <ExpandSubcases
