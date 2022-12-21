@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Space, Row, Col, Select, Divider, Button, DatePicker } from 'antd'
+import { Space, Row, Col, Select, Divider, Button, DatePicker, Typography } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -69,7 +69,7 @@ const AllJobTable = (props: any) => {
         if (start_time && end_time) setParams({ ...params, creation_time: JSON.stringify({ start_time, end_time }) })
         confirm()
     }
-    
+
     const getProductList = async (id: any) => {
         setLoading(true)
         let result = await queryProductList({ ws_id, product_id: id })
@@ -84,7 +84,7 @@ const AllJobTable = (props: any) => {
         }
         setLoading(false)
     }
-    
+
     const getProductData = async () => {
         setLoading(true)
         let result = await queryProduct({ ws_id })
@@ -110,12 +110,12 @@ const AllJobTable = (props: any) => {
         }
     }
 
-    useEffect(()=> {
-        if(!!noGroupData.length){
-            setSelectedRowKeys(noGroupData.map((i:any) => i.id));
+    useEffect(() => {
+        if (!!noGroupData.length) {
+            setSelectedRowKeys(noGroupData.map((i: any) => i.id));
             setSelectRowData(noGroupData);
         }
-    },[noGroupData])
+    }, [noGroupData])
 
     const columns = [
         {
@@ -180,7 +180,10 @@ const AllJobTable = (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => row.test_type,
+            render: (_: any, row: any) => {
+                const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
+                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+            },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
                 list={defaultList}
@@ -304,7 +307,7 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys([...selectedRowKeys, ...keysArr])
         setSelectRowData([...selectRowData, ...arr])
     }
-    
+
     const cancleAllSelectFn = (allData: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
