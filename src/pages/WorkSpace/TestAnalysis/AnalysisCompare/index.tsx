@@ -1081,7 +1081,6 @@ export default (props: any) => {
                                                 )
                                             }}
                                         </Draggable>
-                                        <div>{formatMessage({ id: "analysis.add.job" })}</div>
                                     </div>
 
                                     <div style={{ marginLeft: originType === 'test_result' ? 0 : 20 }} className={styles.group_content}>
