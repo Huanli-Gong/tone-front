@@ -111,11 +111,12 @@ export default (props: any) => {
                 const flag = baselineGroup.type === 'baseline'
                 const isBaseline = !flag ? 0 : 1
                 arr.forEach((item: any) => {
-                    if (["功能测试", "functional"].includes(item.test_type)) {
+                    if (["功能", "功能测试", "functional"].includes(item.test_type)) {
                         paramData.func_data.is_baseline = isBaseline
                         paramData.func_data.base_job.push(item.id)
                     }
-                    else {
+
+                    if (["性能", "性能测试", "performance"].includes(item.test_type)) {
                         paramData.perf_data.is_baseline = isBaseline
                         paramData.perf_data.base_job.push(item.id)
                     }
@@ -126,12 +127,11 @@ export default (props: any) => {
             allGroupData.forEach((item: any, index: number) => {
                 let membersArr = _.get(item, 'members')
                 if (_.isArray(membersArr)) {
-                    const flag = baselineGroup.type === 'baseline'
                     membersArr.forEach((item: any) => {
-                        if (["功能测试", "functional"].includes(item.test_type)) {
+                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
                             brrFun.push(item.id)
                         }
-                        else {
+                        if (["性能", "性能测试", "performance"].includes(item.test_type)) {
                             brrFers.push(item.id)
                         }
                     })
@@ -139,7 +139,7 @@ export default (props: any) => {
             })
             paramData.func_data.compare_job = brrFun
             paramData.perf_data.compare_job = brrFers
-
+            console.log(paramData)
             getSuitDetail(paramData)
         }
     }, [allGroupData, baselineGroup])
