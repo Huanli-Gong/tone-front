@@ -71,8 +71,8 @@ export default (props: any) => {
             allPersRowKeys.current = [...arrKey2]
             let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
             if (tabValue) setTab('performance')
-            setSelectedFuncRowKeys([...arrKey1 ])
-            setSelectedPerfRowKeys([...arrKey2 ])
+            setSelectedFuncRowKeys([...arrKey1])
+            setSelectedPerfRowKeys([...arrKey2])
             setOneLevelFunc(Object.values(obj1))
             setOneLevelPref(Object.values(obj2))
             setSuitData(data)
@@ -191,7 +191,7 @@ export default (props: any) => {
             let selectedKeys: any = []
             result = Object.values(confData).map((item: any, index: number) => {
                 if (item.conf_dic && JSON.stringify(item.conf_dic) !== '{}') {
-                    selectedKeys = [ ...Object.keys(item.conf_dic).map((i:any) => + i)]
+                    selectedKeys = [...Object.keys(item.conf_dic).map((i: any) => + i)]
                     item.conf_list = Object.values(item.conf_dic).map((value: any, index: number) => {
                         return (
                             {
@@ -246,7 +246,7 @@ export default (props: any) => {
             })
             const params = {
                 group_jobs,
-                base_index:baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
+                base_index: baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
                 suite_list
             }
             const { data, code, msg } = await queryDuplicate(params)
@@ -256,7 +256,7 @@ export default (props: any) => {
                 } else {
                     let arr = data.duplicate_data
                     let brr: any = []
-                    arr = arr.map((item: any, groupIndex:number) => {
+                    arr = arr.map((item: any, groupIndex: number) => {
                         let suite_list = item.suite_list.map((i: any) => {
                             let conf_list = i.conf_list.map((conf: any, num: number) => {
                                 let job_list = conf.job_list.map((child: any, idx: number) => {
@@ -329,25 +329,25 @@ export default (props: any) => {
         if (selected) {
             if (!record.level) {
                 let conf_list = []
-                if(record.conf_list){
-                    conf_list = record.conf_list.map((i:any) => i.conf_id)
+                if (record.conf_list) {
+                    conf_list = record.conf_list.map((i: any) => i.conf_id)
                 }
-                arrKeys = [...arrKeys, record.suite_id + '', ...conf_list ]
+                arrKeys = [...arrKeys, record.suite_id + '', ...conf_list]
             } else {
-                arrKeys = [...arrKeys, record.conf_id, record.suite_id + '' ]
+                arrKeys = [...arrKeys, record.conf_id, record.suite_id + '']
             }
         } else {
             if (!record.level) {
-                if(record.conf_list){
-                    let conf_list = record.conf_list.map((i:any) => i.conf_id)
+                if (record.conf_list) {
+                    let conf_list = record.conf_list.map((i: any) => i.conf_id)
                     arrKeys = arrKeys.filter((keys: any) => !conf_list.includes(keys))
                 }
-                arrKeys = arrKeys.filter((keys: any) => String(record.suite_id) !== keys )
+                arrKeys = arrKeys.filter((keys: any) => String(record.suite_id) !== keys)
             } else {
                 arrKeys = arrKeys.filter((keys: any) => keys !== record.conf_id)
                 let conf_list = record.conf_list.splice(0)
-                conf_list = conf_list.filter((i:number) => i !== record.conf_id)
-                if(conf_list.length === 0){
+                conf_list = conf_list.filter((i: number) => i !== record.conf_id)
+                if (conf_list.length === 0) {
                     arrKeys = arrKeys.filter((keys: any) => keys !== String(record.suite_id))
                 }
             }
@@ -412,7 +412,7 @@ export default (props: any) => {
         const selectd = itemSuit[current].job_list
         arr = arr.map((item: any) => {
             if (item.conf_id === itemSuit[current].conf_id && item.key == groupIndex) {
-                let job_id = selectd.filter((item:any) => item.isSelect)[0].job_id || ''
+                let job_id = selectd.filter((item: any) => item.isSelect)[0].job_id || ''
                 return {
                     ...item,
                     job_id
@@ -431,7 +431,7 @@ export default (props: any) => {
         let cId = flag ? 0 : currentGroupIndex
         if (_.isUndefined(selSuiteData) || !selSuiteData.length) {
             return <Empty
-                description={<FormattedMessage id="analysis.no.duplicate.data"/>}
+                description={<FormattedMessage id="analysis.no.duplicate.data" />}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: '0' }} />
         }
@@ -509,15 +509,15 @@ export default (props: any) => {
                 className={styles.tab_title}
                 activeKey={tab}
             >
-                <Tabs.TabPane tab={<FormattedMessage id="functional.test"/>} key="functional" />
-                <Tabs.TabPane tab={<FormattedMessage id="performance.test"/>} key="performance" />
+                <Tabs.TabPane tab={<FormattedMessage id="functional.test" />} key="functional" />
+                <Tabs.TabPane tab={<FormattedMessage id="performance.test" />} key="performance" />
             </Tabs>
         )
     }
 
     // “对比组”转换国际化方式显示
     const groupToLocale = (str: string) => {
-        const temp =  str?.match(/^对比组[0-9]+$/) ? (formatMessage({id: 'analysis.comparison.group'}) + str.slice(3)) : str
+        const temp = str?.match(/^对比组[0-9]+$/) ? (formatMessage({ id: 'analysis.comparison.group' }) + str.slice(3)) : str
         return temp
     }
 
@@ -567,7 +567,7 @@ export default (props: any) => {
                 }} />
             </div>
 
-            <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale? styles.steps_en: styles.steps}>
+            <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale ? styles.steps_en : styles.steps}>
                 <Step title={<FormattedMessage id="analysis.select.comparison.data" />} />
                 <Step title={<FormattedMessage id="analysis.select.duplicate.data" />} disabled={duplicateLoading} />
             </Steps>

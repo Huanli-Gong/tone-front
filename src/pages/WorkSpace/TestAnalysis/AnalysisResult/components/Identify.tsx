@@ -16,19 +16,21 @@ const Identify: React.FC<any> = (props) => {
             <>
                 <Space>
                     {
-                        is_group && <Tooltip title={<FormattedMessage id="analysis.benchmark.group" />}>
+                        is_group &&
+                        <Tooltip title={<FormattedMessage id="analysis.benchmark.group" />}>
                             <BaseIcon
                                 style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
                             />
                         </Tooltip>
                     }
                     {
-                        is_baseline ? <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
-                            <BaseLine
-                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                            />
-                            <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
-                        </Tooltip> : null
+                        is_baseline ?
+                            <Tooltip title={<FormattedMessage id="analysis.baseline.group" />}>
+                                <BaseLine
+                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                />
+                                <Typography.Text>（<FormattedMessage id="analysis.test.baseline" />）</Typography.Text>
+                            </Tooltip> : null
                     }
                 </Space>
                 <EllipsisPulic title={tag} width={'calc(100% - 130px)'} />
@@ -52,6 +54,5 @@ const Identify: React.FC<any> = (props) => {
             }
         </>
     )
-
 }
 export default Identify;

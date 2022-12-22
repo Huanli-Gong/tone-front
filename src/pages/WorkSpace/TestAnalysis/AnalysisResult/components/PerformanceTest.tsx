@@ -103,7 +103,7 @@ const GroupBarWrapper: React.FC<any> = (props) => {
 // }
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group } = useContext(ReportContext)
+    const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)
     const { parentDom, scrollLeft } = props
     const [arrowStyle, setArrowStyle] = useState('')
     const [num, setNum] = useState(0)
@@ -232,7 +232,7 @@ const ReportTestPref: React.FC<any> = (props) => {
         let obj = conf.conf_compare_data || conf.compare_conf_list || []
         return obj.map((item: any, idx: number) => (
             <PrefDataText gLen={group} key={idx}>
-                { !item.is_baseline ? <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> : <>-</> }
+                {!item.is_baseline ? <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> : <>-</>}
             </PrefDataText>
         ))
     }
@@ -311,7 +311,7 @@ const ReportTestPref: React.FC<any> = (props) => {
                                                         <div style={{ border: '1px solid rgba(0,0,0,0.10)' }}>
                                                             <PrefData>
                                                                 <PrefDataTitle gLen={group}><EllipsisPulic title={conf.conf_name} /></PrefDataTitle>
-                                                                { renderShare(conf) }
+                                                                {renderShare(conf)}
                                                             </PrefData>
                                                             {
                                                                 conf.metric_list.map((metric: any, idx: number) => (

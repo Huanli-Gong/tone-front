@@ -88,6 +88,7 @@ export default (props: any) => {
     const [pruductId, setPruductId] = useState<any>()
     // 获取产品版本数据
     const getProductList = async (id: any) => {
+        setLoading(true)
         let result = await queryProductList({ product_id: id, ws_id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val.trim())
@@ -104,6 +105,7 @@ export default (props: any) => {
     const getProductData = async () => {
         setLoading(true)
         let result = await queryProduct({ ws_id })
+        setLoading(false)
         if (result.code === 200) {
             let data = _.isArray(result.data) ? result.data : []
             setAllProduct(data)
@@ -112,7 +114,6 @@ export default (props: any) => {
         } else {
             requestCodeMessage(result.code, result.msg)
         }
-        setLoading(false)
     }
 
     // 查询基线数据
@@ -162,8 +163,8 @@ export default (props: any) => {
     }, [tabKey, baselineParam])
 
     useEffect(() => {
-        getJobList({ ...params, product_version: pruductVersion, product_id: pruductId })
-    }, [pruductVersion])
+        setParams((p: any) => ({ ...p, product_version: pruductVersion, product_id: pruductId }))
+    }, [pruductVersion, pruductId])
 
     useEffect(() => {
         if (pruductId) getProductList(pruductId)
@@ -259,7 +260,6 @@ export default (props: any) => {
                     </PopoverEllipsis>
                 )
             }
-
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -288,10 +288,10 @@ export default (props: any) => {
                     list={defaultList}
                     confirm={confirm}
                     onConfirm={(val: any) => {
-                        let value = undefined
+                        let value: any = undefined
                         if (val === 1) value = 'functional'
                         if (val === 0) value = 'performance'
-                        setParams({ ...params, test_type: value })
+                        setParams((p: any) => ({ ...p, test_type: value }))
                     }}
                 />
             ),
@@ -335,7 +335,6 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-
     ]
 
     const baselineColumns = [

@@ -89,7 +89,7 @@ export default {
     'analysis.normal': 'Normal',
     'analysis.TestConf/metric': 'Test Conf / Metric',
     'analysis.result': 'Result',
-    'analysis.comparison/tracking.results': 'Compare Results/Track Results',
+    'analysis.comparison/tracking.results': 'Compare/Track',
     'analysis.the.greater.difference': 'The performance tests are inconsistent with the benchmark group results, and the more the difference, the greater the difference.',
     'analysis.rules': 'The rules are as follows:',
     'analysis.fluctuation': 'little volatility',
