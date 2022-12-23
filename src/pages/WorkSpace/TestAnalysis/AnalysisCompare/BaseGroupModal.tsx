@@ -60,7 +60,10 @@ export default (props: any) => {
         getemptyTableDom()
     }, [suitData, tab, layoutHeight])
 
+    const [isFetch, setIsFetch] = React.useState(false)
     const getSuitDetail = async (params: any) => {
+        if (isFetch) return
+        setIsFetch(true)
         let { data, code, msg } = await querySuiteList(params)
         if (code === 200) {
             let obj1 = data.func_suite_dic || {}
@@ -92,64 +95,54 @@ export default (props: any) => {
     }, [currentStep])
 
     useEffect(() => {
-        let arr = _.get(baselineGroup, 'members')
-        const paramData: any = {
-            func_data: {
-                base_job: [],
-                compare_job: []
-            },
-            perf_data: {
-                base_job: [],
-                compare_job: []
+        if (allGroupData && baselineGroup) {
+            let arr = _.get(baselineGroup, 'members')
+            const paramData: any = {
+                func_data: {
+                    base_job: [],
+                    compare_job: []
+                },
+                perf_data: {
+                    base_job: [],
+                    compare_job: []
+                }
             }
-        }
-        if (_.isArray(arr)) {
-            const flag = baselineGroup.type === 'baseline'
-            arr.forEach((item: any) => {
-                if (!flag && item.test_type === '功能测试') {
-                    paramData.func_data.is_baseline = 0
-                    paramData.func_data.base_job.push(item.id)
-                }
-                if (!flag && item.test_type === '性能测试') {
-                    paramData.perf_data.is_baseline = 0
-                    paramData.perf_data.base_job.push(item.id)
-                }
-                if (flag && item.test_type === 'functional') {
-                    paramData.func_data.is_baseline = 1
-                    paramData.func_data.base_job.push(item.id)
-                }
-                if (flag && item.test_type === 'performance') {
-                    paramData.perf_data.is_baseline = 1
-                    paramData.perf_data.base_job.push(item.id)
-                }
-            })
-        }
-        let brrFun: any = []
-        let brrFers: any = []
-        allGroupData.forEach((item: any, index: number) => {
-            let membersArr = _.get(item, 'members')
-            if (_.isArray(membersArr)) {
+            if (_.isArray(arr)) {
                 const flag = baselineGroup.type === 'baseline'
-                membersArr.forEach((item: any) => {
-                    if (!flag && item.test_type === '功能测试') {
-                        brrFun.push(item.id)
+                const isBaseline = !flag ? 0 : 1
+                arr.forEach((item: any) => {
+                    if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                        paramData.func_data.is_baseline = isBaseline
+                        paramData.func_data.base_job.push(item.id)
                     }
-                    if (!flag && item.test_type === '性能测试') {
-                        brrFers.push(item.id)
-                    }
-                    if (flag && item.test_type === 'functional') {
-                        brrFun.push(item.id)
-                    }
-                    if (flag && item.test_type === 'performance') {
-                        brrFers.push(item.id)
+
+                    if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                        paramData.perf_data.is_baseline = isBaseline
+                        paramData.perf_data.base_job.push(item.id)
                     }
                 })
             }
-        })
-        paramData.func_data.compare_job = brrFun
-        paramData.perf_data.compare_job = brrFers
-        getSuitDetail(paramData)
-    }, [])
+            let brrFun: any = []
+            let brrFers: any = []
+            allGroupData.forEach((item: any, index: number) => {
+                let membersArr = _.get(item, 'members')
+                if (_.isArray(membersArr)) {
+                    membersArr.forEach((item: any) => {
+                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                            brrFun.push(item.id)
+                        }
+                        if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                            brrFers.push(item.id)
+                        }
+                    })
+                }
+            })
+            paramData.func_data.compare_job = brrFun
+            paramData.perf_data.compare_job = brrFers
+            console.log(paramData)
+            getSuitDetail(paramData)
+        }
+    }, [allGroupData, baselineGroup])
 
     const handleClose = () => {
         handleCancle()

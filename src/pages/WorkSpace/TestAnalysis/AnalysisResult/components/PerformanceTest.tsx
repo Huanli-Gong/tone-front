@@ -84,23 +84,6 @@ const GroupBarWrapper: React.FC<any> = (props) => {
     }
 }
 
-// const handleDataArr = (dataArr: any, baseIndex: number) => {
-//     if (Array.isArray(dataArr) && !!dataArr.length) {
-//         dataArr.forEach((per: any) => (
-//             per.conf_list.forEach((conf: any, i: number) => (
-//                 conf.metric_list.forEach((metric: any, idx: number) =>
-//                 (
-//                     metric.compare_data.splice(baseIndex, 0, {
-//                         cv_value: metric.cv_value,
-//                         test_value: metric.test_value,
-//                     })
-//                 )
-//                 )
-//             ))
-//         ))
-//     }
-//     return dataArr;
-// }
 const ReportTestPref: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { compareResult, allGroupData, environmentResult, baselineGroupIndex, envData, group, wsId } = useContext(ReportContext)

@@ -578,15 +578,18 @@ export default (props: any) => {
         setCurrentEditGroupIndex(index)
         setVisibleAddGroupItem(true)
     }
+
     const handleAddGroupItem = (obj: any, index: number) => {
         setCurrentEditGroup(obj)
         setCurrentEditGroupIndex(index)
         setVisibleAddGroupItem(true)
     }
+
     const handleAddGroupItemCancel = () => {
         setVisibleAddGroupItem(false);
         destroyAll()
     }
+
     const handleBaseGroupModalCancle = () => {
         setVisibleBaseGroup(false);
         destroyAll()
@@ -612,13 +615,24 @@ export default (props: any) => {
 
     const addGroupTypeFn = () => {
         if (!currentEditGroup) return
-        // if (currentEditGroup.type === 'baseline') {
-        //     return <AddBaseline ws_id={ws_id} onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
-        // }
         if (currentEditGroup.type === 'plan') {
-            return <AddPlan onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} />
+            return (
+                <AddPlan
+                    onOk={handleAddGroupItemOk}
+                    onCancel={handleAddGroupItemCancel}
+                    currentGroup={currentEditGroup}
+                />
+            )
         }
-        return <AddJob onOk={handleAddGroupItemOk} onCancel={handleAddGroupItemCancel} currentGroup={currentEditGroup} allGroup={groupData} allNoGroupData={noGroupData} />
+        return (
+            <AddJob
+                onOk={handleAddGroupItemOk}
+                onCancel={handleAddGroupItemCancel}
+                currentGroup={currentEditGroup}
+                allGroup={groupData}
+                allNoGroupData={noGroupData}
+            />
+        )
     }
 
     const contentMark = (
@@ -672,8 +686,10 @@ export default (props: any) => {
         if ((!arr || !arr.length) && productMark) {
             groupArr[endGroupIndex].product_version = productMark
         }
+        groupArr[endGroupIndex].type = groupArr[startGroupIndex].type
         return groupArr;
     };
+
     const diferentDeorderTwo = (noGoupArr: any, groupArr: any, startIndex: number, endIndex: number, endGroupIndex: number) => {
         const arr = _.cloneDeep(groupArr[endGroupIndex].members)
         const [removed] = noGoupArr.splice(startIndex, 1);
@@ -684,22 +700,26 @@ export default (props: any) => {
         }
         return { groupArr, noGoupArr }
     };
+
     const diferentDeorderThree = (groupArr: any, noGoupArr: any, startIndex: number, endIndex: number, startGroupIndex: number) => {
         const [removed] = groupArr[startGroupIndex].members.splice(startIndex, 1);
         noGoupArr.splice(endIndex, 0, removed);
         return { groupArr, noGoupArr }
     };
+
     const onDragEnd = (result: any) => {
         // dropped outside the list
         if (!result.destination) {
             return;
         }
+
         let groupDataCopy = _.cloneDeep(groupData)
         let noGroupDataCopy = _.cloneDeep(noGroupData)
         let number = result.source.droppableId.replace('Group', '')
         let desNumber = result.destination.droppableId.replace(new RegExp('Group', 'g'), '')
         number = Number(number)
         desNumber = Number(desNumber)
+
         // 已分组的组内元素拖动
         if (result.source.droppableId === result.destination.droppableId && result.source.droppableId !== 'noGroup') {
             const members = reorder(
@@ -768,6 +788,7 @@ export default (props: any) => {
         if (baselineGroupIndex === number) setBaselineGroup(groupDataCopy[number])
         if (baselineGroupIndex === desNumber) setBaselineGroup(groupDataCopy[desNumber])
     }
+
     const onGroupDragEnd = (result: any) => {
         if (!result.destination) {
             return;
@@ -786,7 +807,6 @@ export default (props: any) => {
                 }
             })
             setGroupData(itemObj)
-
         } else {
             onDragEnd(result)
         }
@@ -803,18 +823,44 @@ export default (props: any) => {
     const groupItemReact = (item: any, index: number) => {
         if (!_.get(item, 'members').length) {
             return (
-                <Droppable key={`Group${index}`} droppableId={`Group${index}`} index={index} type={`1`}>
+                <Droppable
+                    key={`Group${index}`}
+                    droppableId={`Group${index}`}
+                    index={index}
+                    type={`1`}
+                >
                     {(provided: any, snapshot: any) => (
-
-                        <div className={styles.second_part} ref={provided.innerRef} {...provided.droppableProps} {...provided.dragHandleProps} style={getJobItemStyle(provided.droppableProps.style)}>
+                        <div
+                            className={styles.second_part}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            {...provided.dragHandleProps}
+                            style={getJobItemStyle(provided.droppableProps.style)}
+                        >
                             <div className={styles.first_part}>
-                                <EllipsisRect text={item.product_version} flag={item.type === 'baseline'} isBaseGroup={index === baselineGroupIndex && groupData.length > 1} />
+                                <EllipsisRect
+                                    text={item.product_version}
+                                    flag={item.type === 'baseline'}
+                                    isBaseGroup={index === baselineGroupIndex && groupData.length > 1}
+                                />
                                 <span className={styles.opreate_button}>
-                                    <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
+                                    <ProverEllipsis
+                                        current={groupData[index]}
+                                        currentIndex={index}
+                                        contentMark={contentMark}
+                                        handleEllipsis={handleEllipsis}
+                                        currentEditGroupIndex={currentEditGroupIndex}
+                                    />
                                 </span>
-                                {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
-                                    <FormattedMessage id="analysis.set.benchmark.group" />
-                                </span>}
+                                {
+                                    index !== baselineGroupIndex &&
+                                    <span
+                                        className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn}
+                                        onClick={_.partial(handleGroupClick, groupData[index], index)}
+                                    >
+                                        <FormattedMessage id="analysis.set.benchmark.group" />
+                                    </span>
+                                }
                             </div>
                             <Divider className={styles.line} />
                             {provided.placeholder}
@@ -823,25 +869,52 @@ export default (props: any) => {
                 </Droppable >
             )
         }
+
         return (
             <>
                 <div className={styles.first_part}>
-                    <EllipsisRect text={item.product_version} flag={item.type === 'baseline'} isBaseGroup={index === baselineGroupIndex && groupData.length > 1} />
+                    <EllipsisRect
+                        text={item.product_version}
+                        flag={item.type === 'baseline'}
+                        isBaseGroup={index === baselineGroupIndex && groupData.length > 1}
+                    />
                     <span className={styles.opreate_button}>
-                        <ProverEllipsis current={groupData[index]} currentIndex={index} contentMark={contentMark} handleEllipsis={handleEllipsis} currentEditGroupIndex={currentEditGroupIndex} />
+                        <ProverEllipsis
+                            current={groupData[index]}
+                            currentIndex={index}
+                            contentMark={contentMark}
+                            handleEllipsis={handleEllipsis}
+                            currentEditGroupIndex={currentEditGroupIndex}
+                        />
                     </span>
-                    {index !== baselineGroupIndex && <span className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn} onClick={_.partial(handleGroupClick, groupData[index], index)}>
-                        <FormattedMessage id="analysis.set.benchmark.group" />
-                    </span>}
+                    {
+                        index !== baselineGroupIndex &&
+                        <span
+                            className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn}
+                            onClick={_.partial(handleGroupClick, groupData[index], index)}
+                        >
+                            <FormattedMessage id="analysis.set.benchmark.group" />
+                        </span>
+                    }
                 </div>
 
                 <Divider className={styles.line} />
                 <ul>
-                    <Droppable key={`Group${index}`} droppableId={`Group${index}`} index={index} type={`1`}>
+                    <Droppable
+                        key={`Group${index}`}
+                        droppableId={`Group${index}`}
+                        index={index}
+                        type={`1`}
+                    >
                         {(provided: any, snapshot: any) => (
                             <Scrollbars autoHeightMax={isAlertClose ? scroll.height + 64 - 20 : scroll.height + 64 + 32} autoHeight>
-                                <div className={styles.second_part} ref={provided.innerRef} {...provided.droppableProps} {...provided.dragHandleProps} style={getJobItemStyle(provided.droppableProps.style)}>
-
+                                <div
+                                    className={styles.second_part}
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    {...provided.dragHandleProps}
+                                    style={getJobItemStyle(provided.droppableProps.style)}
+                                >
                                     {item && item.members.map((obj: any, num: number) => {
                                         if (!obj) return ''
                                         let snArr = _.get(obj, 'server') && obj.server.split(',')
@@ -858,11 +931,19 @@ export default (props: any) => {
                                                         <li key={obj.job_id} style={{ background: '#fff' }}>
                                                             <div>{obj.name}</div>
                                                             <div>
-                                                                {obj.product_version && <PopoverEllipsis title={obj.product_version} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
-                                                                    <>
-                                                                        <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.product_version}
-                                                                    </>
-                                                                </PopoverEllipsis>}
+                                                                {
+                                                                    obj.product_version &&
+                                                                    <PopoverEllipsis
+                                                                        title={obj.product_version}
+                                                                        refData={groupData}
+                                                                        customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}
+                                                                    >
+                                                                        <>
+                                                                            <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />
+                                                                            {obj.product_version}
+                                                                        </>
+                                                                    </PopoverEllipsis>
+                                                                }
                                                                 {getSnDom(snArr)}
                                                             </div>
                                                             <div>
@@ -899,8 +980,8 @@ export default (props: any) => {
                 </ul>
             </>
         )
-
     }
+
     const noGroupReact = () => {
         if (!newNoGroupData.length) {
             return (
@@ -1025,6 +1106,7 @@ export default (props: any) => {
             </>
         )
     }
+
     const handleAlertClose = () => {
         setIsAlertClose(false)
     }
@@ -1070,7 +1152,11 @@ export default (props: any) => {
                                                         {...provided.dragHandleProps}
                                                         className={styles.expand_box}
                                                         style={{ ...getItemStyle(provided.draggableProps.style), transform: 'translate(0, 0)' }}>
-                                                        <div className={`${styles.group_info} ${styles.nogroup_info}`} ref={nogroupDom} style={{ height: layoutHeight - 50 - 56 - 5, left: 0 }}>
+                                                        <div
+                                                            className={`${styles.group_info} ${styles.nogroup_info}`}
+                                                            ref={nogroupDom}
+                                                            style={{ height: layoutHeight - 50 - 56 - 5, left: 0 }}
+                                                        >
                                                             <div className={styles.rightExpandButtom} onClick={handleExpandButtom}>
                                                                 {isExpand ? <CompareCollapse /> : <CompareExpand />}
                                                             </div>
@@ -1124,14 +1210,6 @@ export default (props: any) => {
                                                                                 className={styles.create_job_type}>
                                                                                 {item.type === 'baseline' ? <FormattedMessage id="analysis.add.baseline" /> : <FormattedMessage id="analysis.add.job" />}
                                                                             </div>
-                                                                            {
-                                                                                // <div
-                                                                                //     style={{ cursor: 'pointer' }}
-                                                                                //     onClick={_.partial(handleAddBaseline, _, groupData[index], index)}
-                                                                                //     className={styles.create_job_type}>
-                                                                                //     <FormattedMessage id="analysis.add.baseline" />
-                                                                                // </div> 
-                                                                            }
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -1151,7 +1229,10 @@ export default (props: any) => {
                                                                 ...getItemStyle(provided.draggableProps.style),
                                                             }
                                                         }>
-                                                        <div className={styles.create_group} style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local ? 220 : 110 }}>
+                                                        <div
+                                                            className={styles.create_group}
+                                                            style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local ? 220 : 110 }}
+                                                        >
                                                             <div onClick={_.partial(handleAddJobGroup, 'job')} className={styles.popover}>
                                                                 <PlusOutlined style={{ fontSize: 14, marginRight: 8 }} /><FormattedMessage id="analysis.create.comparison.group" />
                                                             </div>
