@@ -354,8 +354,10 @@ export default (props: any) => {
         let num = 0
         let flag = false
         groupData.forEach((item: any) => {
-            if (item.members.length > 0) num++
-            flag = item.type === 'baseline'
+            if (item.members.length > 0) {
+                num++
+                flag = item.type === 'baseline'
+            }
         })
         if (num > 1 && baselineGroupIndex === -1) {
             setLabelBlinking(true)
@@ -363,8 +365,9 @@ export default (props: any) => {
             return message.warning(localStr)
         }
         if (num === 1 && flag) {
-            return message.warning('请添加对比组')
+            return message.warning(formatMessage({ id: "analysis.please.add.comparison.group" }))
         }
+
         setVisibleBaseGroup(true)
         return
         // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
@@ -395,10 +398,10 @@ export default (props: any) => {
         return groupData.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
     }
     const handleSureOk = (suiteData: any) => { // suiteData：已选的
-        setVisibleBaseGroup(false);
-        setLoading(true)
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
+        setVisibleBaseGroup(false);
+        setLoading(true)
         Promise.all([queryDomainGroupFn(params)])
             .then((result: any) => {
                 setLoading(false)
@@ -1002,7 +1005,9 @@ export default (props: any) => {
                             <Divider className={styles.line} />
                             <div className={styles.addJobBtn} onClick={handleAddNoVersionJob} >
                                 <Space>
-                                    添加Job
+                                    {
+                                        formatMessage({ id: "analysis.table.add.job" })
+                                    }
                                     <CaretDownOutlined />
                                 </Space>
                             </div>
@@ -1092,7 +1097,9 @@ export default (props: any) => {
                 </ul>
                 <div className={styles.addJobBtn} onClick={handleAddNoVersionJob} >
                     <Space>
-                        添加Job
+                        {
+                            formatMessage({ id: "analysis.table.add.job" })
+                        }
                         <CaretDownOutlined />
                     </Space>
                 </div>
@@ -1337,7 +1344,9 @@ export default (props: any) => {
                         allGroupData={groupData} />
                 </Modal>
                 <Modal
-                    title="选择Job"
+                    title={
+                        formatMessage({ id: "analysis.select.job" })
+                    }
                     visible={isModalOpen}
                     centered={true}
                     width={1000}

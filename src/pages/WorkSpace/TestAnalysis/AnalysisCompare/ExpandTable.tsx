@@ -21,7 +21,7 @@ export default (props: any) => {
     const { formatMessage } = useIntl()
     const { itemSuitData, handleChangeDefaultJob, currentTab, setCurrentJobIndex, currentJobIndex } = props
     const tab = Number(currentTab.replace('group', ''))
-    const selectedConfData =_.get(itemSuitData, 'conf_list') || {}
+    const selectedConfData = _.get(itemSuitData, 'conf_list') || {}
     const [allConf, setAllConf] = useState({})
     const page_default_params: any = { job_id: '', job_name: '' }
     const [autoFocus, setFocus] = useState(true)
@@ -43,9 +43,9 @@ export default (props: any) => {
         }
     }, []);
 
-    useEffect(()=> {
+    useEffect(() => {
         setAllConf(selectedConfData)
-    },[tab])
+    }, [tab])
 
     const columns: any = [
         {
@@ -74,7 +74,7 @@ export default (props: any) => {
                     setRefAllJob(refAllJobCopy)
                     setParams({ ...params, job_id: val })
                 }}
-                placeholder={formatMessage({id:'analysis.JobID.placeholder'})}
+                placeholder={formatMessage({ id: 'analysis.JobID.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -111,7 +111,7 @@ export default (props: any) => {
                     setRefAllJob(refAllJobCopy)
                     setParams({ ...params, job_name: val })
                 }}
-                placeholder={formatMessage({id:'analysis.job.name.placeholder'})}
+                placeholder={formatMessage({ id: 'analysis.job.name.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -150,8 +150,8 @@ export default (props: any) => {
         setAllConf(allConf)
         let num = currentTab.slice(currentTab.length - 1)
         setSelectedRowKeys([e.target.value])
-        handleChangeDefaultJob(allConf,currentIndex,num)
-        setPopoverVisible(false)
+        handleChangeDefaultJob(allConf, currentIndex, num)
+        // setPopoverVisible(false)
     }
     const rowSelection = {
         selectedRowKeys,
@@ -177,6 +177,22 @@ export default (props: any) => {
                     columns={columns}
                     dataSource={data}
                     pagination={false}
+                    onRow={(record, index) => {
+                        return {
+                            onClick(e: any) {
+                                e.stopPropagation();
+                                setSelectedRowKeys([record.job_id])
+                                const arr = refAllJob.map((val: any) => (
+                                    { ...val, isSelect: String(val.job_id) === String(record.job_id) }
+                                ))
+                                allConf[currentIndex].job_list = arr
+                                setAllConf(allConf)
+                                let num = currentTab.slice(currentTab.length - 1)
+                                setSelectedRowKeys([record.job_id])
+                                handleChangeDefaultJob(allConf, currentIndex, num)
+                            }
+                        }
+                    }}
                 />
             </Scrollbars>
         );
@@ -194,7 +210,7 @@ export default (props: any) => {
         if (confId === currentJobIndex) setPopoverVisible(!popoverVisible)
         if (confId !== currentJobIndex) setPopoverVisible(true)
     }
-    
+
     return (
         <>
             {Object.values(allConf).map((row: any, index: number) => {
@@ -210,15 +226,15 @@ export default (props: any) => {
                         <Space>
                             <span>{row.conf_name}</span>
                             <Tag color='#f2f4f6' style={{ color: '#515B6A' }}>{selJob}</Tag>
-                            <Popover 
-                                placement="right" 
+                            <Popover
+                                placement="right"
                                 title={<FormattedMessage id="analysis.select.job" />}
-                                content={getContent(refAllJob)} 
-                                trigger="click" 
-                                overlayClassName={styles.popover_job} 
+                                content={getContent(refAllJob)}
+                                trigger="click"
+                                overlayClassName={styles.popover_job}
                                 visible={currentJobIndex === row.conf_id && popoverVisible}
                             >
-                                <SelectJob onClick={(e) => handleSelectJob( e, jobList, index, selJob, row.conf_id)}>
+                                <SelectJob onClick={(e) => handleSelectJob(e, jobList, index, selJob, row.conf_id)}>
                                     <FormattedMessage id="analysis.select.job" />
                                 </SelectJob>
                             </Popover>

@@ -116,8 +116,7 @@ export const getTextByJs = (obj: any) => {
     return str;
 }
 
-export const JumpResult: React.FC<ResultProps> = ({ job_id, style }) => {
-    const { ws_id } = useParams() as any
+export const JumpResult: React.FC<ResultProps> = ({ job_id, style, ws_id }) => {
     if (job_id) {
         return (
             <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">

@@ -166,29 +166,39 @@ const handleDomainList = (data: any) => {
     return paramData;
 }
 
+const mapToArr = (m: any) => Array.from(m).map((i: any) => {
+    const [, v] = i
+    return v
+})
+
 const getJobRefSuit = (suiteData: any) => {
-    const baseArr: any = []
-    const compareArr: any = []
+    const baseArr: any = new Map()
+    const compareArr: any = new Map()
     const allData = [...Object.values(suiteData.func_suite_dic), ...Object.values(suiteData.perf_suite_dic)]
     allData.forEach((suit: any) => {
         suit.group_jobs.forEach((item: any, idx: number) => {
             const obj_li = _.get(item, 'job_list') || []
             obj_li.forEach((arr: any) => {
                 if (suit.base_index === idx) {
-                    baseArr.push({
-                        is_baseline: item.is_baseline,
-                        obj_id: arr,
-                    })
+                    if (!baseArr.get(arr))
+                        baseArr.set(arr, {
+                            is_baseline: item.is_baseline,
+                            obj_id: arr,
+                        })
                 } else {
-                    compareArr.push({
-                        is_baseline: item.is_baseline,
-                        obj_id: arr,
-                    })
+                    if (!compareArr.get(arr))
+                        compareArr.set(arr, {
+                            is_baseline: item.is_baseline,
+                            obj_id: arr,
+                        })
                 }
             })
         });
     })
-    return { baseArr, compareArr }
+
+    return {
+        baseArr: mapToArr(baseArr), compareArr: mapToArr(compareArr)
+    }
 }
 
 // const getJobRefSuit = (suiteData: any) => {

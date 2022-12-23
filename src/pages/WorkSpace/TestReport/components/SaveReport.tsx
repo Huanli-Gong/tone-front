@@ -85,7 +85,7 @@ export default forwardRef(
                 })
                 version = _.uniq(version);
                 projectArr = _.uniqWith(projectArr, _.isEqual);
-                projectArr = projectArr.filter((i:any) => i.id !== undefined)
+                projectArr = projectArr.filter((i: any) => i.id !== undefined)
                 setProductVersion(version)
                 setProject(projectArr)
             } catch (e) {
@@ -215,13 +215,15 @@ export default forwardRef(
                             <Form.Item
                                 label={<FormattedMessage id="report.columns.product_version" />}
                                 name="productVersion"
-                                rules={[{ required: true, message: formatMessage({ id: 'report.select.productVersion' }) }]}>
+                            // rules={[{ required: true, message: formatMessage({ id: 'report.select.productVersion' }) }]}
+                            >
                                 {getSelectFn('productVersion')}
                             </Form.Item>
                             <Form.Item
                                 label={<FormattedMessage id="report.columns.project" />}
                                 name="project"
-                                rules={[{ required: true }]}>
+                            // rules={[{ required: true }]}
+                            >
                                 {getSelectFn('project')}
                             </Form.Item>
                             <Form.Item label={<FormattedMessage id="report.description.input" />}

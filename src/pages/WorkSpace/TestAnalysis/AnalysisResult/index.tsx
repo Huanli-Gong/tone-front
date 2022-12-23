@@ -11,11 +11,10 @@ import TestEnv from './components/TestEnv';
 import PerformanceTest from './components/PerformanceTest';
 import FunctionalTest from './components/FunctionalTest';
 import { ReportContext } from './Provider';
-import Clipboard from 'clipboard';
 import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import _ from 'lodash';
 import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
-import { useClientSize } from '@/utils/hooks';
+import { useClientSize, useCopyText } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
 
 const Report = (props: any) => {
@@ -34,9 +33,11 @@ const Report = (props: any) => {
     const [envData, setEnvData] = useState<Array<{}>>([])
     const [shareWsId, setShareWsId] = useState(undefined)
     const [suiteLen, setSuiteLen] = useState(1)
-    const [shareId, setShareId] = useState<Number>(0)
     const [scrollLeft, setScrollLeft] = useState(0)
     const saveReportDraw: any = useRef(null)
+
+    const [shareId, setShareId] = React.useState(undefined)
+    const [fetching, setFetching] = React.useState(false)
 
     const scrollDom = document.querySelector('.ant-layout-has-sider .ant-layout')
     const { top } = useScroll(scrollDom as any)
@@ -46,6 +47,7 @@ const Report = (props: any) => {
     const queryCompareForm = async () => {
         const data = await queryForm({ form_id })
         if (data.code == 200) {
+            if (!data?.data) return
             const shareData = JSON.parse(data.data.req_form)
             setTestDataParam(shareData.testDataParam)
             setParamEenvironment(shareData.envDataParam)
@@ -154,53 +156,41 @@ const Report = (props: any) => {
     }, [testDataParam, paramEenvironment])
 
     const handleReportId = async () => {
-        let arr = allGroupData.map((item: any) => {
+        const arr = allGroupData.map((item: any) => {
             let members = item.members.map((i: any) => i.id)
             return {
                 ...item,
                 members
             }
         })
-        let form_data: any = {
+        const form_data: any = {
             allGroupData: arr,
             baselineGroupIndex,
             testDataParam,
             envDataParam: paramEenvironment
         }
         const { data, code, msg } = await compareForm({ form_data })
-        if (code === 200) {
-            setShareId(data)
-        } else {
+        if (code !== 200) {
             requestCodeMessage(code, msg)
+            return
         }
+        return data
     }
 
-    useEffect(() => {
-        console.log(allGroupData, baselineGroupIndex)
-        if (!!allGroupData.length) {
-            handleReportId()
+    const copyText = useCopyText(formatMessage({ id: 'analysis.copy.sharing.link.succeeded' }))
+
+    const handleShare = async () => {
+        if (fetching) return
+        let id = shareId
+        if (!id) {
+            setFetching(true)
+            id = await handleReportId()
+            setFetching(false)
         }
-    }, [allGroupData, baselineGroupIndex])
 
-    const handleShare = useCallback(
-        () => {
-            if (shareId) {
-                const clipboard = new Clipboard('.test_result_copy_link', {
-                    text: function (trigger) {
-                        return location.origin + `/share/analysis_result/${shareId}`
-                    }
-                });
-
-                clipboard.on('success', function (e: any) {
-                    message.success(formatMessage({ id: 'analysis.copy.sharing.link.succeeded' }))
-                    e.clearSelection();
-                });
-
-                (document.querySelector('.test_result_copy_link') as any).click()
-                clipboard.destroy()
-            }
-        }, [shareId]
-    )
+        setShareId(id)
+        copyText(location.origin + `/share/analysis_result/${id}`)
+    }
 
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
@@ -280,14 +270,24 @@ const Report = (props: any) => {
                             <TypographyText><FormattedMessage id="analysis.comparison.result" /></TypographyText>
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
-                                {!form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
-                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="operation.share" />
-                                </span>
+                                {
+                                    !form_id &&
+                                    <span onClick={handleShare} style={{ cursor: 'pointer' }} >
+                                        <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="operation.share" />
+                                    </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
-                                    {!form_id && <Button type="primary" loading={compareLen !== suiteLen} onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>
-                                        <FormattedMessage id="analysis.create.report" />
-                                    </Button>}
+                                    {
+                                        !form_id &&
+                                        <Button
+                                            type="primary"
+                                            loading={compareLen !== suiteLen}
+                                            onClick={handleCreatReportOk}
+                                            style={{ marginLeft: 8 }}
+                                        >
+                                            <FormattedMessage id="analysis.create.report" />
+                                        </Button>
+                                    }
                                 </Access>
                             </span>
                         </ResultTitle>

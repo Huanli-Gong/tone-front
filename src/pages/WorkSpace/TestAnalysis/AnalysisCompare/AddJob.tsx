@@ -10,7 +10,7 @@ import CommonPagination from '@/components/CommonPagination';
 import SelectRadio from '@/components/Public/SelectRadio';
 import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash'
-import { Tabs, Select, Divider, Space, Button, DatePicker, Row, Col } from 'antd';
+import { Tabs, Select, Divider, Space, Button, DatePicker, Row, Col, Typography } from 'antd';
 import SearchInput from '@/components/Public/SearchInput'
 import { resizeDocumentHeight } from './CommonMethod'
 import SelectUser from '@/components/Public/SelectUser'
@@ -65,7 +65,7 @@ export default (props: any) => {
     const [tabKey, setTabKey] = useState<string>('1')
     allNoGroupData = _.isArray(allNoGroupData) ? allNoGroupData : []
     const selectedId: any = getSelJobFn(allGroup, allNoGroupData)
-   
+
     const page_default_params: any = {
         ...DEFAULTPARAM,
         ws_id,
@@ -87,7 +87,8 @@ export default (props: any) => {
     const [allProduct, setAllProduct] = useState([])
     const [pruductId, setPruductId] = useState<any>()
     // 获取产品版本数据
-    const getProductList = async (id:any) => {
+    const getProductList = async (id: any) => {
+        setLoading(true)
         let result = await queryProductList({ product_id: id, ws_id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val.trim())
@@ -104,6 +105,7 @@ export default (props: any) => {
     const getProductData = async () => {
         setLoading(true)
         let result = await queryProduct({ ws_id })
+        setLoading(false)
         if (result.code === 200) {
             let data = _.isArray(result.data) ? result.data : []
             setAllProduct(data)
@@ -112,7 +114,6 @@ export default (props: any) => {
         } else {
             requestCodeMessage(result.code, result.msg)
         }
-        setLoading(false)
     }
 
     // 查询基线数据
@@ -126,9 +127,9 @@ export default (props: any) => {
         }
         setLoading(false)
     }
-    useEffect(()=> {
-        if(currentGroup.type === 'baseline') setTabKey('2')
-    },[ currentGroup ])
+    useEffect(() => {
+        if (currentGroup.type === 'baseline') setTabKey('2')
+    }, [currentGroup])
 
     const handleTabSwitch = (key: any) => {
         setTabKey(key)
@@ -139,7 +140,7 @@ export default (props: any) => {
             if (!(currentGroup && _.get(currentGroup, 'members').length)) {
                 getProductData()
             }
-        } 
+        }
     }, [tabKey])
 
     const getJobList = async (params: any) => {
@@ -147,27 +148,27 @@ export default (props: any) => {
         let data = await queryJobList(params)
         defaultOption(data)
     }
-    useEffect(()=> {
-        if(!!allNoGroupData.length){
-            setSelectedRowKeys(allNoGroupData.map((i:any) => i.id));
+    useEffect(() => {
+        if (!!allNoGroupData.length) {
+            setSelectedRowKeys(allNoGroupData.map((i: any) => i.id));
             setSelectRowData(allNoGroupData);
         }
-    },[allNoGroupData])
+    }, [allNoGroupData])
     useEffect(() => {
-        if(params.product_version && params.product_id)  getJobList(params)
-    }, [ params])
-
-    useEffect(()=> {
-        if(tabKey ==='2') getBaselineData()
-    },[ tabKey, baselineParam ])
+        if (params.product_version && params.product_id) getJobList(params)
+    }, [params])
 
     useEffect(() => {
-        getJobList({ ...params, product_version: pruductVersion, product_id: pruductId })
-    }, [pruductVersion])
+        if (tabKey === '2') getBaselineData()
+    }, [tabKey, baselineParam])
 
-    useEffect(()=> {
-        if(pruductId) getProductList(pruductId)
-    },[ pruductId ])
+    useEffect(() => {
+        setParams((p: any) => ({ ...p, product_version: pruductVersion, product_id: pruductId }))
+    }, [pruductVersion, pruductId])
+
+    useEffect(() => {
+        if (pruductId) getProductList(pruductId)
+    }, [pruductId])
 
     const defaultOption = (ret: any) => {
         if (ret.code === 200) {
@@ -181,27 +182,27 @@ export default (props: any) => {
 
     const onChange = (value: any) => {
         setPruductVersion(value)
-        setParams({ ...params, product_version: value })
+        setParams((p: any) => ({ ...p, product_version: value }))
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
 
     const onProductChange = (value: any) => {
         setPruductId(value)
-        // setParams({ ...params, product_id: value, product_version: allVersion[0].value })
+        // setParams((p: any) => ({ ...p, product_id: value, product_version: allVersion[0].value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
 
     const handleMemberFilter = (val: []) => {
-        setParams({ ...params, creators: val ? JSON.stringify([val]) : null })
+        setParams((p: any) => ({ ...p, creators: val ? JSON.stringify([val]) : null }))
     }
 
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
         const end_time = dateStrings[1]
-        if (!start_time && !end_time) setParams({ ...params, creation_time: null })
-        if (start_time && end_time) setParams({ ...params, creation_time: JSON.stringify({ start_time, end_time }) })
+        if (!start_time && !end_time) setParams((p: any) => ({ ...p, creation_time: null }))
+        if (start_time && end_time) setParams((p: any) => ({ ...p, creation_time: JSON.stringify({ start_time, end_time }) }))
         confirm()
     }
 
@@ -216,7 +217,7 @@ export default (props: any) => {
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}
-                onConfirm={(val: any) => { setParams({ ...params, job_id: val, page_num: 1 }) }}
+                onConfirm={(val: any) => { setParams((p: any) => ({ ...p, job_id: val, page_num: 1 })) }}
                 placeholder={formatMessage({ id: 'analysis.JobID.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -238,7 +239,7 @@ export default (props: any) => {
                 confirm={confirm}
                 autoFocus={autoFocus}
                 styleObj={styleObj}
-                onConfirm={(val: any) => { setParams({ ...params, name: val, page_num: 1 }) }}
+                onConfirm={(val: any) => { setParams((p: any) => ({ ...p, name: val, page_num: 1 })) }}
                 placeholder={formatMessage({ id: 'analysis.job.name.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -259,7 +260,6 @@ export default (props: any) => {
                     </PopoverEllipsis>
                 )
             }
-
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -268,17 +268,30 @@ export default (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => row.test_type,
+            render: (_: any, row: any) => {
+                if (["功能", "功能测试", "functional"].includes(row.test_type)) {
+                    return (
+                        <Typography.Text ellipsis={{ tooltip: true }}>
+                            {formatMessage({ id: `header.test_type.functional` })}
+                        </Typography.Text>
+                    )
+                }
+                return (
+                    <Typography.Text ellipsis={{ tooltip: true }}>
+                        {formatMessage({ id: "header.test_type.performance" })}
+                    </Typography.Text>
+                )
+            },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
                     list={defaultList}
                     confirm={confirm}
                     onConfirm={(val: any) => {
-                        let value = undefined
+                        let value: any = undefined
                         if (val === 1) value = 'functional'
                         if (val === 0) value = 'performance'
-                        setParams({ ...params, test_type: value })
+                        setParams((p: any) => ({ ...p, test_type: value }))
                     }}
                 />
             ),
@@ -322,7 +335,6 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-
     ]
 
     const baselineColumns = [
@@ -336,7 +348,7 @@ export default (props: any) => {
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}
-                onConfirm={(val: any) => { setBaselineParam({ ...baselineParam, name: val, page_num: 1 }) }}
+                onConfirm={(val: any) => { setBaselineParam((p: any) => ({ ...p, name: val, page_num: 1 })) }}
                 placeholder={formatMessage({ id: 'analysis.baseline.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -354,16 +366,19 @@ export default (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => row.test_type,
+            render: (_: any, row: any) => {
+                const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
+                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+            },
             filterIcon: () => <FilterFilled style={{ color: baselineParam.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
                 list={defaultList}
                 confirm={confirm}
                 onConfirm={(val: any) => {
-                    let value = undefined
+                    let value: any = undefined
                     if (val === 1) value = 'functional'
                     if (val === 0) value = 'performance'
-                    setBaselineParam({ ...baselineParam, test_type: value, page_num:1 })
+                    setBaselineParam((p: any) => ({ ...p, test_type: value, page_num: 1 }))
                 }} />,
         },
         {
@@ -403,7 +418,7 @@ export default (props: any) => {
             arrKeys = arrKeys.filter((keys: any) => Number(keys) !== Number(record.id))
             arrData = arrData.filter((obj: any) => obj && Number(obj.id) !== Number(record.id))
         }
-        if(tabKey === '1'){
+        if (tabKey === '1') {
             setSelectedRowKeys(arrKeys);
             setSelectRowData(arrData);
         } else {
@@ -423,7 +438,7 @@ export default (props: any) => {
 
     const handleOk = () => {
         const groupData = _.cloneDeep(currentGroup)
-        if(tabKey === '1'){
+        if (tabKey === '1') {
             groupData.members = _.isArray(groupData.members) ? [...groupData.members, ...selectRowData] : selectRowData
             groupData.type = 'job'
         } else {
@@ -437,7 +452,7 @@ export default (props: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
         arr.forEach((item: any) => keysArr.push(item.id))
-        if(tabKey === '1'){
+        if (tabKey === '1') {
             setSelectedRowKeys([...selectedRowKeys, ...keysArr])
             setSelectRowData([...selectRowData, ...arr])
         } else {
@@ -450,7 +465,7 @@ export default (props: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
         arr.forEach((item: any) => keysArr.push(item.id))
-        if(tabKey === '1'){
+        if (tabKey === '1') {
             setSelectedRowKeys(_.difference(selectedRowKeys, keysArr))
             setSelectRowData(_.differenceBy(selectRowData, arr, 'id'))
         } else {
@@ -484,7 +499,7 @@ export default (props: any) => {
     };
 
     const baselineSelection = {
-        selectedRowKeys:selectedBaselineKeys,
+        selectedRowKeys: selectedBaselineKeys,
         preserveSelectedRowKeys: false,
         onSelect: selectedChange,
         onSelectAll: (selected: boolean, selectedRows: [], changeRows: []) => {
@@ -530,7 +545,7 @@ export default (props: any) => {
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                         >
-                            { allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>) }
+                            {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
                         </Select>
                     </Col>
                     <Col span={12} >
@@ -547,7 +562,7 @@ export default (props: any) => {
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                         >
-                            { allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>) }
+                            {allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)}
                         </Select>
                     </Col>
                 </Row>
@@ -557,6 +572,7 @@ export default (props: any) => {
                             <ResizeTable
                                 rowSelection={rowSelection as any}
                                 rowKey='id'
+                                key={JSON.stringify(testData || [])}
                                 columns={columns as any}
                                 loading={loading}
                                 dataSource={testData}
@@ -582,6 +598,7 @@ export default (props: any) => {
                                 rowSelection={baselineSelection as any}
                                 rowKey='id'
                                 columns={baselineColumns as any}
+                                key={JSON.stringify(baseData || [])}
                                 loading={loading}
                                 dataSource={baseData}
                                 pagination={false}
@@ -593,8 +610,8 @@ export default (props: any) => {
                             total={baselineData.total}
                             currentPage={baselineParam.page_num}
                             pageSize={baselineParam.page_size}
-                            onPageChange={(page_num, page_size) => 
-                                setBaselineParam({ ...baselineParam, page_num, page_size })
+                            onPageChange={(page_num, page_size) =>
+                                setBaselineParam((p: any) => ({ ...p, page_num, page_size }))
                             }
                         />
                     </Tabs.TabPane>
