@@ -182,27 +182,27 @@ export default (props: any) => {
 
     const onChange = (value: any) => {
         setPruductVersion(value)
-        setParams({ ...params, product_version: value })
+        setParams((p: any) => ({ ...p, product_version: value }))
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
 
     const onProductChange = (value: any) => {
         setPruductId(value)
-        // setParams({ ...params, product_id: value, product_version: allVersion[0].value })
+        // setParams((p: any) => ({ ...p, product_id: value, product_version: allVersion[0].value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
 
     const handleMemberFilter = (val: []) => {
-        setParams({ ...params, creators: val ? JSON.stringify([val]) : null })
+        setParams((p: any) => ({ ...p, creators: val ? JSON.stringify([val]) : null }))
     }
 
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
         const end_time = dateStrings[1]
-        if (!start_time && !end_time) setParams({ ...params, creation_time: null })
-        if (start_time && end_time) setParams({ ...params, creation_time: JSON.stringify({ start_time, end_time }) })
+        if (!start_time && !end_time) setParams((p: any) => ({ ...p, creation_time: null }))
+        if (start_time && end_time) setParams((p: any) => ({ ...p, creation_time: JSON.stringify({ start_time, end_time }) }))
         confirm()
     }
 
@@ -217,7 +217,7 @@ export default (props: any) => {
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}
-                onConfirm={(val: any) => { setParams({ ...params, job_id: val, page_num: 1 }) }}
+                onConfirm={(val: any) => { setParams((p: any) => ({ ...p, job_id: val, page_num: 1 })) }}
                 placeholder={formatMessage({ id: 'analysis.JobID.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -239,7 +239,7 @@ export default (props: any) => {
                 confirm={confirm}
                 autoFocus={autoFocus}
                 styleObj={styleObj}
-                onConfirm={(val: any) => { setParams({ ...params, name: val, page_num: 1 }) }}
+                onConfirm={(val: any) => { setParams((p: any) => ({ ...p, name: val, page_num: 1 })) }}
                 placeholder={formatMessage({ id: 'analysis.job.name.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -348,7 +348,7 @@ export default (props: any) => {
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}
-                onConfirm={(val: any) => { setBaselineParam({ ...baselineParam, name: val, page_num: 1 }) }}
+                onConfirm={(val: any) => { setBaselineParam((p: any) => ({ ...p, name: val, page_num: 1 })) }}
                 placeholder={formatMessage({ id: 'analysis.baseline.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
@@ -375,10 +375,10 @@ export default (props: any) => {
                 list={defaultList}
                 confirm={confirm}
                 onConfirm={(val: any) => {
-                    let value = undefined
+                    let value: any = undefined
                     if (val === 1) value = 'functional'
                     if (val === 0) value = 'performance'
-                    setBaselineParam({ ...baselineParam, test_type: value, page_num: 1 })
+                    setBaselineParam((p: any) => ({ ...p, test_type: value, page_num: 1 }))
                 }} />,
         },
         {
@@ -572,6 +572,7 @@ export default (props: any) => {
                             <ResizeTable
                                 rowSelection={rowSelection as any}
                                 rowKey='id'
+                                key={JSON.stringify(testData || [])}
                                 columns={columns as any}
                                 loading={loading}
                                 dataSource={testData}
@@ -597,6 +598,7 @@ export default (props: any) => {
                                 rowSelection={baselineSelection as any}
                                 rowKey='id'
                                 columns={baselineColumns as any}
+                                key={JSON.stringify(baseData || [])}
                                 loading={loading}
                                 dataSource={baseData}
                                 pagination={false}
@@ -609,7 +611,7 @@ export default (props: any) => {
                             currentPage={baselineParam.page_num}
                             pageSize={baselineParam.page_size}
                             onPageChange={(page_num, page_size) =>
-                                setBaselineParam({ ...baselineParam, page_num, page_size })
+                                setBaselineParam((p: any) => ({ ...p, page_num, page_size }))
                             }
                         />
                     </Tabs.TabPane>
