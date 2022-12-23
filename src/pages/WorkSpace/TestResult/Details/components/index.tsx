@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb } from 'antd'
+import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb, Typography } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
 import Clipboard from 'clipboard'
@@ -46,13 +46,9 @@ export const tooltipTd = (defaultText: string = '-') => ({
     },
     render: (_: any) => (
         _ ?
-            <Tooltip
-                placement="topLeft"
-                title={_}
-                overlayClassName={styles.tootip_overflow}
-            >
+            <Typography.Text ellipsis={{ tooltip: true }}>
                 {_}
-            </Tooltip> :
+            </Typography.Text> :
             defaultText
     ),
 })

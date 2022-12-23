@@ -41,7 +41,7 @@ export default ({ refresh = false, provider_name }: any) => {
         },
         {
             dataIndex: 'server',
-            width: 120,
+            width: 220,
             title: <FormattedMessage id="ws.result.details.test.server" />,
             ellipsis: {
                 showTitle: false
@@ -128,11 +128,11 @@ export default ({ refresh = false, provider_name }: any) => {
     ]
 
     const clusterColumns = [
-        { width: 120 },
+        { width: 150 },
         {
             dataIndex: 'server',
             title: <FormattedMessage id="ws.result.details.test.server" />,
-            width: 120,
+            width: 300,
             render: (_: any, row: any) => (
                 _ ?
                     <ServerLink
@@ -161,7 +161,7 @@ export default ({ refresh = false, provider_name }: any) => {
                 size="small"
                 className={styles.prepTable}
                 pagination={false}
-                scroll={{ x: '100%' }}
+                scroll={{ x: "100%" }}
                 expandable={{
                     columnWidth: 47,
                     expandedRowClassName: () => 'expanded-row-padding-no',

@@ -26,7 +26,7 @@ export default ({ dataSource }: any) => {
         ellipsis: {
             showTitle: false
         },
-        width: 120,
+        width: 220,
         render: () => <ColumnStateLine />
     },
     {
@@ -103,7 +103,6 @@ export default ({ dataSource }: any) => {
             rowKey="rowKey" // "id"
             size="small"
             rowClassName={styles.prep_test_conf_row}
-            scroll={{ x: '100%' }}
             pagination={false}
         />
     )
