@@ -83,8 +83,8 @@ export default ({ refresh = false, provider_name }: any) => {
         {
             dataIndex: 'result',
             title: <FormattedMessage id="ws.result.details.output.results" />,
-            render() {
-                return "-"
+            render(_, row) {
+                return <Typography.Text ellipsis={{ tooltip: true }}>{_ || "-"}</Typography.Text>
             }
         },
         {
