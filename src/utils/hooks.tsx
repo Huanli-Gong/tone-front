@@ -29,7 +29,6 @@ export const useDetectZoom = () => {
         if (ratio) {
             ratio = 1.5 / ratio
         }
-        console.log(ratio)
         setRatio(ratio)
     }
 
@@ -87,6 +86,7 @@ type ListProps = {
 type ResultProps = {
     job_id: string | number,
     style?: React.CSSProperties;
+    ws_id?: string;
 }
 
 export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='topLeft' >{name}</Tooltip>
