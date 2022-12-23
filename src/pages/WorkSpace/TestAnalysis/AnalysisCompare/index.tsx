@@ -354,8 +354,10 @@ export default (props: any) => {
         let num = 0
         let flag = false
         groupData.forEach((item: any) => {
-            if (item.members.length > 0) num++
-            flag = item.type === 'baseline'
+            if (item.members.length > 0) {
+                num++
+                flag = item.type === 'baseline'
+            }
         })
         if (num > 1 && baselineGroupIndex === -1) {
             setLabelBlinking(true)
@@ -365,6 +367,7 @@ export default (props: any) => {
         if (num === 1 && flag) {
             return message.warning(formatMessage({ id: "analysis.please.add.comparison.group" }))
         }
+
         setVisibleBaseGroup(true)
         return
         // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
