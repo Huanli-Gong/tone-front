@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, message, Typography } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
-import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
+import { evnPrepareState, tooltipTd } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
