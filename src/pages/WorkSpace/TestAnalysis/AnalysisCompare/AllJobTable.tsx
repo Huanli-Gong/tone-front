@@ -117,7 +117,7 @@ const AllJobTable = (props: any) => {
         }
     }, [noGroupData])
 
-    const columns = [
+    const [columns, setColumns] = React.useState([
         {
             title: 'Job ID',
             dataIndex: 'id',
@@ -171,7 +171,6 @@ const AllJobTable = (props: any) => {
                     </PopoverEllipsis>
                 )
             }
-
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -236,7 +235,7 @@ const AllJobTable = (props: any) => {
                 return record || '-'
             }
         },
-    ]
+    ])
 
     useEffect(() => {
         getProductData()
@@ -394,6 +393,7 @@ const AllJobTable = (props: any) => {
                     rowSelection={rowSelection as any}
                     rowKey='id'
                     columns={columns as any}
+                    setColumns={setColumns}
                     loading={loading}
                     dataSource={tableData}
                     pagination={false}

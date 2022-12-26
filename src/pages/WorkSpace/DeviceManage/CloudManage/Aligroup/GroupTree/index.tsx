@@ -13,6 +13,7 @@ import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } fr
 import ServerLink from '@/components/MachineWebLink/index';
 import GroupMachine from '../../AddMachinePubilc/index';
 import Log from '@/components/Public/Log';
+
 const GroupTree: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
@@ -61,9 +62,13 @@ const GroupTree: React.FC<any> = (props) => {
         }
     }
 
-    const columns = useMemo(() => {
-        return [{
-            title: !!is_instance ? <FormattedMessage id="device.server.instance" /> : <FormattedMessage id="device.server.config" />,
+    const [columns, setColumns] = React.useState([
+        {
+            title: (
+                !!is_instance ?
+                    <FormattedMessage id="device.server.instance" /> :
+                    <FormattedMessage id="device.server.config" />
+            ),
             dataIndex: 'name',
             width: 160,
             fixed: 'left',
@@ -81,7 +86,8 @@ const GroupTree: React.FC<any> = (props) => {
                     : <EllipsisPulic title={row.name} />
             )
         },
-        !!is_instance && {
+        !!is_instance &&
+        {
             title: 'SN',
             dataIndex: 'sn',
             width: 150,
@@ -90,7 +96,8 @@ const GroupTree: React.FC<any> = (props) => {
             },
             render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
         },
-        BUILD_APP_ENV && !!is_instance && {
+        BUILD_APP_ENV && !!is_instance &&
+        {
             title: 'TSN',
             dataIndex: 'tsn',
             width: 150,
@@ -305,8 +312,7 @@ const GroupTree: React.FC<any> = (props) => {
                 </Space>
             )
         }
-        ].filter(Boolean)
-    }, [data, is_instance, enLocale])
+    ])
 
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
@@ -362,6 +368,7 @@ const GroupTree: React.FC<any> = (props) => {
                 loading={loading}
                 scroll={{ x: '100%' }}
                 columns={columns as any}
+                setColumns={setColumns}
                 showHeader={!!data.length}
                 dataSource={data}
                 rowKey={'id'}

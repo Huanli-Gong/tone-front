@@ -27,7 +27,7 @@ export default ({ refresh = false, provider_name }: any) => {
 
     if (!data) return <></>
 
-    const columns = [
+    const [columns, setColumns] = React.useState([
         {
             dataIndex: 'server_type',
             title: <FormattedMessage id="ws.result.details.mode" />,
@@ -125,7 +125,7 @@ export default ({ refresh = false, provider_name }: any) => {
                 return <Button size="small" type="link" style={{ padding: 0 }} disabled={true}>{strLocals}</Button>
             }
         }
-    ]
+    ])
 
     const clusterColumns = [
         { width: 150 },
@@ -156,6 +156,7 @@ export default ({ refresh = false, provider_name }: any) => {
             <ResizeTable
                 dataSource={data || []}
                 columns={columns}
+                setColumns={setColumns}
                 rowKey="server_id"
                 loading={loading}
                 size="small"

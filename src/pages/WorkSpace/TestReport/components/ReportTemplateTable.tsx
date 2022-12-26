@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState, useRef, useMemo } from 'react'
 import { Space, Popconfirm, message, Spin } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
-import { useAccess, Access, useIntl, FormattedMessage  } from 'umi'
+import { useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { queryReportTemplateList, delReportTemplateList } from '../services'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -23,16 +23,16 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         page_size: 10,
         ws_id,
     }
-    const [params,setParams] = useState<any>(defaultParmas)
+    const [params, setParams] = useState<any>(defaultParmas)
     const [data, setData] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(false)
     const copyTemplate: any = useRef(null)
     const pageCurrent = useStateRef(params)
-    const queryList = async() => {
+    const queryList = async () => {
         setLoading(true)
         const res = await queryReportTemplateList(params)
         const { code, msg } = res
-        if( code === 200 ){
+        if (code === 200) {
             setData(res)
             setLoading(false)
         } else {
@@ -40,9 +40,9 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         }
     }
     const totalCurrent = useStateRef(data)
-    useEffect(()=> {
+    useEffect(() => {
         queryList()
-    },[ params ])
+    }, [params])
 
     useEffect(() => {
         setParams(defaultParmas)
@@ -53,14 +53,14 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         try {
             const { code, msg } = await delReportTemplateList({ id })
             if (code === 200) {
-                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size})
-                message.success(formatMessage({id: 'request.delete.success'}) )
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
+                message.success(formatMessage({ id: 'request.delete.success' }))
             } else {
                 requestCodeMessage(code, msg)
             }
         } catch (e) {
             console.log(e)
-            message.error(formatMessage({id: 'request.delete.failed'}) )
+            message.error(formatMessage({ id: 'request.delete.failed' }))
         }
     }
     const handleAddScript = (currentRow: any) => {
@@ -76,7 +76,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         button_width: 90
     }
 
-    let columns: any = [
+    const [columns, setColumns] = React.useState([
         {
             dataIndex: 'name',
             title: <FormattedMessage id="report.columns.template" />,
@@ -85,10 +85,10 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             width: 200,
             ...getSearchFilter(
-                params, 
-                setParams, 
-                'name', 
-                formatMessage({id: 'report.columns.template.placeholder'}),
+                params,
+                setParams,
+                'name',
+                formatMessage({ id: 'report.columns.template.placeholder' }),
                 styleObj,
             ),
             render: (_: any, row: any) => {
@@ -123,8 +123,8 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             title: <FormattedMessage id="report.columns.update_user_name" />,
             ...getUserFilter(params, setParams, 'update_user'),
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-
-        }, {
+        },
+        {
             dataIndex: 'description',
             width: 200,
             ellipsis: {
@@ -132,7 +132,8 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             title: <FormattedMessage id="report.columns.description" />,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-        }, {
+        },
+        {
             dataIndex: 'gmt_created',
             width: 200,
             ellipsis: {
@@ -140,7 +141,8 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             title: <FormattedMessage id="report.columns.gmt_created" />,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-        }, {
+        },
+        {
             dataIndex: 'gmt_modified',
             width: 200,
             ellipsis: {
@@ -148,7 +150,8 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             title: <FormattedMessage id="report.columns.gmt_modified.s" />,
             render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-        }, {
+        },
+        {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
             width: 200,
@@ -176,7 +179,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                                         </span>
                                     }
                                     <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.copy" /></OptBtn>
-                                    { !isDefault && <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptBtn>}
+                                    {!isDefault && <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptBtn>}
                                 </Space>
                             }
                         >
@@ -208,15 +211,15 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 )
             }
         }
-    ]
+    ])
 
     return (
         <Spin spinning={loading}>
             <ClsResizeTable
                 size="small"
                 rowKey={record => record.id}
-                key={Date.now()}
                 columns={columns}
+                setColumns={setColumns}
                 loading={loading}
                 dataSource={dataSource}
                 pagination={false}

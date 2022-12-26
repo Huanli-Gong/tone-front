@@ -39,7 +39,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
         run()
     }, [refresh])
 
-    const columns: any = [
+    const [columns, setColumns] = React.useState([
         {
             dataIndex: 'test_suite_name',
             title: 'Test Suite',
@@ -93,7 +93,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                 showTitle: false
             },
             render: (_: any) => <>{_ || '-'}</>,
-        }, 
+        },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             render: (_: any) => {
@@ -156,7 +156,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                 return <span style={style}>{stopLocals}</span>
             }
         }
-    ].filter(Boolean);
+    ])
 
     const handleStopSuite = async (_: any) => {
         // 添加用户id
@@ -220,6 +220,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
             <ResizeTable
                 dataSource={data}
                 columns={columns}
+                setColumns={setColumns}
                 rowKey="id"
                 loading={loading}
                 size="small"

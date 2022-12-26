@@ -206,7 +206,7 @@ export default (props: any) => {
         confirm()
     }
 
-    const columns = [
+    const [columns, setColumns] = React.useState([
         {
             title: 'Job ID',
             dataIndex: 'id',
@@ -335,9 +335,9 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-    ]
+    ])
 
-    const baselineColumns = [
+    const [baselineColumns, setBaselineColumns] = React.useState([
         {
             title: <FormattedMessage id="analysis.baseline_name" />,
             dataIndex: 'name',
@@ -402,8 +402,7 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-
-    ]
+    ])
 
     const selectedChange = (record: any, selected: any) => {
         let selectKey = tabKey === '1' ? selectedRowKeys : selectedBaselineKeys
@@ -572,7 +571,7 @@ export default (props: any) => {
                             <ResizeTable
                                 rowSelection={rowSelection as any}
                                 rowKey='id'
-                                key={JSON.stringify(testData || [])}
+                                setColumns={setColumns}
                                 columns={columns as any}
                                 loading={loading}
                                 dataSource={testData}
@@ -598,7 +597,7 @@ export default (props: any) => {
                                 rowSelection={baselineSelection as any}
                                 rowKey='id'
                                 columns={baselineColumns as any}
-                                key={JSON.stringify(baseData || [])}
+                                setColumns={setBaselineColumns}
                                 loading={loading}
                                 dataSource={baseData}
                                 pagination={false}

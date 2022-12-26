@@ -133,9 +133,13 @@ export default (props: any) => {
 
     const $insdance = + isInstance
 
-    const tableColumns: any = useMemo(() => {
-        return [{
-            title: !$insdance ? <FormattedMessage id="device.config.name" /> : <FormattedMessage id="device.instance.name" />,
+    const [columns, setColumns] = React.useState([
+        {
+            title: (
+                !$insdance ?
+                    <FormattedMessage id="device.config.name" /> :
+                    <FormattedMessage id="device.instance.name" />
+            ),
             dataIndex: 'name',
             width: 140,
             fixed: 'left',
@@ -183,7 +187,8 @@ export default (props: any) => {
             },
             render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
         },
-        (BUILD_APP_ENV && !!$insdance) && {
+        (BUILD_APP_ENV && !!$insdance) &&
+        {
             title: 'TSN',
             dataIndex: 'tsn',
             width: 140,
@@ -461,8 +466,7 @@ export default (props: any) => {
                     <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
                 </Space>,
         },
-        ].filter(Boolean)
-    }, [params, $insdance, enLocale])
+    ])
 
     // 部署Agent
     const deployClick = (row: any) => {
@@ -560,10 +564,10 @@ export default (props: any) => {
             </Tabs>
             <ResizeTable
                 size={'small'}
-                key={tableColumns}
                 loading={loading}
                 scroll={{ x: "100%" }}
-                columns={tableColumns}
+                columns={columns}
+                setColumns={setColumns}
                 dataSource={data.data}
                 rowKey={'id'}
                 pagination={false}

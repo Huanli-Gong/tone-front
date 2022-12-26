@@ -312,6 +312,7 @@ export default (props: any) => {
 								disabled={disabled}
 								selectedCaseObj={selectedCaseObj}
 								columnsInner={columnsInner}
+								setInnerColumns={setColumnsInner}
 								selectedSuiteKeys={selectedSuiteKeys}
 								setSelectedCaseKeysFn={setSelectedCaseKeysFn}
 							/>

@@ -1,30 +1,35 @@
 import React, { useRef } from 'react';
-import { UserTable } from './data.d';
-import { Table, Pagination, Spin } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { Pagination, Spin } from 'antd';
+import type { TableProps } from "antd"
+import { useIntl } from 'umi'
 import styles from './style.less';
 import ResizeTable from '@/components/ResizeTable'
-const CommonTable: React.FC<UserTable> = ({
-    list, columns,
-    loading,
-    scrollType = 0,
-    total = 0, rowSelection,
-    expandable, onRow = () => { return false }, handlePage,
-    showPagination = true,
-    page = 1,
-    className = '',
-    paginationBottom = false,
-    pageSize = 10,
-    components,
-    scroll,
-}) => {
+
+type Any = Record<string, any>
+
+const CommonTable: React.FC<TableProps<Any> & Any> = (props) => {
+    const { list,
+        setColumns,
+        total = 0,
+        loading,
+        handlePage,
+        showPagination = true,
+        page = 1,
+        paginationBottom = false,
+        pageSize = 10,
+        className,
+        ...rest
+    } = props;
+
     const { formatMessage } = useIntl()
     const table = useRef<any>(null)
+
     const getTop = (e: any) => {
         var offset = e.offsetTop;
         if (e.offsetParent != null) offset += getTop(e.offsetParent);
         return offset;
     }
+
     const onSelect = () => {
         const _top = getTop(table.current)
         if (_top == 0) return
@@ -35,34 +40,27 @@ const CommonTable: React.FC<UserTable> = ({
             behavior: "smooth"
         });
     }
+
     return (
         <Spin spinning={loading}>
             <div ref={table}></div>
             <ResizeTable
                 size={"small"}
-                columns={columns}
+                setColumns={setColumns}
                 className={`${styles.table_empty} ${className}`}
-                dataSource={list}
-                rowKey={record => record.id}
                 pagination={false}
-                rowSelection={rowSelection}
-                expandable={expandable}
-                scroll={scroll} // { x: '100%' }
-                components={components}
-                onRow={(record, index) => {
-                    return {
-                        onClick: () => onRow(record),
-                    };
-                }}
+                {...rest}
             />
             {
                 showPagination &&
-                <div className={`${paginationBottom ? null : `common_pagination`} ${!loading && total ? styles.pagination : styles.hidden}`} >
+                <div
+                    className={`${paginationBottom ? null : `common_pagination`} ${!loading && total ? styles.pagination : styles.hidden}`}
+                >
                     {
                         total >= 1 &&
                         <>
                             <div className={total == 0 ? styles.hidden : ''}>
-                               {formatMessage({id: 'pagination.total.strip'}, {data: total})}
+                                {formatMessage({ id: 'pagination.total.strip' }, { data: total })}
                             </div>
                             <Pagination
                                 className={total == 0 ? styles.hidden : ''}

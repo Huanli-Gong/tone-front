@@ -505,194 +505,190 @@ export default (props: any) => {
         }
     }
 
-    const columns: any = useMemo(() => {
-        return (
-            [
-                access.IsWsSetting() && {
-                    title: '',
-                    width: 30,
-                    align: 'center',
-                    fixed: 'left',
-                    className: 'collection_star result_job_hover_span',
-                    render: (_: any) => (
-                        <div onClick={() => handleClickStar(_, !_.collection)}>
-                            {
-                                _.collection ?
-                                    <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
-                                    <StarOutlined className="no_collection_star" />
-                            }
-                        </div>
-                    )
-                },
-                {
-                    title: 'JobID',
-                    dataIndex: 'id',
-                    fixed: 'left',
-                    width: 80,
-                    ellipsis: true,
-                    className: 'result_job_hover_span',
-                    render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
-                }, {
-                    title: 'Job名称',
-                    dataIndex: 'name',
-                    width: 200,
-                    ellipsis: {
-                        shwoTitle: false,
-                    },
-                    className: 'result_job_hover_span',
-                    render: (_: any, row: any) => (
-                        row.created_from === 'offline' ?
-                            <>
-                                <span className={styles.offline_flag}>离</span>
-                                <Tooltip placement="topLeft" title={_}>
-                                    <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
-                                        {_}
-                                    </span>
-                                </Tooltip>
-                            </>
-                            :
-                            <Tooltip title={_}>
-                                <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
-                                    {_}
-                                </span>
-                            </Tooltip>
-                    )
-                }, {
-                    title: '状态',
-                    width: 120,
-                    dataIndex: 'state',
-                    render: (_: any, row: any) => <JobListStateTag {...row} />
-                }, {
-                    title: '测试类型',
-                    width: 100,
-                    dataIndex: 'test_type',
-                    ellipsis: true,
-                }, {
-                    title: (
-                        <QusetionIconTootip
-                            placement="bottomLeft"
-                            title={'总计/成功/失败'}
-                            desc={
-                                <ul style={{ paddingInlineStart: 'inherit', paddingTop: 15 }}>
-                                    <li>功能测试：测试结果中TestConf结果状态统计。</li>
-                                    <li>性能测试：执行结果中TestConf执行状态统计。</li>
-                                </ul>
-                            }
-                        />
-                    ),
-                    dataIndex: 'test_result',
-                    width: 140,
-                    render: (_: any) => {
-                        const result = JSON.parse(_)
-                        if (lodash.isNull(result)) {
-                            return (
-                                <Row>
-                                    <Col span={8} style={{ color: "#1890FF" }} >-</Col>
-                                    <Col span={8} style={{ color: "#52C41A" }} >-</Col>
-                                    <Col span={8} style={{ color: "#FF4D4F" }} >-</Col>
-                                </Row>
-                            )
-                        } else {
-                            return (
-                                <Row>
-                                    <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
-                                    <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
-                                    <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
-                                </Row>
-                            )
-                        }
+    const [columns, setColumns] = React.useState([
+        access.IsWsSetting() && {
+            title: '',
+            width: 30,
+            align: 'center',
+            fixed: 'left',
+            className: 'collection_star result_job_hover_span',
+            render: (_: any) => (
+                <div onClick={() => handleClickStar(_, !_.collection)}>
+                    {
+                        _.collection ?
+                            <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
+                            <StarOutlined className="no_collection_star" />
                     }
-                }, {
-                    title: '所属项目',
-                    width: 120,
-                    dataIndex: 'project_name',
-                    ellipsis: {
-                        shwoTitle: false,
-                    },
-                    render: (_: any) => (
-                        <Tooltip title={_ || '-'} placement="topLeft">
-                            {_ || '-'}
+                </div>
+            )
+        },
+        {
+            title: 'JobID',
+            dataIndex: 'id',
+            fixed: 'left',
+            width: 80,
+            ellipsis: true,
+            className: 'result_job_hover_span',
+            render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
+        }, {
+            title: 'Job名称',
+            dataIndex: 'name',
+            width: 200,
+            ellipsis: {
+                shwoTitle: false,
+            },
+            className: 'result_job_hover_span',
+            render: (_: any, row: any) => (
+                row.created_from === 'offline' ?
+                    <>
+                        <span className={styles.offline_flag}>离</span>
+                        <Tooltip placement="topLeft" title={_}>
+                            <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                                {_}
+                            </span>
                         </Tooltip>
-                    )
-                }, {
-                    title: '创建人',
-                    width: 80,
-                    ellipsis: {
-                        shwoTitle: false,
-                    },
-                    dataIndex: 'creator_name',
-                    render: (_: any) => (
-                        <Tooltip title={_ || '-'} placement="topLeft">
-                            {_ || '-'}
-                        </Tooltip>
-                    )
-                }, {
-                    title: '开始时间',
-                    width: 180,
-                    dataIndex: 'start_time',
-                    ellipsis: {
-                        shwoTitle: false,
-                    },
-                    sorter: true,
-                    render: (_: any) => (
-                        <Tooltip title={_ || '-'} placement="topLeft">
-                            {_ || '-'}
-                        </Tooltip>
-                    )
-                }, {
-                    title: '完成时间',
-                    width: 180,
-                    ellipsis: {
-                        shwoTitle: false,
-                    },
-                    dataIndex: 'end_time',
-                    render: (_: any) => (
-                        <Tooltip title={_ || '-'} placement="topLeft">
-                            {_ || '-'}
-                        </Tooltip>
-                    )
-                },
-                {
-                    title: '操作',
-                    width: 160,
-                    fixed: 'right',
-                    render: (_: any) => {
-                        const disableStyle = { color: '#ccc', cursor: 'no-drop' }
-                        const commonStyle = { color: '#1890FF', cursor: 'pointer' }
-                        return (
-                            <Space>
-                                <Access accessible={access.IsWsSetting()}>
-                                    <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
-                                        <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
-                                    </span>
-                                </Access>
-                                <Access accessible={access.WsTourist()}>
-                                    <Access 
-                                        accessible={access.WsMemberOperateSelf(_.creator)}
-                                        fallback={
-                                            <span onClick={()=> AccessTootip()}><Typography.Text style={commonStyle}>删除</Typography.Text></span>
-                                        }
-                                    >
-                                        <Popconfirm
-                                            title="确定要删除吗？"
-                                            onConfirm={() => handleDelete(_)}
-                                            okText="确认"
-                                            cancelText="取消"
-                                        >
-                                            <Typography.Text style={commonStyle}>
-                                                删除
-                                            </Typography.Text>
-                                        </Popconfirm>
-                                    </Access>
-                                </Access>
-                                <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
-                            </Space>
-                        )
+                    </>
+                    :
+                    <Tooltip title={_}>
+                        <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>
+                            {_}
+                        </span>
+                    </Tooltip>
+            )
+        }, {
+            title: '状态',
+            width: 120,
+            dataIndex: 'state',
+            render: (_: any, row: any) => <JobListStateTag {...row} />
+        }, {
+            title: '测试类型',
+            width: 100,
+            dataIndex: 'test_type',
+            ellipsis: true,
+        }, {
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={'总计/成功/失败'}
+                    desc={
+                        <ul style={{ paddingInlineStart: 'inherit', paddingTop: 15 }}>
+                            <li>功能测试：测试结果中TestConf结果状态统计。</li>
+                            <li>性能测试：执行结果中TestConf执行状态统计。</li>
+                        </ul>
                     }
+                />
+            ),
+            dataIndex: 'test_result',
+            width: 140,
+            render: (_: any) => {
+                const result = JSON.parse(_)
+                if (lodash.isNull(result)) {
+                    return (
+                        <Row>
+                            <Col span={8} style={{ color: "#1890FF" }} >-</Col>
+                            <Col span={8} style={{ color: "#52C41A" }} >-</Col>
+                            <Col span={8} style={{ color: "#FF4D4F" }} >-</Col>
+                        </Row>
+                    )
+                } else {
+                    return (
+                        <Row>
+                            <Col span={8} style={{ color: "#1890FF" }} >{result.total}</Col>
+                            <Col span={8} style={{ color: "#52C41A" }} >{result.pass}</Col>
+                            <Col span={8} style={{ color: "#FF4D4F" }} >{result.fail}</Col>
+                        </Row>
+                    )
                 }
-            ].filter(Boolean)
-        )
-    }, [ws_id,access])
+            }
+        }, {
+            title: '所属项目',
+            width: 120,
+            dataIndex: 'project_name',
+            ellipsis: {
+                shwoTitle: false,
+            },
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
+        }, {
+            title: '创建人',
+            width: 80,
+            ellipsis: {
+                shwoTitle: false,
+            },
+            dataIndex: 'creator_name',
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
+        }, {
+            title: '开始时间',
+            width: 180,
+            dataIndex: 'start_time',
+            ellipsis: {
+                shwoTitle: false,
+            },
+            sorter: true,
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
+        }, {
+            title: '完成时间',
+            width: 180,
+            ellipsis: {
+                shwoTitle: false,
+            },
+            dataIndex: 'end_time',
+            render: (_: any) => (
+                <Tooltip title={_ || '-'} placement="topLeft">
+                    {_ || '-'}
+                </Tooltip>
+            )
+        },
+        {
+            title: '操作',
+            width: 160,
+            fixed: 'right',
+            render: (_: any) => {
+                const disableStyle = { color: '#ccc', cursor: 'no-drop' }
+                const commonStyle = { color: '#1890FF', cursor: 'pointer' }
+                return (
+                    <Space>
+                        <Access accessible={access.IsWsSetting()}>
+                            <span onClick={_.created_from === 'offline' ? undefined : () => handleTestReRun(_)}>
+                                <Typography.Text style={_.created_from === 'offline' ? disableStyle : commonStyle}>重跑</Typography.Text>
+                            </span>
+                        </Access>
+                        <Access accessible={access.WsTourist()}>
+                            <Access
+                                accessible={access.WsMemberOperateSelf(_.creator)}
+                                fallback={
+                                    <span onClick={() => AccessTootip()}><Typography.Text style={commonStyle}>删除</Typography.Text></span>
+                                }
+                            >
+                                <Popconfirm
+                                    title="确定要删除吗？"
+                                    onConfirm={() => handleDelete(_)}
+                                    okText="确认"
+                                    cancelText="取消"
+                                >
+                                    <Typography.Text style={commonStyle}>
+                                        删除
+                                    </Typography.Text>
+                                </Popconfirm>
+                            </Access>
+                        </Access>
+                        <ViewReport viewAllReport={allReport} dreType="left" ws_id={ws_id} jobInfo={_} origin={'jobList'} />
+                    </Space>
+                )
+            }
+        }
+    ])
 
 
     const handleTestReRun = (row: any) => {
@@ -829,7 +825,7 @@ export default (props: any) => {
                 return obj.name && obj[key]
             })
         })
-        if(parmas.creators && JSON.parse(parmas.creators).length === 0){
+        if (parmas.creators && JSON.parse(parmas.creators).length === 0) {
             parmas.creators = null
         }
         return { valuesCopy, parmas, filterData, projectDataNew: projectData }
@@ -1559,6 +1555,7 @@ export default (props: any) => {
                                                         rowSelection={rowSelection}
                                                         rowKey='id'
                                                         columns={columns}
+                                                        setColumns={setColumns}
                                                         rowClassName={styles.result_table_row}
                                                         dataSource={dataSource?.data}
                                                         onChange={(pagination: any, filters: any, sorter: any) => sortStartTime(sorter)}

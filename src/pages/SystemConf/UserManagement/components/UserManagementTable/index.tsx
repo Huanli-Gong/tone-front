@@ -75,87 +75,93 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         }
     }
 
-    const columns: any[] = [{
-        title: <FormattedMessage id="user.last_name" />,
-        dataIndex: 'last_name',
-        width: 200,
-        ellipsis: {
-            showTitle: false
+    const [columns, setColumns] = React.useState([
+        {
+            title: <FormattedMessage id="user.last_name" />,
+            dataIndex: 'last_name',
+            width: 200,
+            ellipsis: {
+                showTitle: false
+            },
+            filterDropdown: ({ confirm }: any) => <SearchInput
+                confirm={confirm}
+                autoFocus={autoFocus}
+                onConfirm={(val: string) => {
+                    setLastName(val)
+                    onSearch(val)
+                }} />,
+            onFilterDropdownVisibleChange: (visible: any) => {
+                if (visible) {
+                    setFocus(!autoFocus)
+                }
+            },
+            filterIcon: () => <FilterFilled style={{ color: lastName ? '#1890ff' : undefined }} />,
+            render: (_: number, row: any) => <Space>
+                {
+                    row.avatar ?
+                        <Avatar size={25} src={row.avatar} alt={row.last_name} /> :
+                        <AvatarCover size={25} show_name={row.last_name || row.username} theme_color={row.avatar_color} shape="circle" />
+                }
+                <Highlighter
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[lastName || '']}
+                    autoEscape
+                    textToHighlight={row.last_name.toString()}
+                />
+            </Space>,
         },
-        filterDropdown: ({ confirm }: any) => <SearchInput
-            confirm={confirm}
-            autoFocus={autoFocus}
-            onConfirm={(val: string) => {
-                setLastName(val)
-                onSearch(val)
-            }} />,
-        onFilterDropdownVisibleChange: (visible: any) => {
-            if (visible) {
-                setFocus(!autoFocus)
-            }
+        {
+            title: <FormattedMessage id="user.email" />,
+            dataIndex: 'email',
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: number, row: UserTable) => <PopoverEllipsis title={row.email}></PopoverEllipsis>,
         },
-        filterIcon: () => <FilterFilled style={{ color: lastName ? '#1890ff' : undefined }} />,
-        render: (_: number, row: any) => <Space>
-            {
-                row.avatar ?
-                    <Avatar size={25} src={row.avatar} alt={row.last_name} /> :
-                    <AvatarCover size={25} show_name={row.last_name || row.username} theme_color={row.avatar_color} shape="circle" />
-            }
-            <Highlighter
-                highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                searchWords={[lastName || '']}
-                autoEscape
-                textToHighlight={row.last_name.toString()}
-            />
-        </Space>,
-    }, {
-        title: <FormattedMessage id="user.email" />,
-        dataIndex: 'email',
-        ellipsis: {
-            showTitle: false
+        {
+            title: <FormattedMessage id="user.role_list" />,
+            dataIndex: 'role_list',
+            render: (_: number, row: any) => (
+                (select && select.length > 0) &&
+                <RoleSelect row={row} select={select} handleChange={handleChange} />
+            ),
+            width: 170,
+            filterIcon: () => <FilterFilled style={{ color: role_id ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => <SelectRadio list={rolelist} confirm={confirm} onConfirm={(val: any) => RoleChange(val)} roleType="role" />,
         },
-        render: (_: number, row: UserTable) => <PopoverEllipsis title={row.email}></PopoverEllipsis>,
-    }, {
-        title: <FormattedMessage id="user.role_list" />,
-        dataIndex: 'role_list',
-        render: (_: number, row: any) => (
-            (select && select.length > 0) &&
-            <RoleSelect row={row} select={select} handleChange={handleChange} />
-        ),
-        width: 170,
-        filterIcon: () => <FilterFilled style={{ color: role_id ? '#1890ff' : undefined }} />,
-        filterDropdown: ({ confirm }: any) => <SelectRadio list={rolelist} confirm={confirm} onConfirm={(val: any) => RoleChange(val)} roleType="role" />,
-    }, {
-        title: 'Workspace',
-        dataIndex: 'ws_list',
-        render: (_: number, row: UserTable) => (
-            (row.ws_list && row.ws_list.length > 0) &&
-            <PopoverEllipsis title={row.ws_list.join('、')}></PopoverEllipsis>
-        ),
-        ellipsis: {
-            showTitle: false
+        {
+            title: 'Workspace',
+            dataIndex: 'ws_list',
+            render: (_: number, row: UserTable) => (
+                (row.ws_list && row.ws_list.length > 0) &&
+                <PopoverEllipsis title={row.ws_list.join('、')}></PopoverEllipsis>
+            ),
+            ellipsis: {
+                showTitle: false
+            },
+            width: 200,
         },
-        width: 200,
-    }, {
-        title: <FormattedMessage id="user.gmt_created" />,
-        dataIndex: 'gmt_created',
-        width: 145,
-    },
-    BUILD_APP_ENV === 'opensource' &&
-    {
-        title: <FormattedMessage id="Table.columns.operation" />,
-        render: (_: any, row: any) => (
-            <Popconfirm
-                title={<FormattedMessage id="user.Popconfirm.title" />}
-                onConfirm={() => resetPasswordConfirm(row)}
-                okButtonProps={{ type: "primary", danger: true }}
-                okText={<FormattedMessage id="operation.confirm.reset" />}
-                onVisibleChange={() => console.log('visible change')}
-            >
-                <Typography.Link><FormattedMessage id="operation.reset.password" /></Typography.Link>
-            </Popconfirm>
-        )
-    }].filter(Boolean);
+        {
+            title: <FormattedMessage id="user.gmt_created" />,
+            dataIndex: 'gmt_created',
+            width: 145,
+        },
+        BUILD_APP_ENV === 'opensource' &&
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            render: (_: any, row: any) => (
+                <Popconfirm
+                    title={<FormattedMessage id="user.Popconfirm.title" />}
+                    onConfirm={() => resetPasswordConfirm(row)}
+                    okButtonProps={{ type: "primary", danger: true }}
+                    okText={<FormattedMessage id="operation.confirm.reset" />}
+                    onVisibleChange={() => console.log('visible change')}
+                >
+                    <Typography.Link><FormattedMessage id="operation.reset.password" /></Typography.Link>
+                </Popconfirm>
+            )
+        }
+    ]);
 
     const resetPasswordConfirm = async (row: any) => {
         const { code, data, msg } = await requestResetPassword({ user_id: row.id })
@@ -176,7 +182,8 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 key={rolelist}
                 size="small"
                 columns={columns}
-                list={list}
+                setColumns={setColumns}
+                dataSource={list}
                 loading={loading}
                 page={data.page_num}
                 pageSize={data.page_size}

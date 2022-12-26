@@ -109,7 +109,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		metricEditer.current.show('new')
 	}
 
-	const columns = [
+	const [columns, setColumns] = React.useState([
 		// { title: 'Metric', dataIndex: 'name'},
 		{ title: <FormattedMessage id="TestSuite.conf.metric" />, dataIndex: 'name', width: 300, fixed: 'left' },
 		{ title: <FormattedMessage id="TestSuite.cmp_threshold" />, dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
@@ -140,7 +140,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 				</Space>
 			),
 		},
-	];
+	]);
 
 	const handlePage = (page_num: number, page_size: number) => {
 		setPage(page_num)
@@ -150,12 +150,12 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	return (
 		<div className={styles.warp} key={id}>
 			<CommonTable
-				key={refresh}
 				columns={columns}
+				setColumns={setColumns}
 				// scrollType={670}
 				scroll={{ x: 670 }}
 				loading={expandInnerLoading}
-				list={expandInnerList.data}
+				dataSource={expandInnerList.data}
 				page={expandInnerList.page_num}
 				totalPage={expandInnerList.total_page}
 				total={expandInnerList.total}

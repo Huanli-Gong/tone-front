@@ -17,7 +17,7 @@ import { useClientSize } from '@/utils/hooks';
 /**
  * 系统级-业务测试
  */
-export default forwardRef(( props : any, ref: any) => {
+export default forwardRef((props: any, ref: any) => {
 	const { formatMessage } = useIntl()
 	const [loading, setLoading] = useState<any>(true)
 	const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1 })
@@ -48,7 +48,7 @@ export default forwardRef(( props : any, ref: any) => {
 			if (code === 200) {
 				setData(res)
 			} else {
-				message.error(msg || formatMessage({id: 'request.failed'}) );
+				message.error(msg || formatMessage({ id: 'request.failed' }));
 			}
 			setLoading(false)
 		} catch (e) {
@@ -87,10 +87,10 @@ export default forwardRef(( props : any, ref: any) => {
 		try {
 			const { code, msg }: any = await deleteBusiness(record) || {};
 			if (code === 200) {
-				message.success(formatMessage({id: 'request.delete.success'}) );
+				message.success(formatMessage({ id: 'request.delete.success' }));
 				getTableData(filterQuery)
 			} else {
-				message.error(msg || formatMessage({id: 'request.delete.failed'}) );
+				message.error(msg || formatMessage({ id: 'request.delete.failed' }));
 			}
 			setLoading(false)
 		} catch (e) {
@@ -108,9 +108,9 @@ export default forwardRef(( props : any, ref: any) => {
 		setDeleteRow({});
 	}
 
-	let columns: any = [
+	const [columns, setColumns] = React.useState([
 		{
-			title: <FormattedMessage id="TestSuite.business.name"/>,
+			title: <FormattedMessage id="TestSuite.business.name" />,
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 'auto',
@@ -126,7 +126,7 @@ export default forwardRef(( props : any, ref: any) => {
 			},
 		},
 		{
-			title: <FormattedMessage id="TestSuite.gmt_created"/>,
+			title: <FormattedMessage id="TestSuite.gmt_created" />,
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
@@ -134,7 +134,7 @@ export default forwardRef(( props : any, ref: any) => {
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.gmt_modified"/>,
+			title: <FormattedMessage id="TestSuite.gmt_modified" />,
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
@@ -142,7 +142,7 @@ export default forwardRef(( props : any, ref: any) => {
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.creator_name"/>,
+			title: <FormattedMessage id="TestSuite.creator_name" />,
 			dataIndex: 'creator_name',
 			onCell: () => ({ style: { minWidth: 150 } }),
 			filterIcon: () => <FilterFilled style={{ color: creator ? '#1890ff' : undefined }} />,
@@ -157,27 +157,27 @@ export default forwardRef(( props : any, ref: any) => {
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.description"/>,
+			title: <FormattedMessage id="TestSuite.description" />,
 			dataIndex: 'description',
 			render: (text: any) => {
 				return <PopoverEllipsis title={text} width={200} />
 			}
 		},
 		{
-			title: <FormattedMessage id="Table.columns.operation"/>,
+			title: <FormattedMessage id="Table.columns.operation" />,
 			width: 150,
 			align: 'center',
 			fixed: 'right',
 			render: (text: any, record: any) => {
 				return (
 					<Space>
-						<a><span onClick={() => AddTestDrawer.current.show(record)}><FormattedMessage id="operation.edit"/></span></a>
-						<a><span onClick={() => onOk(record)}><FormattedMessage id="operation.delete"/></span></a>
+						<a><span onClick={() => AddTestDrawer.current.show(record)}><FormattedMessage id="operation.edit" /></span></a>
+						<a><span onClick={() => onOk(record)}><FormattedMessage id="operation.delete" /></span></a>
 					</Space>
 				)
 			},
 		}
-	];
+	]);
 
 	const onChange = (page: number, pageSize: number) => {
 		getTableData({ page_num: page, page_size: pageSize })
@@ -224,7 +224,8 @@ export default forwardRef(( props : any, ref: any) => {
 				<CommonTable
 					className={styles.businessList}
 					columns={columns}
-					list={list}
+					setColumns={setColumns}
+					dataSource={list}
 					scroll={{ x: '100%' }}
 					// loading={true}
 					loading={loading}
@@ -254,26 +255,26 @@ export default forwardRef(( props : any, ref: any) => {
 					}}
 				/>
 
-				<Modal title={<FormattedMessage id="delete.tips"/>}
+				<Modal title={<FormattedMessage id="delete.tips" />}
 					centered={true}
-					okText={<FormattedMessage id="operation.delete"/>}
-					cancelText={<FormattedMessage id="operation.cancel"/>}
+					okText={<FormattedMessage id="operation.delete" />}
+					cancelText={<FormattedMessage id="operation.cancel" />}
 					visible={deleteVisible}
 					onCancel={onCancel}
 					width={300}
 					maskClosable={false}
 					footer={[
 						<Button key="submit" onClick={() => handelDelete(deleteRow)}>
-							<FormattedMessage id="operation.confirm.delete"/>
+							<FormattedMessage id="operation.confirm.delete" />
 						</Button>,
 						<Button key="back" type="primary" onClick={onCancel}>
-							<FormattedMessage id="operation.cancel"/>
+							<FormattedMessage id="operation.cancel" />
 						</Button>
 					]}
 				>
 					<div style={{ color: 'red', marginBottom: 5 }}>
 						<ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-						<FormattedMessage id="delete.prompt"/>
+						<FormattedMessage id="delete.prompt" />
 					</div>
 				</Modal>
 
@@ -283,12 +284,12 @@ export default forwardRef(( props : any, ref: any) => {
 						<Space>
 							<Checkbox indeterminate={true} />
 							<Typography.Text>
-							    {formatMessage({id: 'selected.item'}, {data: selectedSuites.selectedSuiteKeys?.length})}
+								{formatMessage({ id: 'selected.item' }, { data: selectedSuites.selectedSuiteKeys?.length })}
 							</Typography.Text>
-							<Button type="link" onClick={onCancelRowSelection}><FormattedMessage id="operation.cancel"/></Button>
+							<Button type="link" onClick={onCancelRowSelection}><FormattedMessage id="operation.cancel" /></Button>
 						</Space>
 						<Space>
-							<Button onClick={deleteAll}><FormattedMessage id="operation.batch.delete"/></Button>
+							<Button onClick={deleteAll}><FormattedMessage id="operation.batch.delete" /></Button>
 						</Space>
 					</div>
 				}

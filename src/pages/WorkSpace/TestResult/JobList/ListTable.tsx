@@ -115,7 +115,7 @@ const ListTable: React.FC<IProps> = (props) => {
         countRefresh()
     }
 
-    const columns: any = React.useMemo(() => [
+    const [columns, setColumns] = React.useState([
         /* @ts-ignore */
         access.IsWsSetting() &&
         {
@@ -269,7 +269,8 @@ const ListTable: React.FC<IProps> = (props) => {
                     {_ || '-'}
                 </Tooltip>
             )
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.result.list.completion_time" />,
             width: 180,
             ellipsis: {
@@ -325,7 +326,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 )
             }
         }
-    ].filter(Boolean), [access, ws_id, locale, source, queryTestList, countRefresh])
+    ])
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
@@ -432,6 +433,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 loading={loading}
                 dataSource={source?.data}
                 columns={columns}
+                setColumns={setColumns}
                 pagination={false}
                 rowClassName={styles.result_table_row}
                 rowSelection={rowSelection}

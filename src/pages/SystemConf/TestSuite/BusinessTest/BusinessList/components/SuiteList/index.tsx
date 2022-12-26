@@ -46,7 +46,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			if (code === 200) {
 				setData(res)
 			} else {
-				message.error(msg || formatMessage({id: 'request.failed'}) );
+				message.error(msg || formatMessage({ id: 'request.failed' }));
 			}
 			setLoading(false)
 		} catch (e) {
@@ -60,7 +60,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			if (code === 200) {
 				setDomainList(data)
 			} else {
-				message.error(msg || formatMessage({id: 'request.failed'}) );
+				message.error(msg || formatMessage({ id: 'request.failed' }));
 			}
 		} catch (e) {
 			console.log(e)
@@ -72,7 +72,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		try {
 			const { code, msg }: any = await syncSuite(id) || {};
 			if (code === 200) {
-				message.success(formatMessage({id: 'request.synchronize.success'}) );
+				message.success(formatMessage({ id: 'request.synchronize.success' }));
 				getTableData({ page_num: data.page_num, page_size: data.page_size })
 				// case2.展开并刷新conf列表
 				if (expandKeys.includes(id)) {
@@ -84,7 +84,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 				}
 
 			} else {
-				message.error(msg || formatMessage({id: 'request.synchronize.failed'}));
+				message.error(msg || formatMessage({ id: 'request.synchronize.failed' }));
 			}
 			setLoading(false)
 		} catch (e) {
@@ -97,7 +97,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		try {
 			const { code, msg }: any = await delSuite(deleteRow.id) || {};
 			if (code === 200) {
-				message.success(formatMessage({id: 'request.delete.success'}) );
+				message.success(formatMessage({ id: 'request.delete.success' }));
 				// *判断单个删除行时，对批量选中行的影响
 				if (selectedRowKeys.includes(deleteRow.id)) {
 					const tempKeys = selectedRowKeys.filter((item) => item !== deleteRow.id)
@@ -114,7 +114,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 				onCancel()
 				getTableData({ page_num: data.page_num, page_size: data.page_size })
 			} else {
-				message.error(msg || formatMessage({id: 'request.delete.failed'}) );
+				message.error(msg || formatMessage({ id: 'request.delete.failed' }));
 			}
 			setDeleteLoading(false)
 		} catch (e) {
@@ -129,7 +129,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			try {
 				const res = await deleteBusinessSuiteAll({ id_list: selectedRowKeys.join() }) || {}
 				if (res.code === 200) {
-					message.success(formatMessage({id: 'operation.batch.delete.success'}) );
+					message.success(formatMessage({ id: 'operation.batch.delete.success' }));
 					// case1.初始化状态&&关闭对话框
 					setSelectedRow([])
 					setSelectedRowKeys([])
@@ -139,7 +139,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 					// case3.回调父级重置状态
 					rowSelectionCallback({})
 				} else {
-					message.error(res.msg || formatMessage({id: 'operation.batch.delete.failed'}) );
+					message.error(res.msg || formatMessage({ id: 'operation.batch.delete.failed' }));
 				}
 				setLoading(false)
 			} catch (e) {
@@ -220,14 +220,14 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 	/************新增|编辑 start ********************/
 	const handelAddOrEdit = ({ type, record = {} }: any) => {
 		if (type === 'add') {
-			addSuiteDrawer.current?.show(formatMessage({id: 'TestSuite.new.suite'}), { business_id, ...record })
+			addSuiteDrawer.current?.show(formatMessage({ id: 'TestSuite.new.suite' }), { business_id, ...record })
 		} else if (type === 'edit') {
 			const row = {
 				...record,
 				is_default: record.is_default ? 1 : 0,
 				certificated: record.certificated ? 1 : 0,
 			}
-			addSuiteDrawer.current?.show(formatMessage({id: 'TestSuite.edit.suite'}), { business_id, ...row })
+			addSuiteDrawer.current?.show(formatMessage({ id: 'TestSuite.edit.suite' }), { business_id, ...row })
 		}
 	}
 	const handelCallback = () => {
@@ -258,7 +258,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		}
 	}
 
-	let columns: any = [
+	const [columns, setColumns] = React.useState([
 		{
 			title: 'Test Suite',
 			dataIndex: 'name',
@@ -267,19 +267,19 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			render: (text: any) => <PopoverEllipsis title={text} />,
 		},
 		{
-			title: <FormattedMessage id="TestSuite.domain"/>,
+			title: <FormattedMessage id="TestSuite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
 			render: (text: any) => <PopoverEllipsis title={text || '-'} />
 		},
 		{
-			title: <FormattedMessage id="TestSuite.test_type"/>,
+			title: <FormattedMessage id="TestSuite.test_type" />,
 			dataIndex: 'test_type',
 			onCell: () => ({ style: { maxWidth: 100 } }),
 			render: (text: any) => {
 				return <>
 					{test_type_enum.map((item: any) => {
-						return item.value === text ? <span key={item.value}>{formatMessage({id: item.value}) || '-'}</span> : null
+						return item.value === text ? <span key={item.value}>{formatMessage({ id: item.value }) || '-'}</span> : null
 					})
 					}
 				</>
@@ -287,35 +287,35 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		},
 
 		{
-			title: <FormattedMessage id="TestSuite.default.case"/>,
+			title: <FormattedMessage id="TestSuite.default.case" />,
 			dataIndex: 'is_default',
 			render: (text: any) => {
-				return <span>{text ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>}</span>
+				return <span>{text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />}</span>
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.is_certified"/>,
+			title: <FormattedMessage id="TestSuite.is_certified" />,
 			dataIndex: 'certificated',
 			onCell: () => ({ style: { maxWidth: 100 } }),
 			render: (text: any) => {
-				return <span>{text ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>}</span>
+				return <span>{text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />}</span>
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.run_mode"/>,
+			title: <FormattedMessage id="TestSuite.run_mode" />,
 			dataIndex: 'run_mode',
 			onCell: () => ({ style: { maxWidth: 100 } }),
 			render: (text: any) => {
 				return <>
 					{runList.map((item: any) => {
-						return item.id === text ? <span key={item.id}>{formatMessage({id: item.id}) || '-'}</span> : null
+						return item.id === text ? <span key={item.id}>{formatMessage({ id: item.id }) || '-'}</span> : null
 					})
 					}
 				</>
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.gmt_created"/>,
+			title: <FormattedMessage id="TestSuite.gmt_created" />,
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
@@ -323,7 +323,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			}
 		},
 		{
-			title: <FormattedMessage id="TestSuite.desc"/>,
+			title: <FormattedMessage id="TestSuite.desc" />,
 			dataIndex: 'doc',
 			width: 150,
 			// onCell: () => ({ style: { maxWidth: 150 } }),
@@ -331,13 +331,13 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 				<span>{null}</span></ButtonEllipsis> : '-'}</div>,
 		},
 		{
-			title: <FormattedMessage id="TestSuite.remarks"/>,
+			title: <FormattedMessage id="TestSuite.remarks" />,
 			dataIndex: 'description',
 			onCell: () => ({ style: { maxWidth: 150 } }),
 			render: (text: any) => <PopoverEllipsis title={text} />,
 		},
 		{
-			title: (<div><FormattedMessage id="Table.columns.operation"/><Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })} style={{ marginLeft: 8 }}><FormattedMessage id="operation.new"/></Button></div>),
+			title: (<div><FormattedMessage id="Table.columns.operation" /><Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })} style={{ marginLeft: 8 }}><FormattedMessage id="operation.new" /></Button></div>),
 			width: 150,
 			fixed: 'right',
 			render: (text: any, record: any) => {
@@ -347,16 +347,16 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 							{(record.test_type === 'business') ? (
 								<span>&emsp;&emsp;</span>
 							) : (
-								<a><span onClick={() => getSyncSuite(record.id)}><FormattedMessage id="operation.synchronize"/></span></a>
+								<a><span onClick={() => getSyncSuite(record.id)}><FormattedMessage id="operation.synchronize" /></span></a>
 							)}
-							<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit"/></span></a>
-							<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete"/></span></a>
+							<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit" /></span></a>
+							<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete" /></span></a>
 						</Space>
 					</div>
 				)
 			},
 		}
-	];
+	]);
 
 	const onChange = (page: number, pageSize: number) => {
 		getTableData({ page_num: page, page_size: pageSize })
@@ -375,9 +375,11 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 	let list = data.data, total = data.total, pageNum = data.page_num, pageSize = data.page_size
 	return (
 		<div>
-			<CommonTable className={styles.suitList_root}
+			<CommonTable
+				className={styles.suitList_root}
 				columns={columns}
-				list={list}
+				setColumns={setColumns}
+				dataSource={list}
 				loading={loading}
 				page={pageNum}
 				pageSize={pageSize}
@@ -388,7 +390,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 					expandedRowRender: (record: any) => {
 						// 根据"测试类型"区分不同的conf列表
 						const { test_type } = record
-						 
+
 						if (test_type === 'functional' || test_type === 'performance') {
 							// 功能测试、性能测试的conf列表
 							return <FuncOrPerfConfList id={record.id} type={test_type} domainList={domainList} ref={caseTable} />
@@ -416,20 +418,20 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 				scroll={{ x: 1250 }}
 				paginationBottom={true}
 			/>
-			<Modal title={<FormattedMessage id="delete.tips"/>}
+			<Modal title={<FormattedMessage id="delete.tips" />}
 				centered={true}
-				okText={<FormattedMessage id="operation.delete"/>}
-				cancelText={<FormattedMessage id="operation.cancel"/>}
+				okText={<FormattedMessage id="operation.delete" />}
+				cancelText={<FormattedMessage id="operation.cancel" />}
 				visible={deleteState.visible}
 				onCancel={onCancel}
 				width={['', 201].includes(deleteState.result) ? 300 : 600}
 				maskClosable={false}
 				footer={[
 					<Button key="submit" onClick={onSubmit} loading={deleteLoading}>
-						<FormattedMessage id="operation.confirm.delete"/>
+						<FormattedMessage id="operation.confirm.delete" />
 					</Button>,
 					<Button key="back" type="primary" onClick={onCancel}>
-						<FormattedMessage id="operation.cancel"/>
+						<FormattedMessage id="operation.cancel" />
 					</Button>
 				]}
 			>
@@ -438,22 +440,22 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 					{['', 201].includes(deleteState.result) ? (
 						<div style={{ color: 'red', marginBottom: 5 }}>
 							<ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-							<FormattedMessage id="delete.prompt"/>
+							<FormattedMessage id="delete.prompt" />
 						</div>
 					) : (
 						<>
 							<div style={{ color: 'red', marginBottom: 5 }}>
 								<ExclamationCircleOutlined style={{ marginRight: 4 }} />
 								{deleteState.action === 'single' ?
-									formatMessage({id: 'TestSuite.suite.delete.warning'}, {data: 'deleteRow.name'})
+									formatMessage({ id: 'TestSuite.suite.delete.warning' }, { data: 'deleteRow.name' })
 									:
-									formatMessage({id: 'TestSuite.have.suite.delete.warning'})
+									formatMessage({ id: 'TestSuite.have.suite.delete.warning' })
 								}
 							</div>
 							<div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-							  <FormattedMessage id="TestSuite.suite.delete.range"/>
+								<FormattedMessage id="TestSuite.suite.delete.range" />
 							</div>
-							<div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details"/></div>
+							<div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details" /></div>
 						</>
 					)}
 				</>

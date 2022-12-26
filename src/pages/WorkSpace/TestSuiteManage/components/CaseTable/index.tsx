@@ -25,22 +25,24 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
         setExpandInnerKey([record.id])
     }
 
-    const columns: any = [
+    const [columns, setColumns] = React.useState([
         {
             title: 'Test Conf', dataIndex: 'name',
             ellipsis: true, width: 300,
             fixed: 'left',
             render: (_: any) => <EllipsisPulic title={_} />
         },
-        { title: <FormattedMessage id="suite.alias"/>, dataIndex: 'alias', width: 100, ellipsis: true },
-        { title: <FormattedMessage id="suite.domain"/>, dataIndex: 'domain_name_list', width: 100,
+        { title: <FormattedMessage id="suite.alias" />, dataIndex: 'alias', width: 100, ellipsis: true },
+        {
+            title: <FormattedMessage id="suite.domain" />, dataIndex: 'domain_name_list', width: 100,
             render: (_: any) => {
                 return _ ? <Tooltip placement={'bottomLeft'} title={_}><Typography.Text style={{ width: 100 }} ellipsis>{_ || '-'}</Typography.Text></Tooltip> : '-'
             }
         },
         { title: 'Timeout(s)', dataIndex: 'timeout', width: 100 },
-        { title: <FormattedMessage id="suite.repeat"/>, dataIndex: 'repeat', width: 120, ellipsis: true },
-        { title: <FormattedMessage id="suite.var"/>, dataIndex: 'var', ellipsis: true,
+        { title: <FormattedMessage id="suite.repeat" />, dataIndex: 'repeat', width: 120, ellipsis: true },
+        {
+            title: <FormattedMessage id="suite.var" />, dataIndex: 'var', ellipsis: true,
             width: 120,
             render: (_: number, row: any) =>
                 <PopoverEllipsis
@@ -60,7 +62,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                 </PopoverEllipsis>,
         },
         {
-            title: <FormattedMessage id="suite.description"/>, dataIndex: 'doc', width: 120, ellipsis: true,
+            title: <FormattedMessage id="suite.description" />, dataIndex: 'doc', width: 120, ellipsis: true,
             render: (_: any, row: any) => (
                 <div>
                     <ButtonEllipsis
@@ -76,8 +78,8 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
             )
             // render: (text:string) =><Typography.Text>{ text || '-'}</Typography.Text>
         },
-        { title: <FormattedMessage id="suite.gmt_created"/>, dataIndex: 'gmt_created', width: 170 },
-    ];
+        { title: <FormattedMessage id="suite.gmt_created" />, dataIndex: 'gmt_created', width: 170 },
+    ]);
 
     return (
         <div className={styles.warp}>
@@ -85,7 +87,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                 type == 'performance' &&
                 <Tabs defaultActiveKey={'case'} activeKey={innerKey} onChange={(key) => handleInnerTab(key)} >
                     <TabPane tab="Test Conf" key="case"></TabPane>
-                    <TabPane tab={<FormattedMessage id="suite.indicators"/>} key="suite" ></TabPane>
+                    <TabPane tab={<FormattedMessage id="suite.indicators" />} key="suite" ></TabPane>
                 </Tabs>
             }
             {
@@ -93,7 +95,8 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                     <CommonTable
                         // scrollType={1030}
                         columns={columns}
-                        list={record}
+                        setColumns={setColumns}
+                        dataSource={record}
                         loading={false}
                         showPagination={false}
                         size="small"
@@ -119,7 +122,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                 maskClosable={false}
                 keyboard={false}
                 width={376}
-                title={<FormattedMessage id="suite.description.details"/>}
+                title={<FormattedMessage id="suite.description.details" />}
                 onClose={() => setShow(false)}
                 visible={show}
             >

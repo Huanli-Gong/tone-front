@@ -212,7 +212,7 @@ const Standalone = (props: any, ref: any) => {
         }, []
     )
 
-    const columns: any = [
+    const [columns,setColumns] = React.useState([
         {
             title: 'IP',
             width: 176,
@@ -263,7 +263,8 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: 1 })} />
             )
         },
-        BUILD_APP_ENV && {
+        BUILD_APP_ENV && 
+        {
             title: 'TSN',
             dataIndex: 'tsn',
             width: 130,
@@ -272,7 +273,8 @@ const Standalone = (props: any, ref: any) => {
             },
             render: (_: any) => <EllipsisPulic title={_} />,
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: <FormattedMessage id="device.standalone.name" />,
             dataIndex: 'name',
             width: 130,
@@ -285,7 +287,8 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: 1 })} />
             )
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: <FormattedMessage id="device.device_type" />,
             dataIndex: 'device_type',
             width: 100,
@@ -301,7 +304,8 @@ const Standalone = (props: any, ref: any) => {
                 />
             ),
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: <FormattedMessage id="device.sm_name" />,
             dataIndex: 'sm_name',
             width: 100,
@@ -316,7 +320,8 @@ const Standalone = (props: any, ref: any) => {
                 return <EllipsisPulic title={_} />
             }
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: 'IDC',
             width: 100,
             ellipsis: {
@@ -328,7 +333,8 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: 1 })} />
             )
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: <FormattedMessage id="device.console_conf" />,
             ellipsis: {
                 showTitle: false,
@@ -353,7 +359,8 @@ const Standalone = (props: any, ref: any) => {
                 />
             ),
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: <FormattedMessage id="device.app_group" />,
             dataIndex: 'app_group',
             ellipsis: {
@@ -526,7 +533,7 @@ const Standalone = (props: any, ref: any) => {
                 </Space>
             )
         }
-    ].filter(Boolean);
+    ])
 
     const hanldeClickMenu = (item: any, row: any) => {
         switch (item.key) {
@@ -541,6 +548,7 @@ const Standalone = (props: any, ref: any) => {
             <ResizeTable
                 loading={loading}
                 rowKey="id"
+                setColumns={setColumns}
                 columns={columns}
                 pagination={false}
                 size={'small'}

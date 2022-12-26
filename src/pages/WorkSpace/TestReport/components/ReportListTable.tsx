@@ -207,7 +207,6 @@ const ReportListTable = (props: any) => {
             <Table
                 size="small"
                 rowKey={record => record.id}
-                key={Date.now()}
                 columns={columns}
                 pagination={false}
                 dataSource={dataSource.data || []}

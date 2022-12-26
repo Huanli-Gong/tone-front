@@ -95,7 +95,7 @@ export default forwardRef(({ id }: any, ref: any) => {
         setDeleteVisible(false)
         setDeleteDefault(false)
         await delCase(deleteObj.id)
-        message.success(formatMessage({id: 'operation.success'}) );
+        message.success(formatMessage({ id: 'operation.success' }));
         setConfRefresh(!confRefresh)
     }
     const handleDetail = () => {
@@ -116,14 +116,14 @@ export default forwardRef(({ id }: any, ref: any) => {
         setExpandInnerKey([record.id])
     }
 
-    const columns = [
+    const [columns, setColumns] = React.useState([
         { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: true, render: (_: any, row: any) => <PopoverEllipsis title={row.name} /> },
-        { title: <FormattedMessage id="TestSuite.alias"/>, dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
-        { title: <FormattedMessage id="TestSuite.domain"/>, width: 100, dataIndex: 'domain_name_list', ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
-        { title: <FormattedMessage id="TestSuite.timeout"/>, dataIndex: 'timeout', width: 160 },
-        { title: <FormattedMessage id="TestSuite.default.repeat"/>, width: '120px', dataIndex: 'repeat', ellipsis: true },
+        { title: <FormattedMessage id="TestSuite.alias" />, dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
+        { title: <FormattedMessage id="TestSuite.domain" />, width: 100, dataIndex: 'domain_name_list', ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
+        { title: <FormattedMessage id="TestSuite.timeout" />, dataIndex: 'timeout', width: 160 },
+        { title: <FormattedMessage id="TestSuite.default.repeat" />, width: '120px', dataIndex: 'repeat', ellipsis: true },
         {
-            title: <FormattedMessage id="TestSuite.var"/>,
+            title: <FormattedMessage id="TestSuite.var" />,
             ellipsis: {
                 showTitle: false
             },
@@ -146,7 +146,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                 </PopoverEllipsis>,
         },
         {
-            title: <FormattedMessage id="TestSuite.desc"/>,
+            title: <FormattedMessage id="TestSuite.desc" />,
             ellipsis: true,
             width: 100,
             render: (_: any, row: any) => (
@@ -163,19 +163,19 @@ export default forwardRef(({ id }: any, ref: any) => {
             // render: (text: string) => <PopoverEllipsis title={text || ''}></PopoverEllipsis>
         },
         {
-            title: <FormattedMessage id="TestSuite.default.case"/>,
+            title: <FormattedMessage id="TestSuite.default.case" />,
             dataIndex: 'doc',
             width: '80px',
-            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>
+            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />
         },
         {
-            title: <FormattedMessage id="TestSuite.is_certified"/>,
+            title: <FormattedMessage id="TestSuite.is_certified" />,
             dataIndex: 'certificated',
             width: '80px',
-            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>
+            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />
         },
         {
-            title: <FormattedMessage id="TestSuite.gmt_created"/>,
+            title: <FormattedMessage id="TestSuite.gmt_created" />,
             dataIndex: 'gmt_created',
             ellipsis: {
                 showTitle: false
@@ -184,17 +184,17 @@ export default forwardRef(({ id }: any, ref: any) => {
             render: (_: number, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: <div><FormattedMessage id="Table.columns.operation"/><Button type='primary' onClick={newCase} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new"/></Button></div>,
+            title: <div><FormattedMessage id="Table.columns.operation" /><Button type='primary' onClick={newCase} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new" /></Button></div>,
             valueType: 'option',
             dataIndex: 'id',
             width: 150,
             fixed: 'right',
             render: (_: number, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}><FormattedMessage id="operation.edit"/></Button>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}><FormattedMessage id="operation.delete"/></Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}><FormattedMessage id="operation.edit" /></Button>
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}><FormattedMessage id="operation.delete" /></Button>
             </Space>,
         },
-    ];
+    ]);
 
     const handlePage = (page_num: number, page_size: number) => {
         setConfPage(page_num)
@@ -204,7 +204,7 @@ export default forwardRef(({ id }: any, ref: any) => {
     const handleEditDesc = async (data: any) => {
         const { code, msg } = await editCase(data.id, { doc: data.doc })
         if (code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             descFastEdit.current.hide()
             setConfRefresh(!confRefresh)
         }
@@ -223,7 +223,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                     >
                     </TabPane>
                     <TabPane
-                        tab={<FormattedMessage id="TestSuite.conf.metric"/>}
+                        tab={<FormattedMessage id="TestSuite.conf.metric" />}
                         key="2"
                     >
                     </TabPane>
@@ -233,10 +233,11 @@ export default forwardRef(({ id }: any, ref: any) => {
                 innerKey == '1' ?
                     <CommonTable
                         columns={columns}
+                        setColumns={setColumns}
                         // scrollType={1400}
                         scroll={{ x: 1400 }}
                         loading={expandLoading}
-                        list={expandList.data}
+                        dataSource={expandList.data}
                         page={expandList.page_num}
                         rowSelection={rowSelection}
                         totalPage={expandList.total_page}
@@ -263,13 +264,13 @@ export default forwardRef(({ id }: any, ref: any) => {
             }
             <DesFastEditDrawer ref={descFastEdit} onOk={handleEditDesc} />
             <Modal
-                title={<FormattedMessage id="delete.tips"/>}
+                title={<FormattedMessage id="delete.tips" />}
                 footer={[
                     <Button key="submit" onClick={remInnner}>
-                        <FormattedMessage id="operation.confirm.delete"/>
+                        <FormattedMessage id="operation.confirm.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 centered={true}
@@ -281,32 +282,32 @@ export default forwardRef(({ id }: any, ref: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    {formatMessage({id: 'TestSuite.conf.name.delete.warning'},{data: deleteObj.name})}
+                    {formatMessage({ id: 'TestSuite.conf.name.delete.warning' }, { data: deleteObj.name })}
                 </div>
                 <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    <FormattedMessage id="TestSuite.conf.delete.range"/>
+                    <FormattedMessage id="TestSuite.conf.delete.range" />
                 </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details"/></div>
+                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details" /></div>
             </Modal>
             <Modal
-                title={<FormattedMessage id="delete.tips"/>}
+                title={<FormattedMessage id="delete.tips" />}
                 centered={true}
                 className={styles.modalChange}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={remInnner}>
-                        <FormattedMessage id="operation.confirm.delete"/>
+                        <FormattedMessage id="operation.confirm.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt"/>
+                    <FormattedMessage id="delete.prompt" />
                 </div>
             </Modal>
         </div>

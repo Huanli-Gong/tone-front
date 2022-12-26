@@ -115,7 +115,7 @@ export default (props: any) => {
         }
     }
 
-    const columns: any = [
+    const [columns, setColumns] = React.useState([
         {
             title: 'IP',
             width: 170,
@@ -142,7 +142,8 @@ export default (props: any) => {
                 />
             )
         },
-        BUILD_APP_ENV && {
+        BUILD_APP_ENV && 
+        {
             title: 'TSN',
             width: 150,
             ellipsis: {
@@ -150,7 +151,8 @@ export default (props: any) => {
             },
             render: (record: any) => <EllipsisPulic title={record.test_server.tsn} />
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             title: <FormattedMessage id="device.machine.name" />,
             width: 150,
             ellipsis: {
@@ -163,7 +165,8 @@ export default (props: any) => {
             width: 160,
             render: (record: any) => record.test_server.private_ip || '-'
         },
-        !BUILD_APP_ENV && {
+        !BUILD_APP_ENV && 
+        {
             width: 100,
             title: <FormattedMessage id="device.console_conf" />,
             render: (record: any) => record.test_server.console_conf || '-'
@@ -269,7 +272,7 @@ export default (props: any) => {
                 </Space>
             )
         }
-    ].filter(Boolean)
+    ])
 
     // 刷新页面
     useEffect(() => {
@@ -305,8 +308,8 @@ export default (props: any) => {
                 >
                     <ResizeTable
                         rowKey="id"
-                        key={columns}
                         columns={columns}
+                        setColumns={setColumns}
                         loading={loading}
                         dataSource={dataSource}
                         size="small"

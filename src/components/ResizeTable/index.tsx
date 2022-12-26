@@ -4,23 +4,24 @@ import React from 'react';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css'
 import styled from 'styled-components'
+import { useSize } from "ahooks"
 
 const ResizeTableWrapper = styled.div`
     position: relative;
-    width: 100%;
 `
 
 type BorderPosition = {
     left: number;
+    height?: number;
 }
 
 const ResizeBorder = styled.div.attrs((props: BorderPosition) => ({
     style: {
         left: props.left,
+        height: props?.height
     },
 })) <BorderPosition>`
     width: 0px;
-    height: 100%;
     position: absolute;
     left: 0;
     top: 0;
@@ -82,17 +83,18 @@ const ResizeableTitle = (props: any) => {
     );
 }
 
-const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
-    const { columns = [], ...rest } = props
+const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (props) => {
+    const { columns = [], setColumns, ...rest } = props
 
-    const [tableColumns, setTableColumns] = React.useState<any[]>(columns)
     const [end, setEnd] = React.useState(0)
     const [start, setStart] = React.useState(0)
     const [borderShow, setBorderShow] = React.useState(false)
 
     const ref = React.useRef<HTMLDivElement>(null)
 
-    const handleResizeStart = React.useCallback((index: number) => (e: any, { size }: any) => {
+    const size = useSize(ref)
+
+    const handleResizeStart = (index: number) => (e: any, { size }: any) => {
         if (!columns[index].ellipsis) return
 
         const { clientX } = e
@@ -100,36 +102,36 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
         setStart(drageX)
         setEnd(drageX)
         setBorderShow(true)
-    }, [columns, ref])
+    }
 
-    const handleResizeMove = React.useCallback((index: number) => (e: any) => {
+    const handleResizeMove = (index: number) => (e: any) => {
         const { clientX } = e
         const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
 
         setEnd(drageX)
-    }, [ref])
+    }
 
-    const handleResizeStop = React.useCallback((index: number) => (e: any, { size }: any) => {
+    const handleResizeStop = (index: number) => (e: any, { size }: any) => {
         const { clientX } = e
         const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
 
-        const nextColumns = [...tableColumns];
+        const nextColumns = [...columns];
 
         if (nextColumns[index].ellipsis) {
             nextColumns[index] = {
                 ...nextColumns[index],
                 width: size.width += drageX - start,
             }
-            setTableColumns(nextColumns)
+            setColumns(nextColumns)
         }
 
         setEnd(0)
         setStart(0)
         setBorderShow(false)
-    }, [tableColumns, start, ref])
+    }
 
     return (
-        <ResizeTableWrapper ref={ref}>
+        <ResizeTableWrapper ref={ref} className="resize-table-wrapper">
             <Table
                 {...rest}
                 components={{
@@ -138,7 +140,7 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
                     },
                 }}
                 columns={
-                    tableColumns.map((col: any, index: any) => ({
+                    columns.filter(Boolean).map((col: any, index: any) => ({
                         ...col,
                         onHeaderCell: (column: any) => ({
                             resize: !!col.ellipsis,
@@ -151,8 +153,9 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
                 }
             />
             {
-                borderShow &&
+                // borderShow &&
                 <ResizeBorder
+                    height={size?.height}
                     left={end || start}
                 />
             }

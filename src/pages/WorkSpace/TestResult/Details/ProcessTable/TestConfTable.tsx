@@ -48,7 +48,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
         queryTestListTableData(pageParams)
     }, [pageParams])
 
-    const columns = [
+    const [columns, setColumns] = React.useState([
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
@@ -121,7 +121,8 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             width: 160,
             title: <FormattedMessage id="ws.result.details.end_time" />,
             ...tooltipTd('-'),
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.result.details.view.log" />,
             width: 80,
             ellipsis: {
@@ -143,7 +144,8 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 }
                 return <Typography.Text disabled>{strLocals}</Typography.Text >
             }
-        }, {
+        },
+        {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: 80,
             ellipsis: {
@@ -166,7 +168,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                 </Access>
             )
         },
-    ]
+    ])
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
@@ -191,6 +193,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
         <div>
             <ResizeTable
                 columns={columns}
+                setColumns={setColumns}
                 dataSource={dataSource.data}
                 loading={loading}
                 rowKey='id'

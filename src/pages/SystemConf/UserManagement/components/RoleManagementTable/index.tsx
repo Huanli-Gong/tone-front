@@ -19,21 +19,22 @@ const RoleManagementTable: React.FC<any> = () => {
         getRoleList();
     }, [])
 
-    const columns: any[] = [
+    const [columns, setColumns] = React.useState([
         {
-            title: <FormattedMessage id="user.role_name"/>, 
+            title: <FormattedMessage id="user.role_name" />,
             dataIndex: 'title',
             render: (_: any) => switchUserRole2(_, formatMessage)
         },
-        { title: <FormattedMessage id="user.role_desc"/>, dataIndex: 'description' }
-    ]
+        { title: <FormattedMessage id="user.role_desc" />, dataIndex: 'description' }
+    ])
     //const list:any[] = data
     return (
         <div>
             <CommonTable
                 size="small"
                 columns={columns}
-                list={data.list}
+                setColumns={setColumns}
+                dataSource={data.list}
                 loading={loading}
                 page={data.page_num}
                 pageSize={data.page_size}

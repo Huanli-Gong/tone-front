@@ -73,7 +73,7 @@ const ViewTable = (props: ViewTableProps) => {
         message.success(formatMessage({ id: 'plan.operation.success' }))
     }
 
-    let columns = [
+    const [columns, setColumns] = React.useState([
         {
             dataIndex: 'name',
             title: <FormattedMessage id="plan.plan.name" />,
@@ -91,7 +91,8 @@ const ViewTable = (props: ViewTableProps) => {
                 </span>
             ),
             ...getSearchFilter(pageParam, setPageParam, 'name')
-        }, {
+        },
+        {
             dataIndex: 'state',
             title: <FormattedMessage id="plan.state" />,
             width: 120,
@@ -109,13 +110,15 @@ const ViewTable = (props: ViewTableProps) => {
                 ],
                 'state'
             )
-        }, {
+        },
+        {
             title: <FormattedMessage id="plan.total/success/failure" />,
             width: 180,
             render: (row: any) => (
                 <RenderCountTags {...row.statistics} />
             )
-        }, {
+        },
+        {
             dataIndex: 'trigger_name',
             width: 100,
             title: <FormattedMessage id="plan.trigger" />,
@@ -129,11 +132,13 @@ const ViewTable = (props: ViewTableProps) => {
                     </Tooltip>
                 )
             }
-        }, {
+        },
+        {
             dataIndex: 'start_time',
             title: <FormattedMessage id="plan.start_time" />,
             width: 180
-        }, {
+        },
+        {
             dataIndex: 'end_time',
             title: <FormattedMessage id="plan.end_time" />,
             width: 180
@@ -183,7 +188,7 @@ const ViewTable = (props: ViewTableProps) => {
                 )
             }
         }
-    ].filter(Boolean);
+    ])
 
     const handleCancle = () => {
         setSelectedRowKeys([])
@@ -192,7 +197,7 @@ const ViewTable = (props: ViewTableProps) => {
 
     const containerRef = useRef<any>(null)
 
-    const [layoutWidth, setLayoutWidth] = useState(0)
+    /* const [layoutWidth, setLayoutWidth] = useState(0)
 
     const resultColumns = useMemo(() => {
         if (layoutWidth) {
@@ -213,7 +218,7 @@ const ViewTable = (props: ViewTableProps) => {
         return () => {
             window.removeEventListener('resize', hanldeReizeLayout)
         }
-    }, [])
+    }, []) */
 
     const hanldeViewAll = useCallback(
         (id: any) => {
@@ -227,7 +232,8 @@ const ViewTable = (props: ViewTableProps) => {
                 <ResizeTable
                     className={styles.ViewTableStyle}
                     rowClassName={styles.result_table_row}
-                    columns={resultColumns}
+                    columns={columns}
+                    setColumns={setColumns}
                     dataSource={data.data}
                     size="small"
                     pagination={false}
