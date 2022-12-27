@@ -225,7 +225,7 @@ const Performance = (props: any) => {
                 _.isUndefined(item) ? <></>
                     : !item.is_baseline ? <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                         <JumpResult ws_id={wsId} job_id={item?.obj_id || item} />
-                    </PrefDataText> : <>-</>
+                    </PrefDataText> : <></>
             ))
         )
     }

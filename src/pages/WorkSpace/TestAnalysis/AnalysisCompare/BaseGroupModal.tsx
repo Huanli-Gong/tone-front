@@ -139,7 +139,6 @@ export default (props: any) => {
             })
             paramData.func_data.compare_job = brrFun
             paramData.perf_data.compare_job = brrFers
-            console.log(paramData)
             getSuitDetail(paramData)
         }
     }, [allGroupData, baselineGroup])

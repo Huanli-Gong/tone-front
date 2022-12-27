@@ -48,12 +48,11 @@ const Report = (props: any) => {
         const data = await queryForm({ form_id })
         if (data.code == 200) {
             if (!data?.data) return
-            const shareData = JSON.parse(data.data.req_form)
-            setTestDataParam(shareData.testDataParam)
-            setParamEenvironment(shareData.envDataParam)
-            setAllGroupData(shareData.allGroupData)
-            setBaselineGroupIndex(shareData.baselineGroupIndex)
-            setShareWsId(shareData.allGroupData[0]?.members[0]?.ws_id)
+            setTestDataParam(data?.data.testDataParam)
+            setParamEenvironment(data?.data.envDataParam)
+            setAllGroupData(data?.data.allGroupData)
+            setBaselineGroupIndex(data?.data.baselineGroupIndex)
+            setShareWsId(data?.data.allGroupData[0]?.members[0]?.ws_id)
         } else if (data.code === 500) {
             history.push(`/500?page=${location.href}`)
         } else {

@@ -9,9 +9,9 @@ export const OptBtn = styled.span<{ isDefault?: any }>`
 `
 
 const tableTdCls = `
-    tr{
+    tr {
         &:hover {
-            .no_tourist{
+            td.no_tourist {
                 cursor: pointer;
                 color : #1890FF;
             }
