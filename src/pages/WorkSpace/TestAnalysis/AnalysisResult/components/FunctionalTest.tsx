@@ -267,7 +267,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                                 {
                                                                                     metric && !metric.is_baseline ?
                                                                                         <JumpResult ws_id={wsId} job_id={metric.obj_id} style={{ paddingLeft: 10 }} /> :
-                                                                                        <>-</>
+                                                                                        <></>
                                                                                 }
                                                                             </Space>
                                                                         </CaseText>

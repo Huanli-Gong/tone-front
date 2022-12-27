@@ -117,9 +117,16 @@ export const getTextByJs = (obj: any) => {
 }
 
 export const JumpResult: React.FC<ResultProps> = ({ job_id, style, ws_id }) => {
-    if (job_id) {
+    const { ws_id: wsid } = useParams() as any
+
+    const id = ws_id || wsid
+    if (job_id && id) {
         return (
-            <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">
+            <a
+                style={{ cursor: 'pointer', ...style }}
+                href={`/ws/${ws_id || wsid}/test_result/${job_id}`}
+                target="_blank"
+            >
                 {<IconLink style={{ width: 9, height: 9 }} />}
             </a>
         )

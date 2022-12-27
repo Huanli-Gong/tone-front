@@ -215,7 +215,7 @@ const ReportTestPref: React.FC<any> = (props) => {
         let obj = conf.conf_compare_data || conf.compare_conf_list || []
         return obj.map((item: any, idx: number) => (
             <PrefDataText gLen={group} key={idx}>
-                {!item.is_baseline ? <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> : <>-</>}
+                {!item.is_baseline ? <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> : <></>}
             </PrefDataText>
         ))
     }
