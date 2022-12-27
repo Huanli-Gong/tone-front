@@ -75,9 +75,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 	}
 	const view_type_content = (
 		<div>
-			<div><FormattedMessage id="suite.view_type.type1"/></div>
-			<div><FormattedMessage id="suite.view_type.type2"/></div>
-			<div><FormattedMessage id="suite.view_type.type3"/></div>
+			<div><FormattedMessage id="suite.view_type.type1" /></div>
+			<div><FormattedMessage id="suite.view_type.type2" /></div>
+			<div><FormattedMessage id="suite.view_type.type3" /></div>
 		</div>
 	)
 	const handleTab = (test_type: string) => {
@@ -115,22 +115,22 @@ const SuiteManagement: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title={formatMessage({id: 'suite.run_mode'}) }
+					title={formatMessage({ id: 'suite.run_mode' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'run_mode'}
-					list={runList.map((item)=> ({...item, name: formatMessage({id: item.id}) }) ) }
+					list={runList.map((item) => ({ ...item, name: formatMessage({ id: item.id }) }))}
 				/>
 			),
 			width: 120,
 			className: 'no_padding_head',
 			dataIndex: 'run_mode',
-			render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone" />: <FormattedMessage id="cluster" />,
+			render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone" /> : <FormattedMessage id="cluster" />,
 		},
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title={formatMessage({id: 'suite.domain'}) }
+					title={formatMessage({ id: 'suite.domain' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'domain'}
@@ -139,8 +139,8 @@ const SuiteManagement: React.FC<any> = (props) => {
 			),
 			width: 90,
 			ellipsis: {
-                shwoTitle: false,
-            },
+				shwoTitle: false,
+			},
 			render: (_: any) => _ ? <Tooltip placement={'bottomLeft'} title={_}><Typography.Text style={{ width: 85 }} ellipsis>{_ || '-'}</Typography.Text></Tooltip> : '-',
 			className: 'no_padding_head',
 			dataIndex: 'domain_name_list',
@@ -176,9 +176,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 			className: 'no_padding_head',
 			width: 100,
 			ellipsis: {
-                shwoTitle: false,
-            },
-			render: (_:any, row:any) => {
+				shwoTitle: false,
+			},
+			render: (_: any, row: any) => {
 				return (
 					<PopoverEllipsis title={row.description} width={100} />
 				)
@@ -215,11 +215,11 @@ const SuiteManagement: React.FC<any> = (props) => {
 			title={
 				<Tabs defaultActiveKey={testType} onChange={handleTab}>
 					<TabPane
-						tab={<FormattedMessage id="functional.test"/>}
+						tab={<FormattedMessage id="functional.test" />}
 						key="functional"
 					/>
 					<TabPane
-						tab={<FormattedMessage id="performance.test"/>}
+						tab={<FormattedMessage id="performance.test" />}
 						key="performance"
 					/>
 					{
@@ -233,7 +233,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			}
 			extra={
 				<Access accessible={access.WsMemberOperateSelf()}>
-					<Button type="primary" key="createSuite" 
+					<Button type="primary" key="createSuite"
 						onClick={() => {
 							if (['functional', 'performance', 'business'].includes(fetchParams.test_type)) {
 								// history.push(`/test_suite/new?ws=${ws_id}&test_type=${fetchParams.test_type}`)
@@ -248,7 +248,6 @@ const SuiteManagement: React.FC<any> = (props) => {
 				</Access>
 			}
 		>
-
 			{
 				['functional', 'performance'].includes(fetchParams.test_type) &&
 				(
@@ -284,6 +283,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 										ws_id={ws_id}
 									/>
 								),
+								indentSize: 0,
 								onExpand: (_, record) => _ ? onExpand(record) : setExpandKey([]),
 								expandedRowKeys: expandKey,
 								expandIcon: ({ expanded, onExpand, record }) =>
@@ -294,7 +294,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 						/>
 						<Row justify="space-between" style={{ padding: '16px 20px 0' }}>
 							<div>
-								{formatMessage({id: 'pagination.total.strip'}, {data: data.total || 0 })}
+								{formatMessage({ id: 'pagination.total.strip' }, { data: data.total || 0 })}
 							</div>
 							<Pagination
 								className={data.total == 0 ? styles.hidden : ''}
@@ -309,7 +309,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 							/>
 						</Row>
 					</Spin>
-				)}
+				)
+			}
+			
 			{fetchParams.test_type === 'business' && (
 				<BusinessTest ws_id={ws_id} />
 			)}
