@@ -136,7 +136,7 @@ const TestPlan = (props: any) => {
 
         const {
             headers, devel, hotfix_install, scripts, kernel, build_config,
-            build_machine, code_branch, code_repo,
+            build_machine, code_branch, code_repo, kernel_packages,
             commit_id, compile_branch, cpu_arch, product_name, ...formValue
         } = basic;
 
@@ -154,7 +154,7 @@ const TestPlan = (props: any) => {
 
         return {
             ...formValue,
-            kernel_info: { headers, devel, hotfix_install, scripts, kernel },
+            kernel_info: { headers, devel, hotfix_install, scripts, kernel, kernel_packages },
             build_pkg_info: {
                 build_config, build_machine, code_branch, code_repo,
                 commit_id, compile_branch, cpu_arch, name: product_name
@@ -307,9 +307,9 @@ const TestPlan = (props: any) => {
                                                         <Access accessible={access.WsTourist()}>
                                                             <Access
                                                                 accessible={access.WsMemberOperateSelf(template?.creator)}
-                                                                fallback={<Button onClick={() => AccessTootip()}  type="primary"><FormattedMessage id="plan.run.and.save" /></Button>}
+                                                                fallback={<Button onClick={() => AccessTootip()} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>}
                                                             >
-                                                               <Button onClick={() => handleTestPlanOption(true)} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>
+                                                                <Button onClick={() => handleTestPlanOption(true)} type="primary"><FormattedMessage id="plan.run.and.save" /></Button>
                                                             </Access>
                                                         </Access>
                                                     </>
@@ -323,7 +323,7 @@ const TestPlan = (props: any) => {
                                                                 accessible={access.WsMemberOperateSelf(template?.creator)}
                                                                 fallback={<Button onClick={() => AccessTootip()}><FormattedMessage id="plan.save.and.run" /></Button>}
                                                             >
-                                                               <Button onClick={() => handleTestPlanOption(true)}><FormattedMessage id="plan.save.and.run" /></Button>
+                                                                <Button onClick={() => handleTestPlanOption(true)}><FormattedMessage id="plan.save.and.run" /></Button>
                                                             </Access>
                                                         </Access>
                                                     </>
