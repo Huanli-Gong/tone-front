@@ -112,6 +112,11 @@ const FilterForm: React.FC<IProps> = (props) => {
 
         setLeft({})
         setRight({})
+
+        const { search, tab, ws_id, page_num, page_size } = pageQuery
+        const fetchData = { search, tab, ws_id, page_num, page_size }
+        setValues(fetchData)
+        onChange?.(fetchData)
     }
 
     const copy = () => {
@@ -134,8 +139,8 @@ const FilterForm: React.FC<IProps> = (props) => {
     }
 
     useEffect(() => {
-        const { search } = pageQuery
-        setValues({ ...left, ...right, search })
+        const { search, page_size } = pageQuery
+        setValues({ ...left, ...right, search, page_num: 1, page_size })
     }, [left, right])
 
     const queryValue = React.useMemo(() => {

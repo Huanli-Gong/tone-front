@@ -164,22 +164,6 @@ const ServerSelect: React.FC<any> = (props) => {
 
     const { data } = useRequest(() => request(`/api/server/server_snapshot/`, { params: { ws_id } }))
 
-    /* const { data: group } = useRequest(() => queryTestServer({ ws_id, page_size: 999 }), { initialData: [] })
-    const { data: cloud } = useRequest(() => queryTestCloudServer({ ws_id, page_size: 999 }), { initialData: [] })
-
-    const cloudList = cloud.filter((obj: any) => obj && obj.is_instance).map((i: any) => ({ value: i.private_ip, label: i.private_ip }))
-    const groupList = group.reduce((pre: any, cur: any, index: any) => {
-        const { sub_server_list, ip } = cur
-        let list: any = []
-        if (sub_server_list && sub_server_list.length > 0) {
-            list = list.concat(sub_server_list.map((child: any) => ({ value: child.ip, label: child.ip })))
-        }
-        return pre.concat({ value: ip, label: ip }, list)
-    }, [])
-
-    const options = groupList.concat(cloudList) */
-
-
     if (!data)
         return (
             <Select
