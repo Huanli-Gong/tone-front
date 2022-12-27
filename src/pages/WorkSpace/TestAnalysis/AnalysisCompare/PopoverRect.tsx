@@ -8,6 +8,7 @@ import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import _ from 'lodash'
 import styled from 'styled-components'
+import { useIntl } from "umi"
 const SelectJob = styled.span`
     color: #1890FF;
     
@@ -18,6 +19,7 @@ const styleObj = {
 }
 export default (props: any) => {
     let { jobList } = props
+    const { formatMessage } = useIntl()
     if (!_.isArray(jobList)) jobList = []
     const defaultSelKeys = jobList.length ? [jobList[0].id] : []
     const [visiblePopover, setVisiblePopover] = useState(false);
@@ -162,7 +164,9 @@ export default (props: any) => {
 
     return (
         <Popover
-            title="选择Job"
+            title={
+                formatMessage({ id: "analysis.select.job" })
+            }
             trigger="click"
             placement='right'
             content={getContent(refAllJob)}
@@ -172,7 +176,9 @@ export default (props: any) => {
             {/* <div style={{ cursor: 'pointer', marginBottom: 0 }} onClick={handleAddJob} className={styles.create_job_type}>
                 添加job <CaretDownOutlined style={{ fontSize: 10 }} />
             </div> */}
-            <SelectJob onClick={handleSelectJob}>选择Job</SelectJob>
+            <SelectJob onClick={handleSelectJob}>
+                {formatMessage({ id: "analysis.select.job" })}
+            </SelectJob>
         </Popover>
     )
 }

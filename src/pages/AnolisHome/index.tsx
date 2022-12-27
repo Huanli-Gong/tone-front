@@ -1,6 +1,6 @@
 import React from "react"
 import { HomeContainer, TSpace } from "./styled"
-import { queryHelpDocList } from '../HelpDocument/services'
+import { queryDocList } from "@/pages/DOC/services"
 import HomeBanner from "./components/Banner"
 import TopWorkspaces from "./components/TopWorkspace"
 import NoticeBlock from "./components/NoticeBlock"
@@ -12,7 +12,7 @@ const AnolisHome: React.FC<Record<string, any>> = () => {
 
     const fetcher = async () => {
         setLoading(true)
-        const { data, code } = await queryHelpDocList()
+        const { data, code } = await queryDocList()
         if (code !== 200) return
         const ft = data.filter(({ active }: any) => active)
             .sort((a: any, b: any) => a.order_id - b.order_id)

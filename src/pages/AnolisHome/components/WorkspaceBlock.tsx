@@ -4,7 +4,6 @@ import React from "react"
 import { useModel, history } from "umi"
 
 import styled from "styled-components"
-import { getEnterWorkspaceState } from "../TabTable.tsx/TableColumns"
 import { useSize } from "ahooks"
 import { jumpWorkspace } from '@/utils/utils'
 
@@ -44,8 +43,7 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
             }
             return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
         }
-        const path = await getEnterWorkspaceState(props, user_id)
-        path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
+        history.push(jumpWorkspace(id))
     }
 
     return (

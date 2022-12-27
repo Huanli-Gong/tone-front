@@ -71,6 +71,12 @@ export default {
   'report.model': '机型',
   'report.test.data': '测试数据',
 
+  "report.server.distro": "机型",
+  "report.server.memory_info": "内存",
+  "report.server.disk": "磁盘",
+  "report.server.ether": "网络",
+  "report.server.collapsed.tooltip.title": "展开查看更多机器信息",
+
   'report.catalogue': '目录',
   'report.not.filled.in': '未填写',
   'report.legend.comparison.group': '对比组图例',

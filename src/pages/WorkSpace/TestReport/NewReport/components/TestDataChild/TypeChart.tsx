@@ -176,46 +176,52 @@ const TypeChart = (props: any) => {
                     let result = ''
                     for (let i = 0; i < params.length; i++) {
                         result += `
-                            <div style="display:flex;flex-warp:wrap;">
-                                <span style="width:8px;height:8px;border-radius:50%;background:${params[i].color};margin-top:5px;"></span>
-                                <span style="padding-left:9px;width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${params[i].seriesName}</span>
-                                <span style="padding-left:16px;">${params[i].value}</span>
-                                <span style="padding-left:9px;">
-                                <i style="font-style:normal;color:${handleColor(params[i].data?.compare_result) || ''}">
-                                ${params[i].data?.compare_value || ''}
-                                ${handleIcon(params[i].data?.compare_result) || ''}
+                            <div style="display:flex;flex-wrap:wrap;">
+                                <div style="width:8px;height:8px;border-radius:50%;background:${params[i].color};margin-top:5px;"></div>
+                                <div style="padding-left:9px;width:120px;word-break:break-all;white-space:normal;">${params[i].seriesName}</div>
+                                <div style="padding-left:16px;">${params[i].value || '-'}</div>
+                                <div style="padding-left:9px;width:30px;">
+                                    <i style="font-style:normal;color:${handleColor(params[i].data?.compare_result) || ''}">
+                                        ${params[i].data?.compare_value || ''}
+                                        ${handleIcon(params[i].data?.compare_result) || ''}
                                     </i>
-                                </span>
+                                </div>
                             </div>
                             `
                     }
                     if (chartType == '1') {
-                        return `<div>
-                                    <span style="font-weight:bold">${data.metric}</span>
-                                    (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
-                                </div>
-                                <div style="display:flex;flex-warp:wrap;">
-                                    <span style="width:8px;height:8px;border-radius:50%;background:${params.color};display:inline-block;margin-top:5px;"></span>
-                                    <span style="display:inline-block;padding-left:9px;width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${params.seriesName}</span>
-                                    <span style="display:inline-block;padding-left:16px;">${params.value}</span>
-                                    <span style="display:inline-block;padding-left:9px;">
-                                        <i style="font-style:normal;color:${handleColor(params.data.compare_result) || ''}">
-                                        ${params.data.compare_value || ''}
-                                        ${handleIcon(params.data.compare_result) || ''}
-                                        </i>
-                                    </span>
+                        return `
+                                <div style="width:260px;">
+                                    <div style="display:flex;flex-warp:wrap">
+                                        <div style="width:180px;word-break:break-all;white-space:normal;font-weight:bold;padding-right:5px">${data.metric}</div>
+                                        (${`${toPercentage(data.cv_threshold)}/${toPercentage(data.cmp_threshold)}`})
+                                    </div>
+                                    <div style="display:flex;flex-warp:wrap">
+                                        <div style="width:8px;height:8px;border-radius:50%;background:${params.color};margin-top:5px;"></div>
+                                        <div style="padding-left:9px;width:120px;word-break:break-all;white-space:normal;">${params.seriesName}</div>
+                                        <div style="padding-left:16px;">${params.value || '-'}</div>
+                                        <div style="padding-left:9px;width:30px;">
+                                            <i style="font-style:normal;color:${handleColor(params.data.compare_result) || ''}">
+                                            ${params.data.compare_value || ''}
+                                            ${handleIcon(params.data.compare_result) || ''}
+                                            </i>
+                                        </div>
+                                    </div>
                                 </div>`
                     } else if (chartType == '2') {
-                        return `<div>
-                                    <span style="font-weight:bold">${params[0].name}</span>
-                                </div>
-                                ${result}`
+                        return `<div style="width:260px;">
+                                    <div style="font-weight:bold">${params[0].name}</div>
+                                    ${result}
+                                </div>`
                     } else {
-                        return `<div>
-                                    <span style="font-weight:bold">${params[0].name}</span>
-                                    (${`${toPercentage(params[0].data.cv_threshold)}/${toPercentage(params[0].data.cmp_threshold)}`})
+                        return `<div style="width:260px;">
+                                    <div>
+                                        <span style="font-weight:bold;padding-right:5px">${params[0].name}</span>
+                                        (${`${toPercentage(params[0].data.cv_threshold)}/${toPercentage(params[0].data.cmp_threshold)}`})
+                                    </div>
+                                    ${result}
                                 </div>
-                                ${result}`
+                               `
                     }
                 }
             },

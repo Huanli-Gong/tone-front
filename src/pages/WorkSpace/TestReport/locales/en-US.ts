@@ -70,6 +70,12 @@ export default {
   'report.model': 'Model',
   'report.test.data': 'Test Data',
 
+  "report.server.distro": "Model",
+  "report.server.memory_info": "Memory",
+  "report.server.disk": "Disk",
+  "report.server.ether": "Network",
+  "report.server.collapsed.tooltip.title": "Expand to see more details",
+
   'report.catalogue': 'Catalogue',
   'report.not.filled.in': 'Nothing',
   'report.legend.comparison.group': 'Comparison Group',

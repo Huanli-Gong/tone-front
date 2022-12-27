@@ -5,8 +5,8 @@ export const simplify = (child: any, idx: number, listId: number, name: string, 
     child.list?.map((suite: any, suiteId: number) => {
         let conf_list: any = []
         suite.conf_list.map((conf: any, index: number) => {
-            let baseJobList = isOldReport ? [conf?.obj_id || conf.conf_source?.obj_id] : []
-            let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => i?.obj_id || '')
+                let baseJobList = isOldReport ? [conf?.obj_id || conf.conf_source?.obj_id] : []
+                let compareJobList = (conf.conf_compare_data || conf.compare_conf_list).map((i:any) => ({ job_id: i?.obj_id || '', is_baseline:i?.is_baseline }))
             conf_list.push({
                 conf_id: conf.conf_id,
                 conf_name: conf.conf_name,

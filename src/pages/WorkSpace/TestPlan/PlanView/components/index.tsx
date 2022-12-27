@@ -86,6 +86,13 @@ export const RenderDataRow = ( props : any ) => (
             <span><FormattedMessage id="plan.fail"/>：</span><span style={{ marginRight: 8, color: failColr }}>{ props.fail_count }</span>
         </div>
         {
+            props.last_time && 
+            <>
+                <span><FormattedMessage id="plan.last_time"/>：</span> 
+                <span>{ props.last_time }</span>
+            </>
+        }
+        {
             props.next_time && 
             <>
                 <span><FormattedMessage id="plan.next_time"/>：</span> 

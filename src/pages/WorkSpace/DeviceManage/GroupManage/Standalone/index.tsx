@@ -71,8 +71,8 @@ const Standalone = (props: any, ref: any) => {
     const logDrawer: any = useRef()
 
     const deviceTypeList = [
-        { id: 'phy_server', name: formatMessage({id: 'device.standalone.phy_server'}) }, 
-        { id: 'vm', name: formatMessage({id: 'device.standalone.vm'}) }
+        { id: 'phy_server', name: formatMessage({ id: 'device.standalone.phy_server' }) },
+        { id: 'vm', name: formatMessage({ id: 'device.standalone.vm' }) }
     ]
     const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
 
@@ -95,7 +95,7 @@ const Standalone = (props: any, ref: any) => {
         setSyncLoading(true)
         const data = await updateTestServer(id)
         if (data.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             setDeleteVisible(false)
             setDeleteDefault(false)
         }
@@ -114,14 +114,14 @@ const Standalone = (props: any, ref: any) => {
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
         const { data, code, msg } = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aligroup' })
-        if(code === 200){
+        if (code === 200) {
             if (data.length > 0) {
                 setDeleteVisible(true)
             } else {
                 setDeleteDefault(true)
             }
         } else {
-            requestCodeMessage(code,msg)
+            requestCodeMessage(code, msg)
         }
     }
     // const calcPageNo = (total = 0, pageNo = 1, pageSize = 10, delNum = 1) => {
@@ -158,8 +158,8 @@ const Standalone = (props: any, ref: any) => {
         //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
         let pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
         if (data.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) )
-            setSelectRowKeys(selectRowKeys.filter((i:any) => i !== id))
+            message.success(formatMessage({ id: 'operation.success' }))
+            setSelectRowKeys(selectRowKeys.filter((i: any) => i !== id))
             setDeleteVisible(false)
             setDeleteDefault(false)
             setUrlParams({ ...urlParmas, page_num: pageNo })
@@ -184,7 +184,7 @@ const Standalone = (props: any, ref: any) => {
         setSyncLoading(false)
         if (data.code === 200) {
             getTestServerList()
-            message.success(formatMessage({id: 'synchronization.success'}) )
+            message.success(formatMessage({ id: 'synchronization.success' }))
         }
         else {
             message.warning(data.msg)
@@ -194,7 +194,7 @@ const Standalone = (props: any, ref: any) => {
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aligroup' })
         if (code === 200) {
-            message.success(formatMessage({id: 'device.synchronization.state.success'}) )
+            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
             getTestServerList()
         }
         else requestCodeMessage(code, msg)
@@ -273,7 +273,7 @@ const Standalone = (props: any, ref: any) => {
             render: (_: any) => <EllipsisPulic title={_} />,
         },
         !BUILD_APP_ENV && {
-            title: <FormattedMessage id="device.standalone.name"/>,
+            title: <FormattedMessage id="device.standalone.name" />,
             dataIndex: 'name',
             width: 130,
             ellipsis: {
@@ -286,8 +286,8 @@ const Standalone = (props: any, ref: any) => {
             )
         },
         !BUILD_APP_ENV && {
-            title: <FormattedMessage id="device.device_type"/>,
-            dataIndex: 'device_type', 
+            title: <FormattedMessage id="device.device_type" />,
+            dataIndex: 'device_type',
             width: 100,
             ellipsis: {
                 showTitle: false,
@@ -302,8 +302,8 @@ const Standalone = (props: any, ref: any) => {
             ),
         },
         !BUILD_APP_ENV && {
-            title: <FormattedMessage id="device.sm_name"/>,
-            dataIndex: 'sm_name', 
+            title: <FormattedMessage id="device.sm_name" />,
+            dataIndex: 'sm_name',
             width: 100,
             ellipsis: {
                 showTitle: false,
@@ -329,7 +329,7 @@ const Standalone = (props: any, ref: any) => {
             )
         },
         !BUILD_APP_ENV && {
-            title: <FormattedMessage id="device.console_conf"/>,
+            title: <FormattedMessage id="device.console_conf" />,
             ellipsis: {
                 showTitle: false,
             },
@@ -338,7 +338,7 @@ const Standalone = (props: any, ref: any) => {
             render: (text: string) => <>{text || '-'}</>
         },
         {
-            title: <FormattedMessage id="device.channel_type"/>,
+            title: <FormattedMessage id="device.channel_type" />,
             dataIndex: 'channel_type',
             width: 100,
             ellipsis: {
@@ -354,7 +354,7 @@ const Standalone = (props: any, ref: any) => {
             ),
         },
         !BUILD_APP_ENV && {
-            title: <FormattedMessage id="device.app_group"/>,
+            title: <FormattedMessage id="device.app_group" />,
             dataIndex: 'app_group',
             ellipsis: {
                 showTitle: false,
@@ -365,29 +365,53 @@ const Standalone = (props: any, ref: any) => {
             )
         },
         {
-            title: <><FormattedMessage id="device.usage.state"/> <Tooltip title={formatMessage({id: 'device.usage.state.Tooltip'}) }><QuestionCircleOutlined /></Tooltip></>,
+            title: (
+                <Space>
+                    <FormattedMessage id="device.usage.state" />
+                    <Tooltip title={formatMessage({ id: 'device.usage.state.Tooltip' })}>
+                        <QuestionCircleOutlined />
+                    </Tooltip>
+                </Space>
+            ),
             dataIndex: 'state',
             width: 120 + 30,
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: any, row: any) => StateBadge(_, row, ws_id,'not_real'),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: 1 })} stateVal={urlParmas.state} dataArr={['Available', 'Occupied', 'Broken', 'Reserved']} />
+                <SelectDropSync
+                    confirm={confirm}
+                    onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: 1 })}
+                    stateVal={urlParmas.state}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
+                />
             )
         },
         {
-            title: <><FormattedMessage id="device.real_state"/> <Tooltip title={formatMessage({id: 'device.real_state.Tooltip'}) }><QuestionCircleOutlined /></Tooltip></>,
+            title: (
+                <Space>
+                    <FormattedMessage id="device.real_state" />
+                    <Tooltip title={formatMessage({ id: 'device.real_state.Tooltip' })}>
+                        <QuestionCircleOutlined />
+                    </Tooltip>
+                </Space>
+            ),
             width: 120 + 30,
             dataIndex: 'real_state',
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: any, row: any) => StateBadge(_, row, ws_id,'real'),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: urlParmas.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
-                <SelectDropSync confirm={confirm} onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: 1 })} stateVal={urlParmas.real_state} dataArr={['Available', 'Broken']} />
+                <SelectDropSync
+                    confirm={confirm}
+                    onConfirm={(val: string) => setUrlParams({ ...urlParmas, real_state: val, page_num: 1 })}
+                    stateVal={urlParmas.real_state}
+                    dataArr={['Online', 'Offline']}
+                />
             )
         },
         {
@@ -401,7 +425,7 @@ const Standalone = (props: any, ref: any) => {
             filterDropdown: ({ confirm }: any) => <SelectUser confirm={confirm} onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, owner: val }) }} />,
         },
         {
-            title: <FormattedMessage id="device.description"/>,
+            title: <FormattedMessage id="device.description" />,
             dataIndex: 'description',
             filterIcon: () => <FilterFilled style={{ color: urlParmas.description ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -416,7 +440,7 @@ const Standalone = (props: any, ref: any) => {
             }
         },
         {
-            title: <FormattedMessage id="device.tag"/>,
+            title: <FormattedMessage id="device.tag" />,
             // align: 'center',
             dataIndex: 'tag_list',
             width: 240,
@@ -440,34 +464,34 @@ const Standalone = (props: any, ref: any) => {
             ),
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
-            width: !BUILD_APP_ENV ? (enLocale ? 380: 240) : (enLocale ? 320: 260),
+            width: !BUILD_APP_ENV ? (enLocale ? 380 : 240) : (enLocale ? 320 : 260),
             // align: 'center',
             ellipsis: {
                 showTitle: false,
             },
             render: (_: any, row: any) => (
                 <Space>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}><FormattedMessage id="operation.detail"/></Button>
+                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}><FormattedMessage id="operation.detail" /></Button>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
-                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state"/></Button>}
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
-                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
+                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
+                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
+                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
                                 <Button style={{ padding: 0 }} size="small" type="link"
                                     onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}>
-                                    <FormattedMessage id="device.synchronization"/>
+                                    <FormattedMessage id="device.synchronization" />
                                 </Button>
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state"/></Button>}
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)}><FormattedMessage id="operation.edit"/></Button>
-                            <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete"/></Button>
+                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state" /></Button>}
+                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)}><FormattedMessage id="operation.edit" /></Button>
+                            <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete" /></Button>
                             {
                                 !BUILD_APP_ENV ?
                                     row.sub_server_list && row.device_type === '物理机' ?
@@ -477,14 +501,14 @@ const Standalone = (props: any, ref: any) => {
                                                 <Menu
                                                     onClick={(item) => hanldeClickMenu(item, _)}
                                                 >
-                                                    <Menu.Item key={'data'}><FormattedMessage id="device.synchronization.data"/></Menu.Item>
-                                                    <Menu.Item key={'vm'}><FormattedMessage id="device.synchronization.vm"/></Menu.Item>
+                                                    <Menu.Item key={'data'}><FormattedMessage id="device.synchronization.data" /></Menu.Item>
+                                                    <Menu.Item key={'vm'}><FormattedMessage id="device.synchronization.vm" /></Menu.Item>
                                                 </Menu>
                                             }
                                             trigger={['click', 'hover']}
                                         >
                                             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                                <FormattedMessage id="device.synchronization"/> <DownOutlined />
+                                                <FormattedMessage id="device.synchronization" /> <DownOutlined />
                                             </a>
                                         </Dropdown> :
                                         <Button
@@ -492,13 +516,13 @@ const Standalone = (props: any, ref: any) => {
                                             size="small"
                                             type="link"
                                             onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}>
-                                            <FormattedMessage id="device.synchronization"/>
+                                            <FormattedMessage id="device.synchronization" />
                                         </Button>
                                     : null
                             }
                         </Space>
                     </Access>
-                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log"/></Button>
+                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log" /></Button>
                 </Space>
             )
         }
@@ -513,7 +537,7 @@ const Standalone = (props: any, ref: any) => {
     }
 
     return (
-        <Spin spinning={syncLoading} tip={formatMessage({id: 'device.Synchronizing'}) }>
+        <Spin spinning={syncLoading} tip={formatMessage({ id: 'device.Synchronizing' })}>
             <ResizeTable
                 loading={loading}
                 rowKey="id"
@@ -560,12 +584,12 @@ const Standalone = (props: any, ref: any) => {
                         >
                             <Space>
                                 <Checkbox indeterminate={true} />
-                                <Typography.Text>{formatMessage({id: 'device.selected.item'}, {data: selectRowKeys.length})}</Typography.Text>
-                                <Button type="link" onClick={() => setSelectRowKeys([])}><FormattedMessage id="operation.cancel"/></Button>
+                                <Typography.Text>{formatMessage({ id: 'device.selected.item' }, { data: selectRowKeys.length })}</Typography.Text>
+                                <Button type="link" onClick={() => setSelectRowKeys([])}><FormattedMessage id="operation.cancel" /></Button>
                             </Space>
                             <Space>
-                                <Button onClick={() => handleEdit({ selectRowKeys, opreateType: 'moreEdit' })}><FormattedMessage id="batch.edit"/></Button>
-                                {!BUILD_APP_ENV && <Button onClick={handleBatchOption}><FormattedMessage id="batch.synchronization"/></Button>}
+                                <Button onClick={() => handleEdit({ selectRowKeys, opreateType: 'moreEdit' })}><FormattedMessage id="batch.edit" /></Button>
+                                {!BUILD_APP_ENV && <Button onClick={handleBatchOption}><FormattedMessage id="batch.synchronization" /></Button>}
                             </Space>
                         </Row>
                     ) : null
@@ -580,16 +604,16 @@ const Standalone = (props: any, ref: any) => {
             {/* 详情 */}
             <DeviceDetail ref={viewDetailRef} />
             <Modal
-                title={<FormattedMessage id="delete.tips"/>}
+                title={<FormattedMessage id="delete.tips" />}
                 centered={true}
                 visible={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteTestServer(deleteObj.id)}>
-                        <FormattedMessage id="operation.confirm.delete"/>
+                        <FormattedMessage id="operation.confirm.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={600}
@@ -597,30 +621,30 @@ const Standalone = (props: any, ref: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    <FormattedMessage id="device.delete.tips"/>
+                    <FormattedMessage id="device.delete.tips" />
                 </div>
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
-                    <FormattedMessage id="view.quote.details"/>
+                    <FormattedMessage id="view.quote.details" />
                 </div>
             </Modal>
             <Modal
-                title={<FormattedMessage id="delete.tips"/>}
+                title={<FormattedMessage id="delete.tips" />}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteTestServer(deleteObj.id)}>
-                        <FormattedMessage id="operation.confirm.delete"/>
+                        <FormattedMessage id="operation.confirm.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt"/>
+                    <FormattedMessage id="delete.prompt" />
                 </div>
             </Modal>
             <SelectVmServer ref={selectVmServerList} onOk={getTestServerList} />

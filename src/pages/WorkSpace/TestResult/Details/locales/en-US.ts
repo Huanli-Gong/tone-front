@@ -1,11 +1,11 @@
 const defaultKey = 'ws.result.details'
 
-const text =  {
+const text = {
   'test.result': 'Test Result',
   'result.details': 'Result Details',
   'provider_name': 'Sever Type',
-  'test_type': 'Test Type',  
-  'job_state': 'Job Status', 
+  'test_type': 'Test Type',
+  'job_state': 'Job Status',
   'job_type': 'Job Type',
   'creator_name': 'Creator',
   'gmt_created': 'Created Time',
@@ -19,7 +19,7 @@ const text =  {
   'test_summary': 'Note',
   'test.result.view.log.file': 'For details about the test results, check the log file',
   'baseline.description': 'Baseline Description',
-  'baseline.description.ps': 'Record some official more formal analysis of the problem, baseline statement and baseline association',  
+  'baseline.description.ps': 'Record some official more formal analysis of the problem, baseline statement and baseline association',
   'result.remarks': 'Note',
   'result.remarks.ps': 'Record the description of the results, and some corrections to the baseline problems. The notes are related to the current results',
   'rerun': 'Rerun',
@@ -41,7 +41,7 @@ const text =  {
   'machine.config.error': 'The cluster configured incorrectly',
   'machine.occupied.by.job': 'Server occupied by job',
   'occupy.job': 'Occupied Job',
-  
+
   // Tab
   'tab.testResult': 'Test Result',
   'tab.testProgress': 'Cases',
@@ -89,7 +89,7 @@ const text =  {
   'description': 'Description',
   'description.placeholder': 'Enter description',
   // Modal
-	'test.env': 'Test Environment',
+  'test.env': 'Test Environment',
   'baseline.type': 'Baseline Type',
   'baseline.name': 'Baseline Name',
   'baseline.name.placeholder': 'Enter Baseline Name',
@@ -114,7 +114,7 @@ const text =  {
 
 
   // ProcessTable
-  'build.kernel': 'Build Kernel',  
+  'build.kernel': 'Build Kernel',
   'package': 'Package',
   'name': 'Name',
   'state': 'State',
@@ -137,7 +137,7 @@ const text =  {
   'stop.suite': 'Stop', // 'Stop Suite',
   'skip.suite': 'Skip', // 'Skip Suite',
   'restart.server': 'Restart Server',
-  'execute.script': 'Execute Script',  
+  'execute.script': 'Execute Script',
   'view.log': 'View Log',
   'log': 'Logs',
   'suspension': 'Suspend',
@@ -146,13 +146,14 @@ const text =  {
   'monitor_link': 'Link',
   'failed.info': 'Failed Info',
 
+  'job.confirm.stop': "The Job cannot be resumed after it is stopped. Are you sure to stop it?",
 
   // TestSettingTable
   'env.prepare.config': 'Environmental Preparation Configurations',
   //----后端返的字段----
   'reclone': 'Reload Machine',
   'kernel_install': 'Reinstall Kernel',
-  'reboot': 'Restart Machine',  
+  'reboot': 'Restart Machine',
   'global_variable': 'Global Variable',
   'rpm': 'Install RPM',
   'script': 'Execute Script',
@@ -173,7 +174,7 @@ const text =  {
   'script.add': '+ Add Execution Script',
   'please.enter.script': 'Enter script',
 
-  'test.cases.and.config': 'Cases and Server Configurations',  
+  'test.cases.and.config': 'Cases and Server Configurations',
   'restart': 'Restart',
   'setup_info': 'Script',
   'restart.before': 'Before Restart',
@@ -213,7 +214,7 @@ const text =  {
   'failed.server': 'Broken Server',
   'channel_type': 'Control Channel',
   'use_state': 'Using Status',
-  'real_state': 'Actual Status',
+  'real_state': "Heartbeat Status",//'Actual Status',
   'not.assigned.server': 'Not assigned to test server',
   'running,please.wait': 'Running, please wait patiently',
 

@@ -1,5 +1,5 @@
-import React , { useState } from 'react'
-import { Space , Dropdown } from 'antd'
+import React, { useState } from 'react'
+import { Space, Dropdown } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
 import SearchInput from '@/components/Public/SearchInput';
 import SelectCheck from '../components/SelectCheck';
@@ -8,51 +8,53 @@ import SelectDrop from '../components/SelectDrop';
 import styles from './index.less'
 
 interface InputFilterProps {
-    title : string,
-    name : string,
-    params : any,
-    setParams : ( props : any ) => void,
-    confirm ? : () => void,
-    list ? : any
+    title: string,
+    name: string,
+    params: any,
+    setParams: (props: any) => void,
+    confirm?: () => void,
+    list?: any
 }
 
-export const SearchColumnFilterTitle : React.FC<InputFilterProps> = ({ title , confirm , setParams , params , name }) => {
-    const [ visible , setVisible ] = useState( false )
+export const SearchColumnFilterTitle: React.FC<InputFilterProps> = ({ title, confirm, setParams, params, name }) => {
+    const [visible, setVisible] = useState(false)
 
-    const handleVisible = ( v : boolean ) => {
-        setVisible( v )
+    const handleVisible = (v: boolean) => {
+        setVisible(v)
     }
 
     return (
-        <div className={ styles.filter_wrapper_container }>
+        <div className={styles.filter_wrapper_container}>
             <Space>
-                <span>{ title }</span>
-                <Dropdown 
-                    visible={ visible }
-                    onVisibleChange={ handleVisible }
+                <span>{title}</span>
+                <Dropdown
+                    visible={visible}
+                    onVisibleChange={handleVisible}
                     trigger={['click']}
+                    overlayStyle={{ background: "#fff", boxShadow: `0 9px 28px 8px rgb(0 0 0 / 5%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%)` }}
                     overlay={
-                        <SearchInput 
-                            confirm={confirm} 
+                        <SearchInput
+                            confirm={confirm}
                             onConfirm={
-                                ( val : any ) => {
+                                (val: any) => {
                                     const obj = {}
-                                    obj[ name ] = val;
-                                    setVisible( false )
-                                    setParams({ ...params , ...obj,
+                                    obj[name] = val;
+                                    setVisible(false)
+                                    setParams({
+                                        ...params, ...obj,
                                         // 每次查询后，分页参数都要重置为初始状态。
-                                        page_num: 1, 
+                                        page_num: 1,
                                     })
                                 }
-                            } 
+                            }
                         />
                     }
                 >
-                    <div className={ styles.filter_icon_wrapper } >
-                        <FilterFilled 
+                    <div className={styles.filter_icon_wrapper} >
+                        <FilterFilled
                             className={
-                                params[ name ] ?
-                                    styles.filter_icon_contaner_active:
+                                params[name] ?
+                                    styles.filter_icon_contaner_active :
                                     styles.filter_icon_contaner
                             }
                         />
@@ -63,44 +65,45 @@ export const SearchColumnFilterTitle : React.FC<InputFilterProps> = ({ title , c
     )
 }
 
-export const CheckboxColumnFilterTitle : React.FC<InputFilterProps> = ({ title , confirm , setParams , params , name , list }) => {
-    const [ visible , setVisible ] = useState( false )
+export const CheckboxColumnFilterTitle: React.FC<InputFilterProps> = ({ title, confirm, setParams, params, name, list }) => {
+    const [visible, setVisible] = useState(false)
 
-    const handleVisible = ( v : boolean ) => {
-        setVisible( v )
+    const handleVisible = (v: boolean) => {
+        setVisible(v)
     }
 
     return (
-        <div className={ styles.filter_wrapper_container }>
+        <div className={styles.filter_wrapper_container}>
             <Space>
-                <span>{ title }</span>
-                <Dropdown 
-                    visible={ visible }
-                    onVisibleChange={ handleVisible }
+                <span>{title}</span>
+                <Dropdown
+                    visible={visible}
+                    onVisibleChange={handleVisible}
                     trigger={['click']}
                     overlay={
-                        <SelectCheck 
-                            confirm={confirm} 
+                        <SelectCheck
+                            confirm={confirm}
                             onConfirm={
-                                ( val : any ) => {
+                                (val: any) => {
                                     const obj = {}
-                                    obj[ name ] = val;
-                                    setVisible( false )
-                                    setParams({ ...params , ...obj,
+                                    obj[name] = val;
+                                    setVisible(false)
+                                    setParams({
+                                        ...params, ...obj,
                                         // 每次查询后，分页参数都要重置为初始状态。
-                                        page_num: 1, 
+                                        page_num: 1,
                                     })
                                 }
-                            } 
-                            list={ list }
+                            }
+                            list={list}
                         />
                     }
                 >
-                    <div className={ styles.filter_icon_wrapper } >
-                        <FilterFilled 
+                    <div className={styles.filter_icon_wrapper} >
+                        <FilterFilled
                             className={
-                                params[ name ] ?
-                                    styles.filter_icon_contaner_active:
+                                params[name] ?
+                                    styles.filter_icon_contaner_active :
                                     styles.filter_icon_contaner
                             }
                         />
@@ -111,40 +114,40 @@ export const CheckboxColumnFilterTitle : React.FC<InputFilterProps> = ({ title ,
     )
 }
 
-export const UserSearchColumnFilterTitle : React.FC<InputFilterProps> = ({ title , confirm , setParams , params , name }) => {
-    const [ visible , setVisible ] = useState( false )
+export const UserSearchColumnFilterTitle: React.FC<InputFilterProps> = ({ title, confirm, setParams, params, name }) => {
+    const [visible, setVisible] = useState(false)
 
-    const handleVisible = ( v : boolean ) => {
-        setVisible( v )
+    const handleVisible = (v: boolean) => {
+        setVisible(v)
     }
 
     return (
-        <div className={ styles.filter_wrapper_container }>
+        <div className={styles.filter_wrapper_container}>
             <Space>
-                <span>{ title }</span>
-                <Dropdown 
-                    visible={ visible }
-                    onVisibleChange={ handleVisible }
+                <span>{title}</span>
+                <Dropdown
+                    visible={visible}
+                    onVisibleChange={handleVisible}
                     trigger={['click']}
                     overlay={
-                        <SelectDrop 
-                            confirm={confirm} 
+                        <SelectDrop
+                            confirm={confirm}
                             onConfirm={
-                                ( val : any ) => {
+                                (val: any) => {
                                     const obj = {}
-                                    obj[ name ] = val;
-                                    setVisible( false )
-                                    setParams({ ...params , ...obj })
+                                    obj[name] = val;
+                                    setVisible(false)
+                                    setParams({ ...params, ...obj })
                                 }
-                            } 
+                            }
                         />
                     }
                 >
-                    <div className={ styles.filter_icon_wrapper } >
-                        <FilterFilled 
+                    <div className={styles.filter_icon_wrapper} >
+                        <FilterFilled
                             className={
-                                params[ name ] ?
-                                    styles.filter_icon_contaner_active:
+                                params[name] ?
+                                    styles.filter_icon_contaner_active :
                                     styles.filter_icon_contaner
                             }
                         />

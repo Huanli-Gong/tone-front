@@ -86,64 +86,6 @@ const routes = [
 		],
 	},
 	{
-		name: 'HelpDoc',
-		hideInMenu: true,
-		path: '/help_doc',
-		routes: [
-			{
-				path: '/help_doc',
-				component: './HelpDocument',
-			},
-			{
-				path: '/help_doc/new',
-				access: 'IsAdmin',
-				component: './HelpDocument/EditOrNew',
-			},
-			{
-				path: '/help_doc/:help_id',
-				component: './HelpDocument',
-			},
-			{
-				path: '/help_doc/:help_id/edit',
-				access: 'IsAdmin',
-				component: './HelpDocument/EditOrNew',
-			},
-			{
-				path: '*',
-				component: './404',
-			}
-		]
-	},
-	{
-		name: 'NoticeDoc',
-		hideInMenu: true,
-		path: '/notice',
-		routes: [
-			{
-				path: '/notice',
-				component: './HelpDocument',
-			},
-			{
-				path: '/notice/new',
-				access: 'IsAdmin',
-				component: './HelpDocument/EditOrNew',
-			},
-			{
-				path: '/notice/:help_id',
-				component: './HelpDocument',
-			},
-			{
-				path: '/notice/:help_id/edit',
-				access: 'IsAdmin',
-				component: './HelpDocument/EditOrNew',
-			},
-			{
-				path: '*',
-				component: './404',
-			}
-		]
-	},
-	{
 		path: '/message',
 		showInWs: true,
 		hideInMenu: true,
@@ -632,6 +574,31 @@ const routes = [
 		layout: false,
 		hiseInMenu: true,
 		component: './Login'
+	},
+	{
+		path: '/:doc_type(help_doc|notice)',
+		hideInMenu: true,
+		routes: [
+			{
+				path: '/:doc_type(help_doc|notice)/create',
+				access: 'IsAdmin',
+				layout: false,
+				exact: true,
+				component: './DOC/Create',
+			},
+			{
+				path: '/:doc_type(help_doc|notice)/edit/:doc_id?',
+				access: 'IsAdmin',
+				component: './DOC/Create',
+			},
+			{
+				path: '/:doc_type(help_doc|notice)/:doc_id?',
+				component: './DOC',
+			},
+			{
+				redirect: '/'
+			}
+		]
 	},
 	{
 		path: '/workspace/create',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Button, message } from 'antd'
+import { Button, message, Typography } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
-import { evnPrepareState, tooltipTd, copyTooltipColumn } from '../components'
+import { evnPrepareState, tooltipTd } from '../components'
 // import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
@@ -102,7 +102,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render:(_:any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'result',
@@ -130,15 +130,18 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
-                if (_.state === 'success' || _.state === 'fail' || _.state === 'stop') {
+                if (["success", "fail", "stop"].includes(_.state)) {
                     if (_.log_file)
-                        // return <PermissionTootip>
-                        //     <Button type="link" disabled={true} style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>日志</Button>
-                        // </PermissionTootip>
-                        return <Button size="small" type="link" style={{ padding: 0 }} onClick={() => window.open(_.log_file)}>{strLocals}</Button>
+                        return (
+                            <Typography.Link
+                                target={"_blank"}
+                                href={_.log_file}
+                            >
+                                {strLocals}
+                            </Typography.Link>
+                        )
                 }
-                // return <PermissionTootip><Button type="link" style={{ padding: 0 }} disabled={true}>日志</Button></PermissionTootip>
-                return <Button size="small" type="link" style={{ padding: 0 }}>{strLocals}</Button>
+                return <Typography.Text disabled>{strLocals}</Typography.Text >
             }
         }, {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -183,7 +186,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             requestCodeMessage(code, msg)
         }
     }
-    
+
     return (
         <div>
             <ResizeTable

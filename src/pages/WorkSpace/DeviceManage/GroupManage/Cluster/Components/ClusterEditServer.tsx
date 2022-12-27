@@ -102,9 +102,9 @@ const EditServerDrawer = (props: any, ref: any) => {
                     initialValue={'Available'}
                 >
                     <Select placeholder={formatMessage({id: 'device.usage.state.message'})}>
-                        <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                        <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
-                        <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
+                        <Select.Option value="Available"><Badge status="success" text={"Available"}/></Select.Option>
+                        <Select.Option value="Reserved"><Badge status="success" text="Reserved"/></Select.Option>
+                        <Select.Option value="Unusable"><Badge status="default" text="Unusable"/></Select.Option>
                     </Select>
                 </Form.Item>
                 {/* <Form.Item name="role" label="角色" rules={[{ required: true }]}>

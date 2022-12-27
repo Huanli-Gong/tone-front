@@ -1,5 +1,5 @@
 export default {
-  'kernel.manage': '内核管理',  
+  'kernel.manage': '内核管理',
   'kernel.version': '内核版本',
   'kernel.version.type': '版本类型',
   'kernel.release.version': '发布版本',
@@ -21,4 +21,11 @@ export default {
   'kernel.headers.path': 'headers包路径',
   'kernel.remarks': '备注',
   'kernel.is_enable': '是否启用',
+
+  "kernel.kernel_packages.label": "内核包路径",
+  "kernel.kernel_packages.rules.empty": "内核包路径不能为空",
+  "kernel.kernel_packages.other.rules.empty": "RPM包路径不能为空",
+  "kernel.kernel_packages.add": "添加RPM包",
+  "kernel.kernel_packages.placeholder": "请输入内核包路径",
+  "kernel.kernel_packages.other.placeholder": "请输入RPM包路径",
 };
