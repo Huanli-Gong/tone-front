@@ -351,7 +351,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                             dataList?.map((item: any, idx: number) => {
                                                 const { is_baseline, is_job } = item
                                                 const $is_job = Object.prototype.toString.call(is_job) === "[object Number]" ? is_job : is_baseline
-                                                console.log($is_job)
                                                 return (
                                                     <CaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                         <Space size={16}>
@@ -359,7 +358,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                                             <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(item.success_case)}</Typography.Text>
                                                             <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(item.fail_case)}</Typography.Text>
                                                             {
-                                                                !$is_job &&
+                                                                !!$is_job &&
                                                                 <JumpResult ws_id={wsId} job_id={item.obj_id} style={{ paddingLeft: 10 }} />
                                                             }
                                                         </Space>

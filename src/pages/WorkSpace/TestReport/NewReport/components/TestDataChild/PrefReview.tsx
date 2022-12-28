@@ -229,7 +229,7 @@ const Performance = (props: any) => {
                 return (
                     <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                         {
-                            isJob ?
+                            !!isJob ?
                                 <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
                                 <div style={{ height: 38 }}></div>
                         }
