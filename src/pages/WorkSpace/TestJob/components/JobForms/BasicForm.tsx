@@ -161,26 +161,28 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
 
             {/** 功能，性能，业务功能，业务性能时，才有测试基线。 */}
             {(['functional', 'performance'].includes(test_type) || ['functional', 'performance'].includes(business_type)) && (
-                <>{
-                    'baseline' in contrl &&
-                    <Form.Item
-                        name="baseline"
-                        label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`}/> }
-                    >
-                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} 
-                            placeholder={formatMessage({id: 'job.form.baseline.placeholder'}) }
-                        >
-                            {
-                                baselineList.map(
-                                    (item: any) => (
-                                        <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                    )
-                                )
-                            }
-                        </Select>
-                    </Form.Item>
-                }
-                </>
+                'baseline' in contrl &&
+                <Form.Item
+                    name="baseline"
+                    label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`} />}
+                >
+                    <Select
+                        allowClear
+                        getPopupContainer={node => node.parentNode}
+                        showSearch
+                        disabled={disabled}
+                        placeholder={formatMessage({ id: 'job.form.baseline.placeholder' })}
+                        filterOption={(inputValue, option: any) => option.label.indexOf(inputValue) >= 0}
+                        options={
+                            baselineList.map(
+                                (item: any) => ({
+                                    label: item.name,
+                                    value: item.id
+                                })
+                            )
+                        }
+                    />
+                </Form.Item>
             )}
             {
                 'baseline_job' in contrl &&
