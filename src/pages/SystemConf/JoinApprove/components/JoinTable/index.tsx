@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { UserTable, TableListParams, ApproveParams, UserList } from '../../data';
-import { Modal, Row, Col, Avatar, Space, Button, message, Spin, Badge } from 'antd';
+import { Modal, Row, Col, Avatar, Space, Button, message, Spin, Badge, Typography, TableColumnProps } from 'antd';
 import { joinList, approve, info } from '../../service';
 import styles from './style.less';
 import CommonTable from '@/components/Public/CommonTable';
@@ -14,6 +14,7 @@ import AvatarCover from '@/components/AvatarCover'
 
 import RefusePopover from './RefusePopover'
 import { requestCodeMessage } from '@/utils/utils';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
     const { formatMessage } = useIntl()
@@ -111,76 +112,96 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
         await refresh()
         message.success(formatMessage({ id: 'operation.success' }));
     }
-    const ellipsisText = (name: string) => {
-        return name.slice(0, 1)
-    }
-    const [columns, setColumns] = React.useState([
+
+    const columns: TableColumnProps<any>[] | any[] = [
         {
             title: <FormattedMessage id="JoinApprove.table.category" />,
             dataIndex: 'name',
             width: 120,
             ellipsis: true,
-            render: (_: number, row: UserTable) => <div style={{ display: 'flex', alignItems: 'center' }}>
-                {row.object_type == 'workspace' && row.action == 'create' ?
-                    <>
-                        <WScreate style={{ float: 'left', marginRight: '5px', height: 20 }} />
-                        <PopoverEllipsis title={row.title}></PopoverEllipsis>
-                    </> :
-                    <>
-                        <WScancel style={{ float: 'left', marginRight: '5px', height: 20 }} />
-                        <PopoverEllipsis title={row.title}></PopoverEllipsis>
-                    </>
-                }
-            </div>,
+            render: (_: number, row: UserTable) => (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {row.object_type == 'workspace' && row.action == 'create' ?
+                        <>
+                            <WScreate style={{ float: 'left', marginRight: '5px', height: 20 }} />
+                            <PopoverEllipsis title={row.title}></PopoverEllipsis>
+                        </> :
+                        <>
+                            <WScancel style={{ float: 'left', marginRight: '5px', height: 20 }} />
+                            <PopoverEllipsis title={row.title}></PopoverEllipsis>
+                        </>
+                    }
+                </div>
+            ),
         },
         {
             title: <FormattedMessage id={"JoinApprove.table.applicant"} />,
             dataIndex: 'name',
             width: 150,
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
             render: (_: number, row: UserTable) => <Space><Avatar size={25} src={row.proposer_avatar} />{row.proposer_name}</Space>,
         },
         {
             title: <FormattedMessage id={"JoinApprove.table.reason"} />,
             dataIndex: 'reason',
             width: 200,
-            ellipsis: true,
-            render: (_: number, row: UserTable) => <PopoverEllipsis title={row.reason}></PopoverEllipsis>,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: number, row: UserTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.reason} />,
         },
         {
             title: <FormattedMessage id={"JoinApprove.table.start"} />,
             dataIndex: 'gmt_created',
+            ellipsis: {
+                showTitle: false
+            },
             width: 150,
+            render(_, row) {
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
+            }
         },
         status == 1 &&
         {
             title: <FormattedMessage id={"JoinApprove.table.end"} />,
             dataIndex: 'gmt_modified',
-            width: 150
+            width: 150,
+            ellipsis: {
+                showTitle: false
+            },
+            render(_, row) {
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
+            }
         },
         status == 1 &&
         {
             title: <FormattedMessage id={"JoinApprove.table.result"} />,
-            render: (_: number, row: UserTable) => <Space>
-                {row.status == 'passed' && row.action == 'create' && <Badge status="success" text={<FormattedMessage id="JoinApprove.create_passed" />} />}
-                {row.status != 'passed' && row.action == 'create' && <Badge status="default" text={<FormattedMessage id="JoinApprove.create_refused" />} />}
-                {row.status == 'passed' && row.action == 'delete' && <Badge status="success" text={<FormattedMessage id="JoinApprove.logout_passed" />} />}
-                {row.status != 'passed' && row.action == 'delete' && <Badge status="default" text={<FormattedMessage id="JoinApprove.logout_refused" />} />}
-                <Button style={{ padding: 0, height: 'auto' }} type="link" onClick={() => getInfo(row)}><FormattedMessage id="operation.detail" /></Button>
-            </Space>,
+            key: "result",
+            render: (_: number, row: UserTable) => (
+                <Space>
+                    {row.status == 'passed' && row.action == 'create' && <Badge status="success" text={<FormattedMessage id="JoinApprove.create_passed" />} />}
+                    {row.status != 'passed' && row.action == 'create' && <Badge status="default" text={<FormattedMessage id="JoinApprove.create_refused" />} />}
+                    {row.status == 'passed' && row.action == 'delete' && <Badge status="success" text={<FormattedMessage id="JoinApprove.logout_passed" />} />}
+                    {row.status != 'passed' && row.action == 'delete' && <Badge status="default" text={<FormattedMessage id="JoinApprove.logout_refused" />} />}
+                    <Typography.Link onClick={() => getInfo(row)}><FormattedMessage id="operation.detail" /></Typography.Link>
+                </Space>
+            ),
             width: 150
         },
         {
             title: <FormattedMessage id={"JoinApprove.table.operation"} />,
+            key: "operation",
+            fixed: "right",
             width: 120,
-            render: (_: number, row: UserTable) => <Space>
-                {/* <Button style={{padding:0, height: 'auto'}} onClick={()=>check('pass',row.id)} type="link" >通过</Button>
-                                                                <Button style={{padding:0, height: 'auto'}} onClick={()=>check('refuse',row.id)} type="link" >拒绝</Button> */}
-                <Button style={{ padding: 0, height: 'auto' }} type="link" onClick={() => getInfo(row)}><FormattedMessage id="operation.detail" /></Button>
-            </Space>
-
+            render: (_: number, row: UserTable) => (
+                <Space>
+                    <Typography.Link onClick={() => getInfo(row)}><FormattedMessage id="operation.detail" /></Typography.Link>
+                </Space>
+            )
         }
-    ]);
+    ]
 
     const list: UserTable[] = data.data;
 
@@ -195,7 +216,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
         <div>
             <Modal
                 title={<FormattedMessage id="JoinApprove.ws.details" />}
-                visible={visible}
+                open={visible}
                 width='53.3%'
                 centered
                 onCancel={handleCancel}
@@ -323,15 +344,15 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
             <CommonTable
                 size="small"
                 columns={columns}
-                setColumns={setColumns}
+                name="sys-join-ws"
                 dataSource={list}
+                refreshDeps={[status]}
                 loading={loading}
                 page={data.page_num}
                 pageSize={data.page_size}
                 totalPage={data.total_page}
                 total={data.total}
                 handlePage={onChange}
-                scroll={{ x: '100%' }}
             />
         </div>
     );

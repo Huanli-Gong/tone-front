@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Button, message, Typography } from 'antd'
+import { message, Space, Typography } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
 import { evnPrepareState, tooltipTd } from '../components'
-// import PermissionTootip from '@/components/Public/Permission/index';
 import ServerLink from '@/components/MachineWebLink/index';
 import { updateSuiteCaseOption, queryProcessCaseList } from '../service'
 import { useAccess, Access, useModel, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils'
 import CommonPagination from '@/components/CommonPagination';
-import ResizeTable from '@/components/ResizeTable'
 import TidDetail from './QueryTidList';
-import EllipsisPulic from '@/components/Public/EllipsisPulic'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const TestConfTable: React.FC<Record<string, any>> = (props) => {
-    const { test_suite_name, test_suite_id, testType, provider_name, creator } = props
+    const { test_suite_name, test_suite_id, testType, provider_name, creator, columnsRefresh, setColumnsRefresh } = props
     const { id: job_id } = useParams() as any
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
@@ -44,11 +43,12 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
     }
     const pageCurrent = useStateRef(pageParams)
     const totalCurrent = useStateRef(dataSource)
+
     useEffect(() => {
         queryTestListTableData(pageParams)
     }, [pageParams])
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             dataIndex: 'test_case_name',
             title: 'Test Conf',
@@ -79,6 +79,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
+            key: "preparation",
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.env.preparation.details' })
                 return (
@@ -92,6 +93,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
         {
             dataIndex: 'state',
             title: <FormattedMessage id="ws.result.details.state" />,
+            ellipsis: true,
             width: 80,
             render: evnPrepareState
         },
@@ -102,7 +104,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <EllipsisPulic title={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} /> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'result',
@@ -128,6 +130,8 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
+            fixed: "right",
+            key: "log",
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.log' })
                 // success,fail,stop 可看日志
@@ -151,24 +155,48 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
+            fixed: "right",
+            key: "operation",
             render: (_: any) => (
                 <Access accessible={access.WsTourist()}>
                     <Access
                         accessible={access.WsMemberOperateSelf(creator)}
                         fallback={
-                            <span>
-                                {_.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.suspension" /></Button>}
-                                {_.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => AccessTootip()} ><FormattedMessage id="ws.result.details.skip" /></Button>}
-                            </span>
+                            <Typography.Link
+                                onClick={() => AccessTootip()}
+                            >
+                                {
+                                    _.state === 'running' &&
+                                    <FormattedMessage id="ws.result.details.suspension" />
+                                }
+                                {
+                                    _.state === 'pending' &&
+                                    <FormattedMessage id="ws.result.details.skip" />
+                                }
+                            </Typography.Link>
                         }
                     >
-                        {_.state === 'running' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'stop')} ><FormattedMessage id="ws.result.details.suspension" /></Button>}
-                        {_.state === 'pending' && <Button size="small" type="link" style={{ padding: 0 }} onClick={() => doConfServer(_, 'skip')} ><FormattedMessage id="ws.result.details.skip" /></Button>}
+                        {
+                            _.state === 'running' &&
+                            <Typography.Link
+                                onClick={() => doConfServer(_, 'stop')}
+                            >
+                                <FormattedMessage id="ws.result.details.suspension" />
+                            </Typography.Link>
+                        }
+                        {
+                            _.state === 'pending' &&
+                            <Typography.Link
+                                onClick={() => doConfServer(_, 'skip')}
+                            >
+                                <FormattedMessage id="ws.result.details.skip" />
+                            </Typography.Link>
+                        }
                     </Access>
                 </Access>
             )
         },
-    ])
+    ]
 
     const doConfServer = async (_: any, state: any) => {
         // 添加用户id
@@ -190,19 +218,20 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
     }
 
     return (
-        <div>
-            <ResizeTable
+        <Space style={{ width: "100%", paddingLeft: 40, paddingBottom: 8 }} direction={"vertical"}>
+            <ResizeHooksTable
                 columns={columns}
-                setColumns={setColumns}
-                dataSource={dataSource.data}
+                name="ws-job-result-process-testconf"
+                dataSource={dataSource?.data || []}
+                refreshDeps={[provider_name, access, testType, test_suite_name, creator, columnsRefresh]}
                 loading={loading}
                 rowKey='id'
                 size="small"
                 pagination={false}
-                scroll={{ x: "100%" }}
+                onColumnsChange={setColumnsRefresh}
             />
             <CommonPagination
-                style={{ marginTop: 8, marginBottom: 0 }}
+                style={{ marginTop: 0, marginBottom: 0 }}
                 total={dataSource.total}
                 currentPage={pageParams.page_num}
                 pageSize={pageParams.page_size}
@@ -212,7 +241,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
                     }
                 }
             />
-        </div>
+        </Space>
     )
 }
 

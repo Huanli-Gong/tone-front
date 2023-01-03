@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import styles from './style.less';
 import _ from 'lodash'
-import ResizeColumnTable from "@/components/ResizeTable"
+import { ResizeHooksTable } from '@/utils/table.hooks';
 
 export default (props: any) => {
-	const { styleObj, record, disabled, columnsInner, setInnerColumns, selectedSuiteKeys, setSelectedCaseKeysFn, selectedCaseObj } = props
+	const {
+		styleObj, record, disabled,
+		columnsInner, selectedSuiteKeys, setSelectedCaseKeysFn,
+		selectedCaseObj, checked, contrl,
+		onColumnsChange, columnsChange
+	} = props
 	const [selectedKeys, setSelectedKeys] = useState<number[]>([])
 
 	const rowSelectionCase = {
@@ -24,15 +29,16 @@ export default (props: any) => {
 	}, [selectedCaseObj])
 
 	return (
-		<ResizeColumnTable
+		<ResizeHooksTable
 			style={styleObj}
-			// scroll={scroll}
-			scroll={{ x: '100%' }}
+			refreshDeps={[checked, contrl, disabled, columnsChange]}
+			hasChange={columnsChange}
 			rowKey={record => record.id + ''}
 			className={styles.conf_table}
 			rowSelection={!disabled ? rowSelectionCase : undefined}
 			columns={columnsInner}
-			setColumns={setInnerColumns}
+			onColumnsChange={onColumnsChange}
+			name="ws-test-job-suite-inner"
 			dataSource={record.test_case_list || []}
 			pagination={false}
 		/>

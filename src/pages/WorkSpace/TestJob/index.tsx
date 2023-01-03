@@ -28,6 +28,7 @@ import { ReactComponent as YamlCopy } from '@/assets/svg/yaml_copy.svg'
 import { ReactComponent as YamlDownload } from '@/assets/svg/yaml_download.svg'
 import { ReactComponent as YamlTest } from '@/assets/svg/yaml_test.svg'
 import CodeEditer from '@/components/CodeEditer'
+import { useSize } from 'ahooks'
 
 interface PropsTypes {
     templateEditFormInfo?: Object,
@@ -618,19 +619,7 @@ const TestJob: React.FC<any> = (props) => {
         return 20
     }, [layoutWidth])
 
-    const [headerWidth, setHeaderWidth] = useState(0)
-
-    const setChildTableWidth = () => setHeaderWidth(bodyRef.current.clientWidth + bodyPaddding * 2)
-
-    useEffect(
-        () => {
-            setChildTableWidth()
-            addEventListener('resize', setChildTableWidth)
-            return () => {
-                removeEventListener('resize', setChildTableWidth)
-            }
-        }, []
-    )
+    const bodySize = useSize(bodyRef)
 
     const layoutCss = useMemo(() => {
         const defaultCss = { minHeight: layoutHeight, overflow: 'auto', background: "#f5f5f5" }
@@ -938,8 +927,8 @@ const TestJob: React.FC<any> = (props) => {
                 >
                     <div style={{ height: 250, minWidth: 1080, background: '#fff', position: 'absolute', left: 0, top: 0, width: '100%' }} />
                     <Row className={styles.page_title} justify="center" >
-                        <Row style={{ width: headerWidth }}>
-                            <Col span={24} >
+                        <Row style={{ width: bodySize?.width ? bodySize?.width + bodyPaddding * 2 : bodySize?.width }}>
+                            <Col span={24}>
                                 <Row justify="space-between">
                                     <span>{detail.name}</span>
                                     <Access accessible={access.IsWsSetting()}>

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { JobListStateTag } from '@/pages/WorkSpace/TestResult/Details/components/index'
 import lodash from 'lodash'
-import ResizeTable from '@/components/ResizeTable'
 import CommonPagination from '@/components/CommonPagination';
 import { deleteJobTest } from '@/pages/WorkSpace/TestResult/services'
 import { message, Space, Typography, Tooltip, Popconfirm, Row, Spin } from 'antd'
@@ -12,15 +11,8 @@ import { useParams, Access, useAccess, useIntl, FormattedMessage, getLocale } fr
 import RerunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
-
-const TablePagination = styled(Row)`
-    width : 100%;
-    // min-height:20px;
-    .ant-row {
-        width : 100%;
-        margin:0;
-    }
-`
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const TableBody = styled(Row)`
     width : 100%;
@@ -83,13 +75,19 @@ const JobTable = (props: any) => {
 
     const handleTestReRun = (_: any) => rerunModal.current.show(_)
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: <FormattedMessage id="ws.dashboard.job.id" />,
             dataIndex: 'id',
             fixed: 'left',
+            className: "dashboard_job_list_hover_name",
             width: 80,
-            render: (_: any) => <span onClick={() => window.open(`/ws/${ws_id}/test_result/${_}`)} style={{ cursor: 'pointer' }}>{_}</span>
+            render: (_: any) => (
+                <Typography.Link
+                    target={"_blank"}
+                    href={`/ws/${ws_id}/test_result/${_}`}
+                >{_}</Typography.Link>
+            )
         },
         {
             title: <FormattedMessage id="ws.dashboard.job.name" />,
@@ -98,10 +96,13 @@ const JobTable = (props: any) => {
             ellipsis: {
                 showTitle: false
             },
+            className: "dashboard_job_list_hover_name",
             render: (_: any, row: any) => (
-                <Tooltip title={_}>
-                    <span onClick={() => window.open(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>{_}</span>
-                </Tooltip>
+                <ColumnEllipsisText ellipsis={{ tooltip: _ }}>
+                    <Typography.Link href={`/ws/${ws_id}/test_result/${row.id}`} target="_blank" >
+                        {_}
+                    </Typography.Link>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -171,6 +172,7 @@ const JobTable = (props: any) => {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: enLocale ? 220 : 160,
             fixed: 'right',
+            key: "operation",
             render: (_: any) => {
                 return (
                     <Space>
@@ -224,19 +226,19 @@ const JobTable = (props: any) => {
                 )
             }
         }
-    ])
+    ]
 
     return (
         <Spin spinning={loading}>
             <TableBody>
-                <ResizeTable
+                <ResizeHooksTable
                     rowKey='id'
+                    name="ws-dashboard-project-job-list"
                     columns={columns}
-                    setColumns={setColumns}
+                    refreshDeps={[enLocale, ws_id, access]}
                     rowClassName={styles.result_table_row}
                     dataSource={jobs.data}
                     pagination={false}
-                    scroll={{ x: columns.reduce((p: any, c: any) => p += c.width, 0) }}
                     style={{ width: '100%' }}
                     size="small"
                 />

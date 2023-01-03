@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Space, Row, Col, Select, Divider, Button, DatePicker, Typography } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import styles from './index.less'
@@ -12,9 +11,10 @@ import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import SelectRadio from '@/components/Public/SelectRadio';
 import SelectUser from '@/components/Public/SelectUser';
-import ResizeTable from '@/components/ResizeTable';
 import CommonPagination from '@/components/CommonPagination';
 import { requestCodeMessage } from '@/utils/utils'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const { RangePicker } = DatePicker
 const { Option } = Select
@@ -117,7 +117,7 @@ const AllJobTable = (props: any) => {
         }
     }, [noGroupData])
 
-    const [columns, setColumns] = React.useState([
+    const columns = [
         {
             title: 'Job ID',
             dataIndex: 'id',
@@ -161,14 +161,14 @@ const AllJobTable = (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.name }}>
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={row && row.name}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -181,7 +181,7 @@ const AllJobTable = (props: any) => {
             },
             render: (_: any, row: any) => {
                 const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
-                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</ColumnEllipsisText>
             },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
@@ -210,7 +210,7 @@ const AllJobTable = (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
@@ -219,12 +219,15 @@ const AllJobTable = (props: any) => {
                 shwoTitle: false,
             },
             dataIndex: 'start_time',
-            filterDropdown: ({ confirm }: any) => <RangePicker
-                size="middle"
-                showTime={{ format: 'HH:mm:ss' }}
-                format="YYYY-MM-DD HH:mm:ss"
-                onChange={_.partial(handleSelectTime, _, _, confirm)}
-            />,
+            filterDropdown: ({ confirm }: any) => (
+                /* @ts-ignore */
+                <RangePicker
+                    size="middle"
+                    showTime={{ format: 'HH:mm:ss' }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    onChange={_.partial(handleSelectTime, _, _, confirm)}
+                />
+            ),
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -235,7 +238,7 @@ const AllJobTable = (props: any) => {
                 return record || '-'
             }
         },
-    ])
+    ]
 
     useEffect(() => {
         getProductData()
@@ -389,16 +392,16 @@ const AllJobTable = (props: any) => {
                 <Divider className={styles.line} />
             </div>
             <Scrollbars style={scroll} className={styles.scroll}>
-                <ResizeTable
+                <ResizeHooksTable
                     rowSelection={rowSelection as any}
                     rowKey='id'
                     columns={columns as any}
-                    setColumns={setColumns}
+                    name="ws-compare-all-job-list"
+                    refreshDeps={[ws_id, params, autoFocus]}
                     loading={loading}
                     dataSource={tableData}
                     pagination={false}
                     size="small"
-                    scroll={{ x: '100%' }}
                 />
             </Scrollbars>
             <CommonPagination

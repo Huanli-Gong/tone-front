@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Popover, Tooltip, Space, message, Popconfirm, Modal, Button, Checkbox, Typography, Spin } from 'antd';
+import { Space, message, Modal, Button, Checkbox, Typography, } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage, useModel } from 'umi';
+import { useIntl, FormattedMessage } from 'umi';
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SelectDrop from '@/components/Public//SelectDrop';
 import SearchInput from '@/components/Public/SearchInput';
 import SuiteList from './components/SuiteList';
@@ -13,6 +12,7 @@ import styles from './index.less';
 import { AddBusinessDrawer } from '@/pages/SystemConf/TestSuite/BusinessTest';
 import { TestContext } from '../../Provider'
 import { useClientSize } from '@/utils/hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * 系统级-业务测试
@@ -108,7 +108,7 @@ export default forwardRef((props: any, ref: any) => {
 		setDeleteRow({});
 	}
 
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		{
 			title: <FormattedMessage id="TestSuite.business.name" />,
 			dataIndex: 'name',
@@ -122,7 +122,7 @@ export default forwardRef((props: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={260} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			},
 		},
 		{
@@ -130,7 +130,7 @@ export default forwardRef((props: any, ref: any) => {
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <PopoverEllipsis title={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} width={170} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
 			}
 		},
 		{
@@ -138,7 +138,7 @@ export default forwardRef((props: any, ref: any) => {
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <PopoverEllipsis title={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} width={170} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
 			}
 		},
 		{
@@ -153,14 +153,14 @@ export default forwardRef((props: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={150} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			}
 		},
 		{
 			title: <FormattedMessage id="TestSuite.description" />,
 			dataIndex: 'description',
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={200} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			}
 		},
 		{
@@ -168,6 +168,7 @@ export default forwardRef((props: any, ref: any) => {
 			width: 150,
 			align: 'center',
 			fixed: 'right',
+			key: "operation",
 			render: (text: any, record: any) => {
 				return (
 					<Space>
@@ -177,7 +178,7 @@ export default forwardRef((props: any, ref: any) => {
 				)
 			},
 		}
-	]);
+	];
 
 	const onChange = (page: number, pageSize: number) => {
 		getTableData({ page_num: page, page_size: pageSize })
@@ -223,8 +224,9 @@ export default forwardRef((props: any, ref: any) => {
 			<div className={styles.business_root}>
 				<CommonTable
 					className={styles.businessList}
-					columns={columns}
-					setColumns={setColumns}
+					columns={columns as any}
+					name="sys-suite-business-list"
+					refreshDeps={[service_name, creator, autoFocus]}
 					dataSource={list}
 					scroll={{ x: '100%' }}
 					// loading={true}

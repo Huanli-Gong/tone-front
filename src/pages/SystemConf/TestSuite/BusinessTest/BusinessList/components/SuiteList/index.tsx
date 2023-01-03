@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { useIntl, FormattedMessage } from 'umi'
-import { Popover, Tooltip, Space, message, Button, Modal, Affix, Row, Checkbox, Typography, Popconfirm } from 'antd';
-import { FilterFilled, CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Space, message, Button, Modal } from 'antd';
+import { CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import CommonTable from '@/components/Public/CommonTable';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { test_type_enum, runList } from '@/utils/utils'
 import ConfList from '../ConfList';
 import AddSuiteDrawer from './AddSuiteDrawer';
-// import CaseTable from '../../../../BasicTest/components/CaseTable';
 import FuncOrPerfConfList from '../../../FuncOrPerfConfList';
 import { querySuiteList, getDomain, syncSuite, delSuite, queryDelSuiteAll, deleteBusinessSuiteAll } from '../../../../service';
-import { deleteJob, queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
+import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import styles from './index.less';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * @module 业务测试
@@ -258,34 +257,30 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		}
 	}
 
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		{
 			title: 'Test Suite',
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 120,
-			render: (text: any) => <PopoverEllipsis title={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
 		},
 		{
 			title: <FormattedMessage id="TestSuite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <PopoverEllipsis title={text || '-'} />
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
 		},
 		{
 			title: <FormattedMessage id="TestSuite.test_type" />,
 			dataIndex: 'test_type',
 			onCell: () => ({ style: { maxWidth: 100 } }),
 			render: (text: any) => {
-				return <>
-					{test_type_enum.map((item: any) => {
-						return item.value === text ? <span key={item.value}>{formatMessage({ id: item.value }) || '-'}</span> : null
-					})
-					}
-				</>
+				return test_type_enum.map((item: any) => {
+					return item.value === text ? <span key={item.value}>{formatMessage({ id: item.value }) || '-'}</span> : null
+				})
 			},
 		},
-
 		{
 			title: <FormattedMessage id="TestSuite.default.case" />,
 			dataIndex: 'is_default',
@@ -306,12 +301,11 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			dataIndex: 'run_mode',
 			onCell: () => ({ style: { maxWidth: 100 } }),
 			render: (text: any) => {
-				return <>
-					{runList.map((item: any) => {
-						return item.id === text ? <span key={item.id}>{formatMessage({ id: item.id }) || '-'}</span> : null
-					})
-					}
-				</>
+				return (
+					runList.map((item: any) => {
+						return item.id === text ? <span key={item.id}>{formatMessage({ id: item.id }) || '-'}</span> : false
+					}).filter(Boolean)
+				)
 			}
 		},
 		{
@@ -319,7 +313,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <PopoverEllipsis title={text || '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
 			}
 		},
 		{
@@ -334,29 +328,28 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			title: <FormattedMessage id="TestSuite.remarks" />,
 			dataIndex: 'description',
 			onCell: () => ({ style: { maxWidth: 150 } }),
-			render: (text: any) => <PopoverEllipsis title={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
 		},
 		{
 			title: (<div><FormattedMessage id="Table.columns.operation" /><Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })} style={{ marginLeft: 8 }}><FormattedMessage id="operation.new" /></Button></div>),
 			width: 150,
 			fixed: 'right',
+			key: "operation",
 			render: (text: any, record: any) => {
 				return (
-					<div>
-						<Space>
-							{(record.test_type === 'business') ? (
-								<span>&emsp;&emsp;</span>
-							) : (
-								<a><span onClick={() => getSyncSuite(record.id)}><FormattedMessage id="operation.synchronize" /></span></a>
-							)}
-							<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit" /></span></a>
-							<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete" /></span></a>
-						</Space>
-					</div>
+					<Space>
+						{(record.test_type === 'business') ? (
+							<span>&emsp;&emsp;</span>
+						) : (
+							<a><span onClick={() => getSyncSuite(record.id)}><FormattedMessage id="operation.synchronize" /></span></a>
+						)}
+						<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit" /></span></a>
+						<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete" /></span></a>
+					</Space>
 				)
 			},
 		}
-	]);
+	];
 
 	const onChange = (page: number, pageSize: number) => {
 		getTableData({ page_num: page, page_size: pageSize })
@@ -377,8 +370,8 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		<div>
 			<CommonTable
 				className={styles.suitList_root}
-				columns={columns}
-				setColumns={setColumns}
+				columns={columns as any}
+				name="sys-suite-business-suite"
 				dataSource={list}
 				loading={loading}
 				page={pageNum}
@@ -422,7 +415,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 				centered={true}
 				okText={<FormattedMessage id="operation.delete" />}
 				cancelText={<FormattedMessage id="operation.cancel" />}
-				visible={deleteState.visible}
+				open={deleteState.visible}
 				onCancel={onCancel}
 				width={['', 201].includes(deleteState.result) ? 300 : 600}
 				maskClosable={false}

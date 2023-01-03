@@ -1,7 +1,6 @@
 import { Select, Form, Tag } from 'antd'
 import { queryDispatchTags } from './services';
 import React, { useContext, useEffect, useState } from 'react'
-import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import { DrawerProvider } from './Provider'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import { tagRender } from '../untils'

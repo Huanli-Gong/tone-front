@@ -4,7 +4,6 @@ import { CaretRightFilled, CaretDownFilled, QuestionCircleOutlined } from '@ant-
 import { querySuiteList, queryDomains } from './service';
 import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 import { suiteChange } from '@/components/Public/TestSuite/index.js';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import styles from './style.less';
 import CaseTable from './components/CaseTable';
 import BusinessTest from './BusinessTest';
@@ -14,6 +13,7 @@ import { SearchColumnFilterTitle, CheckboxColumnFilterTitle, UserSearchColumnFil
 import CodeViewer from '@/components/CodeViewer'
 import { TabCard } from '@/components/UpgradeUI';
 import { Access, useAccess } from 'umi'
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const SuiteManagement: React.FC<any> = (props) => {
 	const { formatMessage } = useIntl()
@@ -180,7 +180,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			},
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.description} width={100} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description} />
 				)
 			}
 		},
@@ -223,9 +223,9 @@ const SuiteManagement: React.FC<any> = (props) => {
 						key="performance"
 					/>
 					{
-						!BUILD_APP_ENV && 
+						!BUILD_APP_ENV &&
 						<TabPane
-							tab={<FormattedMessage id="business.test"/>}
+							tab={<FormattedMessage id="business.test" />}
 							key="business"
 						/>
 					}
@@ -311,7 +311,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 					</Spin>
 				)
 			}
-			
+
 			{fetchParams.test_type === 'business' && (
 				<BusinessTest ws_id={ws_id} />
 			)}

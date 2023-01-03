@@ -1,9 +1,8 @@
 import React, { memo, useEffect, useState } from 'react'
-import { Space, Popconfirm, message, Spin, DatePicker, Table, Divider, Button } from 'antd'
+import { Space, Popconfirm, message, Spin, DatePicker, Divider, Button } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
 import { Access, useAccess, useIntl, FormattedMessage } from 'umi'
 import { FilterFilled } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import SelectProject from '@/components/Public/SelectProject'
 import SelectProductVersion from '@/components/Public/SelectProductVersion'
@@ -12,6 +11,8 @@ import { queryReportList, delReportList, } from '../services'
 import _ from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 import { getSearchFilter, getUserFilter } from '@/components/TableFilters'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const { RangePicker } = DatePicker
 const ReportListTable = (props: any) => {
@@ -29,7 +30,7 @@ const ReportListTable = (props: any) => {
 
     const queryReport = async () => {
         setLoading(true)
-        const  data = await queryReportList(pageParam)
+        const data = await queryReportList(pageParam)
         if (data.code === 200) {
             setDataSource(data || {})
         } else {
@@ -41,7 +42,7 @@ const ReportListTable = (props: any) => {
     useEffect(() => {
         queryReport()
     }, [pageParam])
-    
+
     const totalCurrent = useStateRef(dataSource)
     const handleReportDel = async (id: any) => {
         const { page_size } = pageCurrent.current
@@ -57,7 +58,7 @@ const ReportListTable = (props: any) => {
         container: 180,
         button_width: 90
     }
-    
+
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
         const end_time = dateStrings[1]
@@ -75,15 +76,15 @@ const ReportListTable = (props: any) => {
         },
         className: 'no_tourist',
         ...getSearchFilter(
-            pageParam, 
-            setPageParam, 
-            'name', 
+            pageParam,
+            setPageParam,
+            'name',
             formatMessage({ id: 'report.columns.name.placeholder' }),
             styleObj,
         ),
         render: (_: any, row: any) => {
             return (
-                <PopoverEllipsis title={_ || '-'} >
+                <ColumnEllipsisText ellipsis={{ tooltip: _ }}>
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[pageParam.name || '']}
@@ -91,7 +92,7 @@ const ReportListTable = (props: any) => {
                         textToHighlight={_ || '-'}
                         onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}/`)}
                     />
-                </PopoverEllipsis>
+                </ColumnEllipsisText>
             )
         }
     },
@@ -102,44 +103,48 @@ const ReportListTable = (props: any) => {
         },
         width: 150,
         dataIndex: 'project',
-        filterDropdown: ({ confirm }: any) => <SelectProject 
-            confirm={confirm} 
-            onConfirm={ (val: any) => setPageParam({ ...pageParam, project_id: val, page_num: 1 })} 
-            page_size={9999} 
-            ws_id={ws_id} 
+        filterDropdown: ({ confirm }: any) => <SelectProject
+            confirm={confirm}
+            onConfirm={(val: any) => setPageParam({ ...pageParam, project_id: val, page_num: 1 })}
+            page_size={9999}
+            ws_id={ws_id}
         />,
         filterIcon: () => <FilterFilled style={{ color: pageParam.project_id ? '#1890ff' : undefined }} />,
-        render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-    }, {
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+    },
+    {
         dataIndex: 'product_version',
         ellipsis: {
             shwoTitle: false,
         },
         width: 150,
         title: <FormattedMessage id="report.columns.product_version" />,
-        filterDropdown: ({ confirm }: any) => <SelectProductVersion 
-            confirm={confirm} 
-            onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val, page_num: 1 })} 
-            page_size={9999} 
-            ws_id={ws_id} 
+        filterDropdown: ({ confirm }: any) => <SelectProductVersion
+            confirm={confirm}
+            onConfirm={(val: any) => setPageParam({ ...pageParam, product_version: val, page_num: 1 })}
+            page_size={9999}
+            ws_id={ws_id}
         />,
         filterIcon: () => <FilterFilled style={{ color: pageParam.product_version ? '#1890ff' : undefined }} />,
-        render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-    }, {
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+    },
+    {
         dataIndex: 'creator',
         width: 150,
         title: <FormattedMessage id="report.columns.creator" />,
         ...getUserFilter(pageParam, setPageParam, 'creator'),
-        render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-    }, {
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+    },
+    {
         dataIndex: 'description',
         width: 200,
         title: <FormattedMessage id="report.columns.description" />,
         ellipsis: {
             shwoTitle: false,
         },
-        render: (_: any) => <PopoverEllipsis title={_ || '-'} />
-    }, {
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+    },
+    {
         dataIndex: 'gmt_modified',
         width: 200,
         title: <FormattedMessage id="report.columns.gmt_modified" />,
@@ -153,24 +158,24 @@ const ReportListTable = (props: any) => {
                 />,
                 <Divider style={{ marginTop: '10px', marginBottom: '4px' }} />
                 <Button
-					type="text"
-					onClick={() => setPageParam({ ...pageParam, gmt_modified: undefined })}
-					size="small"
-					style={{ width: 75, border: 'none' }}
-				>
-					<FormattedMessage id="operation.reset" />
-				</Button>
+                    type="text"
+                    onClick={() => setPageParam({ ...pageParam, gmt_modified: undefined })}
+                    size="small"
+                    style={{ width: 75, border: 'none' }}
+                >
+                    <FormattedMessage id="operation.reset" />
+                </Button>
             </>
         ),
-        
+
         filterIcon: () => <FilterFilled style={{ color: pageParam.gmt_modified ? '#1890ff' : undefined }} />,
         ellipsis: true,
         render: (record: any) => {
             return record || '-'
         }
-
     },
-    access.WsTourist() && {
+    access.WsTourist() &&
+    {
         title: <FormattedMessage id="Table.columns.operation" />,
         width: 200,
         fixed: 'right',
@@ -204,14 +209,17 @@ const ReportListTable = (props: any) => {
 
     return (
         <Spin spinning={loading}>
-            <ClsResizeTable
-                size="small"
-                rowKey={record => record.id}
-                columns={columns}
-                pagination={false}
-                dataSource={dataSource.data || []}
-                scroll={{ x: '100%' }}
-            />
+            <ClsResizeTable>
+                <ResizeHooksTable
+                    size="small"
+                    name="ws-test-report-list"
+                    refreshDeps={[access, ws_id, pageParam]}
+                    rowKey={"id"}
+                    columns={columns}
+                    pagination={false}
+                    dataSource={dataSource.data || []}
+                />
+            </ClsResizeTable>
             <CommonPagination
                 total={dataSource.total}
                 pageSize={pageParam.page_size}

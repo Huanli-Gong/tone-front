@@ -1,14 +1,13 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { message, Space, Popover, Popconfirm } from 'antd';
+import { message, Space, Popover, Popconfirm, TableColumnsType } from 'antd';
 import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
 import { queryTableData, queryDelete } from '../../services';
-
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 export default forwardRef((props: any, ref: any) => {
     const { formatMessage } = useIntl();
@@ -102,15 +101,15 @@ export default forwardRef((props: any, ref: any) => {
         }
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: TableColumnsType<AnyType> = [
         {
             title: <FormattedMessage id="upload.list.table.product" />,
             dataIndex: 'product_name',
             ellipsis: {
                 showTitle: false
             },
-            onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 150 }, }),
-            render: (text: any) => <PopoverEllipsis title={text} />,
+            // onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 150 }, }),
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
         },
         {
             title: <FormattedMessage id="upload.list.table.project" />,
@@ -118,19 +117,19 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            onCell: () => ({ style: { whiteSpace: 'nowrap', minWidth: 100 }, }),
-            render: (text: any) => <PopoverEllipsis title={text} />,
+            // onCell: () => ({ style: { whiteSpace: 'nowrap', minWidth: 100 }, }),
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
         },
         {
             title: <FormattedMessage id="upload.list.table.state" />,
             dataIndex: 'state',
-            onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 100 }, }),
+            // onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 100 }, }),
             render: (text: any, record: any) => <StateFlag title={text} content={record.state_desc} />,
         },
         {
             title: <FormattedMessage id="upload.list.table.testType" />,
             dataIndex: 'test_type',
-            onCell: () => ({ style: { minWidth: 100 } }),
+            // onCell: () => ({ style: { minWidth: 100 } }),
             render: (text: any) => <span>{test_type_enum.filter((item: any) => item.value == text).map((item: any) => formatMessage({ id: item.value }))}</span>,
         },
         {
@@ -139,13 +138,14 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            onCell: () => ({ style: { minWidth: 100 } }),
-            render: (text: any) => <PopoverEllipsis title={text} />,
+            // onCell: () => ({ style: { minWidth: 100 } }),
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
         },
         {
             title: <FormattedMessage id="upload.list.table.uploader" />,
             dataIndex: 'uploader',
-            onCell: () => ({ style: { minWidth: 100 } }),
+            ellipsis: true,
+            // onCell: () => ({ style: { minWidth: 100 } }),
             render: (text: any) => <span>{text || '-'}</span>,
         },
         {
@@ -154,7 +154,7 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            onCell: () => ({ style: { maxWidth: 170 } }),
+            // onCell: () => ({ style: { maxWidth: 170 } }),
             render: (text: any) => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '-'}</span>,
         },
         {
@@ -162,7 +162,10 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            onCell: () => ({ style: { minWidth: 118 } }),
+            width: 180,
+            fixed: "right",
+            key: "operation",
+            // onCell: () => ({ style: { minWidth: 118 } }),
             render: (text: any, record: any) => (
                 <Space>
                     {['file', 'running', 'fail'].includes(record.state) ? (
@@ -184,11 +187,13 @@ export default forwardRef((props: any, ref: any) => {
                                     }
                                 >
                                     <Space>
-                                        <a onClick={() => {
-                                            const a = document.createElement('a');
-                                            a.href = record.file_link;
-                                            a.click();
-                                        }}><FormattedMessage id="operation.download" /></a>
+                                        <a
+                                            href={record.file_link}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            <FormattedMessage id="operation.download" />
+                                        </a>
                                         <Popconfirm
                                             placement="topRight"
                                             title={<FormattedMessage id="delete.prompt" />}
@@ -206,20 +211,20 @@ export default forwardRef((props: any, ref: any) => {
                 </Space>
             ),
         },
-    ]);
+    ];
 
     return (
         <div>
             <CommonTable
                 loading={false}
                 columns={columns}
-                setColumns={setColumns}
+                name="ws-offline-upload"
+                refreshDeps={[access,]}
                 total={data.total}
                 page={data.page_num}
                 pageSize={data.page_size}
                 dataSource={data.data}
                 handlePage={onChange}
-                scroll={{ x: '100%' }}
             />
 
             <ModalForm ws_id={ws_id} visible={visible} callback={hiddenModalCallback} />

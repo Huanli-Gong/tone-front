@@ -358,16 +358,22 @@ const SelectSuite: React.FC<any> = ({
 				!!memoDeleteIp.length &&
 				<div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>
 					<Row style={{ padding: '10px' }}>
-						<Col span={24}>
-							<ExclamationCircleOutlined style={{ color: '#FAAD14', paddingRight: 5 }} />
-							{
-								memoDeleteIp.map((item: any) => (
-									<span style={{ marginRight: 20 }}>
-										{item.ip}/{item.sn}
-									</span>
-								))
-							}
-							<Typography.Text style={{ color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="select.suite.removed" /></Typography.Text>
+						<Col span={24} style={{ display: 'flex' }} >
+							<ExclamationCircleOutlined style={{ color: '#FAAD14', marginRight: 8, marginTop: 4 }} />
+							<div
+								style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" }}
+							>
+								{
+									memoDeleteIp.map((item: any) => (
+										<Typography.Text>
+											{`${item.ip}/${item.sn}`}
+										</Typography.Text>
+									))
+								}
+								<Typography.Text style={{ color: 'rgba(0,0,0,0.85)' }}>
+									<FormattedMessage id="select.suite.removed" />
+								</Typography.Text>
+							</div>
 						</Col>
 					</Row>
 				</div>

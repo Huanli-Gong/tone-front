@@ -2,13 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Popover, Table, Radio } from 'antd';
 import styles from './index.less'
 import { FilterFilled } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
-import SelectUser from '@/components/Public/SelectUser'
 import _ from 'lodash'
 import styled from 'styled-components'
 import { useIntl } from "umi"
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 const SelectJob = styled.span`
     color: #1890FF;
     
@@ -105,17 +104,16 @@ export default (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={row && row.name}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
-
         },
         {
             title: '创建人',
@@ -133,12 +131,10 @@ export default (props: any) => {
         // onSelect: selectedChange,
         preserveSelectedRowKeys: false,
         renderCell: (checked, record) => {
-
             return (
                 <Radio.Group onChange={onChange} value={selectedRowKeys[0]}>
                     <Radio value={record.id} />
                 </Radio.Group>
-
             )
         },
         hideSelectAll: true

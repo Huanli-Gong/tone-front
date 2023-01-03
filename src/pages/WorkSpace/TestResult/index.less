@@ -85,8 +85,13 @@
                 align-items: center;
             }
         }
+
         .ant-table-cell:first-child .no_collection_star {
             visibility: hidden;
+        }
+
+        .ant-typography.result_job_hover_span {
+            color: rgba(0,0,0,0.85);
         }
     }
 
@@ -100,6 +105,14 @@
             .result_job_hover_span {
                 color: #1890FF;
                 cursor: pointer;
+                .ant-typography.ant-typography-ellipsis {
+                    color: #1890FF;
+                }
+            }
+
+            .ant-typography.result_job_hover_span {
+                color: #1890FF;
+                transition: none;
             }
         } 
     }

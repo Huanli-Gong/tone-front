@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, useMemo, useCallback } from 'react';
-import { Button, Space, Popconfirm, message } from 'antd';
+import React, { useState, useEffect, useRef, useImperativeHandle, useCallback } from 'react';
+import { Space, Popconfirm, message, Typography } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { queryClusterMachine, delGroupMachine, editGroupMachine, stateRefresh } from '../../service';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../../DataSetPulic';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import styles from './style.less';
-import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import ServerLink from '@/components/MachineWebLink/index';
 import GroupMachine from '../../AddMachinePubilc/index';
 import Log from '@/components/Public/Log';
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const GroupTree: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
@@ -62,7 +62,7 @@ const GroupTree: React.FC<any> = (props) => {
         }
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: (
                 !!is_instance ?
@@ -82,8 +82,8 @@ const GroupTree: React.FC<any> = (props) => {
                         param={row.id}
                         provider={"aliyun"}
                         machine_pool={true}
-                    />
-                    : <EllipsisPulic title={row.name} />
+                    /> :
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.name} />
             )
         },
         !!is_instance &&
@@ -94,7 +94,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <EllipsisPulic title={row.sn} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.sn} />
         },
         BUILD_APP_ENV && !!is_instance &&
         {
@@ -104,7 +104,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <EllipsisPulic title={row.tsn} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.tsn} />
         },
         !BUILD_APP_ENV && !!is_instance &&
         {
@@ -122,7 +122,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.manufacturer}/${row.ak_name}`} />
         },
         {
             title: 'Region/Zone',
@@ -131,7 +131,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'region',
-            render: (_: number, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.region}/${row.zone}`} />
         },
         {
             title: <FormattedMessage id="device.instance_type" />,
@@ -140,7 +140,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <EllipsisPulic title={row.instance_type} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.instance_type} />
         },
         {
             title: <FormattedMessage id="device.image" />,
@@ -149,7 +149,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'image',
-            render: (_: number, row: any) => <EllipsisPulic title={row.image}>{row.image_name}</EllipsisPulic>
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: row.image }} >{row.image_name}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.bandwidth" />,
@@ -165,12 +165,6 @@ const GroupTree: React.FC<any> = (props) => {
             width: 100,
             render: (_: number, row: any) => <DataSetPulic name={row.storage_type} formatMessage={formatMessage} />
         },
-        // {
-        //     title: '用完释放',
-        //     dataIndex: 'release_rule',
-        //     width: 100,
-        //     render: (_: number, row: any) => <div style={{ width: 100 }}>{row.release_rule ? '是' : '否'}</div>
-        // },
         {
             title: <FormattedMessage id="device.console_conf" />,
             width: enLocale ? 170 : 100,
@@ -178,7 +172,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'console_conf',
-            render: (_: number, row: any) => <EllipsisPulic title={row.console_conf} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.console_conf} />
         },
         {
             title: <FormattedMessage id="device.private_ip" />,
@@ -187,7 +181,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'private_ip',
-            render: (_: number, row: any) => <EllipsisPulic title={row.private_ip} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.private_ip} />
         },
         {
             title: <FormattedMessage id="device.channel_type" />,
@@ -196,7 +190,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <EllipsisPulic title={row.channel_type} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.channel_type} />
         },
         {
             title: 'Owner',
@@ -205,37 +199,41 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'owner_name',
-            render: (_: any, row: any) => <EllipsisPulic title={row.owner_name} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.owner_name} />
         },
         {
             title: <FormattedMessage id="device.local.server" />,
             dataIndex: 'role',
             width: 120,
             align: 'center',
-            render: (text: number, row: any) => <span>
-                {row.role === "local" ?
+            render: (text: number, row: any) => (
+                row.role === "local" ?
                     <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} />
-                    : <CheckCircleOutlined onClick={() => handleSetDefault(row, 'role')} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
-                }
-            </span>
+                    : <CheckCircleOutlined
+                        onClick={() => handleSetDefault(row, 'role')}
+                        style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }}
+                    />
+            )
         },
         {
             title: <FormattedMessage id="device.baseline_server" />,
             dataIndex: 'baseline_server',
             width: 140, // enLocale ? 170: 120,
             align: 'center',
-            render: (text: number, row: any) => <span>
-                {text ?
+            render: (text: number, row: any) => (
+                text ?
                     <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} />
-                    : <CheckCircleOutlined onClick={() => handleSetDefault(row, 'baseline_server')} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
-                }
-            </span>
+                    : <CheckCircleOutlined
+                        onClick={() => handleSetDefault(row, 'baseline_server')}
+                        style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }}
+                    />
+            )
         },
         {
             title: <FormattedMessage id="device.install.kernel" />,
             dataIndex: 'kernel_install',
             width: 120,
-            render: (text: number, row: any) => <span>{text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />}</span>
+            render: (text: number, row: any) => text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />
         },
         {
             title: <FormattedMessage id="device.var_name" />,
@@ -249,19 +247,21 @@ const GroupTree: React.FC<any> = (props) => {
         {
             title: <FormattedMessage id="device.server.state" />,
             width: 120,
+            dataIndex: "state",
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
+            render: (_, record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         !!is_instance &&
         {
             title: <FormattedMessage id="device.real_state" />,
             width: 160,
+            dataIndex: "real_state",
             ellipsis: {
                 showTitle: false,
             },
-            render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
+            render: (_, record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
             title: <FormattedMessage id="device.description" />,
@@ -270,13 +270,13 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'description',
-            render: (_: number, row: any) => <EllipsisPulic title={row.description} width={100} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description} width={100} />
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
             valueType: 'option',
-            dataIndex: 'id',
+            key: 'operation',
             width: BUILD_APP_ENV ? 222 : 182,
             render: (_: number, row: any) => (
                 <Space>
@@ -284,15 +284,31 @@ const GroupTree: React.FC<any> = (props) => {
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
                             <Space>
-                                {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
+                                {
+                                    (BUILD_APP_ENV && !!is_instance) &&
+                                    <Typography.Link onClick={() => AccessTootip()}>
+                                        <FormattedMessage id="device.synchronization.state" />
+                                    </Typography.Link>
+                                }
+                                <Typography.Link onClick={() => AccessTootip()}>
+                                    <FormattedMessage id="operation.edit" />
+                                </Typography.Link>
+                                <Typography.Link onClick={() => AccessTootip()}>
+                                    <FormattedMessage id="operation.delete" />
+                                </Typography.Link>
                             </Space>
                         }
                     >
                         <Space>
-                            {(BUILD_APP_ENV && !!is_instance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state" /></Button>}
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }}><FormattedMessage id="operation.edit" /></Button>
+                            {
+                                (BUILD_APP_ENV && !!is_instance) &&
+                                <Typography.Link onClick={() => handleRefresh(row)}>
+                                    <FormattedMessage id="device.synchronization.state" />
+                                </Typography.Link>
+                            }
+                            <Typography.Link onClick={() => { editMachine(row) }}>
+                                <FormattedMessage id="operation.edit" />
+                            </Typography.Link>
                             <Popconfirm
                                 title={<div style={{ color: 'red' }}><FormattedMessage id="delete.prompt" /></div>}
                                 placement="topRight"
@@ -302,17 +318,17 @@ const GroupTree: React.FC<any> = (props) => {
                                 overlayStyle={{ width: '280px' }}
                                 icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                             >
-                                <Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete" /></Button>
+                                <Typography.Link><FormattedMessage id="operation.delete" /></Typography.Link>
                             </Popconfirm>
                         </Space>
                     </Access>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}>
+                    <Typography.Link onClick={() => handleOpenLogDrawer(row.id)}>
                         <FormattedMessage id="operation.log" />
-                    </Button>
+                    </Typography.Link>
                 </Space>
             )
         }
-    ])
+    ]
 
     const handleRefresh = async (row: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
@@ -363,12 +379,13 @@ const GroupTree: React.FC<any> = (props) => {
                     style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
                 />
             }
-            <ResizeTable
+            <ResizeHooksTable
                 style={{ width: width - 79 }}
                 loading={loading}
                 scroll={{ x: '100%' }}
                 columns={columns as any}
-                setColumns={setColumns}
+                refreshDeps={[is_instance, ws_id, enLocale]}
+                name="ws-device-cloud-group"
                 showHeader={!!data.length}
                 dataSource={data}
                 rowKey={'id'}

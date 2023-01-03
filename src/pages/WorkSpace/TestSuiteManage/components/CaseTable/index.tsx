@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Tooltip, Drawer, Typography } from 'antd';
+import { Tabs, Tooltip, Drawer, Typography, Space } from 'antd';
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import { FormattedMessage } from 'umi'
 import styles from '../../style.less';
@@ -7,8 +7,8 @@ import MetricTable from '../../components/MetricTable';
 import CommonTable from '@/components/Public/CommonTable';
 import CodeViewer from '@/components/CodeViewer'
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
+import type { TableColumnsType } from 'antd';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) => {
     const { TabPane } = Tabs;
@@ -25,12 +25,12 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
         setExpandInnerKey([record.id])
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: TableColumnsType<AnyType> = [
         {
             title: 'Test Conf', dataIndex: 'name',
             ellipsis: true, width: 300,
             fixed: 'left',
-            render: (_: any) => <EllipsisPulic title={_} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
         },
         { title: <FormattedMessage id="suite.alias" />, dataIndex: 'alias', width: 100, ellipsis: true },
         {
@@ -44,50 +44,48 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
         {
             title: <FormattedMessage id="suite.var" />, dataIndex: 'var', ellipsis: true,
             width: 120,
-            render: (_: number, row: any) =>
-                <PopoverEllipsis
-                    title={
-                        row.var && JSON.parse(row.var).map((item: any, index: number) => {
+            render: (_: number, row: any) => (
+                <ColumnEllipsisText
+                    ellipsis={{
+                        tooltip: row.var && JSON.parse(row.var).map((item: any, index: number) => {
                             return <p key={index}>{`${item.name}=${item.val},${item.des || '-'}`};</p>
                         })
-                    }
+                    }}
                 >
-                    <span>
+                    <Space direction="vertical" style={{ width: "100%" }}>
                         {
-                            row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
-                                return `${item.name}=${item.val},${item.des || '-'};`
+                            row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any, index: number) => {
+                                return <p key={index}>{`${item.name}=${item.val},${item.des || '-'}`};</p>
                             }) : '-'
                         }
-                    </span>
-                </PopoverEllipsis>,
+                    </Space>
+                </ColumnEllipsisText>
+            ),
         },
         {
             title: <FormattedMessage id="suite.description" />, dataIndex: 'doc', width: 120, ellipsis: true,
             render: (_: any, row: any) => (
-                <div>
-                    <ButtonEllipsis
-                        title={row.doc}
-                        isCode={true}
-                        width={90}
-                        onClick={() => {
-                            setShow(true)
-                            setDes(row.doc)
-                        }}
-                    />
-                </div>
+                <ButtonEllipsis
+                    title={row.doc}
+                    isCode={true}
+                    width={90}
+                    onClick={() => {
+                        setShow(true)
+                        setDes(row.doc)
+                    }}
+                />
             )
-            // render: (text:string) =><Typography.Text>{ text || '-'}</Typography.Text>
         },
         { title: <FormattedMessage id="suite.gmt_created" />, dataIndex: 'gmt_created', width: 170 },
-    ]);
+    ];
 
     return (
         <div className={styles.warp}>
             {
                 type == 'performance' &&
                 <Tabs defaultActiveKey={'case'} activeKey={innerKey} onChange={(key) => handleInnerTab(key)} >
-                    <TabPane tab="Test Conf" key="case"></TabPane>
-                    <TabPane tab={<FormattedMessage id="suite.indicators" />} key="suite" ></TabPane>
+                    <TabPane tab="Test Conf" key="case" />
+                    <TabPane tab={<FormattedMessage id="suite.indicators" />} key="suite"  />
                 </Tabs>
             }
             {
@@ -95,7 +93,7 @@ const SuiteManagement: React.FC<any> = ({ record, id, type, ws_id, domains }) =>
                     <CommonTable
                         // scrollType={1030}
                         columns={columns}
-                        setColumns={setColumns}
+                        name="ws-suite-manage-case"
                         dataSource={record}
                         loading={false}
                         showPagination={false}

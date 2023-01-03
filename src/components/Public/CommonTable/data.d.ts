@@ -1,6 +1,5 @@
 import { TableProps } from 'antd/lib/table';
 export type UserTable = {
-    setColumns: any;
     list: any[];
     columns: any;
     handlePage?: any;

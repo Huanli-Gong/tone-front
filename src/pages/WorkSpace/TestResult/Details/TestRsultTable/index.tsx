@@ -3,12 +3,11 @@ import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } fr
 import { queryTestResult } from '../service'
 import { Space, Row, Button, Menu, Dropdown } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { matchTestType } from '@/utils/utils'
 import CaseTable from './CaseTable'
 import JoinBaseline from '../components/JoinBaseline'
 import EditRemarks from '../components/EditRemarks'
-import { filter, uniqBy } from 'lodash'
+import { uniqBy } from 'lodash'
 import { ReactComponent as StopCircle } from '@/assets/svg/TestResult/suite/skip.svg'
 import { ReactComponent as SuccessCircle } from '@/assets/svg/TestResult/suite/success.svg'
 import { ReactComponent as ErrorCircle } from '@/assets/svg/TestResult/suite/fail.svg'
@@ -16,7 +15,9 @@ import { EllipsisEditColumn, tooltipTd } from '../components'
 import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline';
 import { AccessTootip } from '@/utils/utils';
-import ResizeTable from '@/components/ResizeTable'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { v4 as uuid } from "uuid"
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 // 结果详情 - 测试列表
 
@@ -60,7 +61,7 @@ const TestResultTable: React.FC<any> = (props) => {
     const [filterData, setFilterData] = useState<any>([])
     // const [openAllExpand, setOpenAllExpand] = useState(false)
     const access = useAccess()
-    const [refreshCaseTable, setRefreshCaseTable] = useState(false)
+    const [refreshCaseTable, setRefreshCaseTable] = useState<any>(uuid())
     // 展开指标级的标志
     const [indexExpandFlag, setIndexExpandFlag] = useState(false)
 
@@ -84,7 +85,7 @@ const TestResultTable: React.FC<any> = (props) => {
 
     const { baseline, baseline_job_id } = filterData[0] || {}
     // 判断第一条数据中的属性
-    const [columns, setColumns] = React.useState([
+    const columns = [
         {
             title: 'Test Suite',
             dataIndex: 'suite_name',
@@ -112,11 +113,12 @@ const TestResultTable: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <PopoverEllipsis title={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
         },
         {
             title: <FormattedMessage id="ws.result.details.the.server" />,
             width: 130,
+            dataIndex: "server",
             render: () => ('-')
         },
         ['functional', 'business_functional', 'business_business'].includes(testType) &&
@@ -137,8 +139,13 @@ const TestResultTable: React.FC<any> = (props) => {
             }
         },
         {
-            title: ['functional', 'business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.functional" /> : (testType === 'business_business' ? <FormattedMessage id="ws.result.details.business_business" /> : <FormattedMessage id="ws.result.details.performance" />),
+            title: ['functional', 'business_functional'].includes(testType) ?
+                <FormattedMessage id="ws.result.details.functional" /> :
+                (testType === 'business_business' ?
+                    <FormattedMessage id="ws.result.details.business_business" /> :
+                    <FormattedMessage id="ws.result.details.performance" />),
             width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
+            key: "details",
             render: (_: any) => {
                 return (
                     ['functional', 'business_functional', 'business_business'].includes(testType) ?
@@ -215,6 +222,7 @@ const TestResultTable: React.FC<any> = (props) => {
             title: <FormattedMessage id="Table.columns.operation" />,
             width: locale ? 180 : 145,
             fixed: 'right',
+            key: "operation",
             ellipsis: {
                 showTitle: false
             },
@@ -240,7 +248,7 @@ const TestResultTable: React.FC<any> = (props) => {
                 )
             }
         }
-    ])
+    ]
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, job_id })
@@ -258,7 +266,7 @@ const TestResultTable: React.FC<any> = (props) => {
         queryDefaultTestData()
         setSuiteCaseSelectKeys([])
         setSelectedRowKeys([])
-        setRefreshCaseTable(!refreshCaseTable)
+        setRefreshCaseTable(uuid())
     }
 
     const handleJoinBaselineOk = () => {
@@ -387,6 +395,10 @@ const TestResultTable: React.FC<any> = (props) => {
     const expandBtnText = isOpenAllConf ? formatMessage({ id: `ws.result.details.folded.conf` }) : formatMessage({ id: `ws.result.details.expand.conf` })
     const expandIndexBtnText = indexExpandFlag ? formatMessage({ id: `ws.result.details.folded.${childName}` }) : formatMessage({ id: `ws.result.details.expand.${childName}` })
 
+    const RESULT_SUITE_TABLE_NAME = "ws-job-result-list"
+
+    const [columnsChange, setColumnsChange] = React.useState(uuid())
+
     return (
         <>
             <div style={{ padding: "4px 20px 20px 20px" }}>
@@ -460,15 +472,16 @@ const TestResultTable: React.FC<any> = (props) => {
                         }
                     </Space>
                 </Row>
-                <ResizeTable
+                <ResizeHooksTable
                     columns={columns as any}
-                    setColumns={setColumns}
+                    onColumnsChange={() => setColumnsChange(uuid())}
                     rowKey="suite_id"
+                    name={RESULT_SUITE_TABLE_NAME}
                     dataSource={filterData}
                     pagination={false}
+                    refreshDeps={[ws_id, access, testType, baseline, baseline_job_id, creator]}
                     size="small"
                     loading={loading}
-                    scroll={{ x: '100%' }}
                     className={styles.result_expand_table}
                     style={{ marginTop: 20 }}
                     rowSelection={rowSelection}
@@ -499,19 +512,18 @@ const TestResultTable: React.FC<any> = (props) => {
                             <CaseTable
                                 key={refreshCaseTable}
                                 {...record}
-                                ws_id={ws_id}
                                 creator={creator}
+                                columnsChange={columnsChange}
+                                parentTableName={RESULT_SUITE_TABLE_NAME}
                                 server_provider={serverProvider}
                                 provider_name={serverProvider}
                                 testType={testType}
-                                job_id={job_id}
                                 setIndexExpandFlag={setIndexExpandFlag}
                                 suiteSelect={selectedRowKeys}
                                 onCaseSelect={handleCaseSelect}
                                 expandedCaseRowKeys={expandedCaseRowKeys}
                             />
                         ),
-
                         expandIcon: ({ expanded, onExpand, record }: any) => (
                             // expanded ? null : null
                             expanded ?

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Popover, Tooltip, Space, message, Button, Popconfirm, Modal, Checkbox, Typography } from 'antd';
-import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Space, message, Button, Modal, Checkbox, Typography } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage } from 'umi'
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import AddConfDrawer from './AddConfDrawer';
 import { delCase, queryConf, delBentch } from '../../../../service';
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import styles from './index.less';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * @module 业务测试
@@ -180,19 +180,19 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 	}
 
 	// 1.业务测试
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		{
 			title: 'Test Conf',
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 150,
-			render: (text: any) => <PopoverEllipsis title={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }}>{text}</ColumnEllipsisText>,
 		},
 		{
 			title: <FormattedMessage id="TestSuite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <PopoverEllipsis title={text} />
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 		},
 		{
 			title: <FormattedMessage id="TestSuite.timeout" />,
@@ -212,7 +212,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			dataIndex: 'ci_type',
 			width: 110,
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			}
 		},
 		{
@@ -220,14 +220,14 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <PopoverEllipsis title={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} width={170} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
 			}
 		},
 		{
 			title: <FormattedMessage id="TestSuite.desc" />,
 			dataIndex: 'description',
 			width: 200,
-			render: (text: any) => <PopoverEllipsis title={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
 		},
 		{
 			title: (
@@ -238,19 +238,19 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 					</Button>
 				</Space>
 			),
+			key: "operation",
 			width: 150,
 			fixed: 'right',
 			render: (text: any, record: any) => {
-				return (<div>
+				return (
 					<Space>
 						<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit" /></span></a>
 						<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete" /></span></a>
 					</Space>
-				</div>
 				)
 			},
 		}
-	]);
+	];
 
 	const onChange = (page: number, pageSize: number) => {
 		getTableData({ page_num: page, page_size: pageSize })
@@ -266,9 +266,10 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 	let list = data.data, total = data.total, pageNum = data.page_num, pageSize = data.page_size
 	return (
 		<div>
-			<CommonTable className={styles.confList_root}
-				columns={columns}
-				setColumns={setColumns}
+			<CommonTable
+				className={styles.confList_root}
+				columns={columns as any}
+				name="sys-suite-bussiness-conf"
 				dataSource={list}
 				loading={loading}
 				page={pageNum}
@@ -284,7 +285,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 				centered={true}
 				okText={<FormattedMessage id="operation.delete" />}
 				cancelText={<FormattedMessage id="operation.cancel" />}
-				visible={deleteState.visible}
+				open={deleteState.visible}
 				onCancel={onCancel}
 				width={['', 201].includes(deleteState.success) ? 300 : 600}
 				maskClosable={false}

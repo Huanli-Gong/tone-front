@@ -1,14 +1,14 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Popover, Tooltip, Space, message, Table, Pagination } from 'antd';
-import { FilterFilled, CaretRightFilled, CaretDownFilled, ExclamationCircleOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, forwardRef } from 'react';
+import { message, Table, Pagination } from 'antd';
+import { FilterFilled, CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
 import { useIntl, FormattedMessage, getLocale } from 'umi';
 import moment from 'moment';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SearchInput from '@/components/Public/SearchInput';
 import SelectDrop from '@/components/Public//SelectDrop';
 import SuiteList from './components/SuiteList';
 import { queryBusinessList } from '../service';
 import styles from './index.less';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * ws-业务测试
@@ -64,7 +64,7 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={260} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			},
 		},
 		{
@@ -72,7 +72,7 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <PopoverEllipsis title={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} width={170} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
 			}
 		},
 		{
@@ -80,7 +80,7 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <PopoverEllipsis title={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} width={170} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
 			}
 		},
 		{
@@ -95,14 +95,14 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={150} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			}
 		},
 		{
 			title: <FormattedMessage id="suite.remarks" />,
 			dataIndex: 'description',
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={200} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			}
 		},
 	];

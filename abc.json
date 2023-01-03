@@ -3,10 +3,12 @@
         "type": "command",
         "command": {
             "cmd": [
-                "yarn install",
-                "yarn run build:tone",
+                "tnpm install pnpm -g",
+                "pnpm install",
+                "pnpm run build",
                 "mv ./dist $BUILD_DEST"
             ]
         }
-    }
+    },
+    "nodeVersion": 16
 }

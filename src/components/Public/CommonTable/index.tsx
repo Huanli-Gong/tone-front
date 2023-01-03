@@ -3,13 +3,12 @@ import { Pagination, Spin } from 'antd';
 import type { TableProps } from "antd"
 import { useIntl } from 'umi'
 import styles from './style.less';
-import ResizeTable from '@/components/ResizeTable'
+import { ResizeHooksTable } from '@/utils/table.hooks';
 
-type Any = Record<string, any>
+type Any = AnyType & { refreshDeps?: any[] }
 
 const CommonTable: React.FC<TableProps<Any> & Any> = (props) => {
-    const { list,
-        setColumns,
+    const {
         total = 0,
         loading,
         handlePage,
@@ -42,11 +41,10 @@ const CommonTable: React.FC<TableProps<Any> & Any> = (props) => {
     }
 
     return (
-        <Spin spinning={loading}>
-            <div ref={table}></div>
-            <ResizeTable
+        <Spin spinning={loading as any}>
+            <div ref={table} />
+            <ResizeHooksTable
                 size={"small"}
-                setColumns={setColumns}
                 className={`${styles.table_empty} ${className}`}
                 pagination={false}
                 {...rest}

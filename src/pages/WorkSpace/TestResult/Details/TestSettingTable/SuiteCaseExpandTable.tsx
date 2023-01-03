@@ -1,15 +1,14 @@
 import React from 'react'
-import { Table, Tooltip } from 'antd'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
+import { Tooltip } from 'antd'
 import { ServerTooltip } from './ServerTooltip'
-import ResizeTable from '@/components/ResizeTable'
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { useIntl, FormattedMessage } from 'umi'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 //测试用例及机器配置 expand table
-export default ({ data = [], testType, provider_name }: any) => {
+export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsChange }: any) => {
     const { formatMessage } = useIntl()
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: 'Test Conf',
             dataIndex: 'test_case_name',
@@ -50,6 +49,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                 showTitle: false
             },
             width: 150,
+            key: "variable",
             render: (_: any) => {
                 const envStr = _.env_info && JSON.stringify(_.env_info) !== '{}' ?
                     Object.keys(_.env_info).reduce(
@@ -58,7 +58,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                     ) : '-'
 
                 return (
-                    <EllipsisPulic title={envStr} width={150} />
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }} children={envStr} />
                 )
             }
         },
@@ -96,11 +96,12 @@ export default ({ data = [], testType, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <PopoverEllipsis title={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
         },
         {
             title: <FormattedMessage id="ws.result.details.monitor" />,
             width: 100,
+            dataIndex: "monitor",
             ellipsis: {
                 showTitle: false
             },
@@ -114,17 +115,18 @@ export default ({ data = [], testType, provider_name }: any) => {
                 showTitle: false
             },
         }
-    ])
+    ]
 
     return (
-        <ResizeTable
+        <ResizeHooksTable
             dataSource={data}
             columns={columns}
-            setColumns={setColumns}
+            onColumnsChange={onColumnsChange}
+            refreshDeps={[testType, columnsRefresh]}
+            name="ws-job-result-setting-case"
             rowKey="test_case_id"
             pagination={false}
             size="small"
-            scroll={{ x: '100%' }}
         />
     )
 }

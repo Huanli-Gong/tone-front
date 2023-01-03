@@ -1,7 +1,7 @@
-import { Space, Table, Tooltip, Input, Button, Typography, message } from 'antd'
+import { Space, Tooltip, Input, Button, Typography, TableColumnProps } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useRequest, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
 import { queryCaseResult } from '../service'
 import EditRemarks from '../components/EditRemarks'
@@ -10,11 +10,12 @@ import { QusetionIconTootip } from '@/components/Product';
 import qs from 'querystring'
 
 import Highlighter from 'react-highlight-words'
-// import VirtualTable from '@/components/VirtualTable'
 
 import { tooltipTd } from '../components'
 import styles from './index.less'
 import { targetJump, AccessTootip } from '@/utils/utils'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -98,12 +99,14 @@ export default (props: any) => {
             }
         },
         render: (text: any,) => (
-            <Highlighter
-                highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                searchWords={[interfaceSearchKeys?.sub_case_name as any]}
-                autoEscape
-                textToHighlight={text ? text.toString() : ''}
-            />
+            <ColumnEllipsisText ellipsis={{ tooltip: text }}>
+                <Highlighter
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[interfaceSearchKeys?.sub_case_name as any]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            </ColumnEllipsisText>
         )
     });
 
@@ -140,130 +143,144 @@ export default (props: any) => {
         joinBaseline.current.show({ ...item, suite_id, job_id, test_case_id })
     }
 
-    const columns = [{
-        dataIndex: 'sub_case_name',
-        title: 'Test Case',
-        width: 400,
-        ...tooltipTd(),
-        ...getColumnSearchProps('sub_case_name', 'Test Case'),
-    }, {
-        dataIndex: 'result',
-        title: (
-            <QusetionIconTootip
-                placement="bottomLeft"
-                title={formatMessage({ id: 'ws.result.details.test.result' })}
-                desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file' })}
-            />
-        ),
-        render: (_: any) => {
-            let color = ''
-            if (_ === 'Fail') color = '#C84C5A'
-            if (_ === 'Pass') color = '#81BF84'
-            if (_ === 'Warning') color = '#dcc506'
-            if (_ === 'Stop') color = '#1D1D1D'
-            return <span style={{ color }}>{_}</span>
-        }
-    }, {
-        dataIndex: 'description',
-        title: (
-            <QusetionIconTootip
-                placement="bottomLeft"
-                title={formatMessage({ id: 'ws.result.details.baseline.description' })}
-                desc={formatMessage({ id: 'ws.result.details.baseline.description.ps' })}
-            />
-        ),
-        ellipsis: true,
-        render: (_: any, row: any) => {
-            let context = row.description
-            const localeStr = formatMessage({ id: 'ws.result.details.match.baseline' })
-            if (row.match_baseline && row.result === 'Fail')
-                context = _ ? `${_}(${localeStr})` : localeStr
-            if (access.IsWsSetting())
-                return (
-                    <Tooltip placement="topLeft" title={context}>
-                        <Typography.Link
-                            className={styles.hrefUrl}
-                            onClick={
-                                () => {
-                                    if (row.skip_baseline_info) {
-                                        const baselineProvider = row.skip_baseline_info.server_provider === 'aligroup' ? 'group' : 'cluster'
-                                        targetJump(`/ws/${ws_id}/baseline/${baselineProvider}?${qs.stringify(row.skip_baseline_info)}`)
+    const columns: TableColumnProps<AnyType>[] = [
+        {
+            dataIndex: 'sub_case_name',
+            title: 'Test Case',
+            fixed: "left",
+            width: 400,
+            ...tooltipTd(),
+            ...getColumnSearchProps('sub_case_name', 'Test Case'),
+        },
+        {
+            dataIndex: 'result',
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={formatMessage({ id: 'ws.result.details.test.result' })}
+                    desc={formatMessage({ id: 'ws.result.details.test.result.view.log.file' })}
+                />
+            ),
+            width: 150,
+            ellipsis: true,
+            render: (_: any) => {
+                let color = ''
+                if (_ === 'Fail') color = '#C84C5A'
+                if (_ === 'Pass') color = '#81BF84'
+                if (_ === 'Warning') color = '#dcc506'
+                if (_ === 'Stop') color = '#1D1D1D'
+                return <span style={{ color }}>{_}</span>
+            }
+        },
+        {
+            dataIndex: 'description',
+            width: 180,
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={formatMessage({ id: 'ws.result.details.baseline.description' })}
+                    desc={formatMessage({ id: 'ws.result.details.baseline.description.ps' })}
+                />
+            ),
+            ellipsis: true,
+            render: (_: any, row: any) => {
+                let context = row.description
+                const localeStr = formatMessage({ id: 'ws.result.details.match.baseline' })
+                if (row.match_baseline && row.result === 'Fail')
+                    context = _ ? `${_}(${localeStr})` : localeStr
+                if (!context) return "-"
+                if (access.IsWsSetting())
+                    return (
+                        <Tooltip placement="topLeft" title={context}>
+                            <Typography.Link
+                                className={styles.hrefUrl}
+                                onClick={
+                                    () => {
+                                        if (row.skip_baseline_info) {
+                                            const baselineProvider = row.skip_baseline_info.server_provider === 'aligroup' ? 'group' : 'cluster'
+                                            targetJump(`/ws/${ws_id}/baseline/${baselineProvider}?${qs.stringify(row.skip_baseline_info)}`)
+                                        }
                                     }
                                 }
+                            >
+                                {context || '-'}
+                            </Typography.Link>
+                        </Tooltip >
+                    )
+                return (<ColumnEllipsisText ellipsis={{ tooltip: true }}>{context || '-'}</ColumnEllipsisText>)
+            }
+        },
+        {
+            dataIndex: 'bug',
+            title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" /> : <FormattedMessage id="ws.result.details.bug" />,
+            width: 180,
+            ellipsis: true,
+            render: (_: any, row: any) => {
+                let context = row.bug
+                let urlHref = ''
+                if (context) {
+                    urlHref = context
+                    let reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    if (!reg.test(context)) urlHref = `${window.origin}/404`
+                }
+
+                return (
+                    context ?
+                        <Tooltip placement="topLeft" title={_}>
+                            <Typography.Link href={urlHref} className={styles.hrefUrl} target='_blank'>
+                                {context}
+                            </Typography.Link>
+                        </Tooltip >
+                        : '-'
+                )
+            }
+        },
+        {
+            dataIndex: 'note',
+            width: 180,
+            title: (
+                <QusetionIconTootip
+                    placement="bottomLeft"
+                    title={formatMessage({ id: 'ws.result.details.result.remarks' })}
+                    desc={formatMessage({ id: 'ws.result.details.result.remarks.ps' })}
+                />
+            ),
+            ...tooltipTd()
+        },
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            fixed: "right",
+            width: 200,
+            render: (_: any) => {
+                let flag = _.result === 'Fail' && !_.bug
+                return (
+                    <Access accessible={access.WsTourist()}>
+                        <Access
+                            accessible={access.WsMemberOperateSelf(creator)}
+                            fallback={
+                                <Space>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
+                                    {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
+                                </Space>
                             }
                         >
-                            {context || '-'}
-                        </Typography.Link>
-                    </Tooltip >
-                )
-            return (
-                <Tooltip placement="topLeft" title={context}>
-                    <Typography>{context || '-'}</Typography>
-                </Tooltip>
-            )
-        }
-    }, {
-        dataIndex: 'bug',
-        title: ['business_functional'].includes(testType) ? <FormattedMessage id="ws.result.details.aone.bug" /> : <FormattedMessage id="ws.result.details.bug" />,
-        ellipsis: true,
-        render: (_: any, row: any) => {
-            let context = row.bug
-            let urlHref = ''
-            if (context) {
-                urlHref = context
-                let reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
-                if (!reg.test(context)) urlHref = `${window.origin}/404`
-            }
-
-            return (
-                context ?
-                    <Tooltip placement="topLeft" title={_}>
-                        < a href={urlHref} className={styles.hrefUrl} target='_blank'>
-                            {context}
-                        </a >
-                    </Tooltip >
-                    : '-'
-            )
-        }
-    }, {
-        dataIndex: 'note',
-        title: (
-            <QusetionIconTootip
-                placement="bottomLeft"
-                title={formatMessage({ id: 'ws.result.details.result.remarks' })}
-                desc={formatMessage({ id: 'ws.result.details.result.remarks.ps' })}
-            />
-        ),
-        ...tooltipTd()
-    }, {
-        title: <FormattedMessage id="Table.columns.operation" />,
-        render: (_: any) => {
-            let flag = _.result === 'Fail' && !_.bug
-            return (
-                <Access accessible={access.WsTourist()}>
-                    <Access
-                        accessible={access.WsMemberOperateSelf(creator)}
-                        fallback={
                             <Space>
-                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
-                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
+                                {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
                             </Space>
-                        }
-                    >
-                        <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenEditRemark(_)}><FormattedMessage id="operation.edit" /></span>
-                            {flag && <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleOpenJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>}
-                        </Space>
+                        </Access>
                     </Access>
-                </Access>
-            )
+                )
+            }
         }
-    },]
+    ]
 
     return (
         <>
             {
-                <Table
+                <ResizeHooksTable
+                    name="wsResultTableCaseList"
+                    refreshDeps={[access, testType]}
                     rowKey="id"
                     size="small"
                     loading={loading}
@@ -290,8 +307,8 @@ export default (props: any) => {
                     rowClassName={styles.result_info_table_row}
                     dataSource={data.data || []}
                 />
-            } 
-            <EditRemarks ref={editRemark} onOk={refresh}/>
+            }
+            <EditRemarks ref={editRemark} onOk={refresh} />
             <JoinBaseline
                 ref={joinBaseline}
                 onOk={refresh}

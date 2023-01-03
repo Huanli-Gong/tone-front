@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Button, Space, Tabs, message, Modal, Checkbox, Typography } from 'antd';
 import { CaretRightFilled, CaretDownFilled, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { addCase, editCase, delCase, delBentch, openSuite, editBentch } from '@/pages/SystemConf/TestSuite/service';
 import { useIntl, FormattedMessage } from 'umi'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import CommonTable from '@/components/Public/CommonTable';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 
@@ -14,6 +13,7 @@ import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { requestCodeMessage } from '@/utils/utils';
 import MetricTable from './components/MetricTable';
 import styles from './index.less';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const { TabPane } = Tabs;
 
@@ -249,10 +249,10 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
         setExpandInnerKey([record.id])
     }
 
-    const [columns, setColumns] = React.useState([
-        { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: true, render: (_: any, row: any) => <PopoverEllipsis title={row.name} /> },
+    const columns = [
+        { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: true, render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.name} /> },
         { title: <FormattedMessage id="TestSuite.alias" />, dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
-        { title: <FormattedMessage id="TestSuite.domain" />, width: 100, dataIndex: 'domain_name_list', render: (text: any) => <PopoverEllipsis title={text || '-'} /> },
+        { title: <FormattedMessage id="TestSuite.domain" />, width: 100, dataIndex: 'domain_name_list', render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} /> },
         { title: <FormattedMessage id="TestSuite.timeout" />, dataIndex: 'timeout', width: 160 },
         { title: <FormattedMessage id="TestSuite.default.repeat" />, width: '120px', dataIndex: 'repeat', ellipsis: true },
         {
@@ -260,38 +260,30 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             ellipsis: {
                 showTitle: false
             },
+            key: "var",
             width: 100,
-            render: (_: number, row: any) =>
-                <PopoverEllipsis
-                    title={
-                        row.var && JSON.parse(row.var).map((item: any, index: number) => {
-                            return <p key={index}>{`${item.name}=${item.val || '-'},${item.des || '-'}`};</p>
-                        })
+            render: (_: number, row: any) => (
+                <Typography.Text ellipsis={{ tooltip: true }}>
+                    {
+                        row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
+                            return `${item.name}=${item.val || '-'},${item.des || '-'};`
+                        }) : '-'
                     }
-                >
-                    <span>
-                        {
-                            row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
-                                return `${item.name}=${item.val || '-'},${item.des || '-'};`
-                            }) : '-'
-                        }
-                    </span>
-                </PopoverEllipsis>,
+                </Typography.Text>
+            ),
         },
         {
             title: <FormattedMessage id="TestSuite.desc" />,
+            key: "desc",
             ellipsis: true,
             width: 100,
             render: (_: any, row: any) => (
-                <div>
-                    <ButtonEllipsis title={row.doc} width={70} isCode={true}>
-                        <EditOutlined
-                            className={styles.edit}
-                            onClick={() => descFastEdit.current.show(row)}
-                        />
-                    </ButtonEllipsis>
-                </div>
-
+                <ButtonEllipsis title={row.doc} width={70} isCode={true}>
+                    <EditOutlined
+                        className={styles.edit}
+                        onClick={() => descFastEdit.current.show(row)}
+                    />
+                </ButtonEllipsis>
             )
         },
         {
@@ -313,20 +305,29 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
                 showTitle: false
             },
             width: '190px',
-            render: (_: number, row: any) => <PopoverEllipsis title={row.gmt_created} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
         },
         {
-            title: <div><FormattedMessage id="Table.columns.operation" /><Button type='primary' onClick={newCase} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new" /></Button></div>,
+            title: (
+                <Space align="center">
+                    <FormattedMessage id="Table.columns.operation" />
+                    <Button type='primary' onClick={newCase} >
+                        <FormattedMessage id="operation.new" />
+                    </Button>
+                </Space>
+            ),
             valueType: 'option',
-            dataIndex: 'id',
+            dataIndex: 'operation',
             width: 150,
             fixed: 'right',
-            render: (_: number, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}><FormattedMessage id="operation.edit" /></Button>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}><FormattedMessage id="operation.delete" /></Button>
-            </Space>,
+            render: (_: number, row: any) => (
+                <Space>
+                    <Typography.Link onClick={() => editInner({ ...row })}><FormattedMessage id="operation.edit" /></Typography.Link>
+                    <Typography.Link onClick={() => deleteInner({ ...row })}><FormattedMessage id="operation.delete" /></Typography.Link>
+                </Space>
+            ),
         },
-    ]);
+    ];
 
     const handlePage = (page_num: number, page_size: number) => {
         setConfPage(page_num)
@@ -363,8 +364,8 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             {innerKey == '1' ?
                 <CommonTable
                     className={styles.FuncOrPerfConfList_root}
-                    columns={columns}
-                    setColumns={setColumns}
+                    columns={columns as any}
+                    name="sys-suite-business-fun-or-perf-conf"
                     // scrollType={1400}
                     scroll={{ x: 1400 }}
                     loading={expandLoading}

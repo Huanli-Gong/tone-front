@@ -3,13 +3,14 @@ import { Space, Popconfirm, message, Spin } from 'antd'
 import { OptBtn, ClsResizeTable } from './styled'
 import { useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { queryReportTemplateList, delReportTemplateList } from '../services'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import CopyTemplateDrawer from './CopyComplate'
 import CommonPagination from '@/components/CommonPagination'
 import _ from 'lodash'
 import { requestCodeMessage, targetJump, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 import { getSearchFilter, getUserFilter } from '@/components/TableFilters'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 const ReportTemplateTable: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
@@ -76,7 +77,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         button_width: 90
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             dataIndex: 'name',
             title: <FormattedMessage id="report.columns.template" />,
@@ -93,14 +94,14 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             ),
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={_ || '-'} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: _ }} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={_ || '-'}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -112,7 +113,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             width: 180,
             title: <FormattedMessage id="report.columns.creator_name" />,
             ...getUserFilter(params, setParams, 'creator'),
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             dataIndex: 'update_user_name',
@@ -122,7 +123,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
             },
             title: <FormattedMessage id="report.columns.update_user_name" />,
             ...getUserFilter(params, setParams, 'update_user'),
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             dataIndex: 'description',
@@ -131,7 +132,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.description" />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             dataIndex: 'gmt_created',
@@ -140,7 +141,7 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.gmt_created" />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             dataIndex: 'gmt_modified',
@@ -149,11 +150,12 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 shwoTitle: false,
             },
             title: <FormattedMessage id="report.columns.gmt_modified.s" />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
+            key: "operation",
             width: 200,
             render(row: any) {
                 const isDefault = _.get(row, 'is_default')
@@ -168,18 +170,17 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                         <Access
                             accessible={access.WsMemberOperateSelf(row.creator)}
                             fallback={
-                                <Space>
+                                <Space onClick={() => AccessTootip()}>
                                     {
                                         !isDefault &&
                                         <span
                                             style={{ color: '#1890FF', cursor: 'pointer' }}
-                                            onClick={() => AccessTootip()}
                                         >
                                             <FormattedMessage id="operation.edit" />
                                         </span>
                                     }
-                                    <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.copy" /></OptBtn>
-                                    {!isDefault && <OptBtn onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptBtn>}
+                                    <OptBtn ><FormattedMessage id="operation.copy" /></OptBtn>
+                                    {!isDefault && <OptBtn ><FormattedMessage id="operation.delete" /></OptBtn>}
                                 </Space>
                             }
                         >
@@ -211,20 +212,21 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 )
             }
         }
-    ])
+    ]
 
     return (
         <Spin spinning={loading}>
-            <ClsResizeTable
-                size="small"
-                rowKey={record => record.id}
-                columns={columns}
-                setColumns={setColumns}
-                loading={loading}
-                dataSource={dataSource}
-                pagination={false}
-                scroll={{ x: '100%' }}
-            />
+            <ClsResizeTable >
+                <ResizeHooksTable
+                    size="small"
+                    rowKey={"id"}
+                    columns={columns}
+                    name="ws-report-template-table"
+                    loading={loading}
+                    dataSource={dataSource}
+                    pagination={false}
+                />
+            </ClsResizeTable>
             <CommonPagination
                 total={data.total}
                 currentPage={params.page_num}

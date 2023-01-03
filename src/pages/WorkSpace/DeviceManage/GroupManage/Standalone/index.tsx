@@ -23,6 +23,8 @@ import SelectVmServer from './Components/SelectVmServer';
 import { Access, useAccess } from 'umi';
 import SelectUser from '@/components/Public/SelectUser';
 import OverflowList from '@/components/TagOverflow/index'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 /**
  * 内网单机
  */
@@ -212,7 +214,7 @@ const Standalone = (props: any, ref: any) => {
         }, []
     )
 
-    const [columns,setColumns] = React.useState([
+    const columns: any = [
         {
             title: 'IP',
             width: 176,
@@ -263,7 +265,7 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(sn: string) => setUrlParams({ ...urlParmas, sn, page_num: 1 })} />
             )
         },
-        BUILD_APP_ENV && 
+        BUILD_APP_ENV &&
         {
             title: 'TSN',
             dataIndex: 'tsn',
@@ -271,9 +273,9 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => <EllipsisPulic title={_} />,
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />,
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.standalone.name" />,
             dataIndex: 'name',
@@ -281,13 +283,13 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (text: any) => <EllipsisPulic title={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: 1 })} />
             )
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.device_type" />,
             dataIndex: 'device_type',
@@ -304,7 +306,7 @@ const Standalone = (props: any, ref: any) => {
                 />
             ),
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.sm_name" />,
             dataIndex: 'sm_name',
@@ -320,7 +322,7 @@ const Standalone = (props: any, ref: any) => {
                 return <EllipsisPulic title={_} />
             }
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: 'IDC',
             width: 100,
@@ -333,7 +335,7 @@ const Standalone = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(idc: string) => setUrlParams({ ...urlParmas, idc, page_num: 1 })} />
             )
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.console_conf" />,
             ellipsis: {
@@ -359,7 +361,7 @@ const Standalone = (props: any, ref: any) => {
                 />
             ),
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.app_group" />,
             dataIndex: 'app_group',
@@ -475,65 +477,85 @@ const Standalone = (props: any, ref: any) => {
             fixed: 'right',
             width: !BUILD_APP_ENV ? (enLocale ? 380 : 240) : (enLocale ? 320 : 260),
             // align: 'center',
+            key: "operation",
             ellipsis: {
                 showTitle: false,
             },
             render: (_: any, row: any) => (
                 <Space>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => viewDetailRef.current.show(_.id)}><FormattedMessage id="operation.detail" /></Button>
+                    <Typography.Link onClick={() => viewDetailRef.current.show(_.id)}>
+                        <FormattedMessage id="operation.detail" />
+                    </Typography.Link>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
-                            <Space>
-                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
-                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
-                                <Button style={{ padding: 0 }} size="small" type="link"
-                                    onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}>
+                            <Space onClick={() => AccessTootip()}>
+                                {
+                                    BUILD_APP_ENV &&
+                                    <Typography.Link >
+                                        <FormattedMessage id="device.synchronization.state" />
+                                    </Typography.Link>
+                                }
+                                <Typography.Link >
+                                    <FormattedMessage id="operation.edit" />
+                                </Typography.Link>
+                                <Typography.Link >
+                                    <FormattedMessage id="operation.delete" />
+                                </Typography.Link>
+                                <Typography.Link
+                                    onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => AccessTootip()}
+                                >
                                     <FormattedMessage id="device.synchronization" />
-                                </Button>
+                                </Typography.Link>
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state" /></Button>}
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleEdit(_)}><FormattedMessage id="operation.edit" /></Button>
-                            <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete" /></Button>
                             {
-                                !BUILD_APP_ENV ?
+                                BUILD_APP_ENV && <Typography.Link onClick={() => handleRefresh(_)}>
+                                    <FormattedMessage id="device.synchronization.state" />
+                                </Typography.Link>
+                            }
+                            <Typography.Link onClick={() => handleEdit(_)}>
+                                <FormattedMessage id="operation.edit" />
+                            </Typography.Link>
+                            <Typography.Link onClick={() => handleDelServer({ ...row })}>
+                                <FormattedMessage id="operation.delete" />
+                            </Typography.Link>
+                            {
+                                !BUILD_APP_ENV &&
                                     row.sub_server_list && row.device_type === '物理机' ?
-                                        <Dropdown
-                                            placement="bottomRight"
-                                            overlay={
-                                                <Menu
-                                                    onClick={(item) => hanldeClickMenu(item, _)}
-                                                >
-                                                    <Menu.Item key={'data'}><FormattedMessage id="device.synchronization.data" /></Menu.Item>
-                                                    <Menu.Item key={'vm'}><FormattedMessage id="device.synchronization.vm" /></Menu.Item>
-                                                </Menu>
-                                            }
-                                            trigger={['click', 'hover']}
-                                        >
-                                            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                                <FormattedMessage id="device.synchronization" /> <DownOutlined />
-                                            </a>
-                                        </Dropdown> :
-                                        <Button
-                                            style={{ padding: 0 }}
-                                            size="small"
-                                            type="link"
-                                            onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}>
-                                            <FormattedMessage id="device.synchronization" />
-                                        </Button>
-                                    : null
+                                    <Dropdown
+                                        placement="bottomRight"
+                                        overlay={
+                                            <Menu
+                                                onClick={(item) => hanldeClickMenu(item, _)}
+                                            >
+                                                <Menu.Item key={'data'}><FormattedMessage id="device.synchronization.data" /></Menu.Item>
+                                                <Menu.Item key={'vm'}><FormattedMessage id="device.synchronization.vm" /></Menu.Item>
+                                            </Menu>
+                                        }
+                                        trigger={['click', 'hover']}
+                                    >
+                                        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                            <FormattedMessage id="device.synchronization" /> <DownOutlined />
+                                        </a>
+                                    </Dropdown> :
+                                    <Typography.Link
+                                        onClick={row.sub_server_list && row.device_type === '物理机' ? () => false : () => handleUpdateTestServer(_.id)}
+                                    >
+                                        <FormattedMessage id="device.synchronization" />
+                                    </Typography.Link>
                             }
                         </Space>
                     </Access>
-                    <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log" /></Button>
+                    <Typography.Link onClick={() => handleOpenLogDrawer(_.id)}>
+                        <FormattedMessage id="operation.log" />
+                    </Typography.Link>
                 </Space>
             )
         }
-    ])
+    ]
 
     const hanldeClickMenu = (item: any, row: any) => {
         switch (item.key) {
@@ -545,11 +567,12 @@ const Standalone = (props: any, ref: any) => {
 
     return (
         <Spin spinning={syncLoading} tip={formatMessage({ id: 'device.Synchronizing' })}>
-            <ResizeTable
+            <ResizeHooksTable
                 loading={loading}
                 rowKey="id"
-                setColumns={setColumns}
                 columns={columns}
+                name="ws-server-group-standalone-list"
+                refreshDeps={[urlParmas, ws_id, access, enLocale]}
                 pagination={false}
                 size={'small'}
                 className={styles.pro_table_card}

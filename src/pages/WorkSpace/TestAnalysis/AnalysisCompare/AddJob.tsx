@@ -3,7 +3,6 @@ import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
 import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { queryJobList, queryProductList, queryProduct, queryBaelineList } from './services'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import styles from './index.less'
 import CommonPagination from '@/components/CommonPagination';
@@ -15,8 +14,9 @@ import SearchInput from '@/components/Public/SearchInput'
 import { resizeDocumentHeight } from './CommonMethod'
 import SelectUser from '@/components/Public/SelectUser'
 import { requestCodeMessage } from '@/utils/utils';
-import ResizeTable from '@/components/ResizeTable';
 import { getUserFilter } from '@/components/TableFilters'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 const { Option } = Select;
 const { RangePicker } = DatePicker
 const defaultResult = {
@@ -206,7 +206,7 @@ export default (props: any) => {
         confirm()
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: 'Job ID',
             dataIndex: 'id',
@@ -250,14 +250,14 @@ export default (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.name }}>
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={row && row.name}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -271,15 +271,15 @@ export default (props: any) => {
             render: (_: any, row: any) => {
                 if (["功能", "功能测试", "functional"].includes(row.test_type)) {
                     return (
-                        <Typography.Text ellipsis={{ tooltip: true }}>
+                        <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                             {formatMessage({ id: `header.test_type.functional` })}
-                        </Typography.Text>
+                        </ColumnEllipsisText>
                     )
                 }
                 return (
-                    <Typography.Text ellipsis={{ tooltip: true }}>
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                         {formatMessage({ id: "header.test_type.performance" })}
-                    </Typography.Text>
+                    </ColumnEllipsisText>
                 )
             },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
@@ -310,7 +310,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
@@ -335,9 +335,9 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-    ])
+    ]
 
-    const [baselineColumns, setBaselineColumns] = React.useState([
+    const baselineColumns: any = [
         {
             title: <FormattedMessage id="analysis.baseline_name" />,
             dataIndex: 'name',
@@ -368,7 +368,7 @@ export default (props: any) => {
             },
             render: (_: any, row: any) => {
                 const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
-                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</ColumnEllipsisText>
             },
             filterIcon: () => <FilterFilled style={{ color: baselineParam.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
@@ -389,7 +389,7 @@ export default (props: any) => {
             },
             dataIndex: 'creator_name',
             ...getUserFilter(baselineParam, setBaselineParam, 'creator'),
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="analysis.gmt_created" />,
@@ -402,7 +402,7 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-    ])
+    ]
 
     const selectedChange = (record: any, selected: any) => {
         let selectKey = tabKey === '1' ? selectedRowKeys : selectedBaselineKeys
@@ -568,16 +568,16 @@ export default (props: any) => {
                 <Tabs activeKey={tabKey} className={styles.job_test} onChange={handleTabSwitch}>
                     <Tabs.TabPane tab={<FormattedMessage id="analysis.test.data" />} key="1" disabled={jobDisable}>
                         <Scrollbars style={scroll} className={styles.scroll}>
-                            <ResizeTable
+                            <ResizeHooksTable
                                 rowSelection={rowSelection as any}
                                 rowKey='id'
-                                setColumns={setColumns}
+                                name="ws-analysis-compare-job-add"
+                                refreshDeps={[ws_id, params]}
                                 columns={columns as any}
                                 loading={loading}
                                 dataSource={testData}
                                 pagination={false}
                                 size="small"
-                                scroll={{ x: '100%' }}
                             />
                         </Scrollbars>
                         <CommonPagination
@@ -593,16 +593,16 @@ export default (props: any) => {
                     </Tabs.TabPane>
                     <Tabs.TabPane tab={<FormattedMessage id="analysis.baseline.data" />} key="2" disabled={baselineDisable}>
                         <Scrollbars style={scroll} className={styles.scroll}>
-                            <ResizeTable
+                            <ResizeHooksTable
                                 rowSelection={baselineSelection as any}
                                 rowKey='id'
+                                name="ws-analysis-compare-baseline-add"
                                 columns={baselineColumns as any}
-                                setColumns={setBaselineColumns}
+                                refreshDeps={[baselineParam, ws_id]}
                                 loading={loading}
                                 dataSource={baseData}
                                 pagination={false}
                                 size="small"
-                                scroll={{ x: '100%' }}
                             />
                         </Scrollbars>
                         <CommonPagination

@@ -1,12 +1,12 @@
-import { Card } from 'antd'
+import { Card, Typography } from 'antd'
 import React, { useEffect } from 'react'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
 import { useRequest, FormattedMessage } from 'umi';
-import ResizeTable from '@/components/ResizeTable'
 import ServerLink from '@/components/MachineWebLink/index';
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default ({ job_id, refresh = false, provider_name }: any) => {
     const { data, loading, run } = useRequest(
@@ -19,14 +19,13 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
         run()
     }, [refresh])
 
-    const [columns, setColumns] = React.useState([
+    const columns = [
         {
             dataIndex: 'index',
             title: ' ',
             width: 48,
             render: (_: undefined) => _
         },
-
         {
             dataIndex: 'server',
             title: `IP${!BUILD_APP_ENV ? "/SN" : ""}`,
@@ -50,19 +49,18 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => _ ?
-                <PopoverEllipsis title={_}>
-
-                    {<a
-                        href={_}
-                        target="_blank"
-                    >
-
-                        {_}
-                    </a>}
-                </PopoverEllipsis>
-
-                : '-'
+            render: (_: any) => (
+                !_ ? "-" :
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }} style={{ color: "#1890FF" }}>
+                        <Typography.Link
+                            target="_blank"
+                            href={_}
+                            ellipsis
+                        >
+                            {_}
+                        </Typography.Link>
+                    </ColumnEllipsisText>
+            )
         },
         {
             dataIndex: 'remark',
@@ -75,9 +73,9 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
-    ])
+    ]
 
     if (data && !data.monitor_control) return <></>
     /* 
@@ -92,10 +90,11 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             headStyle={{ borderBottom: 'none' }}
             style={{ marginBottom: 10, borderTop: 'none' }}
         >
-            <ResizeTable
+            <ResizeHooksTable
                 dataSource={dataCopy}
                 columns={columns as any}
-                setColumns={setColumns}
+                refreshDeps={[]}
+                name="ws-job-result-process-monitor-conf-table"
                 rowKey="id"
                 loading={loading}
                 size="small"

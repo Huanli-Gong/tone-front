@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useIntl, FormattedMessage, getLocale } from 'umi'
-import { Space, Button, message, Popconfirm } from 'antd'
+import { Space, message, Popconfirm, Typography } from 'antd'
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { updateTestServer, deleteClusterServer, queryClusterServer, updateClusterServer, stateRefresh } from '../../services'
 import DeviceDetail from '../../Components/DeviceDetail'
@@ -8,13 +8,12 @@ import { StateBadge } from '../../Components'
 import ClusterEditServer from './ClusterEditServer'
 import OperationLog from '@/components/Public/Log'
 import styles from './index.less'
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import ResizeTable from '@/components/ResizeTable'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import treeSvg from '@/assets/svg/tree.svg'
 import { Access, useAccess, useParams } from 'umi'
-// const treeSvg = require('@/assets/svg/tree.svg')
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -115,16 +114,16 @@ export default (props: any) => {
         }
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: 'IP',
             width: 170,
             fixed: 'left',//TreeIcon
+            key: "ip",
             render: (record: any) => (
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.ip}
-                // provider={'内网机器'}
                 />
             )
         },
@@ -134,65 +133,66 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
+            key: "sn",
             render: (record: any) => (
                 <ServerLink
                     provider={"aligroup"}
                     val={record.test_server.sn}
-                // provider={'内网机器'} 
                 />
             )
         },
-        BUILD_APP_ENV && 
+        BUILD_APP_ENV &&
         {
             title: 'TSN',
             width: 150,
             ellipsis: {
                 showTitle: false
             },
-            render: (record: any) => <EllipsisPulic title={record.test_server.tsn} />
+            key: 'tsn',
+            render: (record: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={record.test_server.tsn} />
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             title: <FormattedMessage id="device.machine.name" />,
             width: 150,
             ellipsis: {
                 showTitle: false
             },
-            render: (record: any) => <EllipsisPulic title={record.test_server.name} color={'#1890ff'} />
+            key: "machine",
+            render: (record: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={<Typography.Link>{record.test_server.name}</Typography.Link>} />
         },
         {
             title: <FormattedMessage id="device.private_ip.s" />,
             width: 160,
+            key: "private_ip",
             render: (record: any) => record.test_server.private_ip || '-'
         },
-        !BUILD_APP_ENV && 
+        !BUILD_APP_ENV &&
         {
             width: 100,
             title: <FormattedMessage id="device.console_conf" />,
+            key: "console_conf",
             render: (record: any) => record.test_server.console_conf || '-'
         },
         {
             title: <FormattedMessage id="device.channel_type" />,
             width: 100,
-            //dataIndex: 'channel_type',
-            render: (record: any) => (record.test_server.channel_type || '-')
+            key: 'channel_type',
+            render: (_, record: any) => (record.test_server.channel_type || '-')
         },
-        // {
-        //     title: '角色',
-        //     dataIndex: 'role',
-        //     render: (record: any) => (record || '-')
-        // },
         {
             title: <FormattedMessage id="device.local.server" />,
             dataIndex: 'role',
             width: 120,
             align: 'center',
-            render: (text: number, row: any) => <span>
-                {row.role === "local" ?
+            render: (text: number, row: any) => (
+                row.role === "local" ?
                     <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} />
-                    : <CheckCircleOutlined onClick={() => handleSetDefault(row, 'role')} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
-                }
-            </span>
+                    : <CheckCircleOutlined
+                        onClick={() => handleSetDefault(row, 'role')}
+                        style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }}
+                    />
+            )
         },
         {
             title: <FormattedMessage id="device.baseline_server" />,
@@ -225,11 +225,13 @@ export default (props: any) => {
         {
             title: <FormattedMessage id="device.usage.state" />,
             width: 120,
+            key: "state",
             render: (record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         {
             title: <FormattedMessage id="device.real_state" />,
             width: 160,
+            key: "real_state",
             render: (record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
@@ -237,42 +239,72 @@ export default (props: any) => {
             fixed: 'right',
             width: enLocale ? 260 : 230,
             align: 'center',
+            key: "operation",
             render: (_: any, row: any) => (
                 <Space>
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>
+                    <Typography.Link onClick={() => detailsDrawerRef.current.show(_.test_server.id)}>
                         <FormattedMessage id="operation.detail" />
-                    </Button>
+                    </Typography.Link>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.test_server.owner)}
                         fallback={
-                            <Space>
-                                {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
-                                <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
-                                <Button style={{ padding: 0 }} size="small" type="link" onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
-                                {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization" /></Button>}
+                            <Space onClick={() => AccessTootip()}>
+                                {
+                                    BUILD_APP_ENV &&
+                                    <Typography.Link >
+                                        <FormattedMessage id="device.synchronization.state" />
+                                    </Typography.Link>
+                                }
+                                <Typography.Link >
+                                    <FormattedMessage id="operation.edit" />
+                                </Typography.Link>
+                                <Typography.Link >
+                                    <FormattedMessage id="operation.delete" />
+                                </Typography.Link>
+                                {
+                                    !BUILD_APP_ENV &&
+                                    <Typography.Link >
+                                        <FormattedMessage id="device.synchronization" />
+                                    </Typography.Link>
+                                }
                             </Space>
                         }
                     >
                         <Space>
-                            {BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleRefresh(_)}><FormattedMessage id="device.synchronization.state" /></Button>}
-                            <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenEditDrawer(_)}><FormattedMessage id="operation.edit" /></Button>
+                            {
+                                BUILD_APP_ENV &&
+                                <Typography.Link onClick={() => handleRefresh(_)}>
+                                    <FormattedMessage id="device.synchronization.state" />
+                                </Typography.Link>
+                            }
+                            <Typography.Link onClick={() => handleOpenEditDrawer(_)}>
+                                <FormattedMessage id="operation.edit" /></Typography.Link>
                             <Popconfirm
                                 title={<FormattedMessage id="delete.prompt" />}
                                 okText={<FormattedMessage id="operation.ok" />}
                                 cancelText={<FormattedMessage id="operation.cancel" />}
                                 onConfirm={() => handleDeleteServer(_.id)}
                             >
-                                <Button style={{ padding: 0 }} size="small" type="link"><FormattedMessage id="operation.delete" /></Button>
+                                <Typography.Link >
+                                    <FormattedMessage id="operation.delete" />
+                                </Typography.Link>
                             </Popconfirm>
-                            {!BUILD_APP_ENV && <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleUpdateServer(_.id)}><FormattedMessage id="operation.synchronize" /></Button>}
+                            {
+                                !BUILD_APP_ENV &&
+                                <Typography.Link onClick={() => handleUpdateServer(_.id)}>
+                                    <FormattedMessage id="operation.synchronize" />
+                                </Typography.Link>
+                            }
                         </Space>
                     </Access>
                     {/* 删掉打开log的disabled */}
-                    <Button style={{ padding: 0 }} type="link" size="small" onClick={() => handleOpenLogDrawer(_.id)}><FormattedMessage id="operation.log" /></Button>
+                    <Typography.Link onClick={() => handleOpenLogDrawer(_.id)}>
+                        <FormattedMessage id="operation.log" />
+                    </Typography.Link>
                 </Space>
             )
         }
-    ])
+    ]
 
     // 刷新页面
     useEffect(() => {
@@ -306,15 +338,15 @@ export default (props: any) => {
                 <div
                     style={{ width: "calc(100% - 47px)" }}
                 >
-                    <ResizeTable
+                    <ResizeHooksTable
                         rowKey="id"
                         columns={columns}
-                        setColumns={setColumns}
+                        name="ws-server-group-cluster-child"
+                        refreshDeps={[access, ws_id, enLocale]}
                         loading={loading}
                         dataSource={dataSource}
                         size="small"
                         pagination={false}
-                        scroll={{ x: '100%' }}
                         rowClassName={() => styles.row_class}
                     />
                 </div>

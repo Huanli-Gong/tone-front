@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Button, Space, Tag, message, Tooltip, Tabs, Modal, Row } from 'antd';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Button, Space, Tag, message, Tooltip, Tabs, Modal, Row, Typography } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import DataSetPulic from '../DataSetPulic';
 import Highlighter from 'react-highlight-words';
 import DeployModal from '../../GroupManage/Standalone/Components/DeployModal'
@@ -16,7 +15,6 @@ import { cloudList, delCloud, stateRefresh } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
-import ResizeTable from '@/components/ResizeTable';
 import { useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import _ from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
@@ -26,6 +24,8 @@ import SelectCheck from '@/pages/WorkSpace/TestSuiteManage/components/SelectChec
 import SelectRadio from '@/components/Public/SelectRadio';
 import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * 云上单机
@@ -131,12 +131,12 @@ export default (props: any) => {
         return dict[val] || ''
     }
 
-    const $insdance = + isInstance
+    const $instance = + isInstance
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: (
-                !$insdance ?
+                !$instance ?
                     <FormattedMessage id="device.config.name" /> :
                     <FormattedMessage id="device.instance.name" />
             ),
@@ -148,17 +148,17 @@ export default (props: any) => {
             },
             ...inputFilterCommonFields("name"),
             render: (_: any, row: any) => (
-                <EllipsisPulic title={row.name}>
+                <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[params.name || '']}
                         autoEscape
                         textToHighlight={row.name.toString()}
                     />
-                </EllipsisPulic>
+                </ColumnEllipsisText>
             )
         },
-        !!$insdance &&
+        !!$instance &&
         {
             title: 'IP',
             dataIndex: BUILD_APP_ENV ? 'private_ip' : "pub_ip", // private_ip
@@ -176,7 +176,7 @@ export default (props: any) => {
                 />
             )
         },
-        !!$insdance &&
+        !!$instance &&
         {
             title: 'SN',
             dataIndex: 'sn',
@@ -185,9 +185,9 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={row.sn} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.sn} />
         },
-        (BUILD_APP_ENV && !!$insdance) &&
+        (BUILD_APP_ENV && !!$instance) &&
         {
             title: 'TSN',
             dataIndex: 'tsn',
@@ -195,9 +195,9 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={row.tsn} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.tsn} />
         },
-        !!$insdance &&
+        !!$instance &&
         {
             title: 'InstanceId',
             dataIndex: 'instance_id',
@@ -206,7 +206,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={row.instance_id} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.instance_id} />
         },
         {
             title: <FormattedMessage id="device.manufacturer/ak" />,
@@ -216,7 +216,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={`${row.manufacturer}/${row.ak_name}`} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.manufacturer}/${row.ak_name}`} />
         },
         {
             title: 'Region/Zone',
@@ -226,7 +226,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={`${row.region}/${row.zone}`} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.region}/${row.zone}`} />
         },
         {
             title: <FormattedMessage id="device.instance_type" />,
@@ -236,7 +236,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={row.instance_type} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.instance_type} />
         },
         {
             title: <FormattedMessage id="device.image" />,
@@ -246,7 +246,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={row.image} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.image} />
         },
         {
             title: <FormattedMessage id="device.bandwidth" />,
@@ -256,7 +256,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => <EllipsisPulic title={_} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
         },
         {
             title: <FormattedMessage id="device.storage_type" />,
@@ -289,7 +289,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <div>{paramTransform(row.release_rule)}</div>
+            render: (_: any, row: any) => paramTransform(row.release_rule)
         },
         {
             title: <FormattedMessage id="device.console_conf" />,
@@ -298,7 +298,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <EllipsisPulic title={_} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
         },
         {
             title: <FormattedMessage id="device.channel_type" />,
@@ -316,7 +316,7 @@ export default (props: any) => {
                 />
             ),
         },
-        !!$insdance &&
+        !!$instance &&
         {
             title: (
                 <Space>
@@ -339,12 +339,12 @@ export default (props: any) => {
                     onConfirm={(val: string) =>
                         setParams({ ...params, state: val })}
                     stateVal={params.state}
-                    tabType={$insdance}
+                    tabType={$instance}
                     dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
                 />
             )
         },
-        !!$insdance &&
+        !!$instance &&
         {
             title: (
                 <Space>
@@ -367,7 +367,7 @@ export default (props: any) => {
                     onConfirm={(val: string) =>
                         setParams({ ...params, real_state: val })}
                     stateVal={params.real_state}
-                    tabType={$insdance}
+                    tabType={$instance}
                     dataArr={['Online', 'Offline']}
                 />
             )
@@ -380,11 +380,12 @@ export default (props: any) => {
                 showTitle: false
             },
             filterIcon: () => <FilterFilled style={{ color: params.owner ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) =>
+            filterDropdown: ({ confirm }: any) => (
                 <SelectUser
                     confirm={confirm}
                     onConfirm={(val: number) => { setParams({ ...params, owner: val }) }}
-                />,
+                />
+            ),
         },
         {
             title: <FormattedMessage id="device.tag" />,
@@ -394,18 +395,21 @@ export default (props: any) => {
                 showTitle: false
             },
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags?.length > 0 ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) =>
+            filterDropdown: ({ confirm }: any) => (
                 <SelectTags
                     ws_id={ws_id}
                     run_mode={'standalone'}
                     autoFocus={autoFocus}
                     confirm={confirm}
                     onConfirm={(val: number) => { setParams({ ...params, tags: val }) }}
-                />,
+                />
+            ),
             render: (_: any, row: any) => (
-                <OverflowList list={row.tag_list.map((item: any, index: number) => {
-                    return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
-                })} />
+                <OverflowList
+                    list={row.tag_list.map((item: any, index: number) => {
+                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                    })}
+                />
             )
         },
         {
@@ -417,57 +421,104 @@ export default (props: any) => {
                 showTitle: false
             },
             render: (_: any, row: any) => (
-                <EllipsisPulic title={row.description} >
+                <ColumnEllipsisText ellipsis={{ tooltip: row.description }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[params.description || '']}
                         autoEscape
                         textToHighlight={row.description ? row.description.toString() : '-'}
                     />
-                </EllipsisPulic>
+                </ColumnEllipsisText>
             )
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
             valueType: 'option',
-            dataIndex: 'id',
-            width: !$insdance ? 180 : (enLocale ? 380 : BUILD_APP_ENV ? 310 : 270),
+            key: 'operation',
+            width: !$instance ? 180 : (enLocale ? 380 : BUILD_APP_ENV ? 310 : 270),
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) =>
+            render: (_: any, row: any) => (
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => viewDetailRef.current.show(row, $insdance)}><FormattedMessage id="operation.detail" /></Button>
+                    <Typography.Link onClick={() => viewDetailRef.current.show(row, $instance)}>
+                        <FormattedMessage id="operation.detail" />
+                    </Typography.Link>
                     <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
-                            <Space>
-                                {BUILD_APP_ENV && !!$insdance && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.synchronization.state" /></Button>}
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()} ><FormattedMessage id="operation.edit" /></Button>
-                                {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="device.deploy" /></Button>}
-                                {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>}
-                                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => AccessTootip()}>
-                                    {(!$insdance) ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}
-                                </Button>
+                            <Space onClick={() => AccessTootip()}>
+                                {
+                                    BUILD_APP_ENV && !!$instance &&
+                                    <Typography.Link>
+                                        <FormattedMessage id="device.synchronization.state" />
+                                    </Typography.Link>
+                                }
+                                <Typography.Link>
+                                    <FormattedMessage id="operation.edit" />
+                                </Typography.Link>
+                                {
+                                    (!!$instance) &&
+                                    <Typography.Link>
+                                        <FormattedMessage id="device.deploy" />
+                                    </Typography.Link>
+                                }
+                                {
+                                    (!!$instance) &&
+                                    <Typography.Link>
+                                        <FormattedMessage id="operation.delete" />
+                                    </Typography.Link>
+                                }
+                                {
+                                    <Typography.Link>
+                                        {
+                                            (!$instance) ?
+                                                <FormattedMessage id="operation.delete" /> :
+                                                <FormattedMessage id="operation.release" />
+                                        }
+                                    </Typography.Link>
+                                }
                             </Space>
                         }
                     >
                         <Space>
-                            {(BUILD_APP_ENV && !!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleRefresh(row)}><FormattedMessage id="device.synchronization.state" /></Button>}
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => { editMachine(row) }} ><FormattedMessage id="operation.edit" /></Button>
-                            {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deployClick(row)}><FormattedMessage id="device.deploy" /></Button>}
-                            {(!!$insdance) && <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, false)}><FormattedMessage id="operation.delete" /></Button>}
-                            <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row }, !!$insdance)}>
-                                {(!$insdance) ? <FormattedMessage id="operation.delete" /> : <FormattedMessage id="operation.release" />}
-                            </Button>
+                            {
+                                (BUILD_APP_ENV && !!$instance) &&
+                                <Typography.Link onClick={() => handleRefresh(row)}>
+                                    <FormattedMessage id="device.synchronization.state" />
+                                </Typography.Link>
+                            }
+                            <Typography.Link onClick={() => editMachine(row)} >
+                                <FormattedMessage id="operation.edit" />
+                            </Typography.Link>
+                            {
+                                (!!$instance) &&
+                                <Typography.Link onClick={() => deployClick(row)}>
+                                    <FormattedMessage id="device.deploy" />
+                                </Typography.Link>}
+                            {
+                                (!!$instance) &&
+                                <Typography.Link onClick={() => handleDelServer({ ...row }, false)}>
+                                    <FormattedMessage id="operation.delete" />
+                                </Typography.Link>
+                            }
+                            <Typography.Link onClick={() => handleDelServer({ ...row }, !!$instance)}>
+                                {
+                                    (!$instance) ?
+                                        <FormattedMessage id="operation.delete" /> :
+                                        <FormattedMessage id="operation.release" />
+                                }
+                            </Typography.Link>
                         </Space>
                     </Access>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
-                </Space>,
+                    <Typography.Link onClick={() => handleOpenLogDrawer(row.id)}>
+                        <FormattedMessage id="operation.log" />
+                    </Typography.Link>
+                </Space>
+            ),
         },
-    ])
-
+    ]
     // 部署Agent
     const deployClick = (row: any) => {
         deployModal.current?.show({ ...row, detailData: [row.private_ip] || [], radio_type: 'cloudManage' });
@@ -539,14 +590,14 @@ export default (props: any) => {
         aloneMachine.current?.editMachine(row)
     }
     const onSuccess = (is_instance: any, id: number) => {
-        if ($insdance == is_instance) {
+        if ($instance == is_instance) {
             getList()
         } else {
             setParams({ ...params, is_instance })
         }
     }
 
-    const localeStr = deleteObj[!$insdance ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
+    const localeStr = deleteObj[!$instance ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
 
     return (
         <div className={styles.warp}>
@@ -555,19 +606,19 @@ export default (props: any) => {
                 onTabClick={RadioChange}
                 tabBarExtraContent={
                     <Button type="primary" onClick={addMachine}>
-                        {(!$insdance) ? <FormattedMessage id="device.add.server.config" /> : <FormattedMessage id="device.add.server.instance" />}
+                        {(!$instance) ? <FormattedMessage id="device.add.server.config" /> : <FormattedMessage id="device.add.server.instance" />}
                     </Button>
                 }
             >
                 <Tabs.TabPane tab={<FormattedMessage id="device.server.config" />} key={0} />
                 <Tabs.TabPane tab={<FormattedMessage id="device.server.instance" />} key={1} />
             </Tabs>
-            <ResizeTable
+            <ResizeHooksTable
                 size={'small'}
                 loading={loading}
-                scroll={{ x: "100%" }}
                 columns={columns}
-                setColumns={setColumns}
+                refreshDeps={[$instance, ws_id, access, enLocale, params]}
+                name="ws-server-cloud-standalone"
                 dataSource={data.data}
                 rowKey={'id'}
                 pagination={false}
@@ -587,20 +638,20 @@ export default (props: any) => {
             <Log ref={logDrawer} operation_object="machine_cloud_server" />
             <AloneMachine
                 onRef={aloneMachine}
-                is_instance={$insdance}
+                is_instance={$instance}
                 onSuccess={onSuccess}
                 type='standalone'
             />
             <DeployModal ref={deployModal} />
             <CloudDetail ref={viewDetailRef} />
             <Modal
-                title={<div><FormattedMessage id={!$insdance ? 'device.tips' : 'delete.tips'} /></div>}
+                title={<div><FormattedMessage id={!$instance ? 'device.tips' : 'delete.tips'} /></div>}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
-                        {!$insdance && <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />}
+                        {!$instance && <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />}
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
                         <FormattedMessage id="operation.cancel" />
@@ -616,13 +667,13 @@ export default (props: any) => {
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.quote.details" /></div>
             </Modal>
             <Modal
-                title={<div><FormattedMessage id={!$insdance ? 'delete.tips' : 'device.tips'} /></div>}
+                title={<div><FormattedMessage id={!$instance ? 'delete.tips' : 'device.tips'} /></div>}
                 centered={true}
-                visible={deleteDefault}
+                open={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" type={"danger" as any} onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad} >
-                        {!$insdance || !deleteObj.is_release ? <FormattedMessage id="operation.confirm.delete" /> : <FormattedMessage id="operation.release" />}
+                        {!$instance || !deleteObj.is_release ? <FormattedMessage id="operation.confirm.delete" /> : <FormattedMessage id="operation.release" />}
                     </Button>,
                     <Button key="back" onClick={() => setDeleteDefault(false)}>
                         <FormattedMessage id="operation.cancel" />
@@ -634,16 +685,16 @@ export default (props: any) => {
                     <Row align="middle">
                         <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
                         <div>
-                            {((!$insdance || !deleteObj.is_release) && !$insdance) ?
+                            {((!$instance || !deleteObj.is_release) && !$instance) ?
                                 formatMessage({ id: 'device.delete.config' }, { data: localeStr }) : null
                             }
-                            {((!$insdance || !deleteObj.is_release) && !!$insdance) ?
+                            {((!$instance || !deleteObj.is_release) && !!$instance) ?
                                 formatMessage({ id: 'device.delete.instance' }, { data: localeStr }) : null
                             }
-                            {(!(!$insdance || !deleteObj.is_release) && !$insdance) ?
+                            {(!(!$instance || !deleteObj.is_release) && !$instance) ?
                                 formatMessage({ id: 'device.release.config' }, { data: localeStr }) : null
                             }
-                            {(!(!$insdance || !deleteObj.is_release) && !!$insdance) ?
+                            {(!(!$instance || !deleteObj.is_release) && !!$instance) ?
                                 formatMessage({ id: 'device.release.instance' }, { data: localeStr }) : null
                             }
                         </div>

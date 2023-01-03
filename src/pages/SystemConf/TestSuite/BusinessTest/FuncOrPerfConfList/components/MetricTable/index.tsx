@@ -110,7 +110,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		metricEditer.current.show('new')
 	}
 
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		{ title: <FormattedMessage id="TestSuite.conf.metric" />, dataIndex: 'name', width: 300, fixed: 'left' },
 		{ title: <FormattedMessage id="TestSuite.cmp_threshold" />, dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
 		{ title: <FormattedMessage id="TestSuite.cv_threshold" />, dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
@@ -140,7 +140,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 				</Space>
 			),
 		},
-	]);
+	];
 
 	const handlePage = (page_num: number, page_size: number) => {
 		setPage(page_num)
@@ -151,8 +151,8 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		<div className={styles.warp} key={id}>
 			<CommonTable
 				className={styles.FuncOrPerfConfList_root}
-				columns={columns}
-				setColumns={setColumns}
+				columns={columns as any}
+				name="sys-business-fun-or-per-conf-metric"
 				// scrollType={670}
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}

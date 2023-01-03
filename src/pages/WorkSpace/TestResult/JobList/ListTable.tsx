@@ -1,5 +1,5 @@
 import React from "react"
-import { Tooltip, Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
+import { Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
 import { useAccess, Access, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { requestCodeMessage, targetJump, AccessTootip, matchTestType } from '@/utils/utils'
 import { StarOutlined, StarFilled } from '@ant-design/icons'
@@ -14,12 +14,12 @@ import {
     deleteMyCollection,
 } from '../services'
 import styled from "styled-components"
-import ResizeColumnTable from "@/components/ResizeTable"
-// import { transQuery } from "./utils"
 import CompareBar from '../CompareBar'
 import ReRunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import ViewReport from '../CompareBar/ViewReport'
 import styles from "../index.less"
+import { ResizeHooksTable } from "@/utils/table.hooks"
+import { ColumnEllipsisText } from "@/components/ColumnComponents"
 
 const Offline = styled.div`
     background: #1890FF;
@@ -115,11 +115,12 @@ const ListTable: React.FC<IProps> = (props) => {
         countRefresh()
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         /* @ts-ignore */
         access.IsWsSetting() &&
         {
             title: '',
+            key: "collection",
             width: 30,
             align: 'center',
             fixed: 'left',
@@ -152,27 +153,24 @@ const ListTable: React.FC<IProps> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
+            className: "result_job_hover_span",
             render: (_: any, row: any) => {
                 return (
-                    <span>
+                    <ColumnEllipsisText ellipsis={{ tooltip: <span>{_ || "-"}</span> }}>
                         {
                             row.created_from === 'offline' &&
                             <Offline>
                                 <FormattedMessage id="ws.result.list.offline" />
                             </Offline>
                         }
-                        <Tooltip placement="topLeft" title={_}>
-                            <Typography.Text
-                                className="result_job_hover_span"
-                                onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)}
-                                style={{
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                {_}
-                            </Typography.Text>
-                        </Tooltip>
-                    </span>
+                        <Typography.Link
+                            className="result_job_hover_span"
+                            target="_blank"
+                            href={`/ws/${ws_id}/test_result/${row.id}`}
+                        >
+                            {_}
+                        </Typography.Link>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -191,7 +189,7 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             render: (_: any, row: any) => {
                 const strLocale = matchTestType(_)
-                return <span><FormattedMessage id={`${strLocale}.test`} defaultMessage={_} /></span>
+                return <FormattedMessage id={`${strLocale}.test`} defaultMessage={_} />
             }
         },
         {
@@ -238,9 +236,9 @@ const ListTable: React.FC<IProps> = (props) => {
                 showTitle: false,
             },
             render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || '-'}
-                </Tooltip>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -251,9 +249,9 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             dataIndex: 'creator_name',
             render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || '-'}
-                </Tooltip>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -265,9 +263,9 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             sorter: true,
             render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || '-'}
-                </Tooltip>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -278,9 +276,9 @@ const ListTable: React.FC<IProps> = (props) => {
             },
             dataIndex: 'end_time',
             render: (_: any) => (
-                <Tooltip title={_ || '-'} placement="topLeft">
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || '-'}
-                </Tooltip>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -289,6 +287,7 @@ const ListTable: React.FC<IProps> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
+            key: "operation",
             fixed: 'right',
             render: (_: any) => {
                 const disableStyle = { color: '#ccc', cursor: 'no-drop' }
@@ -326,7 +325,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 )
             }
         }
-    ])
+    ]
 
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
@@ -427,21 +426,18 @@ const ListTable: React.FC<IProps> = (props) => {
 
     return (
         <Row style={basePadding}>
-            <ResizeColumnTable
-                size="small"
+            <ResizeHooksTable
                 rowKey="id"
+                columns={columns}
+                refreshDeps={[access, ws_id, locale]}
+                name="test-job-list"
                 loading={loading}
                 dataSource={source?.data}
-                columns={columns}
-                setColumns={setColumns}
                 pagination={false}
                 rowClassName={styles.result_table_row}
                 rowSelection={rowSelection}
                 onChange={(pagination: any, filters: any, sorter: any) => {
                     sortStartTime(sorter)
-                }}
-                scroll={{
-                    x: "100%"
                 }}
             />
             {

@@ -4,7 +4,6 @@ import { Avatar, Space, message, Popconfirm, Typography } from 'antd';
 import { userManagementList, roleChange, requestResetPassword } from '../../service';
 import CommonTable from '@/components/Public/CommonTable';
 import RoleSelect from '../RoleSelect';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SelectRadio from '@/components/Public/SelectRadio';
 import Highlighter from 'react-highlight-words';
 import SearchInput from '@/components/Public/SearchInput';
@@ -13,6 +12,7 @@ import ResetModal from '../ResetModal';
 import { useRef } from 'react';
 import AvatarCover from '@/components/AvatarCover';
 import { useIntl, FormattedMessage } from 'umi';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, onSearch, rolelist }: any) => {
     const { formatMessage } = useIntl()
@@ -75,7 +75,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         }
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns = [
         {
             title: <FormattedMessage id="user.last_name" />,
             dataIndex: 'last_name',
@@ -96,19 +96,21 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: lastName ? '#1890ff' : undefined }} />,
-            render: (_: number, row: any) => <Space>
-                {
-                    row.avatar ?
-                        <Avatar size={25} src={row.avatar} alt={row.last_name} /> :
-                        <AvatarCover size={25} show_name={row.last_name || row.username} theme_color={row.avatar_color} shape="circle" />
-                }
-                <Highlighter
-                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                    searchWords={[lastName || '']}
-                    autoEscape
-                    textToHighlight={row.last_name.toString()}
-                />
-            </Space>,
+            render: (_: number, row: any) => (
+                <Space>
+                    {
+                        row.avatar ?
+                            <Avatar size={25} src={row.avatar} alt={row.last_name} /> :
+                            <AvatarCover size={25} show_name={row.last_name || row.username} theme_color={row.avatar_color} shape="circle" />
+                    }
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[lastName || '']}
+                        autoEscape
+                        textToHighlight={row.last_name.toString()}
+                    />
+                </Space>
+            ),
         },
         {
             title: <FormattedMessage id="user.email" />,
@@ -116,7 +118,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             ellipsis: {
                 showTitle: false
             },
-            render: (_: number, row: UserTable) => <PopoverEllipsis title={row.email}></PopoverEllipsis>,
+            render: (_: number, row: UserTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.email} />,
         },
         {
             title: <FormattedMessage id="user.role_list" />,
@@ -134,7 +136,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             dataIndex: 'ws_list',
             render: (_: number, row: UserTable) => (
                 (row.ws_list && row.ws_list.length > 0) &&
-                <PopoverEllipsis title={row.ws_list.join('、')}></PopoverEllipsis>
+                <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.ws_list.join('、')} />
             ),
             ellipsis: {
                 showTitle: false
@@ -149,6 +151,9 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
         BUILD_APP_ENV === 'opensource' &&
         {
             title: <FormattedMessage id="Table.columns.operation" />,
+            key: "operation",
+            fixed: "right",
+            width: 200,
             render: (_: any, row: any) => (
                 <Popconfirm
                     title={<FormattedMessage id="user.Popconfirm.title" />}
@@ -161,7 +166,7 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
                 </Popconfirm>
             )
         }
-    ]);
+    ];
 
     const resetPasswordConfirm = async (row: any) => {
         const { code, data, msg } = await requestResetPassword({ user_id: row.id })
@@ -181,14 +186,13 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             <CommonTable
                 key={rolelist}
                 size="small"
-                columns={columns}
-                setColumns={setColumns}
+                name="sys-user-manage-list"
+                columns={columns as any}
                 dataSource={list}
                 loading={loading}
                 page={data.page_num}
                 pageSize={data.page_size}
                 totalPage={data.total_page}
-                scroll={{ x: '100%' }}
                 total={data.total}
                 handlePage={onChange}
             />

@@ -10,7 +10,8 @@ import PlanSettingDrawer from './components/PlanSettingDrawer'
 import { queryPlanManageList, deleteTestPlan, copyTestPlan } from './services'
 import { getUserFilter, getSearchFilter, getRadioFilter } from '@/components/TableFilters'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
-import ResizeTable from '@/components/ResizeTable'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { tooltipTd } from '../TestResult/Details/components'
 
 interface OptionBtnProp {
     disabled?: boolean
@@ -79,25 +80,19 @@ const TestPlanManage = (props: any) => {
         else requestCodeMessage(code, msg)
     }
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             dataIndex: 'name',
             title: <FormattedMessage id="plan.table.name" />,
-            ellipsis: {
-                showTitle: false
-            },
-            ...getSearchFilter(pageParams, setPageParams, 'name')
+            fixed: "left",
+            ...getSearchFilter(pageParams, setPageParams, 'name'),
+            ...tooltipTd("-"),
         },
         {
             dataIndex: 'cron_info',
             title: <FormattedMessage id="plan.table.cron_info" />,
             width: 120,
-            ellipsis: {
-                showTitle: false
-            },
-            render(_: any) {
-                return _ || '-'
-            }
+            ...tooltipTd("-"),
         },
         {
             dataIndex: 'enable',
@@ -125,32 +120,25 @@ const TestPlanManage = (props: any) => {
             dataIndex: 'creator_name',
             title: <FormattedMessage id="plan.table.creator_name" />,
             width: 120,
-            ellipsis: {
-                showTitle: false
-            },
+            ...tooltipTd("-"),
             ...getUserFilter(pageParams, setPageParams, 'creator_name')
         },
         {
             dataIndex: 'gmt_created',
             title: <FormattedMessage id="plan.table.gmt_created" />,
-            ellipsis: {
-                showTitle: false
-            },
             width: 170,
+            ...tooltipTd("-"),
         },
         {
             dataIndex: 'gmt_modified',
             title: <FormattedMessage id="plan.table.gmt_modified" />,
-            ellipsis: {
-                showTitle: false
-            },
+            ...tooltipTd("-"),
             width: 170,
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            ellipsis: {
-                showTitle: false
-            },
+            fixed: "right",
+            key: "operation",
             width: 220,
             render: (row: any, record: any) => (
                 <Space>
@@ -182,7 +170,7 @@ const TestPlanManage = (props: any) => {
                 </Space>
             )
         }
-    ])
+    ]
 
     return (
         <Spin spinning={loading} >
@@ -205,14 +193,14 @@ const TestPlanManage = (props: any) => {
                     >
                         <Tabs.TabPane key={'list'} tab={<FormattedMessage id={`Workspace.TestPlan.${route.name}`} />} >
                             <div style={{ paddingLeft: 20, paddingRight: 20 }}>
-                                <ResizeTable
+                                <ResizeHooksTable
                                     columns={columns}
-                                    setColumns={setColumns}
+                                    name="ws-test-plan-manage"
+                                    refreshDeps={[ws_id, pageParams, access]}
                                     dataSource={data.data}
                                     rowKey={record => record.id}
                                     size={'small'}
                                     pagination={false}
-                                    scroll={{ x: '100%' }}
                                 />
                                 <CommonPagination
                                     pageSize={data.page_size}

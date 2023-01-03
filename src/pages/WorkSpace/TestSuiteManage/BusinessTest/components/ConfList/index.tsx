@@ -5,8 +5,8 @@ import moment from 'moment';
 import CodeViewer from '@/components/CodeViewer'
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
 import CommonTable from '@/components/Public/CommonTable';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import styles from './index.less';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * @module 业务测试
@@ -18,21 +18,21 @@ const List = ({ suite_id, type, dataSource }: any) => {
 	const [showDoc, setShowDoc] = useState<any>({ visible: false, doc: '' })
 
 	// 1.业务测试
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		{
 			title: 'Test Conf',
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 150,
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={150} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			},
 		},
 		{
 			title: <FormattedMessage id="suite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <PopoverEllipsis title={text} width={100} />
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 		},
 		{
 			title: <FormattedMessage id="suite.timeout" />,
@@ -47,7 +47,7 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			dataIndex: 'ci_type',
 			width: 120,
 			render: (text: any) => {
-				return <PopoverEllipsis title={text} width={120} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
 			}
 		},
 		{
@@ -55,7 +55,7 @@ const List = ({ suite_id, type, dataSource }: any) => {
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <PopoverEllipsis title={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} width={170} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
 			}
 		},
 		{
@@ -72,20 +72,15 @@ const List = ({ suite_id, type, dataSource }: any) => {
 					/> : '-'
 			)
 		},
-	])
+	]
 
 	return (
 		<div>
 			<CommonTable
 				className={styles.confList_root}
-				columns={columns}
-				setColumns={setColumns}
+				columns={columns as any}
+				name="ws-suite-manage-buiness-conf"
 				dataSource={dataSource}
-			// page={pageNum}
-			// pageSize={pageSize}
-			// total={total}
-			// handlePage={onChange}
-			// scroll={{ x: '100%' }}
 			/>
 			<Drawer
 				maskClosable

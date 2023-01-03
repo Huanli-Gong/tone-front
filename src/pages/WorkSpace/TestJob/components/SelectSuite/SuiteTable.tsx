@@ -1,29 +1,30 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { Button, Table, Card, Switch, Space, Checkbox, Row } from 'antd';
+import { Button, Table, Card, Switch, Space, Checkbox, Row, Typography, Tag, Tooltip, TableColumnProps } from 'antd';
 
 import SettingDrawer from '@/pages/WorkSpace/TestJob/components/SuiteSelectDrawer'
-import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { CaretDownFilled, CaretRightFilled, MinusCircleOutlined } from '@ant-design/icons'
+import { useIntl, FormattedMessage } from 'umi'
 import styles from './style.less';
 
-import columnsOutterFn from './columnsOutter'
-import columnsInnerFn from './columnsInner'
-import Tooltip from 'antd/es/tooltip'
 import CaseTable from './CaseTable'
 import _ from 'lodash'
+import { isNull } from 'lodash'
+import { v4 as uuid } from "uuid"
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
-export default (props: any) => {
+const nameWidth = 200;
+const optionWidth = 100;
+
+const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 	const {
 		dataSource, onDataSourceChange, width, disabled, run_mode,
 		contrl, control, server_type, test_type
 	} = props
 	const { formatMessage } = useIntl()
-	const locale = getLocale() === 'en-US'
 
 	const settingDrawerRef: any = useRef(null)
 	const [hasCases, setHasCases] = useState(true)
-	const [columnsOutter, setColumnsOutter] = useState<any>([])
-	const [columnsInner, setColumnsInner] = useState<any>([])
+
 	const [checked, setChecked] = useState<boolean>(false)
 	const [selectedSuiteKeys, setSelectedSuiteKeys] = useState<any[]>([])
 	const [selectedCaseKeys, setSelectedCaseKeys] = useState<any[]>([])
@@ -54,35 +55,239 @@ export default (props: any) => {
 	const [indeterminateCase, setIndeterminateCase] = useState<boolean>(false)
 	const [caseAll, setCaseAll] = useState<boolean>(false)
 
-	const handleColumnsChange = () => {
-		setColumnsOutter(
-			columnsOutterFn({
-				contrl,
-				checked,
-				onDataSourceChange,
-				disabled,
-				openSuite,
-				dataSource,
-				run_mode,
-				width,
-				formatMessage,
-			})
-		)
-
-		setColumnsInner(
-			columnsInnerFn({
-				onDataSourceChange,
-				dataSource,
-				openCase,
-				contrl,
-				disabled,
-				checked,
-				run_mode,
-				width: width - 14,
-				formatMessage,
-			})
+	const onRemoveSuite = (key: string) => {
+		onDataSourceChange(
+			dataSource.filter((item: any) => item.id !== key),
+			run_mode
 		)
 	}
+
+	const onRemove = (key: string) => {
+		const list = dataSource.filter(
+			(item: any) => {
+				const test_case_list = item.test_case_list.filter(
+					(el: any) => {
+						if (key !== el.id) return el
+					}
+				)
+				if (test_case_list.length > 0) {
+					let obj = item
+					obj.test_case_list = test_case_list
+					return obj
+				}
+			}
+		)
+		onDataSourceChange(list, run_mode)
+	}
+
+	const columnsInner: any = [
+		{
+			title: 'Test Conf',
+			dataIndex: 'title',
+			// width: nameWidth,
+			ellipsis: {
+				shwoTitle: false,
+			},
+			fixed: 'left',
+			render: (_: any) => (
+				<ColumnEllipsisText ellipsis={{ tooltip: true }}>
+					{_ || '-'}
+				</ColumnEllipsisText>
+			),
+		},
+		{
+			title: <FormattedMessage id="select.suite.the.server" />,
+			ellipsis: {
+				shwoTitle: false,
+			},
+			key: "server",
+			width: 150,
+			render: (_: any, row: any) => {
+				const random = formatMessage({ id: "select.suite.random" })
+				const { server_tag_id, ip: $ip, customer_server, } = row
+				if (server_tag_id && server_tag_id.length > 0) {
+					const tagList = $ip ? $ip.split(',').map((t: any) => <Tag key={t}>{t}</Tag>) : random
+					return (
+						<ColumnEllipsisText ellipsis={{ tooltip: true }}>
+							{tagList}
+						</ColumnEllipsisText>
+					)
+				}
+
+				if (isNull($ip) && customer_server && JSON.stringify(customer_server) !== '{}') {
+					return (
+						<ColumnEllipsisText ellipsis={{ tooltip: true }}>
+							{customer_server?.custom_ip || ''}
+						</ColumnEllipsisText>
+					)
+				}
+
+				const text = !['随机'].includes($ip) ? $ip : random
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{text || "-"}</ColumnEllipsisText>
+			},
+		},
+		{
+			title: 'Repeat',
+			dataIndex: 'repeat',
+			width: 80,
+		},
+		(checked && 'reboot' in contrl) &&
+		{
+			title: <FormattedMessage id="select.suite.restart" />,
+			dataIndex: 'reboot',
+			// className: styles.action,
+			render: (_: any, row: any) => formatMessage({ id: `operation.${row.need_reboot ? "yes" : "no"}` }),
+			width: 80,
+		},
+		(checked && 'script' in contrl) &&
+		{
+			title: <FormattedMessage id="select.suite.script" />,
+			width: 100,
+			dataIndex: 'script',
+			// className: styles.var,
+			render: (_: any, row: any) => {
+				const beforeStart = formatMessage({ id: 'select.suite.before.restart' })
+				const afterStart = formatMessage({ id: 'select.suite.after.restart' })
+				return row.setup_info || row.cleanup_info ?
+					<ColumnEllipsisText ellipsis={{ tooltip: true }}>
+						{`${beforeStart}:${row.setup_info || '-'}，${afterStart}:${row.cleanup_info || '-'}`}
+					</ColumnEllipsisText> : "-"
+			}
+		},
+		(checked && 'monitor' in contrl) &&
+		{
+			title: <FormattedMessage id="select.suite.monitor" />,
+			dataIndex: 'monitor',
+			render: (_: any, row: any) => row.console === undefined ? '-' : formatMessage({ id: `operation.${row.console ? "yes" : "no"}` }),
+			width: 100,
+		},
+		(checked && 'variable' in contrl) &&
+		{
+			title: <FormattedMessage id="select.suite.variable" />,
+			dataIndex: 'variable',
+			width: 150,
+			render: (_: number, row: any) => {
+				if (row.env_info && row.env_info.length > 0) {
+					const str = row.env_info.map((item: any, index: number) => {
+						return item.name ? `${item.name || ''}=${item.val || ''};` : '-'
+					})
+					return (
+						<ColumnEllipsisText ellipsis={{ tooltip: true }} >{str}</ColumnEllipsisText>
+					)
+				}
+				return '-'
+			},
+		},
+		{
+			title: <FormattedMessage id="select.suite.priority" />,
+			dataIndex: 'priority',
+			width: 80,
+		},
+		{
+			title: <FormattedMessage id="Table.columns.operation" />,
+			dataIndex: 'operation',
+			width: optionWidth,
+			fixed: 'right',
+			render: (_: any, row: any, index: number) => (
+				!disabled &&
+				<>
+					<Button
+						type="link"
+						style={{ padding: 0, height: 'auto' }}
+						onClick={() => openCase(index, row)}
+					>
+						<FormattedMessage id="select.suite.config" />
+					</Button>
+					<MinusCircleOutlined
+						className={styles.remove}
+						onClick={() => onRemove(row.id)}
+					/>
+				</>
+			)
+		}
+	]
+
+	const columnsOutter = [
+		{
+			title: 'Test Suite',
+			dataIndex: 'title',
+			fixed: "left",
+			ellipsis: {
+				shwoTitle: false,
+			},
+			render: (_: any) => (
+				<ColumnEllipsisText ellipsis={{ tooltip: true }}>
+					{_ || '-'}
+				</ColumnEllipsisText>
+			),
+		},
+		(checked && 'reboot' in contrl) &&
+		{
+			title: formatMessage({ id: 'select.suite.restart' }),
+			dataIndex: 'reboot',
+			width: 80,
+			render: (_: any, row: any) => formatMessage({ id: `operation.${row.need_reboot ? "yes" : "no"}` }),
+		},
+		(checked && 'script' in contrl) &&
+		{
+			title: formatMessage({ id: 'select.suite.script' }),
+			dataIndex: 'script',
+			width: 150,
+			render: (_: any, { setup_info, cleanup_info }: any) => {
+				const beforeStart = formatMessage({ id: 'select.suite.before.restart' })
+				const afterStart = formatMessage({ id: 'select.suite.after.restart' })
+				return setup_info || cleanup_info ?
+					<ColumnEllipsisText ellipsis={{ tooltip: true }}>
+						{`${beforeStart}:${setup_info || '-'}，${afterStart}:${cleanup_info || '-'}`}
+					</ColumnEllipsisText> : "-"
+			}
+		},
+		(checked && 'monitor' in contrl) &&
+		{
+			title: formatMessage({ id: 'select.suite.monitor' }),
+			dataIndex: 'monitor',
+			width: 80,
+			render: (_: any, { console: Console }: any) => (
+				Console === undefined ? '-' : formatMessage({ id: `operation.${Console ? "yes" : "no"}` })
+			),
+		},
+		checked &&
+		{
+			title: formatMessage({ id: 'select.suite.priority' }),
+			width: 80,
+			dataIndex: 'priority',
+		},
+		{
+			title: formatMessage({ id: 'Table.columns.operation' }),
+			width: optionWidth,
+			dataIndex: 'operation',
+			fixed: 'right',
+			render: (_: any, row: any, index: number) => (
+				!disabled &&
+				<>
+					{
+						(checked) &&
+						<Button
+							type="link"
+							style={{ padding: 0, height: 'auto' }}
+							onClick={() => openSuite(index, row)}
+						>
+							<FormattedMessage id="select.suite.config" />
+						</Button>
+					}
+					<MinusCircleOutlined
+						className={styles.remove}
+						style={
+							checked ?
+								{ marginTop: 6, padding: 0 } :
+								{ margin: 0, paddingRight: 6, width: 60, textAlign: 'right' }
+						}
+						onClick={() => onRemoveSuite(row.id)}
+					/>
+				</>
+			),
+		}
+	]
 
 	useEffect(() => {
 		dataSource.map((item: any) => {
@@ -91,10 +296,6 @@ export default (props: any) => {
 			}
 		})
 	}, [dataSource])
-
-	useEffect(() => {
-		handleColumnsChange()
-	}, [checked, locale])
 
 	const rowSelectionSuite = {
 		selectedRowKeys: selectedSuiteKeys,
@@ -108,12 +309,12 @@ export default (props: any) => {
 		}),
 	};
 
-
 	const setSelectedCaseKeysFn = (obj: any) => {
 		let selectedCaseObjCopy = _.cloneDeep(selectedCaseObj) || {}
 		selectedCaseObjCopy = { ...selectedCaseObjCopy, ...obj }
 		setSelectedCaseObj(selectedCaseObjCopy)
 	}
+
 	useEffect(() => {
 		let selectedRowKeys: number[] = []
 		Object.values(selectedCaseObj).forEach((itemArr: any) => {
@@ -181,7 +382,6 @@ export default (props: any) => {
 	}
 
 	useEffect(() => {
-		handleColumnsChange()
 		let caseKeysList: any = []
 		let caseKeysListObj: any = {}
 		dataSource.forEach(
@@ -233,6 +433,8 @@ export default (props: any) => {
 		setIndeterminateSuite(false)
 	}
 
+	const [columnsChange, setColumnsChange] = React.useState(uuid())
+
 	return (
 		<div style={run_mode === 'standalone' ? { marginBottom: 10, position: 'relative' } : { position: 'relative' }}>
 			<Row justify="space-between" align="middle">
@@ -249,7 +451,7 @@ export default (props: any) => {
 						<span className={styles.title}>
 							<FormattedMessage id="select.suite.advanced.config" />
 						</span>
-						<Switch size="small" onChange={onChange} />
+						<Switch size="small" checked={checked} onChange={onChange} />
 					</Space>
 				}
 			</Row>
@@ -282,7 +484,7 @@ export default (props: any) => {
 								<FormattedMessage id="select.suite.select.suite/conf" />
 							</span>
 						}
-						visible={!hasCases}
+						open={!hasCases}
 					>
 						<Button size="small" type="primary" onClick={handleBatchSetting} onMouseLeave={handleLeaveSettingBtn}>
 							<FormattedMessage id="select.suite.batch.config" />
@@ -294,25 +496,31 @@ export default (props: any) => {
 				<Table
 					rowClassName='outter'
 					style={{ width: width - 2 }}
+					// refreshDeps={[contrl, checked]}
 					rowSelection={checked ? rowSelectionSuite : undefined}
 					showHeader={checked}
-					columns={columnsOutter}
+					columns={columnsOutter.filter(Boolean) as any}
 					pagination={false}
 					className={styles.suite_table_loading}
+					scroll={checked ? { x: innerScrollX } : undefined}
 					size="small"
 					rowKey={record => record.id + ''}
 					dataSource={dataSource}
 					expandable={{
 						expandedRowKeys,
+						columnWidth: 22,
 						expandedRowRender: (record: any) => (
 							<CaseTable
-								styleObj={{ marginTop: 8, marginBottom: 8, width: width - 14 }}
+								styleObj={{ width: width - 14 }}
 								scroll={checked ? { x: innerScrollX } : undefined}
 								record={record}
 								disabled={disabled}
 								selectedCaseObj={selectedCaseObj}
-								columnsInner={columnsInner}
-								setInnerColumns={setColumnsInner}
+								columnsInner={columnsInner.filter(Boolean)}
+								checked={checked}
+								contrl={contrl}
+								columnsChange={columnsChange}
+								onColumnsChange={() => setColumnsChange(uuid())}
 								selectedSuiteKeys={selectedSuiteKeys}
 								setSelectedCaseKeysFn={setSelectedCaseKeysFn}
 							/>
@@ -340,3 +548,5 @@ export default (props: any) => {
 		</div>
 	)
 }
+
+export default TestJobSuiteTable

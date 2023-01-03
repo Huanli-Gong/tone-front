@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Row, Col, Form, Radio, Input, Select, Button, Space, message, Spin } from 'antd'
+import { Row, Col, Form, Radio, Input, Select, Button, Space, message, Spin, Breadcrumb } from 'antd'
 
 import { queryBasicJobItms, createJobType, queryJobTypeDetail, updateJobType, queryJobTypeItems } from './services'
-import { history, FormattedMessage, useIntl, useModel } from 'umi'
+import { history, FormattedMessage, useIntl, useModel, useParams } from 'umi'
 
 import CheckBoxSelect from './components/CheckBoxSelect'
 import { RectSelect } from './components/RectSelect'
 import PreviewComponent from './components/Preview'
-import Breadcrumb from 'antd/es/breadcrumb'
 import { SingleTabCard } from '@/components/UpgradeUI'
 import { requestCodeMessage } from '@/utils/utils'
 
 const { document }: any = window
 
-export default (props: any) => {
-    const { ws_id, jt_id } = props.match.params
+const CreateJobType: React.FC<Record<string, any>> = (props) => {
+    const { ws_id, jt_id } = useParams() as any
 
     const { setInitialState } = useModel("@@initialState")
 
@@ -162,7 +161,7 @@ export default (props: any) => {
                         ...state,
                         refreshMenu: !state?.refreshMenu
                     }))
-                    message.success(formatMessage({id: 'operation.success'}) )
+                    message.success(formatMessage({ id: 'operation.success' }))
                     if (saveType === 'job')
                         history.push(`/ws/${ws_id}/test_job/${id}`)
                     else
@@ -300,7 +299,7 @@ export default (props: any) => {
         >
             <Spin spinning={loading} >
 
-                <h3><FormattedMessage id="job.types.type.configuration"/></h3>
+                <h3><FormattedMessage id="job.types.type.configuration" /></h3>
                 <Form
                     form={form}
                     layout="horizontal"
@@ -309,34 +308,34 @@ export default (props: any) => {
                     wrapperCol={{ span: 21 }}
                 >
                     <Form.Item
-                        label={<FormattedMessage id="job.types.job.name"/>}
+                        label={<FormattedMessage id="job.types.job.name" />}
                         name="name"
                         rules={[
-                            { required: true, message: formatMessage({id: 'job.types.job.name.rules1'}) },
-                            { max: 20, message: formatMessage({id: 'job.types.job.name.rules2'}) }
+                            { required: true, message: formatMessage({ id: 'job.types.job.name.rules1' }) },
+                            { max: 20, message: formatMessage({ id: 'job.types.job.name.rules2' }) }
                         ]}
                     >
-                        <Input autoComplete="off" placeholder={formatMessage({id: 'job.types.job.name.placeholder'})} style={{ width: 500 }} />
+                        <Input autoComplete="off" placeholder={formatMessage({ id: 'job.types.job.name.placeholder' })} style={{ width: 500 }} />
                     </Form.Item>
-                    <Form.Item label={<FormattedMessage id="job.types.server_type"/>} initialValue={"aliyun"} name="server_type">
+                    <Form.Item label={<FormattedMessage id="job.types.server_type" />} initialValue={"aliyun"} name="server_type">
                         <Radio.Group onChange={handleServerChange}>
                             <Radio value="aligroup">
-                                {formatMessage({id: 'aligroupServer'})}
+                                {formatMessage({ id: 'aligroupServer' })}
                             </Radio>
                             <Radio value="aliyun">
-                                {formatMessage({id: 'aliyunServer'})}
+                                {formatMessage({ id: 'aliyunServer' })}
                             </Radio>
                         </Radio.Group>
                     </Form.Item>
 
-                    <Form.Item 
-                        label={<FormattedMessage id="job.types.test_type"/>}
+                    <Form.Item
+                        label={<FormattedMessage id="job.types.test_type" />}
                         initialValue={"functional"} name="test_type">
                         <Select allowClear onChange={handleTestTypeChange} style={{ width: 500 }}>
-                            <Select.Option value="functional"><FormattedMessage id="functional.test"/></Select.Option>
-                            <Select.Option value="performance"><FormattedMessage id="performance.test"/></Select.Option>
-                            <Select.Option value="stability"><FormattedMessage id="stability.test"/></Select.Option>
-                            <Select.Option value="business"><FormattedMessage id="business.test"/></Select.Option>
+                            <Select.Option value="functional"><FormattedMessage id="functional.test" /></Select.Option>
+                            <Select.Option value="performance"><FormattedMessage id="performance.test" /></Select.Option>
+                            <Select.Option value="stability"><FormattedMessage id="stability.test" /></Select.Option>
+                            <Select.Option value="business"><FormattedMessage id="business.test" /></Select.Option>
                         </Select>
                     </Form.Item>
                     {testType === 'business' && (
@@ -346,57 +345,57 @@ export default (props: any) => {
                                 <Form.Item label=""
                                     initialValue={"business"}
                                     name="business_type"
-                                    rules={[{ required: true, message: formatMessage({id: 'job.types.business.message'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'job.types.business.message' }) }]}
                                 >
                                     <Radio.Group onChange={handleBusinessTypeChange}>
-                                        <Radio value="functional"><FormattedMessage id="functional.test"/></Radio>
-                                        <Radio value="performance"><FormattedMessage id="performance.test"/></Radio>
-                                        <Radio value="business"><FormattedMessage id="access.test"/></Radio>
+                                        <Radio value="functional"><FormattedMessage id="functional.test" /></Radio>
+                                        <Radio value="performance"><FormattedMessage id="performance.test" /></Radio>
+                                        <Radio value="business"><FormattedMessage id="access.test" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
                         </Row>
                     )}
 
-                    <Form.Item 
-                        label={<FormattedMessage id="job.types.desc.option"/>}
-                        name="description" 
-                        rules={[{ 
-                            max: 20, 
-                            message: formatMessage({id: 'job.types.desc.message'}),
+                    <Form.Item
+                        label={<FormattedMessage id="job.types.desc.option" />}
+                        name="description"
+                        rules={[{
+                            max: 20,
+                            message: formatMessage({ id: 'job.types.desc.message' }),
                         }]} >
-                        <Input.TextArea placeholder={formatMessage({id: 'job.types.desc.placeholder'}) }
+                        <Input.TextArea placeholder={formatMessage({ id: 'job.types.desc.placeholder' })}
                             style={{ width: 500 }} />
                     </Form.Item>
-                    <Form.Item 
-                        label={<FormattedMessage id="job.types.enable"/>}
+                    <Form.Item
+                        label={<FormattedMessage id="job.types.enable" />}
                         initialValue={true} name="enable" >
                         <Radio.Group onChange={handleEnabelChange}>
-                            <Radio value={true}><FormattedMessage id="job.types.enable"/></Radio>
-                            <Radio disabled={editPagedata.is_first} value={false}><FormattedMessage id="job.types.stop"/></Radio>
+                            <Radio value={true}><FormattedMessage id="job.types.enable" /></Radio>
+                            <Radio disabled={editPagedata.is_first} value={false}><FormattedMessage id="job.types.stop" /></Radio>
                         </Radio.Group>
                     </Form.Item>
 
-                    <h3><FormattedMessage id="job.types.env.configuration"/></h3>
+                    <h3><FormattedMessage id="job.types.env.configuration" /></h3>
                     <RectSelect
-                        title={formatMessage({id: 'job.types.base.config'})}
-                        desc={formatMessage({id: 'job.types.base.config.ps'})}
+                        title={formatMessage({ id: 'job.types.base.config' })}
+                        desc={formatMessage({ id: 'job.types.base.config.ps' })}
                         data={source.basic}
                         name="basic"
                         onSelect={handleSelect}
                         onEdit={hanldeEditName}
                     />
                     <RectSelect
-                        title={formatMessage({id: 'job.types.env.config'})}
-                        desc={formatMessage({id: 'job.types.env.config.ps'})}
+                        title={formatMessage({ id: 'job.types.env.config' })}
+                        desc={formatMessage({ id: 'job.types.env.config.ps' })}
                         data={source.env}
                         name="env"
                         onSelect={handleSelect}
                         onEdit={hanldeEditName}
                     />
                     <CheckBoxSelect
-                        title={formatMessage({id: 'job.types.case.and.server'})}
-                        desc={formatMessage({id: 'job.types.case.and.server.ps'})}
+                        title={formatMessage({ id: 'job.types.case.and.server' })}
+                        desc={formatMessage({ id: 'job.types.case.and.server.ps' })}
                         defaultValue={defaultSelect.server}
                         data={source.server}
                         name="server"
@@ -404,8 +403,8 @@ export default (props: any) => {
                         onEdit={hanldeEditName}
                     />
                     <CheckBoxSelect
-                        title={formatMessage({id: 'job.types.more.config'})}
-                        desc={formatMessage({id: 'job.types.more.config.ps'})}
+                        title={formatMessage({ id: 'job.types.more.config' })}
+                        desc={formatMessage({ id: 'job.types.more.config.ps' })}
                         data={source.more}
                         defaultValue={defaultSelect.more}
                         name="more"
@@ -417,11 +416,11 @@ export default (props: any) => {
                             {
                                 enabel &&
                                 <Button type="primary" disabled={padding} onClick={() => handleFinish('job')}>
-                                    <FormattedMessage id="job.types.save.and.create.job"/>
+                                    <FormattedMessage id="job.types.save.and.create.job" />
                                 </Button>
                             }
-                            <Button onClick={() => handleFinish()}><FormattedMessage id="job.types.only.save"/></Button>
-                            <Button type="link" onClick={handlePriview}><FormattedMessage id="operation.preview"/></Button>
+                            <Button onClick={() => handleFinish()}><FormattedMessage id="job.types.only.save" /></Button>
+                            <Button type="link" onClick={handlePriview}><FormattedMessage id="operation.preview" /></Button>
                         </Space>
                     </Row>
                 </Form>
@@ -434,3 +433,5 @@ export default (props: any) => {
         </SingleTabCard>
     )
 }
+
+export default CreateJobType

@@ -22,18 +22,18 @@ const SuiteManagement: React.FC<any> = ({ id, innerKey, ws_id }) => {
 		getMetric(id)
 	}, [innerKey]);
 
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		{ title: formatMessage({ id: 'suite.indicators' }), dataIndex: 'name', width: 200, fixed: 'left' },
 		{ title: formatMessage({ id: 'suite.cmp_threshold' }), dataIndex: 'cmp_threshold', width: 160, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
 		{ title: formatMessage({ id: 'suite.cv_threshold' }), dataIndex: 'cv_threshold', width: 140, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
 		{ title: formatMessage({ id: 'suite.direction' }), dataIndex: 'direction', width: 140 },
-	]);
+	];
 
 	return (
 		<div className={styles.warp} key={id}>
 			<CommonTable
 				columns={columns as any}
-				setColumns={setColumns}
+				name="ws-suite-manage-metric-list"
 				// scrollType = {640}
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}

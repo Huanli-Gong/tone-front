@@ -4,8 +4,9 @@ import { Modal, Row, Col, Form, Checkbox } from 'antd'
 import styled from 'styled-components'
 import { useParams, useIntl, FormattedMessage  } from 'umi'
 import { stringify } from 'querystring'
-import { reRunCheckedText } from '../../index'
 import { targetJump } from '@/utils/utils'
+
+const reRunCheckedText = 'reRun.checked.inheriting_machine'
 
 const Content = styled(Modal)`
     .ant-modal-body {

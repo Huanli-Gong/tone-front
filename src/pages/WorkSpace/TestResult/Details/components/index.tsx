@@ -1,12 +1,12 @@
-import React, { useRef, useEffect, useState } from 'react'
-import { Tooltip, Tag, Space, Popover, Row, Col, message, Breadcrumb, Typography } from 'antd'
+import React, { useRef } from 'react'
+import { Tooltip, Tag, Space, Popover, Row, Col, Breadcrumb } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons'
-import Clipboard from 'clipboard'
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
 import { AccessTootip } from '@/utils/utils';
 import { useCopyText } from '@/utils/hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
     const { ws_id }: any = useParams()
@@ -20,10 +20,6 @@ export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
     )
 }
 
-interface CopyHookProps {
-    className: string
-}
-
 export const evnPrepareState = (state: string | boolean) => {
     if (state === 'success' || state === true) return <span style={{ fontWeight: 500, color: '#81BF84' }}>Success</span>
     if (state === 'fail' || state === false) return <span style={{ fontWeight: 500, color: '#C84C5A' }}>Fail</span>
@@ -34,38 +30,19 @@ export const evnPrepareState = (state: string | boolean) => {
     return <></>
 }
 
-export const columnRenderDefault = (defaultText: string = '-') => ({
-    render: (_: any, row: any) => (
-        _ ? _ : defaultText
-    )
-})
-
 export const tooltipTd = (defaultText: string = '-') => ({
     ellipsis: {
         showTitle: false,
     },
-    render: (_: any) => (
-        _ ?
-            <Typography.Text ellipsis={{ tooltip: true }}>
+    render: (_: any) => {
+        if (!_) return defaultText
+        return (
+            <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                 {_}
-            </Typography.Text> :
-            defaultText
-    ),
+            </ColumnEllipsisText>
+        )
+    },
 })
-
-export const copyHook = ({ className }: CopyHookProps) => {
-    const { formatMessage } = useIntl()
-    useEffect(() => {
-        const clipboard = new Clipboard(className)
-        clipboard.on('success', function (e) {
-            message.success(formatMessage({ id: 'request.copy.success' }))
-            e.clearSelection();
-        })
-        return () => {
-            clipboard.destroy()
-        }
-    }, [])
-}
 
 export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdit, access }) => {
     const boxRef: any = useRef()
@@ -220,7 +197,6 @@ const CustomTooltipStateTag: React.FC<any> = (props) => {
         </TooltipStateTag>
     )
 }
-
 
 export const JobListStateTag: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()

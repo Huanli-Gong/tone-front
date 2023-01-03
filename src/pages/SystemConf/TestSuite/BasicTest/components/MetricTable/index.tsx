@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Space, message, Modal, Popconfirm, Row } from 'antd';
+import { Button, Space, message, Modal, Popconfirm, Row, Typography } from 'antd';
 import { metricList, addMetric, editMetric, delMetric, getDomain } from '../../../service';
 import styles from '../../style.less';
 import CommonTable from '@/components/Public/CommonTable';
@@ -13,7 +13,6 @@ import { TestContext } from '../../../Provider'
 const MetricTable: React.FC<AnyType> = (props) => {
 	const { id: object_id, innerKey, componentType } = props
 	const { formatMessage } = useIntl()
-	console.log(props)
 
 	const { setMetricDelInfo, metricDelInfo, selectedRowKeys } = React.useContext(TestContext)
 
@@ -134,7 +133,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 		)
 	}
 
-	const [columns, setColumns] = React.useState([
+	const columns = [
 		// { title: 'Metric', dataIndex: 'name'},
 		{ title: <FormattedMessage id="TestSuite.conf.metric" />, dataIndex: 'name', width: 300, fixed: 'left' },
 		{ title: <FormattedMessage id="TestSuite.cmp_threshold" />, dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
@@ -155,18 +154,16 @@ const MetricTable: React.FC<AnyType> = (props) => {
 			fixed: 'right',
 			render: (_: number, row: any) => (
 				<Space>
-					<Button
-						type="link"
-						style={{ padding: 0, height: 'auto' }}
+					<Typography.Link
 						onClick={() => editMetricRow(row)}
 					>
 						<FormattedMessage id="operation.edit" />
-					</Button>
+					</Typography.Link>
 					<DeleteMetricBtn row={row} />
 				</Space>
 			),
 		},
-	]);
+	];
 
 	const handlePage = (page_num: number, page_size: number) => {
 		setPage(page_num)
@@ -193,10 +190,11 @@ const MetricTable: React.FC<AnyType> = (props) => {
 	return (
 		<div className={styles.warp} key={object_id}>
 			<CommonTable
-				columns={columns}
-				setColumns={setColumns}
+				columns={columns as any}
 				// scrollType={670}
 				scroll={{ x: 670 }}
+				rowkey="id"
+				name="sys-suite-manage-basic-metric"
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}
 				rowSelection={rowSelection}

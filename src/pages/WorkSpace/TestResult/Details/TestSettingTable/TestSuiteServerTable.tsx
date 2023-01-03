@@ -1,15 +1,18 @@
 import React from 'react'
-import { Card, Tooltip } from 'antd'
+import { Card, Typography } from 'antd'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import SuiteCaseExpandTable from './SuiteCaseExpandTable'
-import ResizeTable from '@/components/ResizeTable'
 import { useIntl, FormattedMessage } from 'umi'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { v4 as uuid } from "uuid"
+import styles from "./index.less"
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 export default ({ data = [], testType, provider_name }: any) => {
     const { formatMessage } = useIntl()
+    const [columnsRefresh, setColumnsRefresh] = React.useState(uuid())
 
-    const [columns, setColumns] = React.useState([
+    const columns: any = [
         {
             title: 'Test Suite',
             dataIndex: 'test_suite_name',
@@ -26,7 +29,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: (text: any) => <PopoverEllipsis title={text} />,
+                render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
             } :
             {
                 title: <FormattedMessage id="ws.result.details.mode" />,
@@ -59,11 +62,9 @@ export default ({ data = [], testType, provider_name }: any) => {
                 const after = formatMessage({ id: 'ws.result.details.restart.after' })
                 return (
                     (_ || row.cleanup_info) ?
-                        <Tooltip placement="topLeft" title={
-                            <span>[{before}]: {_ || '-'},  [{after}]: {row.cleanup_info || '-'}</span>}
-                        >
-                            <span>[{before}]: {_ || '-'},  [{after}]: {row.cleanup_info || '-'}</span>
-                        </Tooltip> :
+                        <Typography.Text ellipsis={{ tooltip: true }}>
+                            [{before}]: {_ || '-'},  [{after}]: {row.cleanup_info || '-'}
+                        </Typography.Text> :
                         '-'
                 )
             }
@@ -79,7 +80,7 @@ export default ({ data = [], testType, provider_name }: any) => {
         },
         {
             title: <FormattedMessage id="ws.result.details.monitor" />,
-            // dataIndex : 'monitor_info',
+            dataIndex: 'monitor_info',
             ellipsis: {
                 showTitle: false
             },
@@ -95,24 +96,26 @@ export default ({ data = [], testType, provider_name }: any) => {
             width: 100,
             render: (_: any) => (_ || '-')
         }
-    ])
+    ]
 
     return (
         <Card
             title={<FormattedMessage id="ws.result.details.test.cases.and.config" />}
             style={{ marginBottom: 10 }}
         >
-            <ResizeTable
+            <ResizeHooksTable
                 dataSource={data}
                 columns={columns}
-                setColumns={setColumns}
+                name="ws-job-result-setting-suite-server"
                 rowKey="test_suite_id"
                 size="small"
                 pagination={false}
-                scroll={{ x: '100%' }}
+                className={styles.test_suite_server_table}
+                refreshDeps={[testType]}
                 expandable={{
+                    columnWidth: 30,
                     expandedRowRender: (record: any) => (
-                        <SuiteCaseExpandTable data={record.cases} testType={testType} provider_name={provider_name} />
+                        <SuiteCaseExpandTable onColumnsChange={() => setColumnsRefresh(uuid())} columnsRefresh={columnsRefresh} data={record.cases} testType={testType} provider_name={provider_name} />
                     ),
                     expandIcon: ({ expanded, onExpand, record }: any) => (
                         expanded ?

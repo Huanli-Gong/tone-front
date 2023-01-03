@@ -2,14 +2,14 @@ import { Layout, Spin, Table } from 'antd'
 import React, { useState, useEffect, useMemo } from 'react'
 import styles from './index.less'
 import { CaretRightFilled, CaretDownFilled, FilterFilled } from '@ant-design/icons'
-import { useRequest, useLocation, useParams, useIntl, FormattedMessage } from 'umi'
+import { useRequest, useLocation, useParams, useIntl } from 'umi'
 import { queryBaselineDetail } from '../services'
 import ExpandTable from './ExpandTable'
 import SearchInput from '@/components/Public/SearchInput'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import ExpandPerfsTable from './ExpandPerfsTable'
 import { partial } from 'lodash'
+import { ColumnEllipsisText } from '@/components/Public/ColumnComponents'
 
 // 一级详情
 let timeout: any = null;
@@ -93,14 +93,14 @@ export default (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.test_suite_name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.test_suite_name }} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[name || '']}
                             autoEscape
                             textToHighlight={row.test_suite_name.toString()}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         }
