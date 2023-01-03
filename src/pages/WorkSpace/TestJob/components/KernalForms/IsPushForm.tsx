@@ -4,8 +4,8 @@ import ScriptsListForm from './ScriptsFormList'
 import styles from './index.less'
 import { itemLayout } from './untils'
 import { FormInstance } from 'antd/lib/form'
-import { PackageList } from './PackageFormItem'
 import { useIntl, FormattedMessage } from 'umi'
+import PackagesFormItem from "@/pages/SystemConf/KernelManage/components/PackagesFormItem"
 
 type IProps = {
     kernelList: any[];
@@ -13,7 +13,6 @@ type IProps = {
     form: FormInstance;
     disabled?: boolean;
     needScriptList?: boolean;
-
 } & Record<string, any>
 
 const PushForm: React.FC<IProps> = (props) => {
@@ -22,12 +21,10 @@ const PushForm: React.FC<IProps> = (props) => {
     const handleKernelVersionChange = (version: any) => {
         const idx = kernelList.findIndex((i: any) => i.version === version)
         if (idx > -1) {
+            const { version, kernel_packages } = kernelList[idx]
             form.setFieldsValue({
-                kernel_version: kernelList[idx].version,
-                kernel: kernelList[idx].kernel_link,
-                headers: kernelList[idx].headers_link,
-                devel: kernelList[idx].devel_link,
-
+                kernel_version: version,
+                kernel_packages
             })
         }
     }
@@ -77,7 +74,8 @@ const PushForm: React.FC<IProps> = (props) => {
 
                 {/* package kernel devel headers */}
                 {/* @ts-ignore */}
-                <PackageList {...props} />
+                <PackagesFormItem {...props} {...itemLayout} disabled={true} />
+                {/* <PackageList {...props} /> */}
                 {/* package kernel devel headers */}
 
                 <Form.Item

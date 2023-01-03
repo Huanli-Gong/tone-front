@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Space, message, Modal, Popconfirm } from 'antd';
+import { Button, Space, message, Modal, Popconfirm, Row } from 'antd';
 import { metricList, addMetric, editMetric, delMetric, getDomain } from '../../../service';
 import styles from '../../style.less';
 import CommonTable from '@/components/Public/CommonTable';
@@ -8,14 +8,19 @@ import DeleteMetricPopover from './DeleteMetricPopover'
 import MetricEditDrawer from '../MetricEditDrawer'
 import { useRequest, useIntl, FormattedMessage } from 'umi'
 import { requestCodeMessage } from '@/utils/utils';
+import { TestContext } from '../../../Provider'
 
-const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
+const MetricTable: React.FC<AnyType> = (props) => {
+	const { id: object_id, innerKey, componentType } = props
 	const { formatMessage } = useIntl()
+	console.log(props)
+
+	const { setMetricDelInfo, metricDelInfo, selectedRowKeys } = React.useContext(TestContext)
+
 	const [page, setPage] = useState<number>(1)
 	const [pageSize, setPageSize] = useState<number>(10)
 	const [expandInnerList, setExpandInnerList] = useState<any>([])
 	const [expandInnerLoading, setExpandInnerLoading] = useState<boolean>(true)
-	const [objectId, setObjectId] = useState<number>()
 	const [metricId, setMetricId] = useState<number>()
 	const [refresh, setRefresh] = useState<boolean>(true)
 
@@ -26,22 +31,21 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		{ initialData: [] }
 	)
 
-	const getMetric = async (id: number, type: string) => {
+	const getMetric = async (type: string) => {
 		setExpandInnerList({ data: [] })
 		setExpandInnerLoading(true)
 		const params = { page_num: page, page_size: pageSize }
-		params[type] = id
+		params[type] = object_id
 		const data = await metricList(params)
 		setExpandInnerList(data)
 		setExpandInnerLoading(false)
 	}
 
 	useEffect(() => {
-		getMetric(id, innerKey == '1' ? 'case_id' : 'suite_id')
+		getMetric(innerKey === '1' ? 'case_id' : 'suite_id')
 	}, [page, pageSize, refresh]);
 
-	const editMetricRow = (id: number, row: any) => {
-		setObjectId(id)
+	const editMetricRow = (row: any) => {
 		domainList.forEach((item: any) => { if (item.name == row.domain) row.domain = item.id })
 		setMetricId(row.id)
 		metricEditer.current.show('edit', row)
@@ -51,12 +55,12 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		const params: any = {
 			...data,
 			...{
-				object_id: objectId,
-				object_type: innerKey == 1 ? 'case' : 'suite'
+				object_id,
+				object_type: innerKey === '1' ? 'case' : 'suite'
 			}
 		}
 
-		innerKey == 1 ? metricSubmit(params) : doMetricModalFn(params)
+		innerKey === '1' ? metricSubmit(params) : doMetricModalFn(params)
 	}
 
 	const doMetricModalFn = (params: any) => {
@@ -90,9 +94,9 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	}
 
 	const remMetricRow = async (params: any, is_sync?: any) => {
-		const { object_type, object_id, name } = params
+		const { object_type, name } = params
 
-		const { code, msg } = innerKey == 1 ?
+		const { code, msg } = innerKey === '1' ?
 			await delMetric(params.id) :
 			await delMetric(params.id, { is_sync, object_id, object_type, name })
 
@@ -103,10 +107,31 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		else requestCodeMessage(code, msg)
 	}
 
-	const newMetric = (id: number) => {
-		setObjectId(id)
+	const newMetric = () => {
 		setMetricId(undefined)
 		metricEditer.current.show('new')
+	}
+
+	const DeleteMetricBtn: React.FC<any> = ({ row }) => {
+		if (innerKey === '1')
+			return (
+				<Popconfirm
+					title={<FormattedMessage id="delete.prompt" />}
+					okText={<FormattedMessage id="operation.ok" />}
+					cancelText={<FormattedMessage id="operation.cancel" />}
+					onConfirm={() => remMetricRow(row)}
+					overlayStyle={{ width: '224px' }}
+				>
+					<Button type="link" style={{ padding: 0, height: 'auto' }}>
+						<FormattedMessage id={"operation.delete"} />
+					</Button>
+				</Popconfirm>
+			)
+		return (
+			<DeleteMetricPopover
+				onOk={(is_sync: any) => remMetricRow(row, is_sync)}
+			/>
+		)
 	}
 
 	const [columns, setColumns] = React.useState([
@@ -116,27 +141,28 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		{ title: <FormattedMessage id="TestSuite.cv_threshold" />, dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
 		{ title: <FormattedMessage id="TestSuite.direction" />, dataIndex: 'direction', width: 130 },
 		{
-			title: <div className={styles.center}><span><FormattedMessage id="Table.columns.operation" /></span><Button type='primary' onClick={() => newMetric(id)}><FormattedMessage id="operation.new" /></Button></div>,
+			title: (
+				<Row style={{ width: "100%" }} justify="space-between">
+					<FormattedMessage id="Table.columns.operation" />
+					<Button type='primary' size="small" onClick={() => newMetric()}>
+						<FormattedMessage id="operation.new" />
+					</Button>
+				</Row>
+			),
 			valueType: 'option',
 			dataIndex: 'id',
-			width: 180,
+			width: 140,
 			fixed: 'right',
 			render: (_: number, row: any) => (
 				<Space>
-					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editMetricRow(id, { ...row })}><FormattedMessage id="operation.edit" /></Button>
-					{
-						innerKey == 1 ?
-							<Popconfirm title={<FormattedMessage id="delete.prompt" />}
-								// placement="topRight"	
-								okText={<FormattedMessage id="operation.ok" />}
-								cancelText={<FormattedMessage id="operation.cancel" />}
-								onConfirm={() => remMetricRow(row)}
-								overlayStyle={{ width: '224px' }}
-							>
-								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete" /></Button>
-							</Popconfirm> :
-							<DeleteMetricPopover onOk={(is_sync: any) => remMetricRow(row, is_sync)} />
-					}
+					<Button
+						type="link"
+						style={{ padding: 0, height: 'auto' }}
+						onClick={() => editMetricRow(row)}
+					>
+						<FormattedMessage id="operation.edit" />
+					</Button>
+					<DeleteMetricBtn row={row} />
 				</Space>
 			),
 		},
@@ -147,8 +173,25 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		setPageSize(page_size)
 	}
 
+	const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+		setMetricDelInfo({
+			innerKey,
+			object_id,
+			selectedRowKeys: newSelectedRowKeys,
+			refresh: () => getMetric(innerKey === '1' ? 'case_id' : 'suite_id')
+		})
+	};
+
+	const rowSelection = {
+		selectedRowKeys: metricDelInfo?.selectedRowKeys,
+		getCheckboxProps: (record: AnyType) => ({
+			disabled: !!selectedRowKeys?.length, // Column configuration not to be checked
+		}),
+		onChange: onSelectChange,
+	};
+
 	return (
-		<div className={styles.warp} key={id}>
+		<div className={styles.warp} key={object_id}>
 			<CommonTable
 				columns={columns}
 				setColumns={setColumns}
@@ -156,6 +199,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 				scroll={{ x: 670 }}
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}
+				rowSelection={rowSelection}
 				page={expandInnerList.page_num}
 				totalPage={expandInnerList.total_page}
 				total={expandInnerList.total}
@@ -165,7 +209,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 			<MetricEditDrawer
 				onOk={submitMetric}
 				ref={metricEditer}
-				parentId={id}
+				parentId={object_id}
 				componentType={componentType}
 			/>
 		</div>

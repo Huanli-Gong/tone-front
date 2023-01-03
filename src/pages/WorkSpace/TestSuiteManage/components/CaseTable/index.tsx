@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Tabs, Tooltip, Drawer, Typography } from 'antd';
-import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage } from 'umi'
+import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
+import { FormattedMessage } from 'umi'
 import styles from '../../style.less';
 import MetricTable from '../../components/MetricTable';
 import CommonTable from '@/components/Public/CommonTable';

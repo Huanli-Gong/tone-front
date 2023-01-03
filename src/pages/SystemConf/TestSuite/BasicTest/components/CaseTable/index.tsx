@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, } from 'react';
-import { Button, Space, Tabs, message, Modal } from 'antd';
-import { CaretRightFilled, CaretDownFilled, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Space, Tabs, message, Row } from 'antd';
+import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
 import { editCase, delCase, openSuite } from '../../../service';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import styles from '../../style.less';
@@ -13,6 +13,8 @@ import { TestContext } from '../../../Provider'
 import { requestCodeMessage } from '@/utils/utils';
 import { useSuiteProvider } from '../../../hooks';
 import { useLocation, useIntl, FormattedMessage } from 'umi';
+import DeleteDefault from '../DeleteDefault';
+import DeleteTips from '../DeleteTips';
 
 /**
  * Conf级列表
@@ -27,17 +29,17 @@ export default forwardRef(({ id }: any, ref: any) => {
     // console.log('domainList：', domainList)
 
     const { TabPane } = Tabs;
-    const { setSelectedRowKeys, setSelectedRow, selectedRowKeys, confDrawerShow, confRefresh, setConfRefresh } = useContext(TestContext)
+    const { setSelectedRowKeys, setSelectedRow, selectedRowKeys, confDrawerShow, confRefresh, setConfRefresh, metricDelInfo } = useContext(TestContext)
     const [innerKey, setInnerKey] = useState<string>('1')
-    const [deleteVisible, setDeleteVisible] = useState(false);
-    const [deleteDefault, setDeleteDefault] = useState(false);
-    const [deleteObj, setDeleteObj] = useState<any>({});
     const [confPage, setConfPage] = useState<number>(1)
     const [confPageSize, setConfPageSize] = useState<number>(10)
     const [expandList, setExpandList] = useState<any>([])
     const [expandLoading, setExpandLoading] = useState<boolean>(true)
     const [expandInnerKey, setExpandInnerKey] = useState<string[]>([])
+
     const descFastEdit: any = useRef(null)
+    const deleteTipsRef: any = useRef(null)
+    const deleteDefaultRef: any = useRef(null)
 
     // 刷新列表
     useImperativeHandle(
@@ -79,10 +81,9 @@ export default forwardRef(({ id }: any, ref: any) => {
     }
 
     const deleteInner = async (row: any) => {
-        const data = await queryConfirm({ flag: 'pass', case_id_list: row.id })
-        if (data.code === 200) setDeleteVisible(true)
-        else setDeleteDefault(true)
-        setDeleteObj(row)
+        const { code } = await queryConfirm({ flag: 'pass', case_id_list: row.id })
+        if (code === 200) deleteTipsRef.current?.show(row)
+        else deleteDefaultRef.current?.show(row)
     }
 
     const handleInnerTab = (key: string, id: number) => {
@@ -91,21 +92,20 @@ export default forwardRef(({ id }: any, ref: any) => {
         setConfRefresh(!confRefresh)
     }
 
-    const remInnner = async () => {
-        setDeleteVisible(false)
-        setDeleteDefault(false)
-        await delCase(deleteObj.id)
+    const remInnner = async (row: AnyType) => {
+        await delCase(row.id)
         message.success(formatMessage({ id: 'operation.success' }));
         setConfRefresh(!confRefresh)
     }
-    const handleDetail = () => {
-        window.open(`/refenerce/conf/?name=${deleteObj.name}&id=${deleteObj.id}`)
-    }
+
     const newCase = () => {
         confDrawerShow('new', { bentch: false, test_suite_id: id })
     }
     const rowSelection = + status === 0 ? {
         selectedRowKeys,
+        getCheckboxProps: (record: AnyType) => ({
+            disabled: !!metricDelInfo?.selectedRowKeys?.length, // Column configuration not to be checked
+        }),
         onChange: (selectedRowKeys: any[], selectedRows: any) => {
             setSelectedRow(selectedRows)
             setSelectedRowKeys(selectedRowKeys)
@@ -150,17 +150,13 @@ export default forwardRef(({ id }: any, ref: any) => {
             ellipsis: true,
             width: 100,
             render: (_: any, row: any) => (
-                <div>
-                    <ButtonEllipsis title={row.doc} width={70} isCode={true}>
-                        <EditOutlined
-                            className={styles.edit}
-                            onClick={() => descFastEdit.current.show(row)}
-                        />
-                    </ButtonEllipsis>
-                </div>
-
+                <ButtonEllipsis title={row.doc} width={70} isCode={true}>
+                    <EditOutlined
+                        className={styles.edit}
+                        onClick={() => descFastEdit.current.show(row)}
+                    />
+                </ButtonEllipsis>
             )
-            // render: (text: string) => <PopoverEllipsis title={text || ''}></PopoverEllipsis>
         },
         {
             title: <FormattedMessage id="TestSuite.default.case" />,
@@ -184,15 +180,28 @@ export default forwardRef(({ id }: any, ref: any) => {
             render: (_: number, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: <div><FormattedMessage id="Table.columns.operation" /><Button type='primary' onClick={newCase} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new" /></Button></div>,
+            title: (
+                <Row justify="space-between" style={{ width: "100%" }}>
+                    <FormattedMessage id="Table.columns.operation" />
+                    <Button type='primary' size='small' onClick={newCase}>
+                        <FormattedMessage id="operation.new" />
+                    </Button>
+                </Row>
+            ),
             valueType: 'option',
             dataIndex: 'id',
-            width: 150,
+            width: 140,
             fixed: 'right',
-            render: (_: number, row: any) => <Space>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}><FormattedMessage id="operation.edit" /></Button>
-                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}><FormattedMessage id="operation.delete" /></Button>
-            </Space>,
+            render: (_: number, row: any) => (
+                <Space>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}>
+                        <FormattedMessage id="operation.edit" />
+                    </Button>
+                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}>
+                        <FormattedMessage id="operation.delete" />
+                    </Button>
+                </Space>
+            ),
         },
     ]);
 
@@ -212,11 +221,15 @@ export default forwardRef(({ id }: any, ref: any) => {
     }
 
     return (
-        <div className={`${styles.warp} case_table_wrapper`}
-        >
+        <div className={`${styles.warp} case_table_wrapper`} >
             {
                 query.test_type === 'performance' &&
-                <Tabs defaultActiveKey={'1'} activeKey={innerKey} onChange={(key) => handleInnerTab(key, id)} >
+                <Tabs
+                    defaultActiveKey={'1'}
+                    activeKey={innerKey}
+                    onChange={(key) => handleInnerTab(key, id)}
+                    className={styles.caseTabCls}
+                >
                     <TabPane
                         tab="Test Conf"
                         key="1"
@@ -232,7 +245,7 @@ export default forwardRef(({ id }: any, ref: any) => {
             {
                 innerKey == '1' ?
                     <CommonTable
-                        columns={columns}
+                        columns={columns as any}
                         setColumns={setColumns}
                         // scrollType={1400}
                         scroll={{ x: 1400 }}
@@ -252,6 +265,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                                         // setSelectedRowKeys([])
                                         _ ? onExpand(record) : setExpandInnerKey([])
                                     },
+                                    indentSize: 0,
                                     expandedRowKeys: expandInnerKey,
                                     expandIcon: ({ expanded, onExpand, record }: any) =>
                                         expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
@@ -263,53 +277,8 @@ export default forwardRef(({ id }: any, ref: any) => {
                     : <MetricTable componentType={"suite"} id={id} innerKey={innerKey} />
             }
             <DesFastEditDrawer ref={descFastEdit} onOk={handleEditDesc} />
-            <Modal
-                title={<FormattedMessage id="delete.tips" />}
-                footer={[
-                    <Button key="submit" onClick={remInnner}>
-                        <FormattedMessage id="operation.confirm.delete" />
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        <FormattedMessage id="operation.cancel" />
-                    </Button>
-                ]}
-                centered={true}
-                className={styles.modalChange}
-                visible={deleteVisible}
-                onCancel={() => setDeleteVisible(false)}
-                width={600}
-                maskClosable={false}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    {formatMessage({ id: 'TestSuite.conf.name.delete.warning' }, { data: deleteObj.name })}
-                </div>
-                <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    <FormattedMessage id="TestSuite.conf.delete.range" />
-                </div>
-                <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.reference.details" /></div>
-            </Modal>
-            <Modal
-                title={<FormattedMessage id="delete.tips" />}
-                centered={true}
-                className={styles.modalChange}
-                visible={deleteDefault}
-                onCancel={() => setDeleteDefault(false)}
-                footer={[
-                    <Button key="submit" onClick={remInnner}>
-                        <FormattedMessage id="operation.confirm.delete" />
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel" />
-                    </Button>
-                ]}
-                width={300}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt" />
-                </div>
-            </Modal>
+            <DeleteTips basePath={`/refenerce/conf/`} ref={deleteTipsRef} onOk={remInnner} />
+            <DeleteDefault ref={deleteDefaultRef} onOk={remInnner} />
         </div>
     );
 });

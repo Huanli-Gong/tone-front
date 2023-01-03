@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
 
 import { TabCard } from '@/components/UpgradeUI'
 import { Tabs, Button } from 'antd'
@@ -11,7 +11,7 @@ import { useDomain } from './hooks'
 import { ContainerContext } from './Provider'
 import { runList } from '@/utils/utils';
 
-const TestSuite = (props: any) => {
+const TestSuite: React.FC = () => {
     const { formatMessage } = useIntl()
     const { query }: any = useLocation()
 
@@ -35,41 +35,32 @@ const TestSuite = (props: any) => {
         if (testType === 'domainconf') domainConfAddRef.current.openCreateDrawer()
     }
 
-    const buttonText = useMemo(() => {
-        if (testType === 'functional') return <FormattedMessage id='TestSuite.create.functional'/>
-        if (testType === 'performance') return <FormattedMessage id='TestSuite.create.performance'/>
-        if (testType === 'business')   return <FormattedMessage id='TestSuite.create.business'/>
-        if (testType === 'domainconf') return <FormattedMessage id='TestSuite.create.domainconf'/>
-        return <FormattedMessage id='TestSuite.create.functional'/>
-    }, [testType])
-
     return (
         <ContainerContext.Provider
             value={{
                 domainList,
-                runList: runList.map((item)=> ({...item, name: formatMessage({id: item.id}) }) ),
+                runList: runList.map((item) => ({ ...item, name: formatMessage({ id: item.id }) })),
                 viewType: [
-                    { id: 'Type1', name: formatMessage({id: 'TestSuite.view_type.type1'}) }, 
-                    { id: 'Type2', name: formatMessage({id: 'TestSuite.view_type.type2'}) }, 
-                    { id: 'Type3', name: formatMessage({id: 'TestSuite.view_type.type3'}) },
+                    { id: 'Type1', name: formatMessage({ id: 'TestSuite.view_type.type1' }) },
+                    { id: 'Type2', name: formatMessage({ id: 'TestSuite.view_type.type2' }) },
+                    { id: 'Type3', name: formatMessage({ id: 'TestSuite.view_type.type3' }) },
                 ]
             }}
         >
             <TabCard
                 title={
-                    <Tabs defaultActiveKey={ query.test_type || 'functional' } onChange={handleTab} activeKey={testType} >
-                        <Tabs.TabPane tab={<FormattedMessage id="functional.test"/>} key="functional" />
-                        <Tabs.TabPane tab={<FormattedMessage id="performance.test"/>} key="performance" />
-                        {!BUILD_APP_ENV ? <Tabs.TabPane tab={<FormattedMessage id="business.test"/>} key="business" /> : null}
-                        <Tabs.TabPane tab={<FormattedMessage id="TestSuite.domain.conf"/>} key="domainconf" />
+                    <Tabs defaultActiveKey={query.test_type || 'functional'} onChange={handleTab} activeKey={testType} >
+                        <Tabs.TabPane tab={<FormattedMessage id="functional.test" />} key="functional" />
+                        <Tabs.TabPane tab={<FormattedMessage id="performance.test" />} key="performance" />
+                        {!BUILD_APP_ENV ? <Tabs.TabPane tab={<FormattedMessage id="business.test" />} key="business" /> : null}
+                        <Tabs.TabPane tab={<FormattedMessage id="TestSuite.domain.conf" />} key="domainconf" />
                     </Tabs>
                 }
                 extra={
                     <Button type="primary" onClick={addClick} >
-                        {buttonText}
+                        <FormattedMessage id={`TestSuite.create.${testType}`} />
                     </Button>
                 }
-            // className={styles.warp}
             >
                 {
                     (testType !== 'business' && testType !== 'domainconf') &&

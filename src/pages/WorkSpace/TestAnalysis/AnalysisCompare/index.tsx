@@ -400,6 +400,7 @@ export default (props: any) => {
     const handleSureOk = (suiteData: any) => { // suiteData：已选的
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
+
         setVisibleBaseGroup(false);
         setLoading(true)
         Promise.all([queryDomainGroupFn(params)])
@@ -428,6 +429,7 @@ export default (props: any) => {
                 message.error(formatMessage({ id: 'request.failed' }))
                 console.log(e)
             })
+            
     }
     const creatReportCallback = (reportData: any, suiteData: any) => { // suiteData：已选的
         setLoading(true)
@@ -557,9 +559,16 @@ export default (props: any) => {
 
             compare_groups = _.reduce(arr, (groups: any, obj) => {
                 const index = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(obj.id) });
+                const compareIds = newGroup[index]?.members?.map((i: any) => i.id)
+
                 const groupItem: any = {
                     tag: newGroup[index]?.product_version,
-                    base_objs: compareArr
+                    base_objs: compareArr.reduce((p, c) => {
+                        const { obj_id } = c
+                        if (compareIds.includes(obj_id))
+                            return p.concat(c)
+                        return p
+                    }, [])
                 }
                 groups.push(groupItem)
                 return groups

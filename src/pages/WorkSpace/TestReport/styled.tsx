@@ -14,9 +14,8 @@ export const ReportBody = styled.div<BodyProps>`
     .ant-tabs {
         background: #fff;
         .ant-tabs-content-holder{
-                padding-left: 20px;
-                padding-right: 20px;
-            }
+            padding-left: 20px;
+            padding-right: 20px;
         }
         button{
             margin-right: 20px;

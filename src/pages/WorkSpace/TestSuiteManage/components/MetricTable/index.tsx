@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl } from 'umi'
 import { querySuiteList } from '../../service';
 import styles from '../../style.less';
 import CommonTable from '@/components/Public/CommonTable';
@@ -12,7 +12,6 @@ const SuiteManagement: React.FC<any> = ({ id, innerKey, ws_id }) => {
 	const getMetric = async (id: number) => {
 		setExpandInnerList({ data: [] })
 		setExpandInnerLoading(true)
-		console.log(innerKey)
 		const params = { ws_id, object_type: innerKey, object_id: id }
 		const data = await querySuiteList(params)
 		setExpandInnerList(data)
@@ -33,7 +32,7 @@ const SuiteManagement: React.FC<any> = ({ id, innerKey, ws_id }) => {
 	return (
 		<div className={styles.warp} key={id}>
 			<CommonTable
-				columns={columns}
+				columns={columns as any}
 				setColumns={setColumns}
 				// scrollType = {640}
 				loading={expandInnerLoading}

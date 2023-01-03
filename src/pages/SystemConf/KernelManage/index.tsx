@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Badge, message, Table, Typography, Space, Button, Spin, Tooltip, Popconfirm } from 'antd'
+import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm } from 'antd'
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryKernelList, deleteKernel, updateSyncKernel } from './services'
 import CommonPagination from '@/components/CommonPagination'
@@ -63,9 +63,9 @@ export default (props: any) => {
             showTitle: false
         },
         render: (_: any) => (
-            <Tooltip placement="topLeft" title={_}>
-                {_}
-            </Tooltip>
+            <Typography.Text ellipsis={{ tooltip: true }}>
+                {_ || "-"}
+            </Typography.Text>
         ),
         ...getSearchFilter(pageParams, setPageParams, 'version')
     }, {
@@ -93,7 +93,7 @@ export default (props: any) => {
         dataIndex: 'enable',
         width: 100,
         render: (_: any) => (
-            <Badge 
+            <Badge
                 status={_ ? 'success' : 'error'}
                 text={
                     <Typography.Text>
@@ -121,18 +121,27 @@ export default (props: any) => {
     }, {
         title: <FormattedMessage id="kernel.update_user" />,
         dataIndex: 'update_user',
-        ...getUserFilter(pageParams, setPageParams, 'update_user')
+        ...getUserFilter(pageParams, setPageParams, 'update_user'),
+        render(_) {
+            return (
+                <Typography.Text ellipsis={{ tooltip: true }}>
+                    {_ || "-"}
+                </Typography.Text>
+            )
+        }
     }, {
         title: <FormattedMessage id="kernel.desc" />,
         dataIndex: 'description',
         ellipsis: {
             showTitle: false
         },
-        render: (_: any) => (
-            <Tooltip placement="topLeft" title={_}>
-                {_ || "-"}
-            </Tooltip>
-        ),
+        render(_) {
+            return (
+                <Typography.Text ellipsis={{ tooltip: true }}>
+                    {_ || "-"}
+                </Typography.Text>
+            )
+        }
     }, {
         title: <FormattedMessage id="Table.columns.operation" />,
         width: enLocale ? 190 : 150,
@@ -150,9 +159,9 @@ export default (props: any) => {
                                 message.destroy()
                                 const { code } = result;
                                 if (code != 200) {
-                                    message.warning(formatMessage({ id: 'operation.synchronize.failed' }));
+                                    message.warning(formatMessage({ id: 'request.synchronize.failed' }));
                                 } else {
-                                    message.success(formatMessage({ id: 'operation.synchronize.success' }));
+                                    message.success(formatMessage({ id: 'request.synchronize.success' }));
                                 }
                                 initPageList()
 

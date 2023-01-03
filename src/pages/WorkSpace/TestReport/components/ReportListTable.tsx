@@ -204,7 +204,7 @@ const ReportListTable = (props: any) => {
 
     return (
         <Spin spinning={loading}>
-            <Table
+            <ClsResizeTable
                 size="small"
                 rowKey={record => record.id}
                 columns={columns}

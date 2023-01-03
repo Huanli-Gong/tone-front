@@ -44,7 +44,7 @@ declare const self_agent_name: string
 
 declare const open_agent: string
 
-declare const agentItem : { 
+declare const agentItem: {
     value: string;
     label: string;
 }
@@ -56,3 +56,5 @@ interface FunctionComponent {
     onClick?: any
 }
 declare module 'react-beautiful-dnd';
+
+declare type AnyType = Record<string, any>
