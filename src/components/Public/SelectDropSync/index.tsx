@@ -61,7 +61,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 			<Space>
 				<Button
 					onClick={() => {
-						confirm()
+						confirm?.()
 						onConfirm(val)
 					}}
 					type="link"
@@ -73,7 +73,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 				<Button
 					type="text"
 					onClick={() => {
-						confirm()
+						confirm?.()
 						setVal(undefined)
 						onConfirm(undefined)
 						setOptionData(dataArr)

@@ -71,7 +71,7 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 			<div className={styles.cover}
 				onClick={() => {
 					if(!focus){
-						confirm()
+						confirm?.()
 					}
 				}}
 			>
@@ -109,7 +109,7 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 			<Space>
 				<Button
 					onClick={() => {
-						confirm()
+						confirm?.()
 						onConfirm(val)
 					}}
 					type="link"
@@ -121,7 +121,7 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 				<Button
 					type="text"
 					onClick={() => {
-						confirm()
+						confirm?.()
 						setVal(undefined)
 						setIsEnd(false)
 						onConfirm(undefined)

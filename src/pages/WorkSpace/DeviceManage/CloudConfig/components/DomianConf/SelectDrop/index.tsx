@@ -91,7 +91,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 			<Space>
 				<Button
 					onClick={() => {
-						confirm && confirm()
+						confirm?.()
 						onConfirm( val )
 						// val.length > 0 && onConfirm( val.toString() )
 					}}
@@ -104,7 +104,7 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 				<Button 
 					type="text"
 					onClick={() => {
-						confirm && confirm()
+						confirm?.()
 						setVal(undefined)
 						onConfirm(undefined)
 						handleSearch()

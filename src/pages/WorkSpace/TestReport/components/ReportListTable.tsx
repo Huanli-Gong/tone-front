@@ -64,7 +64,7 @@ const ReportListTable = (props: any) => {
         const end_time = dateStrings[1]
         if (!start_time && !end_time) setPageParam({ ...pageParam, gmt_modified: null })
         if (start_time && end_time) setPageParam({ ...pageParam, gmt_modified: JSON.stringify({ start_time, end_time }) })
-        confirm()
+        confirm?.()
     }
 
     const columns: any = [{

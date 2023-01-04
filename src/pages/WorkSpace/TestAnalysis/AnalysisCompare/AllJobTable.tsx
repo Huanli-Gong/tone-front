@@ -68,7 +68,7 @@ const AllJobTable = (props: any) => {
         const end_time = dateStrings[1]
         if (!start_time && !end_time) setParams({ ...params, creation_time: null })
         if (start_time && end_time) setParams({ ...params, creation_time: JSON.stringify({ start_time, end_time }) })
-        confirm()
+        confirm?.()
     }
 
     const getProductList = async (id: any) => {
