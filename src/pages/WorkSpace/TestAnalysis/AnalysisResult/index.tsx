@@ -11,11 +11,10 @@ import TestEnv from './components/TestEnv';
 import PerformanceTest from './components/PerformanceTest';
 import FunctionalTest from './components/FunctionalTest';
 import { ReportContext } from './Provider';
-import Clipboard from 'clipboard';
 import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import _ from 'lodash';
 import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
-import { useClientSize } from '@/utils/hooks';
+import { useClientSize, useCopyText } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
 
 const Report = (props: any) => {
@@ -34,9 +33,11 @@ const Report = (props: any) => {
     const [envData, setEnvData] = useState<Array<{}>>([])
     const [shareWsId, setShareWsId] = useState(undefined)
     const [suiteLen, setSuiteLen] = useState(1)
-    const [shareId, setShareId] = useState<Number>(0)
     const [scrollLeft, setScrollLeft] = useState(0)
     const saveReportDraw: any = useRef(null)
+
+    const [shareId, setShareId] = React.useState(undefined)
+    const [fetching, setFetching] = React.useState(false)
 
     const scrollDom = document.querySelector('.ant-layout-has-sider .ant-layout')
     const { top } = useScroll(scrollDom as any)
@@ -46,14 +47,14 @@ const Report = (props: any) => {
     const queryCompareForm = async () => {
         const data = await queryForm({ form_id })
         if (data.code == 200) {
-            const shareData = JSON.parse(data.data.req_form)
-            setTestDataParam(shareData.testDataParam)
-            setParamEenvironment(shareData.envDataParam)
-            setAllGroupData(shareData.allGroupData)
-            setBaselineGroupIndex(shareData.baselineGroupIndex)
-            setShareWsId(shareData.allGroupData[0]?.members[0]?.ws_id)
+            if (!data?.data) return
+            setTestDataParam(data?.data.testDataParam)
+            setParamEenvironment(data?.data.envDataParam)
+            setAllGroupData(data?.data.allGroupData)
+            setBaselineGroupIndex(data?.data.baselineGroupIndex)
+            setShareWsId(data?.data.allGroupData[0]?.members[0]?.ws_id)
         } else if (data.code === 500) {
-            history.push('/500')
+            history.push(`/500?page=${location.href}`)
         } else {
             requestCodeMessage(data.code, data.msg)
         }
@@ -128,7 +129,7 @@ const Report = (props: any) => {
                     ...compareResult
                 })
                 if (res.code === 500) {
-                    history.push('/500')
+                    history.push(`/500?page=${location.href}`)
                     return
                 }
                 if (res.code !== 200) {
@@ -154,52 +155,41 @@ const Report = (props: any) => {
     }, [testDataParam, paramEenvironment])
 
     const handleReportId = async () => {
-        let arr = allGroupData.map((item: any) => {
+        const arr = allGroupData.map((item: any) => {
             let members = item.members.map((i: any) => i.id)
             return {
                 ...item,
                 members
             }
         })
-        let form_data: any = {
+        const form_data: any = {
             allGroupData: arr,
             baselineGroupIndex,
             testDataParam,
             envDataParam: paramEenvironment
         }
         const { data, code, msg } = await compareForm({ form_data })
-        if (code === 200) {
-            setShareId(data)
-        } else {
+        if (code !== 200) {
             requestCodeMessage(code, msg)
+            return
         }
+        return data
     }
 
-    useEffect(() => {
-        if (!!allGroupData.length) {
-            handleReportId()
+    const copyText = useCopyText(formatMessage({ id: 'analysis.copy.sharing.link.succeeded' }))
+
+    const handleShare = async () => {
+        if (fetching) return
+        let id = shareId
+        if (!id) {
+            setFetching(true)
+            id = await handleReportId()
+            setFetching(false)
         }
-    }, [allGroupData, baselineGroupIndex])
 
-    const handleShare = useCallback(
-        () => {
-            if (shareId) {
-                const clipboard = new Clipboard('.test_result_copy_link', {
-                    text: function (trigger) {
-                        return location.origin + `/share/analysis_result/${shareId}`
-                    }
-                });
-
-                clipboard.on('success', function (e: any) {
-                    message.success(formatMessage({ id: 'analysis.copy.sharing.link.succeeded' }))
-                    e.clearSelection();
-                });
-
-                (document.querySelector('.test_result_copy_link') as any).click()
-                clipboard.destroy()
-            }
-        }, [shareId]
-    )
+        setShareId(id)
+        copyText(location.origin + `/share/analysis_result/${id}`)
+    }
 
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
@@ -234,7 +224,7 @@ const Report = (props: any) => {
     useEffect(() => {
         if (JSON.stringify(environmentResult) !== '{}') {
             const deep = _.cloneDeep(environmentResult)
-            if (!!environmentResult.compare_groups.length) deep.base_group.is_base = true
+            if (deep.base_group) deep.base_group.is_group = true
             let compare = deep.compare_groups
             let base = deep.base_group
             compare.splice(baselineGroupIndex, 0, base)
@@ -279,14 +269,24 @@ const Report = (props: any) => {
                             <TypographyText><FormattedMessage id="analysis.comparison.result" /></TypographyText>
                             <span className="btn">
                                 <span className="test_result_copy_link"></span>
-                                {!form_id && <span onClick={handleShare} style={{ cursor: 'pointer' }} >
-                                    <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="operation.share" />
-                                </span>
+                                {
+                                    !form_id &&
+                                    <span onClick={handleShare} style={{ cursor: 'pointer' }} >
+                                        <IconLink style={{ marginRight: 5 }} /><FormattedMessage id="operation.share" />
+                                    </span>
                                 }
                                 <Access accessible={access.IsWsSetting()}>
-                                    {!form_id && <Button type="primary" loading={compareLen !== suiteLen} onClick={handleCreatReportOk} style={{ marginLeft: 8 }}>
-                                        <FormattedMessage id="analysis.create.report" />
-                                    </Button>}
+                                    {
+                                        !form_id &&
+                                        <Button
+                                            type="primary"
+                                            loading={compareLen !== suiteLen}
+                                            onClick={handleCreatReportOk}
+                                            style={{ marginLeft: 8 }}
+                                        >
+                                            <FormattedMessage id="analysis.create.report" />
+                                        </Button>
+                                    }
                                 </Access>
                             </span>
                         </ResultTitle>

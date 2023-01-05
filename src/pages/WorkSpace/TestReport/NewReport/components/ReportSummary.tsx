@@ -118,16 +118,21 @@ const ReportSummary = () => {
                             return (
                                 <GroupData gLen={groupLen} key={idx}>
                                     <Space>
-                                        {item.is_job ?
-                                            item.is_base && <Tooltip title={formatMessage({id: 'report.benchmark.group'}) }>
-                                                <BaseIcon style={{ marginRight: 4, marginTop: 17 }} />
-                                            </Tooltip> :
-                                            item.is_base && <Tooltip title={formatMessage({id: 'report.baseline.group'}) }>
-                                                <BaseLine style={{ marginRight: 4, marginTop: 17 }} />
-                                                <Typography.Text><FormattedMessage id="report.test.baseline"/></Typography.Text>
-                                            </Tooltip>
-
-                                        }
+                                    {
+                                        item.is_group && <Tooltip title={<FormattedMessage id="report.benchmark.group" />}>
+                                            <BaseIcon
+                                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                            />
+                                        </Tooltip>
+                                    }
+                                    {
+                                        item.is_baseline ? <Tooltip title={<FormattedMessage id="report.baseline.group" />}>
+                                            <BaseLine
+                                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                            />
+                                            <Typography.Text>（<FormattedMessage id="report.test.baseline" />）</Typography.Text>
+                                        </Tooltip> : null
+                                    }
                                     </Space>
                                     <EllipsisPulic title={item.tag} />
                                 </GroupData>

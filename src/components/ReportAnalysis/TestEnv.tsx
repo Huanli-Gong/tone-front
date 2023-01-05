@@ -1,103 +1,149 @@
 import React from "react";
-import { Tooltip } from 'antd';
 import {
     MachineGroup,
     MachineGroupL,
     MachineGroupR,
 } from './TestEnvUI';
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
-interface EnvType {
-    len: Array<{}>,
-    envData: Array<{}>,
-    environmentResult: any,
-    group: number,
-}
+import { Row, Tooltip, Typography } from "antd";
+import { DoubleRightOutlined } from "@ant-design/icons"
+import styled, { keyframes } from "styled-components"
+import { useIntl } from "umi";
 
-export const TestEnv: React.FC<EnvType> = ({ len, envData, environmentResult, group }) => {
-
-    const RenderItem: React.FC<any> = ({ i, name, style = {} }) => {
-        return (
-            <>
-                {
-                     envData.map((server: any) => {
-                        const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                        return server.server_info.concat(len).map((item: any, idx: number) => (
-                            i === idx && <MachineGroupR style={style} gLen={group} key={idx}>
-                                <EllipsisPulic 
-                                    title={item?.[name] || '-'}
-                                >
-                                        {item?.[name] || '-'}
-                                </EllipsisPulic>
-                            </MachineGroupR>
-                        ))
-                    })
-                }
-            </>
-        )
+const collapsedAnimate = keyframes`
+    from {
+        transform: translateY(0);
     }
 
+    to {
+        transform: translateY(3px);
+    }
+`;
+
+const CollapsedSpan = styled.div`
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    line-height: 40px;
+    display: inline-flex;
+    width: 100px;
+    margin: 0 auto;
+    cursor: pointer;
+    color: #1890FF;
+    animation: ${collapsedAnimate} .5s ease-in-out .5s infinite alternate;
+`
+interface EnvType {
+    len?: any[],
+    envData?: any[],
+    environmentResult?: any,
+    group?: number,
+}
+
+export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }) => {
+    const { count } = environmentResult
+    const intl = useIntl()
+    const [collapsed, setCollapsed] = React.useState(false);
+
+    React.useEffect(() => {
+        return () => {
+            setCollapsed(false)
+        }
+    }, [])
+
+    if (!envData)
+        return <></>
+
     return (
-        Array.isArray(envData) && !!envData.length ? <>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {
-                len.map((item: any, i: number) => (
-                    <MachineGroup key={i}>
-                        <MachineGroupL style={{ background: '#fafafa' }}>IP</MachineGroupL>
-                        <RenderItem i={i} name='ip/sn' style={{ background: '#fafafa' }} />
-                        {/* <MachineGroupL>机型</MachineGroupL>
-                        <RenderItem i={i} name='distro' /> */}
-                        <MachineGroupL>OS</MachineGroupL>
-                        <RenderItem i={i} name='os' />
-                        <MachineGroupL>Kernel</MachineGroupL>
-                        <RenderItem i={i} name='kernel' />
-                        <MachineGroupL>Glibc</MachineGroupL>
-                        <RenderItem i={i} name='glibc' />
-                        {/* <MachineGroupL>内存</MachineGroupL>
-                        <RenderItem i={i} name='memory_info' />
-                        <MachineGroupL>CPU</MachineGroupL>
-                        <RenderItem i={i} name='cpu_info' />
-                        <MachineGroupL>磁盘</MachineGroupL>
-                        <RenderItem i={i} name='disk' />
-                        <MachineGroupL>网卡信息</MachineGroupL>
-                        <RenderItem i={i} name='ether' /> */}
-                        <MachineGroupL>GCC</MachineGroupL>
-                        <RenderItem i={i} name='gcc' />
-                        {/* {
-                            envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            autoAdjustOverflow={false}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                            title={item?.gcc || '-'}>
-                                            <span className="enviroment_child">{item?.gcc || '-'}</span>
-                                        </Tooltip>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        } */}
-                        {/* <MachineGroupL>RPM</MachineGroupL>
-                        {
-                            Array.isArray(envData) && !!envData.length && envData.map((server: any, index: number) => {
-                                const len = Array.from(Array(environmentResult?.count - server.server_info.length)).map(val => ({}))
-                                return server.server_info.concat(len).map((item: any, idx: number) => (
-                                    i === idx && <MachineGroupR gLen={group} key={idx}>
-                                        <Tooltip
-                                            placement="bottomLeft"
-                                            autoAdjustOverflow={false}
-                                            title={<div>{item.rpm?.map((i: any, idx: number) => (<span key={idx}>{i}<br /></span>))}</div>}
-                                            overlayStyle={{ maxWidth: 540, maxHeight: 360, overflowY: 'auto' }}
-                                        >
-                                            <span className="enviroment_child">{item.rpm || '-'}</span>
-                                        </Tooltip>
-                                    </MachineGroupR>
-                                ))
-                            })
-                        } */}
-                    </MachineGroup>
-                ))
+                new Array(collapsed ? count : 1).fill("").map((ctx: any, idx: number) => {
+                    return (
+                        <MachineGroup key={idx}>
+                            {
+                                [
+                                    ["IP", "ip/sn"],
+                                    [
+                                        intl.formatMessage({ id: "report.server.distro", defaultMessage: "机型" }),
+                                        "distro"
+                                    ],
+                                    ["CPU", "cpu_info"],
+                                    [
+                                        intl.formatMessage({ id: "report.server.memory_info", defaultMessage: "内存" }),
+                                        "memory_info"
+                                    ],
+                                    [
+                                        intl.formatMessage({ id: "report.server.disk", defaultMessage: "磁盘" }),
+                                        "disk"
+                                    ],
+                                    [
+                                        intl.formatMessage({ id: "report.server.ether", defaultMessage: "网络" }),
+                                        "ether"
+                                    ],
+                                    ["OS", "os"],
+                                    ["Kernel", "kernel"],
+                                    ["GCC", "gcc"],
+                                    ["Glibc", "glibc"],
+                                    // ["RPM", "rpm"],
+                                ].map((tm: any, i: number) => {
+                                    const [title, field] = tm
+                                    return (
+                                        <Row key={i}>
+                                            <MachineGroupL style={{ background: '#fafafa' }}>
+                                                {title}
+                                            </MachineGroupL>
+                                            {
+                                                new Array(group).fill("").map((item: any, index: number) => {
+                                                    const title = envData[index]?.server_info?.[idx]?.[field] || "-"
+                                                    return (
+                                                        <MachineGroupR
+                                                            gLen={group}
+                                                            key={index}
+                                                        >
+                                                            <Typography.Text
+                                                                ellipsis={{
+                                                                    tooltip: {
+                                                                        title: (
+                                                                            <span
+                                                                                dangerouslySetInnerHTML={{
+                                                                                    __html: title.replace(/\n/g, "<br />")
+                                                                                }}
+                                                                            />
+                                                                        )
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {title}
+                                                            </Typography.Text>
+                                                        </MachineGroupR>
+                                                    )
+                                                })
+                                            }
+                                        </Row>
+                                    )
+                                })
+                            }
+                        </MachineGroup>
+                    )
+                })
             }
-        </> : <></>
+            {
+                (count > 1 && !collapsed) &&
+                <CollapsedSpan
+                    onClick={() => setCollapsed(true)}
+                >
+                    <Tooltip
+                        title={
+                            intl.formatMessage({
+                                id: "report.server.coolapsed.tooltip.title",
+                                defaultMessage: "展开查看更多机器信息"
+                            })
+                        }
+                    >
+                        <span>
+                            <DoubleRightOutlined style={{ transform: "rotate(90deg)", transformOrigin: "center" }} />
+                        </span>
+                    </Tooltip>
+                </CollapsedSpan>
+            }
+        </div>
     )
 }

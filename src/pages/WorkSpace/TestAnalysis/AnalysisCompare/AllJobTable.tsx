@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Space, Row, Col, Select, Divider, Button, DatePicker } from 'antd'
+import { Space, Row, Col, Select, Divider, Button, DatePicker, Typography } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
@@ -36,22 +36,19 @@ const styleObj = {
 }
 
 const AllJobTable = (props: any) => {
-    const { onOk, onCancel } = props
+    const { onOk, onCancel, noGroupData } = props
     const { ws_id }: any = useParams();
     const page_default_params: any = {
         page_num: 1,
         page_size: 10,
         ws_id,
-        creators: null,
-        creation_time: null,
         state: 'success,fail,skip,stop,running',
-        filter_id: '',
     }
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [allProduct, setAllProduct] = useState([])
-    const [allVersion, setAllVersion] = useState([])
+    const [allVersion, setAllVersion] = useState<any>([])
     const [selectRowData, setSelectRowData] = useState<any>([])
     const [loading, setLoading] = useState<any>(false)
     const { formatMessage } = useIntl()
@@ -72,36 +69,36 @@ const AllJobTable = (props: any) => {
         if (start_time && end_time) setParams({ ...params, creation_time: JSON.stringify({ start_time, end_time }) })
         confirm()
     }
-    const getProductList = async () => {
+
+    const getProductList = async (id: any) => {
         setLoading(true)
-        let result = await queryProductList({ product_id: pruductId })
+        let result = await queryProductList({ ws_id, product_id: id })
         if (result.code === 200) {
             let data = result.data.filter((val: any) => val.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
-            if (!!data.length) setPruductVersion('All')
-        } else {
-            requestCodeMessage(result.code, result.msg)
-        }
-        setLoading(false)
-    }
-    const getProductData = async () => {
-        setLoading(true)
-        let result = await queryProduct({ ws_id })
-        if (result.code === 200) {
-            let data = _.isArray(result.data) ? result.data : []
-            setAllProduct(data)
-            if (!!data.length) {
-                setPruductId('All')
-                return
-            }
+            if (!!data.length && pruductId) setPruductVersion(data[0].value)
+            else setPruductVersion(undefined)
         } else {
             requestCodeMessage(result.code, result.msg)
         }
         setLoading(false)
     }
 
-    const getJobList = async (params: any) => {
+    const getProductData = async () => {
+        setLoading(true)
+        let result = await queryProduct({ ws_id })
+        if (result.code === 200) {
+            let data = _.isArray(result.data) ? result.data : []
+            setAllProduct(data)
+            if (!!data.length) setPruductId(undefined)
+        } else {
+            requestCodeMessage(result.code, result.msg)
+        }
+        setLoading(false)
+    }
+
+    const getJobList = async () => {
         setLoading(true)
         let data = await queryJobList(params)
         if (data.code === 200) {
@@ -112,6 +109,14 @@ const AllJobTable = (props: any) => {
             requestCodeMessage(data.code, data.msg)
         }
     }
+
+    useEffect(() => {
+        if (!!noGroupData.length) {
+            setSelectedRowKeys(noGroupData.map((i: any) => i.id));
+            setSelectRowData(noGroupData);
+        }
+    }, [noGroupData])
+
     const columns = [
         {
             title: 'Job ID',
@@ -175,7 +180,10 @@ const AllJobTable = (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => row.test_type,
+            render: (_: any, row: any) => {
+                const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
+                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+            },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
                 list={defaultList}
@@ -231,25 +239,50 @@ const AllJobTable = (props: any) => {
     ]
 
     useEffect(() => {
-       getJobList(params)
+        getProductData()
+        getProductList(undefined)
+    }, [])
+
+    useEffect(() => {
+        if (pruductId) getProductList(pruductId)
+    }, [pruductId])
+
+    useEffect(() => {
+        getJobList()
     }, [params])
 
     useEffect(() => {
-        getProductData()
-        getProductList()
-    }, [])
+        if (pruductId && !pruductVersion) {
+            setParams({ ...params, product_id: pruductId, product_version: undefined })
+        }
+        if (pruductId && pruductVersion) {
+            setParams({ ...params, product_version: pruductVersion, product_id: pruductId })
+        }
+    }, [pruductId, pruductVersion])
 
     const onVersionChange = (value: any) => {
         setPruductVersion(value)
-        setParams({ ...params, product_version: value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
+
     const onProductChange = (value: any) => {
         setPruductId(value)
-        setParams({ ...params, product_id: value })
+        // setPruductVersion(allVersion[0]?.value)
+        // setParams({ ...params, product_id: value, product_version: allVersion[0]?.value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
+    }
+
+    const handleClearVersion = () => {
+        setPruductVersion(undefined)
+        setParams({ ...params, product_version: undefined })
+    }
+
+    const handleClearProduct = () => {
+        setPruductId(undefined)
+        setPruductVersion(undefined)
+        setParams(page_default_params)
     }
 
     const selectedChange = (record: any, selected: any) => {
@@ -274,6 +307,7 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys([...selectedRowKeys, ...keysArr])
         setSelectRowData([...selectRowData, ...arr])
     }
+
     const cancleAllSelectFn = (allData: any) => {
         const arr = _.isArray(allData) ? allData : []
         const keysArr: any = []
@@ -310,6 +344,7 @@ const AllJobTable = (props: any) => {
         // 最大高度，内容超出该高度会出现滚动条
         height: maxHeight - 339 > 430 ? 430 : maxHeight - 339,
     }
+
     return (
         <div className={styles.list_container} id="list_container">
             <div className={styles.select_product}>
@@ -318,35 +353,36 @@ const AllJobTable = (props: any) => {
                         <span><FormattedMessage id="analysis.product.label" /></span>
                         <Select
                             showSearch
+                            allowClear={true}
                             style={{ width: 'calc(100% - 75px)' }}
                             placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                            defaultValue={pruductId}
                             value={pruductId}
                             optionFilterProp="children"
-                            onChange={onProductChange}
+                            onSelect={onProductChange}
+                            onClear={handleClearProduct}
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                         >
-                            { allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>) }
+                            {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
                         </Select>
                     </Col>
                     <Col span={12} >
                         <span><FormattedMessage id="analysis.version.label" /></span>
                         <Select
                             showSearch
+                            allowClear={true}
                             style={{ width: `calc(100% - ${getLocale() === 'en-US' ? 120 : 75}px)` }}
                             placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                            defaultValue={pruductVersion}
                             value={pruductVersion}
                             optionFilterProp="children"
-                            onChange={onVersionChange}
-                            // disabled={currentGroup && _.get(currentGroup, 'members').length}
+                            onSelect={onVersionChange}
+                            onClear={handleClearVersion}
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                         >
-                            { allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>) }
+                            {allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)}
                         </Select>
                     </Col>
                 </Row>

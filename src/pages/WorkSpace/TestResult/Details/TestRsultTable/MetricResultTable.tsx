@@ -30,8 +30,8 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             run()
     }, [compare_result])
 
-    const strLocals = formatMessage({id: 'ws.result.details.threshold'})
-    const columns:any = [{
+    const strLocals = formatMessage({ id: 'ws.result.details.threshold' })
+    const columns: any = [{
         // title : 'Metric',
         title: <FormattedMessage id="ws.result.details.metric" />,
         dataIndex: 'metric',
@@ -48,7 +48,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
         ),
         // render: (_: any) => <span style={{ paddingLeft: 8, paddingRight: 8 }}>{_ || '-'}</span>
     }, {
-        title:(
+        title: (
             <QusetionIconTootip
                 placement="bottomLeft"
                 title={<FormattedMessage id="ws.result.details.test.result" />}
@@ -60,8 +60,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
         render: (_: any, row: any, index: number) => (
             <ResultTdPopver
                 {...row}
-                rowkey={`${test_case_id}${test_case_id}${index}`}
-                title={formatMessage({id: 'ws.result.details.compared.results'})}
+                title={formatMessage({ id: 'ws.result.details.compared.results' })}
             />
         )
     }, {
@@ -121,7 +120,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             pagination={false}
             size="small"
             // scroll={{ x: '100%' }}
-            className={`${styles.result_info_table_head} ${data?.length ? '': styles.result_info_table_head_line}`}
+            className={`${styles.result_info_table_head} ${data?.length ? '' : styles.result_info_table_head_line}`}
             rowClassName={styles.result_info_table_row}
             dataSource={data}
             columns={columns}

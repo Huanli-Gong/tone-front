@@ -117,6 +117,7 @@ export default (props: any) => {
             width: 100,
             dataIndex: 'test_type',
             render: (record: any) => {
+                console.log(record)
                 return record === 'performance' ? <FormattedMessage id="header.test_type.performance" /> : <FormattedMessage id="header.test_type.functional" />
             }
         },

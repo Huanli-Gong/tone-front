@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { history, useModel, Access, useAccess, FormattedMessage, useIntl } from 'umi'
 import { Layout, Row, Col, Button, Table, Space, Typography, notification, message, Empty, Tag, Spin, Tabs, Input, Tooltip, Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 // import JoinPopover from './Component/JoinPopover'
-import { enterWorkspaceHistroy, queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
+import { queryHomeWorkspace, queryWorkspaceTopList } from '@/services/Workspace'
 import { ReactComponent as HomeBackground } from '@/assets/svg/home/home_background.svg';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
 import LogoEllipsis from '@/components/LogoEllipsis/index'
 import _ from 'lodash'
-import { queryHelpDocList } from '../HelpDocument/services'
+import { queryDocList } from '@/pages/DOC/services'
 import HomePush from './Component/HomePush'
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
-import { jumpWorkspace, requestCodeMessage } from '@/utils/utils'
+import { jumpWorkspace } from '@/utils/utils'
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -153,7 +153,7 @@ export default (): React.ReactNode => {
     }
 
     const wsHelpDoc = async () => {
-        const { data } = await queryHelpDocList()
+        const { data } = await queryDocList()
         if (Array.isArray(data)) {
             setHelps(data)
         }
@@ -177,24 +177,9 @@ export default (): React.ReactNode => {
         wsTableData(wsParmas)
     }, [wsParmas])
 
-    const getEnterWorkspaceState = async (record: any) => {
-        const { code, msg, first_entry } = await enterWorkspaceHistroy({ ws_id: record.id })
-        if (code === 200) {
-            const path = first_entry && record.creator === user_id ?
-                `/ws/${record.id}/workspace/initSuccess` :
-                jumpWorkspace(record.id)
-            // `/ws/${record.id}/dashboard`
-            return path
-        }
-        else requestCodeMessage(code, msg)
-        history.push('/500')
-        return ''
-    }
-
     const enterWorkspace = async (record: any) => {
-        if (access.IsAdmin()) {
+        if (record.is_public || record.is_member || access.IsAdmin()) {
             history.push(jumpWorkspace(record.id))
-            // enterWorkspaceHistroy({ ws_id: record.id })
             return
         }
 
@@ -203,12 +188,6 @@ export default (): React.ReactNode => {
                 return window.location.href = login_url
             }
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
-        }
-
-        if (record.is_public || record.is_member) {
-            const path: string = await getEnterWorkspaceState(record)
-            path && history.push({ pathname: path, state: { fetchWorkspaceHistoryRecord: true } })
-            return
         }
 
         history.push({ pathname: '/401', state: record.id })

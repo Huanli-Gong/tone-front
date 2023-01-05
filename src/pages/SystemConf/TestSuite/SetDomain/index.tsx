@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
-import { Space, message, Popconfirm, Pagination, Row, Table, Spin } from 'antd';
+import { Space, message, Popconfirm, Pagination, Row, Table, Spin, Typography } from 'antd';
 import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useRequest, useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 import { getDomain, deleteDomains } from '../service';
 import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Highlighter from 'react-highlight-words';
@@ -12,13 +12,9 @@ import SelectDrop from '@/components/Public//SelectDrop';
 import _ from 'lodash'
 import AddScripotDrawer from './components/DomianConf/AddScript'
 import { requestCodeMessage } from '@/utils/utils';
-import { useLocation } from 'umi';
 
 const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
-    const { query }: any = useLocation()
-
-    const { test_type } = query
 
     useImperativeHandle(ref, () => ({
         openCreateDrawer: addScript.current.show
@@ -59,7 +55,7 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const defaultOption = (code: number, msg: string) => {
         const { page_num, page_size } = params
         if (code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             const pageNum = Math.ceil((dataSource.total - 1) / page_size) || 1
             let index = page_num
             if (page_num > pageNum) {
@@ -72,13 +68,9 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         }
     }
 
-    const totalTotal = (total: any) => {
-        return total || 0
-    }
-
     const columns: any = [
         {
-            title: <FormattedMessage id="TestSuite.domain.name"/>,
+            title: <FormattedMessage id="TestSuite.domain.name" />,
             width: 300,
             fixed: 'left',
             dataIndex: 'name',
@@ -108,53 +100,74 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             )
         },
         {
-            title: <FormattedMessage id="TestSuite.gmt_created"/>,
+            title: <FormattedMessage id="TestSuite.gmt_created" />,
             width: 170,
             dataIndex: 'gmt_created',
             sorter: true,
             render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_created} />
         },
         {
-            title: <FormattedMessage id="TestSuite.gmt_modified"/>,
+            title: <FormattedMessage id="TestSuite.gmt_modified" />,
             width: 170,
             dataIndex: 'gmt_modified',
             sorter: true,
             render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_modified} />
         },
         {
-            title: <FormattedMessage id="TestSuite.creator_name"/>,
+            title: <FormattedMessage id="TestSuite.creator_name" />,
             width: 100,
             dataIndex: 'creator',
             filterIcon: () => <FilterFilled style={{ color: params.creator ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectDrop confirm={confirm} onConfirm={(val: any) => { setParams({ ...params, creator: val }) }} />,
         },
         {
-            title: <FormattedMessage id="TestSuite.update_user"/>,
+            title: <FormattedMessage id="TestSuite.update_user" />,
             width: 100,
             dataIndex: 'update_user',
             filterIcon: () => <FilterFilled style={{ color: params.update_user ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectDrop confirm={confirm} onConfirm={(val: any) => { setParams({ ...params, update_user: val }) }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectDrop
+                    confirm={confirm}
+                    onConfirm={(val: any) => setParams({ ...params, update_user: val })}
+                />
+            ),
+            render(_: any, row: any) {
+                return (
+                    <Typography.Text ellipsis={{ tooltip: true }}>
+                        {row.update_user || "-"}
+                    </Typography.Text>
+                )
+            }
         },
         {
-            title: <FormattedMessage id="TestSuite.description"/>,
+            title: <FormattedMessage id="TestSuite.description" />,
             dataIndex: 'description',
-            ellipsis: true,
+            ellipsis: {
+                showTitle: false
+            },
+            render(_: any, row: any) {
+                return (
+                    <Typography.Text ellipsis={{ tooltip: true }}>
+                        {row.description || "-"}
+                    </Typography.Text>
+                )
+            }
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             key: 'domain_conf',
             width: 130,
             fixed: 'right',
             render: (text: any, record: any) => {
                 return (
                     <Space size='small'>
-                        <span className={styles.fail_detail_operation} onClick={() => hanldeEdit(record)}><FormattedMessage id="operation.edit"/></span>
+                        <span className={styles.fail_detail_operation} onClick={() => hanldeEdit(record)}><FormattedMessage id="operation.edit" /></span>
 
                         <Popconfirm
                             title={
-                              <div style={{ color: 'red' }}>
-                                <FormattedMessage id="TestConf.Suite/Conf.delete.warning"/>
-                              </div>
+                                <div style={{ color: 'red' }}>
+                                    <FormattedMessage id="TestConf.Suite/Conf.delete.warning" />
+                                </div>
                             }
                             onCancel={() => {
                                 const generObj = handleDelete(record);
@@ -164,10 +177,10 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                                     defaultOption(code, msg);
                                 })
                             }}
-                            okText={<FormattedMessage id="operation.cancel"/>}
-                            cancelText={<FormattedMessage id="operation.confirm.delete"/>}
+                            okText={<FormattedMessage id="operation.cancel" />}
+                            cancelText={<FormattedMessage id="operation.confirm.delete" />}
                             icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}>
-                            <span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
+                            <span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete" /></span>
                         </Popconfirm>
                     </Space>
                 )
@@ -213,7 +226,7 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     dataSource.total &&
                     <Row justify="space-between" style={{ padding: '16px 20px 0' }}>
                         <div>
-                            {formatMessage({id: 'pagination.total.strip'}, {data: dataSource.total || 0 })}
+                            {formatMessage({ id: 'pagination.total.strip' }, { data: dataSource.total || 0 })}
                         </div>
                         <Pagination
                             showQuickJumper

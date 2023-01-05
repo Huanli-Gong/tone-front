@@ -281,25 +281,25 @@ export default (props: any) => {
                         <Row className={styles.script_right_detail} align="middle">
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 115}: {}}><FormattedMessage id="baseline.baseline_name"/>：</span>
+                                    <span className={`${styles.script_right_name}`} style={enLocale ? { minWidth: 115 } : {}}><FormattedMessage id="baseline.baseline_name" />：</span>
                                     <EllipsisPulic title={current?.name} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 122}: {}}><FormattedMessage id="baseline.product_version"/>：</span>
+                                    <span className={`${styles.script_right_name}`} style={enLocale ? { minWidth: 122 } : {}}><FormattedMessage id="baseline.product_version" />：</span>
                                     <EllipsisPulic title={current?.version} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 132}: {}}><FormattedMessage id="baseline.test.env"/>：</span>
+                                    <span className={`${styles.script_right_name}`} style={enLocale ? { minWidth: 132 } : {}}><FormattedMessage id="baseline.test.env" />：</span>
                                     <EllipsisPulic title={baselineData.length ? server_provider : '-'} />
                                 </div>
                             </Col>
                             <Col span={12}>
                                 <div className={styles.title_detail_item}>
-                                    <span className={`${styles.script_right_name}`} style={enLocale? {minWidth: 155}: {}}><FormattedMessage id="baseline.baseline_desc"/>：</span>
+                                    <span className={`${styles.script_right_name}`} style={enLocale ? { minWidth: 155 } : {}}><FormattedMessage id="baseline.baseline_desc" />：</span>
                                     <EllipsisPulic title={current?.description} />
                                 </div>
                             </Col>

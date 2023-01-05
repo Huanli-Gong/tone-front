@@ -10,7 +10,7 @@
         background: #fbfbfb !important;
         border-bottom: 1px solid #f0f0f0;
         //
-        padding: 0px 8px!important;
+        // padding: 0px 8px!important;
     }
 }
 
@@ -20,12 +20,12 @@
 }
 
 .prepTable {
-    :global(.expanded-row-padding-no>td) {
-        // padding : 0 !important;
-    }
     :global(.ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table) {
-        // margin: -8px -8px -8px 35px;
-        margin: -8px -8px -8px 39px;
+        margin: 0;
+    }
+
+    :global(.expanded-row-padding-no>td) {
+        padding : 0 !important;
     }
 }
 .buildTable {

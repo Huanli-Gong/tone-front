@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Space, Typography, Table, Spin } from 'antd';
 import { ExclamationCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage, useParams } from 'umi'
+import { FormattedMessage, useParams } from 'umi'
 import styles from './index.less';
 import { queryMachineData } from '../service';
 import { StateBadge } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
@@ -55,14 +55,15 @@ const RenderMachineItem = (props: any) => {
         {
             title: <FormattedMessage id="ws.result.details.use_state" />,
             dataIndex: 'state',
-            render: (_: any, row: any) => StateBadge(_, row, ws_id,'not_real'),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
         },
         {
             title: <FormattedMessage id="ws.result.details.real_state" />,
             dataIndex: 'real_state',
-            render: (_: any, row: any) => StateBadge(_, row, ws_id,'real'),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
         }
     ]
+
     return (
         !!dataSource.length ? <Spin spinning={loading}>
             <div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>

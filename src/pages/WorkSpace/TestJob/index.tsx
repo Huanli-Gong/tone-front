@@ -226,7 +226,7 @@ const TestJob: React.FC<any> = (props) => {
                 env_info, rpm_info, script_info, moniter_contrl,
                 monitor_info, reclone_contrl, app_name, os,
                 vm, need_reboot, kernel_version, kernel_install,
-                code_repo, code_branch, compile_branch, cpu_arch, commit_id,
+                code_repo, code_branch, compile_branch, cpu_arch, commit_id, kernel_packages,
                 build_config, build_machine, scripts, kernel, devel, headers, hotfix_install, ...rest
             }: any = envVal
 
@@ -238,7 +238,7 @@ const TestJob: React.FC<any> = (props) => {
                 build_config, build_machine, scripts, ...rest
             }
 
-            const kernel_info = { kernel, devel, headers, hotfix_install, scripts }
+            const kernel_info = { hotfix_install, scripts, kernel_packages }
 
             let scriptInfo = script_info
             let rpmInfo = rpm_info
@@ -257,7 +257,7 @@ const TestJob: React.FC<any> = (props) => {
                 reclone_contrl,
                 iclone_info: (os || app_name || vm) ? { os, app_name, vm } : undefined,
                 need_reboot,
-                kernel_version
+                kernel_version,
             }
 
             if (code_repo) envProps.build_pkg_info = build_pkg_info
@@ -772,7 +772,7 @@ const TestJob: React.FC<any> = (props) => {
             cleanup_info, tags, notice_subject, report_name, callback_api, email, ding_token, report_template
         } = dataCopy
         const { os = '', app_name = '' } = iclone_info || {}
-        const { devel, headers, branch, ...kernels } = kernel_info || {}
+        const { branch, ...kernels } = kernel_info || {}
         const templateEditFormInfo = { template_name, description, enable }
         const basicFormInfo = { name, project, baseline }
         const envFormInfo = {
@@ -786,7 +786,6 @@ const TestJob: React.FC<any> = (props) => {
             app_name,
             moniter_contrl,
             kernel_version,
-            devel, headers,
             ...kernels,
             ...build_pkg_info
         }
@@ -867,7 +866,7 @@ const TestJob: React.FC<any> = (props) => {
         <div style={layoutCss}>
             {/** 用户未登录提示 */}
             {(!loading && !authList?.user_id) ?
-                <div className={styles.not_logged_in}><div style={{width: '1240px'}}><NotLoggedIn /></div></div>: null}
+                <div className={styles.not_logged_in}><div style={{ width: '1240px' }}><NotLoggedIn /></div></div> : null}
 
             {
                 hasNav &&
@@ -878,7 +877,10 @@ const TestJob: React.FC<any> = (props) => {
                             onClick={
                                 () => {
                                     if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
-                                    else history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                                    else access.IsWsSetting() ?
+                                        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
+                                        :
+                                        history.push('./')
                                 }
                             }
                         >

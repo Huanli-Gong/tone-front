@@ -29,7 +29,6 @@ export const useDetectZoom = () => {
         if (ratio) {
             ratio = 1.5 / ratio
         }
-        console.log(ratio)
         setRatio(ratio)
     }
 
@@ -87,6 +86,7 @@ type ListProps = {
 type ResultProps = {
     job_id: string | number,
     style?: React.CSSProperties;
+    ws_id?: string;
 }
 
 export const listRender: React.FC<ListProps> = ({ name, id }) => <Tooltip title={id} placement='topLeft' >{name}</Tooltip>
@@ -116,11 +116,17 @@ export const getTextByJs = (obj: any) => {
     return str;
 }
 
-export const JumpResult: React.FC<ResultProps> = ({ job_id, style }) => {
-    const { ws_id } = useParams() as any
-    if (job_id) {
+export const JumpResult: React.FC<ResultProps> = ({ job_id, style, ws_id }) => {
+    const { ws_id: wsid } = useParams() as any
+
+    const id = ws_id || wsid
+    if (job_id && id) {
         return (
-            <a style={{ cursor: 'pointer', ...style }} href={`/ws/${ws_id}/test_result/${job_id}`} target="_blank">
+            <a
+                style={{ cursor: 'pointer', ...style }}
+                href={`/ws/${ws_id || wsid}/test_result/${job_id}`}
+                target="_blank"
+            >
                 {<IconLink style={{ width: 9, height: 9 }} />}
             </a>
         )

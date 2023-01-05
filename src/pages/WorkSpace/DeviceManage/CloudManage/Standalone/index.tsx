@@ -251,7 +251,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_:any) => <EllipsisPulic title={_} />
+            render: (_: any) => <EllipsisPulic title={_} />
         },
         {
             title: <FormattedMessage id="device.storage_type" />,
@@ -276,7 +276,7 @@ export default (props: any) => {
             align: 'center',
             ...radioFilterCommonFields("release_rule", [
                 { id: 0, name: formatMessage({ id: 'operation.not.release' }) },
-                { id: 1, name: formatMessage({ id: 'operation.release' }) }, 
+                { id: 1, name: formatMessage({ id: 'operation.release' }) },
                 { id: 2, name: formatMessage({ id: 'device.failed.save' }) }
             ]),
             dataIndex: 'release_rule',
@@ -313,13 +313,20 @@ export default (props: any) => {
         },
         !!$insdance &&
         {
-            title: <><FormattedMessage id="device.usage.state" /> <Tooltip title={formatMessage({ id: 'device.usage.state.Tooltip' })}><QuestionCircleOutlined /></Tooltip></>,
+            title: (
+                <Space>
+                    <FormattedMessage id="device.usage.state" />
+                    <Tooltip title={formatMessage({ id: 'device.usage.state.Tooltip' })}>
+                        <QuestionCircleOutlined />
+                    </Tooltip>
+                </Space>
+            ),
             dataIndex: 'state',
             width: (enLocale ? 150 : 120),
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => StateBadge(_, row, ws_id,'not_real'),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: params.state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
@@ -334,13 +341,20 @@ export default (props: any) => {
         },
         !!$insdance &&
         {
-            title: <><FormattedMessage id="device.real_state" /> <Tooltip title={formatMessage({ id: 'device.real_state.Tooltip' })}><QuestionCircleOutlined /></Tooltip></>,
+            title: (
+                <Space>
+                    <FormattedMessage id="device.real_state" />
+                    <Tooltip title={formatMessage({ id: 'device.real_state.Tooltip' })}>
+                        <QuestionCircleOutlined />
+                    </Tooltip>
+                </Space>
+            ),
             width: (enLocale ? 150 : 120),
             ellipsis: {
                 showTitle: false
             },
             dataIndex: 'real_state',
-            render: (_: any, row: any) => StateBadge(_, row, ws_id,'real'),
+            render: (_: any, row: any) => StateBadge(_, row, ws_id),
             filterIcon: () => <FilterFilled style={{ color: params.real_state ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
@@ -349,7 +363,7 @@ export default (props: any) => {
                         setParams({ ...params, real_state: val })}
                     stateVal={params.real_state}
                     tabType={$insdance}
-                    dataArr={['Alive', 'Broken']}
+                    dataArr={['Online', 'Offline']}
                 />
             )
         },
@@ -454,13 +468,13 @@ export default (props: any) => {
     const deployClick = (row: any) => {
         deployModal.current?.show({ ...row, detailData: [row.private_ip] || [], radio_type: 'cloudManage' });
     }
-   
+
     const handleOpenLogDrawer = useCallback(
         (id) => {
             logDrawer.current.show(id)
         }, []
     )
-   
+
     const removeCloud = _.debounce(
         async (id: number, is_release: boolean) => {
             setBtnLoad(true)
@@ -468,7 +482,7 @@ export default (props: any) => {
             let obj = { ws_id, is_release }
             const res = await delCloud(id, obj)
             if (res.code == 200) {
-                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size})
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
                 message.success(formatMessage({ id: 'operation.success' }));
                 setDeleteVisible(false)
                 setDeleteDefault(false)
@@ -529,7 +543,7 @@ export default (props: any) => {
     }
 
     const localeStr = deleteObj[!$insdance ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
-    
+
     return (
         <div className={styles.warp}>
             <Tabs
@@ -560,7 +574,7 @@ export default (props: any) => {
                     pageSize={params.page_size}
                     currentPage={params.page_num}
                     onPageChange={
-                        (page_num:any, page_size:any) => {
+                        (page_num: any, page_size: any) => {
                             setParams({ ...params, page_num, page_size })
                         }
                     }

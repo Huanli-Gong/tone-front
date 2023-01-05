@@ -1,3 +1,11 @@
+.suiteTable {
+    :global {
+        .ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
+            margin: 0;
+        }
+    }
+}
+
 .warp{
     // position: relative;
     :global(.ant-pro-table-toolbar){
@@ -9,9 +17,9 @@
     :global(tr.ant-table-expanded-row > td){
         background: #fff;
     }
-    :global(.ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell){
+    /* :global(.ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell){
         padding: 0 0 16px 32px;
-    }
+    } */
     
     :global(.ant-drawer-body){
         padding: 13px 24px; 
@@ -60,11 +68,7 @@
     .edit:hover{
         color:#1890ff
     }
-    .center{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-    }
+    
 
     :global {
         .case_expand_row {
@@ -80,8 +84,22 @@
                         border-top: none;
                         border-bottom: none;
                     }
+
+                    
                 }
             }
+        }
+    }
+}
+
+.caseTabCls {
+    :global {
+        .ant-tabs-nav {
+            margin-bottom: 0;
+        }
+
+        .ant-tabs-tab {
+            padding: 0 0 12px 0;
         }
     }
 }

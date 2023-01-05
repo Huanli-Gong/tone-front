@@ -60,7 +60,10 @@ export default (props: any) => {
         getemptyTableDom()
     }, [suitData, tab, layoutHeight])
 
+    const [isFetch, setIsFetch] = React.useState(false)
     const getSuitDetail = async (params: any) => {
+        if (isFetch) return
+        setIsFetch(true)
         let { data, code, msg } = await querySuiteList(params)
         if (code === 200) {
             let obj1 = data.func_suite_dic || {}
@@ -71,8 +74,8 @@ export default (props: any) => {
             allPersRowKeys.current = [...arrKey2]
             let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
             if (tabValue) setTab('performance')
-            setSelectedFuncRowKeys([...arrKey1 ])
-            setSelectedPerfRowKeys([...arrKey2 ])
+            setSelectedFuncRowKeys([...arrKey1])
+            setSelectedPerfRowKeys([...arrKey2])
             setOneLevelFunc(Object.values(obj1))
             setOneLevelPref(Object.values(obj2))
             setSuitData(data)
@@ -92,60 +95,53 @@ export default (props: any) => {
     }, [currentStep])
 
     useEffect(() => {
-        let arr = _.get(baselineGroup, 'members')
-        const paramData: any = {
-            func_data: {
-                base_job: [],
-                compare_job: []
-            },
-            perf_data: {
-                base_job: [],
-                compare_job: []
+        if (allGroupData && baselineGroup) {
+            let arr = _.get(baselineGroup, 'members')
+            const paramData: any = {
+                func_data: {
+                    base_job: [],
+                    compare_job: []
+                },
+                perf_data: {
+                    base_job: [],
+                    compare_job: []
+                }
             }
-        }
-        if (_.isArray(arr)) {
-            const flag = baselineGroup.type === 'baseline'
-            arr.forEach((item: any) => {
-                if (!flag && item.test_type === '功能测试') {
-                    paramData.func_data.base_job.push(item.id)
-                }
-                if (!flag && item.test_type === '性能测试') {
-                    paramData.perf_data.base_job.push(item.id)
-                }
-                if (flag && item.test_type === 'functional') {
-                    paramData.func_data.base_job.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
-                }
-                if (flag && item.test_type === 'performance') {
-                    paramData.perf_data.base_obj.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
-                }
-            })
-        }
-        let brrFun: any = []
-        let brrFers: any = []
-        allGroupData.forEach((item: any, index: number) => {
-            let membersArr = _.get(item, 'members')
-            if (_.isArray(membersArr)) {
+            if (_.isArray(arr)) {
                 const flag = baselineGroup.type === 'baseline'
-                membersArr.forEach((item: any) => {
-                    if (!flag && item.test_type === '功能测试') {
-                        brrFun.push(item.id)
+                const isBaseline = !flag ? 0 : 1
+                arr.forEach((item: any) => {
+                    if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                        paramData.func_data.is_baseline = isBaseline
+                        paramData.func_data.base_job.push(item.id)
                     }
-                    if (!flag && item.test_type === '性能测试') {
-                        brrFers.push(item.id)
-                    }
-                    if (flag && item.test_type === 'functional') {
-                        brrFun.push({ is_job: 0, obj_id: item.id, baseline_type: 'func' })
-                    }
-                    if (flag && item.test_type === 'performance') {
-                        brrFers.push({ is_job: 0, obj_id: item.id, baseline_type: 'perf' })
+
+                    if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                        paramData.perf_data.is_baseline = isBaseline
+                        paramData.perf_data.base_job.push(item.id)
                     }
                 })
             }
-        })
-        paramData.func_data.compare_job = brrFun
-        paramData.perf_data.compare_job = brrFers
-        getSuitDetail(paramData)
-    }, [])
+            let brrFun: any = []
+            let brrFers: any = []
+            allGroupData.forEach((item: any, index: number) => {
+                let membersArr = _.get(item, 'members')
+                if (_.isArray(membersArr)) {
+                    membersArr.forEach((item: any) => {
+                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                            brrFun.push(item.id)
+                        }
+                        if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                            brrFers.push(item.id)
+                        }
+                    })
+                }
+            })
+            paramData.func_data.compare_job = brrFun
+            paramData.perf_data.compare_job = brrFers
+            getSuitDetail(paramData)
+        }
+    }, [allGroupData, baselineGroup])
 
     const handleClose = () => {
         handleCancle()
@@ -161,9 +157,9 @@ export default (props: any) => {
     }, [suitData, tab])
 
     const onExpand = async (expanded: boolean, record: any) => {
-        const { test_job_id, suite_id } = record
+        const { test_job_id, suite_id, is_baseline } = record
         if (expanded) {
-            const data = await queryConfList({ test_job_id, suite_id })
+            const data = await queryConfList({ test_job_id, suite_id, is_baseline })
             if (data.code === 200) {
                 const { conf_dic } = data.data
                 if (tab === 'functional') {
@@ -187,7 +183,7 @@ export default (props: any) => {
             let selectedKeys: any = []
             result = Object.values(confData).map((item: any, index: number) => {
                 if (item.conf_dic && JSON.stringify(item.conf_dic) !== '{}') {
-                    selectedKeys = [ ...Object.keys(item.conf_dic).map((i:any) => + i)]
+                    selectedKeys = [...Object.keys(item.conf_dic).map((i: any) => + i)]
                     item.conf_list = Object.values(item.conf_dic).map((value: any, index: number) => {
                         return (
                             {
@@ -220,6 +216,7 @@ export default (props: any) => {
             groupAll.map((item: any) => {
                 group_jobs.push({
                     group_name: item.product_version,
+                    is_baseline: item.type === 'baseline' ? 1 : 0,
                     test_job_id: [].concat(item.members.map((i: any) => i.id))
                 })
             })
@@ -241,7 +238,7 @@ export default (props: any) => {
             })
             const params = {
                 group_jobs,
-                base_index:baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
+                base_index: baselineGroupIndex === -1 ? 0 : baselineGroupIndex,
                 suite_list
             }
             const { data, code, msg } = await queryDuplicate(params)
@@ -251,7 +248,7 @@ export default (props: any) => {
                 } else {
                     let arr = data.duplicate_data
                     let brr: any = []
-                    arr = arr.map((item: any, groupIndex:number) => {
+                    arr = arr.map((item: any, groupIndex: number) => {
                         let suite_list = item.suite_list.map((i: any) => {
                             let conf_list = i.conf_list.map((conf: any, num: number) => {
                                 let job_list = conf.job_list.map((child: any, idx: number) => {
@@ -262,7 +259,7 @@ export default (props: any) => {
                                 })
                                 brr.push({
                                     conf_id: conf.conf_id,
-                                    job_id: conf.job_list[0].job_id,
+                                    job_id: conf.job_list[0]?.job_id || '',
                                     key: groupIndex
                                 })
                                 return {
@@ -324,25 +321,25 @@ export default (props: any) => {
         if (selected) {
             if (!record.level) {
                 let conf_list = []
-                if(record.conf_list){
-                    conf_list = record.conf_list.map((i:any) => i.conf_id)
+                if (record.conf_list) {
+                    conf_list = record.conf_list.map((i: any) => i.conf_id)
                 }
-                arrKeys = [...arrKeys, record.suite_id + '', ...conf_list ]
+                arrKeys = [...arrKeys, record.suite_id + '', ...conf_list]
             } else {
-                arrKeys = [...arrKeys, record.conf_id, record.suite_id + '' ]
+                arrKeys = [...arrKeys, record.conf_id, record.suite_id + '']
             }
         } else {
             if (!record.level) {
-                if(record.conf_list){
-                    let conf_list = record.conf_list.map((i:any) => i.conf_id)
+                if (record.conf_list) {
+                    let conf_list = record.conf_list.map((i: any) => i.conf_id)
                     arrKeys = arrKeys.filter((keys: any) => !conf_list.includes(keys))
                 }
-                arrKeys = arrKeys.filter((keys: any) => String(record.suite_id) !== keys )
+                arrKeys = arrKeys.filter((keys: any) => String(record.suite_id) !== keys)
             } else {
                 arrKeys = arrKeys.filter((keys: any) => keys !== record.conf_id)
                 let conf_list = record.conf_list.splice(0)
-                conf_list = conf_list.filter((i:number) => i !== record.conf_id)
-                if(conf_list.length === 0){
+                conf_list = conf_list.filter((i: number) => i !== record.conf_id)
+                if (conf_list.length === 0) {
                     arrKeys = arrKeys.filter((keys: any) => keys !== String(record.suite_id))
                 }
             }
@@ -407,7 +404,7 @@ export default (props: any) => {
         const selectd = itemSuit[current].job_list
         arr = arr.map((item: any) => {
             if (item.conf_id === itemSuit[current].conf_id && item.key == groupIndex) {
-                let job_id = selectd.filter((item:any) => item.isSelect)[0].job_id || ''
+                let job_id = selectd.filter((item: any) => item.isSelect)[0].job_id || ''
                 return {
                     ...item,
                     job_id
@@ -426,7 +423,7 @@ export default (props: any) => {
         let cId = flag ? 0 : currentGroupIndex
         if (_.isUndefined(selSuiteData) || !selSuiteData.length) {
             return <Empty
-                description={<FormattedMessage id="analysis.no.duplicate.data"/>}
+                description={<FormattedMessage id="analysis.no.duplicate.data" />}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: '0' }} />
         }
@@ -504,15 +501,15 @@ export default (props: any) => {
                 className={styles.tab_title}
                 activeKey={tab}
             >
-                <Tabs.TabPane tab={<FormattedMessage id="functional.test"/>} key="functional" />
-                <Tabs.TabPane tab={<FormattedMessage id="performance.test"/>} key="performance" />
+                <Tabs.TabPane tab={<FormattedMessage id="functional.test" />} key="functional" />
+                <Tabs.TabPane tab={<FormattedMessage id="performance.test" />} key="performance" />
             </Tabs>
         )
     }
 
     // “对比组”转换国际化方式显示
     const groupToLocale = (str: string) => {
-        const temp =  str?.match(/^对比组[0-9]+$/) ? (formatMessage({id: 'analysis.comparison.group'}) + str.slice(3)) : str
+        const temp = str?.match(/^对比组[0-9]+$/) ? (formatMessage({ id: 'analysis.comparison.group' }) + str.slice(3)) : str
         return temp
     }
 
@@ -562,7 +559,7 @@ export default (props: any) => {
                 }} />
             </div>
 
-            <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale? styles.steps_en: styles.steps}>
+            <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale ? styles.steps_en : styles.steps}>
                 <Step title={<FormattedMessage id="analysis.select.comparison.data" />} />
                 <Step title={<FormattedMessage id="analysis.select.duplicate.data" />} disabled={duplicateLoading} />
             </Steps>

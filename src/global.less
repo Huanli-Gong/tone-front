@@ -1,5 +1,8 @@
 @import '~antd/es/style/themes/default.less';
 
+@import '~highlight.js/styles/default.css';
+@import '~highlight.js/styles/github.css';
+
 html,
 body,
 #root {
@@ -136,4 +139,7 @@ ol {
 
 .ant-tooltip-inner {
     max-width: 510px;
+    max-height: 320px;
+    overflow: auto;
+    word-break: normal;
 }

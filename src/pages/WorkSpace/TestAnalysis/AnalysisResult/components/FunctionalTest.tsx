@@ -31,7 +31,7 @@ import _ from 'lodash';
 
 const ReportTestFunc: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
-    const { allGroupData, compareResult, baselineGroupIndex, group } = useContext(ReportContext)
+    const { allGroupData, compareResult, baselineGroupIndex, group, wsId } = useContext(ReportContext)
     const { scrollLeft } = props
     const { func_data_result } = compareResult
     const [arrowStyle, setArrowStyle] = useState('')
@@ -55,8 +55,10 @@ const ReportTestFunc: React.FC<any> = (props) => {
             <>
                 {
                     expand && sub_case_list?.map((item: any, idx: number) => {
-                        const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
-                        len.forEach((i) => item.compare_data.push('-'))
+                        /* slice(0, group) */
+                        /* const len = Array.from(Array(allGroupData.length - item.compare_data.length)).map(val => ({}))
+                        console.log(len)
+                        len.forEach((i) => item.compare_data.push('-')) */
                         return (
                             <TestSubCase key={idx}>
                                 <SubCaseTitle gLen={group}>
@@ -64,7 +66,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                 </SubCaseTitle>
                                 {
                                     !!item.compare_data.length ?
-                                        item.compare_data.map((cur: any, id: number) => {
+                                        item.compare_data?.slice(0, group)?.map((cur: any, id: number) => {
                                             return (
                                                 <SubCaseText gLen={group} key={id}>
                                                     <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>
@@ -179,7 +181,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
         return (
             <TestItemFunc>
                 <Space>
-                    <Button onClick={OpenSubCase}><FormattedMessage id={btn ? 'analysis.folded.all': 'analysis.expand.all'}/></Button>
+                    <Button onClick={OpenSubCase}><FormattedMessage id={btn ? 'analysis.folded.all' : 'analysis.expand.all'} /></Button>
                     <Space>
                         <Typography.Text><FormattedMessage id="analysis.filter" />: </Typography.Text>
                         <Select defaultValue="All" style={{ width: 200 }} value={filterName} onSelect={handleConditions}>
@@ -240,7 +242,7 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                         </TestConf>
                                         <TestConfWarpper>
                                             {(item.conf_list && item.conf_list.length) ?
-                                                item.conf_list.map((conf: any, cid: number) => {
+                                                item.conf_list?.map((conf: any, cid: number) => {
                                                     const expand = expandKeys.includes(conf.conf_id)
                                                     let conf_data = conf.conf_compare_data || conf.compare_conf_list
                                                     return (
@@ -252,23 +254,24 @@ const ReportTestFunc: React.FC<any> = (props) => {
                                                                             rotate={expand ? 90 : 0}
                                                                             onClick={() => hanldeExpand(conf.conf_id)}
                                                                         />
-                                                                        <Typography.Text style={{marginLeft: '12px'}}>{conf.conf_name}</Typography.Text>
+                                                                        <Typography.Text style={{ marginLeft: '12px' }}>{conf.conf_name}</Typography.Text>
                                                                     </EllipsisPulic>
                                                                 </CaseTitle>
                                                                 {
-                                                                    conf_data?.map((metric: any, idx: number) => (
+                                                                    conf_data?.slice(0, group)?.map((metric: any, idx: number) => (
                                                                         <CaseText gLen={group} key={idx}>
                                                                             <Space size={16}>
                                                                                 <Typography.Text style={{ color: '#649FF6' }}>{toShowNum(metric.all_case)}</Typography.Text>
                                                                                 <Typography.Text style={{ color: '#81BF84' }}>{toShowNum(metric.success_case)}</Typography.Text>
                                                                                 <Typography.Text style={{ color: '#C84C5A' }}>{toShowNum(metric.fail_case)}</Typography.Text>
+                                                                                {
+                                                                                    metric && !metric.is_baseline ?
+                                                                                        <JumpResult ws_id={wsId} job_id={metric.obj_id} style={{ paddingLeft: 10 }} /> :
+                                                                                        <></>
+                                                                                }
                                                                             </Space>
-                                                                            {metric !== null &&
-                                                                                <JumpResult job_id={metric.obj_id} style={{ paddingLeft: 10 }} />
-                                                                            }
                                                                         </CaseText>
-                                                                    )
-                                                                    )
+                                                                    ))
                                                                 }
                                                             </TestCase>
                                                             <ExpandSubcases

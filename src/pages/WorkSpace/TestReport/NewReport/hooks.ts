@@ -574,8 +574,8 @@ export const CreatePageData = (props: any) => {
         let compare = deep.compare_groups
         let base = deep.base_group
         compare.splice(baselineGroupIndex, 0, base)
-        if (baselineGroupIndex !== -1) {
-            compare[baselineGroupIndex].is_base = true
+        if (compare.length > 1 && baselineGroupIndex !== -1) {
+            compare[baselineGroupIndex].is_group = true
         }
         setEnvData(compare)
     }, [environmentResult])
@@ -743,7 +743,7 @@ export const EditPageData = (props: any) => {
         if (test_env && JSON.stringify(test_env) !== '{}') {
             const deep = _.cloneDeep(test_env)
             if (test_env?.compare_groups?.length > 0) {
-                deep.base_group.is_base = true
+                deep.base_group.is_group = true
             }
             let compare = deep?.compare_groups
             let base = deep?.base_group
