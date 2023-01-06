@@ -16,7 +16,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     const { ws_id }: any = useParams()
     const { baseline, project, baseline_job } = contrl
     const [jobList, setJobList] = useState<any>([])
-    
+
     const defaultParams = {
         page_num: 1,
         page_size: 20,
@@ -29,12 +29,12 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
         () => queryProjectList({ ws_id, page_size: 500 }),
         { manual: true, initialData: [] }
     )
-    
+
     const { data: baselineList, run: getBaselineList } = useRequest(
         () => queryBaselineList({ ws_id, test_type, server_provider, page_size: 500 }),
         { manual: true, initialData: [] }
     )
-    
+
     const getJobList = async (params: any) => {
         const { data } = await queryWsJobTest(params)
         setJobList(data)
@@ -92,6 +92,9 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
             form.setFieldsValue(template)
+        }
+        return () => {
+            form.resetFields()
         }
     }, [template])
 
