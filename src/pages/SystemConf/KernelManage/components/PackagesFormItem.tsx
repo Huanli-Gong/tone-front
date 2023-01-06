@@ -34,7 +34,6 @@ const PackagesFormItem: React.FC<IProps> = (props) => {
                 ]}
             >
                 {(fields, { add, remove }, { errors }) => {
-                    console.log(fields)
                     return (
                         <Row style={{ flexDirection: "column", gap: 8, width: "100%" }}>
                             {fields.map((field, index) => (
