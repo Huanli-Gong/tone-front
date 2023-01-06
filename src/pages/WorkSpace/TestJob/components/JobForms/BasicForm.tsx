@@ -55,34 +55,40 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
         }),
     )
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (projectListDataRef) projectListDataRef.current = projectList
         if (baselineListDataRef) baselineListDataRef.current = baselineList
         if (JSON.stringify(template) !== '{}') {
-            const { name, project, baseline, project_id, baseline_id, baseline_job, baseline_job_id } = template
+            const { project, baseline, project_id, baseline_id, baseline_job, baseline_job_id } = template
             const projectId = project || project_id
             const baselineId = baseline || baseline_id
             const baselineJobId = baseline_job || baseline_job_id
-            let obj: any = {}
-            if (name) obj.name = name
-            if (projectId) {
+            if (projectId && projectList.length > 0) {
                 const idx = projectList.findIndex((i: any) => i.id === projectId)
                 if (idx > -1)
-                    obj.project = projectId
+                    form.setFieldsValue({ project: projectId })
             }
-            if (baselineId) {
+            if (baselineId && baselineList.length > 0) {
                 const idx = baselineList.findIndex((i: any) => i.id === baselineId)
                 if (idx > -1)
-                    obj.baseline = baselineId
+                    form.setFieldsValue({ baseline: baselineId })
             }
-            if (baselineJobId) {
+            if (baselineJobId && jobList.length > 0) {
                 const idx = jobList.findIndex((i: any) => i.id === baselineJobId)
                 if (idx > -1)
-                    obj.baseline_job_id = baselineJobId
+                    form.setFieldsValue({ baseline_job_id: baselineJobId })
             }
+        }
+    }, [projectList, baselineList, jobList, template])
+
+    useEffect(() => {
+        if (JSON.stringify(template) !== '{}') {
+            const { name } = template
+            let obj: any = {}
+            if (name) obj.name = name
             form.setFieldsValue(obj)
         }
-    }, [template, baselineList, projectList, jobList])
+    }, [template])
 
 
     useEffect(() => {

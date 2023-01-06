@@ -3,8 +3,14 @@
         "type": "command",
         "command": {
             "cmd": [
+<<<<<<< Updated upstream
                 "yarn install",
                 "yarn run build:tone",
+=======
+                "tnpm install pnpm -g",
+                "pnpm install",
+                "pnpm run build",
+>>>>>>> Stashed changes
                 "mv ./dist $BUILD_DEST"
             ]
         }
