@@ -16,6 +16,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     const { ws_id }: any = useParams()
     const { baseline, project, baseline_job } = contrl
     const [jobList, setJobList] = useState<any>([])
+
     const defaultParams = {
         page_num: 1,
         page_size: 20,
@@ -23,14 +24,17 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
         search: '',
         tab: 'all',
     }
+
     const { data: projectList, run: getProjectList } = useRequest(
         () => queryProjectList({ ws_id, page_size: 500 }),
         { manual: true, initialData: [] }
     )
+
     const { data: baselineList, run: getBaselineList } = useRequest(
         () => queryBaselineList({ ws_id, test_type, server_provider, page_size: 500 }),
         { manual: true, initialData: [] }
     )
+
     const getJobList = async (params: any) => {
         const { data } = await queryWsJobTest(params)
         setJobList(data)
@@ -39,7 +43,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     useEffect(() => {
         if ('baseline' in contrl) getBaselineList()
         if ('project' in contrl) getProjectList()
-        if ('baseline_job' in contrl)  getJobList(defaultParams)
+        if ('baseline_job' in contrl) getJobList(defaultParams)
     }, [baseline, project, baseline_job, disabled])
 
     useImperativeHandle(
@@ -55,35 +59,44 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
         }),
     )
 
-    useEffect(() => {
+    const $project = Form.useWatch('project', form);
+    const $baseline = Form.useWatch('baseline', form);
+    const $baseline_job_id = Form.useWatch('baseline_job_id', form);
+
+    React.useEffect(() => {
         if (projectListDataRef) projectListDataRef.current = projectList
         if (baselineListDataRef) baselineListDataRef.current = baselineList
         if (JSON.stringify(template) !== '{}') {
-            const { name, project, baseline, project_id, baseline_id, baseline_job, baseline_job_id } = template
+            const { project, baseline, project_id, baseline_id, baseline_job, baseline_job_id } = template
             const projectId = project || project_id
             const baselineId = baseline || baseline_id
             const baselineJobId = baseline_job || baseline_job_id
-            let obj: any = {}
-            if (name) obj.name = name
-            if (projectId) {
+            if (!$project && projectId && projectList.length > 0) {
                 const idx = projectList.findIndex((i: any) => i.id === projectId)
-                if (idx > -1)
-                    obj.project = projectId
+                if (idx === -1)
+                    form.setFieldsValue({ project: null })
             }
-            if (baselineId) {
+            if (!$baseline && baselineId && baselineList.length > 0) {
                 const idx = baselineList.findIndex((i: any) => i.id === baselineId)
-                if (idx > -1)
-                    obj.baseline = baselineId
+                if (idx === -1)
+                    form.setFieldsValue({ baseline: null })
             }
-            if (baselineJobId) {
+            if (!$baseline_job_id && baselineJobId && jobList.length > 0) {
                 const idx = jobList.findIndex((i: any) => i.id === baselineJobId)
-                if (idx > -1)
-                    obj.baseline_job_id = baselineJobId
+                if (idx === -1)
+                    form.setFieldsValue({ baseline_job_id: null })
             }
-            form.setFieldsValue(obj)
         }
-    }, [template, baselineList, projectList, jobList])
+    }, [projectList, baselineList, jobList, template, $project, $baseline, $baseline_job_id])
 
+    useEffect(() => {
+        if (JSON.stringify(template) !== '{}') {
+            form.setFieldsValue(template)
+        }
+        return () => {
+            form.resetFields()
+        }
+    }, [template])
 
     useEffect(() => {
         if (projectList.length > 0) {
@@ -99,9 +112,11 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     const handleSelect = (val: any) => {
         callBackProjectId(val)
     }
+
     const handleBaselineJobSelect = debounce((val: string) => {
         getJobList({ ...defaultParams, search: val })
     }, 500)
+
     return (
         <Form
             colon={false}
@@ -119,32 +134,32 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                 'job_name' in contrl &&
                 <Form.Item
                     name="name"
-                    label={contrl.job_name.alias || <FormattedMessage id={`job.form.${contrl.job_name.name}`}/> }
+                    label={contrl.job_name.alias || <FormattedMessage id={`job.form.${contrl.job_name.name}`} />}
                     rules={[{
                         pattern: /^[A-Za-z0-9\{}\._-]+$/g,
-                        message: formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},)
+                        message: formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)
                     }, {
                         max: 128,
-                        message: formatMessage({id: 'job.form.job_name.limit.message'})
+                        message: formatMessage({ id: 'job.form.job_name.limit.message' })
                     }]}
                 >
-                    <Input autoComplete="off" title={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},)} placeholder={formatMessage({id: 'job.form.job_name.message'}, {date: '{date}'},) } disabled={disabled} />
+                    <Input autoComplete="off" title={formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)} placeholder={formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)} disabled={disabled} />
                 </Form.Item>
             }
             {
                 'project' in contrl &&
                 <Form.Item
                     name="project"
-                    label={contrl.project.alias || <FormattedMessage id={`job.form.${contrl.project.name}`}/> }
+                    label={contrl.project.alias || <FormattedMessage id={`job.form.${contrl.project.name}`} />}
                 >
-                    <Select 
-                        allowClear 
-                        getPopupContainer={node => node.parentNode} 
-                        showSearch 
+                    <Select
+                        allowClear
+                        getPopupContainer={node => node.parentNode}
+                        showSearch
                         disabled={disabled}
-                        placeholder={formatMessage({id: 'job.form.project.placeholder'}) }
+                        placeholder={formatMessage({ id: 'job.form.project.placeholder' })}
                         onSelect={handleSelect}
-                        filterOption={(inputValue,option:any) => option.children.indexOf(inputValue) >= 0}
+                        filterOption={(inputValue, option: any) => option.children.indexOf(inputValue) >= 0}
                     >
                         {
                             projectList.map(
@@ -165,10 +180,10 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                     'baseline' in contrl &&
                     <Form.Item
                         name="baseline"
-                        label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`}/> }
+                        label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`} />}
                     >
-                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled} 
-                            placeholder={formatMessage({id: 'job.form.baseline.placeholder'}) }
+                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled}
+                            placeholder={formatMessage({ id: 'job.form.baseline.placeholder' })}
                         >
                             {
                                 baselineList.map(
@@ -186,13 +201,13 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                 'baseline_job' in contrl &&
                 <Form.Item
                     name="baseline_job_id"
-                    label={contrl.baseline_job.alias || <FormattedMessage id={`job.form.${contrl.baseline_job.name}`}/> }
+                    label={contrl.baseline_job.alias || <FormattedMessage id={`job.form.${contrl.baseline_job.name}`} />}
                 >
                     <Select
                         allowClear
                         showSearch
                         getPopupContainer={node => node.parentNode}
-                        placeholder={formatMessage({id: 'job.form.baseline_job_id.placeholder'}) }
+                        placeholder={formatMessage({ id: 'job.form.baseline_job_id.placeholder' })}
                         onSearch={handleBaselineJobSelect}
                     >
                         {

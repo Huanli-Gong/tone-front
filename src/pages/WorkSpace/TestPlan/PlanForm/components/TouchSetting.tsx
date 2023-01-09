@@ -1,15 +1,9 @@
 import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
 import styles from './index.less'
 import { useIntl, FormattedMessage } from 'umi'
-import { Form, Input, Radio, Switch, Row, Space, Typography } from 'antd'
+import { Form, Input, Radio, Switch } from 'antd'
 import { checkCronExpression } from '@/pages/WorkSpace/TestPlan/services'
-import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
-import styled from 'styled-components'
-
-const EmRow = styled(Row)`
-    text-indent:2em;
-    color: #333;
-`
+import RuleQusetionContent from './RuleQusetionContent'
 
 const TouchSetting = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
@@ -52,7 +46,7 @@ const TouchSetting = (props: any, ref: any) => {
                 colon={false}
                 className={styles.job_plan_form}
             >
-                <Form.Item name="cron_schedule" 
+                <Form.Item name="cron_schedule"
                     label={<FormattedMessage id="plan.timed.trigger" />}
                     valuePropName="checked">
                     <Switch onChange={setTigger} size="default" checked checkedChildren={<FormattedMessage id="operation.open" />} unCheckedChildren={<FormattedMessage id="operation.close" />} />
@@ -74,42 +68,14 @@ const TouchSetting = (props: any, ref: any) => {
                                                     return Promise.resolve()
                                                 }
                                                 setExpression([])
-                                                return Promise.reject(formatMessage({id: 'plan.cron_info.reject'}))
+                                                return Promise.reject(formatMessage({ id: 'plan.cron_info.reject' }))
                                             }
                                         }),
                                     ]}
                                 >
-                                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.trigger.rule'})} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.trigger.rule' })} />
                                 </Form.Item>
-                                <div style={{ position: 'absolute', right: -22, top: -4 }}>
-                                    <QusetionIconTootip
-                                        title=""
-                                        placement="rightBottom"
-                                        desc={
-                                            <>
-                                                <Row><Typography.Text strong><FormattedMessage id="plan.trigger.rule.format" />：</Typography.Text></Row>
-                                                <br />
-                                                <Row><Typography.Text strong><FormattedMessage id="plan.trigger.for.example" /></Typography.Text></Row>
-                                                <EmRow><FormattedMessage id="plan.trigger.rule1" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.trigger.rule2" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.trigger.rule3" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.trigger.rule4" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.trigger.rule5" /></EmRow>
-                                                <br />
-                                                <Row><Typography.Text strong><FormattedMessage id="plan.special.symbols" />：</Typography.Text></Row>
-                                                <EmRow><FormattedMessage id="plan.symbols1" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.symbols2" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.symbols3" /></EmRow>
-                                                <EmRow><FormattedMessage id="plan.symbols4" /></EmRow>
-                                                <br />
-                                                <Row><Typography.Text strong><FormattedMessage id="plan.for.example" />：</Typography.Text></Row>
-                                                <EmRow>
-                                                    <FormattedMessage id="plan.example1" />
-                                                </EmRow>
-                                            </>
-                                        }
-                                    />
-                                </div>
+                                <RuleQusetionContent />
                             </div>
                         </Form.Item>
                         {!!expression?.length && (
@@ -126,7 +92,7 @@ const TouchSetting = (props: any, ref: any) => {
                                 <span>下次触发时间：{ template.next_time }</span>
                             </Form.Item>
                         } */}
-                        <Form.Item name="blocking_strategy" 
+                        <Form.Item name="blocking_strategy"
                             label={<FormattedMessage id="plan.blocking_strategy" />}
                             initialValue={1}>
                             <Radio.Group>
