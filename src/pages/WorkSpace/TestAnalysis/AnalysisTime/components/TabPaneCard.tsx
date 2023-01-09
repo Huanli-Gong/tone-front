@@ -81,7 +81,7 @@ const TabPaneCard: React.FC<any> = (props) => {
         (params = { ws_id, page_size: 999 }) => queryJobTagList(params),
         { initialData: [] } /* , manual: true */
     )
-    const { data: projectList } = useRequest(() => queryProjectList({ ws_id }), { initialData: [] })
+    const { data: projectList } = useRequest(() => queryProjectList({ ws_id, page_size: 500 }), { initialData: [] })
 
     const requestAnalysisData = async (params: any) => {
         onChange(params)

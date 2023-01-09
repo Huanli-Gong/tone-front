@@ -1,4 +1,4 @@
- 
+
 export default {
   'plan.table.name': 'Plan Name',
   'plan.table.cron_info': 'Trigger Rule',
@@ -91,7 +91,7 @@ export default {
   'plan.email_info.placeholder': 'The job creator is notified by default. Multiple mailboxes are seperated by spaces or commas.',
   // 'plan.ding_talk_info': '钉钉通知',
   'plan.ding_talk_info.placeholder': 'Please enter the token of the Ding_talk. Multiple tokens are separated by spaces or commas.',
-  
+
   // TestSetting
   'plan.start': 'Start',
   'plan.end': 'End',
@@ -128,27 +128,34 @@ export default {
   'plan.report_description.placeholder': 'Please enter a report description',
   'plan.timed.trigger': 'Timing Trigger',
   'plan.cron_info.reject': 'The rule is wrong, please check whether the trigger rule is correct',
-  'plan.trigger.rule.format': 'Trigger Rule Format',
-  'plan.trigger.for.example': 'For example：* * * * *',
-  'plan.trigger.rule1': '1. minute:minute',
-  'plan.trigger.rule2': '2. hour:hour',
-  'plan.trigger.rule3': '3. day:day',
-  'plan.trigger.rule4': '4. month:month',
-  'plan.trigger.rule5': '5. day_of_week:day_of_week  0-6',
-  'plan.special.symbols': 'Special Symbol',
-  'plan.symbols1': '1. *  Anytime',
-  'plan.symbols2': '2. ，Discontinuous Time',
-  'plan.symbols3': '3. -  Continuous Time',
-  'plan.symbols4': '4. /  How often to execute',
-  'plan.for.example': 'For example',
-  'plan.example1': '0 21 * * 1-5 （Execute tasks at 21:00 every week from 1 to 5）',
+
+  /* 触发规则说明格式 */
+  "plan.trigger.rule.format": 'Trigger Rule Format',
+  "plan.trigger.rule.format.example": 'For example: * * * * *',
+  "plan.trigger.rule.format.1": '1. minute:minute (It can be represented by the numbers 0-59.)',
+  "plan.trigger.rule.format.2": '2. hour:hour (It can be represented by the numbers 0-23)',
+  "plan.trigger.rule.format.3": '3. day:day (It can be represented by the numbers 1-31.)',
+  "plan.trigger.rule.format.4": '4. month:month (It can be represented by the numbers 1-12.)',
+  "plan.trigger.rule.format.5": '5. day_of_week:day_of_week  (0 means Sunday, and 1-6 means Monday through Saturday.)',
+  "plan.trigger.rule.symbols": 'Special Symbol',
+  "plan.trigger.rule.symbols.1": '*  Anytime',
+  "plan.trigger.rule.symbols.2": ',  Discontinuous Time',
+  "plan.trigger.rule.symbols.3": '-  Continuous Time',
+  "plan.trigger.rule.symbols.4": '/  How often to execute',
+  "plan.trigger.rule.example": 'For example',
+  "plan.trigger.rule.example.1": ' 30 21 * * 1-5 (The mission runs Monday through Friday at 21:30.)',
+  "plan.trigger.rule.example.2": ' 0 21 * * 6,0 (The mission runs every Saturday and Sunday at 21:00.)',
+  "plan.trigger.rule.example.3": ' 0 21 */2 * *  (The mission runs every other day from the 1st of each month at 21am.)',
+  "plan.trigger.rule.example.4": ' 0 21,23,1 * * * (The mission runs every day at 21:00, 23:00, 1:00.)',
+
+  /* 阻塞处理策略 */
   'plan.next.three.trigger.times': 'Next three trigger time',
   'plan.blocking_strategy': 'Blocking handling strategy',
   'plan.blocking_strategy1': 'Ignore the preorder plan and execute it directly at the same time',
   'plan.blocking_strategy2': 'Abort the pre-run plan and execute it again',
   'plan.blocking_strategy3': 'There is a pre-order running plan, ignoring this execution',
-  
-  
+
+
   // 'plan.': '计划名称',
   'plan.state': 'State',
   'plan.total/success/failure': 'Total/Success/Failure',
