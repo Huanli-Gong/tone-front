@@ -112,6 +112,8 @@ const text = {
   'threshold': 'Threshold Value',
   'track_result': 'Track Result',
 
+  'breadcrumb.button.download': 'Download',
+  'breadcrumb.button.share': 'Share',
 
   // ProcessTable
   'build.kernel': 'Build Kernel',

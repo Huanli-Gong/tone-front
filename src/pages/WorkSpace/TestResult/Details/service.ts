@@ -82,8 +82,6 @@ export const updateSuiteCaseOption = async (data: any) => {
     return request(`/api/job/test/editor/state/`, { data, method: 'post' })
 }
 
-
-
 export const queryProcessPrepareList = async (params: any) => {
     return request(`/api/job/test/process/test_prepare/`, { params })
 }
@@ -117,4 +115,8 @@ export const querySeverLink = async (params: any) => {
 // tid详细信息查询
 export const queryTidMessage = async (params: any) => {
     return request(`/api/server/agent_task_info/`, { params })
+}
+
+export const getJobDownloadLink = async (params: any) => {
+    return request(`/api/job/download/`, { params })
 }

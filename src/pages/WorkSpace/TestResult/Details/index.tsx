@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert, Popconfirm } from 'antd'
 import styles from './index.less'
 import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet } from 'umi'
-import { querySummaryDetail, updateSuiteCaseOption } from './service'
+import { querySummaryDetail, updateSuiteCaseOption, getJobDownloadLink } from './service'
 
 import { addMyCollection, deleteMyCollection, queryJobState } from '@/pages/WorkSpace/TestResult/services'
-import { StarOutlined, StarFilled, EditOutlined } from '@ant-design/icons'
+import { StarOutlined, StarFilled, EditOutlined, DownloadOutlined, ShareAltOutlined } from '@ant-design/icons'
 import Chart from './components/Chart'
 import TestResultTable from './TestRsultTable'
 import ProcessTable from './ProcessTable'
@@ -18,8 +18,17 @@ import NotFound from './components/404'
 import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
-import { requestCodeMessage, AccessTootip, matchTestType } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, matchTestType, targetJump } from '@/utils/utils';
 import _, { isNull } from 'lodash'
+import { useCopyText } from '@/utils/hooks'
+import styled from 'styled-components'
+
+const BreadcrumbIcon = styled(Typography.Text)`
+    cursor: pointer;
+    &:hover {
+        color: #1890ff
+    }
+`
 
 const CAN_STOP_JOB_STATES = ['running', 'pending', 'pending_q']
 const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => {
@@ -37,29 +46,78 @@ const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any)
                     >
                         <span onClick={onClick}>{dataIndex || '-'}</span>
                     </Typography.Text> :
-                    <Typography.Text className={styles.test_summary_item_right}
+                    <Typography.Text
+                        className={styles.test_summary_item_right}
                         style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}
-                    >{dataIndex || '-'}</Typography.Text>
+                    >
+                        {dataIndex || '-'}
+                    </Typography.Text>
             }
         </Col>
     )
 }
 
-
 const BreadcrumbItem: React.FC<any> = (d: any) => {
-    const { ws_id } = useParams() as any
+    const { ws_id, id: job_id } = useParams() as any
+    const access = useAccess()
+    const intl = useIntl()
+
+    const downloadLink = React.useRef<HTMLAnchorElement>(null)
+    const [downloadHerf, setDownloadHref] = React.useState()
+
+    const handleCopy = useCopyText(intl.formatMessage({ id: "request.copy.success" }))
+
+    const handleDownloadJob = async () => {
+        if (downloadHerf) {
+            downloadLink.current?.click()
+            return
+        }
+        const { data, code } = await getJobDownloadLink({ job_id })
+        if (code !== 200) return
+
+        if (data) {
+            setDownloadHref(data)
+            targetJump(data)
+        }
+    }
+
+    const { origin, pathname } = window.location
+
     return (
-        <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
-            <Breadcrumb.Item >
-                <span
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => history.push(`/ws/${ws_id}/test_result`)}
-                >
-                    <FormattedMessage id="ws.result.details.test.result" />
-                </span>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item><FormattedMessage id="ws.result.details.result.details" /></Breadcrumb.Item>
-        </Breadcrumb>
+        <Row justify={"space-between"}>
+            <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
+                <Breadcrumb.Item >
+                    <span
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => history.push(`/ws/${ws_id}/test_result`)}
+                    >
+                        <FormattedMessage id="ws.result.details.test.result" />
+                    </span>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item><FormattedMessage id="ws.result.details.result.details" /></Breadcrumb.Item>
+            </Breadcrumb>
+            <Access accessible={access.IsWsSetting()}>
+                <Space>
+                    <Tooltip
+                        placement="bottom"
+                        title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download` })}
+                    >
+                        <BreadcrumbIcon onClick={handleDownloadJob}>
+                            <DownloadOutlined />
+                        </BreadcrumbIcon>
+                    </Tooltip>
+                    <Tooltip
+                        placement="bottom"
+                        title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.share` })}
+                    >
+                        <BreadcrumbIcon onClick={() => handleCopy(origin + pathname)}>
+                            <ShareAltOutlined />
+                        </BreadcrumbIcon>
+                    </Tooltip>
+                </Space>
+            </Access>
+            <a ref={downloadLink} href={downloadHerf} target="_blank" style={{ display: "none" }} />
+        </Row>
     )
 }
 
@@ -243,6 +301,7 @@ const TestResultDetails: React.FC = (props: any) => {
             ["aliyun", "aliyun"],
         ]
     ).get(name)
+
 
     return (
         <Spin spinning={loading} className={styles.spin_style}>

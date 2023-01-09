@@ -112,6 +112,8 @@ const text = {
   'threshold': '阈值',
   'track_result': '跟踪结果',
 
+  'breadcrumb.button.download': '下载',
+  'breadcrumb.button.share': '分享Job链接',
 
   // ProcessTable
   'build.kernel': 'Build内核',
