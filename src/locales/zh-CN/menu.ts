@@ -117,6 +117,10 @@ export default {
   'menu.Workspace.Baseline.ClusterBaseline': aliyunServer_baseline,
   'menu.Workspace.PersonCenter': '个人中心',
 
+  'menu.Workspace.baseline': '基线管理',
+  'menu.Workspace.baseline.performance': "性能基线",
+  'menu.Workspace.baseline.functional': "功能基线",
+
   'menu.Workspace.TestPlan': '测试计划',
   'menu.Workspace.TestPlan.Manage': '计划管理',
   'menu.Workspace.TestPlan.Create': '新建计划',

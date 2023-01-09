@@ -242,8 +242,8 @@ const TestResultTable: React.FC<any> = (props) => {
                 }
             }
         ].filter(Boolean)
-        
-    },[testType, access, locale, filterData])
+
+    }, [testType, access, locale, filterData])
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, job_id })
@@ -390,6 +390,12 @@ const TestResultTable: React.FC<any> = (props) => {
     const expandBtnText = isOpenAllConf ? formatMessage({ id: `ws.result.details.folded.conf` }) : formatMessage({ id: `ws.result.details.expand.conf` })
     const expandIndexBtnText = indexExpandFlag ? formatMessage({ id: `ws.result.details.folded.${childName}` }) : formatMessage({ id: `ws.result.details.expand.${childName}` })
 
+    const batchBtnDisabled = React.useMemo(() => {
+        if (suiteCaseSelectKeys.length) return false
+        if (selectedRowKeys.length) return false
+        return true
+    }, [selectedRowKeys, suiteCaseSelectKeys])
+
     return (
         <>
             <div style={{ padding: "4px 20px 20px 20px" }}>
@@ -431,14 +437,34 @@ const TestResultTable: React.FC<any> = (props) => {
                                     accessible={access.WsMemberOperateSelf(creator)}
                                     fallback={
                                         <Space>
-                                            <Button onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.batch.baseline" /></Button>
-                                            <Button onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.batch.join.baseline" /></Button>
+                                            <Button
+                                                disabled={batchBtnDisabled}
+                                                onClick={() => AccessTootip()}
+                                            >
+                                                <FormattedMessage id="ws.result.details.batch.baseline" />
+                                            </Button>
+                                            <Button
+                                                disabled={batchBtnDisabled}
+                                                onClick={() => AccessTootip()}
+                                            >
+                                                <FormattedMessage id="ws.result.details.batch.join.baseline" />
+                                            </Button>
                                         </Space>
                                     }
                                 >
                                     <Space>
-                                        <Button onClick={() => handleBatchContrastBaseline()}><FormattedMessage id="ws.result.details.batch.baseline" /></Button>
-                                        <Button onClick={() => handleBatchJoinBaseline()}><FormattedMessage id="ws.result.details.batch.join.baseline" /></Button>
+                                        <Button
+                                            disabled={batchBtnDisabled}
+                                            onClick={() => handleBatchContrastBaseline()}
+                                        >
+                                            <FormattedMessage id="ws.result.details.batch.baseline" />
+                                        </Button>
+                                        <Button
+                                            disabled={batchBtnDisabled}
+                                            onClick={() => handleBatchJoinBaseline()}
+                                        >
+                                            <FormattedMessage id="ws.result.details.batch.join.baseline" />
+                                        </Button>
                                     </Space>
                                 </Access>
                             </Access>

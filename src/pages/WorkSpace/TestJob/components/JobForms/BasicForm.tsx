@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useEffect, useState } from 'react'
+import React, { useImperativeHandle, useEffect } from 'react'
 import { Form, Input, Select } from 'antd'
 import styles from './index.less'
 
@@ -10,12 +10,14 @@ import { debounce } from 'lodash'
 /**
  * 基础配置
  */
-export default ({ contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', server_provider, baselineListDataRef, projectListDataRef, basicFormData, isYamlFormat }: FormProps) => {
+export default (props: FormProps) => {
+    const { contrl, disabled = false, callBackProjectId, onRef = null, template = {}, test_type = '', business_type = '', baselineListDataRef, projectListDataRef } = props
+
     const { formatMessage } = useIntl()
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
     const { baseline, project, baseline_job } = contrl
-    const [jobList, setJobList] = useState<any>([])
+    const [jobList, setJobList] = React.useState<any>([])
 
     const defaultParams = {
         page_num: 1,
@@ -23,6 +25,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
         ws_id,
         search: '',
         tab: 'all',
+        test_type
     }
 
     const { data: projectList, run: getProjectList } = useRequest(
@@ -31,7 +34,7 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
     )
 
     const { data: baselineList, run: getBaselineList } = useRequest(
-        () => queryBaselineList({ ws_id, test_type, server_provider, page_size: 500 }),
+        () => queryBaselineList({ ws_id, test_type, page_size: 500 }),
         { manual: true, initialData: [] }
     )
 
@@ -143,7 +146,12 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                         message: formatMessage({ id: 'job.form.job_name.limit.message' })
                     }]}
                 >
-                    <Input autoComplete="off" title={formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)} placeholder={formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)} disabled={disabled} />
+                    <Input
+                        autoComplete="off"
+                        title={formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)}
+                        placeholder={formatMessage({ id: 'job.form.job_name.message' }, { date: '{date}' },)}
+                        disabled={disabled}
+                    />
                 </Form.Item>
             }
             {
@@ -159,43 +167,43 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                         disabled={disabled}
                         placeholder={formatMessage({ id: 'job.form.project.placeholder' })}
                         onSelect={handleSelect}
-                        filterOption={(inputValue, option: any) => option.children.indexOf(inputValue) >= 0}
-                    >
-                        {
+                        filterOption={(inputValue, option: any) => option.label.indexOf(inputValue) >= 0}
+                        options={
                             projectList.map(
-                                (item: any) => (
-                                    <Select.Option key={item.id} value={item.id} >
-                                        {`${item.name}(${item.product_name})`}
-                                    </Select.Option>
-                                )
+                                (item: any) => ({
+                                    label: `${item.name}(${item.product_name})`,
+                                    value: item.id
+                                })
                             )
                         }
-                    </Select>
+                    />
                 </Form.Item>
             }
 
             {/** 功能，性能，业务功能，业务性能时，才有测试基线。 */}
             {(['functional', 'performance'].includes(test_type) || ['functional', 'performance'].includes(business_type)) && (
-                <>{
-                    'baseline' in contrl &&
-                    <Form.Item
-                        name="baseline"
-                        label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`} />}
-                    >
-                        <Select allowClear getPopupContainer={node => node.parentNode} showSearch disabled={disabled}
-                            placeholder={formatMessage({ id: 'job.form.baseline.placeholder' })}
-                        >
-                            {
-                                baselineList.map(
-                                    (item: any) => (
-                                        <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                    )
-                                )
-                            }
-                        </Select>
-                    </Form.Item>
-                }
-                </>
+                'baseline' in contrl &&
+                <Form.Item
+                    name="baseline"
+                    label={contrl.baseline.alias || <FormattedMessage id={`job.form.${contrl.baseline.name}`} />}
+                >
+                    <Select
+                        allowClear
+                        getPopupContainer={node => node.parentNode}
+                        showSearch
+                        disabled={disabled}
+                        placeholder={formatMessage({ id: 'job.form.baseline.placeholder' })}
+                        filterOption={(inputValue, option: any) => option.label.indexOf(inputValue) >= 0}
+                        options={
+                            baselineList.map(
+                                (item: any) => ({
+                                    label: item.name,
+                                    value: item.id
+                                })
+                            )
+                        }
+                    />
+                </Form.Item>
             )}
             {
                 'baseline_job' in contrl &&
@@ -209,15 +217,14 @@ export default ({ contrl, disabled = false, callBackProjectId, onRef = null, tem
                         getPopupContainer={node => node.parentNode}
                         placeholder={formatMessage({ id: 'job.form.baseline_job_id.placeholder' })}
                         onSearch={handleBaselineJobSelect}
-                    >
-                        {
-                            jobList.map(
-                                (item: any) => (
-                                    <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                )
-                            )
+                        filterOption={false}
+                        options={
+                            jobList.map((item: any) => ({
+                                label: `#${item.id} ${item.name}`,
+                                value: item.id
+                            }))
                         }
-                    </Select>
+                    />
                 </Form.Item>
             }
         </Form>

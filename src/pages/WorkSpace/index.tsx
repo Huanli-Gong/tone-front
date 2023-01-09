@@ -18,7 +18,6 @@ const WorkspaceLayout = (props: any) => {
     const { routes } = props.route
     const { height: windowHeight } = useClientSize()
 
-    const timeStampKey = useMemo(() => new Date().getTime(), [props.location])
     const intl = useIntl()
 
     const [openKeys, setOpenKeys] = useState<any>([])
@@ -124,8 +123,7 @@ const WorkspaceLayout = (props: any) => {
                 <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', ...style }}>
                     {text}
                 </div>
-            </Popover>
-            :
+            </Popover> :
             <div>{text}</div>
     }
 
