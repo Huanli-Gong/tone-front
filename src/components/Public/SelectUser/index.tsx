@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { FormattedMessage, useParams } from 'umi'
 import { member } from './service';
 import styles from './style.less';
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, mode = 'multiple' }) => {
+const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, mode = 'multiple' }) => {
+	const { ws_id } = useParams() as any
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>()
@@ -19,7 +20,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus,page_size, m
 		if (keyword && keyword == param) return
 		setKeyword(param)
 		setFetching(true)
-		let { data } = await member({ keyword: param, page_size: page_size || 10, page_num: 1 })
+		let { data } = await member({ ws_id, keyword: param, page_size: page_size || 10, page_num: 1 })
 		setUser(Array.isArray(data) ? data : [])
 		setFetching(false)
 	}
