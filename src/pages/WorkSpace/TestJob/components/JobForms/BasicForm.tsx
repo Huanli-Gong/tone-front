@@ -76,25 +76,23 @@ export default (props: FormProps) => {
             const baselineJobId = baseline_job || baseline_job_id
             if (!$project && projectId && projectList.length > 0) {
                 const idx = projectList.findIndex((i: any) => i.id === projectId)
-                if (idx === -1)
-                    form.setFieldsValue({ project: null })
+                form.setFieldsValue({ project: ~idx ? projectId : undefined })
             }
             if (!$baseline && baselineId && baselineList.length > 0) {
                 const idx = baselineList.findIndex((i: any) => i.id === baselineId)
-                if (idx === -1)
-                    form.setFieldsValue({ baseline: null })
+                form.setFieldsValue({ baseline: ~idx ? baselineId : undefined })
             }
             if (!$baseline_job_id && baselineJobId && jobList.length > 0) {
                 const idx = jobList.findIndex((i: any) => i.id === baselineJobId)
-                if (idx === -1)
-                    form.setFieldsValue({ baseline_job_id: null })
+                form.setFieldsValue({ baseline_job_id: ~idx ? baselineJobId : undefined })
             }
         }
     }, [projectList, baselineList, jobList, template, $project, $baseline, $baseline_job_id])
 
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
-            form.setFieldsValue(template)
+            const { baseline_id } = template
+            form.setFieldsValue({ ...template, baseline_id })
         }
         return () => {
             form.resetFields()
@@ -217,6 +215,7 @@ export default (props: FormProps) => {
                         getPopupContainer={node => node.parentNode}
                         placeholder={formatMessage({ id: 'job.form.baseline_job_id.placeholder' })}
                         onSearch={handleBaselineJobSelect}
+                        disabled={disabled}
                         filterOption={false}
                         options={
                             jobList.map((item: any) => ({
