@@ -171,7 +171,6 @@ const AllJobTable = (props: any) => {
                     </PopoverEllipsis>
                 )
             }
-
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -262,16 +261,10 @@ const AllJobTable = (props: any) => {
 
     const onVersionChange = (value: any) => {
         setPruductVersion(value)
-        setSelectedRowKeys([]);
-        setSelectRowData([]);
     }
 
     const onProductChange = (value: any) => {
         setPruductId(value)
-        // setPruductVersion(allVersion[0]?.value)
-        // setParams({ ...params, product_id: value, product_version: allVersion[0]?.value })
-        setSelectedRowKeys([]);
-        setSelectRowData([]);
     }
 
     const handleClearVersion = () => {
@@ -287,17 +280,15 @@ const AllJobTable = (props: any) => {
 
     const selectedChange = (record: any, selected: any) => {
         // 去掉未选组的job 开始
-        let arrKeys = _.cloneDeep(selectedRowKeys)
-        let arrData = _.cloneDeep(selectRowData)
         if (selected) {
-            arrKeys = [...arrKeys, record.id]
-            arrData = [...arrData, record]
+            const allRecord = selectRowData.concat(record)
+            setSelectRowData(allRecord)
+            setSelectedRowKeys(allRecord.map((i: any) => i.id))
         } else {
-            arrKeys = arrKeys.filter((keys: any) => Number(keys) !== Number(record.id))
-            arrData = arrData.filter((obj: any) => obj && Number(obj.id) !== Number(record.id))
+            const allRecord = selectRowData.filter((i: any) => i.id !== record.id)
+            setSelectRowData(allRecord)
+            setSelectedRowKeys(allRecord.map((i: any) => i.id))
         }
-        setSelectedRowKeys(arrKeys);
-        setSelectRowData(arrData);
     }
 
     const allSelectFn = (allData: any) => {

@@ -43,6 +43,15 @@ export const switchRole = (role: number) => {
   }
 };
 
+export const getCompareType = ({ is_job, is_baseline }: any) => {
+  const hasJob = Object.prototype.toString.call(is_job) === "[object Number]"
+  const hasBaseline = Object.prototype.toString.call(is_baseline) === "[object Number]"
+  let isBaseline
+  if (hasJob) isBaseline = is_job === 0 ? true : false
+  if (hasBaseline) isBaseline = is_baseline === 0 ? false : true
+  return isBaseline
+}
+
 export const switchUserRole = (name: string) => {
   return new Map([
     ['user', '普通用户'],
