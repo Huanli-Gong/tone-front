@@ -25,6 +25,7 @@ import styled from 'styled-components'
 
 const BreadcrumbIcon = styled(Typography.Text)`
     cursor: pointer;
+    font-size: 16px;
     &:hover {
         color: #1890ff
     }
@@ -100,18 +101,18 @@ const BreadcrumbItem: React.FC<any> = (d: any) => {
                 <Space>
                     <Tooltip
                         placement="bottom"
-                        title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download` })}
-                    >
-                        <BreadcrumbIcon onClick={handleDownloadJob}>
-                            <DownloadOutlined />
-                        </BreadcrumbIcon>
-                    </Tooltip>
-                    <Tooltip
-                        placement="bottom"
                         title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.share` })}
                     >
                         <BreadcrumbIcon onClick={() => handleCopy(origin + pathname)}>
                             <ShareAltOutlined />
+                        </BreadcrumbIcon>
+                    </Tooltip>
+                    <Tooltip
+                        placement="bottom"
+                        title={intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download` })}
+                    >
+                        <BreadcrumbIcon onClick={handleDownloadJob}>
+                            <DownloadOutlined />
                         </BreadcrumbIcon>
                     </Tooltip>
                 </Space>
