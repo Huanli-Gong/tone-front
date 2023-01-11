@@ -170,10 +170,10 @@ const BaselineManage: React.FC<IProps> = (props) => {
                         style={{ padding: "0 20px 8px" }}
                     >
                         {
-                            intl.formatMessage({ id: "pagination.total.strip" }, { data: list?.total })
+                            intl.formatMessage({ id: "pagination.total.strip" }, { data: list?.total || 0 })
                         }
                         <Pagination
-                            total={list?.total}
+                            total={list?.total || 0}
                             current={listParams?.page_num}
                             pageSize={listParams?.page_size}
                             size="small"
