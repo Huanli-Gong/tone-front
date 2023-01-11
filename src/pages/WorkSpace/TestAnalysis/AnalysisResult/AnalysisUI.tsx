@@ -127,12 +127,12 @@ interface EnvGroupLProps {
 }
 
 const setEnvGroupWdith = (l: number, enLocale: boolean) => {
-    if (l == 1) return (`calc( 100% - ${BASIC_TITLE_WIDTH}px )`)
-    return (`calc((100% - ${BASIC_TITLE_WIDTH}px) / ${l})`)
+    if (l == 1) return (`calc( 100% - ${110}px )`)
+    return (`calc((100% - ${110}px) / ${l})`)
 }
 
 export const EnvGroupL = styled.div<EnvGroupLProps>`
-    width: ${BASIC_TITLE_WIDTH}px;
+    width: ${110}px;
     float:left;
     padding-left:16px;
     border-right:1px solid rgba(0,0,0,0.10);
