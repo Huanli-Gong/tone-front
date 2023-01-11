@@ -79,8 +79,10 @@ export default (props: any) => {
         if (isExpand) nogroupDom.current.style.left = '-260px'
     }
     useEffect(() => {
-        if (groupData.length) seGroupingButton(true)
-        if (!groupData.length) seGroupingButton(false)
+        seGroupingButton(!!groupData.filter((i: any) => i.type === "job").reduce((p: any, c: any) => {
+            const { members } = c
+            return p.concat(members)
+        }, []).length)
         if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
     }, [groupData, baselineGroupIndex])
 
@@ -221,7 +223,7 @@ export default (props: any) => {
         }
         return ''
     }
-    const handleAddJobGroup = (type = 'job') => {
+    const handleAddJobGroup = (type = "") => {
         const arr = _.cloneDeep(groupData)
         const name = addGroupNameFn() || `对比组${groupData.length + 1}`
         const addGroup = {
@@ -690,6 +692,7 @@ export default (props: any) => {
         if ((!arr || !arr.length) && productMark) {
             groupArr[endGroupIndex].product_version = productMark
         }
+        groupArr[endGroupIndex].type = "job"
         return { groupArr, noGoupArr }
     };
 
@@ -1225,7 +1228,7 @@ export default (props: any) => {
                                                             className={styles.create_group}
                                                             style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local ? 220 : 110 }}
                                                         >
-                                                            <div onClick={_.partial(handleAddJobGroup, 'job')} className={styles.popover}>
+                                                            <div onClick={_.partial(handleAddJobGroup, '')} className={styles.popover}>
                                                                 <PlusOutlined style={{ fontSize: 14, marginRight: 8 }} /><FormattedMessage id="analysis.create.comparison.group" />
                                                             </div>
                                                         </div>
@@ -1348,7 +1351,7 @@ export default (props: any) => {
                     onOk={handleOk}
                     onCancel={handleJobCancel}
                 >
-                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} noGroupData={noGroupData} />
+                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} groupData={groupData} noGroupData={noGroupData} />
                 </Modal>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={groupData} />
             </Spin>

@@ -36,7 +36,7 @@ const styleObj = {
 }
 
 const AllJobTable = (props: any) => {
-    const { onOk, onCancel, noGroupData } = props
+    const { onOk, onCancel, noGroupData, groupData } = props
     const { ws_id }: any = useParams();
     const page_default_params: any = {
         page_num: 1,
@@ -44,6 +44,8 @@ const AllJobTable = (props: any) => {
         ws_id,
         state: 'success,fail,skip,stop,running',
     }
+
+    console.log(groupData)
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
@@ -306,9 +308,21 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys(_.difference(selectedRowKeys, keysArr))
         setSelectRowData(_.differenceBy(selectRowData, arr, 'id'))
     }
+    
+    const groupDataJobIds = groupData.filter((i: any) => i.type === "job").reduce((p: any, c: any) => {
+        const { members } = c
+        return p.concat(members.map((i: any) => i.id))
+    }, [])
+
     const rowSelection = {
         selectedRowKeys,
         preserveSelectedRowKeys: false,
+        getCheckboxProps: (record: any) => {
+            return {
+                disabled: groupDataJobIds.includes(record.id), // Column configuration not to be checked
+                name: record.name,
+            }
+        },
         onSelect: selectedChange,
         onSelectAll: (selected: boolean, selectedRows: [], changeRows: []) => {
             if (selected) {

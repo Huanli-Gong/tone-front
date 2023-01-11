@@ -60,10 +60,12 @@ export default (props: any) => {
     const scollMaxHeight = maxHeight - 400 > 430 ? 430 : maxHeight - 400
     resizeDocumentHeight(scollMaxHeight)
     const { onCancel, onOk, currentGroup } = props
+
     let { allGroup, allNoGroupData } = props
     allGroup = _.isArray(allGroup) ? allGroup : []
     const [tabKey, setTabKey] = useState<string>('1')
     allNoGroupData = _.isArray(allNoGroupData) ? allNoGroupData : []
+
     const selectedId: any = getSelJobFn(allGroup, allNoGroupData)
 
     const page_default_params: any = {
@@ -148,12 +150,7 @@ export default (props: any) => {
         let data = await queryJobList(params)
         defaultOption(data)
     }
-    useEffect(() => {
-        if (!!allNoGroupData.length) {
-            setSelectedRowKeys(allNoGroupData.map((i: any) => i.id));
-            setSelectRowData(allNoGroupData);
-        }
-    }, [allNoGroupData])
+
     useEffect(() => {
         if (params.product_version && params.product_id) getJobList(params)
     }, [params])
@@ -163,7 +160,7 @@ export default (props: any) => {
     }, [tabKey, baselineParam])
 
     useEffect(() => {
-        setParams((p: any) => ({ ...p, product_version: pruductVersion, product_id: pruductId }))
+        setParams((p: any) => ({ ...p, product_version: pruductVersion, product_id: pruductId, page_num: 1 }))
     }, [pruductVersion, pruductId])
 
     useEffect(() => {
@@ -182,7 +179,7 @@ export default (props: any) => {
 
     const onChange = (value: any) => {
         setPruductVersion(value)
-        setParams((p: any) => ({ ...p, product_version: value }))
+        setParams((p: any) => ({ ...p, product_version: value, page_num: 1 }))
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
@@ -402,7 +399,6 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-
     ]
 
     const selectedChange = (record: any, selected: any) => {
@@ -478,9 +474,10 @@ export default (props: any) => {
         selectedRowKeys,
         getCheckboxProps: (record: any) => {
             // 有用
-            let flag = record.state !== 'success' && record.state !== 'fail'
+            let flag = !["success", "fail"].includes(record.state)
             const selProductId = pruductId || _.get(selectRowData[0], 'product_id')
             if (selProductId) flag = _.get(record, 'product_id') !== selProductId
+
             return ({
                 disabled: flag, // Column configuration not to be checked
                 name: record.name,
@@ -524,8 +521,8 @@ export default (props: any) => {
     const commonCur = currentGroup && _.get(currentGroup, 'members').length
     // 产品版本disable逻辑
     const flag = commonCur || tabKey === '2'
-    const jobDisable = ((!!selectedBaselineData.length) || (commonCur && currentGroup.type === 'baseline'))
-    const baselineDisable = ((!!selectRowData.length) || (commonCur && currentGroup.type === 'job'))
+    const jobDisable = ((!!selectedBaselineData.length) || (currentGroup.type === 'baseline'))
+    const baselineDisable = ((!!selectRowData.length) || (currentGroup.type === 'job'))
     return (
         <div className={styles.list_container} id="list_container">
             <div className={styles.select_product}>
