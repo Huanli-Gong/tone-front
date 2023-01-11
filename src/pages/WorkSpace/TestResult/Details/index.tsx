@@ -63,24 +63,32 @@ const BreadcrumbItem: React.FC<any> = (d: any) => {
     const access = useAccess()
     const intl = useIntl()
 
-    const downloadLink = React.useRef<HTMLAnchorElement>(null)
+    const downloadRef = React.useRef<HTMLAnchorElement>(null)
     const [downloadHerf, setDownloadHref] = React.useState()
+    const [fetching, setFetching] = React.useState(false)
 
     const handleCopy = useCopyText(intl.formatMessage({ id: "request.copy.success" }))
 
     const handleDownloadJob = async () => {
         if (downloadHerf) {
-            downloadLink.current?.click()
+            downloadRef.current?.click()
             return
         }
-        const { data, code } = await getJobDownloadLink({ job_id })
-        if (code !== 200) return
+        if (!fetching) {
+            setFetching(true)
+            const { data, code } = await getJobDownloadLink({ job_id })
+            setFetching(false)
+            if (code !== 200) return
 
-        if (data) {
-            setDownloadHref(data)
-            targetJump(data)
+            if (data) {
+                setDownloadHref(data)
+            }
         }
     }
+
+    React.useEffect(() => {
+        if (downloadHerf) downloadRef.current?.click()
+    }, [downloadHerf])
 
     const { origin, pathname } = window.location
 
@@ -117,7 +125,7 @@ const BreadcrumbItem: React.FC<any> = (d: any) => {
                     </Tooltip>
                 </Space>
             </Access>
-            <a ref={downloadLink} href={downloadHerf} target="_blank" style={{ display: "none" }} />
+            <a ref={downloadRef} href={downloadHerf} target="_blank" style={{ display: "none" }} />
         </Row>
     )
 }
