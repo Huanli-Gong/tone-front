@@ -3,7 +3,7 @@ import { DeleteOutlined } from '@ant-design/icons'
 import React from 'react'
 import { useIntl, FormattedMessage } from 'umi';
 
-const MonitorItem = (props: any) => {
+const MonitorItem: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
     const { suiteForm } = props
     return (
@@ -32,9 +32,9 @@ const MonitorItem = (props: any) => {
                                         name={[field.name, 'items']}
                                         fieldKey={[field.fieldKey, 'items']}
                                     >
-                                        <Select style={{ width: 140 }} 
-                                            placeholder={suiteForm?.console?.length > 1 ? 
-                                                formatMessage({id: 'select.suite.multiple.values'}): formatMessage({id: 'select.suite.monitor.item'})
+                                        <Select style={{ width: 140 }}
+                                            placeholder={suiteForm?.console?.length > 1 ?
+                                                formatMessage({ id: 'select.suite.multiple.values' }) : formatMessage({ id: 'select.suite.monitor.item' })
                                             }>
                                             <Select.Option value="1"><FormattedMessage id="select.suite.monitor.data" /></Select.Option>
                                         </Select>
@@ -45,9 +45,9 @@ const MonitorItem = (props: any) => {
                                         name={[field.name, 'servers']}
                                         fieldKey={[field.fieldKey, 'servers']}
                                     >
-                                        <Select style={{ width: 140 }} 
+                                        <Select style={{ width: 140 }}
                                             placeholder={suiteForm?.console?.length > 1 ?
-                                                formatMessage({id: 'select.suite.multiple.values'}): formatMessage({id: 'select.suite.monitor.the.server'})
+                                                formatMessage({ id: 'select.suite.multiple.values' }) : formatMessage({ id: 'select.suite.monitor.the.server' })
                                             }>
                                             <Select.Option value="1"><FormattedMessage id="select.suite.the.server.one" /></Select.Option>
                                         </Select>

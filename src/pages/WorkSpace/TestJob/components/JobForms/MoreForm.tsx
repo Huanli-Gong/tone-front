@@ -19,7 +19,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     const [reportTemplate, setReportTemplate] = useState<any>([])
     const [defaultTemplate, setDefaultTemplate] = useState({})
     const [callbackUrl, setCallbackUrl] = useState('')
-    const [regCallbackUrl, setRegCallbackUrl] = useState(false)
+    const [regCallbackUrl, setRegCallbackUrl] = useState<any>(false)
 
     useImperativeHandle(
         onRef,
@@ -30,7 +30,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
             },
             setVal: (data: Object) => {
                 let reg = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
-                const callbackApi = _.get(data, 'callback_api')
+                const callbackApi = _.get(data, 'callback_api') || ""
                 const flag = reg.test(callbackApi)
                 setRegCallbackUrl(callbackApi && !flag)
                 setCheckedList(_.get(data, 'report_name') || '')
@@ -156,10 +156,10 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'cleanup' in contrl &&
                 <Form.Item
                     name="cleanup_info"
-                    label={contrl.cleanup.alias || <FormattedMessage id={`job.form.${contrl.cleanup.name}`}/>}
+                    label={contrl.cleanup.alias || <FormattedMessage id={`job.form.${contrl.cleanup.name}`} />}
                 >
-                    <Input.TextArea disabled={disabled} 
-                        placeholder={formatMessage({id: 'job.form.cleanup_info.placeholder'}) }
+                    <Input.TextArea disabled={disabled}
+                        placeholder={formatMessage({ id: 'job.form.cleanup_info.placeholder' })}
                     />
                 </Form.Item>
             }
@@ -168,7 +168,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <TagSelect
                     tags={tags}
                     // label="Job标签"
-                    label={contrl.job_tag.alias || <FormattedMessage id={`job.form.${contrl.job_tag.name}`}/> }
+                    label={contrl.job_tag.alias || <FormattedMessage id={`job.form.${contrl.job_tag.name}`} />}
                     disabled={disabled}
                 />
             }
@@ -177,10 +177,10 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <Form.Item
                     name="notice_subject"
                     // label="通知主题"
-                    label={contrl.notice_subject.alias || <FormattedMessage id={`job.form.${contrl.notice_subject.name}`}/> }
+                    label={contrl.notice_subject.alias || <FormattedMessage id={`job.form.${contrl.notice_subject.name}`} />}
                 >
-                    <Input autoComplete="off" disabled={disabled} 
-                        placeholder={formatMessage({id: 'job.form.notice_subject.placeholder'}, {date: '{date}'},) }
+                    <Input autoComplete="off" disabled={disabled}
+                        placeholder={formatMessage({ id: 'job.form.notice_subject.placeholder' }, { date: '{date}' },)}
                     />
                 </Form.Item>
             }
@@ -189,21 +189,21 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <Form.Item
                     name="email"
                     // label="邮件通知"
-                    label={contrl.email_notice.alias || <FormattedMessage id={`job.form.${contrl.email_notice.name}`}/> }
+                    label={contrl.email_notice.alias || <FormattedMessage id={`job.form.${contrl.email_notice.name}`} />}
                     rules={[() => ({
                         validator(rule, value) {
                             const reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                             if (value) {
                                 const valArr = value.split(/,|，|\n|\s/g)
                                 let warry = valArr.filter((str: any) => !reg.test(str))
-                                return warry.length === 0 ? Promise.resolve() : Promise.reject(formatMessage({id: 'job.form.email.validator'}));
+                                return warry.length === 0 ? Promise.resolve() : Promise.reject(formatMessage({ id: 'job.form.email.validator' }));
                             }
                             else
                                 return Promise.resolve()
                         },
                     })]}
                 >
-                    <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({id: 'job.form.email.validator'})} />
+                    <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({ id: 'job.form.email.validator' })} />
                 </Form.Item>
             }
             {
@@ -211,22 +211,22 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 <Form.Item
                     name="ding_token"
                     // label="钉钉通知"
-                    label={contrl.ding_notice.alias || <FormattedMessage id={`job.form.${contrl.ding_notice.name}`}/> }
+                    label={contrl.ding_notice.alias || <FormattedMessage id={`job.form.${contrl.ding_notice.name}`} />}
                 >
-                    <Input autoComplete="off" disabled={disabled} 
-                        placeholder={formatMessage({id: 'job.form.ding_token.placeholder'})}
+                    <Input autoComplete="off" disabled={disabled}
+                        placeholder={formatMessage({ id: 'job.form.ding_token.placeholder' })}
                     />
                 </Form.Item>
             }
             {
                 'report' in contrl &&
-                <Form.Item label={contrl.report.alias || formatMessage({id: 'job.form.report.label'})} name="report_name">
+                <Form.Item label={contrl.report.alias || formatMessage({ id: 'job.form.report.label' })} name="report_name">
                     <Input
                         value={checkedList || undefined}
                         onChange={onReportChange}
                         autoComplete="off"
                         disabled={disabled}
-                        placeholder={formatMessage({id: 'job.form.report.placeholder'}, {job_name: '{job_name}', report_seq_id: '{report_seq_id}'},)} />
+                        placeholder={formatMessage({ id: 'job.form.report.placeholder' }, { job_name: '{job_name}', report_seq_id: '{report_seq_id}' },)} />
                     <QuestionCircleComponent contextNode={<div>
                         <FormattedMessage id="job.form.report.tips" />
                         <p style={{ marginBottom: 0 }}>{"{date} {job_name} {job_id} {product_version}"}</p>
@@ -237,12 +237,12 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 checkedList && 'report' in contrl &&
                 <Form.Item
                     name="report_template"
-                    label={contrl.report.alias || formatMessage({id: 'job.form.report_template.label'})}
+                    label={contrl.report.alias || formatMessage({ id: 'job.form.report_template.label' })}
                 >
                     <Select
                         showSearch
                         disabled={disabled}
-                        placeholder={formatMessage({id: 'job.form.report_template.placeholder'})}
+                        placeholder={formatMessage({ id: 'job.form.report_template.placeholder' })}
                         // defaultValue={defaultTemplate.name}
                         optionFilterProp="children"
                         filterOption={
@@ -259,16 +259,16 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 'callback_api' in contrl &&
                 <Form.Item
                     name="callback_api"
-                    label={contrl.callback_api.alias || formatMessage({id: 'job.form.callback_api.label'})}
+                    label={contrl.callback_api.alias || formatMessage({ id: 'job.form.callback_api.label' })}
                     validateStatus={regCallbackUrl && 'error' || undefined}
-                    help={regCallbackUrl && formatMessage({id: 'job.form.callback_api.help'}) }
+                    help={regCallbackUrl && formatMessage({ id: 'job.form.callback_api.help' })}
                 >
                     <Input
                         value={callbackUrl}
                         onChange={handleCallbackURLChange}
                         autoComplete="off"
                         disabled={disabled}
-                        placeholder={formatMessage({id: 'job.form.callback_api.placeholder'})} />
+                        placeholder={formatMessage({ id: 'job.form.callback_api.placeholder' })} />
                     <QuestionCircleComponent
                         contextNode={
                             <div>
@@ -284,14 +284,14 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                 !BUILD_APP_ENV && 'job_timeout' in contrl &&
                 <Form.Item
                     name="job_timeout"
-                    label={contrl.job_timeout.alias || formatMessage({id: 'job.form.job_timeout.label'})}
+                    label={contrl.job_timeout.alias || formatMessage({ id: 'job.form.job_timeout.label' })}
                 >
                     <InputNumber
                         autoComplete="off"
                         style={{ width: '100%' }}
                         addonAfter="h"
                         min={0}
-                        placeholder={formatMessage({id: 'job.form.job_timeout.placeholder'})} />
+                        placeholder={formatMessage({ id: 'job.form.job_timeout.placeholder' })} />
                 </Form.Item>
             }
         </Form>

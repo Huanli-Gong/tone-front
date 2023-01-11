@@ -1,11 +1,9 @@
 import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
-import { Drawer, Button, Form, Spin, Col, Row, Select, Input, Radio, Empty, Popover } from 'antd'
+import { Drawer, Button, Form, Col, Row, Select, Input, Radio } from 'antd'
 import styles from '../style.less'
-import { member, validateSuite } from '../../service'
 import Owner from '@/components/Owner/index';
-import { useLocation, useRequest, useIntl, FormattedMessage } from 'umi'
+import { useLocation, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
-import { QuestionCircleOutlined } from '@ant-design/icons'
 import { useSuiteProvider } from '../../hooks'
 import { QusetionIconTootip } from '@/components/Product/index'
 
@@ -20,22 +18,13 @@ export default forwardRef(
         const testType = query.test_type || 'functional'
         const [form] = Form.useForm()
 
-        const { domainList , runList , viewType } = useSuiteProvider()
+        const { domainList, runList, viewType } = useSuiteProvider()
 
         const [visible, setVisible] = useState(false)
         const [validateStatus, setValidateStatus] = useState<any>('')
         const [help, setHelp] = useState<string | undefined>()
-        const [fetch, setFetch] = useState<boolean>(false)
         const [disable, setDisable] = useState(false)
         const [dataSource, setDataSource] = useState<any>({})
-
-        const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
-            (keyword = '',) => member({ keyword, scope: 'aligroup' }),
-            {
-                initialData: [],
-                debounceInterval: 300,
-            }
-        )
 
         useImperativeHandle(ref, () => ({
             show: (t: any, d: any = {}) => {
@@ -56,7 +45,7 @@ export default forwardRef(
             form.validateFields().then(val => {
                 if (!val.name || val.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
-                    setHelp(formatMessage({id: 'please.enter'}) )
+                    setHelp(formatMessage({ id: 'please.enter' }))
                     return
                 }
                 val.name = val.name.replace(/\s+/g, "")
@@ -68,32 +57,10 @@ export default forwardRef(
             }).catch(err => {
                 if (!err.values.name || err.values.name.replace(/\s+/g, "") == '') {
                     setValidateStatus('error')
-                    setHelp(formatMessage({id: 'please.enter'}) )
+                    setHelp(formatMessage({ id: 'please.enter' }))
                 }
                 setDisable(false)
             })
-        }
-
-        const handleBlur = async (e: any) => {
-            const name = e.target.value.replace(/\s+/g, "")
-            if (!name) {
-                setValidateStatus('error')
-                setHelp(formatMessage({id: 'please.enter'}) )
-                return
-            }
-            setValidateStatus('validating')
-            setFetch(true)
-            const data = await validateSuite({ suite_name: name, test_type: testType })
-            setFetch(false)
-            if (data.code != 200) {
-                setValidateStatus('error')
-                setHelp(data.msg)
-                setDisable(true)
-            } else {
-                setValidateStatus('')
-                setHelp(undefined)
-                setDisable(false)
-            }
         }
 
         const hanldFocus = () => {
@@ -103,10 +70,6 @@ export default forwardRef(
         const handleChange = () => {
             setHelp(undefined)
             setValidateStatus('')
-        }
-
-        const handleSearch = async (word: any = "") => {
-            fetchUserRunner(word)
         }
 
         const handleCancel = () => {
@@ -120,13 +83,13 @@ export default forwardRef(
 
         const title = useMemo(() => {
             const optName = JSON.stringify(dataSource) !== '{}' ?
-               (query.test_type === 'performance' ? <FormattedMessage id="TestSuite.performance.edit"/> : <FormattedMessage id="TestSuite.functional.edit"/>) : 
-               (query.test_type === 'performance' ? <FormattedMessage id="TestSuite.performance.new"/> : <FormattedMessage id="TestSuite.functional.new"/>) 
+                (query.test_type === 'performance' ? <FormattedMessage id="TestSuite.performance.edit" /> : <FormattedMessage id="TestSuite.functional.edit" />) :
+                (query.test_type === 'performance' ? <FormattedMessage id="TestSuite.performance.new" /> : <FormattedMessage id="TestSuite.functional.new" />)
             return optName
         }, [query, dataSource])
 
         const buttonText = useMemo(() => {
-            return JSON.stringify(dataSource) !== '{}' ? <FormattedMessage id="operation.update"/> : <FormattedMessage id="operation.ok"/>
+            return JSON.stringify(dataSource) !== '{}' ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />
         }, [])
 
         return (
@@ -143,147 +106,155 @@ export default forwardRef(
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div style={{ textAlign: 'right' }}>
-                        <Button onClick={handleCancel} style={{ marginRight: 8 }}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button onClick={handleCancel} style={{ marginRight: 8 }}><FormattedMessage id="operation.cancel" /></Button>
                         <Button onClick={handleOk} disabled={disable} type="primary" htmlType="submit" >
                             {buttonText}
                         </Button>
                     </div>
                 }
             >
-                <Spin spinning={fetch} >
-                    <Form
-                        layout="vertical"
-                        form={form}
-                        /*hideRequiredMark*/
-                        initialValues={{ is_default: 1, view_type: 'Type1' }}
-                    >
-                        <Row gutter={16}>
+                <Form
+                    layout="vertical"
+                    form={form}
+                    /*hideRequiredMark*/
+                    initialValues={{ is_default: 1, view_type: 'Type1' }}
+                >
+                    <Row gutter={16}>
+                        <Col span={24}>
+                            <Form.Item
+                                name="name"
+                                label="Test Suite"
+                                validateStatus={validateStatus}
+                                help={help}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
+                            >
+                                <Input
+                                    autoComplete="off"
+                                    placeholder={formatMessage({ id: 'please.enter' })}
+                                    // onBlur={handleBlur} 配合debug需求，临时注释
+                                    onFocus={hanldFocus}
+                                    onChange={handleChange}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="test_type"
+                                label={<FormattedMessage id="TestSuite.test_type" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
+                            >
+                                <Select placeholder={formatMessage({ id: 'please.select' })} disabled getPopupContainer={node => node.parentNode}>
+                                    <Select.Option value="functional"><FormattedMessage id="functional.test" /></Select.Option>
+                                    <Select.Option value="performance"><FormattedMessage id="performance.test" /></Select.Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="run_mode"
+                                label={<FormattedMessage id="TestSuite.run_mode" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
+                            >
+                                <Select placeholder={formatMessage({ id: 'please.select' })} getPopupContainer={node => node.parentNode}>
+                                    {
+                                        runList.map((item: any, index: number) => {
+                                            return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
+                                        })
+                                    }
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        {
+                            query.test_type === 'performance' &&
                             <Col span={24}>
                                 <Form.Item
-                                    name="name"
-                                    label="Test Suite"
-                                    validateStatus={validateStatus}
-                                    help={help}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                    name="view_type"
+                                    label={<FormattedMessage id="TestSuite.view_type" />}
                                 >
-                                    <Input
-                                        autoComplete="off"
-                                        placeholder={formatMessage({id: 'please.enter'})}
-                                        // onBlur={handleBlur} 配合debug需求，临时注释
-                                        onFocus={hanldFocus}
-                                        onChange={handleChange}
-                                    />
-                                </Form.Item>
-                            </Col>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="test_type"
-                                    label={<FormattedMessage id="TestSuite.test_type"/>}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
-                                >
-                                    <Select placeholder={formatMessage({id: 'please.select'})} disabled getPopupContainer={node => node.parentNode}>
-                                        <Select.Option value="functional"><FormattedMessage id="functional.test"/></Select.Option>
-                                        <Select.Option value="performance"><FormattedMessage id="performance.test"/></Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </Col>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="run_mode"
-                                    label={<FormattedMessage id="TestSuite.run_mode"/>}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
-                                >
-                                    <Select placeholder={formatMessage({id: 'please.select'})} getPopupContainer={node => node.parentNode}>
+                                    <Select placeholder={formatMessage({ id: 'please.select' })}>
                                         {
-                                            runList.map((item: any, index: number) => {
+                                            viewType.map((item: any, index: number) => {
                                                 return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
                                             })
                                         }
                                     </Select>
                                 </Form.Item>
                             </Col>
-                            {
-                                query.test_type === 'performance' &&
-                                <Col span={24}>
-                                    <Form.Item
-                                        name="view_type"
-                                        label={<FormattedMessage id="TestSuite.view_type"/>}
-                                    >
-                                        <Select placeholder={formatMessage({id: 'please.select'})}>
-                                            {
-                                                viewType.map((item: any, index: number) => {
-                                                    return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
-                                                })
+                        }
+                        <Col span={24}>
+                            <Form.Item
+                                name="domain_list_str"
+                                label={<FormattedMessage id="TestSuite.domain" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
+                            >
+                                <Select
+                                    placeholder={formatMessage({ id: 'please.select' })}
+                                    mode="multiple"
+                                    getPopupContainer={node => node.parentNode}
+                                    filterOption={(input, option: any) => {
+                                        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }}
+                                    allowClear
+                                    options={
+                                        domainList.map((item: any, index: number) => {
+                                            return {
+                                                value: item.id,
+                                                label: item.name
                                             }
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                            }
-                            <Col span={24}>
-                                <Form.Item
-                                    name="domain_list_str"
-                                    label={<FormattedMessage id="TestSuite.domain"/>}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
-                                >
-                                    <Select placeholder={formatMessage({id: 'please.select'})} mode="multiple" getPopupContainer={node => node.parentNode}>
-                                        {
-                                            domainList.map((item: any, index: number) => {
-                                                return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
-                                            })
-                                        }
-                                    </Select>
-                                </Form.Item>
-                            </Col>
-                            <Col span={24}>
-                                <Owner />
-                            </Col>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="is_default"
-                                    label={
-                                        <QusetionIconTootip title={formatMessage({id: 'TestSuite.default.case'})} desc={formatMessage({id: 'TestSuite.auto.join.workspace'})} />
+                                        })
                                     }
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
-                                >
-                                    <Radio.Group>
-                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
-                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
-                                    </Radio.Group>
-                                </Form.Item>
-                            </Col>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="certificated"
-                                    label={
-                                        <QusetionIconTootip title={formatMessage({id: 'TestSuite.is_certified'})} desc={formatMessage({id: 'TestSuite.is_certified.ps'})} />
-                                    }
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
-                                >
-                                    <Radio.Group>
-                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
-                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
-                                    </Radio.Group>
-                                </Form.Item>
-                            </Col>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="doc"
-                                    label={<FormattedMessage id="TestSuite.desc"/>}
-                                >
-                                    <Input.TextArea rows={3} placeholder={formatMessage({id: 'TestSuite.please.enter.desc'})} />
-                                </Form.Item>
-                            </Col>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="description"
-                                    label={<FormattedMessage id="TestSuite.remarks"/>}
-                                >
-                                    <Input.TextArea rows={3} placeholder={formatMessage({id: 'please.enter'})} />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Spin>
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Owner />
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="is_default"
+                                label={
+                                    <QusetionIconTootip title={formatMessage({ id: 'TestSuite.default.case' })} desc={formatMessage({ id: 'TestSuite.auto.join.workspace' })} />
+                                }
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
+                            >
+                                <Radio.Group>
+                                    <Radio value={1}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={0}><FormattedMessage id="operation.no" /></Radio>
+                                </Radio.Group>
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="certificated"
+                                label={
+                                    <QusetionIconTootip title={formatMessage({ id: 'TestSuite.is_certified' })} desc={formatMessage({ id: 'TestSuite.is_certified.ps' })} />
+                                }
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
+                            >
+                                <Radio.Group>
+                                    <Radio value={1}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={0}><FormattedMessage id="operation.no" /></Radio>
+                                </Radio.Group>
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="doc"
+                                label={<FormattedMessage id="TestSuite.desc" />}
+                            >
+                                <Input.TextArea rows={3} placeholder={formatMessage({ id: 'TestSuite.please.enter.desc' })} />
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item
+                                name="description"
+                                label={<FormattedMessage id="TestSuite.remarks" />}
+                            >
+                                <Input.TextArea rows={3} placeholder={formatMessage({ id: 'please.enter' })} />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </Form>
             </Drawer>
         )
     }
