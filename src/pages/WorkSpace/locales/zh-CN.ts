@@ -4,32 +4,6 @@ import {
 } from '@/utils/utils';
 
 export default {
-  // 'menu.WorkspaceConfig': 'Workspace配置',
-  // 'menu.WorkspaceConfig.BasicConfig': '基础配置',
-  // 'menu.WorkspaceConfig.MemberManage': '成员管理',
-  // 'menu.WorkspaceConfig.JoinDetail': '审批管理',
-
-  // 'menu.JobConfig': 'Job配置',
-  // 'menu.JobConfig.JobTypeManage': 'Job类型管理',
-  // 'menu.JobConfig.TagManage': 'Job标签管理',
-  // 'menu.JobConfig.TestTemplateManage': 'Job模板管理',
-
-  // 'menu.Baseline': '基线管理',
-  // 'menu.Baseline.GroupBaseline': aligroupServer_baseline,
-  // 'menu.Baseline.ClusterBaseline': aliyunServer_baseline,
-
-  // 'menu.TestSuiteManage': 'Test Suite管理',
-  // 'menu.WorkspaceCreate': '创建工作台',
-  // 'menu.TestSuiteCreate': '创建Test suite',
-  // 'menu.PersonCenter': '个人中心',
-
-  // 'menu.DeviceManage': '机器管理',
-  // 'menu.DeviceManage.CludeManage': CLOUD_MANAGE,
-  // //   'menu.DeviceManage.CludeManage': '云上机器',
-  // 'menu.DeviceManage.GroupManage': GROUP_MANAGE,
-  // //   'menu.DeviceManage.GroupManage': '内网机器',
-  // 'menu.DeviceManage.DispatchTag': '调度标签',
-  // 'menu.DeviceManage.CloudConfig': '云资源配置',
 
   'Workspace.WorkspaceConfig': 'Workspace配置',
   'Workspace.WorkspaceConfig.BasicConfig': '基础配置',
@@ -49,6 +23,10 @@ export default {
   //   'Workspace.Baseline.GroupBaseline': '内网基线',
   //   'Workspace.Baseline.ClusterBaseline': '云上基线',
   'Workspace.Baseline.ClusterBaseline': aliyunServer_baseline,
+
+  'Workspace.baseline': '基线管理',
+  'Workspace.baseline.performance': '性能基线',
+  'Workspace.baseline.functional': '功能基线',
 
   'Workspace.DevOps': 'ws系统配置',
 

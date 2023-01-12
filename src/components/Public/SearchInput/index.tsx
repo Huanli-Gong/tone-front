@@ -16,10 +16,10 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, initVal, autoFocus, pl
 	}, defData);
 	const { Search } = Input;
 
-	useEffect(()=> {
+	useEffect(() => {
 		setVal(initVal)
-	},[initVal])
-	
+	}, [initVal])
+
 	return (
 		<div style={{ padding: 8 }}>
 			<div>

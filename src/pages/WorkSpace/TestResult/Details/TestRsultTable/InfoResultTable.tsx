@@ -197,8 +197,8 @@ export default (props: any) => {
                                 onClick={
                                     () => {
                                         if (row.skip_baseline_info) {
-                                            const baselineProvider = row.skip_baseline_info.server_provider === 'aligroup' ? 'group' : 'cluster'
-                                            targetJump(`/ws/${ws_id}/baseline/${baselineProvider}?${qs.stringify(row.skip_baseline_info)}`)
+                                            const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
+                                            targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
                                         }
                                     }
                                 }

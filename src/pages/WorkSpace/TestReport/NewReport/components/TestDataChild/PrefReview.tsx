@@ -220,13 +220,22 @@ const Performance = (props: any) => {
         objList.splice(baseIndex, 0, objConf)
         let obj = conf.conf_compare_data || conf.compare_conf_list
         let arr = isOldReport ? objList : obj
+
         return (
-            arr.map((item: any, idx: number) => (
-                _.isUndefined(item) ? <></>
-                    : !item.is_baseline ? <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
-                        <JumpResult ws_id={wsId} job_id={item?.obj_id || item} />
-                    </PrefDataText> : <></>
-            ))
+            arr.map((item: any, idx: number) => {
+                if (!item) return <></>
+                const { is_baseline, is_job } = item
+                const isJob = Object.prototype.toString.call(is_job) === "[object Number]" ? is_job : is_baseline
+                return (
+                    <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
+                        {
+                            !!isJob ?
+                                <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
+                                <div style={{ height: 38 }}></div>
+                        }
+                    </PrefDataText>
+                )
+            })
         )
     }
 

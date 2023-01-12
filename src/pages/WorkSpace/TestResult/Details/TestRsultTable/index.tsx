@@ -398,6 +398,11 @@ const TestResultTable: React.FC<any> = (props) => {
     const RESULT_SUITE_TABLE_NAME = "ws-job-result-list"
 
     const [columnsChange, setColumnsChange] = React.useState(uuid())
+    const batchBtnDisabled = React.useMemo(() => {
+        if (suiteCaseSelectKeys.length) return false
+        if (selectedRowKeys.length) return false
+        return true
+    }, [selectedRowKeys, suiteCaseSelectKeys])
 
     return (
         <>
@@ -440,14 +445,34 @@ const TestResultTable: React.FC<any> = (props) => {
                                     accessible={access.WsMemberOperateSelf(creator)}
                                     fallback={
                                         <Space>
-                                            <Button onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.batch.baseline" /></Button>
-                                            <Button onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.batch.join.baseline" /></Button>
+                                            <Button
+                                                disabled={batchBtnDisabled}
+                                                onClick={() => AccessTootip()}
+                                            >
+                                                <FormattedMessage id="ws.result.details.batch.baseline" />
+                                            </Button>
+                                            <Button
+                                                disabled={batchBtnDisabled}
+                                                onClick={() => AccessTootip()}
+                                            >
+                                                <FormattedMessage id="ws.result.details.batch.join.baseline" />
+                                            </Button>
                                         </Space>
                                     }
                                 >
                                     <Space>
-                                        <Button onClick={() => handleBatchContrastBaseline()}><FormattedMessage id="ws.result.details.batch.baseline" /></Button>
-                                        <Button onClick={() => handleBatchJoinBaseline()}><FormattedMessage id="ws.result.details.batch.join.baseline" /></Button>
+                                        <Button
+                                            disabled={batchBtnDisabled}
+                                            onClick={() => handleBatchContrastBaseline()}
+                                        >
+                                            <FormattedMessage id="ws.result.details.batch.baseline" />
+                                        </Button>
+                                        <Button
+                                            disabled={batchBtnDisabled}
+                                            onClick={() => handleBatchJoinBaseline()}
+                                        >
+                                            <FormattedMessage id="ws.result.details.batch.join.baseline" />
+                                        </Button>
                                     </Space>
                                 </Access>
                             </Access>

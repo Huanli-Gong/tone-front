@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useImperativeHandle } from 'react';
-import { Button, Card, Empty, Badge, Typography, Space, Row, Col } from 'antd'
+import { Button, Card, Empty, Badge, Typography, Space, Row, Col, Alert } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash'
 import BusinessTestSelectDrawer from './BusinessTestSelectDrawer'
@@ -34,6 +34,7 @@ const SelectSuite: React.FC<any> = ({
 	const [test_config, setTest_config] = useState<any>([])
 	const [control, setControl] = useState<any>([])
 
+	const [showSuiteDeleteAlart, setShowSuiteDeleteAlart] = React.useState(false)
 	const [standalone, setStandalone] = useState([])
 	const [cluster, setCluster] = useState([])
 	const [defaultTreeData, setDefaultTreeData] = useState(false)
@@ -184,56 +185,39 @@ const SelectSuite: React.FC<any> = ({
 		return obj
 	}
 
-	const handleTestConfig = (testConfigData: any[]) => {
-		let keys: any = []
-		let confs: any = []
-		testConfigData.forEach(
-			(suite: any) => {
-				const {
-					test_suite, need_reboot, setup_info, monitor_info,
-					priority, cases, console: Console, cleanup_info, test_suite_id
-				} = suite
-				const suiteId = test_suite || test_suite_id
-				const suiteIdx = treeData.findIndex(({ id }: any) => id === suiteId)
-				if (suiteIdx > -1) {
-					let testCaseList: any = []
-					let isAdvancedConfig: Boolean = false
-					cases.forEach(
-						(conf: any) => {
-							if (treeData[suiteIdx]) {
-								const caseList = treeData[suiteIdx].test_case_list
-								const {
-									test_case, test_case_id
-								} = conf || {}
-								const confId = test_case || test_case_id
-								const idx = caseList.findIndex(({ id }: any) => id === confId)
-								if (idx > -1) {
-									const caseItem = caseList[idx]
-									keys.push(confId)
-									testCaseList.push(transConfData(caseItem, conf))
-								}
-							}
-							isAdvancedConfig = JSON.stringify(conf.env_info) !== '{}'
-						}
-					)
+	const handleTestConfig = (suiteList: any[]) => {
+		const list = suiteList?.reduce((pre, cur) => {
+			const { test_suite_id, cases, setup_info } = cur
+			const hasSuiteId = treeData.findIndex(({ id }: any) => id === test_suite_id)
+			if (~hasSuiteId) {
+				const test_case_list = cases?.reduce((p: any, c: any) => {
+					const caseList = treeData[hasSuiteId].test_case_list
+					const { test_case_id } = c || {}
+					const idx = caseList.findIndex(({ id }: any) => id === test_case_id)
+					if (~idx) {
+						const caseItem = caseList[idx]
+						return p.concat(transConfData(caseItem, c))
+					}
+					return p
+				}, [])
 
-					confs.push({
-						title: treeData[suiteIdx].name,
-						id: suiteId,
-						cosole: Console,
-						need_reboot,
+				if (test_case_list.length > 0)
+					return pre.concat({
+						...cur,
+						id: test_suite_id,
+						title: treeData[hasSuiteId].name,
+						run_mode: treeData[hasSuiteId].run_mode,
 						setup_info: setup_info === '[]' ? '' : setup_info,
-						cleanup_info,
-						monitor_info,
-						isAdvancedConfig,
-						priority,
-						test_case_list: testCaseList,
-						run_mode: treeData[suiteIdx].run_mode
+						test_case_list
 					})
-				}
+				return pre
 			}
-		)
-		return confs
+
+			return pre
+		}, [])
+
+		if (suiteList.length > list) setShowSuiteDeleteAlart(true)
+		return list
 	}
 
 	useEffect(() => {
@@ -315,48 +299,65 @@ const SelectSuite: React.FC<any> = ({
 	}
 
 	return (
-		<div className={styles.suite} ref={outTable} style={{ position: 'relative', width: '100%' }}>
-			<div style={{ display: 'flex', justifyContent: 'space-between' }}>
-				<div>
-					<Button
-						disabled={disabled}
-						type="primary"
-						size="small"
-						onClick={SuiteSelect}
-						style={{ marginBottom: '12px' }}
-					>
-						<FormattedMessage id="select.suite.select.case" />
-					</Button>
-					{
-						test_config.length > 0 &&
-						<span style={{ paddingLeft: 8 }}>
-							<Space>
-								<>
-									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>
-										<FormattedMessage id="select.suite.selected" />
-									</Typography.Text>
-									<Badge
-										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
-										count={test_config.length}
-										overflowCount={999999}
-									/>
-								</>
-								<>
-									<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>Test Conf</Typography.Text>
-									<Badge
-										style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
-										count={memoizedValue}
-										overflowCount={999999}
-									/>
-								</>
-							</Space>
-						</span>
-					}
-				</div>
+		<div
+			className={styles.suite}
+			ref={outTable}
+			style={{ position: 'relative', width: '100%' }}
+		>
+			<div>
+				<Button
+					disabled={disabled}
+					type="primary"
+					size="small"
+					onClick={SuiteSelect}
+					style={{ marginBottom: '12px' }}
+				>
+					<FormattedMessage id="select.suite.select.case" />
+				</Button>
+				{
+					test_config.length > 0 &&
+					<span style={{ paddingLeft: 8 }}>
+						<Space>
+							<>
+								<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>
+									<FormattedMessage id="select.suite.selected" />
+								</Typography.Text>
+								<Badge
+									style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
+									count={test_config.length}
+									overflowCount={999999}
+								/>
+							</>
+							<>
+								<Typography.Text style={{ color: 'rgba(0,0,0,.65)' }}>Test Conf</Typography.Text>
+								<Badge
+									style={{ backgroundColor: 'rgba(140,140,140,0.10)', color: 'rgba(0,0,0,.65)' }}
+									count={memoizedValue}
+									overflowCount={999999}
+								/>
+							</>
+						</Space>
+					</span>
+				}
 			</div>
+
+			{
+				showSuiteDeleteAlart &&
+				<Alert
+					message={formatMessage({
+						id: "select.suite.table.is_delete.alart",
+						defaultMessage: "所选用例已不存在"
+					})}
+					style={{ marginBottom: 12 }}
+					type="warning"
+					showIcon
+					closable
+				/>
+			}
+
 			{
 				!!memoDeleteIp.length &&
-				<div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 10 }}>
+				<div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 12 }}>
 					<Row style={{ padding: '10px' }}>
 						<Col span={24} style={{ display: 'flex' }} >
 							<ExclamationCircleOutlined style={{ color: '#FAAD14', marginRight: 8, marginTop: 4 }} />

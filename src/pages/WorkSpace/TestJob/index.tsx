@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
 
-import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage } from 'umi'
+import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, useParams, useLocation } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
@@ -46,10 +46,10 @@ const TestJob: React.FC<any> = (props) => {
 
     const { initialState, setInitialState } = useModel('@@initialState')
     const { authList } = initialState;
-    const { ws_id, jt_id } = props.match.params
-    const { query, state } = props.location
+    const { ws_id, jt_id } = useParams() as any
+    const { query, state, pathname } = useLocation() as any
+    const access = useAccess();
     writeDocumentTitle(`Workspace.${name}`)
-    const access = useAccess()
     const [test_config, setTest_config] = useState<any>([])
     const [detail, setDetail] = useState<any>({ name: '', server_type: '', test_type: '' })
     const [items, setItems] = useState<any>({ basic: {}, env: {}, suite: {}, more: {} })
@@ -153,7 +153,7 @@ const TestJob: React.FC<any> = (props) => {
     useEffect(() => {
         handleReset()
         getPageData()
-    }, [location.pathname, query])
+    }, [pathname, query])
 
     const isEmpty = (s: any) => [null, undefined, ""].includes(s)
 

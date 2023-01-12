@@ -128,7 +128,7 @@ const ViewPlanDetail = (props: any, ref: any) => {
     const hanldeRunning = () => {
         history.push(`/ws/${ws_id}/test_plan/${dataSource.id}/run`)
     }
-    
+
     return (
         <Drawer
             maskClosable={false}
@@ -160,28 +160,22 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <DrawerNavbar>
                     <span><FormattedMessage id="plan.basic.info" /></span>
                 </DrawerNavbar>
-                <SettingSpaceItem name={formatMessage({id:'plan.name'})} val={dataSource?.name} />
-                <SettingSpaceItem name={formatMessage({id:'plan.creator_name'})} val={dataSource?.creator_name} />
-                <SettingSpaceItem name={formatMessage({id:'plan.project_name'})} val={dataSource?.project_name} />
-                {/* <SettingSpaceItem name="内网功能基线" val={dataSource?.func_baseline_name} /> */}
-                {/* <SettingSpaceItem name="内网性能基线" val={dataSource?.perf_baseline_name} /> */}
-                {/* <SettingSpaceItem name="云上功能基线" val={dataSource?.func_baseline_aliyun_name} />
-                <SettingSpaceItem name="云上性能基线" val={dataSource?.perf_baseline_aliyun_name} /> */}
-                <SettingSpaceItem name={`${formatMessage({id:'plan.func_baseline'})}（${formatMessage({id: 'aligroupServer'})}）`} val={dataSource?.func_baseline_name} />
-                <SettingSpaceItem name={`${formatMessage({id:'plan.perf_baseline'})}（${formatMessage({id: 'aligroupServer'})}）`} val={dataSource?.perf_baseline_name} />
-                <SettingSpaceItem name={`${formatMessage({id:'plan.func_baseline'})}（${formatMessage({id: 'aliyunServer'})}）`} val={dataSource?.func_baseline_aliyun_name} />
-                <SettingSpaceItem name={`${formatMessage({id:'plan.perf_baseline'})}（${formatMessage({id: 'aliyunServer'})}）`} val={dataSource?.perf_baseline_aliyun_name} />
-                <SettingSpaceItem name={formatMessage({id:'plan.description'})} val={dataSource?.description} />
-                <SettingSpaceItem name={formatMessage({id:'plan.notice_name'})} val={dataSource?.notice_name || ((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
-                <SettingSpaceItem name={formatMessage({id:'plan.email_info'})} val={dataSource?.email_info} />
-                <SettingSpaceItem name={formatMessage({id:'plan.ding_talk_info'})} val={dataSource?.ding_talk_info} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.name' })} val={dataSource?.name} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.creator_name' })} val={dataSource?.creator_name} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.project_name' })} val={dataSource?.project_name} />
+                <SettingSpaceItem name={`${formatMessage({ id: 'plan.func_baseline' })}`} val={dataSource?.func_baseline_name} />
+                <SettingSpaceItem name={`${formatMessage({ id: 'plan.perf_baseline' })}`} val={dataSource?.perf_baseline_name} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.description' })} val={dataSource?.description} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.notice_name' })} val={dataSource?.notice_name || ((dataSource?.email_info || dataSource?.ding_talk_info) && '[T-one]你的测试已完成{date}')} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.email_info' })} val={dataSource?.email_info} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.ding_talk_info' })} val={dataSource?.ding_talk_info} />
                 <SettingSpaceItem
-                    name={formatMessage({id:'plan.enable'})}
+                    name={formatMessage({ id: 'plan.enable' })}
                     val={
                         <span style={{ paddingLeft: 4 }}>
                             {
                                 dataSource?.enable ?
-                                    <Badge status="processing" text={<FormattedMessage id="operation.yes" />} /> 
+                                    <Badge status="processing" text={<FormattedMessage id="operation.yes" />} />
                                     :
                                     <Badge status="default" text={<FormattedMessage id="operation.no" />} />
                             }
@@ -198,8 +192,8 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 {
                     (dataSource?.test_obj === 'kernel' && JSON.stringify(dataSource?.build_pkg_info) !== '{}') &&
                     <>
-                        <PrepSpaceItem isLink name={formatMessage({id:'plan.code_repo'})} val={dataSource?.build_pkg_info.code_repo} />
-                        <PrepSpaceItem isLink name={formatMessage({id:'plan.compile_branch'})} val={dataSource?.build_pkg_info.compile_branch} />
+                        <PrepSpaceItem isLink name={formatMessage({ id: 'plan.code_repo' })} val={dataSource?.build_pkg_info.code_repo} />
+                        <PrepSpaceItem isLink name={formatMessage({ id: 'plan.compile_branch' })} val={dataSource?.build_pkg_info.compile_branch} />
                         <PrepSpaceItem name="CpuArch" val={dataSource?.build_pkg_info.cpu_arch} />
                         <PrepSpaceItem name="Commit ID" val={dataSource?.build_pkg_info.commit_id} />
                         <PrepSpaceItem name="Build config" val={dataSource?.build_pkg_info.build_config} />
@@ -209,15 +203,15 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 {
                     (dataSource?.test_obj === 'kernel' && JSON.stringify(dataSource?.kernel_info) !== '{}') &&
                     <>
-                        <PrepSpaceItem isLink name={formatMessage({id:'plan.kernel.pkg'})} val={dataSource?.kernel_info.kernel} />
-                        <PrepSpaceItem isLink name={formatMessage({id:'plan.devel'})} val={dataSource?.kernel_info.devel} />
-                        <PrepSpaceItem isLink name={formatMessage({id:'plan.headers'})} val={dataSource?.kernel_info.headers} />
-                        <PrepSpaceItem name="hotfix" val={dataSource?.kernel_info.hotfix ? formatMessage({id: 'operation.yes'}): formatMessage({id: 'operation.no'})} />
-                        <PrepSpaceItem name={formatMessage({id:'plan.kernel_version'})} val={dataSource?.kernel_info.kernel_version} />
+                        <PrepSpaceItem isLink name={formatMessage({ id: 'plan.kernel.pkg' })} val={dataSource?.kernel_info.kernel} />
+                        <PrepSpaceItem isLink name={formatMessage({ id: 'plan.devel' })} val={dataSource?.kernel_info.devel} />
+                        <PrepSpaceItem isLink name={formatMessage({ id: 'plan.headers' })} val={dataSource?.kernel_info.headers} />
+                        <PrepSpaceItem name="hotfix" val={dataSource?.kernel_info.hotfix ? formatMessage({ id: 'operation.yes' }) : formatMessage({ id: 'operation.no' })} />
+                        <PrepSpaceItem name={formatMessage({ id: 'plan.kernel_version' })} val={dataSource?.kernel_info.kernel_version} />
                     </>
                 }
-                <PrepSpaceItem name={formatMessage({id:'plan.rpm_info'})} val={dataSource?.rpm_info} />
-                <PrepSpaceItem name={formatMessage({id:'plan.env_info'})} val={dataSource?.env_info} />
+                <PrepSpaceItem name={formatMessage({ id: 'plan.rpm_info' })} val={dataSource?.rpm_info} />
+                <PrepSpaceItem name={formatMessage({ id: 'plan.env_info' })} val={dataSource?.env_info} />
             </Row>
 
             <Row style={{ marginBottom: 20 }}>
@@ -259,15 +253,15 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 </DrawerNavbar>
                 {dataSource?.auto_report ? (
                     <>
-                        <SettingSpaceItem name={formatMessage({id: 'plan.generate.reports'})} val={<span style={{ paddingLeft: 4 }}><Badge status="processing" text={formatMessage({id: 'operation.yes'})} /></span>} />
-                        <SettingSpaceItem name={formatMessage({id: 'plan.report_name'})} val={dataSource?.report_name || '{date} {plan_name} {plan_id} {product_version}'} />
-                        <SettingSpaceItem name={formatMessage({id: 'plan.report_template_name'})} val={dataSource?.report_template_name} />
-                        <SettingSpaceItem name={formatMessage({id: 'plan.group_method'})} val={dataSource?.group_method === 'job' ? formatMessage({id: 'plan.group_method.job'}) : formatMessage({id: 'plan.group_method.stage'})} />
-                        <SettingSpaceItem name={formatMessage({id: 'plan.base_group_info'})} val={dataSource?.group_method === 'job' ? `${dataSource?.base_group_info?.stage_name || '-'} / ${dataSource?.base_group_info?.template_name}` : dataSource?.base_group_info?.stage_name} />
-                        <SettingSpaceItem name={formatMessage({id: 'plan.report_description'})} val={dataSource?.report_description} />
-                    </> )
+                        <SettingSpaceItem name={formatMessage({ id: 'plan.generate.reports' })} val={<span style={{ paddingLeft: 4 }}><Badge status="processing" text={formatMessage({ id: 'operation.yes' })} /></span>} />
+                        <SettingSpaceItem name={formatMessage({ id: 'plan.report_name' })} val={dataSource?.report_name || '{date} {plan_name} {plan_id} {product_version}'} />
+                        <SettingSpaceItem name={formatMessage({ id: 'plan.report_template_name' })} val={dataSource?.report_template_name} />
+                        <SettingSpaceItem name={formatMessage({ id: 'plan.group_method' })} val={dataSource?.group_method === 'job' ? formatMessage({ id: 'plan.group_method.job' }) : formatMessage({ id: 'plan.group_method.stage' })} />
+                        <SettingSpaceItem name={formatMessage({ id: 'plan.base_group_info' })} val={dataSource?.group_method === 'job' ? `${dataSource?.base_group_info?.stage_name || '-'} / ${dataSource?.base_group_info?.template_name}` : dataSource?.base_group_info?.stage_name} />
+                        <SettingSpaceItem name={formatMessage({ id: 'plan.report_description' })} val={dataSource?.report_description} />
+                    </>)
                     :
-                    <SettingSpaceItem name={formatMessage({id: 'plan.generate.reports'})} val={<span style={{ paddingLeft: 4 }}><Badge status="default" text={formatMessage({id: 'operation.no'})} /></span>} />
+                    <SettingSpaceItem name={formatMessage({ id: 'plan.generate.reports' })} val={<span style={{ paddingLeft: 4 }}><Badge status="default" text={formatMessage({ id: 'operation.no' })} /></span>} />
                 }
             </Row>
 
@@ -275,7 +269,7 @@ const ViewPlanDetail = (props: any, ref: any) => {
                 <DrawerNavbar>
                     <span><FormattedMessage id="plan.trigger.configuration" /></span>
                 </DrawerNavbar>
-                <SettingSpaceItem name={formatMessage({id: 'plan.trigger.rule'})} val={dataSource?.cron_info || formatMessage({id: 'plan.width.out'})} />
+                <SettingSpaceItem name={formatMessage({ id: 'plan.trigger.rule' })} val={dataSource?.cron_info || formatMessage({ id: 'plan.width.out' })} />
             </Row>
         </Drawer>
     )

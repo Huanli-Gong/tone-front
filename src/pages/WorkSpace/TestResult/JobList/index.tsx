@@ -88,6 +88,11 @@ const BaseTab: React.FC<IProps> = (props) => {
         fetchTestJobCount()
     }, [tab, ws_id])
 
+    React.useEffect(() => {
+        if (ws_id !== pageQuery.ws_id)
+            setPageQuery(({ ...DEFAULT_PAGE_QUERY, tab: "all", ws_id }))
+    }, [ws_id])
+
     const defaultTabKeys = [
         { tab: formatMessage({ id: 'ws.result.list.all.job' }), key: 'all' },
         access.IsWsSetting() && { tab: formatMessage({ id: 'ws.result.list.my.job' }), key: 'my' },

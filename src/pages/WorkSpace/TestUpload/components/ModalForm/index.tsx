@@ -3,7 +3,7 @@ import { Modal, Space, Spin, Alert, Form, Button, message, Input, Radio, Select 
 import { useParams, FormattedMessage, useIntl } from 'umi';
 import { debounce, isNaN, stubFalse } from 'lodash'
 import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
-import { queryBaselineList, } from '@/pages/WorkSpace/Baseline/services';
+import { queryBaselineList, } from '@/pages/WorkSpace/BaselineManage/services';
 import { queryJobTypeList, } from '@/pages/WorkSpace/JobTypeManage/services';
 import { switchTestType, switchServerType } from '@/utils/utils';
 import { createProject } from '../../services';
@@ -78,7 +78,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   // 3.请求数据
   const fetchBaselineList = async (query: any, option = "concat") => {
     try {
-      const res = await queryBaselineList({ ws_id, server_provider: serverType, test_type: testType, ...query });
+      const res = await queryBaselineList({ ws_id, test_type: testType, ...query });
       if (res.code === 200) {
         if (option === 'concat') {
           // 分页数据合并。
@@ -220,7 +220,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
       setServerType(server_type)
       setTestType(test_type)
       setHasBaseline(has_baseline)
-      fetchBaselineList({ server_provider: server_type, test_type, page_num: 1, page_size: 20 }, 'reset');
+      fetchBaselineList({ test_type, page_num: 1, page_size: 20 }, 'reset');
     }
   }
   const jobOnClear = () => {

@@ -30,7 +30,7 @@ export default {
 
   // BaselineDetail
   'pages.workspace.baseline.detail.table.test_suite_name': 'Search to search Test Suite name',
-  
+
   // BaselineFailDetail
   'pages.workspace.baseline.failDetail.table.sub_case_name': 'FailCase',
   'pages.workspace.baseline.failDetail.table.bug': 'Defect Record',
@@ -38,27 +38,32 @@ export default {
   'pages.workspace.baseline.failDetail.table.impact_result': 'Impact Result',
   'pages.workspace.baseline.failDetail.table.description': 'Problem Description',
   'pages.workspace.baseline.failDetail.table.action': 'Operation',
-  
+
   // BaselineMetricDetail
   'pages.workspace.baseline.metricDetail.table.metric': 'Metric',
   'pages.workspace.baseline.metricDetail.table.baseline_data': 'Baseline Value',
   'pages.workspace.baseline.metricDetail.table.action': 'Operation',
   'pages.workspace.baseline.mertricDetail.data': 'Baseline Dataa',
-  
+
   // CommentModal
   'pages.workspace.baseline.comment.modal.title': 'Edit FailCase Information',
 
   // ExpandPerfsTable
-  'pages.workspace.baseline.expandPerf.server_sn': 'SN',
-  'pages.workspace.baseline.expandPerf.server_ip': 'IP',
-  'pages.workspace.baseline.expandPerf.server_sm_name': 'Model',
+  'pages.workspace.baseline.expandPerf.sn': 'SN',
+  'pages.workspace.baseline.expandPerf.ip': 'IP',
+  'pages.workspace.baseline.expandPerf.sm_name': 'Model',
   'pages.workspace.baseline.expandPerf.run_mode': 'RunMode',
   'pages.workspace.baseline.expandPerf.source_job_id': 'Job Source',
-  'pages.workspace.baseline.expandPerf.server_instance_type': 'Instance Type',
-  'pages.workspace.baseline.expandPerf.server_image': 'Image',
-  'pages.workspace.baseline.expandPerf.server_bandwidth': 'Bandwidth',
+  'pages.workspace.baseline.expandPerf.instance_type': 'Instance Type',
+  'pages.workspace.baseline.expandPerf.image': 'Image',
+  'pages.workspace.baseline.expandPerf.bandwidth': 'Bandwidth',
+  'pages.workspace.baseline.expandPerf.ether': 'Network',
 
   // ExpandTable
   'pages.workspace.baseline.failDetail': 'FailCase Detail',
   'pages.workspace.baseline.mertricDetail': 'Metric Detail',
+
+  'pages.workspace.baseline.metric.table.view': 'View Info',
+  'pages.workspace.baseline.metric.table.expand': 'Collapse Info',
+  'pages.worksapce.baseline.metric.expand.title': "Environment Info"
 }

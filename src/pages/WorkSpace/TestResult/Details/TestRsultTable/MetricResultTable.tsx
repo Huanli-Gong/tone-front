@@ -8,7 +8,7 @@ import styles from './index.less'
 import { targetJump } from '@/utils/utils'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 
-export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId }: any) => {
+export default ({ test_case_id, suite_id, state: compare_result, refreshId, setRefreshId, testType }: any) => {
     const { formatMessage } = useIntl()
     const { id: job_id, ws_id } = useParams() as any
 
@@ -80,8 +80,8 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
                                 className={styles.hrefUrl}
                                 onClick={() => {
                                     if (row.skip_baseline_info) {
-                                        const baseline_type = row.skip_baseline_info.server_provider === 'aligroup' ? 'group' : 'cluster'
-                                        targetJump(`/ws/${ws_id}/baseline/${baseline_type}?${qs.stringify(row.skip_baseline_info)}`)
+                                        const $test_type = ["performance", "性能测试"].includes(testType) ? "performance" : "functional"
+                                        targetJump(`/ws/${ws_id}/baseline/${$test_type}?${qs.stringify(row.skip_baseline_info)}`)
                                     }
                                 }}
                             >
