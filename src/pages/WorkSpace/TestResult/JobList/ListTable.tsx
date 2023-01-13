@@ -45,9 +45,7 @@ const SelectionRow = styled.div`
     z-index: 99;
 `
 
-type IProps = {
-    [k: string]: any
-}
+type IProps = Record<string, any>
 
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
@@ -63,6 +61,7 @@ const ListTable: React.FC<IProps> = (props) => {
 
     const [loading, setLoading] = React.useState(true)
     const [source, setSource] = React.useState<Record<string, any>>({})
+    const [sortOrder, setSortOrder] = React.useState({})
 
     const queryTestList = async () => {
         setLoading(true)
@@ -74,12 +73,14 @@ const ListTable: React.FC<IProps> = (props) => {
 
     React.useEffect(() => {
         queryTestList()
+        setSortOrder({})
     }, [pageQuery])
 
     /* 重置 */
     React.useEffect(() => {
         return () => {
             setPageQuery((p: any) => ({ ...p, ...DEFAULT_PAGE_QUERY, ws_id }))
+            setSortOrder({})
         }
     }, [ws_id])
 
@@ -262,6 +263,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 showTitle: false,
             },
             sorter: true,
+            sortOrder: sortOrder?.start_time,
             render: (_: any) => (
                 <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || '-'}
@@ -429,7 +431,7 @@ const ListTable: React.FC<IProps> = (props) => {
             <ResizeHooksTable
                 rowKey="id"
                 columns={columns}
-                refreshDeps={[access, ws_id, locale]}
+                refreshDeps={[access, ws_id, locale, sortOrder]}
                 name="test-job-list"
                 loading={loading}
                 dataSource={source?.data}
@@ -437,6 +439,8 @@ const ListTable: React.FC<IProps> = (props) => {
                 rowClassName={styles.result_table_row}
                 rowSelection={rowSelection}
                 onChange={(pagination: any, filters: any, sorter: any) => {
+                    const { field, order } = sorter
+                    setSortOrder(p => ({ ...p, [field]: order }))
                     sortStartTime(sorter)
                 }}
             />
