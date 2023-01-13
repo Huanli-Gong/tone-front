@@ -51,7 +51,7 @@ export default (props: any) => {
                 return groupItem
             })
             window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arrGroup))
-            window.sessionStorage.setItem('originType', 'test_plan')
+            window.sessionStorage.setItem(`${ws_id}-originType`, 'test_plan')
             history.push(`/ws/${ws_id}/test_analysis/compare`)
         } else {
             requestCodeMessage(code, msg)

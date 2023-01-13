@@ -46,7 +46,7 @@ export default (props: any) => {
     selectedJob = transformFn(selectedJob)
     let noGroupJob: any = _.get(state, `${ws_id}-noGroupJobData`)
     noGroupJob = noGroupJob && _.isArray(JSON.parse(noGroupJob)) ? JSON.parse(noGroupJob) : []
-    const originType = _.get(state, 'originType') || ''
+    const originType = _.get(state, `${ws_id}-originType`) || ''
     const { height: layoutHeight } = useClientSize()
     const [groupData, setGroupData] = useState<any>(selectedJob)
     const [noGroupData, setNoGroupData] = useState<any>(noGroupJob)
@@ -96,7 +96,11 @@ export default (props: any) => {
         if (remainArr.length) versionGroupingFn(remainArr, newGroup)
         if (!remainArr.length) {
             newGroup = newGroup.map((brr: any) => {
-                return { members: brr, product_version: brr[0]['product_version'] }
+                return {
+                    members: brr,
+                    product_version: brr[0]?.['product_version'],
+                    product_id: brr[0]?.['product_id'],
+                }
             })
             newNoGroup.current = newGroup
         }
@@ -1049,13 +1053,18 @@ export default (props: any) => {
                                                         style={getJobItemStyle(provided.draggableProps.style)}
                                                     >
                                                         <li key={obj.job_id} style={{ background: '#fff' }}>
-                                                            <div>{obj.name}</div>
                                                             <div>
-                                                                {obj.product_version && <PopoverEllipsis title={obj.product_version} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
-                                                                    <>
-                                                                        <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.product_version}
-                                                                    </>
-                                                                </PopoverEllipsis>}
+                                                                <Typography.Text ellipsis={{ tooltip: true }}>{obj.name}</Typography.Text>
+                                                            </div>
+                                                            <div>
+                                                                {
+                                                                    obj.product_version &&
+                                                                    <PopoverEllipsis title={obj.product_version} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
+                                                                        <>
+                                                                            <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.product_version}
+                                                                        </>
+                                                                    </PopoverEllipsis>
+                                                                }
 
                                                                 {getSnDom(snArr)}
                                                             </div>

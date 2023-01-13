@@ -45,7 +45,6 @@ const AllJobTable = (props: any) => {
         state: 'success,fail,skip,stop,running',
     }
 
-    console.log(groupData)
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
