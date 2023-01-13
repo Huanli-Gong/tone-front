@@ -1,10 +1,9 @@
 import React from "react"
-import { Space, Row, Col, Typography, Tag, Button } from "antd"
-import { useSize } from "ahooks"
+import { Space, Row, Typography, Button } from "antd"
 import { UpOutlined, DownOutlined } from "@ant-design/icons"
 import styled from "styled-components"
-import { ButtonProps } from "antd/es/button"
-import { useIntl, FormattedMessage } from 'umi'
+import type { ButtonProps } from "antd/es/button"
+import { FormattedMessage } from 'umi'
 
 type StyledProps = {
     width?: string;
@@ -25,7 +24,6 @@ type IProps = {
 const DomainExpaned: React.FC<IProps> = (props) => {
     const { dataSource, onChange, active } = props
     const lyRef = React.useRef(null)
-    const lySize = useSize(lyRef)
 
     const listRef = React.useRef(null)
 
@@ -56,7 +54,7 @@ const DomainExpaned: React.FC<IProps> = (props) => {
     }, [])
 
     return (
-        <Row style={{ display: 'flex',flexFlow: 'row nowrap' }}>
+        <Row style={{ display: 'flex', flexFlow: 'row nowrap' }}>
             <div ref={lyRef} ><Typography.Text strong><FormattedMessage id="select.suite.domain" /></Typography.Text></div>
             <div style={{ flex: 1 }}>
                 <DomainList
@@ -68,7 +66,7 @@ const DomainExpaned: React.FC<IProps> = (props) => {
                             .map((i: any) => {
                                 const buttonProps: ButtonProps = {
                                     onClick() {
-                                        onChange && onChange(i.name === "全部" ? "" : i.name)
+                                        onChange?.(i.name === "全部" ? "" : i.name)
                                     },
                                     size: "small",
                                     style: {

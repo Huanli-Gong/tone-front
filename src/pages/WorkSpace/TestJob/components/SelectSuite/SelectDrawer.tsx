@@ -1,18 +1,16 @@
 import React, { useState, useImperativeHandle } from 'react';
-import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty, Typography } from 'antd';
 import { useRequest, useParams, useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from './service'
 import styles from './style.less';
-import { targetJump } from '@/utils/utils'
 import DomainExpaned from './DomainExpanded';
+import { v4 as uuid } from 'uuid';
 
 const SelectDrawer: React.FC<any> = ({
     testType,
     onRef,
     handleSelect,
-    config,
     control,
     treeData = [],
     loading,
@@ -28,8 +26,8 @@ const SelectDrawer: React.FC<any> = ({
     const [name, setName] = React.useState<string>("")
 
     const allKeys = React.useMemo(() => {
-        return treeData.reduce((pre: any, cur: any, index: number) => {
-            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
+        return treeData.reduce((pre: any, cur: any) => {
+            return pre.concat(cur.test_case_list.map((i: any) => `${i.id}`))
         }, [])
     }, [treeData])
 
@@ -42,8 +40,8 @@ const SelectDrawer: React.FC<any> = ({
     }
 
     React.useMemo(() => {
-        const ids = hasTree.reduce((pre: any, cur: any, index: number) => {
-            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
+        const ids = hasTree.reduce((pre: any, cur: any) => {
+            return pre.concat(cur.test_case_list.map((i: any) => `${i.id}`))
         }, [])
         const hasList = ids.map((i: string) => selectData.includes(i))
         setCheckAll([...new Set(hasList)].length === 1 && hasList[0])
@@ -55,23 +53,18 @@ const SelectDrawer: React.FC<any> = ({
     )
 
     useImperativeHandle(onRef, () => ({
-        openDrawer: () => {
-            let keys: any = []
-            treeData.forEach((
-                (item: any) => {
-                    const suiteIdx = config.findIndex(({ id }: any) => id === item.id)
-                    if (suiteIdx > -1) {
-                        item.test_case_list.forEach(
-                            (conf: any) => {
-                                const confIdx = config[suiteIdx].test_case_list.findIndex(({ id }: any) => id === conf.id)
-                                if (confIdx > -1)
-                                    keys.push(`${conf.id}`)
-                            }
-                        )
-                    }
-                }
-            ))
-
+        openDrawer: ({ test_config }: any) => {
+            const keys = treeData.reduce((pre: any, cur: any) => {
+                const suiteIdx = test_config.findIndex(({ id }: any) => id === cur.id)
+                return ~suiteIdx ?
+                    pre.concat(
+                        cur.test_case_list.reduce((p: any, c: any) => {
+                            const confIdx = test_config[suiteIdx].test_case_list.findIndex(({ id }: any) => id === c.id)
+                            return ~confIdx ? p.concat(`${c.id}`) : p
+                        }, [])
+                    ) :
+                    pre
+            }, [])
             checkAllChange(keys)
             setSelectData(keys)
             setShow(true)
@@ -86,20 +79,29 @@ const SelectDrawer: React.FC<any> = ({
     const selectAll = ({ target }: any) => {
         setCheckAll(target.checked)
         if (hasTree.length > 0 && (name || domain)) {
-            const currentHasIds = treeData.reduce((pre: any, cur: any, index: number) => {
+            const currentHasIds = treeData.reduce((pre: any, cur: any) => {
                 const filter = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name)
-                if (filter) return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
+                if (filter) return pre.concat(cur.test_case_list.map((i: any) => `${i.id}`))
                 return pre
             }, [])
-            target.checked ?
-                setSelectData(selectData.concat(currentHasIds)) :
-                setSelectData(selectData.reduce((pre: any, cur: any) => {
-                    if (currentHasIds.includes(cur)) return pre
-                    return pre.concat(cur)
-                }, []))
+            setSelectData(
+                target.checked ?
+                    selectData.concat(currentHasIds) :
+                    selectData.reduce((pre: any, cur: any) => {
+                        if (currentHasIds.includes(cur)) return pre
+                        return pre.concat(cur)
+                    }, [])
+            )
         }
         else
-            target.checked ? setSelectData(allKeys) : setSelectData([])
+            setSelectData(target.checked ? allKeys : [])
+    }
+
+    const handleCancel = () => {
+        setShow(false)
+        setSelectData([])
+        setDomain("")
+        setName("")
     }
 
     const onConfirm = () => {
@@ -140,18 +142,12 @@ const SelectDrawer: React.FC<any> = ({
         handleCancel()
     }
 
-    const handleCancel = () => {
-        setShow(false)
-        setSelectData([])
-        setDomain("")
-        setName("")
-    }
-
     const resultTreeData = React.useMemo(() => {
-        return treeData.reduce((pre: any, cur: any, index: number) => {
+        return treeData.reduce((pre: any, cur: any) => {
             const hidden = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name) ? {} : { display: "none" }
+
             return pre.concat(
-                <Tree.TreeNode key={`${cur.id}-${index}`} title={cur.name} style={hidden}>
+                <Tree.TreeNode key={uuid()} title={cur.name} style={hidden}>
                     {
                         cur.test_case_list.map((conf: any) => (
                             <Tree.TreeNode key={conf.id} title={conf.name} />
@@ -172,7 +168,7 @@ const SelectDrawer: React.FC<any> = ({
             forceRender={true}
             destroyOnClose={true}
             onClose={() => setShow(false)}
-            visible={show}
+            open={show}
             bodyStyle={{ paddingBottom: 80 }}
             footer={
                 <div style={{ textAlign: 'right', padding: '0 8px' }} >
@@ -199,7 +195,7 @@ const SelectDrawer: React.FC<any> = ({
             <Spin spinning={loading} wrapperClassName={styles.spinWrapper}>
                 <Search
                     placeholder={formatMessage({ id: 'please.enter' })}
-                    onSearch={(value: any) => setName(value.replace(/\s+/g, ""))}
+                    onChange={({ target }: any) => setName(target.value.replace(/\s+/g, ""))}
                     style={{ width: 420 }}
                     allowClear
                 />
@@ -225,18 +221,20 @@ const SelectDrawer: React.FC<any> = ({
                     <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.no.case" />} />
                         <Access accessible={access.WsMemberOperateSelf()}>
-                            <Button
-                                type="primary"
-                                onClick={
-                                    () => targetJump(
-                                        testType ?
-                                            `/ws/${ws_id}/test_suite?test_type=${testType}` :
-                                            `/ws/${ws_id}/test_suite`
-                                    )
+                            <Typography.Link
+                                target={"_blank"}
+                                href={
+                                    testType ?
+                                        `/ws/${ws_id}/test_suite?test_type=${testType}` :
+                                        `/ws/${ws_id}/test_suite`
                                 }
                             >
-                                <FormattedMessage id="select.suite.add.case" />
-                            </Button>
+                                <Button
+                                    type="primary"
+                                >
+                                    <FormattedMessage id="select.suite.add.case" />
+                                </Button>
+                            </Typography.Link>
                         </Access>
                     </div>
                 }
