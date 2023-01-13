@@ -1,9 +1,8 @@
 import React from "react"
 import { Space, Row, Typography, Button } from "antd"
-import { useSize } from "ahooks"
 import { UpOutlined, DownOutlined } from "@ant-design/icons"
 import styled from "styled-components"
-import type { ButtonProps } from "antd"
+import type { ButtonProps } from "antd/es/button"
 import { FormattedMessage } from 'umi'
 
 type StyledProps = {
@@ -25,7 +24,6 @@ type IProps = {
 const DomainExpaned: React.FC<IProps> = (props) => {
     const { dataSource, onChange, active } = props
     const lyRef = React.useRef(null)
-    const lySize = useSize(lyRef)
 
     const listRef = React.useRef(null)
 
@@ -68,7 +66,7 @@ const DomainExpaned: React.FC<IProps> = (props) => {
                             .map((i: any) => {
                                 const buttonProps: ButtonProps = {
                                     onClick() {
-                                        onChange && onChange(i.name === "全部" ? "" : i.name)
+                                        onChange?.(i.name === "全部" ? "" : i.name)
                                     },
                                     size: "small",
                                     style: {

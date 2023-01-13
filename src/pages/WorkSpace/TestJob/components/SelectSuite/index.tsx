@@ -75,7 +75,7 @@ const SelectSuite: React.FC<any> = ({
 	}, [test_config])
 
 	const SuiteSelect = () => {
-		drawer.current?.openDrawer()
+		drawer.current?.openDrawer({ test_config })
 	}
 
 	const getList = async () => {
@@ -385,7 +385,6 @@ const SelectSuite: React.FC<any> = ({
 						testType={test_type}
 						onRef={drawer}
 						handleSelect={handleSelect}
-						config={test_config}
 						control={control}
 						treeData={treeData}
 						loading={loading}
@@ -394,7 +393,6 @@ const SelectSuite: React.FC<any> = ({
 						testType={test_type}
 						onRef={drawer}
 						handleSelect={handleSelect}
-						config={test_config}
 						control={control}
 						treeData={treeData}
 						loading={loading}
