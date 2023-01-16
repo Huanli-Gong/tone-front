@@ -173,7 +173,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                 showTitle: false
             },
             width: '190px',
-            render: (_: number, row: any) => <ColumnEllipsisText children={row.gmt_created} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
         },
         {
             title: (
