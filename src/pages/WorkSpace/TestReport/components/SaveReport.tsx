@@ -1,6 +1,6 @@
 import { Drawer, Space, Button, Form, Input, Select, message, Divider, Spin } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle, useEffect } from 'react'
-import { queryReportTemplateList, projectList, productVersionList } from '../services'
+import { queryReportTemplateList } from '../services'
 import styled from 'styled-components'
 import _, { result } from 'lodash'
 import { useIntl, FormattedMessage, useParams } from 'umi'

@@ -115,6 +115,9 @@ const text = {
   'breadcrumb.button.download': '下载',
   'breadcrumb.button.share': '分享Job链接',
 
+  "breadcrumb.button.download.running": "下载中...",
+  "breadcrumb.button.download.fail": "下载失败，请稍后重试！",
+
   // ProcessTable
   'build.kernel': 'Build内核',
   'package': '包',

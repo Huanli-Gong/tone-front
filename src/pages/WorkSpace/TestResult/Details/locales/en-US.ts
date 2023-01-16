@@ -35,6 +35,10 @@ const text = {
   'skip': 'Skip',
   'warn': 'Warn',
   'count': 'All',
+
+  "breadcrumb.button.download.running": "Downloading...",
+  "breadcrumb.button.download.fail": "Download failed. Please try again later.",
+
   //
   'instance.released': 'Instance released',
   'machine.has.been.released': 'Cloud instance released',

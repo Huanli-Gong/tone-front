@@ -118,5 +118,5 @@ export const queryTidMessage = async (params: any) => {
 }
 
 export const getJobDownloadLink = async (params: any) => {
-    return request(`/api/job/download/`, { params })
+    return request(`/api/job/download/query/`, { params })
 }

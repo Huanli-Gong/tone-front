@@ -18,7 +18,7 @@ import NotFound from './components/404'
 import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
-import { requestCodeMessage, AccessTootip, matchTestType, targetJump } from '@/utils/utils';
+import { requestCodeMessage, AccessTootip, matchTestType } from '@/utils/utils';
 import _, { isNull } from 'lodash'
 import { useCopyText } from '@/utils/hooks'
 import styled from 'styled-components'
@@ -66,23 +66,59 @@ const BreadcrumbItem: React.FC<any> = (d: any) => {
     const downloadRef = React.useRef<HTMLAnchorElement>(null)
     const [downloadHerf, setDownloadHref] = React.useState()
     const [fetching, setFetching] = React.useState(false)
+    const [fetchingDownloadLink, setFetchingDownloadLink] = React.useState(false)
 
     const handleCopy = useCopyText(intl.formatMessage({ id: "request.copy.success" }))
+
+    const msgRef = React.useRef<any>(null)
+
+    const queryJobDownloadLink = async () => {
+        setFetching(true)
+        const { data, code } = await getJobDownloadLink({ job_id })
+        setFetching(false)
+
+        if (code !== 200) return
+        if (!data) return
+        const { state, job_url } = data
+        if (state === "running") {
+            setFetchingDownloadLink(true)
+            if (!fetchingDownloadLink)
+                msgRef.current = message.loading({
+                    content: intl.formatMessage({ id: `breadcrumb.button.download.running` }),
+                    duration: 0,
+                });
+            return
+        }
+
+        if (msgRef.current)
+            msgRef.current.destroy?.()
+
+        if (state === "success") {
+            setDownloadHref(job_url)
+            setFetchingDownloadLink(false)
+        }
+        if (state === "fail") {
+            setFetchingDownloadLink(false)
+            message.error(intl.formatMessage({ id: `breadcrumb.button.download.fail` }),)
+        }
+    }
+
+    React.useEffect(() => {
+        if (!fetchingDownloadLink) return
+        const timer = setInterval(queryJobDownloadLink, 2000)
+        return () => {
+            clearInterval(timer)
+        }
+    }, [fetchingDownloadLink])
 
     const handleDownloadJob = async () => {
         if (downloadHerf) {
             downloadRef.current?.click()
             return
         }
+        if (fetchingDownloadLink) return
         if (!fetching) {
-            setFetching(true)
-            const { data, code } = await getJobDownloadLink({ job_id })
-            setFetching(false)
-            if (code !== 200) return
-
-            if (data) {
-                setDownloadHref(data)
-            }
+            queryJobDownloadLink()
         }
     }
 
@@ -125,7 +161,7 @@ const BreadcrumbItem: React.FC<any> = (d: any) => {
                     </Tooltip>
                 </Space>
             </Access>
-            <a ref={downloadRef} href={downloadHerf} target="_blank" style={{ display: "none" }} />
+            <a ref={downloadRef} href={downloadHerf} target="_blank" style={{ display: "none" }} rel="noreferrer" />
         </Row>
     )
 }
@@ -271,7 +307,7 @@ const TestResultDetails: React.FC = (props: any) => {
         setFetching(false)
     }
 
-    let TextStyle: any = {
+    const TextStyle: any = {
         // width: 'calc(100% - 104px)',
         wordBreak: 'break-all',
         whiteSpace: 'pre-wrap',
@@ -285,8 +321,6 @@ const TestResultDetails: React.FC = (props: any) => {
     const handleReplay = () => {
         rerunModalRef.current.show(details)
     }
-    // const { height: windowHeight } = useClientSize()
-    // !["success", "fail", "skip", "stop"].includes(data.state)
 
     const buttonType = details?.report_li?.length ? "default" : "primary"
     // 判断是"离线上传"的数据
@@ -310,7 +344,6 @@ const TestResultDetails: React.FC = (props: any) => {
             ["aliyun", "aliyun"],
         ]
     ).get(name)
-
 
     return (
         <Spin spinning={loading} className={styles.spin_style}>

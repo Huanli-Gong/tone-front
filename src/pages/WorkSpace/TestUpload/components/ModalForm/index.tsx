@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useEffect } from 'react'
-import { Modal, Space, Spin, Alert, Form, Button, message, Input, Radio, Select } from 'antd'
-import { useParams, FormattedMessage, useIntl } from 'umi';
-import { debounce, isNaN, stubFalse } from 'lodash'
+import { Modal, Space, Spin, Alert, Form, Button, message, Input, Select, Row } from 'antd'
+import { useParams, FormattedMessage, useIntl, useRequest } from 'umi';
+import { isNaN } from 'lodash'
 import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
 import { queryBaselineList, } from '@/pages/WorkSpace/BaselineManage/services';
 import { queryJobTypeList, } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -9,6 +9,7 @@ import { switchTestType, switchServerType } from '@/utils/utils';
 import { createProject } from '../../services';
 import BizUpload from './component/BizUpload';
 import styles from './style.less';
+import { productVersionList as queryProductVersionList } from '@/pages/WorkSpace/TestReport/services';
 const { Option } = Select;
 
 const DrawerForm = forwardRef((props: any, ref: any) => {
@@ -35,7 +36,14 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   // disabled 提交按钮
   const [submitDisable, setSubmitDisable] = useState(true);
 
+  const $productId = Form.useWatch("product_id", form)
 
+  const { data: productVersionList, run } = useRequest(queryProductVersionList, { manual: true, initialData: [] })
+
+  React.useEffect(() => {
+    if ($productId)
+      run({ product_id: $productId, ws_id })
+  }, [$productId])
   // 1.请求数据
   const fetchProductList = async (query: any, option = "concat") => {
     const tempValue = { ws_id, ...query };
@@ -168,7 +176,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
     form.validateFields().then(async (values) => {
       setLoading(true);
       // 触发上传接口
-      const query = { server_type: serverType, test_type: testType, ...values };
+      const query = { ws_id, server_type: serverType, test_type: testType, ...values };
       const { code, msg } = await createProject(query);
       if (code === 200) {
         message.success(formatMessage({ id: 'request.create.success' }));
@@ -246,7 +254,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
     <Modal
       title={<FormattedMessage id="upload.list.Drawer.title" />}
       width={460}
-      visible={visible}
+      open={visible}
       maskClosable={!loading}
       onCancel={!loading ? handleClose : () => { }}
       className={styles.drawerWarper}
@@ -261,7 +269,8 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
             </Button>
           </Space>
         </div>
-      }>
+      }
+    >
       <div className={styles.contentWarper} ref={ref}>
         <Alert message={<FormattedMessage id="upload.list.Drawer.upload.Alert" />} type="info" showIcon style={{ marginBottom: 20, padding: '4px 15px' }} />
         <Spin spinning={loading}>
@@ -287,17 +296,20 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 autoFocus={true}
                 showSearch
                 filterOption={(input, option: any) => {
-                  return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
-              >
-                {productPagination.data.map((item: any) => (
-                  <Option key={item.id} value={item.id}>{item.name}</Option>
-                ))}
-              </Select>
+                options={
+                  productPagination.data?.map((item: any) => ({
+                    value: item.id,
+                    label: item.name
+                  }))
+                }
+              />
             </Form.Item>
 
             {/** project相关 */}
-            <Form.Item label={<FormattedMessage id="upload.list.Drawer.project" />}
+            <Form.Item
+              label={<FormattedMessage id="upload.list.Drawer.project" />}
               name="project_id"
               rules={[{
                 required: true,
@@ -306,14 +318,48 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
               <Select
                 placeholder={<FormattedMessage id="upload.list.Drawer.project.placeholder" />}
                 getPopupContainer={node => node.parentNode}
-                disabled={!productId || !projectList.length}>
-                {projectList.map((item: any) => (
-                  <Option key={item.id} value={item.id}>{item.name}</Option>
-                ))}
-              </Select>
+                disabled={!productId || !projectList.length}
+                showSearch
+                filterOption={(input, option: any) => {
+                  return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }}
+                options={
+                  (projectList || [])?.map((item: any) => ({
+                    value: item.id,
+                    label: item.name
+                  }))
+                }
+              />
             </Form.Item>
             {/** ----------end 选项目------------------------ */}
 
+            <Form.Item
+              label={formatMessage({ id: "upload.list.Drawer.product_version" })}
+              name="product_version"
+              rules={[{
+                required: true,
+                message: formatMessage({ id: "upload.list.Drawer.product_version.message" })
+              }]}
+            >
+              <Select
+                placeholder={formatMessage({ id: "upload.list.Drawer.product_version.placeholder" })}
+                getPopupContainer={node => node.parentNode}
+                disabled={!$productId}
+                showSearch
+                filterOption={(input, option: any) => {
+                  return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }}
+                onSelect={val => form.setFieldValue("product_version", val)}
+                mode="tags"
+                allowClear
+                options={
+                  productVersionList.map((i: any) => ({
+                    value: i,
+                    label: i
+                  }))
+                }
+              />
+            </Form.Item>
             {/** ----------start 2.选基线------------------------ */}
             <Form.Item label={<FormattedMessage id="upload.list.Drawer.job_type" />}
               name="job_type_id"
@@ -328,18 +374,21 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 onClear={jobOnClear}
                 showSearch
                 filterOption={(input, option: any) => {
-                  return option.children?.props?.children[0]?.props?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  return option.search?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
-              >
-                {jobTypeList.map((item: any) => (
-                  <Option key={item.id} value={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>{item.name}</span>
-                      <span>{switchTestType(item.test_type, formatMessage)} | {switchServerType(item.server_type, formatMessage)}</span>
-                    </div>
-                  </Option>
-                ))}
-              </Select>
+                options={
+                  jobTypeList.map((item: any) => ({
+                    value: item.id,
+                    search: item.name,
+                    label: (
+                      <Row justify={"space-between"}>
+                        <span>{item.name}</span>
+                        <span>{switchTestType(item.test_type, formatMessage)} | {switchServerType(item.server_type, formatMessage)}</span>
+                      </Row>
+                    )
+                  }))
+                }
+              />
             </Form.Item>
 
             {hasBaseline ?
@@ -371,9 +420,6 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
               name="ip"
               rules={[{
                 required: false,
-                // max: 32,
-                // pattern: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
-                // message: '请输入正确格式的IP'
               }]}
             >
               <Input placeholder={formatMessage({ id: 'upload.list.Drawer.ip.placeholder' })} />
@@ -390,20 +436,10 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
             >
               <BizUpload callback={validateFields} />
             </Form.Item>
-            <Form.Item style={{ display: 'none' }}
-              name="ws_id"
-              initialValue={ws_id}
-              rules={[{
-                required: true,
-              }]}
-            >
-              <Input type="hidden" />
-            </Form.Item>
-
           </Form>
         </Spin>
       </div>
-    </Modal>
+    </Modal >
   )
 });
 
