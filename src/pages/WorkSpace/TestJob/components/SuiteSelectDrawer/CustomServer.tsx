@@ -6,19 +6,22 @@ import styles from '../SelectSuite/style.less'
 import { checkIpAndSn } from './services';
 import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal'
 import { AgentSelect } from '@/components/utils';
-import { FormInstance } from 'antd/lib/form';
+import type { FormInstance } from 'antd/lib/form';
 
 type IProps = {
     mask: boolean;
     multipInfo: any;
-    form: FormInstance;
     loading?: boolean
 }
 
+type ContextProps = {
+    form: FormInstance
+} & AnyType
+
 const CustomServer: React.FC<IProps> = (props: any) => {
     const { formatMessage } = useIntl()
-    const { mask, multipInfo, form } = props
-    const { setMask, setLoading } = useContext<any>(DrawerProvider)
+    const { mask, multipInfo } = props
+    const { setMask, setLoading, setHasInfoError, form } = useContext<ContextProps>(DrawerProvider)
 
     /**
      * @author jpt 部署Agent对话框
@@ -74,6 +77,7 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                     placeholder={multipInfo.selfServer ? formatMessage({ id: 'select.suite.multiple.values' }) : formatMessage({ id: 'select.suite.agent.select' })}
                     onChange={(value: any) => {
                         setMask(false)
+                        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                         value && form.validate
                     }}
                 />
@@ -96,12 +100,13 @@ const CustomServer: React.FC<IProps> = (props: any) => {
                             setLoading(true)
                             // 接口校验
                             const { code, msg } = await checkIpAndSn({ ip: value, channel_type }) || {}
+                            setLoading(false)
                             if (code !== 200) {
-                                setLoading(false)
+                                setHasInfoError(true)
                                 return Promise.reject(<ValidateIps data={{ msg, errors: [value] }} channelType={channel_type} />)
                             }
+                            setHasInfoError(true)
                             Promise.resolve()
-                            setLoading(false)
                             return
                         },
                     }

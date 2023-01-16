@@ -1,5 +1,5 @@
-import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber } from 'antd'
-import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, memo, useEffect } from 'react'
+import { Drawer, Form, Spin, Space, Input, Tooltip, Button, Alert, Radio, InputNumber, Popconfirm } from 'antd'
+import React, { forwardRef, useImperativeHandle, useState, useMemo, useCallback, useEffect } from 'react'
 import { useIntl, FormattedMessage } from 'umi';
 import styled from 'styled-components'
 import { DrawerProvider } from './Provider'
@@ -69,28 +69,27 @@ const SuiteDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { contrl, checked, server_type, test_type, run_mode, onDataSourceChange, testSuiteData, onOk } = props
 
+    const [form] = Form.useForm();
+
     const [serverType, setServerType] = useState('pool') //pool custom
     const [serverObjectType, setServerObjectType] = useState<any>('ip') //'' , server_tag_id , tag_id
-
     const [settingType, setSettingType] = useState<any>(null)
-    const [form] = Form.useForm();
     const [dataSource, setDataSource] = useState<any>(undefined)
     const [batch, setBatch] = useState(false)
     const [loading, setLoading] = useState(true)
     const [visible, setVisible] = useState(false)
     const [isNullEnv, setIsNullEnv] = useState(false)
     const [mask, setMask] = useState(false)
-
     const [serverList, setServerList] = useState<any>([])
     const [tagList, setTagList] = useState<any>([])
-
     const [caseFrom, setCaseForm] = useState<any>(null)
     const [suiteForm, setSuiteForm] = useState<any>(null)
+    const [hasInfoError, setHasInfoError] = useState(false)
 
-    const caseHasMultip = useMemo(() => getHasMuiltip(caseFrom), [caseFrom])
-    const suiteHasMultip = useMemo(() => getHasMuiltip(suiteForm), [suiteForm, caseFrom])
+    const caseHasMultip = React.useMemo(() => getHasMuiltip(caseFrom), [caseFrom])
+    const suiteHasMultip = React.useMemo(() => getHasMuiltip(suiteForm), [suiteForm, caseFrom])
 
-    const getMultipFields = (source: Array<any>, isSuite: boolean = false) => {
+    const getMultipFields = (source: any[], isSuite: boolean = false) => {
         let caseMultipFields: any = {}
 
         const filterSourceMultip = (_: any, initial = {}) => _.reduce(
@@ -123,7 +122,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                         const s = arr[cur].reduce((p: any, c: any) => JSON.stringify(c) !== '[]' ? p.concat(c.toString()) : p, [])
                         let r = s;
                         if (s.length > 0)
-                            r = lodash.uniq(s).map((i: any) => i.split(',').map((i: any) => Number(i)))
+                            r = lodash.uniq(s).map((i: any) => i.split(',').map((t: any) => Number(t)))
                         pre[cur] = r
                     }
                     else
@@ -155,7 +154,7 @@ const SuiteDrawer = (props: any, ref: any) => {
     }
     const changeServerSelect = (params: any) => {
         const { server_object_id, server_tag_id, ip, is_instance, customer_server } = params
-        let flag = location.search.indexOf('inheriting_machine') !== -1
+        const flag = location.search.indexOf('inheriting_machine') !== -1
 
         if (lodash.isNull(ip)) {
             setServerObjectType('ip')
@@ -218,7 +217,6 @@ const SuiteDrawer = (props: any, ref: any) => {
 
     useEffect(() => {
         if (dataSource) {
-            console.log(dataSource)
             const initialValues = {
                 repeat: test_type === 'performance' ? 3 : 1,
                 need_reboot: false,
@@ -252,7 +250,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                 }
             }
             else {
-                let params: any = { ...initialValues, ...dataSource }
+                const params: any = { ...initialValues, ...dataSource }
                 if (dataSource.console == undefined) params.console = true
                 const { env_info } = dataSource
                 if (env_info && env_info.length === 0) {
@@ -276,24 +274,23 @@ const SuiteDrawer = (props: any, ref: any) => {
         }
     }))
 
-    const handleClose = useCallback(
-        () => {
-            form.resetFields()
-            setVisible(false)
-            setDataSource(null)
-            setBatch(false)
-            setLoading(true)
-            setIsNullEnv(false)
-            setCaseForm(null)
-            setSuiteForm(null)
-            setServerList([])
-            setTagList([])
-            setMask(false)
-            setServerType('pool')
-            setServerObjectType('ip')
-            setSettingType('case')
-        }, []
-    )
+    const handleClose = () => {
+        form.resetFields()
+        setVisible(false)
+        setDataSource(null)
+        setBatch(false)
+        setLoading(true)
+        setIsNullEnv(false)
+        setCaseForm(null)
+        setSuiteForm(null)
+        setServerList([])
+        setTagList([])
+        setMask(false)
+        setServerType('pool')
+        setServerObjectType('ip')
+        setSettingType('case')
+        setHasInfoError(false)
+    }
 
     const filterIp = (id: any) => {
         let ip = ''
@@ -337,9 +334,9 @@ const SuiteDrawer = (props: any, ref: any) => {
                     const t = getType(cur)
                     if (JSON.stringify(cur) !== '{}' && t === '[object Object]') {
                         const r = Object.keys(cur).reduce(
-                            (p: any, c: any) => {
-                                const i = cur[c]
-                                if (i !== null && i !== undefined && i !== '') p[c] = i
+                            (p: any, o: any) => {
+                                const i = cur[o]
+                                if (i !== null && i !== undefined && i !== '') p[o] = i
                                 return p
                             }, {}
                         )
@@ -419,60 +416,63 @@ const SuiteDrawer = (props: any, ref: any) => {
         return DEFAULT_SERVER_SETTING
     }
 
-    const hanldeOk = () => {
+    const handleSubmit = (values: any) => {
+        const params: any = { ...values }
+        const { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, ...rest } = params
+
+        const caseParam = { custom_channel, custom_ip, server_object_id, server_tag_id, repeat }
+
+        const selectIds = batch ? dataSource.map((item: any) => item.id) : [dataSource.id]
+        let resultSuiteList = []
+
+        if (settingType === 'suite') {
+            if (batch) {
+                resultSuiteList = testSuiteData.reduce(
+                    (pre: any, cur: any) => (
+                        pre.concat(
+                            selectIds.includes(cur.id) ?
+                                {
+                                    ...cur,
+                                    ...rest,
+                                    test_case_list: cur.test_case_list.reduce(
+                                        (p: any, c: any) => (
+                                            p.concat(rerenderParams(c, caseParam))
+                                        ), []
+                                    )
+                                } :
+                                cur
+                        )
+                    ), []
+                )
+            }
+            else {
+                resultSuiteList = testSuiteData.map(
+                    (item: any) => item.id === dataSource.id ? { ...item, ...rest } : item
+                )
+            }
+        }
+        else {
+            resultSuiteList = testSuiteData.reduce((pre: any, cur: any) => pre.concat({
+                ...cur,
+                test_case_list: cur.test_case_list.reduce(
+                    (p: any, c: any) => p.concat(
+                        selectIds.includes(c.id) ?
+                            rerenderParams(c, values)
+                            : c
+                    )
+                    , []
+                )
+            }), [])
+        }
+
+        onDataSourceChange(resultSuiteList, run_mode)
+        handleClose()
+        onOk()
+    }
+    const handleOk = () => {
         form.validateFields()
             .then((values: any) => {
-                let params: any = { ...values }
-                const { custom_channel, custom_ip, server_object_id, server_tag_id, repeat, ...rest } = params
-
-                const caseParam = { custom_channel, custom_ip, server_object_id, server_tag_id, repeat }
-
-                const selectIds = batch ? dataSource.map((item: any) => item.id) : [dataSource.id]
-                let resultSuiteList = []
-
-                if (settingType === 'suite') {
-                    if (batch) {
-                        resultSuiteList = testSuiteData.reduce(
-                            (pre: any, cur: any) => (
-                                pre.concat(
-                                    selectIds.includes(cur.id) ?
-                                        {
-                                            ...cur,
-                                            ...rest,
-                                            test_case_list: cur.test_case_list.reduce(
-                                                (p: any, c: any) => (
-                                                    p.concat(rerenderParams(c, caseParam))
-                                                ), []
-                                            )
-                                        } :
-                                        cur
-                                )
-                            ), []
-                        )
-                    }
-                    else {
-                        resultSuiteList = testSuiteData.map(
-                            (item: any) => item.id === dataSource.id ? { ...item, ...rest } : item
-                        )
-                    }
-                }
-                else {
-                    resultSuiteList = testSuiteData.reduce((pre: any, cur: any) => pre.concat({
-                        ...cur,
-                        test_case_list: cur.test_case_list.reduce(
-                            (p: any, c: any) => p.concat(
-                                selectIds.includes(c.id) ?
-                                    rerenderParams(c, values)
-                                    : c
-                            )
-                            , []
-                        )
-                    }), [])
-                }
-
-                onDataSourceChange(resultSuiteList, run_mode)
-                handleClose()
-                onOk()
+                handleSubmit(values)
             })
             .catch((error) => console.log(error))
     }
@@ -533,7 +533,6 @@ const SuiteDrawer = (props: any, ref: any) => {
         return { serverPool: false, selfServer: false, repeat: false, cleanup_info: false, setup_info: false }
     }, [caseFrom, batch, server_type, settingType, suiteForm, run_mode])
 
-
     return (
         <DrawerWrapper
             maskClosable={false}
@@ -560,29 +559,49 @@ const SuiteDrawer = (props: any, ref: any) => {
                     <Button onClick={handleClose} style={{ marginRight: 8 }}>
                         <FormattedMessage id="operation.cancel" />
                     </Button>
-                    <Button onClick={hanldeOk} type="primary">
-                        <FormattedMessage id="operation.ok" />
-                    </Button>
+                    {
+                        hasInfoError ?
+                            <Popconfirm
+                                title="查询 staragent/toneagent 通道异常，机器可能无法连通，从而导致无法正常执行任务。是否继续保存？"
+                                onConfirm={() => handleSubmit(form.getFieldsValue())}
+                                overlayInnerStyle={{ width: 320 }}
+                                placement="rightTop"
+                                arrowPointAtCenter
+                                okText={
+                                    formatMessage({ id: "operation.ok" })
+                                }
+                                cancelText={
+                                    formatMessage({ id: "operation.cancel" })
+                                }
+                            >
+                                <Button type="primary">
+                                    <FormattedMessage id="operation.ok" />
+                                </Button>
+                            </Popconfirm> :
+                            <Button onClick={handleOk} type="primary">
+                                <FormattedMessage id="operation.ok" />
+                            </Button>
+                    }
                 </div>
             }
         >
-
-            <Spin spinning={loading} >
-                <DrawerProvider.Provider
-                    value={{
-                        setLoading,
-                        setServerList,
-                        setTagList,
-                        setServerType,
-                        setServerObjectType,
-                        setMask,
-                        settingType
-                    }}
-                >
+            <DrawerProvider.Provider
+                value={{
+                    setLoading,
+                    setServerList,
+                    setTagList,
+                    setServerType,
+                    setServerObjectType,
+                    setMask,
+                    settingType,
+                    setHasInfoError,
+                    form
+                }}
+            >
+                <Spin spinning={loading} >
                     <Form
                         layout="vertical"
                         form={form}
-                        /*hideRequiredMark*/
                         scrollToFirstError
                     >
                         {
@@ -601,7 +620,6 @@ const SuiteDrawer = (props: any, ref: any) => {
                             (batch || settingType === 'case') &&
                             <ServerFormItem
                                 {...props}
-                                form={form}
                                 dataSource={dataSource}
                                 visible={visible}
                                 multipInfo={multipInfo}
@@ -731,10 +749,10 @@ const SuiteDrawer = (props: any, ref: any) => {
                             />
                         </Form.Item>
                     </Form>
-                </DrawerProvider.Provider >
-            </Spin>
+                </Spin>
+            </DrawerProvider.Provider >
         </DrawerWrapper >
     )
 }
 
-export default memo(forwardRef(SuiteDrawer))
+export default forwardRef(SuiteDrawer)
