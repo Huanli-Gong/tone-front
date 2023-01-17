@@ -31,7 +31,7 @@ export default {
   'upload.list.Drawer.ip.placeholder': '请输入测试机IP',
   'upload.list.Drawer.result': '结果数据',
   'upload.list.Drawer.product_version': '产品版本',
-  'upload.list.Drawer.product_version.placeholder': '请选择产品版本',
+  'upload.list.Drawer.product_version.placeholder': '请输入产品版本',
   'upload.list.Drawer.product_version.message': '产品版本不能为空',
   //
   'upload.list.Drawer.upload.message': '请上传文件',

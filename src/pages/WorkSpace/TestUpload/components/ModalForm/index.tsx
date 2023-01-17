@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useEffect } from 'react'
 import { Modal, Space, Spin, Alert, Form, Button, message, Input, Select, Row } from 'antd'
-import { useParams, FormattedMessage, useIntl, useRequest } from 'umi';
+import { useParams, FormattedMessage, useIntl } from 'umi';
 import { isNaN } from 'lodash'
 import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
 import { queryBaselineList, } from '@/pages/WorkSpace/BaselineManage/services';
@@ -9,7 +9,6 @@ import { switchTestType, switchServerType } from '@/utils/utils';
 import { createProject } from '../../services';
 import BizUpload from './component/BizUpload';
 import styles from './style.less';
-import { productVersionList as queryProductVersionList } from '@/pages/WorkSpace/TestReport/services';
 const { Option } = Select;
 
 const DrawerForm = forwardRef((props: any, ref: any) => {
@@ -36,14 +35,19 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   // disabled 提交按钮
   const [submitDisable, setSubmitDisable] = useState(true);
 
-  const $productId = Form.useWatch("product_id", form)
-
-  const { data: productVersionList, run } = useRequest(queryProductVersionList, { manual: true, initialData: [] })
+  const $project_id = Form.useWatch("project_id", form)
 
   React.useEffect(() => {
-    if ($productId)
-      run({ product_id: $productId, ws_id })
-  }, [$productId])
+    if ($project_id) {
+      for (let len = projectList.length, i = 0; i < len; i++) {
+        const { id, product_version } = projectList[i]
+        if (id === $project_id) {
+          form.setFieldValue("product_version", product_version)
+        }
+      }
+    }
+  }, [$project_id, projectList])
+
   // 1.请求数据
   const fetchProductList = async (query: any, option = "concat") => {
     const tempValue = { ws_id, ...query };
@@ -326,7 +330,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 options={
                   (projectList || [])?.map((item: any) => ({
                     value: item.id,
-                    label: item.name
+                    label: item.name,
                   }))
                 }
               />
@@ -341,23 +345,10 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 message: formatMessage({ id: "upload.list.Drawer.product_version.message" })
               }]}
             >
-              <Select
+              <Input
                 placeholder={formatMessage({ id: "upload.list.Drawer.product_version.placeholder" })}
-                getPopupContainer={node => node.parentNode}
-                disabled={!$productId}
-                showSearch
-                filterOption={(input, option: any) => {
-                  return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }}
-                onSelect={val => form.setFieldValue("product_version", val)}
-                mode="tags"
+                disabled={!$project_id}
                 allowClear
-                options={
-                  productVersionList.map((i: any) => ({
-                    value: i,
-                    label: i
-                  }))
-                }
               />
             </Form.Item>
             {/** ----------start 2.选基线------------------------ */}

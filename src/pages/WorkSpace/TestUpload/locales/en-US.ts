@@ -15,13 +15,13 @@ export default {
   // 上传表单
   'upload.list.Drawer.title': 'Upload Data',
   'upload.list.Drawer.accessible': 'No permission, please refer to',
-  'upload.list.Drawer.help_doc': 'Documentation',  
+  'upload.list.Drawer.help_doc': 'Documentation',
   'upload.list.Drawer.upload.button': 'select file',
-  'upload.list.Drawer.upload.Alert': 'The status of file upload can be viewed in the list.',  
+  'upload.list.Drawer.upload.Alert': 'The status of file upload can be viewed in the list.',
   'upload.list.Drawer.product': 'Product Name',
   'upload.list.Drawer.product.placeholder': 'Please select Product Name',
   'upload.list.Drawer.project': 'Project Name',
-  'upload.list.Drawer.project.placeholder': 'Please select Project Name',  
+  'upload.list.Drawer.project.placeholder': 'Please select Project Name',
   'upload.list.Drawer.job_type': 'Job Type',
   'upload.list.Drawer.job_type.placeholder': 'Please select Job Type',
   'upload.list.Drawer.testType': 'Test Type',
@@ -30,7 +30,11 @@ export default {
   'upload.list.Drawer.ip': 'IP',
   'upload.list.Drawer.ip.placeholder': 'Please input IP',
   'upload.list.Drawer.result': 'Result',
-   //
+
+  'upload.list.Drawer.product_version': 'Product Version',
+  'upload.list.Drawer.product_version.placeholder': 'Please enter the Product Version',
+  'upload.list.Drawer.product_version.message': 'Product Version can not be empty',
+  //
   'upload.list.Drawer.upload.message': 'Please upload the file',
   'upload.list.Drawer.upload.supportText': 'Support extensions',
   'upload.list.Drawer.valid.type': 'Upload the compressed package file containing tar suffix.',
