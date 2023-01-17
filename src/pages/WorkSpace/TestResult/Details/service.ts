@@ -117,6 +117,10 @@ export const queryTidMessage = async (params: any) => {
     return request(`/api/server/agent_task_info/`, { params })
 }
 
-export const getJobDownloadLink = async (params: any) => {
+export const queryDownloadLink = async (params: any) => {
     return request(`/api/job/download/query/`, { params })
+}
+
+export const startDownloadTask = async (params: any) => {
+    return request(`/api/job/download/`, { params })
 }
