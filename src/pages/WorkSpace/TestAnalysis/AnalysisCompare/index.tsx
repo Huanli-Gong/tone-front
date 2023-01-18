@@ -928,7 +928,7 @@ export default (props: any) => {
                                                         style={getJobItemStyle(provided.draggableProps.style)}
                                                     >
                                                         <li key={obj.job_id} style={{ background: '#fff' }}>
-                                                            <div>{obj.name}</div>
+                                                            <Typography.Text ellipsis={{ tooltip: true }}>{obj.name}</Typography.Text>
                                                             <div>
                                                                 {
                                                                     obj.product_version &&
