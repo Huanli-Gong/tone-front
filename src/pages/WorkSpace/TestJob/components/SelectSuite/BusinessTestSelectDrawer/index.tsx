@@ -32,6 +32,8 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     const [domain, setDomain] = useState<any>("")
     const [name, setName] = React.useState<string>("")
 
+    const checkDomainName = (item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.indexOf(name)
+
     const allKeys = React.useMemo(() => {
         return treeData.reduce((pre: any, cur: any, index: number) => {
             return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
@@ -43,7 +45,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     }, [])
 
     const hasTree = React.useMemo(() => {
-        return treeData.filter((item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.indexOf(name))
+        return treeData.filter((item: any) => checkDomainName(item))
     }, [treeData, domain, name])
 
     React.useMemo(() => {
@@ -124,7 +126,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
         setCheckAll(target.checked)
         if (hasTree.length > 0 && (name || domain)) {
             const currentHasIds = treeData.reduce((pre: any, cur: any, index: number) => {
-                const filter = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name)
+                const filter = checkDomainName(cur)
                 if (filter) return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
                 return pre
             }, [])
@@ -186,12 +188,19 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
 
     const resultTreeData = React.useMemo(() => {
         return treeData.reduce((pre: any, cur: any) => {
-            const hidden = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name) ? {} : { display: "none" }
+            const { test_case_list } = cur
+            const hidden = checkDomainName(cur) ? {} : { display: "none" }
+            const filterCaseList = test_case_list.filter((i: any) => checkDomainName(i))
             return pre.concat(
-                <Tree.TreeNode {...cur} key={uuid()} title={cur.name} style={hidden}>
+                <Tree.TreeNode {...cur} key={uuid()} title={cur.name} style={filterCaseList.length > 0 ? {} : hidden}>
                     {
                         cur.test_case_list.map((conf: any) => (
-                            <Tree.TreeNode {...conf} key={conf.id} title={conf.name} />
+                            <Tree.TreeNode
+                                {...conf}
+                                key={conf.id}
+                                title={conf.name}
+                                style={checkDomainName(conf) ? {} : { display: "none" }}
+                            />
                         ))
                     }
                 </Tree.TreeNode>
