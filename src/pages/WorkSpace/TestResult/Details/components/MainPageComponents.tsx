@@ -22,6 +22,8 @@ const BreadcrumbIcon = styled(Typography.Text)`
 
 export const CAN_STOP_JOB_STATES = ['running', 'pending', 'pending_q']
 
+export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
+
 export const BreadcrumbItem: React.FC<any> = (props) => {
     const { state: jobState, bottomHeight } = props
     const { ws_id, id: job_id } = useParams() as any
@@ -51,6 +53,8 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
                     content: intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download.running` }),
                     duration: 0,
                 });
+            await sleep(1500)
+            queryJobDownloadLink()
             return
         }
 
@@ -65,14 +69,6 @@ export const BreadcrumbItem: React.FC<any> = (props) => {
             message.error(intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download.fail` }))
         }
     }
-
-    React.useEffect(() => {
-        if (!fetchingDownloadLink) return
-        const timer = setInterval(queryJobDownloadLink, 1000)
-        return () => {
-            clearInterval(timer)
-        }
-    }, [fetchingDownloadLink])
 
     const handleDownloadJob = async () => {
         if (downloadHerf) {
