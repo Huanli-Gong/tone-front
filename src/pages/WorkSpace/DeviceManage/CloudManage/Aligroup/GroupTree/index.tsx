@@ -62,6 +62,15 @@ const GroupTree: React.FC<any> = (props) => {
         }
     }
 
+    const paramTransform = (val: any) => {
+        const dict = {
+            0: formatMessage({ id: 'operation.not.release' }),
+            1: formatMessage({ id: 'operation.release' }),
+            2: formatMessage({ id: 'device.failed.save' })
+        }
+        return dict[val] || ''
+    }
+
     const columns: any = [
         {
             title: (
@@ -173,6 +182,15 @@ const GroupTree: React.FC<any> = (props) => {
             },
             dataIndex: 'console_conf',
             render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.console_conf} />
+        },
+        {
+            title: <FormattedMessage id="device.release_rule" />,
+            dataIndex: 'release_rule',
+            width: enLocale ? 150 : 110,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any, row: any) => paramTransform(row.release_rule)
         },
         {
             title: <FormattedMessage id="device.private_ip" />,
