@@ -416,14 +416,14 @@ const TestJob: React.FC<any> = (props) => {
             if (code === 200) {
                 setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
                 history.push(`/ws/${ws_id}/test_result`)
+                message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
             }
-            if (code === 1380) {
-                setEnvErrorFlag(true)
-                requestCodeMessage(code, msg)
+            if (code !== 200) {
+                if (code === 1380)
+                    setEnvErrorFlag(true)
+                else
+                    requestCodeMessage(code, msg)
             }
-            else
-                requestCodeMessage(code, formatMessage({ id: 'ws.test.job.operation.success' }))
-            // setFetching(false)
         }
         catch (error) {
 
@@ -800,8 +800,11 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleTestYaml = async () => {
         const parmas = { yaml_data: jobInfo, workspace: ws_id }
-        let { code, msg } = await testYaml(parmas)
-        requestCodeMessage(code, msg)
+        const { code, msg } = await testYaml(parmas)
+        if (code !== 200)
+            requestCodeMessage(code, msg)
+        else
+            message.success(formatMessage({ id: 'operation.success' }))
     }
 
     const handleClose = () => {
