@@ -175,7 +175,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                 })),
                 style: { display: checkDomainName(i) || hasLen ? undefined : "none" },
                 selectable: false,
-                checkable: i.test_case_list.length !== 0
+                checkable: hasLen !== 0
             }
         })
     }, [treeHasRowkey, domain, name])
