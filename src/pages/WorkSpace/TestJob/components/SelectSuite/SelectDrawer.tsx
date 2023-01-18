@@ -38,6 +38,15 @@ const SelectDrawer: React.FC<any> = ({
         }, [])
     }, [treeHasRowkey, name, domain])
 
+    const canSelectKeys = React.useMemo(() => {
+        return treeHasRowkey.reduce((pre: any, cur: any) => {
+            const { test_case_list, rowkey } = cur
+            const hasCases = test_case_list.filter((c: any) => checkDomainName(c))
+            if (checkDomainName(cur) || hasCases.length > 0) return pre.concat(rowkey, hasCases.map((t: any) => t.id))
+            return pre
+        }, [])
+    }, [treeHasRowkey, domain, name])
+
     const checkAllChange = (keys: any) => {
         setCheckAll(keys.slice().sort().join(',') && keys.slice().sort().join(',') == allIds.slice().sort().join(','))
     }
@@ -73,11 +82,7 @@ const SelectDrawer: React.FC<any> = ({
 
     const selectAll = ({ target }: any) => {
         setCheckAll(target.checked)
-        if (target.checked) {
-            setSelectData(allIds)
-        }
-        else
-            setSelectData([])
+        setSelectData(target.checked ? allIds : [])
     }
 
     const handleCancel = () => {
@@ -202,7 +207,7 @@ const SelectDrawer: React.FC<any> = ({
                     />
                 }
                 {
-                    (treeData?.length === 0 || allIds.length === 0) &&
+                    (treeData?.length === 0 || canSelectKeys.length === 0) &&
                     <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.no.case" />} />
                         <Access accessible={access.WsMemberOperateSelf()}>

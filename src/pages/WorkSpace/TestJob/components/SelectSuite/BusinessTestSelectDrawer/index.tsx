@@ -45,6 +45,15 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
         }, [])
     }, [treeHasRowkey, name, domain])
 
+    const canSelectKeys = React.useMemo(() => {
+        return treeHasRowkey.reduce((pre: any, cur: any) => {
+            const { test_case_list, rowkey } = cur
+            const hasCases = test_case_list.filter((c: any) => checkDomainName(c))
+            if (checkDomainName(cur) || hasCases.length > 0) return pre.concat(rowkey, hasCases.map((t: any) => t.id))
+            return pre
+        }, [])
+    }, [treeHasRowkey, domain, name])
+
     const checkAllChange = (keys: any) => {
         const selectedKeys = keys.slice().sort().join(',');
         if (selectedKeys && selectedKeys === allKeys.slice().sort().join(',')) {
@@ -260,7 +269,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                     }
                 </div>
 
-                {treeData?.length ? (
+                {canSelectKeys?.length ? (
                     <>
                         <div className={styles.selection_table_thead}>
                             <div style={{ width: 200 }}>Test Suite</div>
