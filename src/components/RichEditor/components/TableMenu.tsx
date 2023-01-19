@@ -54,13 +54,10 @@ const BOX_SOURCE = new Array(5).fill("").map(() => new Array(6).fill("").map((x,
 const DEFAULT_INSERT_TABLE_ROWS_COLS = { rows: 3, cols: 3 }
 
 const TableMenu: React.FC<{ editor: Editor }> = ({ editor }) => {
-    const [show, setShow] = React.useState(false)
     const dom = React.useRef<HTMLDivElement>(null)
 
+    const [show, setShow] = React.useState(false)
     const [hoverKey, setHoverKey] = React.useState<InsertTableOptions>(DEFAULT_INSERT_TABLE_ROWS_COLS)
-    const handleClickIcon = () => {
-        setShow(true)
-    }
 
     useClickAway(() => {
         setShow(false)
@@ -81,11 +78,15 @@ const TableMenu: React.FC<{ editor: Editor }> = ({ editor }) => {
 
     const { rows, cols } = hoverKey
 
+    if (!editor) return <></>
+    
     return (
-        <TableBox ref={dom}>
+        <TableBox ref={dom}
+            onMouseEnter={() => setShow(true)}
+            onMouseLeave={() => setShow(false)}
+        >
             <TooltipMenu
                 title={"表格"}
-                onClick={handleClickIcon}
                 className={
                     cls(
                         editor.isActive('table') && "is-active"

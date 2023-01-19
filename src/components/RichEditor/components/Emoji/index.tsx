@@ -53,6 +53,8 @@ const Emoji: React.FC<{ editor: Editor }> = ({ editor }) => {
         setShow(false)
     }, ref)
 
+    if (!editor) return <></>
+    
     return (
         <ToolMenu
             ref={ref}
