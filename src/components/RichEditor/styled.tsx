@@ -127,7 +127,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
 
             td,
             th {
-                border: 2px solid #eee;
+                border: 2px solid #ced4da;
                 box-sizing: border-box;
                 min-width: 1em;
                 padding: 3px 5px;
@@ -174,7 +174,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
     }
 
     .tableWrapper {
-        padding: 1rem 0;
+        padding: 8px 0;
         overflow-x: auto;
     }
 
@@ -340,6 +340,10 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             height: 0;
             pointer-events: none;
         }
+    }
+
+    .ProseMirror-hideselection * {
+        caret-color: unset;
     }
 
 `

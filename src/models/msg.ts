@@ -1,9 +1,8 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { queryMsgNum } from '@/services/Workspace'
 
 export default function () {
   const [msgNum, setMsgNum] = useState<any>({})
-  const increment = useCallback(() => getMsgNum(), []);
   // 获取消息数量
   const getMsgNum = async () => {
     const data = await queryMsgNum()
@@ -11,6 +10,8 @@ export default function () {
       setMsgNum(data.data)
     }
   }
+
+  const increment = useCallback(() => getMsgNum(), []);
 
   return { msgNum, increment };
 }
