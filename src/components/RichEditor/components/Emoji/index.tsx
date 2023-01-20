@@ -10,6 +10,37 @@ import { useClickAway } from "ahooks"
 
 import styled from "styled-components"
 
+type EmojiClassItemProps = {
+    is_active: boolean
+}
+
+const BaseTabStyle = `
+    background-color: #1890ff;
+    color: #fff;
+`
+
+const EmojiClassItem = styled.div <EmojiClassItemProps>`
+    display: flex;
+    div {
+        padding: 0 6px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: row;
+        font-weight: 500;
+        gap: 6px;
+        ${({ is_active }) => is_active && BaseTabStyle}
+        &:hover {
+            ${BaseTabStyle}
+        }
+    }
+    &::after {
+        content: '';
+        border-right: 1px solid #e5e5e5;
+        height: 100%;
+        margin-left: 8px;
+    }
+`
+
 const EmojiClassRow = styled.div`
     display: flex;
     flex-direction: row;
@@ -18,17 +49,11 @@ const EmojiClassRow = styled.div`
     padding-bottom: 8px;
     margin-bottom: 8px;
     overflow: auto;
-`
-type EmojiClassItemProps = {
-    is_active: boolean
-}
 
-const EmojiClassItem = styled.div <EmojiClassItemProps>`
-    border-radius: 8px;
-    padding: 0 4px;
-    ${({ is_active }) => is_active && `background-color: #dbeafe;`}
-    &:hover {
-        background-color: #dbeafe;
+    ${EmojiClassItem} {
+        &:last-child::after {
+            display: none;
+        }
     }
 `
 
@@ -44,6 +69,10 @@ const EmojiItemWrapper = styled.div`
     }
 `
 
+const EmojiShowSpan = styled.span`
+    font-size: 24px;
+`
+
 const Emoji: React.FC<{ editor: Editor }> = ({ editor }) => {
     const [emojiIndex, setEmojiIndex] = React.useState(0)
     const [show, setShow] = React.useState(false)
@@ -54,7 +83,7 @@ const Emoji: React.FC<{ editor: Editor }> = ({ editor }) => {
     }, ref)
 
     if (!editor) return <></>
-    
+
     return (
         <ToolMenu
             ref={ref}
@@ -77,7 +106,10 @@ const Emoji: React.FC<{ editor: Editor }> = ({ editor }) => {
                                     onClick={() => setEmojiIndex(index)}
                                     is_active={emojiIndex === index}
                                 >
-                                    {item.title}
+                                    <div>
+                                        <span>{item.line_emoji}</span>
+                                        <span>{item.title.replace(item.line_emoji, "")}</span>
+                                    </div>
                                 </EmojiClassItem>
                             ))
                         }
@@ -93,7 +125,7 @@ const Emoji: React.FC<{ editor: Editor }> = ({ editor }) => {
                                         setShow(false)
                                     }}
                                 >
-                                    {i.emoji}
+                                    <EmojiShowSpan>{i.emoji}</EmojiShowSpan>
                                 </TooltipMenu>
                             ))
                         }

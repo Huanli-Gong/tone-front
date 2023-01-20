@@ -10,6 +10,7 @@ import Empty from './Empty'
 import Catalog from './Catalog'
 import moment from 'moment';
 import lodash from 'lodash'
+import { tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
 const Wrapper = styled(Row)`
     height: 100%;
@@ -78,7 +79,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
             const { data } = await queryDocList({ id })
             setLoading(false)
             if (data[0]) {
-                setText(data[0].content)
+                setText(tarnsformEmoji(data[0].content))
             }
         }
     }

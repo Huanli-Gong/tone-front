@@ -115,6 +115,7 @@
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.0.2",
+    "@tiptap/core": "2.0.0-beta.209",
     "@tiptap/extension-code-block-lowlight": "2.0.0-beta.209",
     "@tiptap/extension-color": "2.0.0-beta.209",
     "@tiptap/extension-font-family": "2.0.0-beta.209",

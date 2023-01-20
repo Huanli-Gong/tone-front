@@ -24,6 +24,7 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import CodeBlockComponent from './components/CodeBlockComponent'
 
+import { SmilieReplacer } from "./components/Emoji/emojiReplacer"
 import { lowlight } from 'lowlight'
 
 type IProps = Partial<EditorOptions> & { placeholder?: string }
@@ -69,9 +70,10 @@ const RichEditor: React.FC<IProps> = (props) => {
             Image.configure({
                 inline: true,
                 allowBase64: true,
-            })
+            }),
+            SmilieReplacer
         ],
-        ...props
+        ...props,
     }, [content])
 
     return (
@@ -91,4 +93,4 @@ const RichEditor: React.FC<IProps> = (props) => {
     )
 }
 
-export default RichEditor
+export default React.memo(RichEditor)
