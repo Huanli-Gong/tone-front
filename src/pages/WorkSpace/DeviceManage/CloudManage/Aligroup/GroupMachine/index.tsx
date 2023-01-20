@@ -631,7 +631,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         instance_type_two: 1,
                         system_disk_size: 40,
                         storage_size: 40,
-                        storage_number: 1,
+                        storage_number: 0,
                         release_rule: 1
                     }}
                 >
