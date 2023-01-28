@@ -127,7 +127,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
 
             td,
             th {
-                border: 2px solid #ced4da;
+                border: 1px solid #e5e5e5;
                 box-sizing: border-box;
                 min-width: 1em;
                 padding: 3px 5px;
@@ -140,13 +140,13 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             }
 
             th {
-                background-color: #f1f3f5;
+                background-color: #e5e5e5;
                 font-weight: bold;
                 text-align: left;
             }
 
             .selectedCell:after {
-                background: rgba(200, 200, 255, 0.4);
+                background: rgba(27, 162, 227, 0.2);
                 content: "";
                 left: 0;
                 right: 0;
@@ -158,7 +158,7 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             }
 
             .column-resize-handle {
-                background-color: #adf;
+                background-color: #1890ff;
                 bottom: -2px;
                 position: absolute;
                 right: -2px;
@@ -321,6 +321,10 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
             /* max-width: 100%; */
             max-width: 630px;
             height: auto;
+
+            &.ProseMirror-selectednode {
+                outline: 3px solid #68cef8;
+            }
         }
 
         blockquote {
@@ -342,8 +346,24 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         }
     }
 
-    .ProseMirror-hideselection * {
-        caret-color: unset;
+    .ProseMirror-hideselection *::selection {
+        background-color: #1890ff;
     }
 
+    .image-resizer {
+        display: inline-flex;
+        position: relative;
+        flex-grow: 0;
+        .resize-trigger {
+            position: absolute;
+            right: -6px;
+            bottom: -9px;
+            opacity: 0;
+            transition: opacity .3s ease;
+            color: #3259a5;
+        }
+        &:hover .resize-trigger {
+            opacity: 1;
+        }
+    }
 `

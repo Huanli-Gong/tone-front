@@ -8,7 +8,7 @@ import { useClickAway } from "ahooks"
 import cls from "classnames"
 
 type CellProps = {
-    bg: boolean;
+    bg?: boolean;
 }
 
 type InsertTableOptions = {
@@ -20,7 +20,7 @@ const TableBox = styled.div`
     position: relative;
 `
 
-const TableCell = styled.div.attrs(props => ({
+const TableCell = styled.div.attrs((props: CellProps) => ({
     style: {
         background: props.bg ? "#a5f3fc" : undefined
     }
@@ -64,22 +64,22 @@ const TableMenu: React.FC<{ editor: Editor }> = ({ editor }) => {
     }, dom)
 
     const handleMouseMove = (evt: React.MouseEvent<HTMLDivElement>) => {
-        const { target } = evt
+        const { target }: any = evt
         setHoverKey({
-            cols: + target.getAttribute("data-index"),
-            rows: + target.parentNode?.getAttribute("data-index")
+            cols: + target?.getAttribute("data-index"),
+            rows: + target?.parentNode?.getAttribute("data-index")
         })
     }
 
     const handleInsertTable = ({ rows, cols }: InsertTableOptions) => {
         setHoverKey(DEFAULT_INSERT_TABLE_ROWS_COLS)
-        editor?.commands.insertTable({ rows, cols })
+        editor?.chain().focus().insertTable({ rows, cols, withHeaderRow: false }).run()
     }
 
     const { rows, cols } = hoverKey
 
     if (!editor) return <></>
-    
+
     return (
         <TableBox ref={dom}
             onMouseEnter={() => setShow(true)}

@@ -71,7 +71,7 @@ const RichEditor: React.FC<IProps> = (props) => {
                 inline: true,
                 allowBase64: true,
             }),
-            SmilieReplacer
+            SmilieReplacer,
         ],
         ...props,
     }, [content])

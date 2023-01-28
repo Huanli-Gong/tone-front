@@ -22,7 +22,7 @@ import TextHighlight from "./components/TextHighlight"
 import ImageMenu from "./components/Image"
 import LinkMenu from "./components/LinkMenu"
 import MoreMenus from "./components/More"
-import TableMenu from "./components/TableMenu"
+import TableMenu from "./components/TableInsertMenu"
 import TableFloatingMenuBar from './components/TableMenuBar'
 import Emoji from "./components/Emoji"
 
@@ -71,7 +71,6 @@ const MenuBar: React.FC<Record<string, any>> = ({ editor }) => {
                         <ToolbarWidget />
                         <TextMenu editor={editor} />
                         <TextSize editor={editor} />
-
 
                         <TooltipMenu
                             title={"加粗"}
