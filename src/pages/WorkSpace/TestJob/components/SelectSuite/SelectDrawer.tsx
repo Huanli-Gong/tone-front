@@ -41,8 +41,9 @@ const SelectDrawer: React.FC<any> = ({
     const canSelectKeys = React.useMemo(() => {
         return treeHasRowkey.reduce((pre: any, cur: any) => {
             const { test_case_list, rowkey } = cur
-            const hasCases = test_case_list.filter((c: any) => checkDomainName(c))
-            if (checkDomainName(cur) || hasCases.length > 0) return pre.concat(rowkey, hasCases.map((t: any) => t.id))
+            /* const hasCases = test_case_list.filter((c: any) => checkDomainName(c)) */
+            /* if (checkDomainName(cur) || hasCases.length > 0) return pre.concat(rowkey, hasCases.map((t: any) => t.id)) */
+            if (checkDomainName(cur)) return pre.concat(rowkey, test_case_list.map((t: any) => t.id))
             return pre
         }, [])
     }, [treeHasRowkey, domain, name])
@@ -132,7 +133,7 @@ const SelectDrawer: React.FC<any> = ({
 
     const resultTreeList = React.useMemo(() => {
         return treeHasRowkey.map((i: any) => {
-            const hasLen = i.test_case_list.filter((c: any) => checkDomainName(c)).length
+            /* const hasLen = i.test_case_list.filter((c: any) => checkDomainName(c)).length */
             return {
                 key: i.rowkey,
                 title: i.name,
@@ -140,11 +141,13 @@ const SelectDrawer: React.FC<any> = ({
                     key: cls.id,
                     title: cls.name,
                     selectable: false,
-                    style: { display: checkDomainName(cls) ? undefined : "none" }
+                    style: { display: checkDomainName(i) ? undefined : "none" }
+                    /* style: { display: checkDomainName(cls) ? undefined : "none" } */
                 })),
-                style: { display: checkDomainName(i) || hasLen ? undefined : "none" },
+                style: { display: checkDomainName(i) /* || hasLen */ ? undefined : "none" },
                 selectable: false,
-                checkable: hasLen !== 0
+                checkable: i.test_case_list.length > 0
+                /* checkable: hasLen !== 0 */
             }
         })
     }, [domain, name, treeHasRowkey])
