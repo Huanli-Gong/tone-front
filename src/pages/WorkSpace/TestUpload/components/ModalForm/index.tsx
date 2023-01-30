@@ -178,10 +178,20 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   // 确认
   const handleOk = () => {
     form.validateFields().then(async (values) => {
-      setLoading(true);
       // 触发上传接口
-      const query = { ws_id, server_type: serverType, test_type: testType, ...values };
+      const { product_version } = values
+      if (!product_version.trim()) {
+        form.setFields([{
+          name: "product_version",
+          value: null,
+          errors: [formatMessage({ id: "upload.list.Drawer.product_version.message" })]
+        }])
+        return
+      }
+      setLoading(true);
+      const query = { ws_id, server_type: serverType, test_type: testType, ...values, product_version: product_version.trim(), };
       const { code, msg } = await createProject(query);
+      setLoading(false);
       if (code === 200) {
         message.success(formatMessage({ id: 'request.create.success' }));
         // step1.初始化状态、关闭对话框
@@ -191,7 +201,6 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
       } else {
         message.error(msg || formatMessage({ id: 'request.create.failed' }));
       }
-      setLoading(false);
     }).catch(() => {
       setLoading(false);
     });
