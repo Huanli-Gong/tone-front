@@ -554,7 +554,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         instance_type_two: 1,
                         system_disk_size: 40,
                         storage_size: 40,
-                        storage_number: 1,
+                        storage_number: 0,
                         release_rule: 1,
                         kernel_install: 1,
                         bandwidth: 10,
@@ -841,13 +841,12 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     name="storage_type"
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
-                                            })
-                                            }
+                                            })}
                                         </Select>
                                     }
                                 </Form.Item>
@@ -1062,8 +1061,8 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                 >
                                     <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}
                                         disabled={disabledState}>
-                                        <Select.Option value="Available"><Badge status="success" text={"Available"} /></Select.Option>
-                                        <Select.Option value="Reserved"><Badge status="default" text={"Reserved"} /></Select.Option>
+                                        <Select.Option value="Available"><Badge status="success" text="Available" /></Select.Option>
+                                        <Select.Option value="Reserved"><Badge status="default" text="Reserved" /></Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>)

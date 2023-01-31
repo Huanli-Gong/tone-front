@@ -76,6 +76,13 @@ const BasicSetting = (props: any, ref: any) => {
         }
     }, [template])
 
+    const baseFormItemProps = {
+        allowClear: true,
+        getPopupContainer: (node: any) => node.parentNode,
+        showSearch: true,
+        filterOption: (input: string, option: any) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+    }
+
     return (
         <div
             style={{
@@ -116,37 +123,35 @@ const BasicSetting = (props: any, ref: any) => {
                 </Form.Item>
                 {/* rules={[{ required: true, message: "请选择Project" }]} */}
                 <Form.Item name="project_id" label={'Project'} >
-                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                        placeholder={formatMessage({ id: 'plan.plan.project_id' })}>
-                        {
+                    <Select
+                        {...baseFormItemProps}
+                        placeholder={formatMessage({ id: 'plan.plan.project_id' })}
+                        options={
                             projectList.map(
-                                (item: any, idx: any) => (
-                                    <Select.Option key={idx} value={item.id} >
-                                        {`${item.name}(${item.product_name})`}
-                                    </Select.Option>
-                                )
+                                (item: any, idx: any) => ({
+                                    value: item.id,
+                                    label: `${item.name}(${item.product_name})`
+                                })
                             )
                         }
-                    </Select>
+                    />
                 </Form.Item>
                 <Form.Item label={<FormattedMessage id="plan.test.baseline" />}>
                     <BaselineWrapper>
                         <Form.Item name="func_baseline" >
                             <Select
-                                allowClear
-                                getPopupContainer={node => node.parentNode}
-                                showSearch
+                                {...baseFormItemProps}
                                 /* placeholder="请选择内网功能基线" */
                                 placeholder={formatMessage({ id: 'plan.func_baseline.placeholder' })}
-                            >
-                                {
+                                options={
                                     baselineList.filter((i: any) => i.test_type === 'functional').map(
-                                        (item: any) => (
-                                            <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                        )
+                                        (item: any) => ({
+                                            value: item.id,
+                                            label: item.name
+                                        })
                                     )
                                 }
-                            </Select>
+                            />
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜功能 */}
@@ -156,20 +161,18 @@ const BasicSetting = (props: any, ref: any) => {
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline">
                             <Select
-                                allowClear
-                                getPopupContainer={node => node.parentNode}
-                                showSearch
+                                {...baseFormItemProps}
                                 /* placeholder="请选择内网性能基线" */
                                 placeholder={formatMessage({ id: 'plan.perf_baseline.placeholder' })}
-                            >
-                                {
+                                options={
                                     baselineList.filter((i: any) => i.test_type === 'performance').map(
-                                        (item: any) => (
-                                            <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                        )
+                                        (item: any) => ({
+                                            value: item.id,
+                                            lable: item.name
+                                        })
                                     )
                                 }
-                            </Select>
+                            />
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜性能 */}
@@ -177,10 +180,16 @@ const BasicSetting = (props: any, ref: any) => {
                         </BaselineSpan>
                     </BaselineWrapper>
                 </Form.Item>
-                <Form.Item name="test_obj"
+                <Form.Item
+                    name="test_obj"
                     label={<FormattedMessage id="plan.tested.object" />}
                 >
-                    <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
+                    <Select
+                        {...baseFormItemProps}
+                        filterOption={false}
+                        onChange={(val: any) => setTestObject(val)}
+                        placeholder="请选择被测对象"
+                    >
                         <Select.Option value={'kernel'}><FormattedMessage id="plan.kernel.package" /></Select.Option>
                         <Select.Option value={'rpm'}><FormattedMessage id="plan.others.soft" /></Select.Option>
                     </Select>

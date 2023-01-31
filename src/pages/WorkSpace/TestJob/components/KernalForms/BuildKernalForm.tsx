@@ -27,7 +27,7 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
     const disabledStyles = disabled ? { backgroundColor: '#f5f5f5' } : {}
 
     const branches = useMemo(() => {
-        for (let branch of data) {
+        for (const branch of data) {
             if (branch.repo_id === codeBranch)
                 return branch.branch_dict
         }
@@ -72,13 +72,16 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                                     placeholder={formatMessage({ id: 'kernel.form.code_repo.placeholder' })}
                                     style={disabledStyles}
                                     onChange={hanldeChangeCodeRepo}
-                                >
-                                    {
-                                        data.map((item: any) => (
-                                            <Select.Option key={item.repo_id} value={item.repo_id}>{item.repo_git_url}</Select.Option>
-                                        ))
+                                    allowClear
+                                    showSearch
+                                    filterOption={(input: string, option: any) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                    options={
+                                        data.map((item: any) => ({
+                                            value: item.repo_id,
+                                            label: item.repo_git_url
+                                        }))
                                     }
-                                </Select>
+                                />
                             </Form.Item>
                             <Form.Item
                                 {...itemLayout}
@@ -91,14 +94,17 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                                 <Select
                                     style={disabledStyles}
                                     disabled={disabled}
+                                    showSearch
+                                    allowClear
                                     placeholder={formatMessage({ id: 'kernel.form.code_branch.message' })}
-                                >
-                                    {
-                                        branches?.map((item: any) => (
-                                            <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
-                                        ))
+                                    filterOption={(input: string, option: any) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                    options={
+                                        branches?.map((item: any) => ({
+                                            value: item.id,
+                                            label: item.name
+                                        }))
                                     }
-                                </Select>
+                                />
                             </Form.Item>
                         </> :
                         <>
@@ -112,22 +118,27 @@ const BuildKernelForm: React.FC<IProps> = (props) => {
                                     disabled={disabled}
                                     placeholder={formatMessage({ id: 'kernel.form.cbc.product.empty' })}
                                     onChange={handleCbpSelectChange}
+                                    filterOption={(input: string, option: any) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                                     style={disabledStyles}
-                                >
-                                    {
-                                        cbpProductList?.map((product: any) => (
-                                            <Select.Option key={product.id} value={product.id}>{product.name}</Select.Option>
-                                        ))
+                                    allowClear
+                                    showSearch
+                                    options={
+                                        cbpProductList?.map((product: any) => ({
+                                            value: product.id,
+                                            label: product.name
+                                        }))
                                     }
-                                </Select>
+                                />
                             </Form.Item>
-                            <Form.Item {...itemLayout}
+                            <Form.Item
+                                {...itemLayout}
                                 label={<FormattedMessage id="kernel.form.code_repo" />}
                                 name="code_repo"
                                 rules={[{
                                     required: true,
                                     message: formatMessage({ id: 'kernel.form.code_repo.message' })
-                                }]}>
+                                }]}
+                            >
                                 <Input
                                     style={disabledStyles}
                                     disabled={disabled}

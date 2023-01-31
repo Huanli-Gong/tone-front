@@ -47,14 +47,14 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                 setIsMoreEdit(_.get(data, 'opreateType') === 'moreEdit')
                 data.ip && form.setFieldsValue({ ips: [data.ip] })
                 let list = []
-                if(data.tag_list){
-                    list = data.tag_list.map((item:any) => item.id)
+                if (data.tag_list) {
+                    list = data.tag_list.map((item: any) => item.id)
                 }
                 setTagFlag({ ...tagFlag, isQuery: 'edit', list })
-            }else{
+            } else {
                 setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
             }
-            
+
         }
     }))
 
@@ -84,12 +84,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             }
 
             if (data.code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 onFinish()
                 handleClose()
             }
             else {
-                message.error(data.msg || formatMessage({id: 'operation.failed'}) )
+                message.error(data.msg || formatMessage({ id: 'operation.failed' }))
             }
             setPadding(false)
         })
@@ -109,12 +109,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             data = await batchPutTestServer(values)
 
             if (data.code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 onFinish()
                 handleClose()
             }
             else {
-                message.error(data.msg || formatMessage({id: 'operation.failed'}) )
+                message.error(data.msg || formatMessage({ id: 'operation.failed' }))
             }
             setPadding(false)
         })
@@ -143,7 +143,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info"/></span></Tooltip>
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info" /></span></Tooltip>
         </Space>
     )
 
@@ -151,9 +151,9 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const ValidateIps: React.FC<any> = ({ data, channelType }) => (
         <Space>
             <span>{data.msg[0]}</span>
-            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info"/></span></Tooltip>
+            <Tooltip title={data.msg[1]}><span style={{ color: '#1890ff' }}><FormattedMessage id="device.detail.info" /></span></Tooltip>
             {BUILD_APP_ENV ? <></> : channelType === 'toneagent' && <span className={styles.btn_style} onClick={() => deployClick(data.data)}>
-                <FormattedMessage id="device.deploy.toneagent"/>
+                <FormattedMessage id="device.deploy.toneagent" />
             </span>}
         </Space>
     )
@@ -232,10 +232,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
 
     // 失焦校验
     const handleBlurIps = () => {
-        if(selectIpsValue.length > 0){
-            if(selectIpsValue.indexOf('，') > 1){
+        if (selectIpsValue.length > 0) {
+            if (selectIpsValue.indexOf('，') > 1) {
                 message.error('机器ip参数格式不正确')
-                return 
+                return
             }
             const matchResult: any = selectIpsValue.trim().split(/,|\s/) || []
             const resultIp: any = Array.from(
@@ -276,7 +276,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             keyboard={false}
             maskClosable={false}
             forceRender={true}
-            title={!modifyProps ? <FormattedMessage id="device.add.btn"/>: <FormattedMessage id="device.device.edit"/>}
+            title={!modifyProps ? <FormattedMessage id="device.add.btn" /> : <FormattedMessage id="device.device.edit" />}
             width="376"
             visible={visible}
             destroyOnClose={true}
@@ -285,9 +285,9 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right' }}>
                     <Space>
-                        <Button onClick={handleClose} disabled={padding}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button onClick={handleClose} disabled={padding}><FormattedMessage id="operation.cancel" /></Button>
                         <Button onClick={isMoreEdit ? handleMoreEditFinish : handleFinish} type="primary" loading={padding}>
-                            {!modifyProps ? <FormattedMessage id="operation.ok"/>: <FormattedMessage id="operation.update"/>}
+                            {!modifyProps ? <FormattedMessage id="operation.ok" /> : <FormattedMessage id="operation.update" />}
                         </Button>
                     </Space>
                 </div>
@@ -301,11 +301,11 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         channel_type: BUILD_APP_ENV ? open_agent : self_agent
                     }}
                 >
-                    {!isMoreEdit && <Form.Item label={<FormattedMessage id="device.channel_type"/>}
+                    {!isMoreEdit && <Form.Item label={<FormattedMessage id="device.channel_type" />}
                         name="channel_type"
                         rules={[{
                             required: true,
-                            message: formatMessage({id: 'device.channel_type.message'}),
+                            message: formatMessage({ id: 'device.channel_type.message' }),
                         }]}
                         // 表单提交后校验该通道是否可用
                         validateStatus={validateResult.error ? 'error' : ''}
@@ -317,7 +317,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                         <AgentSelect
                             onChange={handleIpsChange}
                             disabled={BUILD_APP_ENV ? true : disabledState}
-                            placeholder={formatMessage({id: 'device.channel_type.message'}) }
+                            placeholder={formatMessage({ id: 'device.channel_type.message' })}
                         />
                     </Form.Item>}
 
@@ -325,14 +325,14 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     {/** 添加 */}
                     {!isMoreEdit && !modifyProps &&
                         <Form.Item
-                            label={BUILD_APP_ENV ? <FormattedMessage id="device.machine.IP"/>: <FormattedMessage id="device.machine"/>}
+                            label={BUILD_APP_ENV ? <FormattedMessage id="device.machine.IP" /> : <FormattedMessage id="device.machine" />}
                             name="ips"
                             validateStatus={ips.errors.length > 0 ? 'error' : undefined}
                             help={ips.errors.length > 0 ? validateMsg : undefined}
-                            rules={[{ 
+                            rules={[{
                                 required: true,
                                 // pattern:/^((((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})( |,))*((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
-                                message: formatMessage({id: BUILD_APP_ENV ? 'device.please.enter.correct.server.IP': 'device.please.enter.correct.server' })
+                                message: formatMessage({ id: BUILD_APP_ENV ? 'device.please.enter.correct.server.IP' : 'device.please.enter.correct.server' })
                             }]}
                         >
                             <Select
@@ -358,13 +358,13 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     {/** 编辑 */}
                     {!isMoreEdit && modifyProps &&
                         <>
-                            <Form.Item name="ip" label={<FormattedMessage id="device.machine"/>}>
+                            <Form.Item name="ip" label={<FormattedMessage id="device.machine" />}>
                                 <Input disabled />
                             </Form.Item>
                             <Form.Item
                                 name="name"
-                                label={<FormattedMessage id="device.machine.name"/>}
-                                rules={[{ required: true, message: formatMessage({id: 'device.machine.message'}) }]}
+                                label={<FormattedMessage id="device.machine.name" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'device.machine.message' }) }]}
                                 initialValue="SN"
                             >
                                 <Input autoComplete="off" />
@@ -380,21 +380,21 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                     }
 
                     {!isMoreEdit && <Form.Item
-                        label={<FormattedMessage id="device.usage.state"/>}
+                        label={<FormattedMessage id="device.usage.state" />}
                         name="state"
-                        rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
                         initialValue={'Available'}
                     >
-                        <Select placeholder={formatMessage({id: 'device.usage.state.message'})} disabled={disabledState}>
-                            <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                            <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
-                            <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
+                        <Select placeholder={formatMessage({ id: 'device.usage.state.message' })} disabled={disabledState}>
+                            <Select.Option value="Available"><Badge status="success" text={"Available"} /></Select.Option>
+                            <Select.Option value="Reserved"><Badge status="success" text={"Reserved"} /></Select.Option>
+                            <Select.Option value="Unusable"><Badge status="default" text={"Unusable"} /></Select.Option>
                         </Select>
                     </Form.Item>}
                     {!isMoreEdit && <Owner />}
-                    {!isMoreEdit && <MachineTags {...tagFlag}/>}
-                    <Form.Item label={<FormattedMessage id="device.description"/>} name="description">
-                        <Input.TextArea placeholder={formatMessage({id: 'device.description.placeholder'})} />
+                    {!isMoreEdit && <MachineTags {...tagFlag} />}
+                    <Form.Item label={<FormattedMessage id="device.description" />} name="description">
+                        <Input.TextArea placeholder={formatMessage({ id: 'device.description.placeholder' })} />
                     </Form.Item>
                 </Form>
             </Spin>

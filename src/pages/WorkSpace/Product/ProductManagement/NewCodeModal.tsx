@@ -11,7 +11,7 @@ export default forwardRef(
         const { formatMessage } = useIntl()
         const [form] = Form.useForm()
         const [visible, setVisible] = useState(false)
-        const [padding , setPadding ] = useState( false )
+        const [padding, setPadding] = useState(false)
         const [info, setInfo] = useState<any>({})
         const [codeData, setCodeData] = useState<any>({})
         const ws_id = window.location.pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
@@ -19,36 +19,36 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (item:any, data:any = {}) => {
+                show: (item: any, data: any = {}) => {
                     setCodeData(data.data.length)
                     setVisible(true)
                     setInfo(item)
-                    repositoryRun({ws_id})
+                    repositoryRun({ ws_id })
                 }
             })
         )
 
-        const { data,run: repositoryRun } = useRequest(
+        const { data, run: repositoryRun } = useRequest(
             (params: any) => queryRepositoryList(params),
             {
-                manual:true,
+                manual: true,
             }
         )
         const { run: repositoryUrlRun } = useRequest(
             (params: any) => queryRepositoryList(params),
             {
-                manual:true,
+                manual: true,
             }
         )
 
         const handleChangeRepoid = useCallback((repo_id: any) => {
-          if (repo_id)
-              branchRun({ repo_id })
-              repositoryUrlRun({ repo_id }).then(res => {
-                  form.setFieldsValue({ 'gitUrl': res[0].git_url })
-              })
-          },
-        [], )
+            if (repo_id)
+                branchRun({ repo_id })
+            repositoryUrlRun({ repo_id }).then(res => {
+                form.setFieldsValue({ 'gitUrl': res[0].git_url })
+            })
+        },
+            [],)
 
         /* const InputChange = useCallback(
             (e: any) => {
@@ -69,38 +69,38 @@ export default forwardRef(
         const { data: branchList, run: branchRun } = useRequest(
             (params: any) => queryBranchList(params),
             {
-                defaultParams:[DEFAULT_PARAMS],
+                defaultParams: [DEFAULT_PARAMS],
                 initialData: {
                     data: []
                 },
-                manual:true,
+                manual: true,
                 formatResult: r => r,
 
             }
         )
         const handleOk = async () => {
-            if ( padding ) return 
-            setPadding( true )
+            if (padding) return
+            setPadding(true)
             form.validateFields()
                 .then(async (values) => {
                     values.ws_id = ws_id
-                    if(codeData === 0){
-                        const { code, msg } = await createBranchAndRelation({ project_id: info.id,is_master:1, ...values })
+                    if (codeData === 0) {
+                        const { code, msg } = await createBranchAndRelation({ project_id: info.id, is_master: 1, ...values })
                         defaultOption(code, msg)
-                    }else{
-                        const { code, msg } = await createBranchAndRelation({ project_id: info.id, is_master:0,...values })
+                    } else {
+                        const { code, msg } = await createBranchAndRelation({ project_id: info.id, is_master: 0, ...values })
                         defaultOption(code, msg)
                     }
                     /*  */
                 })
                 .catch(err => {
                     console.log(err)
-                    setPadding( false )
+                    setPadding(false)
                 })
         }
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 props.onOk();
                 setVisible(false)
                 // 重置表单，重置数据源
@@ -108,9 +108,9 @@ export default forwardRef(
                 branchList.data = []
             }
             else {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
             }
-            setPadding ( false )
+            setPadding(false)
         }
         const handleCancel = () => {
             setVisible(false)
@@ -124,22 +124,22 @@ export default forwardRef(
             //props.onCancle();
             //history.push(`/ws/${ ws_id }/product?t=code`)
             //window.location.reload()
-            window.location.replace(`/ws/${ ws_id }/product?t=code`)
+            window.location.replace(`/ws/${ws_id}/product?t=code`)
         }
         return (
             <Modal
-                title={<FormattedMessage id="code.add.code"/>}
+                title={<FormattedMessage id="code.add.code" />}
                 visible={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                cancelText={<FormattedMessage id="operation.cancel"/>}
-                okText={<FormattedMessage id="operation.confirm"/>}
+                cancelText={<FormattedMessage id="operation.cancel" />}
+                okText={<FormattedMessage id="operation.confirm" />}
                 className={styles.modal_warpper}
                 maskClosable={false}
             >
                 <div className={styles.content_warpper}>
                     <Space>
-                        <Typography.Text style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 'bold', fontSize: 14 }}><FormattedMessage id="product.project.name"/>：</Typography.Text>
+                        <Typography.Text style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 'bold', fontSize: 14 }}><FormattedMessage id="product.project.name" />：</Typography.Text>
                         <Tooltip title={info.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                             <Typography.Text style={{ color: '#000', opacity: 0.65, fontSize: 14 }}><div className={styles.text_ellip}>{info.name}</div></Typography.Text>
                         </Tooltip>
@@ -148,19 +148,29 @@ export default forwardRef(
                 <div style={{ height: 10, backgroundColor: '#f5f5f5' }}></div>
                 <div className={styles.content_warpper}>
                     <Form
-                      form={form}
-                      layout="vertical"
-                      /*hideRequiredMark*/
+                        form={form}
+                        layout="vertical"
+                    /*hideRequiredMark*/
                     >
-                        <Form.Item 
-                            label={<FormattedMessage id="product.repositories"/>}
-                            name="repo_id" 
-                            rules={[{ required: true, message:formatMessage({id: 'product.repositories.cannot.be.empty'}) }]}>
-                            <Select 
-                                placeholder={<FormattedMessage id="product.please.select.the.repositories"/>}
+                        <Form.Item
+                            label={<FormattedMessage id="product.repositories" />}
+                            name="repo_id"
+                            rules={[{ required: true, message: formatMessage({ id: 'product.repositories.cannot.be.empty' }) }]}>
+                            <Select
+                                placeholder={<FormattedMessage id="product.please.select.the.repositories" />}
                                 notFoundContent={<div style={{ height: 0 }}></div>}
-                                onChange={handleChangeRepoid} 
-                                dropdownRender={(menu)=>(
+                                onChange={handleChangeRepoid}
+                                options={data?.map(
+                                    (item: any) => ({
+                                        value: item.id,
+                                        label: item.name
+                                    })
+                                )}
+                                filterOption={(input, option: any) => {
+                                    return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }}
+                                showSearch
+                                dropdownRender={(menu) => (
                                     <div>
                                         {menu}
                                         <div style={{ display: 'inline-block', flexWrap: 'nowrap', width: '100%', padding: '8px 0 8px 8px' }}
@@ -173,37 +183,29 @@ export default forwardRef(
                                             </span>
                                         </div>
                                     </div>
-                                )}>
-                                {
-                                    data?.map(
-                                        (item: any) => (
-                                            <Select.Option
-                                                key={item.id}
-                                                value={item.id}
-                                            >
-                                                { item.name}
-                                            </Select.Option>
-                                        )
-                                    )
-                                }
-                            </Select>
+                                )}
+                            />
                         </Form.Item>
                         <Form.Item label="GitUrl" name="gitUrl">
-                            <Input placeholder={formatMessage({id: 'product.please.select.gitUrl'})}
-                                disabled/>
+                            <Input placeholder={formatMessage({ id: 'product.please.select.gitUrl' })}
+                                disabled />
                         </Form.Item>
-                        <Form.Item label="Branch" name="branch_id" 
-                            rules={[{ required:true, message: formatMessage({id: 'product.branch.cannot.be.empty'}) }]}>
-                            <Select placeholder={<FormattedMessage id="product.please.select.branch"/>}>
-                              {branchList.data?.map(
-                                  (item: any) => (
-                                    <Select.Option key={item.id} value={item.id}>
-                                      {item.name}
-                                    </Select.Option>
-                                  )
-                                )
-                              }
-                            </Select>
+                        <Form.Item label="Branch" name="branch_id"
+                            rules={[{ required: true, message: formatMessage({ id: 'product.branch.cannot.be.empty' }) }]}>
+                            <Select
+                                allowClear
+                                showSearch
+                                filterOption={(input, option: any) => {
+                                    return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }}
+                                placeholder={<FormattedMessage id="product.please.select.branch" />}
+                                options={branchList.data?.map(
+                                    (item: any) => ({
+                                        value: item.id,
+                                        label: item.name
+                                    })
+                                )}
+                            />
                         </Form.Item>
                     </Form>
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Badge, Tag, Select, Drawer, Space, Button, Form, Popover } from 'antd'
+import { Badge, Tag, Select, Drawer, Space, Button, Form, Popover, FormItemProps } from 'antd'
 import { queryMember } from '@/services/Workspace'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
@@ -113,7 +113,13 @@ export const tagRender = ({ label, closable, onClose, value }: any) => (
     </Tag>
 )
 
-export const TagSelect = (props: any) => {
+type CustomTagSelectProps = {
+    tags: any[];
+    placeholder?: string;
+    disabled?: boolean;
+}
+
+export const TagSelect: React.FC<FormItemProps & CustomTagSelectProps> = (props) => {
     const { formatMessage } = useIntl()
     const {
         tags,
@@ -139,17 +145,15 @@ export const TagSelect = (props: any) => {
                 tagRender={tagRender}
                 allowClear
                 getPopupContainer={node => node.parentNode}
-            >
-                {
-                    tags.map(
-                        (item: any) => (
-                            <Select.Option key={item.id} value={item.id}>
-                                <Tag color={item.tag_color} >{item.name}</Tag>
-                            </Select.Option>
-                        )
-                    )
+                filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}
+                options={
+                    tags.map((i: any) => ({
+                        value: i.id,
+                        label: <Tag color={i.tag_color} >{i.name}</Tag>,
+                        name: i.name
+                    }))
                 }
-            </Select>
+            />
         </Form.Item>
     )
 }

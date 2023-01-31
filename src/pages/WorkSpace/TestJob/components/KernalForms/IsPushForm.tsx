@@ -55,21 +55,18 @@ const PushForm: React.FC<IProps> = (props) => {
                         placeholder={formatMessage({ id: 'please.select' })}
                         onChange={handleKernelVersionChange}
                         disabled={disabled}
+                        showSearch
                         getPopupContainer={node => node.parentNode}
-                    >
-                        {
+                        filterOption={(input: string, option: any) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                        options={
                             kernelList.map(
-                                (item: any) => (
-                                    <Select.Option
-                                        key={item.id}
-                                        value={item.version}
-                                    >
-                                        {item.version}
-                                    </Select.Option>
-                                )
+                                (item: any) => ({
+                                    value: item.version,
+                                    label: item.version
+                                })
                             )
                         }
-                    </Select>
+                    />
                 </Form.Item>
 
                 {/* package kernel devel headers */}

@@ -101,23 +101,21 @@ const StateSelect: React.FC<any> = (props) => {
         <Select
             {...props}
             tagRender={stateRender}
-        >
-            {
-                states.map((item: any) => (
-                    <Select.Option
-                        key={item.value}
-                        value={item.value}
-                    >
+            options={
+                states.map((i: any) => ({
+                    value: i.value,
+                    label: (
                         <Tag
-                            color={item.bgColor}
-                            style={{ color: item.color ? item.color : '' }}
+                            color={i.bgColor}
+                            style={{ color: i.color ? i.color : '' }}
                         >
-                            {item.label}
+                            {i.label}
                         </Tag>
-                    </Select.Option>
-                ))
+                    ),
+                    name: i.label
+                }))
             }
-        </Select>
+        />
     )
 }
 
@@ -134,32 +132,28 @@ const TagSelect: React.FC<any> = (props) => {
             {...rest}
             tagRender={tagRender}
             labelInValue
+            filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}
             mode="multiple"
-        >
-            {
-                data.map(
-                    (item: any) => (
-                        <Select.Option
-                            value={item.id}
-                            key={item.id}
-                            label={item.name}
+            options={
+                data.map((i: any) => ({
+                    value: i.id,
+                    label: (
+                        <Tag
+                            color={i.tag_color}
+                            style={{ color: i.color ? i.color : '' }}
                         >
-                            <Tag
-                                color={item.tag_color}
-                                style={{ color: item.color ? item.color : '' }}
-                            >
-                                {item.name}
-                            </Tag>
-                        </Select.Option>
-                    )
-                )
+                            {i.name}
+                        </Tag>
+                    ),
+                    name: i.name
+                }))
             }
-        </TagSelectStyled>
+        />
     )
 }
 
 const ServerSelect: React.FC<any> = (props) => {
-    const { onChange, placeholder } = props
+    const { onChange } = props
     const { ws_id } = useParams() as any
 
     const { data } = useRequest(() => request(`/api/server/server_snapshot/`, { params: { ws_id } }))
@@ -180,10 +174,7 @@ const ServerSelect: React.FC<any> = (props) => {
             mode="multiple"
             onSelect={onChange}
             options={options}
-            filterOption={(input, option: any) =>
-                option.value?.indexOf(input.trim()) >= 0
-            }
-
+            filterOption={(input, option: any) => option.value?.indexOf(input.trim()) >= 0}
         />
     )
 }
