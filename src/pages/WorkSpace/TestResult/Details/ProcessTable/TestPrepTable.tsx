@@ -183,10 +183,15 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                         if (record.server_type === 'cluster') {
                             return Object.keys(record.server_list).map((item: any) => {
                                 const source = record.server_list[item]
+                                const getServerId = source[0]?.server_id
                                 return (
-                                    <div key={item} style={{ width: "100%", display: "flex", flexDirection: "column" }} >
+                                    <div
+                                        style={{ width: "100%", display: "flex", flexDirection: "column" }}
+                                        key={uuidv4()}
+                                    >
                                         <Table
-                                            dataSource={[{ server: item, id: uuidv4(), server_id: item }]}
+                                            key={item}
+                                            dataSource={[{ server: item, id: uuidv4(), server_id: getServerId }]}
                                             columns={clusterColumns}
                                             size={'small'}
                                             rowKey="id"

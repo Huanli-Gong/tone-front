@@ -7,7 +7,9 @@ import { useClickAway } from "ahooks"
 import { ToolMenu, ToolMenuWrapper } from "../styled"
 
 import { ReactComponent as DownOutline } from "../assets/down.svg"
-import ReactTooltip from "react-tooltip"
+import { Tooltip } from "react-tooltip"
+import 'react-tooltip/dist/react-tooltip.css'
+import { v4 as uuid } from "uuid"
 
 const DorpdownMenu: React.FC<Record<string, any>> = ({ menu, children, title }) => {
     const [open, setOpen] = React.useState(false)
@@ -17,13 +19,18 @@ const DorpdownMenu: React.FC<Record<string, any>> = ({ menu, children, title }) 
         setOpen(false)
     }, dom)
 
+    const anchorId = uuid()
     return (
-        <ToolMenu ref={dom} onClick={() => setOpen(p => !p)}>
-            <ToolMenuWrapper data-tip={title}>
+        <ToolMenu
+            ref={dom}
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+        >
+            <ToolMenuWrapper id={anchorId} data-tip={title}>
                 {children}
                 <DownOutline />
             </ToolMenuWrapper>
-            <ReactTooltip place="bottom" data-type="dark" />
+            <Tooltip anchorId={anchorId} place="top" data-type="dark" content={title} />
             {
                 open &&
                 menu

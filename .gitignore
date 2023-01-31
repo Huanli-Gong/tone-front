@@ -44,3 +44,5 @@ pnpm-lock.yaml
 build
 
 .env
+
+pnpm-lock.yaml

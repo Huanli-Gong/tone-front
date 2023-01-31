@@ -22,73 +22,75 @@ import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
-
 import CodeBlockComponent from './components/CodeBlockComponent'
 
+import { SmilieReplacer } from "./components/Emoji/emojiReplacer"
 import { lowlight } from 'lowlight'
 
 type IProps = Partial<EditorOptions> & { placeholder?: string }
 
 const RichEditor: React.FC<IProps> = (props) => {
-  const { content, placeholder, editable = true } = props
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      TextStyle,
-      Color,
-      FontFamily,
-      FontSize,
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Subscript,
-      Superscript,
-      CodeBlockLowlight
-        .extend({
-          addNodeView() {
-            return ReactNodeViewRenderer(CodeBlockComponent)
-          },
-        }).configure({
-          lowlight,
-          defaultLanguage: 'plaintext',
-        }),
-      Highlight.configure({ multicolor: true }),
-      Placeholder.configure({
-        placeholder,
-      }),
-      Link.configure({
-        openOnClick: false,
-      }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      Image.configure({
-        inline: true,
-        allowBase64: true,
-      })
-    ],
-    ...props
-  }, [content])
+    const { content, placeholder, editable = true } = props
 
-  return (
-    <EditorCls editable={editable}>
-      {
-        editable &&
-        <MenuBar editor={editor} />
-      }
-      {
-        editor &&
-        <EditorContent
-          editor={editor}
-          style={{ height: `calc(100%${editable ? " - 48px" : ""})` }}
-        />
-      }
-    </EditorCls>
-  )
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Underline,
+            TextStyle,
+            Color,
+            FontFamily,
+            FontSize,
+            Table.configure({
+                resizable: true,
+            }),
+            TableRow,
+            TableHeader,
+            TableCell,
+            Subscript,
+            Superscript,
+            CodeBlockLowlight
+                .extend({
+                    addNodeView() {
+                        return ReactNodeViewRenderer(CodeBlockComponent)
+                    },
+                }).configure({
+                    lowlight,
+                    defaultLanguage: 'plaintext',
+                }),
+            Highlight.configure({ multicolor: true }),
+            Placeholder.configure({
+                placeholder,
+            }),
+            Link.configure({
+                openOnClick: false,
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
+            Image.configure({
+                inline: true,
+                allowBase64: true,
+            }),
+            SmilieReplacer,
+        ],
+        ...props,
+    }, [content])
+
+    return (
+        <EditorCls editable={editable}>
+            {
+                editable &&
+                <MenuBar editor={editor} />
+            }
+            {
+                editor &&
+                <EditorContent
+                    editor={editor}
+                    style={{ height: `calc(100%${editable ? " - 48px" : ""})` }}
+                />
+            }
+        </EditorCls>
+    )
 }
 
 export default React.memo(RichEditor)
