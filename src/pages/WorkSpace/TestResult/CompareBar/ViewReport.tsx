@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { Popover, Table, Typography, Button, TableColumnProps } from 'antd'
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
-import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
+import { useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const styleObj = {
     container: 245,
@@ -18,7 +18,6 @@ const styleObj = {
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
-    const { initialState } = useModel('@@initialState');
     let timeout: any = null;
     const { dreType, jobInfo, origin, buttonStyle = {}, title } = props
     const viewAllReport = jobInfo && jobInfo.report_li
@@ -89,7 +88,7 @@ export default (props: any) => {
                     setJobRefAllReport(refAllJobCopy)
                     setParams({ ...params, name: val })
                 }}
-                placeholder={formatMessage({id: 'ws.result.list.report.name.placeholder'})}
+                placeholder={formatMessage({ id: 'ws.result.list.report.name.placeholder' })}
             />,
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
@@ -100,7 +99,7 @@ export default (props: any) => {
             render: (_: any, row: any) => {
 
                 return (
-                    <PopoverEllipsis title={row.name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
@@ -108,7 +107,7 @@ export default (props: any) => {
                             textToHighlight={row && row.name || '-'}
                             onClick={() => window.open(`/ws/${ws_id}/test_report/${row.id}`)}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -123,13 +122,13 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creator_name ? '#1890ff' : undefined }} />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             dataIndex: 'gmt_created',
             title: <FormattedMessage id="ws.result.list.gmt_created" />,
             width: 200,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         }
     ]
     const handleEdit = async (id: any, name: string) => {
@@ -160,7 +159,7 @@ export default (props: any) => {
         }
     }, [])
     const handleLeave = () => {
-        if (timeout !== null) clearTimeout(timeout); 
+        if (timeout !== null) clearTimeout(timeout);
         timeout = setTimeout(() => {
             setVisible(false)
         }, 500);
@@ -186,24 +185,24 @@ export default (props: any) => {
 
     return (
         <div className={styles.conf_item_box} key={isFlag} onMouseLeave={handleLeave}>
-            <Popover placement={dreType} 
+            <Popover placement={dreType}
                 title={<FormattedMessage id="ws.result.list.view.report" />}
-                content={getContent(jobRefReport)} 
-                trigger="click" 
-                overlayClassName={styles.popover_job} 
+                content={getContent(jobRefReport)}
+                trigger="click"
+                overlayClassName={styles.popover_job}
                 visible={visible}>
                 {
                     origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
                         <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
-                            {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px',marginTop: '2px' }} />
+                            {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
                         </span>
                     </Typography.Text>
-                    :
-                    <Button type="primary"
-                        onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
-                        style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
-                        {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px',marginTop: '2px' }} />
-                    </Button>
+                        :
+                        <Button type="primary"
+                            onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
+                            style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
+                            {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
+                        </Button>
                 }
             </Popover>
         </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { Space, Popconfirm, message, Spin, Tooltip } from 'antd'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { Space, Popconfirm, message, Spin, Tooltip, Typography, TableColumnProps } from 'antd'
 import styled from 'styled-components'
 import { StateTagRender, RenderCountTags } from './'
 import { useRequest, history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
@@ -11,7 +11,8 @@ import styles from './compareBar.less'
 import _ from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
-import ResizeTable from '@/components/ResizeTable'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 const OptionButton = styled.span`
     color:#1890FF;
@@ -73,25 +74,23 @@ const ViewTable = (props: ViewTableProps) => {
         message.success(formatMessage({ id: 'plan.operation.success' }))
     }
 
-    let columns = [
+    const columns: TableColumnProps<AnyType>[] = [
         {
             dataIndex: 'name',
             title: <FormattedMessage id="plan.plan.name" />,
             ellipsis: {
                 showTitle: false
             },
+            fixed: "left",
             className: 'plan_name_hover',
             render: (_: string, record: any) => (
-                <span
-                    onClick={
-                        () => hanldeOpenPlanDetail(record)
-                    }
-                >
+                <span onClick={() => hanldeOpenPlanDetail(record)}>
                     {_ || '-'}
                 </span>
             ),
             ...getSearchFilter(pageParam, setPageParam, 'name')
-        }, {
+        },
+        {
             dataIndex: 'state',
             title: <FormattedMessage id="plan.state" />,
             width: 120,
@@ -109,13 +108,16 @@ const ViewTable = (props: ViewTableProps) => {
                 ],
                 'state'
             )
-        }, {
+        },
+        {
             title: <FormattedMessage id="plan.total/success/failure" />,
             width: 180,
+            key: "total",
             render: (row: any) => (
                 <RenderCountTags {...row.statistics} />
             )
-        }, {
+        },
+        {
             dataIndex: 'trigger_name',
             width: 100,
             title: <FormattedMessage id="plan.trigger" />,
@@ -129,14 +131,24 @@ const ViewTable = (props: ViewTableProps) => {
                     </Tooltip>
                 )
             }
-        }, {
+        },
+        {
             dataIndex: 'start_time',
             title: <FormattedMessage id="plan.start_time" />,
-            width: 180
-        }, {
+            width: 180,
+            ellipsis: { showTitle: false },
+            render(_, row) {
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{row.start_time || "-"}</ColumnEllipsisText>
+            }
+        },
+        {
             dataIndex: 'end_time',
             title: <FormattedMessage id="plan.end_time" />,
-            width: 180
+            ellipsis: { showTitle: false },
+            width: 180,
+            render(_, row) {
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{row.end_time || "-"}</ColumnEllipsisText>
+            }
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -144,6 +156,8 @@ const ViewTable = (props: ViewTableProps) => {
             ellipsis: {
                 showTitle: false
             },
+            fixed: "right",
+            key: "operation",
             className: 'option',
             render(row: any) {
                 return (
@@ -183,7 +197,7 @@ const ViewTable = (props: ViewTableProps) => {
                 )
             }
         }
-    ].filter(Boolean);
+    ]
 
     const handleCancle = () => {
         setSelectedRowKeys([])
@@ -191,29 +205,6 @@ const ViewTable = (props: ViewTableProps) => {
     }
 
     const containerRef = useRef<any>(null)
-
-    const [layoutWidth, setLayoutWidth] = useState(0)
-
-    const resultColumns = useMemo(() => {
-        if (layoutWidth) {
-            const countWidth = columns.reduce((pre: any, cur: any) => pre += (cur.width ? cur.width : 0), 0)
-            const nameWidth = layoutWidth - countWidth
-            return columns.map((item: any) => item.dataIndex === 'name' ? { ...item, width: nameWidth } : item)
-        }
-        return columns
-    }, [layoutWidth])
-
-    const hanldeReizeLayout = () => {
-        setLayoutWidth(containerRef.current.clientWidth)
-    }
-
-    useEffect(() => {
-        containerRef.current && hanldeReizeLayout()
-        window.addEventListener('resize', hanldeReizeLayout)
-        return () => {
-            window.removeEventListener('resize', hanldeReizeLayout)
-        }
-    }, [])
 
     const hanldeViewAll = useCallback(
         (id: any) => {
@@ -224,10 +215,12 @@ const ViewTable = (props: ViewTableProps) => {
     return (
         <div ref={containerRef} className={styles.list_container}>
             <Spin spinning={loading}>
-                <ResizeTable
+                <ResizeHooksTable
                     className={styles.ViewTableStyle}
                     rowClassName={styles.result_table_row}
-                    columns={resultColumns}
+                    columns={columns}
+                    name="ws-test-plan-view-table"
+                    refreshDeps={[ws_id, pageParam, access]}
                     dataSource={data.data}
                     size="small"
                     pagination={false}

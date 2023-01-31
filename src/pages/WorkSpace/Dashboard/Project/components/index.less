@@ -15,9 +15,17 @@
     :global(.ant-table-cell:first-child .no_collection_star) {
         visibility: hidden;
     }
-
+    :global {
+        
+        .dashboard_job_list_hover_name .ant-typography {
+            color: rgba(0,0,0,85);
+        }
+    }
     &:hover {
         :global {
+            .dashboard_job_list_hover_name .ant-typography {
+                color : #1890FF;
+            }
             .ant-table-cell:first-child .no_collection_star {
                 visibility: visible;
                 cursor: pointer;

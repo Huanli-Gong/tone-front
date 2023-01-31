@@ -3,7 +3,6 @@ import { Space, Drawer, message, Pagination, Tooltip, Row, Alert, Table, Spin, T
 import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Highlighter from 'react-highlight-words';
 import { suiteChange } from '@/components/Public/TestSuite/index.js';
 import styles from './style.less';
@@ -28,6 +27,7 @@ import { useSuiteProvider } from '../hooks';
 import DeleteTips from "./components/DeleteTips"
 import DeleteDefault from "./components/DeleteDefault"
 import MetricBatchDelete from './components/MetricTable/MetricBatchDelete';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 let timeout: any = null;
 let timer: any = null;
@@ -234,14 +234,14 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             ),
             filterIcon: () => <FilterFilled style={{ color: pageParams.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => (
-                <PopoverEllipsis title={row.name} >
+                <ColumnEllipsisText ellipsis={{ tooltip: row.name }}  >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[pageParams.name || '']}
                         autoEscape
                         textToHighlight={row.name.toString()}
                     />
-                </PopoverEllipsis>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -379,14 +379,14 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             dataIndex: 'gmt_created',
             width: 200,
             sorter: true,
-            render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_created} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
         },
         {
             title: <FormattedMessage id="TestSuite.gmt_modified" />,
             dataIndex: 'gmt_modified',
             sorter: true,
             width: 200,
-            render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_modified} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -412,7 +412,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
 
     const [time, setTime] = useState()
     const onExpand = async (record: any) => {
-        setExpandKey([record.id + ''])
+        setExpandKey([record.id])
     }
 
     const handleSynchronous = async () => {
@@ -508,7 +508,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                     }
                     columns={columns}
                     dataSource={dataSource.data}
-                    rowKey={record => record.id + ''}
+                    rowKey={record => record.id}
                     pagination={false}
                     expandable={{
                         indentSize: 0,

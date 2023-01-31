@@ -7,10 +7,11 @@ import CopyModal from './components/CopyModal'
 import CommonPagination from '@/components/CommonPagination'
 import { getSearchFilter, getRadioFilter, getCheckboxFilter, getUserFilter } from '@/components/TableFilters'
 import { SingleTabCard } from '@/components/UpgradeUI';
-import ResizeTable from '@/components/ResizeTable';
 import { requestCodeMessage, AccessTootip, useStateRef } from '@/utils/utils';
 import { cloneDeep, get } from 'lodash'
 import { Access, useAccess } from 'umi'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { tooltipTd } from '../TestResult/Details/components'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -103,102 +104,112 @@ export default (props: any) => {
         copyModal.current.show('copy', _)
     }
 
-
-    const columns: any = [{
-        title: <FormattedMessage id="job.templates.name" />,
-        dataIndex: 'name',
-        ellipsis: true,
-        fixed: 'left',
-        width: 240,
-        ...getSearchFilter(params, setParams, 'name')
-    }, {
-        title: <FormattedMessage id="job.templates.description" />,
-        ellipsis: true,
-        width: 150,
-        dataIndex: 'description',
-        ...getSearchFilter(params, setParams, 'description')
-    }, {
-        title: <FormattedMessage id="job.templates.enable" />,
-        ellipsis: true,
-        width: 80,
-        dataIndex: 'enable',
-        render: (_: any) => (
-            <Badge
-                status={_ ? 'success' : 'error'}
-                text={
-                    <Typography.Text>
-                        {_ ? <FormattedMessage id="job.templates.enable" /> : <FormattedMessage id="job.templates.stop" />}
-                    </Typography.Text>
-                }
-            />
-        ),
-        ...getRadioFilter(
-            params,
-            setParams,
-            [{ name: formatMessage({ id: 'job.templates.enable' }), value: 1 },
-            { name: formatMessage({ id: 'job.templates.stop' }), value: 0 }],
-            'enable'
-        )
-    }, {
-        title: <FormattedMessage id="job.templates.job_type" />,
-        dataIndex: 'job_type',
-        width: 130,
-        ellipsis: true,
-        ...getCheckboxFilter(
-            params,
-            setParams,
-            initialState?.jobTypeList.map(({ id, name }: any) => ({ name, value: id })),
-            'job_type_id',
-            { marginTop: 80 }
-        )
-    }, {
-        width: 90,
-        title: <FormattedMessage id="job.templates.creator_name" />,
-        ellipsis: true,
-        dataIndex: 'creator_name',
-        ...getUserFilter(params, setParams, 'creator')
-    }, {
-        width: 90,
-        ellipsis: true,
-        title: <FormattedMessage id="job.templates.update_user" />,
-        dataIndex: 'update_user',
-        ...getUserFilter(params, setParams, 'update_user')
-    }, {
-        title: <FormattedMessage id="job.templates.gmt_created" />,
-        width: 120,
-        ellipsis: true,
-        dataIndex: 'gmt_created',
-    }, {
-        title: <FormattedMessage id="job.templates.gmt_modified" />,
-        width: 120,
-        ellipsis: true,
-        dataIndex: 'gmt_modified',
-    }, {
-        title: <FormattedMessage id="Table.columns.operation" />,
-        width: 155,
-        fixed: 'right',
-        render: (_: any, row: any) => (
-            <Space>
-                <span onClick={() => handlePreview(_)} style={{ color: '#1890FF', cursor: 'pointer' }}><FormattedMessage id="operation.preview" /></span>
-                <Access
-                    accessible={access.WsMemberOperateSelf(row.creator)}
-                    fallback={
-                        <Space>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.copy" /></span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
-                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></span>
-                        </Space>
+    const columns: any = [
+        {
+            title: <FormattedMessage id="job.templates.name" />,
+            dataIndex: 'name',
+            fixed: 'left',
+            width: 240,
+            ...getSearchFilter(params, setParams, 'name'),
+            ...tooltipTd("-")
+        },
+        {
+            title: <FormattedMessage id="job.templates.description" />,
+            width: 150,
+            dataIndex: 'description',
+            ...getSearchFilter(params, setParams, 'description'),
+            ...tooltipTd("-")
+        },
+        {
+            title: <FormattedMessage id="job.templates.enable" />,
+            ellipsis: true,
+            width: 80,
+            dataIndex: 'enable',
+            render: (_: any) => (
+                <Badge
+                    status={_ ? 'success' : 'error'}
+                    text={
+                        <Typography.Text>
+                            {_ ? <FormattedMessage id="job.templates.enable" /> : <FormattedMessage id="job.templates.stop" />}
+                        </Typography.Text>
                     }
-                >
-                    <Space>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}><FormattedMessage id="operation.copy" /></span>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}><FormattedMessage id="operation.edit" /></span>
-                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}><FormattedMessage id="operation.delete" /></span>
-                    </Space>
-                </Access>
-            </Space>
-        )
-    }]
+                />
+            ),
+            ...getRadioFilter(
+                params,
+                setParams,
+                [{ name: formatMessage({ id: 'job.templates.enable' }), value: 1 },
+                { name: formatMessage({ id: 'job.templates.stop' }), value: 0 }],
+                'enable'
+            )
+        },
+        {
+            title: <FormattedMessage id="job.templates.job_type" />,
+            dataIndex: 'job_type',
+            width: 130,
+            ...tooltipTd("-"),
+            ...getCheckboxFilter(
+                params,
+                setParams,
+                initialState?.jobTypeList.map(({ id, name }: any) => ({ name, value: id })),
+                'job_type_id',
+                { marginTop: 80 }
+            )
+        },
+        {
+            width: 90,
+            title: <FormattedMessage id="job.templates.creator_name" />,
+            ...tooltipTd("-"),
+            dataIndex: 'creator_name',
+            ...getUserFilter(params, setParams, 'creator')
+        },
+        {
+            width: 90,
+            ...tooltipTd("-"),
+            title: <FormattedMessage id="job.templates.update_user" />,
+            dataIndex: 'update_user',
+            ...getUserFilter(params, setParams, 'update_user')
+        },
+        {
+            title: <FormattedMessage id="job.templates.gmt_created" />,
+            width: 120,
+            ...tooltipTd("-"),
+            dataIndex: 'gmt_created',
+        },
+        {
+            title: <FormattedMessage id="job.templates.gmt_modified" />,
+            width: 120,
+            ...tooltipTd("-"),
+            dataIndex: 'gmt_modified',
+        },
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            width: 155,
+            fixed: 'right',
+            key: "operation",
+            render: (_: any, row: any) => (
+                <Space>
+                    <span onClick={() => handlePreview(_)} style={{ color: '#1890FF', cursor: 'pointer' }}><FormattedMessage id="operation.preview" /></span>
+                    <Access
+                        accessible={access.WsMemberOperateSelf(row.creator)}
+                        fallback={
+                            <Space>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.copy" /></span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></span>
+                            </Space>
+                        }
+                    >
+                        <Space>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleCopy(_)}><FormattedMessage id="operation.copy" /></span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleEdit(_)}><FormattedMessage id="operation.edit" /></span>
+                            <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleDeleteaModal({ ...row })}><FormattedMessage id="operation.delete" /></span>
+                        </Space>
+                    </Access>
+                </Space>
+            )
+        }
+    ]
 
     const handleEdit = ({ id, job_type }: any): any => {
         if (!job_type) return message.warning(formatMessage({ id: 'job.templates.delete.the.problem.template' }))
@@ -219,12 +230,13 @@ export default (props: any) => {
         <SingleTabCard title={<FormattedMessage id="job.templates.list" />}>
             <Spin spinning={loading}>
                 <div ref={resizeTableRef}>
-                    <ResizeTable
+                    <ResizeHooksTable
+                        name="ws-job-template-manage"
                         size="small"
                         dataSource={dataSource.data}
                         columns={columns}
                         pagination={false}
-                        key={Date.now()}
+                        refreshDeps={[params, access, initialState?.jobTypeList, ws_id]}
                         scroll={{ x: scrollX }}
                     />
                 </div>
@@ -248,7 +260,7 @@ export default (props: any) => {
             <Modal
                 title={<FormattedMessage id="job.templates.delete.prompt" />}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={handleDelete}>
@@ -270,7 +282,7 @@ export default (props: any) => {
             <Modal
                 title={<FormattedMessage id="job.templates.delete.prompt" />}
                 centered={true}
-                visible={deleteDefault}
+                open={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={handleDelete}>

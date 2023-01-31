@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import styles from './index.less'
 import { useIntl, FormattedMessage } from 'umi'
-import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table, Tooltip } from 'antd'
+import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table } from 'antd'
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
 import { MembersFilter } from './Components/FilterDropdowns'
@@ -15,10 +15,9 @@ import CommonPagination from '@/components/CommonPagination'
 import { usePageInit } from './hooks'
 import { useClientSize } from '@/utils/hooks'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
-import PermissionTootip from '@/components/Public/Permission/index';
 import { Access, useAccess } from 'umi';
 import OverflowList from '@/components/TagOverflow/index'
-import EllipsisPulic from '@/components/Public/EllipsisPulic'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 
 /**
@@ -60,7 +59,7 @@ const Cluster = (props: any, ref: any) => {
     const defaultOption = (data: any) => {
         if (data.code === 200) {
             setRefresh(!refresh)
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             setDeleteVisible(false)
             setDeleteDefault(false)
         }
@@ -103,7 +102,7 @@ const Cluster = (props: any, ref: any) => {
 
     const columns: any = [
         {
-            title: <FormattedMessage id="device.cluster.name"/>,
+            title: <FormattedMessage id="device.cluster.name" />,
             dataIndex: 'name',
             render: (record: any) => (<Typography.Text style={{ color: '#1890ff' }} >{record}</Typography.Text>),
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
@@ -121,7 +120,7 @@ const Cluster = (props: any, ref: any) => {
             )
         },
         {
-            title: <FormattedMessage id="device.tag"/>,
+            title: <FormattedMessage id="device.tag" />,
             dataIndex: 'tag_list',
             width: 240,
             render: (record: any) => (
@@ -141,7 +140,7 @@ const Cluster = (props: any, ref: any) => {
             )
         },
         {
-            title: <FormattedMessage id="device.description"/>,
+            title: <FormattedMessage id="device.description" />,
             width: 300,
             dataIndex: 'description',
             filterIcon: () => <FilterFilled style={{ color: params.description ? '#1890ff' : undefined }} />,
@@ -149,30 +148,30 @@ const Cluster = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, description })} />
             ),
             render(_: any) {
-                return <EllipsisPulic title={_} />
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
             }
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             width: 190,
             render: (record: any, row: any) => (
                 <Space>
-                    <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}><FormattedMessage id="operation.add"/></Button>
-                    <Access 
+                    <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenAddDrawer(record)}><FormattedMessage id="operation.add" /></Button>
+                    <Access
                         accessible={access.WsMemberOperateSelf(row.owner)}
                         fallback={
                             <Space>
-                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit"/></Button>
-                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete"/></Button>
+                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></Button>
+                                <Button type="link" style={{ padding: 0 }} onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></Button>
                             </Space>
                         }
                     >
                         <Space>
-                            <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}><FormattedMessage id="operation.edit"/></Button>
-                            <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete"/></Button>
+                            <Button type="link" style={{ padding: 0 }} onClick={() => handleUpdateServer(record)}><FormattedMessage id="operation.edit" /></Button>
+                            <Button type="link" style={{ padding: 0 }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete" /></Button>
                         </Space>
                     </Access>
-                     <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}><FormattedMessage id="operation.log"/></Button>
+                    <Button type="link" style={{ padding: 0 }} onClick={() => handleOpenLogDrawer(record.id)}><FormattedMessage id="operation.log" /></Button>
                 </Space>
             )
         }
@@ -180,7 +179,7 @@ const Cluster = (props: any, ref: any) => {
 
     return (
         <Layout.Content className={styles.table}>
-            <Spin spinning={syncServerLoading} tip={formatMessage({id: 'device.Synchronizing'}) }>
+            <Spin spinning={syncServerLoading} tip={formatMessage({ id: 'device.Synchronizing' })}>
                 <Table
                     style={{ width: '100%' }}
                     loading={loading}
@@ -238,16 +237,16 @@ const Cluster = (props: any, ref: any) => {
                 ref={addClusterServerRef}
             />
             <Modal
-                title={<FormattedMessage id="delete.tips"/>}
+                title={<FormattedMessage id="delete.tips" />}
                 centered={true}
                 visible={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteServer(deleteObj.id)}>
-                        <FormattedMessage id="operation.confirm.delete"/>
+                        <FormattedMessage id="operation.confirm.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={600}
@@ -255,30 +254,30 @@ const Cluster = (props: any, ref: any) => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    <FormattedMessage id="device.cluster.delete.tips"/>
+                    <FormattedMessage id="device.cluster.delete.tips" />
                 </div>
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
-                    <FormattedMessage id="view.quote.details"/>
+                    <FormattedMessage id="view.quote.details" />
                 </div>
             </Modal>
             <Modal
-                title={<FormattedMessage id="delete.tips"/>}
+                title={<FormattedMessage id="delete.tips" />}
                 centered={true}
                 visible={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteServer(deleteObj.id)}>
-                        <FormattedMessage id="operation.delete"/>
+                        <FormattedMessage id="operation.delete" />
                     </Button>,
                     <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}
                 width={300}
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt"/>
+                    <FormattedMessage id="delete.prompt" />
                 </div>
             </Modal>
         </Layout.Content>

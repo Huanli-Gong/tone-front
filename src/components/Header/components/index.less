@@ -62,7 +62,9 @@
 .active_typography { color : #1890FF;}
 
 .dropdownClass {
-    :global(.ant-dropdown-arrow ){
-        visibility: hidden;
+    :global {
+        .ant-dropdown-arrow {
+            visibility: hidden;
+        }
     }
 }

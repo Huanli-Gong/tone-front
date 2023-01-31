@@ -4,6 +4,8 @@ import React from 'react';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css'
 import styled from 'styled-components'
+import { useSize } from "ahooks"
+import { setStorageState } from '@/utils/table.hooks';
 
 const ResizeTableWrapper = styled.div`
     position: relative;
@@ -12,20 +14,21 @@ const ResizeTableWrapper = styled.div`
 
 type BorderPosition = {
     left: number;
+    height?: number;
 }
 
 const ResizeBorder = styled.div.attrs((props: BorderPosition) => ({
     style: {
         left: props.left,
+        height: props?.height
     },
 })) <BorderPosition>`
     width: 0px;
-    height: 100%;
     position: absolute;
     left: 0;
     top: 0;
     border-left: 1px dashed #d9d9d9;
-    z-index: 9999;
+    z-index: 99;
 `
 
 type ResizeProps = {
@@ -69,10 +72,9 @@ const StyledResizeable = styled(Resizable) <ResizeProps>`
 
 const ResizeableTitle = (props: any) => {
     const { width, ...restProps } = props;
-    // if (!width) return <th {...restProps} />;
     return (
         <StyledResizeable
-            width={!width ? 90 : width}
+            width={!width ? 100 : width}
             height={0}
             draggableOpts={{ enableUserSelectHack: false }}
             {...restProps}
@@ -82,17 +84,19 @@ const ResizeableTitle = (props: any) => {
     );
 }
 
-const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
-    const { columns = [], ...rest } = props
+const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (props) => {
+    const { columns = [], setColumns, name, onColumnsChange, ...rest } = props
 
-    const [tableColumns, setTableColumns] = React.useState<any[]>(columns)
     const [end, setEnd] = React.useState(0)
     const [start, setStart] = React.useState(0)
     const [borderShow, setBorderShow] = React.useState(false)
 
     const ref = React.useRef<HTMLDivElement>(null)
+    // const tb = React.useRef<HTMLTableElement>(null)
 
-    const handleResizeStart = React.useCallback((index: number) => (e: any, { size }: any) => {
+    const size = useSize(ref)
+
+    const handleResizeStart = (index: number) => (e: any, { size }: any) => {
         if (!columns[index].ellipsis) return
 
         const { clientX } = e
@@ -100,36 +104,47 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
         setStart(drageX)
         setEnd(drageX)
         setBorderShow(true)
-    }, [columns, ref])
+    }
 
-    const handleResizeMove = React.useCallback((index: number) => (e: any) => {
+    const handleResizeMove = (index: number) => (e: any) => {
         const { clientX } = e
         const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
 
         setEnd(drageX)
-    }, [ref])
+    }
 
-    const handleResizeStop = React.useCallback((index: number) => (e: any, { size }: any) => {
+    const handleResizeStop = (index: number) => (e: any, { size }: any) => {
         const { clientX } = e
         const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
 
-        const nextColumns = [...tableColumns];
+        const nextColumns = [...columns];
 
         if (nextColumns[index].ellipsis) {
-            nextColumns[index] = {
-                ...nextColumns[index],
-                width: size.width += drageX - start,
+            const w = size.width += drageX - start
+            const { dataIndex, key }: any = nextColumns[index]
+            /* 计算小于20px操作不生效 */
+            if (w > 20) {
+                nextColumns[index] = {
+                    ...nextColumns[index],
+                    width: w,
+                }
+                name && setStorageState(name, dataIndex || key, w)
+                onColumnsChange?.()
             }
-            setTableColumns(nextColumns)
         }
 
         setEnd(0)
         setStart(0)
         setBorderShow(false)
-    }, [tableColumns, start, ref])
+    }
+
+    const scrollX = React.useMemo(() => columns.reduce((p: any, c: any) => {
+        if (c.width) return p += c?.width
+        return p
+    }, 0), [columns])
 
     return (
-        <ResizeTableWrapper ref={ref}>
+        <ResizeTableWrapper ref={ref} className="resize-table-wrapper">
             <Table
                 {...rest}
                 components={{
@@ -137,8 +152,9 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
                         cell: ResizeableTitle,
                     },
                 }}
+                scroll={props?.scroll || { x: scrollX || size?.width }}
                 columns={
-                    tableColumns.map((col: any, index: any) => ({
+                    columns.filter(Boolean).map((col: any, index: any) => ({
                         ...col,
                         onHeaderCell: (column: any) => ({
                             resize: !!col.ellipsis,
@@ -153,6 +169,7 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
             {
                 borderShow &&
                 <ResizeBorder
+                    height={size?.height}
                     left={end || start}
                 />
             }
@@ -161,3 +178,41 @@ const ResizeColumnTable: React.FC<TableProps<any>> = (props) => {
 }
 
 export default ResizeColumnTable
+
+
+
+/* const scrollX = React.useMemo(() => {
+    const { columns: cols = [] } = props
+    const { width } = size
+    if (!width) return
+    const rw = cols?.reduce((pre: any, cur: any, index: number) => {
+        if (cur?.width)
+            return pre += cur.width
+        return pre
+    }, 0)
+    if (rw > width) return rw
+    return width
+}, [props.columns, size]) */
+
+/* React.useEffect(() => {
+    const { columns: cols = [], expandable, rowSelection } = props
+    const table = tb.current
+    const allCols = [expandable, rowSelection, ...cols].filter(Boolean)
+
+    if (table) {
+        const ths = table?.querySelector("thead")?.querySelectorAll("th")
+        const allThs: { width?: number, className?: string }[] = ths ? Array.from(ths)?.map((i) => ({
+            width: i.getBoundingClientRect()?.width,
+            calssName: i?.className
+        })) : []
+        if (!!allThs?.length) {
+            allCols.forEach((i: any, index) => {
+                const { width, dataIndex, key } = i
+                const w = allThs[index]?.width
+                const title = dataIndex || key
+                if (!width && w && title && name)
+                    setStorageState(name, title, w)
+            })
+        }
+    }
+}, [props]) */

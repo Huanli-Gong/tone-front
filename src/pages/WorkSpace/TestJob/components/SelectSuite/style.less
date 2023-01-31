@@ -2,14 +2,17 @@
     .spinWrapper {
         width: 100%;
         height: 100%;
-        :global(.ant-spin-container){
-            width: 100%;
-            height: 100%;
-        }
-        :global(.ant-empty-normal){
-            margin: 0 0 12px 0; // 覆盖原组件样式。
-        }
 
+         :global{
+            .ant-spin-container {
+                width: 100%;
+                height: 100%;
+            }
+
+            .ant-empty-normal {
+                margin: 0 0 12px 0; // 覆盖原组件样式。
+            }
+        }
     }
     .nav{
         opacity: 0.85;
@@ -19,45 +22,102 @@
         line-height: 24px;
     }
 
-    :global(.ant-table-tbody > tr > td){
-        border-bottom: none;
+    .bar{
+        white-space:nowrap;
+        background-color: transparent;
+    }
+
+    .title{
+        opacity: 0.85;
+        margin-right: 8px;
+        font-family: PingFangSC-Regular;
+        font-size: 14px;
+        line-height: 28px;
+    }
+
+    .remove{
+        visibility: hidden;
+        float : right;
+        margin-top: 6px;
+        margin-right: 6px;
+        color:red;
+        cursor: pointer;
+    }
+    
+    .batch{
+        position: absolute;
+        padding-right : 20px;
+        height:48px;
+        width:100%;
+        top: -11px;
         background-color: #fff;
-        padding:0 4px !important;
+        padding-left:24px;
+        z-index: 1;
+        box-shadow:0 -9px 28px 8px rgba(0,0,0,0.05), 0 -6px 16px 0 rgba(0,0,0,0.08), 0 -3px 6px -4px rgba(0,0,0,0.12);
     }
 
-    :global(.ant-table-tbody > tr .ant-table-wrapper:only-child .ant-table td ){
-        background-color: #fbfcfe;
+    .info{
+        width: 180px;
     }
 
-    :global( .ant-table-tbody > tr .ant-table-wrapper:only-child .ant-table tr ) {
-        &:hover {
-            td {
-                background-color: #fafafa !important;
-            }
-        }
+    .var{
+        width: 150px;
     }
 
-    :global(.ant-table-thead > tr > th){
-        padding:0 4px !important;
+    .action{
+        width: 60px;
     }
 
-    :global(.ant-card-body){
-        padding:0;
-    }
-
-    :global(tr.ant-table-expanded-row > td){
-        background: #fff;
-        // overflow: hidden;
-    }
-    :global(.ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell){
-        padding: 0px; 
-    }
-
-    :global( .ant-table-expand-icon-col ) {
-        width: 22px !important;
+    .column_outter {
+        width : 100px;
     }
 
     :global {
+        .ant-table.ant-table-small .ant-table-expanded-row-fixed {
+            margin: 0;
+            padding: 0;
+        }
+        .ant-table-tbody > tr > td {
+            border-bottom: none;
+            background-color: #fff;
+            padding:0 4px !important;
+        }
+
+        .ant-table-tbody > tr .ant-table-wrapper:only-child .ant-table td {
+            background-color: #fbfcfe;
+        }
+
+        .ant-table-tbody > tr .ant-table-wrapper:only-child .ant-table tr {
+            &:hover {
+                td {
+                    background-color: #fafafa !important;
+                }
+            }
+        }
+
+        .ant-table-thead > tr > th {
+            padding:0 4px !important;
+        }
+
+        .ant-card-body {
+            padding:0;
+        }
+
+        tr.ant-table-expanded-row > td {
+            background: #fff;
+        }
+
+        .ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell {
+            padding: 0!important;
+            .resize-table-wrapper {
+                padding: 0 0 0 22px!important; 
+            }
+        }
+    
+         .ant-table-expand-icon-col {
+            width: 22px !important;
+        }
+    
         .ant-table-thead tr .ant-table-selection-column,
         .ant-table-tbody .outter .ant-table-row-expand-icon-cell {
             overflow: hidden;
@@ -71,119 +131,83 @@
             width: 30px !important;
             min-width:0;
         }
-    }
 
-    .bar{
-        white-space:nowrap;
-        background-color: transparent;
-    }
-    .title{
-        opacity: 0.85;
-        margin-right: 8px;
-        font-family: PingFangSC-Regular;
-        font-size: 14px;
-        line-height: 28px;
-    }
-    :global(.ant-table-row:hover .ant-table-cell>.anticon-minus-circle){
-        visibility: visible;
-    }
-    :global(.ant-table-row:hover,.ant-table-row:hover){
-        background-color: #fafafa !important;
-    }
-    .remove{
-        visibility: hidden;
-        float : right;
-        margin-top: 6px;
-        margin-right: 6px;
-        color:red;
-        cursor: pointer;
-    }
-    :global(.ant-card-body>.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table-small .ant-table-thead > tr > th){
-        // background: #fff;
-        border-bottom: none;
-    }
-    :global(.ant-table-cell .ant-table .ant-table-row){
-        background: #fbfcfe !important; 
-    }
+        .ant-table-row:hover .ant-table-cell>.anticon-minus-circle {
+            visibility: visible;
+        }
 
-    :global(.ant-table-cell .ant-table .ant-table-thead .ant-table-cell){
-        background: #f2f5fc !important; 
-    }
-    :global(.ant-table-cell .ant-table .ant-table-thead .ant-table-selection){
-        background: #f2f5fc !important; 
-    }
-    :global(.ant-drawer-body){
-        padding: 13px 24px; 
-    }
-    :global(.ant-form-item){
-        margin-bottom: 8px; 
-    }
-    :global(.ant-space>.ant-space-item>.ant-form-item){
-        margin-bottom: 0; 
-    }
-    :global(.ant-table-ping-right .ant-table-cell-fix-right-last::after){
-        box-shadow: none;
-    }
-    .batch{
-        position: absolute;
-        padding-right : 20px;
-        height:48px;
-        width:100%;
-        top: -11px;
-        background-color: #fff;
-        padding-left:24px;
-        z-index: 1;
-        box-shadow:0 -9px 28px 8px rgba(0,0,0,0.05), 0 -6px 16px 0 rgba(0,0,0,0.08), 0 -3px 6px -4px rgba(0,0,0,0.12)
-    }
-    .info{
-        width: 180px;
-    }
-    .var{
-        width: 150px;
-    }
-    .action{
-        width: 60px;
-    }
+        .ant-table-row:hover,.ant-table-row:hover {
+            background-color: #fafafa !important;
+        }
 
-    .column_outter {
-        width : 100px
+        .ant-card-body>.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table-small .ant-table-thead > tr > th {
+            border-bottom: none;
+        }
+
+        .ant-table-cell .ant-table .ant-table-row {
+            background: #fbfcfe !important; 
+        }
+    
+        .ant-table-cell .ant-table .ant-table-thead .ant-table-cell {
+            background: #f2f5fc !important; 
+        }
+
+        .ant-table-cell .ant-table .ant-table-thead .ant-table-selection {
+            background: #f2f5fc !important; 
+        }
+
+        .ant-drawer-body {
+            padding: 13px 24px; 
+        }
+
+        .ant-form-item {
+            margin-bottom: 8px; 
+        }
+
+        .ant-space>.ant-space-item>.ant-form-item {
+            margin-bottom: 0; 
+        }
+
+        .ant-table-ping-right .ant-table-cell-fix-right-last::after {
+            box-shadow: none;
+        }
     }
 }
 
 .conf_table {
-    :global(.ant-table-thead > tr ){
-        & th:nth-child( n + 2 ) {
-            line-height: 0 !important;
-            height : 22px !important;
-            span {
-                height: 22px !important;
-                line-height: 22px !important;
+    :global {
+        .ant-table-thead > tr {
+            & th:nth-child( n + 2 ) {
+                line-height: 0 !important;
+                height : 22px !important;
+                span {
+                    height: 22px !important;
+                    line-height: 22px !important;
+                }
             }
         }
 
-        // & span {
-        //     height: 22px !important;
-        //     line-height: 0 !important;
-        // }
-    }
-
-    :global(.ant-table) {
-        & .ant-table-container::before {
-            width: 0px !important;
+        .ant-table {
+            & .ant-table-container::before {
+                width: 0px !important;
+            }
         }
     }
 }
+
 .suite_table_loading {
-    :global(.ant-spin-nested-loading > div > .ant-spin) {
-        z-index: 0;
-    }
+    :global {
+        .ant-spin-nested-loading > div > .ant-spin {
+            z-index: 0;
+        }
 
-    :global(table tr td.ant-table-selection-column) {
-        text-align: left !important;
-    }
+        table tr td.ant-table-selection-column {
+            text-align: center !important;
+        }
 
-    :global(.ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table) {
-        margin: -8px -8px -8px 17px;
+        .ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
+            margin: 0px;
+        }
     }
 }
 
@@ -197,14 +221,16 @@
 
 .suite_drawer,
 .case_drawer {
-    :global(.ant-drawer-body) {
-        padding: 0;
-    }
-    :global(.ant-form) {
-        padding: 13px 0;
-    }
-    :global(.ant-drawer-header) {
-        padding: 16px 14px 8px;
+    :global {
+        .ant-drawer-body {
+            padding: 0;
+        }
+        .ant-form {
+            padding: 13px 0;
+        }
+        .ant-drawer-header {
+            padding: 16px 14px 8px;
+        }
     }
 }
 

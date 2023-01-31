@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, } from 'react';
-import { Button, Space, Tabs, message, Row } from 'antd';
+import { Button, Space, Tabs, message, Row, Typography, TableColumnProps } from 'antd';
 import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
 import { editCase, delCase, openSuite } from '../../../service';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import styles from '../../style.less';
 import MetricTable from '../../components/MetricTable';
 import CommonTable from '@/components/Public/CommonTable';
@@ -15,6 +14,7 @@ import { useSuiteProvider } from '../../../hooks';
 import { useLocation, useIntl, FormattedMessage } from 'umi';
 import DeleteDefault from '../DeleteDefault';
 import DeleteTips from '../DeleteTips';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 /**
  * Conf级列表
@@ -107,6 +107,7 @@ export default forwardRef(({ id }: any, ref: any) => {
             disabled: !!metricDelInfo?.selectedRowKeys?.length, // Column configuration not to be checked
         }),
         onChange: (selectedRowKeys: any[], selectedRows: any) => {
+            console.log(selectedRows, selectedRowKeys)
             setSelectedRow(selectedRows)
             setSelectedRowKeys(selectedRowKeys)
         }
@@ -116,8 +117,8 @@ export default forwardRef(({ id }: any, ref: any) => {
         setExpandInnerKey([record.id])
     }
 
-    const columns = [
-        { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: true, render: (_: any, row: any) => <PopoverEllipsis title={row.name} /> },
+    const columns: TableColumnProps<any>[] = [
+        { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: { showTitle: false }, render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.name} /> },
         { title: <FormattedMessage id="TestSuite.alias" />, dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
         { title: <FormattedMessage id="TestSuite.domain" />, width: 100, dataIndex: 'domain_name_list', ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
         { title: <FormattedMessage id="TestSuite.timeout" />, dataIndex: 'timeout', width: 160 },
@@ -127,28 +128,23 @@ export default forwardRef(({ id }: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
+            key: "var",
             width: 100,
-            render: (_: number, row: any) =>
-                <PopoverEllipsis
-                    title={
-                        row.var && JSON.parse(row.var).map((item: any, index: number) => {
-                            return <p key={index}>{`${item.name}=${item.val || '-'},${item.des || '-'}`};</p>
-                        })
+            render: (_: number, row: any) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
+                    {
+                        row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
+                            return `${item.name}=${item.val || '-'},${item.des || '-'};`
+                        }) : '-'
                     }
-                >
-                    <span>
-                        {
-                            row.var && row.var != '[]' ? JSON.parse(row.var).map((item: any) => {
-                                return `${item.name}=${item.val || '-'},${item.des || '-'};`
-                            }) : '-'
-                        }
-                    </span>
-                </PopoverEllipsis>,
+                </ColumnEllipsisText>
+            )
         },
         {
             title: <FormattedMessage id="TestSuite.desc" />,
             ellipsis: true,
             width: 100,
+            key: "desc",
             render: (_: any, row: any) => (
                 <ButtonEllipsis title={row.doc} width={70} isCode={true}>
                     <EditOutlined
@@ -177,7 +173,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                 showTitle: false
             },
             width: '190px',
-            render: (_: number, row: any) => <PopoverEllipsis title={row.gmt_created} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
         },
         {
             title: (
@@ -188,22 +184,21 @@ export default forwardRef(({ id }: any, ref: any) => {
                     </Button>
                 </Row>
             ),
-            valueType: 'option',
-            dataIndex: 'id',
+            key: 'option',
             width: 140,
             fixed: 'right',
             render: (_: number, row: any) => (
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editInner({ ...row })}>
+                    <Typography.Link onClick={() => editInner({ ...row })}>
                         <FormattedMessage id="operation.edit" />
-                    </Button>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => deleteInner({ ...row })}>
+                    </Typography.Link>
+                    <Typography.Link onClick={() => deleteInner({ ...row })}>
                         <FormattedMessage id="operation.delete" />
-                    </Button>
+                    </Typography.Link>
                 </Space>
             ),
         },
-    ];
+    ]
 
     const handlePage = (page_num: number, page_size: number) => {
         setConfPage(page_num)
@@ -220,6 +215,7 @@ export default forwardRef(({ id }: any, ref: any) => {
         else requestCodeMessage(code, msg)
     }
 
+    console.log(expandInnerKey)
     return (
         <div className={`${styles.warp} case_table_wrapper`} >
             {
@@ -245,11 +241,12 @@ export default forwardRef(({ id }: any, ref: any) => {
             {
                 innerKey == '1' ?
                     <CommonTable
-                        columns={columns}
-                        // scrollType={1400}
+                        columns={columns as any}
+                        name="sys-suite-manage-case"
                         scroll={{ x: 1400 }}
+                        rowKey={record => record.id}
                         loading={expandLoading}
-                        list={expandList.data}
+                        dataSource={expandList?.data || []}
                         page={expandList.page_num}
                         rowSelection={rowSelection}
                         totalPage={expandList.total_page}
@@ -261,7 +258,6 @@ export default forwardRef(({ id }: any, ref: any) => {
                                 {
                                     expandedRowRender: (record: any) => <MetricTable componentType={"case"} id={record.id} innerKey={innerKey} />,
                                     onExpand: (_: any, record: any) => {
-                                        // setSelectedRowKeys([])
                                         _ ? onExpand(record) : setExpandInnerKey([])
                                     },
                                     indentSize: 0,

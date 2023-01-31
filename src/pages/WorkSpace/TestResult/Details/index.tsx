@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert, Popconfirm } from 'antd'
 import styles from './index.less'
-import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet } from 'umi'
+import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet, useLocation } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection, queryJobState } from '@/pages/WorkSpace/TestResult/services'
@@ -99,14 +99,16 @@ const EditNoteBtn: React.FC<any> = (props) => {
 
     )
 }
+
 const TestResultDetails: React.FC = (props: any) => {
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const widthStyle = locale ? 120 : 58
     const { ws_id, id: job_id } = useParams() as any
+    const { pathname, query } = useLocation() as any
 
     const access = useAccess()
-    const [tab, setTab] = useState('testResult')
+    const [tab, setTab] = useState<any>(query?.tab ? +query.tab : 1)
     const rerunModalRef: any = useRef()
     const processTableRef: any = useRef()
     const [fetching, setFetching] = React.useState(false)
@@ -130,7 +132,7 @@ const TestResultDetails: React.FC = (props: any) => {
         const [dataSource] = data
         if (!dataSource) return setDetails({})
         if (dataSource?.state === 'running')
-            setTab('testProgress')
+            setTab(2)
         setDetails(dataSource)
     }
 
@@ -159,8 +161,9 @@ const TestResultDetails: React.FC = (props: any) => {
         if (state) getJobState()
     }, [details?.state])
 
-    const handleTabClick = (t: string) => {
+    const handleTabClick = (t: any) => {
         setTab(t)
+        history.replace(`${pathname}?tab=${t}`)
     }
 
     const handleEditTagsOk = () => {
@@ -195,10 +198,10 @@ const TestResultDetails: React.FC = (props: any) => {
         }
         message.success(formatMessage({ id: 'operation.success' }))
         queryJobDetails()
-        if (tab === 'testResult') {
+        if (tab === 1) {
             setRefreshResult(true)
         }
-        if (tab === 'testProgress') {
+        if (tab === 2) {
             processTableRef.current.refresh()
         }
         setFetching(false)
@@ -243,6 +246,38 @@ const TestResultDetails: React.FC = (props: any) => {
             ["aliyun", "aliyun"],
         ]
     ).get(name)
+
+    const tabsMap = [
+        [
+            1, "testResult",
+            <TestResultTable
+                creator={details.creator}
+                test_type={details.test_type}
+                job_id={job_id}
+                cases={details.case_result}
+                caseResult={details.case_result}
+                provider_name={transProvider(details.provider_name)}
+                ws_id={ws_id}
+                refreshResult={refreshResult}
+            />],
+        [
+            2, "testProgress",
+            <ProcessTable
+                job_id={job_id}
+                onRef={processTableRef}
+                test_type={details?.test_type}
+                provider_name={transProvider(details?.provider_name)}
+            />
+        ],
+        [
+            3, "testConfig",
+            <TestSettingTable
+                jt_id={details?.job_type_id}
+                provider_name={transProvider(details?.provider_name)}
+                test_type={details?.test_type}
+            />
+        ]
+    ]
 
     return (
         <Spin spinning={loading} className={styles.spin_style}>
@@ -483,41 +518,13 @@ const TestResultDetails: React.FC = (props: any) => {
                                         </Access>
                                     </div>
                                 }
-                            >
-                                <Tabs.TabPane
-                                    tab={<FormattedMessage id="ws.result.details.tab.testResult" />}
-                                    key="testResult"
-                                    style={{ overflow: "hidden" }}
-                                >
-                                    <TestResultTable
-                                        creator={details.creator}
-                                        test_type={details.test_type}
-                                        job_id={job_id}
-                                        cases={details.case_result}
-                                        caseResult={details.case_result}
-                                        provider_name={transProvider(details.provider_name)}
-                                        ws_id={ws_id}
-                                        refreshResult={refreshResult}
-                                    />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testProgress" />}
-                                    key="testProgress" disabled={details?.created_from === 'offline'} >
-                                    <ProcessTable
-                                        job_id={job_id}
-                                        onRef={processTableRef}
-                                        test_type={details?.test_type}
-                                        provider_name={transProvider(details?.provider_name)}
-                                    />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testConfig" />}
-                                    key="testConfig" >
-                                    <TestSettingTable
-                                        jt_id={details?.job_type_id}
-                                        provider_name={transProvider(details?.provider_name)}
-                                        test_type={details?.test_type}
-                                    />
-                                </Tabs.TabPane>
-                            </Tabs>
+                                items={tabsMap.map((i: any) => ({
+                                    key: i[0],
+                                    label: formatMessage({ id: `ws.result.details.tab.${i[1]}` }),
+                                    children: i[2],
+                                    disabled: i[0] === 2 && details?.created_from === 'offline'
+                                }))}
+                            />
                         </div>
                     </div>
             }

@@ -16,7 +16,6 @@ export default (props: FormProps) => {
     const { formatMessage } = useIntl()
     const [form] = Form.useForm()
     const { ws_id }: any = useParams()
-    const { baseline, project, baseline_job } = contrl
     const [jobList, setJobList] = React.useState<any>([])
 
     const defaultParams = {
@@ -47,7 +46,7 @@ export default (props: FormProps) => {
         if ('baseline' in contrl) getBaselineList()
         if ('project' in contrl) getProjectList()
         if ('baseline_job' in contrl) getJobList(defaultParams)
-    }, [baseline, project, baseline_job, disabled])
+    }, [contrl, disabled])
 
     useImperativeHandle(
         onRef,

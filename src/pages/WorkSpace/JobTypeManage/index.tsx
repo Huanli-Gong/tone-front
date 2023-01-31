@@ -1,13 +1,13 @@
-import React, { useCallback, useRef, useEffect,useState } from 'react'
-import { Table, Space, Button, Badge, message, Tooltip, Modal, Input } from 'antd'
+import React, { useCallback, useRef, useEffect, useState } from 'react'
+import { Table, Space, Button, Badge, message, Modal } from 'antd'
 import { useRequest, history, useModel, useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryJobTypeList, jobSwitch, deleteJob, queryJobTypeDel } from './services'
 import { requestCodeMessage, switchServerType, switchTestType } from '@/utils/utils'
-import EllipsisPulic from '@/components/Public/EllipsisPulic';
-import { CheckCircleOutlined, CheckCircleFilled , ExclamationCircleOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, CheckCircleFilled, ExclamationCircleOutlined } from '@ant-design/icons'
 
 import { JobTypeDeleteModal, EditTalbeCell } from './components'
 import { SingleTabCard } from '@/components/UpgradeUI'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -30,11 +30,11 @@ export default (props: any) => {
     const defaultOption = (ret: any) => {
         if (ret.code === 200) {
             run({ ws_id })
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
 
         }
         else
-            requestCodeMessage( ret.code , ret.msg )
+            requestCodeMessage(ret.code, ret.msg)
     }
 
     const handleChangePriority = async (jt_id: number, priority: number) => {
@@ -43,9 +43,9 @@ export default (props: any) => {
                 const result = await jobSwitch({ priority, jt_id })
                 defaultOption(result)
             }
-            else message.error(formatMessage({id: 'job.types.sort.ps1'}) )
+            else message.error(formatMessage({ id: 'job.types.sort.ps1' }))
         }
-        else message.error(formatMessage({id: 'job.types.sort.ps2'}) )
+        else message.error(formatMessage({ id: 'job.types.sort.ps2' }))
     }
 
     useEffect(() => {
@@ -57,9 +57,9 @@ export default (props: any) => {
 
     const handleDeleteJobType = async (job: any) => {
         const data = await queryJobTypeDel({ jt_id: job.id })
-        if(data.data.length > 0){
+        if (data.data.length > 0) {
             deleteModal.current.show(job)
-        }else{
+        } else {
             setDeleteDefault(true)
             setDefaultJob(job)
         }
@@ -69,12 +69,12 @@ export default (props: any) => {
         const result = await deleteJob({ jt_id: job.id, ws_id })
         if (result.code === 200) {
             run({ ws_id })
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             deleteModal.current.hide()
             setDeleteDefault(false)
         }
         else
-            requestCodeMessage( result.code , result.msg )
+            requestCodeMessage(result.code, result.msg)
     }
 
     // 编辑
@@ -101,16 +101,16 @@ export default (props: any) => {
 
     const columns: any = [
         {
-            title: <FormattedMessage id="job.types.default"/>,
+            title: <FormattedMessage id="job.types.default" />,
             fixed: 'left',
-            width: enLocale ? 100: 50,
+            width: enLocale ? 100 : 50,
             // dataIndex : 'is_first',
             render: (_: any) => (
                 _.is_first ? <CheckCircleFilled style={{ width: 17.5, height: 17.5, color: '#1890ff' }} /> : <CheckCircleOutlined onClick={() => handleSetDefault(_)} style={{ cursor: 'pointer', width: 17.5, height: 17.5, color: 'rgba(0,0,0,.1)' }} />
             )
         },
         {
-            title: <FormattedMessage id="job.types.sort"/>,
+            title: <FormattedMessage id="job.types.sort" />,
             fixed: 'left',
             width: 75,
             render: (_: any) => (
@@ -118,66 +118,66 @@ export default (props: any) => {
             )
         },
         {
-            title: <FormattedMessage id="job.types.type_name"/>,
+            title: <FormattedMessage id="job.types.type_name" />,
             dataIndex: 'name',
             ellipsis: {
                 shwoTitle: false,
             },
             fixed: 'left',
-            render: (_: any) => <EllipsisPulic title={_}/>,
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />,
         },
         {
-            title: <FormattedMessage id="job.types.test_type"/>,
+            title: <FormattedMessage id="job.types.test_type" />,
             dataIndex: 'test_type',
             render: (_: string) => switchTestType(_, formatMessage)
         },
         {
-            title: <FormattedMessage id="job.types.server_type"/>,
+            title: <FormattedMessage id="job.types.server_type" />,
             dataIndex: 'server_type',
             render: (_: string) => switchServerType(_, formatMessage)
         },
         {
-            title: <FormattedMessage id="job.types.creator_name"/>,
+            title: <FormattedMessage id="job.types.creator_name" />,
             dataIndex: 'creator_name',
             render: (_: any) => (_ || '-')
         },
         {
-            title: <FormattedMessage id="job.types.gmt_created"/>,
+            title: <FormattedMessage id="job.types.gmt_created" />,
             width: 176,
             dataIndex: 'gmt_created',
             render: (_: any) => (_ || '-')
         },
         {
-            title: <FormattedMessage id="job.types.enable.state"/>,
+            title: <FormattedMessage id="job.types.enable.state" />,
             dataIndex: 'enable',
             render: (_: any) => (
                 <Badge
                     status={_ ? "success" : "error"}
-                    text={_ ? <FormattedMessage id="job.types.enable"/>: <FormattedMessage id="job.types.stop"/>}
+                    text={_ ? <FormattedMessage id="job.types.enable" /> : <FormattedMessage id="job.types.stop" />}
                 />
             )
         },
         {
-            title: <FormattedMessage id="job.types.description"/>,
+            title: <FormattedMessage id="job.types.description" />,
             dataIndex: 'description',
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => <EllipsisPulic title={_}/>
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
         },
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             fixed: 'right',
             render: (_: any) => (
                 <Space>
                     <Button style={{ padding: 0 }} size="small" type="link" onClick={() => handleEditJobType(ws_id, _.id)}>
-                        <FormattedMessage id="operation.edit"/>
+                        <FormattedMessage id="operation.edit" />
                     </Button>
                     <Button onClick={() => handlePreviewJobType(_.id)} style={{ padding: 0 }} size="small" type="link">
-                        <FormattedMessage id="operation.preview"/>
+                        <FormattedMessage id="operation.preview" />
                     </Button>
-                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> :  <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>
-                        <FormattedMessage id="operation.delete"/>
+                    {(_.creator_name === '系统预设') || (_.creator_name !== '系统预设' && _.is_first) ? <></> : <Button type='link' size="small" style={{ padding: 0 }} onClick={() => handleDeleteJobType(_)}>
+                        <FormattedMessage id="operation.delete" />
                     </Button>}
                 </Space>
             )
@@ -190,9 +190,9 @@ export default (props: any) => {
 
     return (
         <SingleTabCard
-            title={<FormattedMessage id="job.types.manage"/>}
+            title={<FormattedMessage id="job.types.manage" />}
             extra={
-                <Button type="primary" onClick={handleCreate}><FormattedMessage id="job.types.create"/></Button>
+                <Button type="primary" onClick={handleCreate}><FormattedMessage id="job.types.create" /></Button>
             }
         >
             <Table
@@ -206,25 +206,25 @@ export default (props: any) => {
             />
             <JobTypeDeleteModal ref={deleteModal} onOk={handleDelete} />
             <Modal
-				title={<FormattedMessage id="delete.prompt"/>}
-				centered={true}
-				visible={deleteDefault}
-				onCancel={() => setDeleteDefault(false)}
-				footer={[
-					<Button key="submit" onClick={()=>handleDelete(DefaultJob)}>
-						<FormattedMessage id="operation.ok"/>
-					</Button>,
-					<Button key="back" type="primary"  onClick={() => setDeleteDefault(false)}>
-						<FormattedMessage id="operation.cancel"/>
-					</Button>
-				]}
-				width={300}
-			>
-				<div style={{ color:'red',marginBottom: 5 }}> 
-					<ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign:'middle' 	}}/>
-					<FormattedMessage id="delete.prompt"/>
-				</div>
-			</Modal>
+                title={<FormattedMessage id="delete.prompt" />}
+                centered={true}
+                visible={deleteDefault}
+                onCancel={() => setDeleteDefault(false)}
+                footer={[
+                    <Button key="submit" onClick={() => handleDelete(DefaultJob)}>
+                        <FormattedMessage id="operation.ok" />
+                    </Button>,
+                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
+                        <FormattedMessage id="operation.cancel" />
+                    </Button>
+                ]}
+                width={300}
+            >
+                <div style={{ color: 'red', marginBottom: 5 }}>
+                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                    <FormattedMessage id="delete.prompt" />
+                </div>
+            </Modal>
         </SingleTabCard>
     )
 }

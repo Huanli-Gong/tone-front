@@ -7,15 +7,14 @@ import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushF
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 import FormList from '@/pages/WorkSpace/TestJob/components/FormList'
 import MonitorList from '@/pages/WorkSpace/TestJob/components/JobForms/MonitorList'
-import { getTextByJs, useCopyText } from '@/utils/hooks'
+import { getTextByJs } from '@/utils/hooks'
 import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
-import { CopyOutlined } from '@ant-design/icons';
 import { CopyLinkSpan } from '@/pages/WorkSpace/TestJob/components/untils'
 
 /**
  * 环境配置
  */
-export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }: any) => {
+export default ({ contrl, disabled = false, onRef = null, template = {} }: any) => {
     if (JSON.stringify(contrl) === '{}') return <></>
 
     const { formatMessage } = useIntl()
@@ -49,8 +48,6 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, ws_id }
     const { data: kernelList } = useRequest(
         () => queryKernelList({ enable: 'True' }) // , release : 'True'
     )
-
-    const handleCopyText = useCopyText(formatMessage({ id: 'request.copy.success' }))
 
     useEffect(() => {
         if (JSON.stringify(template) !== '{}') {
