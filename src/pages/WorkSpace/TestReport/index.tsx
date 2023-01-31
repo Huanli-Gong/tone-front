@@ -24,8 +24,8 @@ export default (props: any) => {
 
     const handleCreateReport = useCallback(() => {
         history.push(`/ws/${ws_id}/test_report/compare`)
-        // window.sessionStorage.setItem('compareData', JSON.stringify([]))
-        // window.sessionStorage.setItem('noGroupJobData', JSON.stringify([]))
+        // window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([]))
+        // window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify([]))
         // window.sessionStorage.setItem('originType', 'test_report')
     }, [])
 

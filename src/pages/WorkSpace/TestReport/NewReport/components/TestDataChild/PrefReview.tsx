@@ -44,6 +44,7 @@ import {
     CloseBtn,
 } from '../../ReportUI';
 import { toPercentage, handleIcon, handleColor } from '@/components/AnalysisMethods/index';
+import { getCompareType } from '@/utils/utils';
 const { Option } = Select;
 
 const getSortNum = (compare_result: string) => new Map([
@@ -224,12 +225,10 @@ const Performance = (props: any) => {
         return (
             arr.map((item: any, idx: number) => {
                 if (!item) return <></>
-                const { is_baseline, is_job } = item
-                const isJob = Object.prototype.toString.call(is_job) === "[object Number]" ? is_job : is_baseline
                 return (
                     <PrefDataText gLen={groupLen} btnState={btnState} key={idx}>
                         {
-                            !!isJob ?
+                            !getCompareType(item) ?
                                 <JumpResult ws_id={wsId} job_id={item?.obj_id || item} /> :
                                 <div style={{ height: 38 }}></div>
                         }

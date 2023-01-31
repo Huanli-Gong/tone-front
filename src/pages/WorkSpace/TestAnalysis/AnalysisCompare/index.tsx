@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';
-import { queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from './services'
+import { queryEenvironmentResultList, queryDomainGroup } from './services'
 import { history, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { message, Layout, Row, Select, Modal, Space, Divider, Button, Alert, Spin, Tooltip, Popconfirm, Typography } from 'antd';
 import styles from './index.less'
 import { PlusOutlined, CaretDownOutlined } from '@ant-design/icons'
 import EditMarkDrawer from './EditMark'
 import AddJob from './AddJob'
-import AddBaseline from './AddBaseline'
 import AddPlan from './AddPlan/ViewCollapse'
 import BaseGroupModal from './BaseGroupModal'
 import _ from 'lodash'
@@ -40,15 +39,15 @@ export default (props: any) => {
     const { formatMessage } = useIntl()
     const local = getLocale() === 'en-US'
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { ws_id } = useParams() as any
     const { state } = props.location
-    let selectedJob: any = _.get(state, 'compareData')
+    let selectedJob: any = _.get(state, `${ws_id}-compareData`)
     selectedJob = selectedJob && _.isArray(JSON.parse(selectedJob)) ? JSON.parse(selectedJob) : []
     selectedJob = transformFn(selectedJob)
-    let noGroupJob: any = _.get(state, 'noGroupJobData')
+    let noGroupJob: any = _.get(state, `${ws_id}-noGroupJobData`)
     noGroupJob = noGroupJob && _.isArray(JSON.parse(noGroupJob)) ? JSON.parse(noGroupJob) : []
-    const originType = _.get(state, 'originType') || ''
+    const originType = _.get(state, `${ws_id}-originType`) || ''
     const { height: layoutHeight } = useClientSize()
-    const { ws_id } = useParams() as any
     const [groupData, setGroupData] = useState<any>(selectedJob)
     const [noGroupData, setNoGroupData] = useState<any>(noGroupJob)
     const [currentEditGroup, setCurrentEditGroup] = useState<any>({})
@@ -80,8 +79,10 @@ export default (props: any) => {
         if (isExpand) nogroupDom.current.style.left = '-260px'
     }
     useEffect(() => {
-        if (groupData.length) seGroupingButton(true)
-        if (!groupData.length) seGroupingButton(false)
+        seGroupingButton(!!groupData.filter((i: any) => i.type === "job").reduce((p: any, c: any) => {
+            const { members } = c
+            return p.concat(members)
+        }, []).length)
         if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
     }, [groupData, baselineGroupIndex])
 
@@ -95,7 +96,11 @@ export default (props: any) => {
         if (remainArr.length) versionGroupingFn(remainArr, newGroup)
         if (!remainArr.length) {
             newGroup = newGroup.map((brr: any) => {
-                return { members: brr, product_version: brr[0]['product_version'] }
+                return {
+                    members: brr,
+                    product_version: brr[0]?.['product_version'],
+                    product_id: brr[0]?.['product_id'],
+                }
             })
             newNoGroup.current = newGroup
         }
@@ -185,8 +190,8 @@ export default (props: any) => {
         setGroupData(groupDataCopy)
         setBaselineGroup(groupDataCopy[baselineGroupIndex] || {})
         setNoGroupData(moreSn)
-        window.sessionStorage.setItem('compareData', JSON.stringify(groupDataCopy))
-        window.sessionStorage.setItem('noGroupJobData', JSON.stringify(moreSn))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupDataCopy))
+        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(moreSn))
     }
 
     const handleAddNoVersionJob = () => {
@@ -194,18 +199,25 @@ export default (props: any) => {
     }
 
     const cancleGrouping = () => {
-        let noGroupDataCopy = _.cloneDeep(noGroupData)
-        let groupDataCopy = _.cloneDeep(groupData)
-        groupDataCopy.filter((item: any) => item.type !== 'baseline')
-            .forEach((item: any) => noGroupDataCopy = [...noGroupDataCopy, ...item.members])
+        const hasGroups = groupData.filter((item: any) => item.type !== 'baseline')
+        const allNoGroups = hasGroups.reduce((p: any, c: any) => p.concat(c.members), []).concat(noGroupData)
+
+        const results = Object.entries(allNoGroups.reduce((p: any, c: any) => {
+            const { id } = c
+            p[id] = c
+            return p
+        }, {})).map(i => {
+            const [, r] = i
+            return r
+        })
+
         setGroupMethod(null)
-        setGroupData(groupDataCopy.filter((item: any) => item.type === 'baseline'))
+        setGroupData(groupData.filter((item: any) => item.type === 'baseline'))
         setBaselineGroupIndex(-1)
         setBaselineGroup({})
-        setNoGroupData(noGroupDataCopy)
-        window.sessionStorage.setItem('compareData', JSON.stringify([]))
-        window.sessionStorage.setItem('noGroupJobData', JSON.stringify(noGroupDataCopy))
-
+        setNoGroupData(results)
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([]))
+        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(results))
     }
 
     const addGroupNameFn = (arrGroup = groupData) => {
@@ -215,7 +227,7 @@ export default (props: any) => {
         }
         return ''
     }
-    const handleAddJobGroup = (type = 'job') => {
+    const handleAddJobGroup = (type = "") => {
         const arr = _.cloneDeep(groupData)
         const name = addGroupNameFn() || `对比组${groupData.length + 1}`
         const addGroup = {
@@ -236,7 +248,7 @@ export default (props: any) => {
             setBaselineGroupIndex(-1)
             setBaselineGroup({})
         }
-        window.sessionStorage.setItem('compareData', JSON.stringify(arr))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
     }
 
     const handleGroupClick = (obj: any, num: number) => {
@@ -259,7 +271,7 @@ export default (props: any) => {
         arr = arr.filter((item: any, indexNum: number) => indexNum !== num)
         setNoGroupData(arr)
         setCurrentDelJobDom(null)
-        window.sessionStorage.setItem('noGroupJobData', JSON.stringify(arr))
+        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(arr))
     }
     const handleJobDelClick = (e: any, index: number, num: number) => {
         e.stopPropagation();
@@ -276,7 +288,7 @@ export default (props: any) => {
         setCurrentEditGroupIndex(index)
         setBaselineGroup(arr[baselineGroupIndex])
         setCurrentDelJobDom(null)
-        window.sessionStorage.setItem('compareData', JSON.stringify(arr))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
     }
 
     const handleEditMark = () => {
@@ -290,7 +302,7 @@ export default (props: any) => {
     const handleDelGroup = () => {
         let arr = _.cloneDeep(groupData)
         arr = arr.filter((item: any, index: number) => index !== currentEditGroupIndex)
-        window.sessionStorage.setItem('compareData', JSON.stringify(arr))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
 
         if (currentEditGroupIndex === baselineGroupIndex && arr.length !== 1) {
             setBaselineGroupIndex(-1)
@@ -327,7 +339,7 @@ export default (props: any) => {
         arr[currentEditGroupIndex] = obj
         if (currentEditGroupIndex === baselineGroupIndex) setBaselineGroup(obj)
         setGroupData(arr)
-        window.sessionStorage.setItem('compareData', JSON.stringify(arr))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
     }
     const handleClear = () => {
         setNoGroupData([])
@@ -336,8 +348,8 @@ export default (props: any) => {
         setBaselineGroupIndex(-1)
         setCurrentEditGroup({})
         setCurrentEditGroupIndex(0)
-        window.sessionStorage.setItem('compareData', JSON.stringify([]))
-        window.sessionStorage.setItem('noGroupJobData', JSON.stringify([]))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([]))
+        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify([]))
     }
 
     const isSureOk = () => {
@@ -420,7 +432,7 @@ export default (props: any) => {
                             envDataParam: paramEenvironment,
                         }
                     })
-                    window.sessionStorage.setItem('compareData', JSON.stringify(groupData))
+                    window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupData))
                     return
                 }
             })
@@ -429,7 +441,7 @@ export default (props: any) => {
                 message.error(formatMessage({ id: 'request.failed' }))
                 console.log(e)
             })
-            
+
     }
     const creatReportCallback = (reportData: any, suiteData: any) => { // suiteData：已选的
         setLoading(true)
@@ -473,7 +485,7 @@ export default (props: any) => {
                             saveReportData: reportData
                         }
                     })
-                    window.sessionStorage.setItem('compareData', JSON.stringify(groupData))
+                    window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupData))
                     return
                 }
                 if (result[1].code === 1358) {
@@ -514,22 +526,6 @@ export default (props: any) => {
             })
             newProductVersionGroup.current = newGroup
         }
-    }
-    const baseAssemble = (baseObj: any, arr: any) => {
-        let brr: any = []
-        let baseMembers = _.get(arr, 'members')
-        baseMembers = _.isArray(baseMembers) ? baseMembers : []
-        baseMembers = baseMembers.filter((val: any) => val)
-        const flag = arr?.type === 'baseline'
-        baseMembers.forEach((item: any) => {
-            if (!flag) {
-                brr.push({ is_job: 1, obj_id: item.id, suite_data: baseObj[item.id] || {} })
-            }
-            if (flag) {
-                brr.push({ is_job: 0, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf', suite_data: baseObj[item.id] || {} })
-            }
-        })
-        return brr;
     }
 
     const handlEenvironment = (selData: any) => {
@@ -581,13 +577,6 @@ export default (props: any) => {
         return paramData
     }
 
-    const handleAddBaseline = (e: any, obj: any, index: number) => {
-        // e.stopPropagation();
-        setCurrentEditGroup(obj)
-        setCurrentEditGroupIndex(index)
-        setVisibleAddGroupItem(true)
-    }
-
     const handleAddGroupItem = (obj: any, index: number) => {
         setCurrentEditGroup(obj)
         setCurrentEditGroupIndex(index)
@@ -619,7 +608,7 @@ export default (props: any) => {
         setCurrentEditGroup(obj)
         setGroupData(arr)
         setVisibleAddGroupItem(false);
-        window.sessionStorage.setItem('compareData', JSON.stringify(arr))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
     }
 
     const addGroupTypeFn = () => {
@@ -707,6 +696,7 @@ export default (props: any) => {
         if ((!arr || !arr.length) && productMark) {
             groupArr[endGroupIndex].product_version = productMark
         }
+        groupArr[endGroupIndex].type = "job"
         return { groupArr, noGoupArr }
     };
 
@@ -938,7 +928,7 @@ export default (props: any) => {
                                                         style={getJobItemStyle(provided.draggableProps.style)}
                                                     >
                                                         <li key={obj.job_id} style={{ background: '#fff' }}>
-                                                            <div>{obj.name}</div>
+                                                            <Typography.Text ellipsis={{ tooltip: true }}>{obj.name}</Typography.Text>
                                                             <div>
                                                                 {
                                                                     obj.product_version &&
@@ -1063,13 +1053,18 @@ export default (props: any) => {
                                                         style={getJobItemStyle(provided.draggableProps.style)}
                                                     >
                                                         <li key={obj.job_id} style={{ background: '#fff' }}>
-                                                            <div>{obj.name}</div>
                                                             <div>
-                                                                {obj.product_version && <PopoverEllipsis title={obj.product_version} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
-                                                                    <>
-                                                                        <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.product_version}
-                                                                    </>
-                                                                </PopoverEllipsis>}
+                                                                <Typography.Text ellipsis={{ tooltip: true }}>{obj.name}</Typography.Text>
+                                                            </div>
+                                                            <div>
+                                                                {
+                                                                    obj.product_version &&
+                                                                    <PopoverEllipsis title={obj.product_version} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
+                                                                        <>
+                                                                            <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.product_version}
+                                                                        </>
+                                                                    </PopoverEllipsis>
+                                                                }
 
                                                                 {getSnDom(snArr)}
                                                             </div>
@@ -1242,7 +1237,7 @@ export default (props: any) => {
                                                             className={styles.create_group}
                                                             style={{ left: groupData.length ? `${(groupData.length) * 312}px` : 0, height: scroll.height + 82, width: local ? 220 : 110 }}
                                                         >
-                                                            <div onClick={_.partial(handleAddJobGroup, 'job')} className={styles.popover}>
+                                                            <div onClick={_.partial(handleAddJobGroup, '')} className={styles.popover}>
                                                                 <PlusOutlined style={{ fontSize: 14, marginRight: 8 }} /><FormattedMessage id="analysis.create.comparison.group" />
                                                             </div>
                                                         </div>
@@ -1365,7 +1360,7 @@ export default (props: any) => {
                     onOk={handleOk}
                     onCancel={handleJobCancel}
                 >
-                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} noGroupData={noGroupData} />
+                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} groupData={groupData} noGroupData={noGroupData} />
                 </Modal>
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={groupData} />
             </Spin>

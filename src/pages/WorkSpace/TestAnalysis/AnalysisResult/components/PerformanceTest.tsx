@@ -14,6 +14,7 @@ import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { useScroll } from 'ahooks'
 import styled from 'styled-components'
 import { JumpResult } from '@/utils/hooks';
+import { getCompareType } from "@/utils/utils"
 import {
     TestDataTitle,
     Summary,
@@ -213,11 +214,17 @@ const ReportTestPref: React.FC<any> = (props) => {
     }
     const renderShare = (conf: any) => {
         let obj = conf.conf_compare_data || conf.compare_conf_list || []
-        return obj.map((item: any, idx: number) => (
-            <PrefDataText gLen={group} key={idx}>
-                {!item.is_baseline ? <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> : <></>}
-            </PrefDataText>
-        ))
+        return obj.map((item: any, idx: number) => {
+            return (
+                <PrefDataText gLen={group} key={idx}>
+                    {
+                        !getCompareType(item) ?
+                            <JumpResult ws_id={wsId} job_id={item.obj_id || item} /> :
+                            <div style={{ height: 38 }}></div>
+                    }
+                </PrefDataText>
+            )
+        })
     }
 
     return (
