@@ -22,6 +22,7 @@ export const ColumnEllipsisText: React.FC<AnyType> = (props) => {
 
     React.useEffect(() => {
         const { offsetParent } = ref.current
+        if (!offsetParent) return
         const resizeObserver = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 if (entry.contentRect) {
