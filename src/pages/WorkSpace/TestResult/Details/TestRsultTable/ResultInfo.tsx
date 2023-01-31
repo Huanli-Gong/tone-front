@@ -43,7 +43,7 @@ const ResultInfo: React.FC<any> = (props) => {
     }
 
     return (
-        <div style={{ paddingLeft: 40, paddingRight: 0, background: '#FBFBFB' }}>
+        <div style={{ paddingLeft: 40, paddingRight: 0, background: '#FBFBFB', width: "100%" }}>
             <CustomTabs defaultActiveKey="1" onTabClick={(t: any) => setTab(t)} activeKey={tab}>
                 <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testResult" />} key="1" />
                 {

@@ -17,11 +17,12 @@ import styles from './index.less'
 import ContrastBaseline from '../components/ContrastBaseline'
 import treeSvg from '@/assets/svg/tree.svg'
 import { AccessTootip } from '@/utils/utils';
+import { getStorageState } from '@/utils/table.hooks';
 // const treeSvg = require('@/assets/svg/tree.svg')
 
 const CaseTable: React.FC<Record<string, any>> = ({
     suite_id, testType, suite_name, server_provider, provider_name, creator, expandedState, expandedCaseRowKeys,
-    suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag
+    suiteSelect = [], onCaseSelect, openAllRows = false, setIndexExpandFlag, parentTableName, columnsChange
 }) => {
     const locale = getLocale() === 'en-US';
     const { id: job_id } = useParams() as any
@@ -53,151 +54,154 @@ const CaseTable: React.FC<Record<string, any>> = ({
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
 
-    const columns = React.useMemo(() => {
-        return [
-            {
-                title: 'Test Suite',
-                dataIndex: 'conf_name',
-                width: 228,
-                ...tooltipTd(),
-            },
-            {
-                title: <FormattedMessage id="ws.result.details.test_type" />,
-                dataIndex: 'test_type',
-                width: 100,
-                render: (text: any) => <span>{text || '-'}</span>,
-            },
-            {
-                title: <FormattedMessage id="ws.result.details.the.server" />,
-                dataIndex: 'server_ip',
-                width: 130,
-                ellipsis: {
-                    showHeader: false,
-                },
-                render: (_: string, row: any) => (
-                    <ServerLink
-                        val={_}
-                        param={row.server_id}
-                        provider={provider_name}
-                        description={row.server_description}
-                    />
-                )
-            },
-            ['functional', 'business_functional', 'business_business'].includes(testType) &&
-            {
-                title: <FormattedMessage id="ws.result.details.result" />,
-                width: 80,
-                render: (_: any) => {
-                    const r = _.result_data.result
-                    if (r === 'success') return <SuccessSVG style={{ width: 16, height: 16 }} />
-                    if (r === 'fail') return <ErrorSVG style={{ width: 16, height: 16 }} />
-                    if (r === 'NA') return <MinusSvg style={{ width: 16, height: 16 }} />
-                    if (r === '-') return r
-                    return ''
-                }
-            },
-            { // title : '总计/通过/失败/跳过',
-                width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
-                render: (_: any) => (
-                    ['functional', 'business_functional', 'business_business'].includes(testType) ?
-                        (
-                            <Space>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }}>{_.result_data.case_count}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'success')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }}>{_.result_data.case_success}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'fail')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }}>{_.result_data.case_fail}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'warn')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#dcc506" }}>{_.result_data.case_warn}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'skip')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }}>{_.result_data.case_skip}</span>
-                            </Space>
-                        ) :
-                        (
-                            <Space>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }} >{_.result_data.count}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'increase')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }} >{_.result_data.increase}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'decline')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }} >{_.result_data.decline}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'normal')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.normal}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'invalid')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.invalid}</span>
-                                <span onClick={() => hanldeChangeChildState(_.test_case_id, 'na')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.na}</span>
-                            </Space>
-                        )
-                )
-            },
-            (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline) &&
-            {
-                title: <FormattedMessage id="ws.result.details.baseline" />,
-                dataIndex: 'baseline',
-                width: 80,
-                ...tooltipTd(),
-            },
-            (['performance', 'business_performance'].includes(testType) && !!data.length && data[0].baseline_job_id) &&
-            {
-                title: <FormattedMessage id="ws.result.details.baseline_job_id" />,
-                dataIndex: 'baseline_job_id',
-                width: 80,
-                ...tooltipTd(),
-            },
-            {
-                title: <FormattedMessage id="ws.result.details.start_time" />,
-                dataIndex: 'start_time',
-                width: 160,
-                ...tooltipTd(),
-            },
-            {
-                title: <FormattedMessage id="ws.result.details.end_time" />,
-                dataIndex: 'end_time',
-                width: 160,
-                ...tooltipTd(),
-            },
-            access.WsTourist() &&
-            {
-                title: <FormattedMessage id="ws.result.details.note" />,
-                dataIndex: 'note',
-                width: 120,
-                ellipsis: {
-                    showTitle: false,
-                },
-                render: (_: any, row: any) => (
-                    <EllipsisEditColumn
-                        title={_}
-                        width={120}
-                        access={access.WsMemberOperateSelf(creator)}
-                        onEdit={
-                            () => editRemarkDrawer.current.show({
-                                ...row,
-                                suite_name: row.suite_name,
-                                editor_obj: 'test_job_conf'
-                            })
-                        }
-                    />
-                )
-            },
-            ['performance', 'business_performance'].includes(testType) &&
-            {
-                title: <FormattedMessage id="Table.columns.operation" />,
-                width: locale ? 180 : 145,
-                fixed: 'right',
-                render: (_: any) => {
+    const hasBaselineColumn = !!data.length && data[0].baseline
+    const hasBaselineIdColumn = !!data.length && data[0].baseline_job_id
 
-                    return (
-                        <Access accessible={access.WsTourist()}>
-                            <Access accessible={access.WsMemberOperateSelf(creator)}
-                                fallback={
-                                    <Space>
-                                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.baseline" /></span>
-                                        <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => AccessTootip()}><FormattedMessage id="ws.result.details.join.baseline" /></span>
-                                    </Space>
-                                }
-                            >
-                                <Space>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
-                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
-                                </Space>
-                            </Access>
-                        </Access>
-                    )
-                }
+    const columns = React.useMemo(() => [
+        {
+            title: 'Test Suite',
+            dataIndex: 'conf_name',
+            width: getStorageState(parentTableName, "suite_name") - 32 || 228,
+            ...tooltipTd(),
+        },
+        {
+            title: <FormattedMessage id="ws.result.details.test_type" />,
+            dataIndex: 'test_type',
+            width: getStorageState(parentTableName, "test_type") || 100,
+            render: (text: any) => <span>{text || '-'}</span>,
+        },
+        {
+            title: <FormattedMessage id="ws.result.details.the.server" />,
+            dataIndex: 'server_ip',
+            width: 130,
+            ellipsis: {
+                showHeader: false,
+            },
+            render: (_: string, row: any) => (
+                <ServerLink
+                    val={_}
+                    param={row.server_id}
+                    provider={provider_name}
+                    description={row.server_description}
+                />
+            )
+        },
+        ['functional', 'business_functional', 'business_business'].includes(testType) &&
+        {
+            title: <FormattedMessage id="ws.result.details.result" />,
+            width: 80,
+            render: (_: any) => {
+                const r = _.result_data.result
+                if (r === 'success') return <SuccessSVG style={{ width: 16, height: 16 }} />
+                if (r === 'fail') return <ErrorSVG style={{ width: 16, height: 16 }} />
+                if (r === 'NA') return <MinusSvg style={{ width: 16, height: 16 }} />
+                if (r === '-') return r
+                return ''
             }
-        ].filter(Boolean)
-    }, [testType, access, creator, data, locale])
+        },
+        { // title : '总计/通过/失败/跳过',
+            width: ['functional', 'business_functional', 'business_business'].includes(testType) ? 255 : 302,
+            render: (_: any) => (
+                ['functional', 'business_functional', 'business_business'].includes(testType) ?
+                    (
+                        <Space>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }}>{_.result_data.case_count}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'success')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }}>{_.result_data.case_success}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'fail')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }}>{_.result_data.case_fail}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'warn')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#dcc506" }}>{_.result_data.case_warn}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'skip')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }}>{_.result_data.case_skip}</span>
+                        </Space>
+                    ) :
+                    (
+                        <Space>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, '')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#649FF6" }} >{_.result_data.count}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'increase')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#81BF84" }} >{_.result_data.increase}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'decline')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "#C84C5A" }} >{_.result_data.decline}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'normal')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.normal}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'invalid')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.invalid}</span>
+                            <span onClick={() => hanldeChangeChildState(_.test_case_id, 'na')} className={styles.column_circle_text} style={{ fontWeight: 600, color: "rgba(0,0,0.65)" }} >{_.result_data.na}</span>
+                        </Space>
+                    )
+            )
+        },
+        (['performance', 'business_performance'].includes(testType) && hasBaselineColumn) &&
+        {
+            title: <FormattedMessage id="ws.result.details.baseline" />,
+            dataIndex: 'baseline',
+            width: 80,
+            ...tooltipTd(),
+        },
+        (['performance', 'business_performance'].includes(testType) && hasBaselineIdColumn) &&
+        {
+            title: <FormattedMessage id="ws.result.details.baseline_job_id" />,
+            dataIndex: 'baseline_job_id',
+            width: 80,
+            ...tooltipTd(),
+        },
+        {
+            title: <FormattedMessage id="ws.result.details.start_time" />,
+            dataIndex: 'start_time',
+            width: getStorageState(parentTableName, "start_time") || 160,
+            ...tooltipTd(),
+        },
+        {
+            title: <FormattedMessage id="ws.result.details.end_time" />,
+            dataIndex: 'end_time',
+            width: getStorageState(parentTableName, "end_time") || 160,
+            ...tooltipTd(),
+        },
+        access.WsTourist() &&
+        {
+            title: <FormattedMessage id="ws.result.details.note" />,
+            dataIndex: 'note',
+            width: 120,
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (_: any, row: any) => (
+                <EllipsisEditColumn
+                    title={_}
+                    width={120}
+                    access={access.WsMemberOperateSelf(creator)}
+                    onEdit={
+                        () => editRemarkDrawer.current.show({
+                            ...row,
+                            suite_name: row.suite_name,
+                            editor_obj: 'test_job_conf'
+                        })
+                    }
+                />
+            )
+        },
+        ['performance', 'business_performance'].includes(testType) &&
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            width: locale ? 180 : 145,
+            fixed: 'right',
+            render: (_: any) => {
+
+                return (
+                    <Access accessible={access.WsTourist()}>
+                        <Access accessible={access.WsMemberOperateSelf(creator)}
+                            fallback={
+                                <Space
+                                    onClick={() => AccessTootip()}
+                                >
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} ><FormattedMessage id="ws.result.details.baseline" /></span>
+                                    <span style={{ color: '#1890FF', cursor: 'pointer' }} ><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                                </Space>
+                            }
+                        >
+                            <Space>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleContrastBaseline(_)}><FormattedMessage id="ws.result.details.baseline" /></span>
+                                <span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => handleJoinBaseline(_)}><FormattedMessage id="ws.result.details.join.baseline" /></span>
+                            </Space>
+                        </Access>
+                    </Access>
+                )
+            }
+        }
+    ], [testType, creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
 
     const handleContrastBaseline = (_: any) => {
         contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
@@ -262,7 +266,7 @@ const CaseTable: React.FC<Record<string, any>> = ({
                     showHeader={false}
                     dataSource={data}
                     pagination={false}
-                    scroll={{ x: '100%' }}
+                    scroll={{ x: 1300 }}
                     size="small"
                     className={styles["resultCaseTableCls"]}
                     style={{ width: `calc(100% - 32px)` }}

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Space, Tabs, message, Popconfirm, Pagination, Popover, Table, Row } from 'antd';
+import { Form, Button, Space, Tabs, message, Popconfirm, Pagination, Table, Row, TableColumnProps } from 'antd';
 import { FilterFilled, QuestionCircleOutlined } from '@ant-design/icons';
 import { deleteCloudImage, queryCloudImage, deleteCloudAk, queryCloudAk } from './service';
 import styles from './style.less';
 import { history, useIntl, FormattedMessage, getLocale } from 'umi'
 
 import SearchInput from '@/components/Public/SearchInput'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 
 import _ from 'lodash'
@@ -16,6 +15,7 @@ import { UserSearchColumnFilterTitle, CheckboxColumnFilterTitle } from './compon
 import SelectRadio from '@/components/Public/SelectRadio';
 import { TabCard } from '@/components/UpgradeUI';
 import { requestCodeMessage } from '@/utils/utils';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const CloudConfig: React.FC<any> = (props) => {
 	const { formatMessage } = useIntl()
@@ -107,7 +107,7 @@ const CloudConfig: React.FC<any> = (props) => {
 	}
 	const defaultOption = (code: number, msg: string) => {
 		if (code === 200) {
-			message.success(formatMessage({id: 'operation.success'}) )
+			message.success(formatMessage({ id: 'operation.success' }))
 			const page_num = Math.ceil((data.total - 1) / fetchParams.page_size) || 1
 			let index = fetchParams.page_num
 			if (fetchParams.page_num > page_num) {
@@ -122,31 +122,19 @@ const CloudConfig: React.FC<any> = (props) => {
 	}
 
 	const providerList = [
-		{ id: 'aliyun_ecs', name: formatMessage({id: 'device.aliyun_ecs'}) }, 
-		{ id: 'aliyun_eci', name: formatMessage({id: 'device.aliyun_eci'}) },
+		{ id: 'aliyun_ecs', name: formatMessage({ id: 'device.aliyun_ecs' }) },
+		{ id: 'aliyun_eci', name: formatMessage({ id: 'device.aliyun_eci' }) },
 	]
 	const defaultList = [
-		{ id: 1, name: formatMessage({id: 'operation.yes'}) }, 
-		{ id: 0, name: formatMessage({id: 'operation.no'}) }
+		{ id: 1, name: formatMessage({ id: 'operation.yes' }) },
+		{ id: 0, name: formatMessage({ id: 'operation.no' }) }
 	]
 	const styleObj = {
 		container: 180,
 		button_width: 90
 	}
 
-	const plusMessage = (str: string, frontLen: number, endLen: number) => {
-		if (str) {
-			let len = str.length - frontLen - endLen;
-			let xing = '';
-			for (var i = 0; i < len; i++) {
-				xing += '*';
-			}
-			return str.substring(0, frontLen) + xing + str.substring(str.length - endLen);
-		}
-		return '';
-	}
-
-	const columnsAk: any = [
+	const columnsAk: TableColumnProps<any>[] = [
 		{
 			title: 'AK Name',
 			dataIndex: 'name',
@@ -161,7 +149,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'name' }}
-				placeholder={formatMessage({id: 'device.ak.name.placeholder'}) }
+				placeholder={formatMessage({ id: 'device.ak.name.placeholder' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -171,14 +159,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.name ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.name} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.name || '']}
 							autoEscape
 							textToHighlight={row && row.name}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
@@ -196,7 +184,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_id' }}
-				placeholder={formatMessage({id: 'device.access_id.placeholder'}) }
+				placeholder={formatMessage({ id: 'device.access_id.placeholder' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -206,14 +194,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_id ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.access_id} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.access_id }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_id || '']}
 							autoEscape
 							textToHighlight={row.access_id}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
@@ -230,7 +218,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, access_key: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'access_key' }}
-				placeholder={formatMessage({id: 'device.access_key.placeholder'}) }
+				placeholder={formatMessage({ id: 'device.access_key.placeholder' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -240,25 +228,25 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.access_key ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.access_key} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.access_key }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.access_key || '']}
 							autoEscape
 							textToHighlight={row.access_key}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
 		{
-			title: <FormattedMessage id="device.vm_quota"/>,
+			title: <FormattedMessage id="device.vm_quota" />,
 			dataIndex: "vm_quota",
 			width: 120,
 		},
 		BUILD_APP_ENV && {
-			title: <FormattedMessage id="device.resource_group_id"/>,
-			width: enLocale? 160: 120,
+			title: <FormattedMessage id="device.resource_group_id" />,
+			width: enLocale ? 160 : 120,
 			dataIndex: 'resource_group_id',
 			ellipsis: {
 				showTitle: false
@@ -269,7 +257,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, resource_group_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'resource_group_id' }}
-				placeholder={formatMessage({id: 'device.resource_group_id.placeholder'}) }
+				placeholder={formatMessage({ id: 'device.resource_group_id.placeholder' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -279,21 +267,21 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.resource_group_id ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.resource_group_id} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.resource_group_id }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.resource_group_id || '']}
 							autoEscape
 							textToHighlight={row.resource_group_id || "-"}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title={formatMessage({id: 'device.cloud.service.provider'}) }
+					title={formatMessage({ id: 'device.cloud.service.provider' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'provider'}
@@ -301,16 +289,16 @@ const CloudConfig: React.FC<any> = (props) => {
 					list={providerList}
 				/>
 			),
-			width: enLocale? 180: 100,
+			width: enLocale ? 180 : 100,
 			dataIndex: 'provider',
 			ellipsis: true,
 		},
 		{
-			title: <FormattedMessage id="device.enable"/>,
+			title: <FormattedMessage id="device.enable" />,
 			width: 100,
 			dataIndex: 'enable',
 			ellipsis: true,
-			render: (_: any, row: any) => ['是', true].includes(row.enable) ? <FormattedMessage id="operation.yes"/> : <FormattedMessage id="operation.no"/>,
+			render: (_: any, row: any) => ['是', true].includes(row.enable) ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.enable ? '#1890ff' : undefined }} />,
 			filterDropdown: ({ confirm }: any) => <SelectRadio
 				list={defaultList}
@@ -323,14 +311,14 @@ const CloudConfig: React.FC<any> = (props) => {
 				}} />,
 		},
 		{
-			title: <FormattedMessage id="device.gmt_created"/>,
+			title: <FormattedMessage id="device.gmt_created" />,
 			width: 170,
 			dataIndex: 'gmt_created',
 			ellipsis: true,
 			sorter: true,
 		},
 		{
-			title: <FormattedMessage id="device.gmt_modified"/>,
+			title: <FormattedMessage id="device.gmt_modified" />,
 			width: 170,
 			dataIndex: 'gmt_modified',
 			ellipsis: true,
@@ -340,7 +328,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title={formatMessage({id: 'device.creator'}) }
+					title={formatMessage({ id: 'device.creator' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'creator'}
@@ -353,7 +341,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title={formatMessage({id: 'device.update_user'}) }
+					title={formatMessage({ id: 'device.update_user' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'update_user'}
@@ -367,7 +355,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: <FormattedMessage id="device.description"/>,
+			title: <FormattedMessage id="device.description" />,
 			dataIndex: 'description',
 			ellipsis: true,
 			// fixed: 'right',
@@ -377,7 +365,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: <FormattedMessage id="Table.columns.operation"/>,
+			title: <FormattedMessage id="Table.columns.operation" />,
 			key: 'ak_conf',
 			fixed: 'right',
 			width: 90,
@@ -385,7 +373,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				return (
 					<Space size='small'>
 						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}>
-						   <FormattedMessage id="operation.edit"/>
+							<FormattedMessage id="operation.edit" />
 						</span>
 						<Form
 							form={form}
@@ -393,7 +381,7 @@ const CloudConfig: React.FC<any> = (props) => {
 						/*hideRequiredMark*/
 						>
 							<Popconfirm
-								title={<FormattedMessage id="delete.prompt"/>}
+								title={<FormattedMessage id="delete.prompt" />}
 								onConfirm={() => {
 									const generObj = handleDelete(record);
 									const excuteResult: any = generObj.next();
@@ -402,11 +390,11 @@ const CloudConfig: React.FC<any> = (props) => {
 										defaultOption(code, msg);
 									})
 								}}
-								okText={<FormattedMessage id="operation.confirm"/>}
-								cancelText={<FormattedMessage id="operation.cancel"/>}
+								okText={<FormattedMessage id="operation.confirm" />}
+								cancelText={<FormattedMessage id="operation.cancel" />}
 								// scroll={{ x: 400 }}
 								icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-								<span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
+								<span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete" /></span>
 							</Popconfirm>
 						</Form>
 					</Space>
@@ -415,7 +403,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		}
 	].filter(Boolean);
 
-	const columnsImage: any = [
+	const columnsImage: TableColumnProps<any>[] = [
 		{
 			title: 'Image Name',
 			width: 150,
@@ -428,7 +416,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_name: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_name' }}
-				placeholder={formatMessage({id: 'device.search.image.name'}) }
+				placeholder={formatMessage({ id: 'device.search.image.name' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -438,14 +426,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_name ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.image_name} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.image_name }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.image_name || '']}
 							autoEscape
 							textToHighlight={row && row.image_name}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
@@ -460,7 +448,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_id: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_id' }}
-				placeholder={formatMessage({id: 'device.search.image.id'}) }
+				placeholder={formatMessage({ id: 'device.search.image.id' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -470,14 +458,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_id ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.image_id} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.image_id }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.image_id || '']}
 							autoEscape
 							textToHighlight={row && row.image_id}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
@@ -492,7 +480,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={{ container: 200, button_width: 100 }}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, image_version: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'image_version' }}
-				placeholder={formatMessage({id: 'device.search.image.version'}) }
+				placeholder={formatMessage({ id: 'device.search.image.version' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -502,14 +490,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.image_version ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.image_version} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.image_version }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.image_version || '']}
 							autoEscape
 							textToHighlight={row && row.image_version}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
@@ -524,7 +512,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, platform: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'platform' }}
-				placeholder={formatMessage({id: 'device.search.image.group'}) }
+				placeholder={formatMessage({ id: 'device.search.image.group' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -534,14 +522,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.platform ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.platform} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.platform }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.platform || '']}
 							autoEscape
 							textToHighlight={row && row.platform}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText>
 				)
 			}
 		},
@@ -556,7 +544,7 @@ const CloudConfig: React.FC<any> = (props) => {
 				styleObj={styleObj}
 				onConfirm={(val: any) => { setFetchParams({ ...fetchParams, region: val }) }}
 				currentBaseline={{ server_provider: ws_id, test_type: key, id: 'region' }}
-				placeholder={formatMessage({id: 'device.search.region'}) }
+				placeholder={formatMessage({ id: 'device.search.region' })}
 			/>,
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
@@ -566,14 +554,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			filterIcon: () => <FilterFilled style={{ color: fetchParams.region ? '#1890ff' : undefined }} />,
 			render: (_: any, row: any) => {
 				return (
-					<PopoverEllipsis title={row.region} >
+					<ColumnEllipsisText ellipsis={{ tooltip: row.region }} >
 						<Highlighter
 							highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
 							searchWords={[fetchParams.region || '']}
 							autoEscape
 							textToHighlight={row && row.region}
 						/>
-					</PopoverEllipsis>
+					</ColumnEllipsisText >
 				)
 			}
 		},
@@ -594,7 +582,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<CheckboxColumnFilterTitle
-					title={formatMessage({id: 'device.cloud.service.provider'}) }
+					title={formatMessage({ id: 'device.cloud.service.provider' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'provider'}
@@ -602,19 +590,19 @@ const CloudConfig: React.FC<any> = (props) => {
 					list={providerList}
 				/>
 			),
-			width: enLocale ? 180: 100,
+			width: enLocale ? 180 : 100,
 			dataIndex: 'provider',
 			ellipsis: true,
 		},
 		{
-			title: <FormattedMessage id="device.gmt_created"/>,
+			title: <FormattedMessage id="device.gmt_created" />,
 			width: 180,
 			dataIndex: 'gmt_created',
 			ellipsis: true,
 			sorter: true
 		},
 		{
-			title: <FormattedMessage id="device.gmt_modified"/>,
+			title: <FormattedMessage id="device.gmt_modified" />,
 			width: 180,
 			dataIndex: 'gmt_modified',
 			ellipsis: true,
@@ -623,7 +611,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title={formatMessage({id: 'device.creator'}) }
+					title={formatMessage({ id: 'device.creator' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'creator'}
@@ -637,7 +625,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		{
 			title: () => (
 				<UserSearchColumnFilterTitle
-					title={formatMessage({id: 'device.update_user'}) }
+					title={formatMessage({ id: 'device.update_user' })}
 					params={fetchParams}
 					setParams={setFetchParams}
 					name={'update_user'}
@@ -651,14 +639,14 @@ const CloudConfig: React.FC<any> = (props) => {
 			}
 		},
 		{
-			title: <FormattedMessage id="Table.columns.operation"/>,
+			title: <FormattedMessage id="Table.columns.operation" />,
 			key: 'image_conf',
 			fixed: 'right',
 			width: 100,
 			render: (text: string, record: any) => {
 				return (
 					<Space size='small'>
-						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}><FormattedMessage id="operation.edit"/></span>
+						<span className={styles.fail_detail_operation} onClick={() => key === 'ak' ? hanldeEdit(record) : hanldeEditImage(record)}><FormattedMessage id="operation.edit" /></span>
 						{/* 删除的弹框 */}
 						<Form
 							form={form}
@@ -666,7 +654,7 @@ const CloudConfig: React.FC<any> = (props) => {
 						/*hideRequiredMark*/
 						>
 							<Popconfirm
-								title={<FormattedMessage id="delete.prompt"/>}
+								title={<FormattedMessage id="delete.prompt" />}
 								onConfirm={() => {
 									const generObj = handleDelete(record);
 									const excuteResult: any = generObj.next();
@@ -675,10 +663,10 @@ const CloudConfig: React.FC<any> = (props) => {
 										defaultOption(code, msg);
 									})
 								}}
-								okText={<FormattedMessage id="operation.ok"/>}
-								cancelText={<FormattedMessage id="operation.cancel"/>}
+								okText={<FormattedMessage id="operation.ok" />}
+								cancelText={<FormattedMessage id="operation.cancel" />}
 								icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-								<span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete"/></span>
+								<span className={styles.fail_detail_operation}><FormattedMessage id="operation.delete" /></span>
 							</Popconfirm>
 						</Form>
 					</Space>
@@ -720,18 +708,18 @@ const CloudConfig: React.FC<any> = (props) => {
 			title={
 				<Tabs activeKey={key} onChange={handleTab}  >
 					<TabPane
-						tab={<FormattedMessage id="device.ak.config"/>}
+						tab={<FormattedMessage id="device.ak.config" />}
 						key="ak"
 					/>
 					<TabPane
-						tab={<FormattedMessage id="device.image.config"/>}
+						tab={<FormattedMessage id="device.image.config" />}
 						key="image"
 					/>
 				</Tabs>
 			}
 			extra={
 				<Button key="3" type="primary" onClick={key === 'ak' ? handleAddAk : handleAddImage}>
-					{key === 'ak' ? <FormattedMessage id="device.new.ak"/>: <FormattedMessage id="device.new.image"/>}
+					{key === 'ak' ? <FormattedMessage id="device.new.ak" /> : <FormattedMessage id="device.new.image" />}
 				</Button>
 			}
 		>
@@ -767,7 +755,7 @@ const CloudConfig: React.FC<any> = (props) => {
 					data.total > 1 &&
 					<>
 						<div>
-							{formatMessage({id: 'pagination.total.strip'}, {data: data.total || 0 })}
+							{formatMessage({ id: 'pagination.total.strip' }, { data: data.total || 0 })}
 						</div>
 						<Pagination
 							// className={totalPaginationClass(data.total)}

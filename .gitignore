@@ -39,6 +39,8 @@ screenshot
 .firebase
 .eslintcache
 
+pnpm-lock.yaml
+
 build
 
 .env

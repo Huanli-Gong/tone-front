@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Table, Space, Radio, Tag, Popover } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import styles from './index.less'
@@ -9,6 +8,7 @@ import _ from 'lodash'
 import { useIntl, FormattedMessage } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import styled from 'styled-components'
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 const SelectJob = styled.span`
     color: #1890FF;
     cursor: pointer;
@@ -121,14 +121,14 @@ export default (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.job_name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.job_name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.job_name }} >
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.job_name || '']}
                             autoEscape
                             textToHighlight={row && row.job_name}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         },

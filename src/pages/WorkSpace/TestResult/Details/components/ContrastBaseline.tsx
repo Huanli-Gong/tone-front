@@ -83,22 +83,26 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
             }
         >
             <Form form={form} requiredMark={false} layout="vertical">
-                <Form.Item label={<FormattedMessage id="ws.result.details.baseline" />}
+                <Form.Item
+                    label={<FormattedMessage id="ws.result.details.baseline" />}
                     name="baseline_id"
                     rules={[{
                         required: true,
                         message: formatMessage({ id: `ws.result.details.baseline.message` })
-                    }]}>
-                    <Select placeholder={formatMessage({ id: `ws.result.details.baseline.placeholder` })}
-                    >
-                        {
-                            baselineList.map(
-                                (item: any) => (
-                                    <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
-                                )
-                            )
-                        }
-                    </Select>
+                    }]}
+                >
+                    <Select
+                        placeholder={formatMessage({ id: `ws.result.details.baseline.placeholder` })}
+                        showSearch
+                        allowClear
+                        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                        options={baselineList.map(
+                            (item: any) => ({
+                                value: item.id,
+                                label: item.name
+                            })
+                        )}
+                    />
                 </Form.Item>
             </Form>
         </Drawer>

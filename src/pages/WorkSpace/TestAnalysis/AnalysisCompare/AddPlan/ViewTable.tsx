@@ -6,7 +6,7 @@ import { queryPlanResultList } from '../services'
 
 import SearchInput from '@/components/Public/SearchInput'
 import { FilterFilled } from '@ant-design/icons'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 import Highlighter from 'react-highlight-words'
 const styleObj = {
     container: 230,
@@ -98,14 +98,14 @@ const ViewTable = (props: any) => {
         filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
         render: (_: any, row: any) => {
             return (
-                <PopoverEllipsis title={row.name} >
+                <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[params.name || '']}
                         autoEscape
                         textToHighlight={row && row.name}
                     />
-                </PopoverEllipsis>
+                </ColumnEllipsisText>
             )
         }
     }, {

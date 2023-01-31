@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { JobListStateTag } from '@/pages/WorkSpace/TestResult/Details/components/index'
 import lodash from 'lodash'
-import ResizeTable from '@/components/ResizeTable'
 import CommonPagination from '@/components/CommonPagination';
 import { deleteJobTest } from '@/pages/WorkSpace/TestResult/services'
 import { message, Space, Typography, Tooltip, Popconfirm, Row, Spin } from 'antd'
@@ -12,15 +11,8 @@ import { useParams, Access, useAccess, useIntl, FormattedMessage, getLocale } fr
 import RerunModal from '@/pages/WorkSpace/TestResult/Details/components/ReRunModal'
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
-
-const TablePagination = styled(Row)`
-    width : 100%;
-    // min-height:20px;
-    .ant-row {
-        width : 100%;
-        margin:0;
-    }
-`
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const TableBody = styled(Row)`
     width : 100%;
@@ -78,40 +70,53 @@ const JobTable = (props: any) => {
         }
         const { page_num, page_size } = pageParams
         await getProjectJobs({ ws_id, project_id, page_num, page_size })
-        message.success(formatMessage({id: 'operation.success'}) )
+        message.success(formatMessage({ id: 'operation.success' }))
     }
 
     const handleTestReRun = (_: any) => rerunModal.current.show(_)
 
-    let columns: any = [
+    const columns: any = [
         {
             title: <FormattedMessage id="ws.dashboard.job.id" />,
             dataIndex: 'id',
             fixed: 'left',
+            className: "dashboard_job_list_hover_name",
             width: 80,
-            render: (_: any) => <span onClick={() => window.open(`/ws/${ws_id}/test_result/${_}`)} style={{ cursor: 'pointer' }}>{_}</span>
-        }, {
+            render: (_: any) => (
+                <Typography.Link
+                    target={"_blank"}
+                    href={`/ws/${ws_id}/test_result/${_}`}
+                >{_}</Typography.Link>
+            )
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.name" />,
             dataIndex: 'name',
             width: 200,
             ellipsis: {
                 showTitle: false
             },
+            className: "dashboard_job_list_hover_name",
             render: (_: any, row: any) => (
-                <Tooltip title={_}>
-                    <span onClick={() => window.open(`/ws/${ws_id}/test_result/${row.id}`)} style={{ cursor: 'pointer' }}>{_}</span>
-                </Tooltip>
+                <ColumnEllipsisText ellipsis={{ tooltip: _ }}>
+                    <Typography.Link href={`/ws/${ws_id}/test_result/${row.id}`} target="_blank" >
+                        {_}
+                    </Typography.Link>
+                </ColumnEllipsisText>
             )
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.state" />,
             width: 120,
             dataIndex: 'state',
             render: (_: any, row: any) => <JobListStateTag {...row} />
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.test_type" />, //'测试类型',
             width: 100,
             dataIndex: 'test_type',
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.test_result" />, //'总计/成功/失败',
             dataIndex: 'test_result',
             width: 160,
@@ -135,7 +140,8 @@ const JobTable = (props: any) => {
                     )
                 }
             }
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.project_name" />, //'所属项目',
             width: 120,
             dataIndex: 'project_name',
@@ -143,17 +149,20 @@ const JobTable = (props: any) => {
                 showTitle: false
             },
             render: (_: any) => _ && <Tooltip title={_}>{_}</Tooltip>
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.creator_name" />, //'创建人',
             width: 80,
             ellipsis: true,
             dataIndex: 'creator_name'
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.start_time" />, //'开始时间',
             width: 180,
             dataIndex: 'start_time',
             ellipsis: true,
-        }, {
+        },
+        {
             title: <FormattedMessage id="ws.dashboard.job.end_time" />, //'完成时间',
             width: 180,
             ellipsis: true,
@@ -161,13 +170,14 @@ const JobTable = (props: any) => {
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            width: enLocale ? 220: 160,
+            width: enLocale ? 220 : 160,
             fixed: 'right',
+            key: "operation",
             render: (_: any) => {
                 return (
                     <Space>
                         <Access accessible={access.WsTourist()}>
-                            <Access 
+                            <Access
                                 accessible={access.WsMemberOperateSelf(_.creator)}
                                 fallback={
                                     <Space>
@@ -207,7 +217,7 @@ const JobTable = (props: any) => {
                                             <FormattedMessage id="operation.delete" />
                                         </Typography.Text>
                                     </Popconfirm>
-                                    
+
                                 </Space>
                             </Access>
                         </Access>
@@ -216,18 +226,19 @@ const JobTable = (props: any) => {
                 )
             }
         }
-    ].filter(Boolean)
+    ]
 
     return (
         <Spin spinning={loading}>
             <TableBody>
-                <ResizeTable
+                <ResizeHooksTable
                     rowKey='id'
+                    name="ws-dashboard-project-job-list"
                     columns={columns}
+                    refreshDeps={[enLocale, ws_id, access]}
                     rowClassName={styles.result_table_row}
                     dataSource={jobs.data}
                     pagination={false}
-                    scroll={{ x: columns.reduce((p: any, c: any) => p += c.width, 0) }}
                     style={{ width: '100%' }}
                     size="small"
                 />

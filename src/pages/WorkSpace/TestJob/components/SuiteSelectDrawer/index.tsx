@@ -715,6 +715,7 @@ const SuiteDrawer = (props: any, ref: any) => {
                         }
 
                         {
+                            // 注释监控配置
                             (contrl.includes('monitor') && checked) &&
                             <MonitorItem />
                         }

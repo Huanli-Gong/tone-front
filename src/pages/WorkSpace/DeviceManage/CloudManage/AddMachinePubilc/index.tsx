@@ -488,8 +488,8 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const onSubmit = () => {
         form.validateFields().then(val => {
             let arr = val.extra_param || []
-            if(!!arr.length){
-                let names = arr.map((item:any) => item["param_key"]);
+            if (!!arr.length) {
+                let names = arr.map((item: any) => item["param_key"]);
                 let nameSet = new Set(names);
                 if (nameSet.size == names.length) {
                     submit(val)
@@ -554,7 +554,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                         instance_type_two: 1,
                         system_disk_size: 40,
                         storage_size: 40,
-                        storage_number: 1,
+                        storage_number: 0,
                         release_rule: 1,
                         kernel_install: 1,
                         bandwidth: 10,
@@ -841,13 +841,12 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     name="storage_type"
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
-                                            })
-                                            }
+                                            })}
                                         </Select>
                                     }
                                 </Form.Item>
@@ -913,7 +912,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                             </Col> :
                             null
                         }
-                        { !is_instance ?
+                        {!is_instance ?
                             <Col span={24} className={styles.warp}>
                                 <Form.Item
                                     label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={formatMessage({ id: 'device.aliyun.params' })} />}
@@ -1062,8 +1061,8 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                 >
                                     <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}
                                         disabled={disabledState}>
-                                        <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                                        <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
+                                        <Select.Option value="Available"><Badge status="success" text="Available" /></Select.Option>
+                                        <Select.Option value="Reserved"><Badge status="default" text="Reserved" /></Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>)

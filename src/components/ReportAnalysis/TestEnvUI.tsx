@@ -4,14 +4,15 @@ interface GroupRowProps {
     gLen?: number   /* group数量 */
 }
 
+const BASIC_TITLE_WIDTH = "110"
 const setEnvGroupWdith = (l?: number) => {
     if (!l) return ""
-    if (l == 1) return (`calc( 100% - 110px )`)
-    return (`calc( (100% - 110px) / ${l})`)
+    if (l == 1) return (`calc( 100% - ${BASIC_TITLE_WIDTH}px )`)
+    return (`calc( (100% - ${BASIC_TITLE_WIDTH}px) / ${l})`)
 }
 
 export const EnvGroupL = styled.div`
-    width:110px;
+    width:${BASIC_TITLE_WIDTH}px;
     float:left;
     padding-left:16px;
     border-right:1px solid rgba(0,0,0,0.10);

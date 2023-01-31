@@ -46,7 +46,10 @@ const BaseTable: React.FC<IProps> = (props) => {
     }, [current])
 
     const fetchListData = async () => {
-        if (!listParams.baseline_id) return
+        if (!listParams.baseline_id) {
+            setSource([])
+            return
+        }
         setLoading(true)
         const { code, data, msg } = test_type === "functional" ?
             await queryFunctionalBaseline(listParams) :

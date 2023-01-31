@@ -14,8 +14,6 @@ export const ReportTemplate = styled.div<ReportTamplateProps>`
     //padding-bottom: 56px;
 `
 
-
-
 interface CatalogProp {
     collapsed: boolean
 }
@@ -97,7 +95,7 @@ export const CatalogLine = styled.div`
     margin-right:13px;
 `
 interface CountProp {
-    count:any;
+    count: any;
 }
 const setCount = (c: number) => {
     return c + 3 + 'px'
@@ -290,7 +288,7 @@ export const EditTitle = styled.div`
     color:rgba(0,0,0,0.85);
     font-size:14px;
     margin-bottom:8px;
-    font-family:'PingFangSC-Medium'
+    font-family:PingFangSC-Medium;
 `
 // 项总标题
 export const SubTitle = styled.div`
@@ -435,7 +433,7 @@ export const TestGroup = styled.div`
     position:relative;
 `
 interface IsGroup {
-    isGroup: boolean   
+    isGroup: boolean
 }
 export const TestGroupItem = styled.div<IsGroup>`
     height: ${({ isGroup }) => isGroup ? '57px' : '47px'};
@@ -532,22 +530,7 @@ export const TestConfWarpper = styled.div`
 interface Expand {
     expand: boolean
 }
-// const setExpand = (e: boolean, n: string) => {
-//     if (n === 'border')
-//         if (e) {
-//             return 'none';
-//         } else {
-//             return '1px solid rgba(0,0,0,0.10)'
-//         }
-//     else
-//         if (e) {
-//             return '2px'
-//         } else {
-//             return '8px'
-//         }
-// }
- //border-right: ${({ expand }) => setExpand(expand, 'border')};
- //margin-bottom:${({ expand }) => setExpand(expand, 'space')};
+
 export const TestCase = styled.div<Expand>`
     height:40px;
     background:#fafafa;
@@ -617,8 +600,8 @@ const iconAlign = `
     top: 50%;
     transform: translate(-50%, -50%);
 `
-interface Del{
-    empty : boolean;
+interface Del {
+    empty: boolean;
 }
 export const PrefDataDel = styled.div<Del>`
     width : 39px;

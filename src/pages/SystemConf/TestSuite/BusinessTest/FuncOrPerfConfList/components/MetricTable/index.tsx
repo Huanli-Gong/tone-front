@@ -98,7 +98,7 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 			await delMetric(params.id, { is_sync, object_id, object_type, name })
 
 		if (code === 200) {
-			message.success(formatMessage({id: 'operation.success'}) );
+			message.success(formatMessage({ id: 'operation.success' }));
 			setRefresh(!refresh)
 		}
 		else requestCodeMessage(code, msg)
@@ -111,29 +111,29 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 	}
 
 	const columns = [
-		{ title: <FormattedMessage id="TestSuite.conf.metric"/>, dataIndex: 'name', width: 300, fixed: 'left' },
-		{ title: <FormattedMessage id="TestSuite.cmp_threshold"/>, dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
-		{ title: <FormattedMessage id="TestSuite.cv_threshold"/>, dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
-		{ title: <FormattedMessage id="TestSuite.direction"/>, dataIndex: 'direction', width: 130 },
+		{ title: <FormattedMessage id="TestSuite.conf.metric" />, dataIndex: 'name', width: 300, fixed: 'left' },
+		{ title: <FormattedMessage id="TestSuite.cmp_threshold" />, dataIndex: 'cmp_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
+		{ title: <FormattedMessage id="TestSuite.cv_threshold" />, dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
+		{ title: <FormattedMessage id="TestSuite.direction" />, dataIndex: 'direction', width: 130 },
 		{
-			title: <div><FormattedMessage id="Table.columns.operation"/><Button type='primary' onClick={() => newMetric(id)} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new"/></Button></div>,
+			title: <div><FormattedMessage id="Table.columns.operation" /><Button type='primary' onClick={() => newMetric(id)} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new" /></Button></div>,
 			valueType: 'option',
 			dataIndex: 'id',
 			width: 180,
 			fixed: 'right',
 			render: (_: number, row: any) => (
 				<Space>
-					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editMetricRow(id, { ...row })}><FormattedMessage id="operation.edit"/></Button>
+					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editMetricRow(id, { ...row })}><FormattedMessage id="operation.edit" /></Button>
 					{
 						innerKey == 1 ?
-							<Popconfirm title={<FormattedMessage id="delete.prompt"/>}
+							<Popconfirm title={<FormattedMessage id="delete.prompt" />}
 								// placement="topRight"	
-								okText={<FormattedMessage id="operation.ok"/>}
-								cancelText={<FormattedMessage id="operation.cancel"/>}
+								okText={<FormattedMessage id="operation.ok" />}
+								cancelText={<FormattedMessage id="operation.cancel" />}
 								onConfirm={() => remMetricRow(row)}
 								overlayStyle={{ width: '224px' }}
 							>
-								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
+								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete" /></Button>
 							</Popconfirm> :
 							<DeleteMetricPopover onOk={(is_sync: any) => remMetricRow(row, is_sync)} />
 					}
@@ -149,11 +149,13 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 
 	return (
 		<div className={styles.warp} key={id}>
-			<CommonTable className={styles.FuncOrPerfConfList_root}
-				columns={columns}
+			<CommonTable
+				className={styles.FuncOrPerfConfList_root}
+				columns={columns as any}
+				name="sys-business-fun-or-per-conf-metric"
 				// scrollType={670}
 				loading={expandInnerLoading}
-				list={expandInnerList.data}
+				dataSource={expandInnerList.data}
 				page={expandInnerList.page_num}
 				totalPage={expandInnerList.total_page}
 				total={expandInnerList.total}

@@ -290,11 +290,11 @@ const TestSuiteCreate: React.FC = () => {
             //setPadding(false)
             if (data.code === 200) {
                 setBtnLoad(false)
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 history.go(-1)
             }
             else
-                message.error(formatMessage({id: 'operation.failed'}) )
+                message.error(formatMessage({ id: 'operation.failed' }))
         }
     }
 
@@ -402,7 +402,7 @@ const TestSuiteCreate: React.FC = () => {
         }
         return <FormattedMessage id="suite.performance" />
     }, [test_type])
-    
+
     return (
         <Layout.Content style={{ height: layoutHeight, overflow: 'hidden' }}>
             <PageHeader
@@ -530,19 +530,20 @@ const TestSuiteCreate: React.FC = () => {
                                         value={domainValue}
                                         onSelect={handleTestSuiteSelect}
                                         style={{ width: 148 }}
-                                    >
-                                        <Select.Option value=""><FormattedMessage id="suite.all.domain" /></Select.Option>
-                                        {
-                                            domainList?.map((item: any) => (
-                                                <Select.Option
-                                                    key={item.id}
-                                                    value={item.id}
-                                                >
-                                                    {item.name}
-                                                </Select.Option>
-                                            ))
+                                        filterOption={(input, option: any) => {
+                                            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }}
+                                        allowClear
+                                        showSearch
+                                        options={
+                                            [{ value: "", label: formatMessage({ id: "suite.all.domain" }) }].concat(
+                                                domainList.map((item: any) => ({
+                                                    value: item.id,
+                                                    label: item.name
+                                                }))
+                                            )
                                         }
-                                    </Select>
+                                    />
                                     <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'center' }}>
                                         <Input
                                             style={{ width: 160, height: 32 }}
@@ -550,7 +551,7 @@ const TestSuiteCreate: React.FC = () => {
                                             value={searchInp}
                                             onChange={({ target }) => setSearchInp(target.value)}
                                             onPressEnter={handleTestSuiteSearch}
-                                            placeholder={formatMessage({id: 'suite.search.TestSuites'})}
+                                            placeholder={formatMessage({ id: 'suite.search.TestSuites' })}
                                         />
                                         <span
                                             className={styles.search_input_style}
@@ -571,17 +572,17 @@ const TestSuiteCreate: React.FC = () => {
                                     Table.SELECTION_COLUMN,
                                     Table.EXPAND_COLUMN,
                                     { title: 'Test Suite', dataIndex: 'name', },
-                                    { title: formatMessage({id: 'suite.business_name'}), dataIndex: 'business_name', },
-                                    { title: formatMessage({id: 'suite.test_type'}), dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({id: item.value}) : '')}</>, },
-                                ] 
-                                : 
+                                    { title: formatMessage({ id: 'suite.business_name' }), dataIndex: 'business_name', },
+                                    { title: formatMessage({ id: 'suite.test_type' }), dataIndex: 'test_type', render: (text: any, record: any) => <>{test_type_enum.map((item) => item.value === text ? formatMessage({ id: item.value }) : '')}</>, },
+                                ]
+                                :
                                 [
                                     Table.SELECTION_COLUMN,
                                     Table.EXPAND_COLUMN,
                                     { title: 'Test Suite', dataIndex: 'name', },
-                                    { title: formatMessage({id: 'suite.var'}), dataIndex: 'var', width: 180, ...toolTipSetting },
+                                    { title: formatMessage({ id: 'suite.var' }), dataIndex: 'var', width: 180, ...toolTipSetting },
                                     {
-                                        title: formatMessage({id: 'suite.description'}),
+                                        title: formatMessage({ id: 'suite.description' }),
                                         dataIndex: 'doc',
                                         ellipsis: {
                                             showTitle: false,
@@ -679,7 +680,7 @@ const TestSuiteCreate: React.FC = () => {
                                                             </Space>
                                                         )
                                                     },
-                                                    { title: formatMessage({id: 'suite.var'}), dataIndex: 'var', width: 180, ...toolTipSetting },
+                                                    { title: formatMessage({ id: 'suite.var' }), dataIndex: 'var', width: 180, ...toolTipSetting },
                                                     {
                                                         dataIndex: 'doc',
                                                         ellipsis: true,
@@ -743,10 +744,10 @@ const TestSuiteCreate: React.FC = () => {
             >
                 <div style={{ color: 'red', marginBottom: 5 }}>
                     <ExclamationCircleOutlined style={{ marginRight: 4 }} />
-                    {formatMessage({id: 'suite.please.delete.carefully'}, {data: delType ==='suite' ? 'Suite' : 'Conf'})}
+                    {formatMessage({ id: 'suite.please.delete.carefully' }, { data: delType === 'suite' ? 'Suite' : 'Conf' })}
                 </div>
                 <div style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 5 }}>
-                    {formatMessage({id: 'suite.delete.influence.range'}, {data: delType ==='suite' ? 'Suite' : 'Conf'})}
+                    {formatMessage({ id: 'suite.delete.influence.range' }, { data: delType === 'suite' ? 'Suite' : 'Conf' })}
                 </div>
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}>
                     <FormattedMessage id="suite.view.reference.details" />
