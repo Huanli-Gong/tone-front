@@ -1,7 +1,6 @@
 import { Select, Form, Tag } from 'antd'
 import { queryDispatchTags } from './services';
 import React, { useContext, useEffect, useState } from 'react'
-import EllipsisPulic from '@/components/Public/EllipsisPulic'
 import { DrawerProvider } from './Provider'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import { tagRender } from '../untils'
@@ -50,31 +49,28 @@ const DispathTagSelect = (props: any) => {
 
     return (
         <Form.Item
-            name="server_tag_id" 
-            rules={[{ 
-                required: true, 
-                message: formatMessage({id: 'select.suite.server_tag_id.message'})
+            name="server_tag_id"
+            rules={[{
+                required: true,
+                message: formatMessage({ id: 'select.suite.server_tag_id.message' })
             }]}
         >
             <Select
-                title={formatMessage({id: 'select.suite.server_tag_id.message'})}
+                // title={formatMessage({id: 'select.suite.server_tag_id.message'})}
                 placeholder={<FormattedMessage id="select.suite.server_tag_id.message" />}
                 style={{ width: '100%' }}
                 allowClear
-                filterOption={false}
+                filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}
                 tagRender={tagRender}
                 mode="multiple"
                 loading={fetching}
                 onPopupScroll={handleTagePopupScroll}
-            >
-                {
-                    tagList.map((item: any) => (
-                        <Select.Option key={item.id} value={item.id}>
-                            <Tag color={item.tag_color}>{item.name}</Tag>
-                        </Select.Option>
-                    ))
-                }
-            </Select>
+                options={tagList.map((i: any) => ({
+                    value: i.id,
+                    label: <Tag color={i.tag_color}>{i.name}</Tag>,
+                    name: i.name,
+                }))}
+            />
         </Form.Item>
     )
 }

@@ -9,5 +9,6 @@
                 "mv ./dist $BUILD_DEST"
             ]
         }
-    }
+    },
+    "nodeVersion": 16
 }

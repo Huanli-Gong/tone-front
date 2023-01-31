@@ -76,6 +76,8 @@ const text =  {
   'deploy.toneagent': '部署ToneAgent',
   'repeat.tootip1': '对选中Suite下所有Conf生效，范围1-10000',
   'repeat.tootip2': '范围1-10000',
+
+  "select.suite.table.is_delete.alart": "所选用例已不存在",
 };
 
 export default Object.keys(text).reduce((p, key) => {

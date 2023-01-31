@@ -16,10 +16,10 @@ import { useParams, useIntl, FormattedMessage } from 'umi';
 import { useClientSize } from '@/utils/hooks';
 import { AccessTootip, handlePageNum, requestCodeMessage, useStateRef } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Log from '@/components/Public/Log';
 import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 /**
  * 云上集群
  * 
@@ -107,16 +107,16 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             setDeleteDefault(true)
         }
     }
-    
+
     const removeGroup = async (id: number) => {
         let data = { ws_id: ws_id }
         const { page_size } = pageCurrent.current
         const { code, msg } = await delGroup(id, data)
-        if(code === 200){
+        if (code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
             setDeleteVisible(false)
             setDeleteDefault(false)
-            setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size})
+            setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
         } else {
             requestCodeMessage(code, msg)
         }
@@ -167,14 +167,16 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             dataIndex: 'name',
             width: 150,
             ...inputFilterCommonFields("name"),
-            render: (_: any, row: any) => <PopoverEllipsis title={row.name} width={120}>
-                <Highlighter
-                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                    searchWords={[params.name || '']}
-                    autoEscape
-                    textToHighlight={row.name.toString()}
-                />
-            </PopoverEllipsis>
+            render: (_: any, row: any) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[params.name || '']}
+                        autoEscape
+                        textToHighlight={row.name.toString()}
+                    />
+                </ColumnEllipsisText>
+            )
         },
         {
             title: 'Owner',
@@ -187,7 +189,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                     setFocus(!autoFocus)
                 }
             },
-            render: (_: any, row: any) => <PopoverEllipsis title={row.owner_name} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.owner_name} />
         },
         {
             title: <FormattedMessage id="device.tag" />,
@@ -197,13 +199,15 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             },
             width: 240,
             filterIcon: () => <FilterFilled style={{ color: params.tags && params.tags.length > 0 ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) =>
+            filterDropdown: ({ confirm }: any) => (
                 <SelectTags
                     ws_id={ws_id}
                     run_mode={'cluster'}
                     autoFocus={autoFocus}
                     confirm={confirm}
-                    onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }} />,
+                    onConfirm={(val: number) => { setParams({ ...params, page_num: 1, tags: val }) }}
+                />
+            ),
             render: (_: any, row: any) => (
                 <OverflowList list={
                     row.tag_list.map((item: any, index: number) => {
@@ -217,14 +221,16 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             dataIndex: 'description',
             width: 300,
             ...inputFilterCommonFields("description"),
-            render: (_: any, row: any) => <PopoverEllipsis title={row.description} width={200} >
-                <Highlighter
-                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                    searchWords={[params.description || '']}
-                    autoEscape
-                    textToHighlight={row.description ? row.description.toString() : '-'}
-                />
-            </PopoverEllipsis>,
+            render: (_: any, row: any) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: row.description }} >
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[params.description || '']}
+                        autoEscape
+                        textToHighlight={row.description ? row.description.toString() : '-'}
+                    />
+                </ColumnEllipsisText>
+            ),
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -308,7 +314,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                     pageSize={params.page_size}
                     currentPage={params.page_num}
                     onPageChange={
-                        (page_num:any, page_size:any) => {
+                        (page_num: any, page_size: any) => {
                             setParams({ ...params, page_num, page_size })
                         }
                     }

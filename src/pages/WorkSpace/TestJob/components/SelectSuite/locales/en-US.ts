@@ -76,6 +76,8 @@ const text =  {
   'deploy.toneagent': 'Deploy ToneAgent',	
   'repeat.tootip1': 'Applies to all Conf files under the Suite selected, range 1-10000',
   'repeat.tootip2': 'Range 1-10000',
+
+  "select.suite.table.is_delete.alart": "The selected TestCase no longer exists.",
 };
 
 export default Object.keys(text).reduce((p, key) => {

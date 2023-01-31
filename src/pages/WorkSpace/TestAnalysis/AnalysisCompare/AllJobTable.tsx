@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Space, Row, Col, Select, Divider, Button, DatePicker, Typography } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
 import styles from './index.less'
@@ -12,9 +11,10 @@ import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { Scrollbars } from 'react-custom-scrollbars';
 import SelectRadio from '@/components/Public/SelectRadio';
 import SelectUser from '@/components/Public/SelectUser';
-import ResizeTable from '@/components/ResizeTable';
 import CommonPagination from '@/components/CommonPagination';
 import { requestCodeMessage } from '@/utils/utils'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const { RangePicker } = DatePicker
 const { Option } = Select
@@ -36,7 +36,7 @@ const styleObj = {
 }
 
 const AllJobTable = (props: any) => {
-    const { onOk, onCancel, noGroupData } = props
+    const { onOk, onCancel, noGroupData, groupData } = props
     const { ws_id }: any = useParams();
     const page_default_params: any = {
         page_num: 1,
@@ -44,6 +44,7 @@ const AllJobTable = (props: any) => {
         ws_id,
         state: 'success,fail,skip,stop,running',
     }
+
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
@@ -161,17 +162,16 @@ const AllJobTable = (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.name }}>
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={row && row.name}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
-
         },
         {
             title: <FormattedMessage id="analysis.test_type" />,
@@ -182,7 +182,7 @@ const AllJobTable = (props: any) => {
             },
             render: (_: any, row: any) => {
                 const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
-                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</ColumnEllipsisText>
             },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
@@ -211,7 +211,7 @@ const AllJobTable = (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
@@ -220,12 +220,15 @@ const AllJobTable = (props: any) => {
                 shwoTitle: false,
             },
             dataIndex: 'start_time',
-            filterDropdown: ({ confirm }: any) => <RangePicker
-                size="middle"
-                showTime={{ format: 'HH:mm:ss' }}
-                format="YYYY-MM-DD HH:mm:ss"
-                onChange={_.partial(handleSelectTime, _, _, confirm)}
-            />,
+            filterDropdown: ({ confirm }: any) => (
+                /* @ts-ignore */
+                <RangePicker
+                    size="middle"
+                    showTime={{ format: 'HH:mm:ss' }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    onChange={_.partial(handleSelectTime, _, _, confirm)}
+                />
+            ),
             onFilterDropdownVisibleChange: (visible: any) => {
                 if (visible) {
                     setFocus(!autoFocus)
@@ -262,16 +265,10 @@ const AllJobTable = (props: any) => {
 
     const onVersionChange = (value: any) => {
         setPruductVersion(value)
-        setSelectedRowKeys([]);
-        setSelectRowData([]);
     }
 
     const onProductChange = (value: any) => {
         setPruductId(value)
-        // setPruductVersion(allVersion[0]?.value)
-        // setParams({ ...params, product_id: value, product_version: allVersion[0]?.value })
-        setSelectedRowKeys([]);
-        setSelectRowData([]);
     }
 
     const handleClearVersion = () => {
@@ -287,17 +284,15 @@ const AllJobTable = (props: any) => {
 
     const selectedChange = (record: any, selected: any) => {
         // 去掉未选组的job 开始
-        let arrKeys = _.cloneDeep(selectedRowKeys)
-        let arrData = _.cloneDeep(selectRowData)
         if (selected) {
-            arrKeys = [...arrKeys, record.id]
-            arrData = [...arrData, record]
+            const allRecord = selectRowData.concat(record)
+            setSelectRowData(allRecord)
+            setSelectedRowKeys(allRecord.map((i: any) => i.id))
         } else {
-            arrKeys = arrKeys.filter((keys: any) => Number(keys) !== Number(record.id))
-            arrData = arrData.filter((obj: any) => obj && Number(obj.id) !== Number(record.id))
+            const allRecord = selectRowData.filter((i: any) => i.id !== record.id)
+            setSelectRowData(allRecord)
+            setSelectedRowKeys(allRecord.map((i: any) => i.id))
         }
-        setSelectedRowKeys(arrKeys);
-        setSelectRowData(arrData);
     }
 
     const allSelectFn = (allData: any) => {
@@ -315,9 +310,21 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys(_.difference(selectedRowKeys, keysArr))
         setSelectRowData(_.differenceBy(selectRowData, arr, 'id'))
     }
+    
+    const groupDataJobIds = groupData.filter((i: any) => i.type === "job").reduce((p: any, c: any) => {
+        const { members } = c
+        return p.concat(members.map((i: any) => i.id))
+    }, [])
+
     const rowSelection = {
         selectedRowKeys,
         preserveSelectedRowKeys: false,
+        getCheckboxProps: (record: any) => {
+            return {
+                disabled: groupDataJobIds.includes(record.id), // Column configuration not to be checked
+                name: record.name,
+            }
+        },
         onSelect: selectedChange,
         onSelectAll: (selected: boolean, selectedRows: [], changeRows: []) => {
             if (selected) {
@@ -390,15 +397,16 @@ const AllJobTable = (props: any) => {
                 <Divider className={styles.line} />
             </div>
             <Scrollbars style={scroll} className={styles.scroll}>
-                <ResizeTable
+                <ResizeHooksTable
                     rowSelection={rowSelection as any}
                     rowKey='id'
                     columns={columns as any}
+                    name="ws-compare-all-job-list"
+                    refreshDeps={[ws_id, params, autoFocus]}
                     loading={loading}
                     dataSource={tableData}
                     pagination={false}
                     size="small"
-                    scroll={{ x: '100%' }}
                 />
             </Scrollbars>
             <CommonPagination

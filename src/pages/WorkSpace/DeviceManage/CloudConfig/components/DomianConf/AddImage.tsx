@@ -1,10 +1,11 @@
-import { Drawer, Space, Button, Form, Input, Radio, message, Select } from 'antd'
+import { Drawer, Space, Button, Form, Input, message, Select } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { createCloudImage, updateCloudImage, queryCloudAk, queryRegionCloudAk } from '../../service'
 
 import styles from './index.less'
 import _ from 'lodash'
+
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
@@ -22,21 +23,10 @@ export default forwardRef(
         const [regionList, setRegionList] = useState<any>([])
         const [providerType, setProviderType] = useState<any>() // 编辑的数据
 
-        const [nameAkStatus, setNameAkStatus] = useState(true) // 校验名称是否为空
-        const [nameStatus, setNameStatus] = useState(true) // 校验名称是否为空
-        const [idStatus, setIDStatus] = useState(true) // 校验名称是否为空
-        const [versionStatus, setVersiontatus] = useState(true) // 校验名称是否为空
-        const [providerStatus, setProviderStatus] = useState(true) // 校验名称是否为空
-
-        const [platformStatus, setPlatformStatus] = useState(true) // 校验名称是否为空
-        const [regionStatus, setRegionStatus] = useState(true) // 校验名称是否为空
-        const [queryNameStatus, setQuerynameStatus] = useState(true) // 校验名称重复的校验
-
         useImperativeHandle(
             ref,
             () => ({
                 show: (title: string = "new", data: any = {}) => {
-
                     let type = ''
                     if (data && data.provider) {
                         type = data.provider
@@ -48,7 +38,6 @@ export default forwardRef(
                     setVisible(true)
                     setTitle(title)
                     setEditer(data)
-                    setQuerynameStatus(true)
                     setProviderType(type)
                     form.setFieldsValue(data) // 动态改变表单值
                 }
@@ -65,75 +54,43 @@ export default forwardRef(
             setRegionList(data || [])
         };
 
-
-
         const handleClose = () => {
             form.resetFields() // 重置一组字段到 initialValues
             setPadding(false)
             setVisible(false)
-            setQuerynameStatus(true)
-            setNameAkStatus(true)
-            setNameStatus(true)
-            setIDStatus(true)
-            setVersiontatus(true)
-            setProviderStatus(true)
-            setPlatformStatus(true)
-            setRegionStatus(true)
             setEditer({})
         }
 
         const defaultOption = (code: number, msg: string, type: string) => {
+            setPadding(false)
             if (code === 200) {
                 props.onOk()
                 props.setPage(1)
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 setVisible(false)
                 form.resetFields() //重置一组字段到 initialValues
             }
             else {
                 if (code === 201) {
-                    setQuerynameStatus(false)
+                    form.setFields([{
+                        name: "image_name",
+                        errors: [
+                            formatMessage({ id: 'device.image.name.cannot.repeated' })
+                        ]
+                    }])
                 } else {
                     message.error(msg)
                 }
             }
-            setPadding(false)
         }
 
         const handleOk = () => {
-            if (!form.getFieldValue('provider')) {
-                setProviderStatus(false)
-                return
-            }
-            if (!form.getFieldValue('ak_name')) {
-                setNameAkStatus(false)
-                return
-            }
-            if (!form.getFieldValue('image_name')) {
-                setNameStatus(false)
-                return
-            }
-            if (!form.getFieldValue('image_id')) {
-                setIDStatus(false)
-                return
-            }
-            if (!form.getFieldValue('image_version')) {
-                setVersiontatus(false)
-                return
-            }
-            if (!form.getFieldValue('platform')) {
-                setPlatformStatus(false)
-                return
-            }
-            if (!form.getFieldValue('region')) {
-                setRegionStatus(false)
-                return
-            }
+            if (padding) return
             setPadding(true)
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
                     let akId = values.ak_name
-                    const arr = akData.filter(item => item.name === values.ak_name)
+                    const arr = akData.filter((item: any) => item.name === values.ak_name)
                     if (arr.length) akId = arr[0].id
                     values.ak_id = akId
                     if (title === 'new') {
@@ -145,20 +102,21 @@ export default forwardRef(
                         defaultOption(code, msg, 'edit')
                     }
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.log(err)
+                    setPadding(false)
+                })
         }
         const providerArr = [
-            {id:'aliyun_ecs', name: formatMessage({id: 'device.aliyun_ecs'}) },
-            {id:'aliyun_eci', name: formatMessage({id: 'device.aliyun_eci'}) },
+            { id: 'aliyun_ecs', name: formatMessage({ id: 'device.aliyun_ecs' }) },
+            { id: 'aliyun_eci', name: formatMessage({ id: 'device.aliyun_eci' }) },
         ]
         const providerSelectFn = (value: string) => {
-            setProviderStatus(true)
             if (value !== providerType) {
                 const fieldsValue = _.cloneDeep(form.getFieldsValue())
                 fieldsValue.ak_name = undefined
                 form.setFieldsValue(fieldsValue)
                 setProviderType(value)
-
             }
 
             getAkList({ ...defaultParmasAk, provider: value })
@@ -168,17 +126,18 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title === 'new' ? <FormattedMessage id="device.new.image"/>: <FormattedMessage id="device.edit.image"/>}
-                width="375"
+                title={title === 'new' ? <FormattedMessage id="device.new.image" /> : <FormattedMessage id="device.edit.image" />}
+                width={375}
                 onClose={handleClose}
-                visible={visible}
+                destroyOnClose
+                open={visible}
                 className={styles.add_baseline_drawer}
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
-                                {editer && editer.name ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
+                                {editer && editer.name ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />}
                             </Button>
                         </Space>
                     </div>
@@ -187,41 +146,31 @@ export default forwardRef(
                 <Form
                     form={form}
                     layout="vertical" // 表单布局 ，垂直
-                /*hideRequiredMark*/
                 >
                     <Form.Item
-                        label={<FormattedMessage id="device.cloud.service.provider"/>}
+                        label={<FormattedMessage id="device.cloud.service.provider" />}
                         name="provider"
-                        validateStatus={(!providerStatus) && 'error'}
-                        help={(!providerStatus ? formatMessage({ id: 'device.cloud.service.provider.cannot.empty'}) : undefined)}
-                        rules={[{ required: true }]}>
+                        rules={[{ required: true, message: formatMessage({ id: 'device.cloud.service.provider.cannot.empty' }) }]}>
                         <Select
                             onSelect={providerSelectFn}
-                            placeholder={formatMessage({ id: 'device.cloud.service.provider.select'})}
-                            // defaultValue={providerArr[0].id}
+                            placeholder={formatMessage({ id: 'device.cloud.service.provider.select' })}
                             filterOption={(input, option: any) => {
-                                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }}
-                            optionFilterProp="children">
-                            {
+                            options={
                                 providerArr.map(
-                                    (item: any) => (
-                                        <Select.Option
-                                            value={item.id}
-                                        >
-                                            {item.name}
-                                        </Select.Option>
-                                    )
+                                    (item: any) => ({
+                                        value: item.id,
+                                        label: item.name
+                                    })
                                 )
                             }
-                        </Select>
+                        />
                     </Form.Item>
                     <Form.Item
                         label="Ak Name"
                         name="ak_name"
-                        validateStatus={(!providerType || !nameAkStatus) && 'error'}
-                        help={(!providerType ? formatMessage({ id: 'device.cloud.service.provider.select'}) : undefined) || (!nameAkStatus ? formatMessage({ id: 'device.ak.name.cannot.empty'}) : undefined)}
-                        rules={[{ required: true }]}>
+                        rules={[{ required: true, message: formatMessage({ id: 'device.ak.name.cannot.empty' }) }]}>
                         <Select
                             onChange={(value) => {
                                 form.setFieldsValue({ region: undefined });
@@ -229,111 +178,73 @@ export default forwardRef(
                                 if (oneItem.length && oneItem[0].id) {
                                     getRegionList({ ak_id: oneItem[0].id })
                                 }
-                            }
-                            }
-                            onSelect={() => { setNameAkStatus(true) }}
-                            placeholder={formatMessage({ id: 'device.ak.name.select'})}
+                            }}
+                            placeholder={formatMessage({ id: 'device.ak.name.select' })}
                             disabled={!providerType ? true : false}
                             showSearch={true}
                             filterOption={(input, option: any) => {
-                                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }}
-                            optionFilterProp="children">
-                            {
+                            options={
                                 akData.map(
-                                    (item: any) => (
-                                        <Select.Option
-                                            value={item.name}
-                                        >
-                                            {item.name}
-                                        </Select.Option>
-                                    )
+                                    (item: any) => ({
+                                        value: item.name,
+                                        label: item.name
+                                    })
                                 )
                             }
-                        </Select>
+                        />
                     </Form.Item>
 
-                    <Form.Item label="Region"
+                    <Form.Item
+                        label="Region"
                         name="region"
-                        // validateStatus={(!regionStatus) && 'error'}
-                        // help={(!regionStatus && `region不能为空`)}
-                        rules={[{ required: true }]}>
-                        {/* <Input autoComplete="auto" placeholder="请输入region" onChange={(e) => {
-                            if (!e.target.value) {
-                                setRegionStatus(false)
-                                return
+                        rules={[{ required: true, message: "region不能为空" }]}>
+                        <Select
+                            placeholder={formatMessage({ id: 'device.region.placeholder' })}
+                            disabled={!regionList.length}
+                            filterOption={(input, option: any) => {
+                                return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }}
+                            showSearch
+                            options={
+                                regionList.map((item: any) => ({
+                                    value: item.id,
+                                    label: item.name
+                                }))
                             }
-                            setRegionStatus(true)
-                        }} /> */}
-                        <Select placeholder={formatMessage({ id: 'device.region.placeholder'})} disabled={!regionList.length}>
-                            {regionList.map((item: any) =>
-                                <Select.Option value={item.id} key={item.id}>
-                                    {item.name}
-                                </Select.Option>
-                            )}
-                        </Select>
+                        />
                     </Form.Item>
                     <Form.Item
                         label="Image Group"
                         name="platform"
-                        validateStatus={(!platformStatus) ? 'error': undefined}
-                        help={(!platformStatus && formatMessage({ id: 'device.image.group.cannot.empty'}) )}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.group.enter'})} onChange={(e) => {
-                            if (!e.target.value) {
-                                setPlatformStatus(false)
-                                return
-                            }
-                            setPlatformStatus(true)
-                        }} />
+                        rules={[{ required: true, message: formatMessage({ id: 'device.image.group.cannot.empty' }) }]}>
+                        <Input
+                            autoComplete="auto"
+                            placeholder={formatMessage({ id: 'device.image.group.enter' })}
+                        />
                     </Form.Item>
 
 
                     <Form.Item
                         label="Image Name"
                         name="image_name"
-                        validateStatus={(!nameStatus || !queryNameStatus) && 'error'}
-                        help={(!nameStatus ? formatMessage({ id: 'device.image.name.cannot.empty'}) : undefined) || (!queryNameStatus ? formatMessage({ id: 'device.image.name.cannot.repeated'}) : undefined)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.name.enter'})} onChange={(e) => {
-                            if (!e.target.value) {
-                                setNameStatus(false)
-                                return
-                            }
-                            setQuerynameStatus(true)
-                            setNameStatus(true)
-                        }} />
+                        rules={[{ required: true, message: formatMessage({ id: 'device.image.name.cannot.empty' }) }]}>
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.name.enter' })} />
                     </Form.Item>
                     <Form.Item
                         label="Image ID"
                         name="image_id"
-                        validateStatus={(!idStatus) && 'error'}
-                        help={(!idStatus ? formatMessage({ id: 'device.image.id.cannot.empty'}) : undefined)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.id.enter'})} onChange={(e) => {
-                            if (!e.target.value) {
-                                setIDStatus(false)
-                                return
-                            }
-                            setIDStatus(true)
-                        }} />
+                        rules={[{ required: true, message: formatMessage({ id: 'device.image.id.cannot.empty' }) }]}>
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.id.enter' })} />
                     </Form.Item>
                     <Form.Item
                         label="Image Version"
                         name="image_version"
-                        validateStatus={(!versionStatus) && 'error'}
-                        help={(!versionStatus ? formatMessage({ id: 'device.image.version.cannot.empty'}) : undefined)}
-                        rules={[{ required: true }]}>
-                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.version.enter'})} onChange={(e) => {
-                            if (!e.target.value) {
-                                setVersiontatus(false)
-                                return
-                            }
-                            setVersiontatus(true)
-                        }} />
+                        rules={[{ required: true, message: formatMessage({ id: 'device.image.version.cannot.empty' }) }]}
+                    >
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.image.version.enter' })} />
                     </Form.Item>
-
-
                 </Form>
             </Drawer>
         )

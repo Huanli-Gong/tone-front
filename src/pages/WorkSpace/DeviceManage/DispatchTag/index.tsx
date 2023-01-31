@@ -4,14 +4,13 @@ import { tagList, delSuite } from './service';
 import styles from './style.less';
 import SearchInput from '@/components/Public/SearchInput';
 import Log from '@/components/Public/Log';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { SingleTabCard } from '@/components/UpgradeUI';
-import PermissionTootip from '@/components/Public/Permission';
 import { useDetectZoom } from '@/utils/hooks';
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import AddModel from './components/AddModel'
 import { Access, useAccess } from 'umi'
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const SuiteManagement: React.FC<any> = props => {
 	const { formatMessage } = useIntl()
@@ -68,13 +67,13 @@ const SuiteManagement: React.FC<any> = props => {
 
 	const remOuter = async (params: any) => {
 		await delSuite(params.id, ws_id)
-		message.success(formatMessage({id: 'operation.success'}) );
+		message.success(formatMessage({ id: 'operation.success' }));
 		setRefresh(!refresh)
 	}
 
 	const columns: any[] = [
 		{
-			title: <FormattedMessage id="device.tag.name"/>,
+			title: <FormattedMessage id="device.tag.name" />,
 			dataIndex: 'name',
 			width: 170,
 			filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
@@ -97,7 +96,7 @@ const SuiteManagement: React.FC<any> = props => {
 			)
 		},
 		{
-			title: <FormattedMessage id="device.description"/>,
+			title: <FormattedMessage id="device.description" />,
 			dataIndex: 'description',
 			width: 100,
 			filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
@@ -108,11 +107,11 @@ const SuiteManagement: React.FC<any> = props => {
 				}
 			},
 			render: (_: string, row: any) => (
-				<PopoverEllipsis title={row.description} width={100 * ratio} />
+				<ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description} />
 			)
 		},
 		{
-			title: <FormattedMessage id="device.create_user"/>,
+			title: <FormattedMessage id="device.create_user" />,
 			dataIndex: 'create_user',
 			width: 90,
 			ellipsis: {
@@ -120,12 +119,12 @@ const SuiteManagement: React.FC<any> = props => {
 			},
 			render(_: string, row: any) {
 				return (
-					<PopoverEllipsis width={90} title={_ || '-'} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
 				)
 			}
 		},
 		{
-			title: <FormattedMessage id="device.update_user"/>,
+			title: <FormattedMessage id="device.update_user" />,
 			dataIndex: 'update_user',
 			ellipsis: {
 				showTitle: false
@@ -133,30 +132,30 @@ const SuiteManagement: React.FC<any> = props => {
 			width: 90,
 			render(_: string, row: any) {
 				return (
-					<PopoverEllipsis width={90} title={_ || '-'} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
 				)
 			}
 		},
 		{
-			title: <FormattedMessage id="device.gmt_created"/>,
+			title: <FormattedMessage id="device.gmt_created" />,
 			dataIndex: 'gmt_created',
 			width: 200,
 			render: (_: string, row: any) => {
-				if (row.create_user !== '系统预设') return <PopoverEllipsis width={200 * ratio} title={row.gmt_created} />
+				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
 				return "-"
 			}
 		},
 		{
-			title: <FormattedMessage id="device.gmt_modified"/>,
+			title: <FormattedMessage id="device.gmt_modified" />,
 			dataIndex: 'gmt_modified',
 			width: 200,
 			render: (_: string, row: any) => {
-				if (row.create_user !== '系统预设') return <PopoverEllipsis width={200 * ratio} title={row.gmt_modified} />
+				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
 				return "-"
 			}
 		},
 		{
-			title: <FormattedMessage id="Table.columns.operation"/>,
+			title: <FormattedMessage id="Table.columns.operation" />,
 			valueType: 'option',
 			dataIndex: 'id',
 			width: 150,
@@ -165,31 +164,31 @@ const SuiteManagement: React.FC<any> = props => {
 				<Space>
 					<Access accessible={access.WsMemberOperateSelf()}>
 						<Space>
-							<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}><FormattedMessage id="operation.edit"/></Button>
+							<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter(row)}><FormattedMessage id="operation.edit" /></Button>
 							<Popconfirm
-								title={<div style={{ color: 'red' }}><FormattedMessage id="device.tag.delete.tips"/></div>}
+								title={<div style={{ color: 'red' }}><FormattedMessage id="device.tag.delete.tips" /></div>}
 								placement="topRight"
-								okText={<FormattedMessage id="operation.cancel"/>}
-								cancelText={<FormattedMessage id="operation.confirm.delete"/>}
+								okText={<FormattedMessage id="operation.cancel" />}
+								cancelText={<FormattedMessage id="operation.confirm.delete" />}
 								onCancel={() => remOuter(row)}
 								icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
 								overlayStyle={{ width: '300px' }}
 							>
-								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete"/></Button>
+								<Button type="link" style={{ padding: 0, height: 'auto' }}><FormattedMessage id="operation.delete" /></Button>
 							</Popconfirm>
 						</Space>
 					</Access>
-					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log"/></Button>
+					<Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
 				</Space>,
 		},
 	];
 
 	return (
 		<SingleTabCard
-			title={<FormattedMessage id="device.dispatch.tag"/>}
+			title={<FormattedMessage id="device.dispatch.tag" />}
 			extra={
 				<Access accessible={access.WsMemberOperateSelf()}>
-					<Button key="3" type="primary" onClick={newSuite}> <FormattedMessage id="device.create.tag"/> </Button>
+					<Button key="3" type="primary" onClick={newSuite}> <FormattedMessage id="device.create.tag" /> </Button>
 				</Access>
 			}
 		>
@@ -204,7 +203,7 @@ const SuiteManagement: React.FC<any> = props => {
 				/>
 				<Row justify="space-between" style={{ padding: '16px 20px 0' }}>
 					<div className={!dataSource?.total ? styles.hidden : ''}>
-						{formatMessage({id: 'pagination.total.strip'}, {data: dataSource?.total || 0 })}
+						{formatMessage({ id: 'pagination.total.strip' }, { data: dataSource?.total || 0 })}
 					</div>
 					<Pagination
 						size="small"

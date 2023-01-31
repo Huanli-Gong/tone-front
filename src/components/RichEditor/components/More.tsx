@@ -1,7 +1,7 @@
 import React from "react";
 import DorpdownMenu from "./DropdownMenu";
 import cls from "classnames"
-import { Editor } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 import { ToolMenuList, ToolMenuItem } from "../styled"
 
 import { ReactComponent as Horizontal } from "../assets/horizontal.svg"
@@ -10,6 +10,8 @@ import { ReactComponent as Subscript } from "../assets/subscript.svg"
 import { ReactComponent as Superscript } from "../assets/superscript.svg"
 import { ReactComponent as Code } from "../assets/code.svg"
 import { ReactComponent as BlockCode } from "../assets/block-code.svg"
+import { ReactComponent as BlockQuote } from "../assets/block-quote.svg"
+import { ReactComponent as MoreOutlined } from "../assets/more.svg"
 
 const More: React.FC<{ editor: Editor }> = ({ editor }) => {
     if (!editor) return <></>
@@ -18,6 +20,18 @@ const More: React.FC<{ editor: Editor }> = ({ editor }) => {
             title="更多样式"
             menu={
                 <ToolMenuList>
+                    <ToolMenuItem
+                        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                        className={
+                            cls(
+                                editor.isActive('blockquote') && 'is-active'
+                            )
+                        }
+                    >
+                        <BlockQuote />
+                        <span>引用</span>
+                    </ToolMenuItem>
+
                     <ToolMenuItem
                         onClick={() => editor.chain().focus().toggleCode().run()}
                         className={
@@ -68,7 +82,7 @@ const More: React.FC<{ editor: Editor }> = ({ editor }) => {
                         onClick={() => editor.chain().focus().setHorizontalRule().run()}
                     >
                         <Horizontal />
-                        <span>插入分割线</span>
+                        <span>分割线</span>
                     </ToolMenuItem>
 
                     <ToolMenuItem
@@ -80,7 +94,7 @@ const More: React.FC<{ editor: Editor }> = ({ editor }) => {
                 </ToolMenuList>
             }
         >
-            更多
+            <MoreOutlined />
         </DorpdownMenu>
     )
 }

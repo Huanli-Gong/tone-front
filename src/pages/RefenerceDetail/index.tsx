@@ -1,5 +1,5 @@
-import React,{ useEffect, useMemo, useState } from 'react';
-import { Breadcrumb, Collapse,message,Table } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Breadcrumb, Collapse, message, Table, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks'
 import CommonPagination from '@/components/CommonPagination'
@@ -42,21 +42,21 @@ const Wapper = styled.div`
     }
 `
 
-const Refenerce = ( props:any ) => {
+const Refenerce = (props: any) => {
     const { Panel } = Collapse;
     const { type } = props.match.params
-    const [ JobTotal,setJobTotal ] = useState(0)
-    const [ JobData,setJobData ] = useState<any>([])
-    const [ TempTotal,setTempTotal ] = useState(0)
-    const [ TempData,setTempData ] = useState<any>([])
-    const [ loading,setLoading ] = useState(false)
+    const [JobTotal, setJobTotal] = useState(0)
+    const [JobData, setJobData] = useState<any>([])
+    const [TempTotal, setTempTotal] = useState(0)
+    const [TempData, setTempData] = useState<any>([])
+    const [loading, setLoading] = useState(false)
     //const [ JobObj,setJobObj ] = useState<any>({  flag:'job', page_num:1, page_size:10 })
     //const [ TempObj,setTempObj ] = useState<any>({ flag:'template', page_num:1, page_size:10 })
-    const [ params, setParams ] = useState<any>({ page_num:1, page_size:10 })
-    const [ tempParams, setTempParams ] = useState<any>({ page_num:1, page_size:10 })
-    const {height: layoutHeight} = useClientSize()
-    let param =  new URLSearchParams(location.search);
-    let [ id, name ] = [param.get('id'),param.get('name')]
+    const [params, setParams] = useState<any>({ page_num: 1, page_size: 10 })
+    const [tempParams, setTempParams] = useState<any>({ page_num: 1, page_size: 10 })
+    const { height: layoutHeight } = useClientSize()
+    let param = new URLSearchParams(location.search);
+    let [id, name] = [param.get('id'), param.get('name')]
 
     const BreadcrumbItem: React.FC<any> = () => (
         <Breadcrumb className="breadcrumb">
@@ -66,50 +66,50 @@ const Refenerce = ( props:any ) => {
                 </span>
             </Breadcrumb.Item>
             <Breadcrumb.Item >
-                <span style={{ cursor: 'pointer',color:'rgba(0,0,0,0.85)' }}>{type == 1 ? 'Suite' : 'Conf'}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({name})</span> <FormattedMessage id="reference.details" /></span>
+                <span style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.85)' }}>{type == 1 ? 'Suite' : 'Conf'}<span style={{ color: 'rgba(0,0,0,0.65)' }}>({name})</span> <FormattedMessage id="reference.details" /></span>
             </Breadcrumb.Item>
         </Breadcrumb>
     )
-    let JobObj:any = { flag:'job', ...params }
-    let TempObj:any = { flag:'template', ...tempParams }
-    if(type == 'suite') {
+    let JobObj: any = { flag: 'job', ...params }
+    let TempObj: any = { flag: 'template', ...tempParams }
+    if (type == 'suite') {
         JobObj.suite_id = id
         TempObj.suite_id = id
-    }else{
+    } else {
         JobObj.case_id_list = id
         TempObj.case_id_list = id
     }
 
-    const QueryJobData = async() =>{
+    const QueryJobData = async () => {
         setLoading(true)
         const data = await queryConfirm(JobObj)
-        if(data.code == 200){
+        if (data.code == 200) {
             setJobTotal(data.total)
             setJobData(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
-    const QueryTemplateData = async() =>{
+    const QueryTemplateData = async () => {
         setLoading(true)
         const data = await queryConfirm(TempObj)
-        if(data.code == 200){
+        if (data.code == 200) {
             setTempTotal(data.total)
             setTempData(data.data)
             setLoading(false)
         }
-        else requestCodeMessage( data.code , data.msg )
+        else requestCodeMessage(data.code, data.msg)
     }
-    const showTemp = useMemo(()=>{
-        if(JobTotal > 0 ) return true
+    const showTemp = useMemo(() => {
+        if (JobTotal > 0) return true
         return false
-    },[JobTotal])
+    }, [JobTotal])
 
-    useEffect(()=>{
+    useEffect(() => {
         QueryJobData();
         QueryTemplateData();
-    },[params,tempParams])
-    
+    }, [params, tempParams])
+
     const JobColumns = [
         {
             title: <FormattedMessage id="workspace.ws.name" />,
@@ -125,10 +125,10 @@ const Refenerce = ( props:any ) => {
             title: <FormattedMessage id="analysis.job.name" />,
             dataIndex: 'name',
             key: 'name',
-            render:( _:any,row:any )=>(
-                <span 
-                    onClick={() => window.open(`/ws/${row.ws_id}/test_result/${row.id}`)} 
-                    style={{ color:'#1890FF',cursor:'pointer'}}>
+            render: (_: any, row: any) => (
+                <span
+                    onClick={() => window.open(`/ws/${row.ws_id}/test_result/${row.id}`)}
+                    style={{ color: '#1890FF', cursor: 'pointer' }}>
                     {_}
                 </span>
             )
@@ -137,7 +137,7 @@ const Refenerce = ( props:any ) => {
             title: <FormattedMessage id="ws.dashboard.job.state" />,
             dataIndex: 'state',
             key: 'state',
-            render:( _:any,row:any ) => <JobListStateTag {...row} />
+            render: (_: any, row: any) => <JobListStateTag {...row} />
         },
         {
             title: <FormattedMessage id="device.create_user" />,
@@ -160,12 +160,14 @@ const Refenerce = ( props:any ) => {
             title: <FormattedMessage id="ws.test.job.template.name" />,
             dataIndex: 'name',
             key: 'name',
-            render:( _:any,row:any )=>(
-                <span 
-                    onClick={() => window.open(`/ws/${row.ws_id}/test_template/${row.id}/preview`)} 
-                    style={{ color:'#1890FF',cursor:'pointer'}}>
+            render: (_: any, row: any) => (
+                <Typography.Link
+                    ellipsis
+                    target={"_blank"}
+                    href={`/ws/${row.ws_id}/test_template/${row.id}/preview`}
+                >
                     {_}
-                </span>
+                </Typography.Link>
             )
         },
         {
@@ -179,65 +181,65 @@ const Refenerce = ( props:any ) => {
             key: 'gmt_created',
         },
     ];
-    const RenderItem : React.FC<any> = (props:any) => {
+    const RenderItem: React.FC<any> = (props: any) => {
         return props.children
     }
     return (
         <Wapper>
-            <BreadcrumbItem/>
+            <BreadcrumbItem />
             <div className="content" style={{ height: layoutHeight - 88, overflowY: 'auto' }}>
-            <RenderItem>
-            {
-                JobTotal > 0 && <Collapse
-                    bordered={false}
-                    ghost
-                    defaultActiveKey="1"
-                    expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-                    className="site-collapse-custom-collapse"
-                >
-                    <Panel header={<div><FormattedMessage id="analysis.job.table" /><span className="total">{JobTotal}</span></div>} key="1" className="site-collapse-custom-panel">
-                        <Table dataSource={JobData} columns={JobColumns} size='small' loading={loading} rowKey="id" pagination={false}/>
-                        <CommonPagination
-                            pageSize={params.page_size}
-                            currentPage={params.page_num}
-                            total={JobTotal}
-                            onPageChange={
-                                (page_num, page_size) => setParams({
-                                    ...params,
-                                    page_size,
-                                    page_num
-                                })
-                            }
-                        />
-                    </Panel>
-                </Collapse>
-            }
-            {
-                TempTotal > 0 && <Collapse
-                    bordered={false}
-                    ghost
-                    defaultActiveKey={ showTemp ? '0' : '1' }
-                    expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-                    className="site-collapse-custom-collapse"
-                >
-                <Panel header={<div><FormattedMessage id="template.list" /><span className="total">{TempTotal}</span></div>} key="1" className="site-collapse-custom-panel">
-                    <Table dataSource={TempData} columns={TempColumns} size='small' loading={loading} rowKey="id" pagination={false}/>
-                    <CommonPagination
-                        pageSize={tempParams.page_size}
-                        currentPage={tempParams.page_num}
-                        total={TempTotal}
-                        onPageChange={
-                            (page_num, page_size) => setTempParams({
-                                ...tempParams,
-                                page_size,
-                                page_num
-                            })
-                        }
-                    />
-                </Panel>
-            </Collapse>
-            }
-            </RenderItem>
+                <RenderItem>
+                    {
+                        JobTotal > 0 && <Collapse
+                            bordered={false}
+                            ghost
+                            defaultActiveKey="1"
+                            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+                            className="site-collapse-custom-collapse"
+                        >
+                            <Panel header={<div><FormattedMessage id="analysis.job.table" /><span className="total">{JobTotal}</span></div>} key="1" className="site-collapse-custom-panel">
+                                <Table dataSource={JobData} columns={JobColumns} size='small' loading={loading} rowKey="id" pagination={false} />
+                                <CommonPagination
+                                    pageSize={params.page_size}
+                                    currentPage={params.page_num}
+                                    total={JobTotal}
+                                    onPageChange={
+                                        (page_num, page_size) => setParams({
+                                            ...params,
+                                            page_size,
+                                            page_num
+                                        })
+                                    }
+                                />
+                            </Panel>
+                        </Collapse>
+                    }
+                    {
+                        TempTotal > 0 && <Collapse
+                            bordered={false}
+                            ghost
+                            defaultActiveKey={showTemp ? '0' : '1'}
+                            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+                            className="site-collapse-custom-collapse"
+                        >
+                            <Panel header={<div><FormattedMessage id="template.list" /><span className="total">{TempTotal}</span></div>} key="1" className="site-collapse-custom-panel">
+                                <Table dataSource={TempData} columns={TempColumns} size='small' loading={loading} rowKey="id" pagination={false} />
+                                <CommonPagination
+                                    pageSize={tempParams.page_size}
+                                    currentPage={tempParams.page_num}
+                                    total={TempTotal}
+                                    onPageChange={
+                                        (page_num, page_size) => setTempParams({
+                                            ...tempParams,
+                                            page_size,
+                                            page_num
+                                        })
+                                    }
+                                />
+                            </Panel>
+                        </Collapse>
+                    }
+                </RenderItem>
             </div>
         </Wapper>
     )

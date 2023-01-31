@@ -47,22 +47,22 @@ export default forwardRef(
             } else {
                 setPadding(false)
                 setValidateStatus('error')
-                setMsg(formatMessage({id: 'product.please.check.whether.exists'}) )
+                setMsg(formatMessage({ id: 'product.please.check.whether.exists' }))
                 setHasFeedback(false)
             }
             if (branchValue.replace(/(^\s*)|(\s*$)/g, '') === '') {
                 setValidateStatus('warning')
-                setMsg(formatMessage({id: 'please.enter'}) )
+                setMsg(formatMessage({ id: 'please.enter' }))
                 setHasFeedback(true)
             }
         }
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
                 props.onOk()
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 handleClose();
             } else if (code === 1376) {
-                setMsg(formatMessage({id: 'product.branch.already.exists'}) )
+                setMsg(formatMessage({ id: 'product.branch.already.exists' }))
                 setPadding(false)
             }
             else {
@@ -95,7 +95,7 @@ export default forwardRef(
         }
         const fetchFinally = (code: number, msg: string) => {
             if (code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 props.onOk()
                 handleClose()
                 setDeleteVisible(false)
@@ -106,7 +106,7 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title === 'new' ? <FormattedMessage id="product.new.branch"/> : <FormattedMessage id="product.edit.branch"/>}
+                title={title === 'new' ? <FormattedMessage id="product.new.branch" /> : <FormattedMessage id="product.edit.branch" />}
                 width="380"
                 onClose={handleClose}
                 visible={visible}
@@ -114,9 +114,9 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
-                                {title === 'new' ? <FormattedMessage id="operation.ok"/>: <FormattedMessage id="operation.update"/> }
+                                {title === 'new' ? <FormattedMessage id="operation.ok" /> : <FormattedMessage id="operation.update" />}
                             </Button>
                         </Space>
                     </div>
@@ -127,7 +127,7 @@ export default forwardRef(
                     overlayStyle={{ cursor: 'pointer' }}
                     overlay={
                         <Menu>
-                            <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}><FormattedMessage id="product.delete.branch"/></i></Menu.Item>
+                            <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}><FormattedMessage id="product.delete.branch" /></i></Menu.Item>
                         </Menu>
                     }
                 >
@@ -135,14 +135,11 @@ export default forwardRef(
                 </Dropdown>
                 <div className={styles.content_warpper}>
                     <Space style={{ display: 'revert', marginBottom: 5 }}>
-                        <Typography.Text style={{ color: '#000', opacity: 0.85, fontSize: 14, fontWeight: 'bold' }}><FormattedMessage id="product.repositories"/></Typography.Text>
+                        <Typography.Text style={{ color: '#000', opacity: 0.85, fontSize: 14, fontWeight: 'bold' }}><FormattedMessage id="product.repositories" /></Typography.Text>
                     </Space>
 
                     <Space className={styles.title_detail_branch}>
-                        <EllipsisPulic title={props.current.name} width={320}/>
-                        {/* <Tooltip title={props.current.name} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
-                            <Typography.Text className={styles.create_branch_name}>{props.current.name}</Typography.Text>
-                        </Tooltip> */}
+                        <EllipsisPulic title={props.current.name} width={320} />
                     </Space>
                 </div>
                 <div style={{ height: 10, backgroundColor: '#f5f5f5' }}></div>
@@ -153,44 +150,44 @@ export default forwardRef(
                         /*hideRequiredMark*/
                         className={styles.product_form}
                     >
-                        <Form.Item 
-                            label="Branch" 
-                            rules={[{ 
-                                required : true , 
-                                message: formatMessage({id: 'product.please.enter.branch'}), 
-                            }]} 
-                            name="name" 
+                        <Form.Item
+                            label="Branch"
+                            rules={[{
+                                required: true,
+                                message: formatMessage({ id: 'product.please.enter.branch' }),
+                            }]}
+                            name="name"
                             help={msg} validateStatus={validateStatus} hasFeedback={hasFeedback}>
-                            <Input 
-                                autoComplete="auto" 
-                                placeholder={formatMessage({id: 'product.please.enter.branch'}) }
+                            <Input
+                                autoComplete="auto"
+                                placeholder={formatMessage({ id: 'product.please.enter.branch' })}
                                 onBlur={(e: any) => UrlBlur(e)} />
                         </Form.Item>
-                        <Form.Item 
-                            label={<FormattedMessage id="product.branch.desc"/>}
+                        <Form.Item
+                            label={<FormattedMessage id="product.branch.desc" />}
                             name="description">
-                            <Input.TextArea 
-                                placeholder={formatMessage({id: 'product.please.enter.desc'}) }
-                                rows={4} 
+                            <Input.TextArea
+                                placeholder={formatMessage({ id: 'product.please.enter.desc' })}
+                                rows={4}
                             />
                         </Form.Item>
 
                     </Form>
                 </div>
                 <Modal
-                    title={<FormattedMessage id="delete.tips"/>}
-                    cancelText={<FormattedMessage id="operation.cancel"/>}
+                    title={<FormattedMessage id="delete.tips" />}
+                    cancelText={<FormattedMessage id="operation.cancel" />}
                     okType="danger"
                     centered={true}
                     className={styles.modalChange}
-                    okText={<FormattedMessage id="operation.delete"/>}
+                    okText={<FormattedMessage id="operation.delete" />}
                     visible={deleteVisible}
                     onOk={() => setDeleteBranch()}
                     onCancel={() => setDeleteVisible(false)}
                     width={390}
                     maskClosable={false}
                 >
-                    <p>{formatMessage({id: 'product.are.you.sure.you.delete.branch'}, {data: warehouse['name']}) }</p>
+                    <p>{formatMessage({ id: 'product.are.you.sure.you.delete.branch' }, { data: warehouse['name'] })}</p>
                 </Modal>
             </Drawer>
         )

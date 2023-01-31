@@ -56,7 +56,8 @@ const text =  {
   'please.add.comparison.group': 'Add comparison group data',
 
   'reRun.Modal.title': 'Import Configuration',
-  'reRun.checked.suite': 'Import cases at the same time',
+  'reRun.checked.suite': 'Import all cases at the same time',
+  'reRun.checked.fail_case': 'Just import failed Testcase',
   'reRun.checked.notice': 'Import notification configuration at the same time',
   'reRun.checked.inheriting_machine': 'Use the machine used by the original Job',
 };

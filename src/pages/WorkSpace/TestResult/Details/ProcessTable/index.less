@@ -27,6 +27,12 @@
     :global(.expanded-row-padding-no>td) {
         padding : 0 !important;
     }
+    :global {
+        .ant-table-expanded-row.ant-table-expanded-row-level-1>.ant-table-cell>.ant-table-expanded-row-fixed {
+            padding: 0;
+            margin: 0;
+        }
+    }
 }
 .buildTable {
     :global(.expanded-row-padding-no>td) {
@@ -60,6 +66,22 @@
             width: 3%;
             cursor: pointer;
             float: left;
+        }
+    }
+}
+
+.process_suite_table_cls {
+    :global {
+        .ant-table.ant-table-small .ant-table-tbody > tr > td:only-child {
+            padding: 0;
+        }
+        .ant-table.ant-table-small .ant-table-expanded-row-fixed {
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
+            margin: 0;
         }
     }
 }
