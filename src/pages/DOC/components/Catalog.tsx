@@ -67,7 +67,7 @@ const Catalog: React.FC<IProps> = ({ source, position, setPosition }) => {
                         }
                     >
                         <Typography.Text
-                            style={{ textIndent: l.level + "em" }}
+                            style={{ textIndent: l.level - 1 + "em" }}
                             ellipsis={{ tooltip: true }}
                         >
                             {l.text}
