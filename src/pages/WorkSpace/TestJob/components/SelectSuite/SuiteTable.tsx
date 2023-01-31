@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { Button, Table, Card, Switch, Space, Checkbox, Row, Typography, Tag, Tooltip, TableColumnProps } from 'antd';
+import { Button, Table, Card, Switch, Space, Checkbox, Row, Tag, Tooltip } from 'antd';
 
+import type { TableColumnProps } from "antd"
 import SettingDrawer from '@/pages/WorkSpace/TestJob/components/SuiteSelectDrawer'
 import { CaretDownFilled, CaretRightFilled, MinusCircleOutlined } from '@ant-design/icons'
 import { useIntl, FormattedMessage } from 'umi'
@@ -80,7 +81,8 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 		onDataSourceChange(list, run_mode)
 	}
 
-	const columnsInner: any = [
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const columnsInner = [
 		{
 			title: 'Test Conf',
 			dataIndex: 'title',
@@ -154,6 +156,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 					</ColumnEllipsisText> : "-"
 			}
 		},
+		/* 
 		(checked && 'monitor' in contrl) &&
 		{
 			title: <FormattedMessage id="select.suite.monitor" />,
@@ -161,6 +164,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 			render: (_: any, row: any) => row.console === undefined ? '-' : formatMessage({ id: `operation.${row.console ? "yes" : "no"}` }),
 			width: 100,
 		},
+		 */
 		(checked && 'variable' in contrl) &&
 		{
 			title: <FormattedMessage id="select.suite.variable" />,
@@ -242,6 +246,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 					</ColumnEllipsisText> : "-"
 			}
 		},
+		/* 
 		(checked && 'monitor' in contrl) &&
 		{
 			title: formatMessage({ id: 'select.suite.monitor' }),
@@ -251,6 +256,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 				Console === undefined ? '-' : formatMessage({ id: `operation.${Console ? "yes" : "no"}` })
 			),
 		},
+		 */
 		checked &&
 		{
 			title: formatMessage({ id: 'select.suite.priority' }),

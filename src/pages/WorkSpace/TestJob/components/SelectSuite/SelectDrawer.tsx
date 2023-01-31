@@ -1,6 +1,5 @@
 import React, { useState, useImperativeHandle } from 'react';
 import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useRequest, useParams, useAccess, Access, useIntl, FormattedMessage } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from './service'
