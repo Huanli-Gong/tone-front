@@ -1,4 +1,4 @@
-import { Drawer, Space, Typography, Form, Tooltip, Button, message, Menu, Modal, Dropdown, Input } from 'antd'
+import { Drawer, Space, Typography, Form, Button, message, Menu, Modal, Dropdown, Input } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { createBranch, updateBranch, deleteBranch, checkGitlab } from '../services'
@@ -122,17 +122,25 @@ export default forwardRef(
                     </div>
                 }
             >
-                <Dropdown
-                    placement="topLeft"
-                    overlayStyle={{ cursor: 'pointer' }}
-                    overlay={
-                        <Menu>
-                            <Menu.Item onClick={() => setDeleteVisible(true)}><i className={styles.menu_font_color}><FormattedMessage id="product.delete.branch" /></i></Menu.Item>
-                        </Menu>
-                    }
-                >
-                    <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 55, top: 21 }} />
-                </Dropdown>
+                {
+                    title !== 'new' &&
+                    <Dropdown
+                        placement="topLeft"
+                        overlayStyle={{ cursor: 'pointer' }}
+                        overlay={
+                            <Menu>
+                                <Menu.Item onClick={() => setDeleteVisible(true)}>
+                                    <i className={styles.menu_font_color}>
+                                        <FormattedMessage id="product.delete.branch" />
+                                    </i>
+                                </Menu.Item>
+                            </Menu>
+                        }
+                    >
+                        <MoreOutlined style={{ cursor: 'pointer', position: 'absolute', right: 55, top: 21 }} />
+                    </Dropdown>
+                }
+
                 <div className={styles.content_warpper}>
                     <Space style={{ display: 'revert', marginBottom: 5 }}>
                         <Typography.Text style={{ color: '#000', opacity: 0.85, fontSize: 14, fontWeight: 'bold' }}><FormattedMessage id="product.repositories" /></Typography.Text>
@@ -142,7 +150,7 @@ export default forwardRef(
                         <EllipsisPulic title={props.current.name} width={320} />
                     </Space>
                 </div>
-                <div style={{ height: 10, backgroundColor: '#f5f5f5' }}></div>
+                <div style={{ height: 10, backgroundColor: '#f5f5f5' }} />
                 <div className={styles.content_warpper}>
                     <Form
                         form={form}
@@ -181,7 +189,7 @@ export default forwardRef(
                     centered={true}
                     className={styles.modalChange}
                     okText={<FormattedMessage id="operation.delete" />}
-                    visible={deleteVisible}
+                    open={deleteVisible}
                     onOk={() => setDeleteBranch()}
                     onCancel={() => setDeleteVisible(false)}
                     width={390}

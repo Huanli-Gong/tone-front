@@ -129,7 +129,7 @@ export default forwardRef(
         return (
             <Modal
                 title={<FormattedMessage id="code.add.code" />}
-                visible={visible}
+                open={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
                 cancelText={<FormattedMessage id="operation.cancel" />}
@@ -145,7 +145,7 @@ export default forwardRef(
                         </Tooltip>
                     </Space>
                 </div>
-                <div style={{ height: 10, backgroundColor: '#f5f5f5' }}></div>
+                <div style={{ height: 10, backgroundColor: '#f5f5f5' }} />
                 <div className={styles.content_warpper}>
                     <Form
                         form={form}
