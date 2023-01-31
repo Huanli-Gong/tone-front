@@ -77,7 +77,7 @@ export default forwardRef(
                 title={<FormattedMessage id={title === 'new'? 'product.new.product.info': 'product.edit.product.info'} />}
                 width="380"
                 onClose={handleClose}
-                visible={visible}
+                open={visible}
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>

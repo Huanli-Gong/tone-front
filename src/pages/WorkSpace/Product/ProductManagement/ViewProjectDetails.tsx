@@ -190,7 +190,7 @@ export default forwardRef(
                 className={styles.drawer_warpper}
             >
                 <Dropdown
-                    placement="topLeft"
+                    placement="bottom"
                     overlayStyle={{ cursor: 'pointer' }}
                     overlay={
                         <Menu>
@@ -220,7 +220,7 @@ export default forwardRef(
                     </Space>
                 </div>
 
-                <div style={{ height: 10, backgroundColor: '#f5f5f5' }}></div>
+                <div style={{ height: 10, backgroundColor: '#f5f5f5' }} />
                 <div className={styles.content_warpper}>
                     <Row style={{ height: 60, lineHeight: '60px' }}>
                         <Col span={19} style={{ color: '#000', fontWeight: 'bold' }}>

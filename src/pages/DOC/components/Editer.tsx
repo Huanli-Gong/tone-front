@@ -43,7 +43,7 @@ const EditorTitle = styled.div`
     height: 38px;
     align-items: center;
     justify-content: space-between;
-    padding-right: 20px;
+    /* padding-right: 20px; */
     h2 {
         margin-bottom: 0;
     }
@@ -56,6 +56,7 @@ const EditorWrapper = styled.div`
 
 const EditorEditBtn = styled.span`
     cursor: pointer;
+    width: 60px;
     &:hover {
         color :#108ee9;
     }
@@ -74,14 +75,14 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
     const ref = useRef(null) as any
 
     const queryDocContent = async () => {
+        setLoading(true)
         if (id) {
-            setLoading(true)
             const { data } = await queryDocList({ id })
-            setLoading(false)
             if (data[0]) {
                 setText(tarnsformEmoji(data[0].content))
             }
         }
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -134,37 +135,42 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
     return (
         <Wrapper>
             <EditorContent >
-                <EditorContainer hasCatalog={catalogSource.length ? 1 : 0}>
-                    {
-                        title &&
-                        <>
-                            <EditorTitle >
-                                <Typography.Title level={2}>{title}</Typography.Title>
-                                <Access accessible={access.IsSysTestAdmin()}>
-                                    <EditorEditBtn onClick={() => history.push(`/${doc_type}/edit/${id}`)}>
-                                        <Space>
-                                            <EditFilled />
-                                            编辑
-                                        </Space>
-                                    </EditorEditBtn>
-                                </Access>
-                            </EditorTitle>
-                            <Typography.Text type="secondary">
-                                更新时间：{gmt_modified && moment(gmt_modified).format('YYYY-MM-DD hh:mm:ss')}
-                            </Typography.Text>
-                        </>
-                    }
+                {
+                    !loading && !text ?
+                        <Empty /> :
+                        <EditorContainer hasCatalog={catalogSource.length ? 1 : 0}>
+                            {
+                                title &&
+                                <>
+                                    <EditorTitle >
+                                        <Typography.Title ellipsis={{ tooltip: true }} level={2}>{title}</Typography.Title>
+                                        <Access accessible={access.IsSysTestAdmin()}>
+                                            <EditorEditBtn onClick={() => history.push(`/${doc_type}/edit/${id}`)}>
+                                                <Space>
+                                                    <EditFilled />
+                                                    编辑
+                                                </Space>
+                                            </EditorEditBtn>
+                                        </Access>
+                                    </EditorTitle>
+                                    <Typography.Text type="secondary">
+                                        更新时间：{gmt_modified && moment(gmt_modified).format('YYYY-MM-DD hh:mm:ss')}
+                                    </Typography.Text>
+                                </>
+                            }
 
-                    <EditorWrapper ref={ref as any} >
-                        <RichEditor
-                            editable={false}
-                            content={text}
-                            onCreate={({ editor }) => {
-                                setEditor(editor)
-                            }}
-                        />
-                    </EditorWrapper>
-                </EditorContainer>
+                            <EditorWrapper ref={ref as any} >
+                                <RichEditor
+                                    editable={false}
+                                    content={text}
+                                    onCreate={({ editor }) => {
+                                        setEditor(editor)
+                                    }}
+                                />
+                            </EditorWrapper>
+                        </EditorContainer>
+                }
+
                 {
                     !!catalogSource.length &&
                     <Catalog

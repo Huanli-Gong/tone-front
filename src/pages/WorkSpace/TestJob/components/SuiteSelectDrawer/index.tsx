@@ -6,7 +6,7 @@ import { DrawerProvider } from './Provider'
 import { QusetionIconTootip, getHasMuiltip, formatter } from '../untils'
 import lodash from 'lodash'
 import ServerFormItem from './ServerFormItem'
-import MonitorItem from './MonitorItem'
+// import MonitorItem from './MonitorItem'
 
 const DrawerWrapper = styled(Drawer)`
     .ant-form-item {
@@ -218,7 +218,6 @@ const SuiteDrawer = (props: any, ref: any) => {
 
     useEffect(() => {
         if (dataSource) {
-            console.log(dataSource)
             const initialValues = {
                 repeat: test_type === 'performance' ? 3 : 1,
                 need_reboot: false,
@@ -713,13 +712,13 @@ const SuiteDrawer = (props: any, ref: any) => {
                                 </Form.Item>
                             </>
                         }
-
+{/* 
                         {
                             // 注释监控配置
                             (contrl.includes('monitor') && checked) &&
                             <MonitorItem />
                         }
-
+ */}
                         <Form.Item
                             name="priority"
                             label={<QusetionIconTootip title={formatMessage({ id: 'select.suite.priority' })} desc={formatMessage({ id: 'select.suite.priority.desc' })} />}
