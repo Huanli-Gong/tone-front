@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm } from 'antd'
+import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm, TableColumnProps } from 'antd'
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryKernelList, deleteKernel, updateSyncKernel } from './services'
 import CommonPagination from '@/components/CommonPagination'
@@ -7,6 +7,7 @@ import { getRadioFilter, getSearchFilter, getUserFilter } from '@/components/Tab
 import DrawerForm from './components/Form'
 import { SingleTabCard } from '@/components/UpgradeUI'
 import { requestCodeMessage } from '@/utils/utils'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
@@ -56,16 +57,16 @@ export default (props: any) => {
         yield updateSyncKernel({ version_list: [version] })
     }
 
-    const columns = [{
+    const columns: TableColumnProps<any>[] = [{
         title: <FormattedMessage id="kernel.version" />,
         dataIndex: 'version',
         ellipsis: {
             showTitle: false
         },
         render: (_: any) => (
-            <Typography.Text ellipsis={{ tooltip: true }}>
+            <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                 {_ || "-"}
-            </Typography.Text>
+            </ColumnEllipsisText>
         ),
         ...getSearchFilter(pageParams, setPageParams, 'version')
     }, {
@@ -124,9 +125,9 @@ export default (props: any) => {
         ...getUserFilter(pageParams, setPageParams, 'update_user'),
         render(_) {
             return (
-                <Typography.Text ellipsis={{ tooltip: true }}>
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || "-"}
-                </Typography.Text>
+                </ColumnEllipsisText>
             )
         }
     }, {
@@ -137,9 +138,9 @@ export default (props: any) => {
         },
         render(_) {
             return (
-                <Typography.Text ellipsis={{ tooltip: true }}>
+                <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                     {_ || "-"}
-                </Typography.Text>
+                </ColumnEllipsisText>
             )
         }
     }, {
@@ -164,7 +165,6 @@ export default (props: any) => {
                                     message.success(formatMessage({ id: 'request.synchronize.success' }));
                                 }
                                 initPageList()
-
                             })
                         }}
                 >

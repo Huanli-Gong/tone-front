@@ -488,8 +488,8 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const onSubmit = () => {
         form.validateFields().then(val => {
             let arr = val.extra_param || []
-            if(!!arr.length){
-                let names = arr.map((item:any) => item["param_key"]);
+            if (!!arr.length) {
+                let names = arr.map((item: any) => item["param_key"]);
                 let nameSet = new Set(names);
                 if (nameSet.size == names.length) {
                     submit(val)
@@ -913,7 +913,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                             </Col> :
                             null
                         }
-                        { !is_instance ?
+                        {!is_instance ?
                             <Col span={24} className={styles.warp}>
                                 <Form.Item
                                     label={<QusetionIconTootip title={formatMessage({ id: 'device.extended.fields' })} desc={formatMessage({ id: 'device.aliyun.params' })} />}
@@ -1062,8 +1062,8 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                 >
                                     <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}
                                         disabled={disabledState}>
-                                        <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
-                                        <Select.Option value="Reserved"><Badge status="default" />Reserved</Select.Option>
+                                        <Select.Option value="Available"><Badge status="success" text={"Available"} /></Select.Option>
+                                        <Select.Option value="Reserved"><Badge status="default" text={"Reserved"} /></Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>)

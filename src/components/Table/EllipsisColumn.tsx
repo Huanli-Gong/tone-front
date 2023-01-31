@@ -1,6 +1,6 @@
 import React from 'react'
 import { Tooltip } from 'antd'
-import type { TooltipProps } from 'antd/es/tooltip'
+import type { TooltipProps } from 'antd'
 import type { ColumnProps } from 'antd/es/table'
 import styled from 'styled-components'
 

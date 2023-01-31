@@ -1,7 +1,6 @@
 import { Card, message, Button } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import TestConfTable from './TestConfTable'
 import { evnPrepareState } from '../components'
 import ConfPopoverTable from './ConfPopoverTable'
@@ -9,7 +8,10 @@ import _ from 'lodash';
 import { updateSuiteCaseOption, queryProcessSuiteList } from '../service'
 import { useRequest, useAccess, Access, useModel, useIntl, FormattedMessage, useParams } from 'umi';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
-import ResizeTable from '@/components/ResizeTable'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { v4 as uuid } from "uuid"
+import styles from "./index.less"
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const pointerStyle = { color: '#1890FF', cursor: 'pointer', marginLeft: 12 };
 const disablePointer = { color: 'rgba(0,0,0,.25)', marginLeft: 12 };
@@ -23,6 +25,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
     const access = useAccess()
     const [skipBtn, setSkipBtn] = useState<Boolean>(false)
     const [suiteId, setSuiteId] = useState<number>(0)
+    const [columnsRefresh, setColumnsRefresh] = React.useState(uuid())
 
     const stopLocals = formatMessage({ id: 'ws.result.details.stop.suite' })
     const skipLocals = formatMessage({ id: 'ws.result.details.skip.suite' })
@@ -56,13 +59,14 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <PopoverEllipsis title={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
         },
         {
             title: <FormattedMessage id="ws.result.details.env.preparation" />,
             ellipsis: {
                 showTitle: false
             },
+            key: "preparation",
             render: (_: any) => {
                 const strLocals = formatMessage({ id: 'ws.result.details.env.preparation.details' })
                 return (
@@ -93,9 +97,11 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                 showTitle: false
             },
             render: (_: any) => <>{_ || '-'}</>,
-        }, 
+        },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
+            fixed: "right",
+            key: "operation",
             render: (_: any) => {
                 const state = _.state
 
@@ -156,7 +162,7 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                 return <span style={style}>{stopLocals}</span>
             }
         }
-    ].filter(Boolean);
+    ]
 
     const handleStopSuite = async (_: any) => {
         // 添加用户id
@@ -217,13 +223,16 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                     </Button>
             }
         >
-            <ResizeTable
+            <ResizeHooksTable
                 dataSource={data}
                 columns={columns}
+                name="job-result-process-suite"
                 rowKey="id"
                 loading={loading}
                 size="small"
                 pagination={false}
+                className={styles.process_suite_table_cls}
+                refreshDeps={[testType, access]}
                 expandable={{
                     indentSize: 60,
                     expandedRowKeys: expandedKeys,
@@ -236,6 +245,8 @@ const TestSuiteTable: React.FC<Record<string, any>> = (props) => {
                                 {...record}
                                 testType={testType}
                                 provider_name={provider_name}
+                                setColumnsRefresh={() => setColumnsRefresh(uuid())}
+                                columnsRefresh={columnsRefresh}
                             />
                         )
                     },

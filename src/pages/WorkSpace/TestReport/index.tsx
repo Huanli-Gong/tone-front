@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { writeDocumentTitle, useClientSize } from '@/utils/hooks';
 import { Button, Layout, Tabs } from 'antd';
-import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi';
+import { history, useAccess, FormattedMessage } from 'umi';
 
 import { ReportBody } from './styled'
 import ReportListTable from './components/ReportListTable'
@@ -45,17 +45,17 @@ export default (props: any) => {
                     }}
                     tabBarExtraContent={
                         tab === 'list' ? (
-                            access.IsWsSetting() && <Button type="primary" onClick={handleCreateReport}><FormattedMessage id="report.create.report"/></Button>
+                            access.IsWsSetting() && <Button type="primary" onClick={handleCreateReport}><FormattedMessage id="report.create.report" /></Button>
                         ) : (
-                            access.IsWsSetting() && <Button type="primary" onClick={hanldeCreateTemplate}><FormattedMessage id="report.create.template"/></Button>
+                            access.IsWsSetting() && <Button type="primary" onClick={hanldeCreateTemplate}><FormattedMessage id="report.create.template" /></Button>
                         )
                     }
                 >
-                    <Tabs.TabPane key="list" tab={<FormattedMessage id="report.test.report"/>}>
+                    <Tabs.TabPane key="list" tab={<FormattedMessage id="report.test.report" />}>
                         <ReportListTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                     </Tabs.TabPane>
                     {access.IsWsSetting() &&
-                        <Tabs.TabPane key="template" tab={<FormattedMessage id="report.template"/>}>
+                        <Tabs.TabPane key="template" tab={<FormattedMessage id="report.template" />}>
                             <ReportTemplateTable ws_id={ws_id} tab={tab} tableHeght={layoutHeight - 80} />
                         </Tabs.TabPane>
                     }

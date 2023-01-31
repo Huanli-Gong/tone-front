@@ -6,6 +6,8 @@ import { useParams, FormattedMessage } from 'umi'
 import { stringify } from 'querystring'
 import { targetJump } from '@/utils/utils'
 
+const reRunCheckedText = 'reRun.checked.inheriting_machine'
+
 const Content = styled(Modal)`
     .ant-modal-body {
         background-color: #f0f2f5;
