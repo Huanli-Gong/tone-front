@@ -436,7 +436,7 @@ export default (props: any) => {
             fixed: 'right',
             valueType: 'option',
             key: 'operation',
-            width: !$instance ? 180 : (enLocale ? 380 : BUILD_APP_ENV ? 310 : 270),
+            width: !$instance ? 230 : (enLocale ? 380 : BUILD_APP_ENV ? 310 : 270),
             ellipsis: {
                 showTitle: false
             },
@@ -618,7 +618,7 @@ export default (props: any) => {
                 loading={loading}
                 columns={columns}
                 refreshDeps={[$instance, ws_id, access, enLocale, params]}
-                name="ws-server-cloud-standalone"
+                name={`ws-server-cloud-standalone-${$instance ? "setting" : "server"}`}
                 dataSource={data.data}
                 rowKey={'id'}
                 pagination={false}
