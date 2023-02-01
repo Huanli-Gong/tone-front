@@ -26,7 +26,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 			<div className={styles.cover}
 				onClick={() => {
 					if (!focus) {
-						confirm()
+						confirm?.()
 					}
 				}}
 			>
@@ -62,7 +62,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 			<Space>
 				<Button
 					onClick={() => {
-						confirm()
+						confirm?.()
 						onConfirm(val)
 					}}
 					type="link"
@@ -74,7 +74,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 				<Button
 					type="text"
 					onClick={() => {
-						confirm()
+						confirm?.()
 						setVal(undefined)
 						onConfirm(undefined)
 						handleSearch()

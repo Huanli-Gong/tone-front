@@ -225,13 +225,16 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             width: 300,
             fixed: 'left',
             ellipsis: true,
-            filterDropdown: ({ confirm }: any) => (
-                <SearchInput
-                    confirm={confirm}
-                    // autoFocus={autoFocus}
-                    onConfirm={(val: string) => { setPageParams({ ...pageParams, name: val }) }}
-                />
-            ),
+            filterDropdown: (p) => {
+                console.log(confirm)
+                return (
+                    <SearchInput
+                        {...p}
+                        // autoFocus={autoFocus}
+                        onConfirm={(val: string) => { setPageParams({ ...pageParams, name: val }) }}
+                    />
+                )
+            },
             filterIcon: () => <FilterFilled style={{ color: pageParams.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => (
                 <ColumnEllipsisText ellipsis={{ tooltip: row.name }}  >
@@ -274,29 +277,28 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 />
             ),
         },
+        testType !== 'functional' &&
         {
             title: (
-                testType === 'functional' ?
-                    <></> :
-                    <Space>
-                        <FormattedMessage id="TestSuite.view_type" />
-                        <Tooltip
-                            title={
-                                <div>
-                                    <div><FormattedMessage id="TestSuite.view_type.1" /></div>
-                                    <div><FormattedMessage id="TestSuite.view_type.2" /></div>
-                                    <div><FormattedMessage id="TestSuite.view_type.3" /></div>
-                                </div>
-                            }
-                            placement="bottomLeft"
-                        >
-                            <QuestionCircleOutlined />
-                        </Tooltip>
-                    </Space>
+                <Space>
+                    <FormattedMessage id="TestSuite.view_type" />
+                    <Tooltip
+                        title={
+                            <div>
+                                <div><FormattedMessage id="TestSuite.view_type.1" /></div>
+                                <div><FormattedMessage id="TestSuite.view_type.2" /></div>
+                                <div><FormattedMessage id="TestSuite.view_type.3" /></div>
+                            </div>
+                        }
+                        placement="bottomLeft"
+                    >
+                        <QuestionCircleOutlined />
+                    </Tooltip>
+                </Space>
             ),
             dataIndex: 'view_type',
-            render: (_: any, record: any) => testType === 'functional' ? <></> : suiteChange(_, record),
-            width: testType === 'functional' ? 0 : 120,
+            render: (_: any, record: any) => suiteChange(_, record),
+            width: 120,
             ellipsis: true,
         },
         {
@@ -408,7 +410,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 </Space>
             )
         },
-    ]
+    ].filter(Boolean)
 
     const [time, setTime] = useState()
     const onExpand = async (record: any) => {

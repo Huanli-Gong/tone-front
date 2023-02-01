@@ -36,7 +36,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 					type="link"
 					style={{ border: 'none' }}
 					onClick={() => {
-						confirm()
+						confirm?.()
 						onConfirm(val)
 					}}
 				>
@@ -46,7 +46,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 					size="small"
 					type="text"
 					onClick={() => {
-						confirm()
+						confirm?.()
 						setVal(undefined)
 						onConfirm(undefined)
 					}}

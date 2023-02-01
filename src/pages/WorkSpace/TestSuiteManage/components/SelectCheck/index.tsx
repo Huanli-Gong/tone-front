@@ -57,7 +57,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 					size="small"
 					type="link"
 					onClick={() => {
-						confirm && confirm()
+						confirm?.()
 						const params = val && val.join(',')
 						onConfirm(params)
 					}}
@@ -68,7 +68,7 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 					size="small"
 					type="text"
 					onClick={() => {
-						confirm && confirm()
+						confirm?.()
 						setVal([])
 						onConfirm(undefined)
 						setAll(false)

@@ -19,7 +19,7 @@ export const MembersFilter = memo(
         }, [])
 
         const handleSearch = () => {
-            props.confirm()
+            props.confirm?.()
             props.onOk(selectValue)
         }
 
@@ -70,7 +70,7 @@ export const ServerTagsFilter = memo(
         }, [])
 
         const handleSearch = () => {
-            props.confirm()
+            props.confirm?.()
             props.onOk(tagsValue)
         }
 

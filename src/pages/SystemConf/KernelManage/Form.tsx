@@ -37,7 +37,7 @@ export default forwardRef(
 
         const defaultResult = (code: number, msg: string) => {
             if (code === 200) {
-                confirm()
+                confirm?.()
                 setVisible(false)
                 form.resetFields()
                 setInitValue({})

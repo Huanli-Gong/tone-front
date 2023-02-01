@@ -57,7 +57,7 @@ export default (props: any) => {
     )
 
     const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
-        confirm();
+        confirm?.();
         setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys[0], page_num: 1, page_size: 10 }))
     };
 
