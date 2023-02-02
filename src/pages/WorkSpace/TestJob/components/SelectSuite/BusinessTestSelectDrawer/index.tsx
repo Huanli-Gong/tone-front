@@ -1,11 +1,11 @@
 import React, { useState, useImperativeHandle } from 'react';
-import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty } from 'antd';
+import { Drawer, Button, Input, Tree, Spin, Checkbox, Empty, Typography } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useRequest, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
 import { cloneDeep } from 'lodash';
 import { getDomain } from '../service';
 import styles from './index.less';
-import { targetJump } from '@/utils/utils'
+import { v4 as uuid } from 'uuid';
 
 /**
  * @author jpt
@@ -15,7 +15,6 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     testType,
     onRef,
     handleSelect,
-    config,
     control,
     treeData = [],
     loading,
@@ -33,32 +32,32 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     const [domain, setDomain] = useState<any>("")
     const [name, setName] = React.useState<string>("")
 
-    const allKeys = React.useMemo(() => {
-        return treeData.reduce((pre: any, cur: any, index: number) => {
-            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
-        }, [])
+    const checkDomainName = (item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.toLowerCase().indexOf(name.toLowerCase())
+
+    const treeHasRowkey = React.useMemo(() => {
+        return treeData.map((i: any) => ({ ...i, rowkey: uuid() }))
     }, [treeData])
 
-    const suiteAllKeys = React.useMemo(() => {
-        return []
-    }, [])
-
-    const hasTree = React.useMemo(() => {
-        return treeData.filter((item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.indexOf(name))
-    }, [treeData, domain, name])
-
-    React.useMemo(() => {
-        const ids = hasTree.reduce((pre: any, cur: any, index: number) => {
-            return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
+    const allKeys = React.useMemo(() => {
+        return treeHasRowkey.reduce((pre: any, cur: any) => {
+            const { test_case_list, rowkey } = cur
+            return pre.concat(rowkey, test_case_list.map((t: any) => t.id))
         }, [])
-        const hasList = ids.map((i: string) => selectData.includes(i))
-        setCheckAll([...new Set(hasList)].length === 1 && hasList[0])
-    }, [name, domain, hasTree, selectData])
+    }, [treeHasRowkey, name, domain])
+
+    const canSelectKeys = React.useMemo(() => {
+        return treeHasRowkey.reduce((pre: any, cur: any) => {
+            const { test_case_list, rowkey } = cur
+            if (checkDomainName(cur)) return pre.concat(rowkey, test_case_list.map((t: any) => t.id))
+            /* const hasCases = test_case_list.filter((c: any) => checkDomainName(c))
+            if (checkDomainName(cur) || hasCases.length > 0) return pre.concat(rowkey, hasCases.map((t: any) => t.id)) */
+            return pre
+        }, [])
+    }, [treeHasRowkey, domain, name])
 
     const checkAllChange = (keys: any) => {
-        console.log(keys)
         const selectedKeys = keys.slice().sort().join(',');
-        if (selectedKeys && selectedKeys === suiteAllKeys.slice().sort().join(',')) {
+        if (selectedKeys && selectedKeys === allKeys.slice().sort().join(',')) {
             // 全选
             setIndeterminate(false)
             setCheckAll(true)
@@ -83,22 +82,22 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     )
 
     useImperativeHandle(onRef, () => ({
-        openDrawer: () => {
+        openDrawer: ({ test_config }: any) => {
             let keys: any = []
             treeData.forEach((
                 (item: any) => {
-                    const suiteIdx = config.findIndex(({ id }: any) => id === item.id)
+                    const suiteIdx = test_config.findIndex(({ id }: any) => id === item.id)
                     if (suiteIdx > -1) {
                         let row: any = []
                         item.test_case_list.forEach(
                             (conf: any) => {
-                                const confIdx = config[suiteIdx].test_case_list.findIndex(({ id }: any) => id === conf.id)
+                                const confIdx = test_config[suiteIdx].test_case_list.findIndex(({ id }: any) => id === conf.id)
                                 if (confIdx > -1)
-                                    row.push(`${conf.id}`)
+                                    row.push(conf.id)
                             }
                         )
                         if (row.length && (row.length === item.test_case_list.length)) {
-                            keys.push(`${item.id}`) // 如果子级全选，则包含父级key
+                            keys.push(item.id) // 如果子级全选，则包含父级key
                         }
                         if (row.length) {
                             keys.push(...row)
@@ -119,32 +118,25 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     };
 
     const selectAll = ({ target }: any) => {
-        // setIndeterminate(false);
-        // setCheckAll(e.target.checked)
-        // e.target.checked ? setSelectData(suiteAllKeys) : setSelectData([])
         setCheckAll(target.checked)
-        if (hasTree.length > 0 && (name || domain)) {
-            const currentHasIds = treeData.reduce((pre: any, cur: any, index: number) => {
-                const filter = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name)
-                if (filter) return pre.concat(`${cur.id}-${index}`, cur.test_case_list.map((i: any) => `${i.id}`))
-                return pre
-            }, [])
-            target.checked ?
-                setSelectData(selectData.concat(currentHasIds)) :
-                setSelectData(selectData.reduce((pre: any, cur: any) => {
-                    if (currentHasIds.includes(cur)) return pre
-                    return pre.concat(cur)
-                }, []))
+        if (domain || name) {
+
         }
-        else
-            target.checked ? setSelectData(allKeys) : setSelectData([])
+        setSelectData(target.checked ? allKeys : [])
+    }
+
+    const onCancel = () => {
+        setShow(false)
+        setSelectData([])
+        setDomain("")
+        setName("")
     }
 
     const onOk = () => {
         const treeDataCopy = cloneDeep(treeData)
         const data = treeDataCopy.filter((item: any) => {
             item.test_case_list = item.children.filter((el: any) => {
-                if (selectData.indexOf(`${el.id}`) > -1) {
+                if (selectData.indexOf(el.id) > -1) {
                     el.setup_info = ''
                     el.cleanup_info = ''
                     el.need_reboot = false
@@ -177,28 +169,29 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
         handleSelect(data)
         onCancel()
     }
-    
-    const onCancel = () => {
-        setShow(false)
-        setSelectData([])
-        setDomain("")
-        setName("")
-    }
 
     const resultTreeData = React.useMemo(() => {
-        return treeData.reduce((pre: any, cur: any, index: number) => {
-            const hidden = ~cur.domain_name_list.indexOf(domain) && ~cur.name.indexOf(name) ? {} : { display: "none" }
-            return pre.concat(
-                <Tree.TreeNode {...cur} key={`${cur.id}-${index}`} title={cur.name} style={hidden}>
-                    {
-                        cur.test_case_list.map((conf: any) => (
-                            <Tree.TreeNode {...conf} key={conf.id} title={conf.name} />
-                        ))
-                    }
-                </Tree.TreeNode>
-            )
-        }, [])
-    }, [treeData, domain, name])
+        return treeHasRowkey.map((i: any) => {
+            /* const hasLen = i.test_case_list.filter((c: any) => checkDomainName(c)).length */
+            return {
+                key: i.rowkey,
+                title: i.name,
+                children: i.test_case_list.map((cls: any) => ({
+                    ...cls,
+                    key: cls.id,
+                    title: cls.name,
+                    selectable: false,
+                    style: { display: checkDomainName(i) ? undefined : "none" }
+                    /* style: { display: checkDomainName(cls) ? undefined : "none" } */
+                })),
+                style: { display: checkDomainName(i) ? undefined : "none" },
+                /* style: { display: checkDomainName(i) || hasLen ? undefined : "none" }, */
+                selectable: false,
+                checkable: i.test_case_list.length !== 0
+                /* checkable: hasLen !== 0 */
+            }
+        })
+    }, [treeHasRowkey, domain, name])
 
     return (
         <Drawer
@@ -210,7 +203,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
             forceRender={true}
             destroyOnClose={true}
             onClose={() => setShow(false)}
-            visible={show}
+            open={show}
             bodyStyle={{ paddingBottom: 80 }}
             footer={
                 <div style={{ textAlign: 'right', padding: '0 8px' }} >
@@ -228,17 +221,19 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
             }
         >
             <Spin spinning={loading} wrapperClassName={styles.spinWrapper}>
-                <div>
+                <div style={{ display: "flex", "flexDirection": "column" }}>
                     <Search
-                        onSearch={(value: any) => setName(value.replace(/\s+/g, ""))}
-                        placeholder={formatMessage({id: 'select.suite.search.placeholder' })}
-                        style={{ width: 420, marginBottom: 16 }}
+                        onChange={({ target }: any) => setName(target?.value?.replace(/\s+/g, ""))}
+                        placeholder={formatMessage({ id: 'select.suite.search.placeholder' })}
+                        value={name}
+                        allowClear
+                        style={{ marginBottom: 12 }}
                     />
                     {
                         control.includes('domain') &&
                         <>
                             <div style={{ position: 'relative', display: 'flex' }}>
-                                <div className={styles.nav}><FormattedMessage id="select.suite.domain" />：</div>
+                                <div className={styles.nav}><FormattedMessage id="select.suite.domain" /></div>
                                 <div className={styles.domainList_Tab}>
                                     <Button
                                         className={styles.domain_all}
@@ -256,7 +251,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                                                     key={item.id}
                                                     type={item.name == domain ? "primary" : "ghost"}
                                                     size="small"
-                                                    style={{ marginRight: 8, marginBottom: 8, ...(item.name === domain ? {} : { border: 'none' }) }}
+                                                    style={{ marginRight: 8, marginBottom: 8, boxShadow: "none", ...(item.name === domain ? {} : { border: 'none' }) }}
                                                     onClick={() => handleDomainChange(item.name)}
                                                 >
                                                     {item.name}
@@ -272,15 +267,14 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                                     icon={expand ? <UpOutlined /> : <DownOutlined />}
                                     style={{ position: 'absolute', right: 0 }}
                                 >
-                                    {expand ? formatMessage({id: 'operation.collapse'}) : formatMessage({id: 'operation.expand' }) }
+                                    {expand ? formatMessage({ id: 'operation.collapse' }) : formatMessage({ id: 'operation.expand' })}
                                 </Button>
                             </div>
-                            <hr className={styles.dividing_line} />
                         </>
                     }
                 </div>
 
-                {treeData?.length ? (
+                {canSelectKeys?.length ? (
                     <>
                         <div className={styles.selection_table_thead}>
                             <div style={{ width: 200 }}>Test Suite</div>
@@ -292,34 +286,35 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
                             checkable
                             onCheck={onCheck}
                             titleRender={(nodeData: any) => {
-                                const { name, children, business_name } = nodeData || {}
+                                const { title, children, business_name } = nodeData || {}
                                 return (
                                     <div key={nodeData.id} className={styles.selection_table_row}>
-                                        <div className={styles.col} style={{ width: children ? 200 : '100%' }}>{name || null}</div>
+                                        <div className={styles.col} style={{ width: children ? 200 : '100%' }}>{title || null}</div>
                                         <div className={styles.otherCol}>{business_name || (children ? '-' : null)}</div>
                                     </div>
                                 )
                             }}
-                        >
-                            {resultTreeData}
-                        </Tree>
+                            treeData={resultTreeData}
+                        />
                     </>
                 ) : (
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.no.case" />} />
                         <Access accessible={access.WsMemberOperateSelf()}>
-                            <Button
-                                type="primary"
-                                onClick={
-                                    () => targetJump(
-                                        testType ?
-                                            `/ws/${ws_id}/test_suite?test_type=${testType}` :
-                                            `/ws/${ws_id}/test_suite`
-                                    )
+                            <Typography.Link
+                                target={"_blank"}
+                                href={
+                                    testType ?
+                                        `/ws/${ws_id}/test_suite?test_type=${testType}` :
+                                        `/ws/${ws_id}/test_suite`
                                 }
                             >
-                                <FormattedMessage id="select.suite.add.case" />
-                            </Button>
+                                <Button
+                                    type="primary"
+                                >
+                                    <FormattedMessage id="select.suite.add.case" />
+                                </Button>
+                            </Typography.Link>
                         </Access>
                     </div>
                 )}

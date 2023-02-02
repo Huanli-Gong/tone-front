@@ -13,6 +13,10 @@ const tableTdCls = `
             td.no_tourist {
                 cursor: pointer;
                 color : #1890FF;
+                span {
+                    cursor: pointer;
+                    color : #1890FF;
+                }
             }
         }
     }
