@@ -32,7 +32,7 @@ const BusinessTestSelectDrawer: React.FC<any> = ({
     const [domain, setDomain] = useState<any>("")
     const [name, setName] = React.useState<string>("")
 
-    const checkDomainName = (item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.indexOf(name)
+    const checkDomainName = (item: any) => ~item.domain_name_list.indexOf(domain) && ~item.name.toLowerCase().indexOf(name.toLowerCase())
 
     const treeHasRowkey = React.useMemo(() => {
         return treeData.map((i: any) => ({ ...i, rowkey: uuid() }))
