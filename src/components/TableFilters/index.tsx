@@ -12,12 +12,12 @@ const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVa
     const [val, setVal] = useState<any>(initVal === undefined ? '' : initVal)
 
     const handleConfirm = () => {
-        confirm()
+        confirm?.()
         onConfirm(val)
     }
 
     const handleReset = () => {
-        confirm()
+        confirm?.()
         onConfirm()
         setVal('')
     }
@@ -75,13 +75,13 @@ const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, styleObj
     const scrollbarsRef: any = useRef(null)
     const { height: layoutHeight } = useClientSize()
     const handleConfirm = () => {
-        confirm()
+        confirm?.()
         onConfirm(groupValue)
     }
 
     const handleReset = () => {
         setGroupValue([])
-        confirm()
+        confirm?.()
         onConfirm()
 
     }

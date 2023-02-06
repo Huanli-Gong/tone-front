@@ -3,7 +3,6 @@ import { Space, Drawer, message, Pagination, Tooltip, Row, Alert, Table, Spin, T
 import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Highlighter from 'react-highlight-words';
 import { suiteChange } from '@/components/Public/TestSuite/index.js';
 import styles from './style.less';
@@ -28,6 +27,7 @@ import { useSuiteProvider } from '../hooks';
 import DeleteTips from "./components/DeleteTips"
 import DeleteDefault from "./components/DeleteDefault"
 import MetricBatchDelete from './components/MetricTable/MetricBatchDelete';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 let timeout: any = null;
 let timer: any = null;
@@ -225,23 +225,26 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             width: 300,
             fixed: 'left',
             ellipsis: true,
-            filterDropdown: ({ confirm }: any) => (
-                <SearchInput
-                    confirm={confirm}
-                    // autoFocus={autoFocus}
-                    onConfirm={(val: string) => { setPageParams({ ...pageParams, name: val }) }}
-                />
-            ),
+            filterDropdown: (p) => {
+                console.log(confirm)
+                return (
+                    <SearchInput
+                        {...p}
+                        // autoFocus={autoFocus}
+                        onConfirm={(val: string) => { setPageParams({ ...pageParams, name: val }) }}
+                    />
+                )
+            },
             filterIcon: () => <FilterFilled style={{ color: pageParams.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => (
-                <PopoverEllipsis title={row.name} >
+                <ColumnEllipsisText ellipsis={{ tooltip: row.name }}  >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[pageParams.name || '']}
                         autoEscape
                         textToHighlight={row.name.toString()}
                     />
-                </PopoverEllipsis>
+                </ColumnEllipsisText>
             )
         },
         {
@@ -274,29 +277,28 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 />
             ),
         },
+        testType !== 'functional' &&
         {
             title: (
-                testType === 'functional' ?
-                    <></> :
-                    <Space>
-                        <FormattedMessage id="TestSuite.view_type" />
-                        <Tooltip
-                            title={
-                                <div>
-                                    <div><FormattedMessage id="TestSuite.view_type.1" /></div>
-                                    <div><FormattedMessage id="TestSuite.view_type.2" /></div>
-                                    <div><FormattedMessage id="TestSuite.view_type.3" /></div>
-                                </div>
-                            }
-                            placement="bottomLeft"
-                        >
-                            <QuestionCircleOutlined />
-                        </Tooltip>
-                    </Space>
+                <Space>
+                    <FormattedMessage id="TestSuite.view_type" />
+                    <Tooltip
+                        title={
+                            <div>
+                                <div><FormattedMessage id="TestSuite.view_type.1" /></div>
+                                <div><FormattedMessage id="TestSuite.view_type.2" /></div>
+                                <div><FormattedMessage id="TestSuite.view_type.3" /></div>
+                            </div>
+                        }
+                        placement="bottomLeft"
+                    >
+                        <QuestionCircleOutlined />
+                    </Tooltip>
+                </Space>
             ),
             dataIndex: 'view_type',
-            render: (_: any, record: any) => testType === 'functional' ? <></> : suiteChange(_, record),
-            width: testType === 'functional' ? 0 : 120,
+            render: (_: any, record: any) => suiteChange(_, record),
+            width: 120,
             ellipsis: true,
         },
         {
@@ -379,14 +381,14 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             dataIndex: 'gmt_created',
             width: 200,
             sorter: true,
-            render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_created} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
         },
         {
             title: <FormattedMessage id="TestSuite.gmt_modified" />,
             dataIndex: 'gmt_modified',
             sorter: true,
             width: 200,
-            render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_modified} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -408,11 +410,11 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 </Space>
             )
         },
-    ]
+    ].filter(Boolean)
 
     const [time, setTime] = useState()
     const onExpand = async (record: any) => {
-        setExpandKey([record.id + ''])
+        setExpandKey([record.id])
     }
 
     const handleSynchronous = async () => {
@@ -508,7 +510,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                     }
                     columns={columns}
                     dataSource={dataSource.data}
-                    rowKey={record => record.id + ''}
+                    rowKey={record => record.id}
                     pagination={false}
                     expandable={{
                         indentSize: 0,

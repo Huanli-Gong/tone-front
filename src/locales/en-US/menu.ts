@@ -117,6 +117,10 @@ export default {
   'menu.Workspace.Baseline.ClusterBaseline': aliyunServer_baseline_en,
   'menu.Workspace.PersonCenter': 'Person Center',
 
+  'menu.Workspace.baseline': 'Baseline',
+  'menu.Workspace.baseline.performance': "Performance Baseline",
+  'menu.Workspace.baseline.functional': "Functional Baseline",
+
   'menu.Workspace.TestPlan': 'Plan',
   'menu.Workspace.TestPlan.Manage': 'Plan Manage',
   'menu.Workspace.TestPlan.Create': 'Create Plan',

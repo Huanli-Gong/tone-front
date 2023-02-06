@@ -7,7 +7,7 @@ This project is initialized with [Ant Design Pro](https://pro.ant.design). Follo
 Install `node_modules`:
 
 ```bash
-npm install
+pnpm install
 ```
 
 or
@@ -25,64 +25,33 @@ Scripts provided in `package.json`. It's safe to modify or add additional script
 ### Start project
 
 ```bash
-npm start
+pnpm start
 ```
 
 ### Build project
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ### Check code style
 
 ```bash
-npm run lint
+pnpm run lint
 ```
 
 You can also use script to auto fix some lint error:
 
 ```bash
-npm run lint:fix
+pnpm run lint:fix
 ```
 
 ### Test code
 
 ```bash
-npm test
+pnpm test
 ```
 
 ## More
 
 You can view full document on our [official website](https://pro.ant.design). And welcome any feedback in our [github](https://github.com/ant-design/ant-design-pro).
-
-
-
-sudo vi /etc/hosts
-
-
-{
-    "assets": {
-        "type": "builder",
-        "builder": {
-            "name": "@ali/builder-buildsync",
-            "options": {
-                "source_dest": "dist"
-            }
-        }
-    }
-}
-
-
-{
-    "assets": {
-        "type": "command",
-        "command": {
-            "cmd": [
-                "tnpm install",
-                "tnpm run build",
-                "mv ./build $BUILD_DEST"
-            ]
-        }
-    }
-}

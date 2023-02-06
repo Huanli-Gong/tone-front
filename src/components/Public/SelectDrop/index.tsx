@@ -57,7 +57,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, pageSize = 
 					onClick={() => {
 						let userId = val
 						if (val && isNaN(Number(val))) userId = initVal?.id
-						confirm()
+						confirm?.()
 						onConfirm(userId, userName)
 					}}
 					type="link"
@@ -69,7 +69,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, pageSize = 
 				<Button
 					type="text"
 					onClick={() => {
-						confirm()
+						confirm?.()
 						setVal(undefined)
 						setUserName(undefined)
 						onConfirm(undefined, undefined)

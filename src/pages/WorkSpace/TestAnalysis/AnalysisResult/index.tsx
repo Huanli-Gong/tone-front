@@ -1,7 +1,7 @@
-import React, { useState, useEffect, memo, useRef, useMemo, useCallback } from 'react';
-import { Col, Button, message, Spin } from 'antd';
+import React, { useState, useEffect, memo, useRef, useMemo } from 'react';
+import { Col, Button, message } from 'antd';
 import { ReactComponent as IconLink } from '@/assets/svg/icon_link.svg'
-import { history, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi';
+import { history, Access, useAccess, useIntl, FormattedMessage, useParams, useLocation } from 'umi';
 import { useScroll } from 'ahooks';
 import { UpOutlined } from '@ant-design/icons';
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport';
@@ -18,9 +18,9 @@ import { useClientSize, useCopyText } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
 
 const Report = (props: any) => {
+    const { state } = useLocation() as any
     const { formatMessage } = useIntl()
     const { ws_id, form_id } = useParams() as any
-    const local = props.history.location
     const access = useAccess();
     const testDataRef = useRef(null)
     const [testDataParam, setTestDataParam] = useState<any>({})
@@ -64,16 +64,16 @@ const Report = (props: any) => {
         if (form_id) {
             queryCompareForm()
         } else {
-            if (local.state && JSON.stringify(local.state) !== '{}') {
-                setTestDataParam(local.state.testDataParam)
-                setParamEenvironment(local.state.envDataParam)
-                setCompareGroupData(local.state.compareGroupData)
-                setAllGroupData(local.state.allGroupData)
-                setBaselineGroupIndex(local.state.baselineGroupIndex)
-                setDomainGroupResult(local.state.domainGroupResult)
+            if (state && JSON.stringify(state) !== '{}') {
+                setTestDataParam(state?.testDataParam)
+                setParamEenvironment(state?.envDataParam)
+                setCompareGroupData(state?.compareGroupData)
+                setAllGroupData(state?.allGroupData)
+                setBaselineGroupIndex(state?.baselineGroupIndex)
+                setDomainGroupResult(state?.domainGroupResult)
             }
         }
-    }, [form_id, local])
+    }, [form_id, state])
 
     const group = allGroupData?.length
 
@@ -313,11 +313,14 @@ const Report = (props: any) => {
                         <UpOutlined style={{ fontSize: 30, padding: 7, color: 'rgb(0, 0, 0, 0.7)' }} />
                     </div>
                 }
-                <SaveReport
-                    ref={saveReportDraw}
-                    onOk={creatReportCallback}
-                    allGroup={allGroupData}
-                />
+                {
+                    ws_id &&
+                    <SaveReport
+                        ref={saveReportDraw}
+                        onOk={creatReportCallback}
+                        allGroup={allGroupData}
+                    />
+                }
             </div>
         </ReportContext.Provider>
     )

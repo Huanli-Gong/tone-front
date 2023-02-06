@@ -76,6 +76,13 @@ const BasicSetting = (props: any, ref: any) => {
         }
     }, [template])
 
+    const baseFormItemProps = {
+        allowClear: true,
+        getPopupContainer: (node: any) => node.parentNode,
+        showSearch: true,
+        filterOption: (input: string, option: any) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+    }
+
     return (
         <div
             style={{
@@ -116,108 +123,73 @@ const BasicSetting = (props: any, ref: any) => {
                 </Form.Item>
                 {/* rules={[{ required: true, message: "请选择Project" }]} */}
                 <Form.Item name="project_id" label={'Project'} >
-                    <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                        placeholder={formatMessage({ id: 'plan.plan.project_id' })}>
-                        {
+                    <Select
+                        {...baseFormItemProps}
+                        placeholder={formatMessage({ id: 'plan.plan.project_id' })}
+                        options={
                             projectList.map(
-                                (item: any, idx: any) => (
-                                    <Select.Option key={idx} value={item.id} >
-                                        {`${item.name}(${item.product_name})`}
-                                    </Select.Option>
-                                )
+                                (item: any, idx: any) => ({
+                                    value: item.id,
+                                    label: `${item.name}(${item.product_name})`
+                                })
                             )
                         }
-                    </Select>
+                    />
                 </Form.Item>
                 <Form.Item label={<FormattedMessage id="plan.test.baseline" />}>
                     <BaselineWrapper>
                         <Form.Item name="func_baseline" >
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                            <Select
+                                {...baseFormItemProps}
                                 /* placeholder="请选择内网功能基线" */
                                 placeholder={formatMessage({ id: 'plan.func_baseline.placeholder' })}
-                            >
-                                {
-                                    baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aligroup').map(
-                                        (item: any) => (
-                                            <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                        )
+                                options={
+                                    baselineList.filter((i: any) => i.test_type === 'functional').map(
+                                        (item: any) => ({
+                                            value: item.id,
+                                            label: item.name
+                                        })
                                     )
                                 }
-                            </Select>
+                            />
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜功能 */}
-                            {formatMessage({ id: 'aligroupServer' })}｜<FormattedMessage id="plan.function" />
+                            <FormattedMessage id="plan.function" />
                         </BaselineSpan>
-                        {/* <div style={{ position : 'absolute' , right : -22 , top : -4 }}>
-                            <QusetionIconTootip desc="" title="至少添加一种基线" />
-                        </div> */}
                     </BaselineWrapper>
                     <BaselineWrapper>
                         <Form.Item name="perf_baseline">
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
+                            <Select
+                                {...baseFormItemProps}
                                 /* placeholder="请选择内网性能基线" */
                                 placeholder={formatMessage({ id: 'plan.perf_baseline.placeholder' })}
-                            >
-                                {
-                                    baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aligroup').map(
-                                        (item: any) => (
-                                            <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                        )
+                                options={
+                                    baselineList.filter((i: any) => i.test_type === 'performance').map(
+                                        (item: any) => ({
+                                            value: item.id,
+                                            lable: item.name
+                                        })
                                     )
                                 }
-                            </Select>
+                            />
                         </Form.Item>
                         <BaselineSpan >
                             {/* 内网｜性能 */}
-                            {formatMessage({ id: 'aligroupServer' })}｜<FormattedMessage id="plan.performance" />
-                        </BaselineSpan>
-                    </BaselineWrapper>
-
-                    {/** 新添加--云上 */}
-                    <BaselineWrapper>
-                        <Form.Item name="func_baseline_aliyun">
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                                placeholder={formatMessage({ id: 'plan.func_baseline.placeholder' })}
-                            // placeholder="请选择云上功能基线"
-                            >
-                                {
-                                    baselineList.filter((i: any) => i.test_type === 'functional' && i.server_provider == 'aliyun').map(
-                                        (item: any) => (
-                                            <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                        )
-                                    )
-                                }
-                            </Select>
-                        </Form.Item>
-                        <BaselineSpan>
-                            {formatMessage({ id: 'aliyunServer' })}｜<FormattedMessage id="plan.function" />
-                            {/* 云上｜功能 */}
-                        </BaselineSpan>
-                    </BaselineWrapper>
-                    <BaselineWrapper>
-                        <Form.Item name="perf_baseline_aliyun">
-                            <Select allowClear getPopupContainer={node => node.parentNode} showSearch
-                                placeholder={formatMessage({ id: 'plan.perf_baseline.placeholder' })}
-                            // placeholder="请选择云上性能基线"
-                            >
-                                {baselineList.filter((i: any) => i.test_type === 'performance' && i.server_provider == 'aliyun').map(
-                                    (item: any) => (
-                                        <Select.Option key={item.id} value={item.id} >{item.name}</Select.Option>
-                                    )
-                                )}
-                            </Select>
-                        </Form.Item>
-                        <BaselineSpan>
-                            {formatMessage({ id: 'aliyunServer' })}｜<FormattedMessage id="plan.performance" />
-                            {/* 云上｜性能 */}
+                            <FormattedMessage id="plan.performance" />
                         </BaselineSpan>
                     </BaselineWrapper>
                 </Form.Item>
-                <Form.Item name="test_obj"
+                <Form.Item
+                    name="test_obj"
                     label={<FormattedMessage id="plan.tested.object" />}
                 >
-                    <Select onChange={(val: any) => setTestObject(val)} getPopupContainer={node => node.parentNode} showSearch placeholder="请选择被测对象">
+                    <Select
+                        {...baseFormItemProps}
+                        filterOption={false}
+                        onChange={(val: any) => setTestObject(val)}
+                        placeholder="请选择被测对象"
+                    >
                         <Select.Option value={'kernel'}><FormattedMessage id="plan.kernel.package" /></Select.Option>
                         <Select.Option value={'rpm'}><FormattedMessage id="plan.others.soft" /></Select.Option>
                     </Select>

@@ -12,10 +12,10 @@ import LogoEllipsis from '@/components/LogoEllipsis/index'
 import _ from 'lodash'
 import { queryDocList } from '@/pages/DOC/services'
 import HomePush from './Component/HomePush'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
 import { jumpWorkspace } from '@/utils/utils'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -269,19 +269,6 @@ export default (): React.ReactNode => {
         })
     }, [helps])
 
-    // const myWsGroup = useMemo(() => {
-    //     let list: any = []
-
-    //     topWs.forEach((obj, index) => {
-    //         const num = Math.floor(index / 6)
-    //         const remain = index % 6
-    //         if (index % 6 === 0) list[num] = []
-    //         list[num][remain] = obj
-    //     })
-
-    //     return list
-    // }, [topWs])
-
     return (
         <Layout className={styles.content}>
             <HomePush ref={homePushRef} />
@@ -411,11 +398,9 @@ export default (): React.ReactNode => {
                                                             className={styles.notice_tag}>{item && noticeType[item.tags] || '-'}
                                                         </Tag>
                                                         <div className={styles.notice_title}>
-                                                            <PopoverEllipsis title={item.title}>
-                                                                <>
-                                                                    {item.title}
-                                                                </>
-                                                            </PopoverEllipsis>
+                                                            <ColumnEllipsisText ellipsis={{ tooltip: true }}>
+                                                                {item.title}
+                                                            </ColumnEllipsisText>
                                                         </div>
                                                     </div>
                                                 )
@@ -459,11 +444,9 @@ export default (): React.ReactNode => {
                                                         className={styles.notice_tag}>{item && docType[item.tags] || '-'}
                                                     </Tag>
                                                     <div className={styles.notice_title}>
-                                                        <PopoverEllipsis title={item.title}>
-                                                            <>
-                                                                {item.title}
-                                                            </>
-                                                        </PopoverEllipsis>
+                                                        <ColumnEllipsisText ellipsis={{ tooltip: true }}>
+                                                            {item.title}
+                                                        </ColumnEllipsisText>
                                                     </div>
                                                 </div>
                                             )

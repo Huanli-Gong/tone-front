@@ -3,7 +3,6 @@ import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
 import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { queryJobList, queryProductList, queryProduct, queryBaelineList } from './services'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import Highlighter from 'react-highlight-words'
 import styles from './index.less'
 import CommonPagination from '@/components/CommonPagination';
@@ -15,8 +14,9 @@ import SearchInput from '@/components/Public/SearchInput'
 import { resizeDocumentHeight } from './CommonMethod'
 import SelectUser from '@/components/Public/SelectUser'
 import { requestCodeMessage } from '@/utils/utils';
-import ResizeTable from '@/components/ResizeTable';
 import { getUserFilter } from '@/components/TableFilters'
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 const { Option } = Select;
 const { RangePicker } = DatePicker
 const defaultResult = {
@@ -60,10 +60,12 @@ export default (props: any) => {
     const scollMaxHeight = maxHeight - 400 > 430 ? 430 : maxHeight - 400
     resizeDocumentHeight(scollMaxHeight)
     const { onCancel, onOk, currentGroup } = props
+
     let { allGroup, allNoGroupData } = props
     allGroup = _.isArray(allGroup) ? allGroup : []
     const [tabKey, setTabKey] = useState<string>('1')
     allNoGroupData = _.isArray(allNoGroupData) ? allNoGroupData : []
+
     const selectedId: any = getSelJobFn(allGroup, allNoGroupData)
 
     const page_default_params: any = {
@@ -148,12 +150,7 @@ export default (props: any) => {
         let data = await queryJobList(params)
         defaultOption(data)
     }
-    useEffect(() => {
-        if (!!allNoGroupData.length) {
-            setSelectedRowKeys(allNoGroupData.map((i: any) => i.id));
-            setSelectRowData(allNoGroupData);
-        }
-    }, [allNoGroupData])
+
     useEffect(() => {
         if (params.product_version && params.product_id) getJobList(params)
     }, [params])
@@ -163,7 +160,7 @@ export default (props: any) => {
     }, [tabKey, baselineParam])
 
     useEffect(() => {
-        setParams((p: any) => ({ ...p, product_version: pruductVersion, product_id: pruductId }))
+        setParams((p: any) => ({ ...p, product_version: pruductVersion, product_id: pruductId, page_num: 1 }))
     }, [pruductVersion, pruductId])
 
     useEffect(() => {
@@ -182,7 +179,7 @@ export default (props: any) => {
 
     const onChange = (value: any) => {
         setPruductVersion(value)
-        setParams((p: any) => ({ ...p, product_version: value }))
+        setParams((p: any) => ({ ...p, product_version: value, page_num: 1 }))
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
@@ -203,10 +200,10 @@ export default (props: any) => {
         const end_time = dateStrings[1]
         if (!start_time && !end_time) setParams((p: any) => ({ ...p, creation_time: null }))
         if (start_time && end_time) setParams((p: any) => ({ ...p, creation_time: JSON.stringify({ start_time, end_time }) }))
-        confirm()
+        confirm?.()
     }
 
-    const columns = [
+    const columns: any = [
         {
             title: 'Job ID',
             dataIndex: 'id',
@@ -250,14 +247,14 @@ export default (props: any) => {
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
                 return (
-                    <PopoverEllipsis title={row.name} >
+                    <ColumnEllipsisText ellipsis={{ tooltip: row.name }}>
                         <Highlighter
                             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                             searchWords={[params.name || '']}
                             autoEscape
                             textToHighlight={row && row.name}
                         />
-                    </PopoverEllipsis>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -271,15 +268,15 @@ export default (props: any) => {
             render: (_: any, row: any) => {
                 if (["功能", "功能测试", "functional"].includes(row.test_type)) {
                     return (
-                        <Typography.Text ellipsis={{ tooltip: true }}>
+                        <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                             {formatMessage({ id: `header.test_type.functional` })}
-                        </Typography.Text>
+                        </ColumnEllipsisText>
                     )
                 }
                 return (
-                    <Typography.Text ellipsis={{ tooltip: true }}>
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                         {formatMessage({ id: "header.test_type.performance" })}
-                    </Typography.Text>
+                    </ColumnEllipsisText>
                 )
             },
             filterIcon: () => <FilterFilled style={{ color: params.test_type ? '#1890ff' : undefined }} />,
@@ -310,7 +307,7 @@ export default (props: any) => {
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creators && params.creators !== '[]' ? '#1890ff' : undefined }} />,
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="analysis.test_time" />,
@@ -337,7 +334,7 @@ export default (props: any) => {
         },
     ]
 
-    const baselineColumns = [
+    const baselineColumns: any = [
         {
             title: <FormattedMessage id="analysis.baseline_name" />,
             dataIndex: 'name',
@@ -368,7 +365,7 @@ export default (props: any) => {
             },
             render: (_: any, row: any) => {
                 const text = ["功能", "功能测试", "functional"].includes(row.test_type) ? "functional" : "performance"
-                return <Typography.Text ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</Typography.Text>
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{formatMessage({ id: `header.test_type.${text}` })}</ColumnEllipsisText>
             },
             filterIcon: () => <FilterFilled style={{ color: baselineParam.test_type ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => <SelectRadio
@@ -389,7 +386,7 @@ export default (props: any) => {
             },
             dataIndex: 'creator_name',
             ...getUserFilter(baselineParam, setBaselineParam, 'creator'),
-            render: (_: any) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
         {
             title: <FormattedMessage id="analysis.gmt_created" />,
@@ -402,7 +399,6 @@ export default (props: any) => {
                 return record || '-'
             }
         },
-
     ]
 
     const selectedChange = (record: any, selected: any) => {
@@ -478,9 +474,10 @@ export default (props: any) => {
         selectedRowKeys,
         getCheckboxProps: (record: any) => {
             // 有用
-            let flag = record.state !== 'success' && record.state !== 'fail'
+            let flag = !["success", "fail"].includes(record.state)
             const selProductId = pruductId || _.get(selectRowData[0], 'product_id')
             if (selProductId) flag = _.get(record, 'product_id') !== selProductId
+
             return ({
                 disabled: flag, // Column configuration not to be checked
                 name: record.name,
@@ -524,8 +521,8 @@ export default (props: any) => {
     const commonCur = currentGroup && _.get(currentGroup, 'members').length
     // 产品版本disable逻辑
     const flag = commonCur || tabKey === '2'
-    const jobDisable = ((!!selectedBaselineData.length) || (commonCur && currentGroup.type === 'baseline'))
-    const baselineDisable = ((!!selectRowData.length) || (commonCur && currentGroup.type === 'job'))
+    const jobDisable = ((!!selectedBaselineData.length) || (currentGroup.type === 'baseline'))
+    const baselineDisable = ((!!selectRowData.length) || (currentGroup.type === 'job'))
     return (
         <div className={styles.list_container} id="list_container">
             <div className={styles.select_product}>
@@ -569,16 +566,16 @@ export default (props: any) => {
                 <Tabs activeKey={tabKey} className={styles.job_test} onChange={handleTabSwitch}>
                     <Tabs.TabPane tab={<FormattedMessage id="analysis.test.data" />} key="1" disabled={jobDisable}>
                         <Scrollbars style={scroll} className={styles.scroll}>
-                            <ResizeTable
+                            <ResizeHooksTable
                                 rowSelection={rowSelection as any}
                                 rowKey='id'
-                                key={JSON.stringify(testData || [])}
+                                name="ws-analysis-compare-job-add"
+                                refreshDeps={[ws_id, params]}
                                 columns={columns as any}
                                 loading={loading}
                                 dataSource={testData}
                                 pagination={false}
                                 size="small"
-                                scroll={{ x: '100%' }}
                             />
                         </Scrollbars>
                         <CommonPagination
@@ -594,16 +591,16 @@ export default (props: any) => {
                     </Tabs.TabPane>
                     <Tabs.TabPane tab={<FormattedMessage id="analysis.baseline.data" />} key="2" disabled={baselineDisable}>
                         <Scrollbars style={scroll} className={styles.scroll}>
-                            <ResizeTable
+                            <ResizeHooksTable
                                 rowSelection={baselineSelection as any}
                                 rowKey='id'
+                                name="ws-analysis-compare-baseline-add"
                                 columns={baselineColumns as any}
-                                key={JSON.stringify(baseData || [])}
+                                refreshDeps={[baselineParam, ws_id]}
                                 loading={loading}
                                 dataSource={baseData}
                                 pagination={false}
                                 size="small"
-                                scroll={{ x: '100%' }}
                             />
                         </Scrollbars>
                         <CommonPagination

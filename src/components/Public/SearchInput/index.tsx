@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Space, Button, Input, Divider } from 'antd';
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, initVal, autoFocus, placeholder, styleObj, currentData }) => {
+const filterRadio: React.FC<any> = (props) => {
+	const { confirm, onConfirm, initVal, autoFocus, placeholder, styleObj, currentData } = props
 	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<any>()
 	const input: any = useRef(null);
@@ -16,10 +17,10 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, initVal, autoFocus, pl
 	}, defData);
 	const { Search } = Input;
 
-	useEffect(()=> {
+	useEffect(() => {
 		setVal(initVal)
-	},[initVal])
-	
+	}, [initVal])
+
 	return (
 		<div style={{ padding: 8 }}>
 			<div>
@@ -29,11 +30,11 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, initVal, autoFocus, pl
 					value={val}
 					onChange={(e: any) => setVal(e.target.value)}
 					onSearch={(val: any) => {
-						confirm()
+						confirm?.()
 						onConfirm(val.trim())
 					}}
 					onPressEnter={() => {
-						confirm()
+						confirm?.()
 						onConfirm(val.trim())
 					}}
 					size="middle"
@@ -44,7 +45,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, initVal, autoFocus, pl
 			<Space>
 				<Button
 					onClick={() => {
-						confirm()
+						confirm?.()
 						onConfirm(val.trim())
 					}}
 					type="link"
@@ -56,7 +57,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, initVal, autoFocus, pl
 				<Button
 					type="text"
 					onClick={() => {
-						confirm()
+						confirm?.()
 						setVal('')
 						onConfirm('')
 					}}

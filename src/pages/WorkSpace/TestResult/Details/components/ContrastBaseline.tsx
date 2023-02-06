@@ -1,32 +1,27 @@
 import { queryBaselineList } from '@/pages/WorkSpace/TestJob/services'
 import { requestCodeMessage } from '@/utils/utils'
 import { Drawer, Form, Select, Space, Button, Row } from 'antd'
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
 import { contrastBaseline } from '../service'
 
 const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
-    const { server_provider, test_type, onOk } = props
+    const { test_type, onOk } = props
     const [visible, setVisible] = useState(false)
     const [pedding, setPedding] = useState(false)
     const [form] = Form.useForm()
     const [drawerData, setDrawerData] = useState<any>()
 
     const { data: baselineList, run } = useRequest(
-        () => queryBaselineList({ ws_id, test_type, server_provider }),
+        () => queryBaselineList({ ws_id, test_type, page_size: 999 }),
         { initialData: [], manual: true }
     )
-    
-    useEffect(() => {
-        if(test_type === 'performance'){
-            run()
-        } ;
-    },[ test_type ])
 
     useImperativeHandle(ref, () => ({
         show: (_: any) => {
+            run()
             setDrawerData(_)
             setVisible(true)
         }
@@ -74,6 +69,7 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
             maskClosable={false}
             keyboard={false}
             visible={visible}
+            destroyOnClose
             title={<FormattedMessage id="ws.result.details.baseline" />}
             onClose={handleClose}
             width="376"
@@ -87,22 +83,26 @@ const ContrastBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) 
             }
         >
             <Form form={form} requiredMark={false} layout="vertical">
-                <Form.Item label={<FormattedMessage id="ws.result.details.baseline" />}
-                    name="baseline_id" 
-                    rules={[{ 
-                        required: true, 
-                        message: formatMessage({id: `ws.result.details.baseline.message`})
-                    }]}>
-                    <Select placeholder={formatMessage({id: `ws.result.details.baseline.placeholder`})}
-                        >
-                        {
-                            baselineList.map(
-                                (item: any) => (
-                                    <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
-                                )
-                            )
-                        }
-                    </Select>
+                <Form.Item
+                    label={<FormattedMessage id="ws.result.details.baseline" />}
+                    name="baseline_id"
+                    rules={[{
+                        required: true,
+                        message: formatMessage({ id: `ws.result.details.baseline.message` })
+                    }]}
+                >
+                    <Select
+                        placeholder={formatMessage({ id: `ws.result.details.baseline.placeholder` })}
+                        showSearch
+                        allowClear
+                        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                        options={baselineList.map(
+                            (item: any) => ({
+                                value: item.id,
+                                label: item.name
+                            })
+                        )}
+                    />
                 </Form.Item>
             </Form>
         </Drawer>

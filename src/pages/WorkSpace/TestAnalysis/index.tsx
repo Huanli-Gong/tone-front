@@ -35,9 +35,9 @@ export default (props: any) => {
     }
     const handleAddGroupItemOk = (obj: any) => {
         setVisibleAddGroupItem(false)
-        window.sessionStorage.setItem('compareData', JSON.stringify([obj]))
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([obj]))
         window.sessionStorage.setItem('originType', 'test_analysis')
-        window.sessionStorage.setItem('noGroupJobData', JSON.stringify([]))
+        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify([]))
         history.push(`/ws/${ws_id}/test_analysis/compare`)
     }
     const onStart = (event: any, uiData: any) => {

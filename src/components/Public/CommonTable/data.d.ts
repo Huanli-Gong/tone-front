@@ -1,6 +1,6 @@
 import { TableProps } from 'antd/lib/table';
 export type UserTable = {
-    list: any[],
+    list: any[];
     columns: any;
     handlePage?: any;
     onRow?: (record?: any) => void;

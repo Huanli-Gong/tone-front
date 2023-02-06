@@ -204,7 +204,7 @@ export default (props: any) => {
                             <Droppable droppableId="droppable">
                                 {(provided: any, snapshot: any) => (
                                     //这里是拖拽容器 在这里设置容器的宽高等等...
-                                    <Row
+                                    <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
                                         className={styles.all_product}
@@ -276,7 +276,7 @@ export default (props: any) => {
                                             })
                                         }
                                         {provided.placeholder}
-                                    </Row>
+                                    </div>
                                 )}
                             </Droppable>
                         </DragDropContext>

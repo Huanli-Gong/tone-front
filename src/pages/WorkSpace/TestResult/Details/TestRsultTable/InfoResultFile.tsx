@@ -1,7 +1,7 @@
 import React from 'react'
 import { queryCaseResultFile } from '../service'
-import { useRequest, request, useParams, useIntl, FormattedMessage } from 'umi'
-import { Tree, Spin, Empty, message, Row, Space } from 'antd'
+import { useRequest, request, useParams, useIntl } from 'umi'
+import { Tree, Spin, Empty, message, Space } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons';
 
 import styles from './index.less'
@@ -15,8 +15,6 @@ const TreeFileIcon: React.FC<any> = (props: any) => (
         }
     </>
 )
-
-
 
 export default ({ test_case_id, suite_id }: any) => {
     const { formatMessage } = useIntl()
@@ -33,7 +31,7 @@ export default ({ test_case_id, suite_id }: any) => {
         const data = await request(`/api/get/oss/url/`, { params: obj })
         if (data) {
             if (data.code === 200 && data.msg === 'ok') window.open(data.data)
-            else message.warn(`${state === 'download'? formatMessage({id:'ws.result.details.failed.download.file'}): formatMessage({id:'ws.result.details.failed.get.file'})}`)
+            else message.warn(`${state === 'download' ? formatMessage({ id: 'ws.result.details.failed.download.file' }) : formatMessage({ id: 'ws.result.details.failed.get.file' })}`)
         }
     }
 
@@ -74,7 +72,7 @@ export default ({ test_case_id, suite_id }: any) => {
         const data = await request(`/api/get/oss/url/`, { params: { path, job_id } })
         if (data) {
             if (data.code === 200 && data.msg === 'ok') window.open(data.data)
-            else message.warn(formatMessage({id:'ws.result.details.failed.get.file'}))
+            else message.warn(formatMessage({ id: 'ws.result.details.failed.get.file' }))
         }
     }
 
@@ -88,11 +86,6 @@ export default ({ test_case_id, suite_id }: any) => {
         }
     }
 
-    // const handleSelectTree = ( _ : any ) => {
-    //     const [ checkKey ] = _
-    //     mapChildKey( data , checkKey )
-    // }
-
     return (
         <div style={{ minHeight: 50 }}>
             <Spin spinning={loading}>
@@ -102,8 +95,6 @@ export default ({ test_case_id, suite_id }: any) => {
                             style={{ padding: 20 }}
                             treeData={data}
                             showIcon={true}
-                        // onSelect={ handleSelectTree }
-                        // onRightClick = { handleDownload }
                         /> :
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }

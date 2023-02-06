@@ -40,7 +40,7 @@ const ViewReports = (props: any) => {
     }
 
     const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
-        confirm();
+        confirm?.();
         setSearchText(selectedKeys[0])
         setSearchedColumn(dataIndex)
     };
@@ -56,7 +56,7 @@ const ViewReports = (props: any) => {
     };
 
     const handleSearchUser = (selectedKeys: any, confirm: any, dataIndex: any) => {
-        confirm();
+        confirm?.();
         setVal(selectedKeys[0])
         setUserSearchColumn(dataIndex)
     };

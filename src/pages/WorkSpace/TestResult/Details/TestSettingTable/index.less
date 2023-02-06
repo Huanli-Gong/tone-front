@@ -109,3 +109,21 @@
         }
     }
 }
+
+.test_suite_server_table {
+    :global {
+        .ant-table.ant-table-small .ant-table-tbody > tr > td:only-child {
+            padding: 0;
+        }
+        .ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
+            margin: 0;
+            padding: 0;
+        }
+        .resize-table-wrapper {
+            padding: 0 0 0 43px!important; 
+            & table:last-child tr>td {
+                border: none;
+            }
+        }
+    }
+}

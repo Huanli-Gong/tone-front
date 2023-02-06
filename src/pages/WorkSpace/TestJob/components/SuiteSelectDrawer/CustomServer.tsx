@@ -6,7 +6,7 @@ import styles from '../SelectSuite/style.less'
 import { checkIpAndSn } from './services';
 import DeployModal from '@/pages/WorkSpace/DeviceManage/GroupManage/Standalone/Components/DeployModal'
 import { AgentSelect } from '@/components/utils';
-import { FormInstance } from 'antd/lib/form';
+import type { FormInstance } from 'antd/lib/form';
 
 type IProps = {
     mask: boolean;

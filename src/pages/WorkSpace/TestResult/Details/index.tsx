@@ -1,16 +1,15 @@
 import React, { useRef, useState } from 'react'
-import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Breadcrumb, Space, Alert, Popconfirm } from 'antd'
+import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Space, Alert, Popconfirm } from 'antd'
 import styles from './index.less'
-import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet } from 'umi'
+import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet, useLocation } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection, queryJobState } from '@/pages/WorkSpace/TestResult/services'
-import { StarOutlined, StarFilled, EditOutlined } from '@ant-design/icons'
+import { StarOutlined, StarFilled, } from '@ant-design/icons'
 import Chart from './components/Chart'
 import TestResultTable from './TestRsultTable'
 import ProcessTable from './ProcessTable'
 import TestSettingTable from './TestSettingTable'
-import EditRemarks from './components/EditRemarks'
 import TagsEditer from './components/TagsEditer'
 import { StateTag } from './components'
 import ViewReport from '../CompareBar/ViewReport'
@@ -19,94 +18,19 @@ import RenderMachineItem from './components/MachineTable'
 import RenderMachinePrompt from './components/MachinePrompt'
 import ReRunModal from './components/ReRunModal'
 import { requestCodeMessage, AccessTootip, matchTestType } from '@/utils/utils';
-import _, { isNull } from 'lodash'
+import { isNull } from 'lodash'
 
-const CAN_STOP_JOB_STATES = ['running', 'pending', 'pending_q']
-const RenderDesItem: React.FC<any> = ({ name, dataIndex, isLink, onClick }: any) => {
-    const locale = getLocale() === 'en-US';
-    const widthStyle = locale ? 120 : 58
+import { BreadcrumbItem, CAN_STOP_JOB_STATES, RenderDesItem, EditNoteBtn } from "./components/MainPageComponents"
 
-    return (
-        <Col span={8} style={{ display: 'flex', alignItems: 'start' }}>
-            <Typography.Text className={styles.test_summary_item} style={{ width: widthStyle }}>{name}</Typography.Text>
-            {
-                isLink ?
-                    <Typography.Text
-                        className={styles.test_summary_item_right}
-                        style={{ cursor: 'pointer', color: '#1890FF', width: `calc(100% - ${widthStyle}px - 16px)` }}
-                    >
-                        <span onClick={onClick}>{dataIndex || '-'}</span>
-                    </Typography.Text> :
-                    <Typography.Text className={styles.test_summary_item_right}
-                        style={{ width: `calc( 100% - ${widthStyle}px - 16px)` }}
-                    >{dataIndex || '-'}</Typography.Text>
-            }
-        </Col>
-    )
-}
-
-
-const BreadcrumbItem: React.FC<any> = (d: any) => {
-    const { ws_id } = useParams() as any
-    return (
-        <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
-            <Breadcrumb.Item >
-                <span
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => history.push(`/ws/${ws_id}/test_result`)}
-                >
-                    <FormattedMessage id="ws.result.details.test.result" />
-                </span>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item><FormattedMessage id="ws.result.details.result.details" /></Breadcrumb.Item>
-        </Breadcrumb>
-    )
-}
-
-const EditNoteBtn: React.FC<any> = (props) => {
-    const access = useAccess()
-    const { creator_id, note, refresh } = props;
-    const { id: job_id } = useParams() as any
-    const ref: any = useRef()
-
-    const handleOpenEditRemark = () => {
-        ref.current?.show({ editor_obj: 'job', job_id, note })
-    }
-
-    const noteStyle: any = {
-        paddingTop: 5,
-        marginRight: 10,
-    }
-
-    return (
-        <>
-            <Access
-                accessible={access.WsMemberOperateSelf(creator_id)}
-                fallback={
-                    <EditOutlined
-                        onClick={() => AccessTootip()}
-                        style={{ ...noteStyle }}
-                    />
-                }
-            >
-                <EditOutlined
-                    onClick={handleOpenEditRemark}
-                    style={{ ...noteStyle }}
-                />
-            </Access>
-            <EditRemarks ref={ref} onOk={refresh} />
-        </>
-
-    )
-}
-const TestResultDetails: React.FC = (props: any) => {
+const TestResultDetails: React.FC = () => {
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const widthStyle = locale ? 120 : 58
     const { ws_id, id: job_id } = useParams() as any
+    const { pathname, query } = useLocation() as any
 
     const access = useAccess()
-    const [tab, setTab] = useState('testResult')
+    const [tab, setTab] = useState<any>(query?.tab ? +query.tab : 1)
     const rerunModalRef: any = useRef()
     const processTableRef: any = useRef()
     const [fetching, setFetching] = React.useState(false)
@@ -122,7 +46,7 @@ const TestResultDetails: React.FC = (props: any) => {
 
     const queryJobDetails = async () => {
         setLoading(true)
-        const { data, code, msg } = await querySummaryDetail({ job_id, ws_id })
+        const { data, code } = await querySummaryDetail({ job_id, ws_id })
         setLoading(false)
         if (code !== 200 || Object.prototype.toString.call(data) !== "[object Array]" || data.length === 0)
             return setDetails({})
@@ -130,13 +54,14 @@ const TestResultDetails: React.FC = (props: any) => {
         const [dataSource] = data
         if (!dataSource) return setDetails({})
         if (dataSource?.state === 'running')
-            setTab('testProgress')
+            setTab(2)
         setDetails(dataSource)
     }
 
     React.useEffect(() => {
         queryJobDetails()
         return () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             timer.current && clearTimeout(timer.current)
             setDetails({})
         }
@@ -159,8 +84,9 @@ const TestResultDetails: React.FC = (props: any) => {
         if (state) getJobState()
     }, [details?.state])
 
-    const handleTabClick = (t: string) => {
+    const handleTabClick = (t: any) => {
         setTab(t)
+        history.replace(`${pathname}?tab=${t}`)
     }
 
     const handleEditTagsOk = () => {
@@ -195,16 +121,16 @@ const TestResultDetails: React.FC = (props: any) => {
         }
         message.success(formatMessage({ id: 'operation.success' }))
         queryJobDetails()
-        if (tab === 'testResult') {
+        if (tab === 1) {
             setRefreshResult(true)
         }
-        if (tab === 'testProgress') {
+        if (tab === 2) {
             processTableRef.current.refresh()
         }
         setFetching(false)
     }
 
-    let TextStyle: any = {
+    const TextStyle: any = {
         // width: 'calc(100% - 104px)',
         wordBreak: 'break-all',
         whiteSpace: 'pre-wrap',
@@ -218,8 +144,6 @@ const TestResultDetails: React.FC = (props: any) => {
     const handleReplay = () => {
         rerunModalRef.current.show(details)
     }
-    // const { height: windowHeight } = useClientSize()
-    // !["success", "fail", "skip", "stop"].includes(data.state)
 
     const buttonType = details?.report_li?.length ? "default" : "primary"
     // 判断是"离线上传"的数据
@@ -244,6 +168,38 @@ const TestResultDetails: React.FC = (props: any) => {
         ]
     ).get(name)
 
+    const tabsMap = [
+        [
+            1, "testResult",
+            <TestResultTable
+                creator={details.creator}
+                test_type={details.test_type}
+                job_id={job_id}
+                cases={details.case_result}
+                caseResult={details.case_result}
+                provider_name={transProvider(details.provider_name)}
+                ws_id={ws_id}
+                refreshResult={refreshResult}
+            />],
+        [
+            2, "testProgress",
+            <ProcessTable
+                job_id={job_id}
+                onRef={processTableRef}
+                test_type={details?.test_type}
+                provider_name={transProvider(details?.provider_name)}
+            />
+        ],
+        [
+            3, "testConfig",
+            <TestSettingTable
+                jt_id={details?.job_type_id}
+                provider_name={transProvider(details?.provider_name)}
+                test_type={details?.test_type}
+            />
+        ]
+    ]
+
     return (
         <Spin spinning={loading} className={styles.spin_style}>
             <Helmet>
@@ -254,7 +210,7 @@ const TestResultDetails: React.FC = (props: any) => {
                     <NotFound /> :
                     <div style={{ background: '#F5F5F5', width: "100%", overflowX: "hidden", overflowY: "auto" }} >
                         <div style={{ minHeight: 270, marginBottom: 10, background: '#fff', padding: 20 }}>
-                            <BreadcrumbItem bottomHeight={4} />
+                            <BreadcrumbItem bottomHeight={4} {...details} />
                             <div style={{ paddingLeft: 20, position: 'relative' }}>
                                 <Access accessible={access.WsTourist()}>
                                     {
@@ -483,41 +439,13 @@ const TestResultDetails: React.FC = (props: any) => {
                                         </Access>
                                     </div>
                                 }
-                            >
-                                <Tabs.TabPane
-                                    tab={<FormattedMessage id="ws.result.details.tab.testResult" />}
-                                    key="testResult"
-                                    style={{ overflow: "hidden" }}
-                                >
-                                    <TestResultTable
-                                        creator={details.creator}
-                                        test_type={details.test_type}
-                                        job_id={job_id}
-                                        cases={details.case_result}
-                                        caseResult={details.case_result}
-                                        provider_name={transProvider(details.provider_name)}
-                                        ws_id={ws_id}
-                                        refreshResult={refreshResult}
-                                    />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testProgress" />}
-                                    key="testProgress" disabled={details?.created_from === 'offline'} >
-                                    <ProcessTable
-                                        job_id={job_id}
-                                        onRef={processTableRef}
-                                        test_type={details?.test_type}
-                                        provider_name={transProvider(details?.provider_name)}
-                                    />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane tab={<FormattedMessage id="ws.result.details.tab.testConfig" />}
-                                    key="testConfig" >
-                                    <TestSettingTable
-                                        jt_id={details?.job_type_id}
-                                        provider_name={transProvider(details?.provider_name)}
-                                        test_type={details?.test_type}
-                                    />
-                                </Tabs.TabPane>
-                            </Tabs>
+                                items={tabsMap.map((i: any) => ({
+                                    key: i[0],
+                                    label: formatMessage({ id: `ws.result.details.tab.${i[1]}` }),
+                                    children: i[2],
+                                    disabled: i[0] === 2 && details?.created_from === 'offline'
+                                }))}
+                            />
                         </div>
                     </div>
             }

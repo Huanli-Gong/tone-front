@@ -10,7 +10,8 @@ import PlanSettingDrawer from './components/PlanSettingDrawer'
 import { queryPlanManageList, deleteTestPlan, copyTestPlan } from './services'
 import { getUserFilter, getSearchFilter, getRadioFilter } from '@/components/TableFilters'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
-import ResizeTable from '@/components/ResizeTable'
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { tooltipTd } from '../TestResult/Details/components'
 
 interface OptionBtnProp {
     disabled?: boolean
@@ -32,13 +33,13 @@ const TestPlanManage = (props: any) => {
 
     const { height: layoutHeight } = useClientSize()
     const viewSettingRef: any = useRef()
-    const [data , setData] = useState<any>([])
+    const [data, setData] = useState<any>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [pageParams, setPageParams] = useState<any>({ ws_id, page_num: 1, page_size: 10 })
 
-    const queryPlanList = async() => {
+    const queryPlanList = async () => {
         const data = await queryPlanManageList(pageParams)
-        if(data.code === 200){
+        if (data.code === 200) {
             setData(data)
         } else {
             requestCodeMessage(data.code, data.msg)
@@ -46,9 +47,9 @@ const TestPlanManage = (props: any) => {
         setLoading(false)
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         queryPlanList()
-    },[pageParams])
+    }, [pageParams])
 
     const handleRun = async (row: any) => {
         if (!row.enable) return;
@@ -65,7 +66,7 @@ const TestPlanManage = (props: any) => {
             requestCodeMessage(code, msg)
             return
         }
-        message.success(formatMessage({id: 'request.copy.success'}) )
+        message.success(formatMessage({ id: 'request.copy.success' }))
         queryPlanList()
     }
 
@@ -75,106 +76,101 @@ const TestPlanManage = (props: any) => {
 
     const handleDelete = async (row: any) => {
         const { code, msg } = await deleteTestPlan({ plan_id: row.id, ws_id })
-        if (code === 200)  queryPlanList()
+        if (code === 200) queryPlanList()
         else requestCodeMessage(code, msg)
     }
 
-    const columns = [{
-        dataIndex: 'name',
-        title: <FormattedMessage id="plan.table.name" />,
-        ellipsis: {
-            showTitle: false
+    const columns: any = [
+        {
+            dataIndex: 'name',
+            title: <FormattedMessage id="plan.table.name" />,
+            fixed: "left",
+            ...getSearchFilter(pageParams, setPageParams, 'name'),
+            ...tooltipTd("-"),
         },
-        ...getSearchFilter(pageParams, setPageParams, 'name')
-    }, {
-        dataIndex: 'cron_info',
-        title: <FormattedMessage id="plan.table.cron_info" />,
-        width: 120,
-        ellipsis: {
-            showTitle: false
+        {
+            dataIndex: 'cron_info',
+            title: <FormattedMessage id="plan.table.cron_info" />,
+            width: 120,
+            ...tooltipTd("-"),
         },
-        render(_: any) {
-            return _ || '-'
-        }
-    }, {
-        dataIndex: 'enable',
-        title: <FormattedMessage id="plan.table.enable" />,
-        width: 120,
-        ellipsis: {
-            showTitle: false
+        {
+            dataIndex: 'enable',
+            title: <FormattedMessage id="plan.table.enable" />,
+            width: 120,
+            ellipsis: {
+                showTitle: false
+            },
+            render: (_: any) => (
+                _ ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />
+                // <Badge status="processing" text="是" /> :
+                // <Badge status="default" text="否" />
+            ),
+            ...getRadioFilter(
+                pageParams,
+                setPageParams,
+                [
+                    { name: <FormattedMessage id="operation.yes" />, value: 'True' },
+                    { name: <FormattedMessage id="operation.no" />, value: 'False' }
+                ],
+                'enable'
+            )
         },
-        render: (_: any) => (
-            _ ? <FormattedMessage id="operation.yes" />: <FormattedMessage id="operation.no" />
-            // <Badge status="processing" text="是" /> :
-            // <Badge status="default" text="否" />
-        ),
-        ...getRadioFilter(
-            pageParams,
-            setPageParams,
-            [
-                { name: <FormattedMessage id="operation.yes" />, value: 'True' }, 
-                { name: <FormattedMessage id="operation.no" />, value: 'False' }
-            ],
-            'enable'
-        )
-    }, {
-        dataIndex: 'creator_name',
-        title: <FormattedMessage id="plan.table.creator_name" />,
-        width: 120,
-        ellipsis: {
-            showTitle: false
+        {
+            dataIndex: 'creator_name',
+            title: <FormattedMessage id="plan.table.creator_name" />,
+            width: 120,
+            ...tooltipTd("-"),
+            ...getUserFilter(pageParams, setPageParams, 'creator_name')
         },
-        ...getUserFilter(pageParams, setPageParams, 'creator_name')
-    }, {
-        dataIndex: 'gmt_created',
-        title: <FormattedMessage id="plan.table.gmt_created" />,
-        ellipsis: {
-            showTitle: false
+        {
+            dataIndex: 'gmt_created',
+            title: <FormattedMessage id="plan.table.gmt_created" />,
+            width: 170,
+            ...tooltipTd("-"),
         },
-        width: 170,
-    },{
-        dataIndex: 'gmt_modified',
-        title: <FormattedMessage id="plan.table.gmt_modified" />,
-        ellipsis: {
-            showTitle: false
+        {
+            dataIndex: 'gmt_modified',
+            title: <FormattedMessage id="plan.table.gmt_modified" />,
+            ...tooltipTd("-"),
+            width: 170,
         },
-        width: 170,
-    }, {
-        title: <FormattedMessage id="Table.columns.operation" />,
-        ellipsis: {
-            showTitle: false
-        },
-        width: 220,
-        render: (row: any, record: any) => (
-            <Space>
-                <OptButton disabled={!row.enable} onClick={() => handleRun(row)}><FormattedMessage id="operation.run" /></OptButton>
-                <OptButton onClick={() => handleView(row)}><FormattedMessage id="operation.view" /></OptButton>
-                <OptButton onClick={() => handleCopy(row)}><FormattedMessage id="operation.copy" /></OptButton>
-                <Access accessible={access.WsTourist()}>
-                    <Access
-                        accessible={access.WsMemberOperateSelf(record.creator)}
-                        fallback={
+        {
+            title: <FormattedMessage id="Table.columns.operation" />,
+            fixed: "right",
+            key: "operation",
+            width: 220,
+            render: (row: any, record: any) => (
+                <Space>
+                    <OptButton disabled={!row.enable} onClick={() => handleRun(row)}><FormattedMessage id="operation.run" /></OptButton>
+                    <OptButton onClick={() => handleView(row)}><FormattedMessage id="operation.view" /></OptButton>
+                    <OptButton onClick={() => handleCopy(row)}><FormattedMessage id="operation.copy" /></OptButton>
+                    <Access accessible={access.WsTourist()}>
+                        <Access
+                            accessible={access.WsMemberOperateSelf(record.creator)}
+                            fallback={
+                                <Space>
+                                    <OptButton onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></OptButton>
+                                    <OptButton onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptButton>
+                                </Space>
+                            }
+                        >
                             <Space>
-                                <OptButton onClick={() => AccessTootip()}><FormattedMessage id="operation.edit" /></OptButton>
-                                <OptButton onClick={() => AccessTootip()}><FormattedMessage id="operation.delete" /></OptButton>
+                                <OptButton onClick={() => handleEdit(row)}><FormattedMessage id="operation.edit" /></OptButton>
+                                <Popconfirm title={<FormattedMessage id="delete.prompt" />}
+                                    onConfirm={() => handleDelete(row)}
+                                    okText={<FormattedMessage id="operation.confirm" />}
+                                    cancelText={<FormattedMessage id="operation.cancel" />}
+                                >
+                                    <OptButton><FormattedMessage id="operation.delete" /></OptButton>
+                                </Popconfirm>
                             </Space>
-                        }
-                    >
-                        <Space>
-                            <OptButton onClick={() => handleEdit(row)}><FormattedMessage id="operation.edit" /></OptButton>
-                            <Popconfirm title={<FormattedMessage id="delete.prompt" />}
-                                onConfirm={() => handleDelete(row)}
-                                okText={<FormattedMessage id="operation.confirm" />}
-                                cancelText={<FormattedMessage id="operation.cancel" />}
-                            >
-                                <OptButton><FormattedMessage id="operation.delete" /></OptButton>
-                            </Popconfirm>
-                        </Space>
+                        </Access>
                     </Access>
-                </Access>
-            </Space>
-        )
-    }]
+                </Space>
+            )
+        }
+    ]
 
     return (
         <Spin spinning={loading} >
@@ -197,13 +193,14 @@ const TestPlanManage = (props: any) => {
                     >
                         <Tabs.TabPane key={'list'} tab={<FormattedMessage id={`Workspace.TestPlan.${route.name}`} />} >
                             <div style={{ paddingLeft: 20, paddingRight: 20 }}>
-                                <ResizeTable
+                                <ResizeHooksTable
                                     columns={columns}
+                                    name="ws-test-plan-manage"
+                                    refreshDeps={[ws_id, pageParams, access]}
                                     dataSource={data.data}
                                     rowKey={record => record.id}
                                     size={'small'}
                                     pagination={false}
-                                    scroll={{ x: '100%' }}
                                 />
                                 <CommonPagination
                                     pageSize={data.page_size}

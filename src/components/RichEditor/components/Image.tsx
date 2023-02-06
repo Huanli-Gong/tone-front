@@ -1,5 +1,7 @@
 import React from "react"
 import { ReactComponent as ImageIcon } from "../assets/image.svg"
+import { ReactComponent as NetworkPicture } from "../assets/net-picture.svg"
+import { ReactComponent as UploadPicture } from "../assets/upload-picture.svg"
 import styled from "styled-components"
 import { ToolMenuList, ToolMenuItem } from "../styled"
 import DorpdownMenu from "./DropdownMenu";
@@ -39,7 +41,6 @@ const ImageInput = styled.input`
 `
 
 const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
-    if (!editor) return <></>
     const inp = React.useRef<HTMLInputElement>(null)
 
     const [modal, setModal] = React.useState(false)
@@ -78,6 +79,8 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
         setModal(false)
     }
 
+    if (!editor) return <></>
+
     return (
         <ImageInputWrap>
             <DorpdownMenu
@@ -85,10 +88,12 @@ const ImageMenu: React.FC<Record<string, any>> = ({ editor }) => {
                 menu={
                     <ToolMenuList>
                         <ToolMenuItem onClick={() => setModal(true)} >
+                            <NetworkPicture />
                             网络图片
                         </ToolMenuItem>
                         <ToolMenuItem onClick={handleClick}>
-                            上传图片
+                            <UploadPicture />
+                            本地图片
                         </ToolMenuItem>
                     </ToolMenuList>
                 }

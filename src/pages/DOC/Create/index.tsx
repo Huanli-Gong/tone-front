@@ -12,6 +12,7 @@ import Loading from '../components/Loading';
 import Helmet from 'react-helmet'
 import RichEditor from '@/components/RichEditor';
 import { Editor } from '@tiptap/core';
+import { replaceEmoji, tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
 const Content = styled.div`
     width: 100%;
@@ -85,7 +86,7 @@ const CreateDoc: React.FC = () => {
     const initEditor = (data: any) => {
         const { title, content } = data
         title && setTtitle(title)
-        content && setText(content)
+        content && setText(tarnsformEmoji(content))
     }
 
     const init = async () => {
@@ -112,7 +113,7 @@ const CreateDoc: React.FC = () => {
     }
 
     const handlePublish = async () => {
-        const html = vm?.getHTML()
+        const html = replaceEmoji(vm?.getHTML())
         if (!html) return message.warning("内容不能为空！")
         if (!title) return message.warning('标题不能为空！')
         const form = setting.current

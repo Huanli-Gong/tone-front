@@ -35,6 +35,10 @@ const text = {
   'skip': 'Skip',
   'warn': 'Warn',
   'count': 'All',
+
+  "breadcrumb.button.download.running": "Downloading...",
+  "breadcrumb.button.download.fail": "Download failed. Please try again later.",
+
   //
   'instance.released': 'Instance released',
   'machine.has.been.released': 'Cloud instance released',
@@ -112,6 +116,8 @@ const text = {
   'threshold': 'Threshold Value',
   'track_result': 'Track Result',
 
+  'breadcrumb.button.download': 'Download',
+  'breadcrumb.button.share': 'Share',
 
   // ProcessTable
   'build.kernel': 'Build Kernel',

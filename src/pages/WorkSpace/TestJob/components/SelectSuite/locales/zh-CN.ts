@@ -28,8 +28,8 @@ const text =  {
   'batch.config': '批量配置',
   'restart': '重启',
   'script': '脚本',
-  'before.restart': '[重启前]',
-  'after.restart': '[重启后]',
+  'before.restart': '[执行前脚本]',
+  'after.restart': '[执行后脚本]',
   'monitor': '监控',
   'priority': '执行优先级',
   'config': '配置',
@@ -76,6 +76,8 @@ const text =  {
   'deploy.toneagent': '部署ToneAgent',
   'repeat.tootip1': '对选中Suite下所有Conf生效，范围1-10000',
   'repeat.tootip2': '范围1-10000',
+
+  "select.suite.table.is_delete.alart": "所选用例已不存在",
 };
 
 export default Object.keys(text).reduce((p, key) => {

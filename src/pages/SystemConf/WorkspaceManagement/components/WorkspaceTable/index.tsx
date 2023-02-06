@@ -3,9 +3,8 @@ import styles from '../style.less';
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { WorkspaceTable, WorkspaceList, TableListParams } from '../../data.d';
 import { Avatar, Space, Switch, Table, Typography, Row, message } from 'antd';
-import { CalculatorFilled, HolderOutlined } from '@ant-design/icons'
+import { HolderOutlined } from '@ant-design/icons'
 import { workspaceList, updateTopWorkspaceOrder, getWrokspaces } from '../../service';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as UnPublicIcon } from '@/assets/svg/no_public.svg'
 import AvatarCover from '@/components/AvatarCover'
@@ -17,6 +16,7 @@ import CommonPagination from '@/components/CommonPagination';
 import { QusetionIconTootip } from '@/components/Product';
 import { saveWorkspaceConfig } from '@/services/Workspace';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
     const { formatMessage } = useIntl()
@@ -84,20 +84,20 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     )
                 },
                 {
-                    title: <FormattedMessage id="workspace.cover"/>,
+                    title: <FormattedMessage id="workspace.cover" />,
                     dataIndex: 'logo',
                     className: 'row_cursor',
                     width: 70,
                     render: (_: number, row: WorkspaceTable) => <AvatarCover size="small" {...row} />,
                     // <img className={styles.img} src={row.logo}  />,
                 }, {
-                    title: <FormattedMessage id="workspace.show_name"/>,
+                    title: <FormattedMessage id="workspace.show_name" />,
                     dataIndex: 'show_name',
                     className: 'row_cursor',
                     width: 180,
-                    render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.show_name || ''}></PopoverEllipsis>,
+                    render: (_: number, row: WorkspaceTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.show_name || ''} />,
                 }, {
-                    title: <FormattedMessage id="workspace.owner"/>,
+                    title: <FormattedMessage id="workspace.owner" />,
                     dataIndex: 'owner_name',
                     className: 'row_cursor',
                     width: 124,
@@ -107,21 +107,21 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                         <EllipsisPulic title={row.owner_name || ''} width={99} />
                     </Space>,
                 }, {
-                    title: <FormattedMessage id="workspace.brief.introduction"/>,
+                    title: <FormattedMessage id="workspace.brief.introduction" />,
                     dataIndex: 'description',
                     className: 'row_cursor',
                     ellipsis: {
                         showTitle: false
                     },
                     width: 210,
-                    render: (_: number, row: WorkspaceTable) => <PopoverEllipsis title={row.description || ''}></PopoverEllipsis>,
+                    render: (_: number, row: WorkspaceTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description || ''} />,
                 }, {
-                    title: <FormattedMessage id="workspace.number"/>,
+                    title: <FormattedMessage id="workspace.number" />,
                     dataIndex: 'member_count',
                     className: 'row_cursor',
-                    width: enLocale ? 155: 85,
+                    width: enLocale ? 155 : 85,
                 }, {
-                    title: <FormattedMessage id="workspace.is_public"/>,
+                    title: <FormattedMessage id="workspace.is_public" />,
                     dataIndex: 'is_public',
                     className: 'row_cursor',
                     width: 100,
@@ -129,11 +129,11 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                         row.is_public ?
                             <div className={styles.bar}>
                                 <PublicIcon />
-                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.public"/></span>
+                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.public" /></span>
                             </div> :
                             <div className={styles.bar}>
                                 <UnPublicIcon />
-                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.private"/></span>
+                                <span style={{ paddingLeft: '6px' }}><FormattedMessage id="workspace.private" /></span>
                             </div>
                     )
                 },
@@ -141,21 +141,21 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     title: (
                         <QusetionIconTootip
                             placement="left"
-                            title={<FormattedMessage id="workspace.home.recommended"/>}
+                            title={<FormattedMessage id="workspace.home.recommended" />}
                             desc={
                                 <ul style={{ listStyle: 'auto', paddingInlineStart: 25, paddingTop: 15 }}>
-                                    <li><FormattedMessage id="workspace.recommended1"/></li>
-                                    <li><FormattedMessage id="workspace.recommended2"/></li>
+                                    <li><FormattedMessage id="workspace.recommended1" /></li>
+                                    <li><FormattedMessage id="workspace.recommended2" /></li>
                                 </ul>
                             }
                         />
                     ),
-                    width: enLocale ? 240: 100,
+                    width: enLocale ? 240 : 100,
                     render(_: any, row: any, idx: number) {
                         return (
                             <Switch
-                                checkedChildren={<FormattedMessage id="operation.yes"/>}
-                                unCheckedChildren={<FormattedMessage id="operation.no"/>}
+                                checkedChildren={<FormattedMessage id="operation.yes" />}
+                                unCheckedChildren={<FormattedMessage id="operation.no" />}
                                 disabled={row.is_common}
                                 checked={row.is_common || row.is_show}
                                 onClick={() => {
@@ -164,7 +164,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                                             onTopChange(row)
                                         } else {
                                             // message.error(`最多配置${canTopWsNumb}个推荐Workspace`)
-                                            message.error(formatMessage({id: `workspace.configure.up.to.${canTopWsNumb}.recommended`}))
+                                            message.error(formatMessage({ id: `workspace.configure.up.to.${canTopWsNumb}.recommended` }))
                                         }
                                     } else {
                                         onTopChange(row)
@@ -174,10 +174,10 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                         )
                     }
                 }, {
-                    title: <FormattedMessage id="Table.columns.operation"/>,
+                    title: <FormattedMessage id="Table.columns.operation" />,
                     width: 100,
                     render(_: any, row: any) {
-                        return <Typography.Link onClick={() => getInfo(row.id)}><FormattedMessage id="operation.detail"/></Typography.Link>
+                        return <Typography.Link onClick={() => getInfo(row.id)}><FormattedMessage id="operation.detail" /></Typography.Link>
                     }
                 }].filter(Boolean)
         )

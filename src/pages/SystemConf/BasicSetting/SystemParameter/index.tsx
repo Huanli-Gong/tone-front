@@ -1,5 +1,5 @@
-import { Layout, Space, Table, Typography, Badge, message, Spin, Popconfirm, Tooltip } from 'antd'
-import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react'
+import { Layout, Space, Table, Typography, Badge, message, Spin, Popconfirm } from 'antd'
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { deleteConfig, queryConfigList } from '../services'
@@ -7,6 +7,7 @@ import { getRadioFilter, getSearchFilter, getUserFilter } from '@/components/Tab
 import CommonPagination from '@/components/CommonPagination'
 import AddConfig from './AddConfig'
 import { requestCodeMessage } from '@/utils/utils'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 const SystemParameter = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
@@ -40,9 +41,9 @@ const SystemParameter = (props: any, ref: any) => {
             showTitle: false
         },
         render: (_: any) => (
-            <Tooltip placement="topLeft" title={_}>
+            <ColumnEllipsisText ellipsis={{ tooltip: true }} placement="topLeft" title={_}>
                 {_}
-            </Tooltip>
+            </ColumnEllipsisText>
         ),
         ...getSearchFilter(params, setParams, 'config_key'),
     }, {
@@ -53,9 +54,9 @@ const SystemParameter = (props: any, ref: any) => {
             showTitle: false
         },
         render: (_: any) => (
-            <Tooltip placement="topLeft" title={_}>
+            <ColumnEllipsisText ellipsis={{ tooltip: true }} placement="topLeft" title={_}>
                 {_}
-            </Tooltip>
+            </ColumnEllipsisText>
         ),
         ...getSearchFilter(params, setParams, 'config_value'),
     }, {
@@ -102,9 +103,9 @@ const SystemParameter = (props: any, ref: any) => {
             showTitle: false
         },
         render: (_: any) => (
-            <Tooltip placement="topLeft" title={_}>
+            <ColumnEllipsisText ellipsis={{ tooltip: true }} placement="topLeft" title={_}>
                 {_ || "-"}
-            </Tooltip>
+            </ColumnEllipsisText>
         ),
     }, {
         title: <FormattedMessage id="Table.columns.operation" />,

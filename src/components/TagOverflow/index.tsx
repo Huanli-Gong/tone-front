@@ -10,6 +10,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
     const { list, style, ...rest } = props
 
     const ref = React.useRef(null) as any
+    const $dom = React.useRef(null) as any
     const [currentCanShowCount, setCurrentCanShowCount] = React.useState<number | undefined>(undefined)
 
     const reduceCoutWidth = React.useCallback(
@@ -22,12 +23,14 @@ const OverflowList: React.FC<Iprops> = (props) => {
     const oberverCallback = React.useCallback(
         (entries: IntersectionObserverEntry[]) => {
             const count = entries.reduce((pre: number, cur: IntersectionObserverEntry, index: number) => {
-                const { rootBounds } = cur;
+                const { rootBounds, target } = cur;
                 const ww = rootBounds?.width
                 if (ww) {
                     const rw = reduceCoutWidth(entries, index)
-                    if (ww - rw > 0 && index === entries.length) return pre += 1
-                    if (rw < (ww - 20))
+                    const pr = parseInt(getComputedStyle(target)["padding-right"]) || 0
+                    const rsw = rw + pr
+                    if ((ww - rsw) > 0 && index === entries.length) return pre += 1
+                    if (rsw < (ww - 32))
                         return pre += 1
                 }
                 return pre
@@ -36,6 +39,26 @@ const OverflowList: React.FC<Iprops> = (props) => {
         },
         []
     )
+
+    const [realWidth, setRealWidth] = React.useState<any>()
+
+    React.useEffect(() => {
+        if (!$dom.current) return
+        const { offsetParent } = $dom.current
+        if (!offsetParent) return
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                if (entry.contentRect) {
+                    const { width } = entry.contentRect
+                    setRealWidth(width)
+                }
+            }
+        });
+        resizeObserver.observe(offsetParent);
+        return () => {
+            resizeObserver.unobserve(offsetParent)
+        }
+    }, [])
 
     React.useEffect(() => {
         const oberver = new IntersectionObserver(oberverCallback, { root: ref.current })
@@ -47,7 +70,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
             oberver.disconnect()
             setCurrentCanShowCount(undefined)
         }
-    }, [list])
+    }, [list, realWidth])
 
     const listRender = React.useCallback(
         (arr: any) => arr.map(((item: any, index: number) => (
@@ -62,7 +85,7 @@ const OverflowList: React.FC<Iprops> = (props) => {
 
     if (!list || list.length === 0) return <>-</>
     return (
-        <div style={{ position: "relative", userSelect: "none", ...style }} {...rest}>
+        <div ref={$dom} style={{ position: "relative", userSelect: "none", ...style }} {...rest}>
             <div style={{ width: "100%", overflow: "hidden", opacity: 0 }} ref={ref} >
                 {
                     listRender(list)
@@ -101,4 +124,4 @@ const OverflowList: React.FC<Iprops> = (props) => {
     )
 }
 
-export default React.memo(OverflowList)
+export default OverflowList

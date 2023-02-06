@@ -1,87 +1,83 @@
-import { Card, Table, Tooltip } from 'antd'
+import { Card, Typography } from 'antd'
 import React, { useEffect } from 'react'
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis'
 import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
-import { useRequest, useAccess, useIntl, FormattedMessage } from 'umi';
-import ResizeTable from '@/components/ResizeTable'
+import { useRequest, FormattedMessage } from 'umi';
 import ServerLink from '@/components/MachineWebLink/index';
+import { ResizeHooksTable } from '@/utils/table.hooks'
+import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export default ({ job_id , refresh = false, provider_name } : any ) => {
-    const { formatMessage } = useIntl()
-    const access = useAccess()
-    const { data , loading , run } = useRequest(
+export default ({ job_id, refresh = false, provider_name }: any) => {
+    const { data, loading, run } = useRequest(
         () => queryMonitorList({ job_id }),
         {
-            manual : true
+            manual: true
         }
     )
     useEffect(() => {
         run()
-    },[ refresh ])
+    }, [refresh])
 
     const columns = [
         {
-            dataIndex : 'index',
-            title : ' ',
+            dataIndex: 'index',
+            title: ' ',
             width: 48,
-            render : ( _ : undefined) => _
+            render: (_: undefined) => _
         },
-
         {
             dataIndex: 'server',
             title: `IP${!BUILD_APP_ENV ? "/SN" : ""}`,
             ellipsis: {
                 showTitle: false
             },
-            render: (_: string | number | undefined,row:any) => (
+            render: (_: string | number | undefined, row: any) => (
                 _ ?
-                    <ServerLink val={_} param={row.server_id} provider={provider_name} description={row.server_description}/>
+                    <ServerLink val={_} param={row.server_id} provider={provider_name} description={row.server_description} />
                     : '-'
             )
         },
         {
-            dataIndex : 'state',
-            title : <FormattedMessage id="ws.result.details.state"/>,
+            dataIndex: 'state',
+            title: <FormattedMessage id="ws.result.details.state" />,
             render: evnPrepareState
         },
         {
             dataIndex: 'monitor_link',
-            title: <FormattedMessage id="ws.result.details.monitor_link"/>,
+            title: <FormattedMessage id="ws.result.details.monitor_link" />,
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => _ ?
-                 <PopoverEllipsis title={_}>
-
-                    {<a
-                        href={_}
-                        target="_blank"
-                    >
-
-                    {_}
-                </a>}
-                </PopoverEllipsis>
-
-            : '-'
+            render: (_: any) => (
+                !_ ? "-" :
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }} style={{ color: "#1890FF" }}>
+                        <Typography.Link
+                            target="_blank"
+                            href={_}
+                            ellipsis
+                        >
+                            {_}
+                        </Typography.Link>
+                    </ColumnEllipsisText>
+            )
         },
         {
             dataIndex: 'remark',
-            title: <FormattedMessage id="ws.result.details.failed.info"/>,
+            title: <FormattedMessage id="ws.result.details.failed.info" />,
             ...tooltipTd(),
         },
         {
             dataIndex: 'gmt_created',
-            title : <FormattedMessage id="ws.result.details.start_time"/>,
+            title: <FormattedMessage id="ws.result.details.start_time" />,
             ellipsis: {
                 showTitle: false
             },
-            render : ( _ : any ) => <PopoverEllipsis title={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
         },
     ]
 
-    if(data && !data.monitor_control) return <></>
+    if (data && !data.monitor_control) return <></>
     /* 
      *** 后端字段调整
     */
@@ -89,18 +85,20 @@ export default ({ job_id , refresh = false, provider_name } : any ) => {
 
     return (
         <Card
-            title={<FormattedMessage id="ws.result.details.monitor"/>}
-            bodyStyle={{ paddingTop : 0 }}
-            headStyle={{ borderBottom : 'none' }}
-            style={{ marginBottom : 10 , borderTop : 'none' }}
+            title={<FormattedMessage id="ws.result.details.monitor" />}
+            bodyStyle={{ paddingTop: 0 }}
+            headStyle={{ borderBottom: 'none' }}
+            style={{ marginBottom: 10, borderTop: 'none' }}
         >
-            <ResizeTable
-                dataSource={ dataCopy }
-                columns={ columns as any }
+            <ResizeHooksTable
+                dataSource={dataCopy}
+                columns={columns as any}
+                refreshDeps={[]}
+                name="ws-job-result-process-monitor-conf-table"
                 rowKey="id"
-                loading={ loading }
+                loading={loading}
                 size="small"
-                pagination={ false }
+                pagination={false}
             />
         </Card>
     )

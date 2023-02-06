@@ -32,10 +32,11 @@ const SuiteManagement: React.FC<any> = ({ id, innerKey, ws_id }) => {
 	return (
 		<div className={styles.warp} key={id}>
 			<CommonTable
-				columns={columns}
+				columns={columns as any}
+				name="ws-suite-manage-metric-list"
 				// scrollType = {640}
 				loading={expandInnerLoading}
-				list={expandInnerList.data}
+				dataSource={expandInnerList.data}
 				showPagination={false}
 				scroll={{ x: 640 }}
 			/>

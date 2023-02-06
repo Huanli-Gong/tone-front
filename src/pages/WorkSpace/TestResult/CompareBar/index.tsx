@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Space, Popconfirm, Button, message, Popover } from 'antd';
-import { history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
+import { history, Access, useAccess, useIntl, FormattedMessage, useParams } from 'umi'
 import _ from 'lodash'
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { CloseOutlined, RightOutlined } from '@ant-design/icons'
 import SaveReport from '@/pages/WorkSpace/TestReport/components/SaveReport'
 import { querySuiteList, queryCompareResultList, queryEenvironmentResultList, queryDomainGroup } from '../services'
-import { getJobRefSuit, handleDomainList, getSelectedDataFn, fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
+import { handleDomainList, getSelectedDataFn } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { requestCodeMessage } from '@/utils/utils';
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const { selectedChange, wsId, allSelectRowData } = props
+    const { ws_id } = useParams() as any
     const access = useAccess()
     const scrollbarsRef: any = useRef(null)
     const [padding, setPadding] = useState(false)
@@ -51,9 +52,9 @@ export default (props: any) => {
         history.push({
             pathname: `/ws/${wsId}/${path}`,
             state: {
-                compareData: JSON.stringify([]),
-                noGroupJobData: JSON.stringify(allSelectRowData),
-                originType: 'test_result',
+                [`${ws_id}-compareData`]: JSON.stringify([]),
+                [`${ws_id}-noGroupJobData`]: JSON.stringify(allSelectRowData),
+                [`${ws_id}-originType`]: 'test_result',
             }
         })
     }
@@ -141,11 +142,6 @@ export default (props: any) => {
         return result
     }
 
-    const queryCompareResultFn = async (paramData: any) => {
-        const result = await queryCompareResultList(paramData)
-        return result
-
-    }
     const queryEenvironmentResultFn = async (paramData: any) => {
         const result = await queryEenvironmentResultList(paramData)
         return result
@@ -176,7 +172,7 @@ export default (props: any) => {
         const flag = baselineGroup.type === 'baseline'
         baseMembers.forEach((item: any) => {
             if (!flag) {
-                brr.push({ is_baseline: 0, obj_id: item.id,  })
+                brr.push({ is_baseline: 0, obj_id: item.id, })
             }
             if (flag) {
                 brr.push({ is_baseline: 1, obj_id: item.id, baseline_type: item.test_type === 'functional' ? 'func' : 'perf' })
@@ -202,7 +198,7 @@ export default (props: any) => {
         let func_keys = Object.keys(func_suite) || []
         let perf_keys = Object.keys(perf_suite) || []
         const duplicate: any = []
-        let allGroupData:any =  []
+        let allGroupData: any = []
         allGroupData.push({ members: allSelectRowData })
         let newSuiteData = {
             func_suite_dic: getSelectedDataFn(
@@ -241,7 +237,7 @@ export default (props: any) => {
                     return
                 }
                 if (result[0].code === 1358) {
-                    message.error(message.error(formatMessage({id: 'ws.result.list.please.add.comparison.group'}) ))
+                    message.error(message.error(formatMessage({ id: 'ws.result.list.please.add.comparison.group' })))
                     return
                 }
                 if (result[1].code !== 200) {
@@ -250,7 +246,7 @@ export default (props: any) => {
             })
 
             .catch((e) => {
-                message.error(message.error(formatMessage({id: 'request.failed'}) ))
+                message.error(message.error(formatMessage({ id: 'request.failed' })))
                 console.log(e)
             })
     }
@@ -272,18 +268,18 @@ export default (props: any) => {
     return (
         <div className={styles.job_compare} style={{ display: allSelectRowData.length ? 'block' : 'none' }}>
             <div className={styles.title}><FormattedMessage id="ws.result.list.compare.bar" /><span>（{allSelectRowData.length}）</span>  <Popover
-                        content={
-                            <div>
-                                {<FormattedMessage id="ws.result.list.combining.rule" />}
-                                <div>{<FormattedMessage id="ws.result.list.top.ranked" />}</div>
-                            </div>
-                        }
-                        placement="right"
-                    >
-                        <QuestionCircleOutlined
-                            className={styles.question_icon}
-                        />
-                    </Popover></div>
+                content={
+                    <div>
+                        {<FormattedMessage id="ws.result.list.combining.rule" />}
+                        <div>{<FormattedMessage id="ws.result.list.top.ranked" />}</div>
+                    </div>
+                }
+                placement="right"
+            >
+                <QuestionCircleOutlined
+                    className={styles.question_icon}
+                />
+            </Popover></div>
             <div className={styles.job_group} id='job_group'>
                 <Scrollbars style={scroll} ref={scrollbarsRef}>
                     <ul id='box'>
@@ -292,9 +288,9 @@ export default (props: any) => {
                                 {
                                     firstRowData.map((obj: any) => {
                                         return (
-                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />} 
-                                                okText={<FormattedMessage id="operation.delete" />} 
-                                                cancelText={<FormattedMessage id="operation.cancel" />} 
+                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />}
+                                                okText={<FormattedMessage id="operation.delete" />}
+                                                cancelText={<FormattedMessage id="operation.cancel" />}
                                                 onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
                                                 <span className={styles.job_item_span}><span>{obj.id}</span><CloseOutlined className={styles.delete} /></span>
                                             </Popconfirm>
@@ -306,8 +302,8 @@ export default (props: any) => {
                                 {
                                     secondRowData.map((obj: any) => {
                                         return (
-                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />} 
-                                                okText={<FormattedMessage id="operation.delete" />} 
+                                            <Popconfirm title={<FormattedMessage id="delete.prompt" />}
+                                                okText={<FormattedMessage id="operation.delete" />}
                                                 cancelText={<FormattedMessage id="operation.cancel" />}
                                                 onConfirm={_.partial(handleDelete, obj)} placement="topLeft">
                                                 <span className={styles.job_item_span}>{obj.id}<CloseOutlined className={styles.delete} /></span>
@@ -326,12 +322,12 @@ export default (props: any) => {
                         <Access accessible={access.IsWsSetting()}>
                             <Button type="primary" onClick={_.partial(handleSaveReportScript)} disabled={getDisabled()}><FormattedMessage id="ws.result.list.create.report" /></Button>
                         </Access>
-                        <Button type="primary" onClick={_.partial(handleNext,'test_analysis/compare')}>
+                        <Button type="primary" onClick={_.partial(handleNext, 'test_analysis/compare')}>
                             <FormattedMessage id="ws.result.list.compare.analysis" />
                         </Button>
                     </Space>
                 </div>
-                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id = {wsId} allGroup = {[getBaselineGroup()]}/>
+                <SaveReport ref={saveReportDraw} onOk={creatReportCallback} ws_id={wsId} allGroup={[getBaselineGroup()]} />
             </div>
         </div>
     )

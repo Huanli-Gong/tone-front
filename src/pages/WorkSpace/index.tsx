@@ -18,7 +18,6 @@ const WorkspaceLayout = (props: any) => {
     const { routes } = props.route
     const { height: windowHeight } = useClientSize()
 
-    const timeStampKey = useMemo(() => new Date().getTime(), [props.location])
     const intl = useIntl()
 
     const [openKeys, setOpenKeys] = useState<any>([])
@@ -109,28 +108,27 @@ const WorkspaceLayout = (props: any) => {
 
     if (!hasLeftMenu)
         return (
-            <div key={timeStampKey} style={{ minHeight: windowHeight - 50, background: "#fff" }}>
+            <div style={{ minHeight: windowHeight - 50, background: "#fff" }}>
                 {props.children}
                 <AdCompoent />
             </div>
         )
 
     // 国际化英文模式，菜单项内容过长缩略问题
-    const EllipsisDiv = ({ placement='top', style={}, item={}, child={} }: any)=> {
+    const EllipsisDiv = ({ placement = 'top', style = {}, item = {}, child = {} }: any) => {
         const caseRoute = ["TestTemplateManage", "GroupBaseline", "ClusterBaseline", "GroupManage"].includes(child.name)
-        const text = formatMessage({id: `Workspace.${item.name}.${child.name}`})
+        const text = formatMessage({ id: `Workspace.${item.name}.${child.name}` })
         return caseRoute && enLocale ?
-        <Popover content={text} placement={placement}>
-            <div style={{ overflow:'hidden',textOverflow:'ellipsis', whiteSpace:'nowrap', cursor: 'pointer', ...style }}>
-                {text}
-            </div>
-        </Popover>
-        :
-        <div>{text}</div>
+            <Popover content={text} placement={placement}>
+                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer', ...style }}>
+                    {text}
+                </div>
+            </Popover> :
+            <div>{text}</div>
     }
 
     return (
-        <Layout key={timeStampKey} className={styles.layout} >
+        <Layout className={styles.layout} >
             <Layout.Sider theme="light" className={styles.ws_slider}>
                 <Menu
                     selectedKeys={[realPath]}

@@ -1,9 +1,14 @@
-import { Select, Space, Badge, Tooltip, Typography, Form } from 'antd'
+import { Select, Badge, Typography, Form } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { standloneServerList, queryClusterServer, queryClusterStandaloneServer, queryClusterGroupServer } from './services';
 import { DrawerProvider } from './Provider'
-import { RenderSelectItems } from '../untils'
 import { useParams, useIntl } from 'umi'
+
+const getServerStatusMap = (state: string) => new Map([
+    ["Available", "success"],
+    ["Occupied", "error"],
+    ["Reserved", "warning"],
+]).get(state) || undefined
 
 const ServerObjectSelect = (props: any) => {
     const { formatMessage } = useIntl()
@@ -13,7 +18,6 @@ const ServerObjectSelect = (props: any) => {
     const PAGE_SIZE = 100
     const [fetching, setFetching] = useState(true)
     const [pageNum, setPageNum] = useState(1)
-    const [serverListCopy, setServerListCopy] = useState([])
 
     useEffect(() => {
         if (serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id') {
@@ -21,10 +25,6 @@ const ServerObjectSelect = (props: any) => {
             setPageNum(1)
         }
     }, [serverObjectType])
-
-    useEffect(() => {
-        setServerListCopy(serverList)
-    }, [serverList])
 
     //内网单机
     const standaloneServerRequest = async (page_num = 1) => {
@@ -86,114 +86,76 @@ const ServerObjectSelect = (props: any) => {
         }, [serverObjectType]
     )
 
-    const handleSearch = (value: string) => {
-        if (run_mode === 'standalone' && Array.isArray(serverListCopy)) {
-            const data = serverList.filter((item: any) => {
-                let ip = ''
-                if (server_type === 'aligroup') {
-                    ip = item?.ip
-                } else {
-                    ip = BUILD_APP_ENV ? item?.private_ip : item?.pub_ip
-                }
-                const filterIp = ip || item?.sn || ''
-                return filterIp.toLowerCase().includes(value)
-            })
-            setServerListCopy(data)
-        }
-    }
-
-    const handleSelectChange = () => {
-        if (run_mode === 'standalone') {
-            setServerListCopy(serverList)
-        }
-    }
-
     const renderServerItem = useMemo(() => {
-        if (serverObjectType !== 'ip' && serverObjectType !== 'server_tag_id')
-            return (
-                <Form.Item noStyle>
-                    <Form.Item
-                        name="server_object_id"
-                        rules={[{ required: true, message: switchServerMessage }]}
-                    >
-                        <Select
-                            title={switchServerMessage}
-                            allowClear
-                            style={{ width: '100%' }}
-                            placeholder={switchServerMessage}
-                            dropdownMatchSelectWidth={340}
-                            showSearch
-                            onSearch={handleSearch}
-                            onChange={handleSelectChange}
-                            loading={fetching}
-                            onPopupScroll={handleServerPopupScroll}
-                            optionFilterProp="children"
-                            filterOption={false}
-                        >
-                            {
-                                serverObjectType === 'server_object_id' &&
-                                (
-                                    run_mode === 'standalone' ?
-                                        serverListCopy.map(
-                                            (item: any) => (
-                                                <Select.Option key={item.id} value={item.id}>
-                                                    <Space>
-                                                        {item.state === "Available" && <Badge status="success" />}
-                                                        {item.state === "Occupied" && <Badge status="error" />}
-                                                        {item.state === "Reserved" && <Badge status="warning" />}
-                                                        <Tooltip placement="top" title={item.state}>
-                                                            <Typography.Text ellipsis>{item.ip || item.sn}</Typography.Text>
-                                                        </Tooltip>
-                                                    </Space>
-                                                </Select.Option>
-                                            )
-                                        ) :
-                                        RenderSelectItems(serverList, 'name')
-                                )
-                            }
-                            {
-                                serverObjectType === 'instance' &&
-                                serverListCopy.filter((i: any) => i.is_instance).map((item: any) => {
-                                    let ip = BUILD_APP_ENV ? item.private_ip : item.pub_ip
-                                    return (
-                                        <Select.Option value={item.id} key={item.id}>
-                                            {ip ? (
-                                                ~item.instance_name.indexOf(' / ') ?
-                                                    item.instance_name :
-                                                    <Tooltip
-                                                        placement='topLeft'
-                                                        overlayInnerStyle={{ width: 320 }}
-                                                        title={
-                                                            <div style={{ wordBreak: 'break-all' }}>
-                                                                {item.state === "Available" && <Badge status="success" />}
-                                                                {item.state === "Occupied" && <Badge status="error" />}
-                                                                {item.state === "Reserved" && <Badge status="warning" />}
-                                                                {ip} / {item.instance_name}
-                                                            </div>
-                                                        }
-                                                    >
-                                                        <Typography.Text ellipsis>
-                                                            {item.state === "Available" && <Badge status="success" />}
-                                                            {item.state === "Occupied" && <Badge status="error" />}
-                                                            {item.state === "Reserved" && <Badge status="warning" />}
-                                                            {ip} / {item.instance_name}
-                                                        </Typography.Text>
-                                                    </Tooltip>
-                                            ) : item.instance_name}
-                                        </Select.Option>
-                                    )
-                                })
-                            }
-                            {
-                                serverObjectType === 'setting' &&
-                                RenderSelectItems(serverList.filter((i: any) => !i.is_instance), 'template_name')
-                            }
-                        </Select>
-                    </Form.Item>
+        if (["ip", "server_tag_id"].includes(serverObjectType)) return <></>
+        let options = []
+        if (serverObjectType === 'server_object_id') {
+            if (run_mode === 'standalone')
+                options = serverList.map((item: any) => {
+                    const text = item.ip || item.sn
+                    return {
+                        value: item.id,
+                        label: (
+                            <Typography.Text ellipsis={{ tooltip: text }}>
+                                <Badge status={getServerStatusMap(item.state)} style={{ marginRight: 8 }} />
+                                {text}
+                            </Typography.Text>
+                        ),
+                        search_key: text
+                    }
+                })
+            else
+                options = serverList.map((item: any) => ({
+                    value: item.id,
+                    label: item.name,
+                    search_key: item.name
+                }))
+        }
+        if (serverObjectType === 'instance')
+            options = serverList.filter((i: any) => i.is_instance).map((item: any) => {
+                const ip = BUILD_APP_ENV ? item.private_ip : item.pub_ip
+                const text = ip ? `${ip} / ${item.instance_name}` : item.instance_name
+                return {
+                    value: item.id,
+                    label: (
+                        <Typography.Text ellipsis={{ tooltip: text }}>
+                            <Badge style={{ marginRight: 8 }} status={getServerStatusMap(item.state)} />
+                            {text}
+                        </Typography.Text>
+                    ),
+                    search_key: text
+                }
+            })
+
+        if (serverObjectType === 'setting')
+            options = serverList.filter((i: any) => !i.is_instance).map((item: any) => ({
+                value: item.id,
+                label: <Typography.Text ellipsis={{ tooltip: true }}>{item.template_name}</Typography.Text>,
+                search_key: item.template_name
+            }))
+
+        return (
+            <Form.Item noStyle>
+                <Form.Item
+                    name="server_object_id"
+                    rules={[{ required: true, message: switchServerMessage }]}
+                >
+                    <Select
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder={switchServerMessage}
+                        dropdownMatchSelectWidth={340}
+                        showSearch
+                        loading={fetching}
+                        onPopupScroll={handleServerPopupScroll}
+                        optionFilterProp="children"
+                        filterOption={(input, option) => (option?.search_key ?? '').toLowerCase().includes(input.toLowerCase())}
+                        options={options}
+                    />
                 </Form.Item>
-            )
-        return <></>
-    }, [serverListCopy, serverList])
+            </Form.Item>
+        )
+    }, [serverList, fetching])
 
     return renderServerItem
 }

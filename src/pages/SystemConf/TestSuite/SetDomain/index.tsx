@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
-import { Space, message, Popconfirm, Pagination, Row, Table, Spin, Typography } from 'antd';
+import { Space, message, Popconfirm, Pagination, Row, Table, Spin } from 'antd';
 import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useIntl, FormattedMessage } from 'umi'
 import { getDomain, deleteDomains } from '../service';
-import PopoverEllipsis from '@/components/Public/PopoverEllipsis';
 import Highlighter from 'react-highlight-words';
 import styles from './style.less';
 import SearchInput from '@/components/Public/SearchInput';
@@ -12,6 +11,7 @@ import SelectDrop from '@/components/Public//SelectDrop';
 import _ from 'lodash'
 import AddScripotDrawer from './components/DomianConf/AddScript'
 import { requestCodeMessage } from '@/utils/utils';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const { formatMessage } = useIntl()
@@ -89,14 +89,14 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             },
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => (
-                <PopoverEllipsis title={row.name} >
+                <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[params.name || '']}
                         autoEscape
                         textToHighlight={row.name.toString()}
                     />
-                </PopoverEllipsis>
+                </ColumnEllipsisText >
             )
         },
         {
@@ -104,14 +104,14 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             width: 170,
             dataIndex: 'gmt_created',
             sorter: true,
-            render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_created} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
         },
         {
             title: <FormattedMessage id="TestSuite.gmt_modified" />,
             width: 170,
             dataIndex: 'gmt_modified',
             sorter: true,
-            render: (_: any, row: any) => <PopoverEllipsis title={row.gmt_modified} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
         },
         {
             title: <FormattedMessage id="TestSuite.creator_name" />,
@@ -133,9 +133,9 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             ),
             render(_: any, row: any) {
                 return (
-                    <Typography.Text ellipsis={{ tooltip: true }}>
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                         {row.update_user || "-"}
-                    </Typography.Text>
+                    </ColumnEllipsisText>
                 )
             }
         },
@@ -147,9 +147,9 @@ const SetDomain: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             },
             render(_: any, row: any) {
                 return (
-                    <Typography.Text ellipsis={{ tooltip: true }}>
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }}>
                         {row.description || "-"}
-                    </Typography.Text>
+                    </ColumnEllipsisText>
                 )
             }
         },

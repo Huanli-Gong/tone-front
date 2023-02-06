@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { Row,Typography } from 'antd';
+import { Row, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
-import { getLocale } from 'umi';
+
+export const BASIC_TITLE_WIDTH = 360;
 
 export const MyLoading = styled.div`
     position:fixed;
@@ -75,7 +76,7 @@ export const ResultTitle = styled.div`
         display:inline-block;
         float:right;
     }
-`       
+`
 // 右侧功能
 export const TestItemFunc = styled.span`
     float: right;
@@ -126,12 +127,12 @@ interface EnvGroupLProps {
 }
 
 const setEnvGroupWdith = (l: number, enLocale: boolean) => {
-    if (l == 1) return (`calc( 100% - ${enLocale? 360: 110}px )`)
-    return (`calc( (100% - ${enLocale? 360: 110}px) / ${l})`)
+    if (l == 1) return (`calc( 100% - ${110}px )`)
+    return (`calc((100% - ${110}px) / ${l})`)
 }
 
 export const EnvGroupL = styled.div<EnvGroupLProps>`
-    width: ${props => props.enLocale ? 360: 110}px;
+    width: ${110}px;
     float:left;
     padding-left:16px;
     border-right:1px solid rgba(0,0,0,0.10);
@@ -142,33 +143,6 @@ export const EnvGroupR = styled.div<GroupRowProps>`
     padding-left:13px;
     border-right:1px solid rgba(0,0,0,0.10);
 `
-// export const MachineGroup = styled.div`
-//     border: 1px solid rgba(0,0,0,0.10);
-//     height:240px;
-//     margin-bottom:13px;
-//     border-bottom:none;
-//     border-right:none;
-// `
-// export const MachineGroupL = styled(EnvGroupL)`
-//     height:40px;
-//     line-height:40px;
-//     color:rgba(0,0,0,0.85);
-//     border-bottom:1px solid rgba(0,0,0,0.10);
-//     font-weight:500;
-// `
-// export const MachineGroupR = styled.div<GroupRowProps>`
-//     width: ${({ gLen }) => setEnvGroupWdith(gLen)};
-//     float:left;
-//     padding:0px 13px;
-//     border-right:1px solid rgba(0,0,0,0.10);
-//     overflow: hidden;
-//     text-overflow: ellipsis;
-//     white-space: nowrap;
-//     height:40px;
-//     line-height:40px;
-//     border-bottom:1px solid rgba(0,0,0,0.10);
-//     border-right:1px solid rgba(0,0,0,0.10);
-// `
 
 // 功能测试数据
 export const TestDataTitle = styled.div`
@@ -209,14 +183,14 @@ const setTestConfWdith = (l: number) => {
     if (l == 1) {
         return '50%'
     } else {
-        return '360px'
+        return `${BASIC_TITLE_WIDTH}px`
     }
 }
-const setTestNumWdith = (l: number, ) => {
+const setTestNumWdith = (l: number,) => {
     if (l == 1) {
         return '50%'
     } else {
-       return (`calc( (100% - 360px) / ${l})`)
+        return (`calc((100% - ${BASIC_TITLE_WIDTH}px) / ${l})`)
     }
 }
 export const Group = styled.div`

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
 
-import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage } from 'umi'
+import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, useParams, useLocation } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
@@ -28,6 +28,7 @@ import { ReactComponent as YamlCopy } from '@/assets/svg/yaml_copy.svg'
 import { ReactComponent as YamlDownload } from '@/assets/svg/yaml_download.svg'
 import { ReactComponent as YamlTest } from '@/assets/svg/yaml_test.svg'
 import CodeEditer from '@/components/CodeEditer'
+import { useSize } from 'ahooks'
 
 interface PropsTypes {
     templateEditFormInfo?: Object,
@@ -45,10 +46,10 @@ const TestJob: React.FC<any> = (props) => {
 
     const { initialState, setInitialState } = useModel('@@initialState')
     const { authList } = initialState;
-    const { ws_id, jt_id } = props.match.params
-    const { query, state } = props.location
+    const { ws_id, jt_id } = useParams() as any
+    const { query, state, pathname } = useLocation() as any
+    const access = useAccess();
     writeDocumentTitle(`Workspace.${name}`)
-    const access = useAccess()
     const [test_config, setTest_config] = useState<any>([])
     const [detail, setDetail] = useState<any>({ name: '', server_type: '', test_type: '' })
     const [items, setItems] = useState<any>({ basic: {}, env: {}, suite: {}, more: {} })
@@ -152,7 +153,7 @@ const TestJob: React.FC<any> = (props) => {
     useEffect(() => {
         handleReset()
         getPageData()
-    }, [location.pathname, query])
+    }, [pathname, query])
 
     const isEmpty = (s: any) => [null, undefined, ""].includes(s)
 
@@ -415,14 +416,14 @@ const TestJob: React.FC<any> = (props) => {
             if (code === 200) {
                 setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
                 history.push(`/ws/${ws_id}/test_result`)
+                message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
             }
-            if (code === 1380) {
-                setEnvErrorFlag(true)
-                requestCodeMessage(code, msg)
+            if (code !== 200) {
+                if (code === 1380)
+                    setEnvErrorFlag(true)
+                else
+                    requestCodeMessage(code, msg)
             }
-            else
-                requestCodeMessage(code, formatMessage({ id: 'ws.test.job.operation.success' }))
-            // setFetching(false)
         }
         catch (error) {
 
@@ -618,19 +619,7 @@ const TestJob: React.FC<any> = (props) => {
         return 20
     }, [layoutWidth])
 
-    const [headerWidth, setHeaderWidth] = useState(0)
-
-    const setChildTableWidth = () => setHeaderWidth(bodyRef.current.clientWidth + bodyPaddding * 2)
-
-    useEffect(
-        () => {
-            setChildTableWidth()
-            addEventListener('resize', setChildTableWidth)
-            return () => {
-                removeEventListener('resize', setChildTableWidth)
-            }
-        }, []
-    )
+    const bodySize = useSize(bodyRef)
 
     const layoutCss = useMemo(() => {
         const defaultCss = { minHeight: layoutHeight, overflow: 'auto', background: "#f5f5f5" }
@@ -811,8 +800,11 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleTestYaml = async () => {
         const parmas = { yaml_data: jobInfo, workspace: ws_id }
-        let { code, msg } = await testYaml(parmas)
-        requestCodeMessage(code, msg)
+        const { code, msg } = await testYaml(parmas)
+        if (code !== 200)
+            requestCodeMessage(code, msg)
+        else
+            message.success(formatMessage({ id: 'operation.success' }))
     }
 
     const handleClose = () => {
@@ -938,8 +930,8 @@ const TestJob: React.FC<any> = (props) => {
                 >
                     <div style={{ height: 250, minWidth: 1080, background: '#fff', position: 'absolute', left: 0, top: 0, width: '100%' }} />
                     <Row className={styles.page_title} justify="center" >
-                        <Row style={{ width: headerWidth }}>
-                            <Col span={24} >
+                        <Row style={{ width: bodySize?.width ? bodySize?.width + bodyPaddding * 2 : bodySize?.width }}>
+                            <Col span={24}>
                                 <Row justify="space-between">
                                     <span>{detail.name}</span>
                                     <Access accessible={access.IsWsSetting()}>
