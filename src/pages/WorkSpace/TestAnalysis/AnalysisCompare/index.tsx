@@ -70,14 +70,20 @@ export default (props: any) => {
     const [isAlertClose, setIsAlertClose] = useState(true)
     const nogroupDom: any = useRef(null)
     const saveReportDraw: any = useRef(null)
+
+    document.title = '配置页-T-One'
+
     useEffect(() => {
+        /* 引起热更新新增一个对比组 */
         if (originType !== 'test_result') handleAddJobGroup()
     }, [])
+
     const handleExpandButtom = () => {
         seIsExpand(!isExpand);
         if (!isExpand) nogroupDom.current.style.left = '0'
         if (isExpand) nogroupDom.current.style.left = '-260px'
     }
+
     useEffect(() => {
         seGroupingButton(!!groupData.filter((i: any) => i.type === "job").reduce((p: any, c: any) => {
             const { members } = c
@@ -86,7 +92,6 @@ export default (props: any) => {
         if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
     }, [groupData, baselineGroupIndex])
 
-    document.title = '配置页-T-One'
     const versionGroupingFn = (arrGroup: any, newGroup: any) => {
         const arr: [] = arrGroup.filter((item: any) => {
             return item.product_version === arrGroup[0].product_version && item.product_id === arrGroup[0].product_id
@@ -105,6 +110,18 @@ export default (props: any) => {
             newNoGroup.current = newGroup
         }
     }
+
+    const checkSameTitleAndReturnNew = (arr: any[], title: string) => {
+        const trimTitle = title.trim()
+        const samCount = arr.reduce((p: number, c: any) => {
+            const { product_version } = c
+            if (product_version.replace(/\(\d+\)/, "") === trimTitle)
+                return p + 1
+            return p
+        }, 0)
+        return samCount > 0 ? `${trimTitle}(${samCount})` : trimTitle
+    }
+
     const snGroupingFn = (arrGroup: any, newGroup: any) => {
         const arr: [] = arrGroup.filter((item: any) => {
             return item.product_version === arrGroup[0].product_version && item.server === arrGroup[0].server && item.product_id === arrGroup[0].product_id
@@ -134,7 +151,7 @@ export default (props: any) => {
                     if (index !== -1) groupDataCopy[index] = matchGroup
                 }
                 if (!matchGroup) {
-                    const name = addGroupNameFn(groupDataCopy) || `对比组${groupDataCopy.length + 1}`
+                    const name = addGroupNameFn(groupDataCopy)
                     const addGroup = {
                         product_version: obj.product_version || name,
                         members: obj.members,
@@ -174,9 +191,9 @@ export default (props: any) => {
                     if (index !== -1) groupDataCopy[index] = matchGroup
                 }
                 if (!matchGroup) {
-                    const name = addGroupNameFn(groupDataCopy) || `对比组${groupDataCopy.length + 1}`
+                    const name = addGroupNameFn(groupDataCopy)
                     const addGroup = {
-                        product_version: obj.product_version || name,
+                        product_version: checkSameTitleAndReturnNew(groupDataCopy, obj.product_version) || name,
                         members: obj.members,
                         name,
                         type: 'job',
@@ -221,15 +238,12 @@ export default (props: any) => {
     }
 
     const addGroupNameFn = (arrGroup = groupData) => {
-        const arr = arrGroup.map((item: any) => item.product_version && item.product_version.trim())
-        for (let i = 0; i < arrGroup.length; i++) {
-            if (!arr.includes(`对比组${i + 1}`)) return `对比组${i + 1}`
-        }
-        return ''
+        return checkSameTitleAndReturnNew(arrGroup, "对比组")
     }
+
     const handleAddJobGroup = (type = "") => {
         const arr = _.cloneDeep(groupData)
-        const name = addGroupNameFn() || `对比组${groupData.length + 1}`
+        const name = addGroupNameFn()
         const addGroup = {
             product_version: name,
             members: [],
@@ -279,7 +293,7 @@ export default (props: any) => {
         arr[index].members = arr[index].members.filter((item: any, indexNum: number) => indexNum !== num)
         if (!arr[index].members.length) {
             // 空组时重置组的对比标识
-            const name = addGroupNameFn() || `对比组${arr.length + 1}`
+            const name = addGroupNameFn()
             arr[index].product_version = name
             arr[index].name = name
         }
@@ -352,17 +366,20 @@ export default (props: any) => {
         window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify([]))
     }
 
-    const isSureOk = () => {
-        let member: any = []
-        groupData.forEach((ele: any) => {
-            member = member.concat(ele.members)
-        })
-        if (member.length > 0) return false
-        return true
-    }
+    const canCompare = React.useMemo(() => {
+        const member: any[] = []
+        for (const ele of groupData)
+            member.push(ele.members)
+        return !(member.length > 0)
+    }, [groupData])
 
     const handleStartAnalysis = () => {
-        if (isSureOk()) return;
+        if (canCompare) return;
+
+        if (baselineGroupIndex !== -1 && groupData[baselineGroupIndex]?.members?.length === 0) {
+            return message.warning(formatMessage({ id: "analysis.comparison.base_group.compare_data.empty" }))
+        }
+
         let num = 0
         let flag = false
         groupData.forEach((item: any) => {
@@ -382,7 +399,6 @@ export default (props: any) => {
 
         setVisibleBaseGroup(true)
         return
-        // compareSuite.current?.show('选择BaseGroup对比的内容', baselineGroup)
     }
 
     useEffect(() => {
@@ -676,13 +692,14 @@ export default (props: any) => {
         result.splice(endIndex, 0, removed);
         return result;
     };
+
     const diferentDeorderOne = (groupArr: any, startIndex: number, endIndex: number, startGroupIndex: number, endGroupIndex: number) => {
         const arr = _.cloneDeep(groupArr[endGroupIndex].members)
         const [removed] = groupArr[startGroupIndex].members.splice(startIndex, 1);
         groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
         const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = productMark
+            groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
         }
         groupArr[endGroupIndex].type = groupArr[startGroupIndex].type
         return groupArr;
@@ -694,7 +711,7 @@ export default (props: any) => {
         groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
         const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = productMark
+            groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
         }
         groupArr[endGroupIndex].type = "job"
         return { groupArr, noGoupArr }
@@ -1256,7 +1273,13 @@ export default (props: any) => {
                     <div className={styles.bottom}>
                         <Space>
                             <Button onClick={handleClear}><FormattedMessage id="operation.clear" /></Button>
-                            <Button type="primary" onClick={handleStartAnalysis} disabled={isSureOk()}><FormattedMessage id="operation.ok" /></Button>
+                            <Button
+                                type="primary"
+                                onClick={handleStartAnalysis}
+                                disabled={canCompare}
+                            >
+                                <FormattedMessage id="operation.ok" />
+                            </Button>
                         </Space>
                     </div>
                 </div>
@@ -1331,7 +1354,7 @@ export default (props: any) => {
                         </div>
                     }
                     centered={true}
-                    visible={visibleBaseGroup}
+                    open={visibleBaseGroup}
                     width={1000}
                     className={styles.baseline_del_modal}
                     onCancel={handleBaseGroupModalCancle}
@@ -1345,7 +1368,8 @@ export default (props: any) => {
                         handleCancle={handleBaseGroupModalCancle}
                         onOk={handleSureOk}
                         creatReportOk={handleCreatReportOk}
-                        allGroupData={groupData} />
+                        allGroupData={groupData}
+                    />
                 </Modal>
                 <Modal
                     title={
