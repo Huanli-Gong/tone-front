@@ -1,6 +1,6 @@
-import { Drawer, Space, Button, Form, Input, Radio, message, Select, InputNumber } from 'antd'
+import { Drawer, Space, Button, Form, Input, Radio, message, Select } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle, useRef } from 'react'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { createCloudAk, updateCloudAk } from '../../service'
 import styles from './index.less'
 import _ from 'lodash'
@@ -8,6 +8,7 @@ import _ from 'lodash'
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
+        const { ws_id } = useParams() as any
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
@@ -34,16 +35,16 @@ export default forwardRef(
 
         const defaultOption = (code: number, msg: string, type: string) => {
             if (code === 200) {
-                // props.onOk()
-                props.setPage()
-                message.success(formatMessage({id: 'operation.success'}) )
+                props.onOk()
+                message.success(formatMessage({ id: 'operation.success' }))
                 setVisible(false)
                 form.resetFields() //重置一组字段到 initialValues
             }
             else {
                 if (code === 201) {
-                    const localeStr = formatMessage({id: 'device.ak.name.cannot.repeated'})
+                    const localeStr = formatMessage({ id: 'device.ak.name.cannot.repeated' })
                     form.setFields([{ name: 'name', errors: [localeStr] }])
+                    form.scrollToField("name")
                 } else {
                     message.error(msg)
                 }
@@ -75,11 +76,11 @@ export default forwardRef(
                     const valuesCopy = _.cloneDeep(values)
                     valuesCopy.enable = valuesCopy.enable ? 'True' : 'False'
                     if (title === 'new') {
-                        const { code, msg } = await createCloudAk({ ...valuesCopy, ws_id: props.ws_id })
+                        const { code, msg } = await createCloudAk({ ...valuesCopy, ws_id })
                         defaultOption(code, msg, 'new')
                     }
                     else {
-                        const { code, msg } = await updateCloudAk({ id: editer.id, ...valuesCopy, ws_id: props.ws_id })
+                        const { code, msg } = await updateCloudAk({ id: editer.id, ...valuesCopy, ws_id })
                         defaultOption(code, msg, 'edit')
                     }
                     setPadding(false)
@@ -90,15 +91,15 @@ export default forwardRef(
                 })
         }
         const providerArr = [
-            { id: 'aliyun_ecs', name: formatMessage({id: 'device.aliyun_ecs'}) }, 
-            { id: 'aliyun_eci', name: formatMessage({id: 'device.aliyun_eci'}) },
+            { id: 'aliyun_ecs', name: formatMessage({ id: 'device.aliyun_ecs' }) },
+            { id: 'aliyun_eci', name: formatMessage({ id: 'device.aliyun_eci' }) },
         ]
 
         return (
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                title={title === 'new' ? <FormattedMessage id="device.new.ak"/>: <FormattedMessage id="device.edit.ak"/>}
+                title={title === 'new' ? <FormattedMessage id="device.new.ak" /> : <FormattedMessage id="device.edit.ak" />}
                 width="375"
                 onClose={handleClose}
                 visible={visible}
@@ -106,9 +107,9 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
-                                {editer && editer.name ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
+                                {editer && editer.name ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />}
                             </Button>
                         </Space>
                     </div>
@@ -123,12 +124,12 @@ export default forwardRef(
                     }}
                 >
                     <Form.Item
-                        label={<FormattedMessage id="device.cloud.service.provider"/>}
+                        label={<FormattedMessage id="device.cloud.service.provider" />}
                         name="provider"
-                        rules={[{ required: true, message: formatMessage({id: 'device.cloud.service.provider.cannot.empty'}) },]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.cloud.service.provider.cannot.empty' }) },]}
                     >
                         <Select
-                            placeholder={formatMessage({id: 'device.cloud.service.provider.select'})}
+                            placeholder={formatMessage({ id: 'device.cloud.service.provider.select' })}
                             filterOption={(input, option: any) => {
                                 return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }}
@@ -148,61 +149,61 @@ export default forwardRef(
                             }
                         </Select>
                     </Form.Item>
-                    <Form.Item 
-                        label={<FormattedMessage id="device.enable"/>}
+                    <Form.Item
+                        label={<FormattedMessage id="device.enable" />}
                         name="enable">
                         <Radio.Group>
-                            <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                            <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                            <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                            <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         label="AK Name"
                         name="name"
-                        rules={[{ required: true, message: formatMessage({id: 'device.ak.name.cannot.empty'}) }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.ak.name.cannot.empty' }) }]}
                     >
-                        <Input autoComplete="auto" placeholder={formatMessage({id: 'device.ak.name.enter'}) } />
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.ak.name.enter' })} />
                     </Form.Item>
                     <Form.Item
                         label="Access ID"
                         name="access_id"
-                        rules={[{ required: true, message: formatMessage({id: 'device.access_id.cannot.empty'})  }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.access_id.cannot.empty' }) }]}
                     >
-                        <Input autoComplete="auto" placeholder={formatMessage({id: 'device.access_id.enter'}) }
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.access_id.enter' })}
                             onChange={handAccessIdChange} ref={IdRef} />
                     </Form.Item>
                     <Form.Item
                         label="Access Key"
                         name="access_key"
-                        rules={[{ required: true, message: formatMessage({id: 'device.access_key.cannot.empty'}) }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.access_key.cannot.empty' }) }]}
                     >
-                        <Input autoComplete="auto" placeholder={formatMessage({id: 'device.access_key.enter'})}
+                        <Input autoComplete="auto" placeholder={formatMessage({ id: 'device.access_key.enter' })}
                             onChange={handAccessKeyChange} ref={KeyRef} />
                     </Form.Item>
                     <Form.Item
-                        label={<FormattedMessage id="device.vm_quota"/>}
+                        label={<FormattedMessage id="device.vm_quota" />}
                         name="vm_quota"
-                        rules={[{ required: true, message: formatMessage({id: 'device.vm_quota.cannot.empty'}) }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'device.vm_quota.cannot.empty' }) }]}
                     >
-                        <Input placeholder={formatMessage({id: 'device.vm_quota.placeholder'})} />
+                        <Input placeholder={formatMessage({ id: 'device.vm_quota.placeholder' })} />
                     </Form.Item>
                     {/* 开源和社区版需要 */}
                     {
                         BUILD_APP_ENV &&
                         <Form.Item
-                            label={<FormattedMessage id="device.resource_group_id"/>}
+                            label={<FormattedMessage id="device.resource_group_id" />}
                             name="resource_group_id"
                         >
                             <Input
                                 autoComplete="auto"
-                                placeholder={formatMessage({id: 'please.enter'})} 
+                                placeholder={formatMessage({ id: 'please.enter' })}
                             />
                         </Form.Item>
                     }
-                    <Form.Item label={<FormattedMessage id="device.description.option"/>}
+                    <Form.Item label={<FormattedMessage id="device.description.option" />}
                         name="description">
-                        <Input.TextArea placeholder={formatMessage({id: 'device.description.option.placeholder'})} 
-                         />
+                        <Input.TextArea placeholder={formatMessage({ id: 'device.description.option.placeholder' })}
+                        />
                     </Form.Item>
                 </Form>
             </Drawer>

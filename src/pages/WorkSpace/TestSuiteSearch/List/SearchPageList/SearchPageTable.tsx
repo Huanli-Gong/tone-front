@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Space, Table, Row, Pagination, message, Typography } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Space, Pagination, message, Typography } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { matchType } from '@/utils/utils'
 import { querySearchList } from '../../service'
 import styles from './SearchPageTable.less'
@@ -9,7 +9,8 @@ import styles from './SearchPageTable.less'
 // 列表
 const SearchPageList: React.FC<any> = (props: any) => {
   const { formatMessage } = useIntl()
-  const { searchKey = "", tabKey, ws_id, refresh, loadingCallback = () => { } } = props
+  const { ws_id } = useParams() as any
+  const { searchKey = "", tabKey, loadingCallback = () => { } } = props
 
   // 分页数据
   const [dataSource, setDataSource] = useState<any>([])
@@ -70,12 +71,6 @@ const SearchPageList: React.FC<any> = (props: any) => {
       getListData({ page_num: pagination.pageNum, page_size: pagination.pageSize })
     }
   }, [searchKey, tabKey])
-
-  useEffect(() => {
-    if (searchKey) {
-      getListData({ page_num: pagination.pageNum, page_size: pagination.pageSize })
-    }
-  }, [refresh])
 
   const handleClick = (item: any) => {
     if (item.id && item.test_suite_id) {

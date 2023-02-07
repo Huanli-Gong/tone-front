@@ -1,6 +1,6 @@
 import { Drawer, Space, Button, Form, Input, message, Select } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { createCloudImage, updateCloudImage, queryCloudAk, queryRegionCloudAk } from '../../service'
 
 import styles from './index.less'
@@ -9,10 +9,11 @@ import _ from 'lodash'
 export default forwardRef(
     (props: any, ref: any) => {
         const { formatMessage } = useIntl()
+        const { ws_id } = useParams() as any
         const defaultParmasAk = {
             page_num: 1,
             page_size: 1000,
-            ws_id: props.ws_id
+            ws_id
         }
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
@@ -65,7 +66,6 @@ export default forwardRef(
             setPadding(false)
             if (code === 200) {
                 props.onOk()
-                props.setPage(1)
                 message.success(formatMessage({ id: 'operation.success' }))
                 setVisible(false)
                 form.resetFields() //重置一组字段到 initialValues
@@ -76,8 +76,9 @@ export default forwardRef(
                         name: "image_name",
                         errors: [
                             formatMessage({ id: 'device.image.name.cannot.repeated' })
-                        ]
+                        ],
                     }])
+                    form.scrollToField("image_name")
                 } else {
                     message.error(msg)
                 }
@@ -94,11 +95,11 @@ export default forwardRef(
                     if (arr.length) akId = arr[0].id
                     values.ak_id = akId
                     if (title === 'new') {
-                        const { code, msg } = await createCloudImage({ ...values, ws_id: props.ws_id })
+                        const { code, msg } = await createCloudImage({ ...values, ws_id })
                         defaultOption(code, msg, 'new')
                     }
                     else {
-                        const { code, msg } = await updateCloudImage({ id: editer.id, ...values, ws_id: props.ws_id })
+                        const { code, msg } = await updateCloudImage({ id: editer.id, ...values, ws_id })
                         defaultOption(code, msg, 'edit')
                     }
                 })
