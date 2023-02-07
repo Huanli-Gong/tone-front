@@ -30,6 +30,7 @@ export default {
     'analysis.edit.mark': '编辑对比组',
     'analysis.comparison.group.cannot.empty': '对比组名称不能为空',
     'analysis.comparison.group.name.placeholder': '请输入对比组名称',
+    'analysis.comparison.base_group.compare_data.empty': "基准组对比数据不能为空!",
     // AddJob
     'analysis.product.label': '产品：',
     'analysis.product.placeholder': '请选择产品',
