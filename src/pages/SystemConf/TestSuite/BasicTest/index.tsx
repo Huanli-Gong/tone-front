@@ -200,7 +200,13 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
     const remOuter = async (row: any) => {
         await delSuite(row.id)
         message.success(formatMessage({ id: 'operation.success' }));
-        getList()
+        const { page_size, page_num } = pageParams
+        const remainNum = dataSource.total % page_size === 1
+        const totalPage: number = Math.floor(dataSource.total / page_size)
+        if (remainNum && totalPage && totalPage + 1 <= page_num)
+            setPageParams((p: any) => ({ ...p, total: totalPage }))
+        else
+            getList()
     }
 
     const synchro = async (row: any) => {
