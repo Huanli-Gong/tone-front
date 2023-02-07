@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Space, Drawer, message, Pagination, Tooltip, Row, Alert, Table, Spin, Typography } from 'antd';
+import type { TableColumnProps } from "antd"
 import { CaretRightFilled, CaretDownFilled, FilterFilled, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { suiteList, addSuite, editSuite, delSuite, syncSuite, manual, lastSync, batchDeleteMetric } from '../service';
 import ButtonEllipsis from '@/components/Public/ButtonEllipsis';
@@ -18,7 +19,7 @@ import BatchDelete from './components/BatchDelete';
 import { TestContext } from '../Provider'
 import ConfEditDrawer from './components/CaseTable/ConfEditDrawer'
 
-import _ from 'lodash'
+import lodash from 'lodash'
 import { editBentch, editCase, addCase } from '@/pages/SystemConf/TestSuite/service'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
 import { requestCodeMessage } from '@/utils/utils';
@@ -29,16 +30,12 @@ import DeleteDefault from "./components/DeleteDefault"
 import MetricBatchDelete from './components/MetricTable/MetricBatchDelete';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
-let timeout: any = null;
+const timeout: any = null;
 let timer: any = null;
 
 const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-
-    useImperativeHandle(ref, () => ({
-        openCreateDrawer: suiteEditDrawer.current.show
-    }))
 
     const { domainList, runList } = useSuiteProvider()
     const { query }: any = useLocation()
@@ -69,6 +66,10 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
     const edscFastEditer: any = useRef(null)
     const defaultDeleteRef = React.useRef<AnyType>(null)
 
+    useImperativeHandle(ref, () => ({
+        openCreateDrawer: suiteEditDrawer.current.show
+    }))
+
     const getList = async () => {
         setLoading(true)
         const data: any = await suiteList(pageParams)
@@ -79,7 +80,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
 
     const debouncedList = (fn: any, wait: any) => {
         if (timer !== null) clearTimeout(timer);  //清除这个定时器
-        timer = setTimeout(_.partial(fn, pageParams), wait);
+        timer = setTimeout(lodash.partial(fn, pageParams), wait);
     }
 
     const submitCase = async (data: any, bentch: boolean) => {
@@ -94,10 +95,10 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             let content = param.var
             if (Object.prototype.toString.call(param.var) === '[object String]') {
                 try {
-                    let valid = JSON.parse(content)
+                    const valid = JSON.parse(content)
                     if (Object.prototype.toString.call(valid) === '[object Array]') {
-                        let len = valid.length
-                        for (var i = 0; i < len; i++) {
+                        const len = valid.length
+                        for (let i = 0; i < len; i++) {
                             if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
                                 message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                                 return
@@ -113,7 +114,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 }
             }
             else {
-                let arr: any = []
+                const arr: any = []
                 content.map((item: any) => {
                     if (item.name) {
                         arr.push(item)
@@ -158,12 +159,13 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
     }
 
     const editOuter = (row: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         row.direction == '上升' ? row.domain = 'increase' : 'decline'
         row.is_default = row.is_default ? 1 : 0
         row.test_type = testType
         const arr = row.domain_id_list === '' ? [] : row.domain_id_list.split(',')
-        let newArr = [];
-        for (var i = 0; i < arr.length; i++) newArr.push(Number.parseInt(arr[i]))
+        const newArr = [];
+        for (let i = 0; i < arr.length; i++) newArr.push(Number.parseInt(arr[i]))
         row.domain_list_str = newArr
         domainList.forEach((item: any) => { if (item.name == row.domain) row.domain = item.id })
 
@@ -174,6 +176,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         await editSuite(id, { doc })
         message.success(formatMessage({ id: 'operation.success' }));
         edscFastEditer.current.hide()
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         pageParams.page_num === 1 ?
             getList() :
             setPageParams({ ...pageParams, page_num: 1 })
@@ -224,7 +227,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         setAsyncTime(new Date().getTime())
     }
 
-    const columns: any = [
+    const columns: TableColumnProps<AnyType>[] = [
         {
             title: 'Test Suite',
             dataIndex: 'name',
@@ -236,13 +239,12 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 return (
                     <SearchInput
                         {...p}
-                        // autoFocus={autoFocus}
-                        onConfirm={(val: string) => { setPageParams({ ...pageParams, name: val }) }}
+                        onConfirm={(val: string) => setPageParams({ ...pageParams, name: val, page_num: 1 })}
                     />
                 )
             },
             filterIcon: () => <FilterFilled style={{ color: pageParams.name ? '#1890ff' : undefined }} />,
-            render: (_: any, row: any) => (
+            render: (_, row) => (
                 <ColumnEllipsisText ellipsis={{ tooltip: row.name }}  >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
@@ -256,7 +258,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         {
             title: <FormattedMessage id="TestSuite.run_mode" />,
             dataIndex: 'run_mode',
-            render: (_: any) => _ === 'standalone' ? <FormattedMessage id="standalone" /> : <FormattedMessage id="cluster" />,
+            render: (_) => _ === 'standalone' ? <FormattedMessage id="standalone" /> : <FormattedMessage id="cluster" />,
             width: enLocale ? 150 : 100,
             filterIcon: () => <FilterFilled style={{ color: pageParams.run_mode ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -283,6 +285,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 />
             ),
         },
+        // @ts-ignore
         testType !== 'functional' &&
         {
             title: (
@@ -303,7 +306,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 </Space>
             ),
             dataIndex: 'view_type',
-            render: (_: any, record: any) => suiteChange(_, record),
+            render: (_, record) => suiteChange(_, record),
             width: 120,
             ellipsis: true,
         },
@@ -312,7 +315,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             dataIndex: 'doc',
             width: 130,
             ellipsis: true,
-            render: (_: any, row: any) => (
+            render: (_, row) => (
                 <div>
                     <ButtonEllipsis title={row.doc} width={95} isCode={true}>
                         <EditOutlined
@@ -328,7 +331,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         {
             title: <FormattedMessage id="TestSuite.default.case" />,
             width: enLocale ? 130 : 110,
-            render: (_: any, row: any) => row.is_default ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
+            render: (_, row) => row.is_default ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
             filterIcon: () => <FilterFilled style={{ color: pageParams.is_default === 1 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
@@ -351,7 +354,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 </Space>
             ),
             width: 120,
-            render: (_: any, row: any) => row.certificated ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
+            render: (_, row) => row.certificated ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />,
             filterIcon: () => <FilterFilled style={{ color: pageParams.certificated === 1 ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SelectRadio
@@ -387,22 +390,21 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             dataIndex: 'gmt_created',
             width: 200,
             sorter: true,
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
+            render: (_, row) => <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{row.gmt_created}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="TestSuite.gmt_modified" />,
             dataIndex: 'gmt_modified',
             sorter: true,
             width: 200,
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
+            render: (_, row) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_modified}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
-            valueType: 'option',
             dataIndex: 'id',
             width: enLocale ? 190 : 140,
             fixed: 'right',
-            render: (_: any, row: any) => (
+            render: (_, row) => (
                 <Space>
                     <Typography.Link onClick={() => synchro(row)}>
                         <FormattedMessage id="operation.synchronize" />
@@ -416,12 +418,9 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 </Space>
             )
         },
-    ].filter(Boolean)
+    ]
 
     const [time, setTime] = useState()
-    const onExpand = async (record: any) => {
-        setExpandKey([record.id])
-    }
 
     const handleSynchronous = async () => {
         const data = await manual()
@@ -436,6 +435,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
 
     const handleLastSync = async () => {
         const data = await lastSync()
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         data.code === 200 ?
             setTime(data.data) :
             message.error(data.msg)
@@ -514,14 +514,14 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                             }
                         }
                     }
-                    columns={columns}
+                    columns={columns.filter(Boolean)}
                     dataSource={dataSource.data}
                     rowKey={record => record.id}
                     pagination={false}
                     expandable={{
                         indentSize: 0,
                         expandedRowRender: (record) => <CaseTable key={asyncTime} id={record.id} type={testType} />,
-                        onExpand: (_, record) => _ ? onExpand(record) : setExpandKey([]),
+                        onExpand: (_, record) => _ ? setExpandKey([record.id]) : setExpandKey([]),
                         expandedRowClassName: () => 'case_expand_row',
                         expandedRowKeys: expandKey,
                         expandIcon: ({ expanded, onExpand, record }) => (
