@@ -43,7 +43,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const [instance, setInstance] = useState<any>([])
     const [image, setImage] = useState<any>([])
     const [sever, setSever] = useState<any>([])
-    const [ak, setAK] = useState<any>([])
     const [showZone, setShowZone] = useState<boolean>(false)
     const [region, setRegion] = useState<any>([])
     const [categories, setCategories] = useState<any>([])
@@ -74,9 +73,9 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                     zone,
                 }
                 if (!!is_instance) {
-                    Promise.all([getShowRegion(params), getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 } else {
-                    Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
                 }
                 form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [region, zone] })
             }
@@ -112,11 +111,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
     const getSeverList = async (param: any) => {
         const { data } = await querysServer(param)
         setSever(data || [])
-    }
-
-    const getAK = async () => {
-        const { data = [] } = await querysAK({ ws_id: ws_id }) || {}
-        setAK(data)
     }
 
     const loadRegionData = async (selectedOptions: any) => {
@@ -374,9 +368,9 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
         if (!!is_instance) {
-            Promise.all([getShowRegion(params), getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+            Promise.all([getShowRegion(params), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
         } else {
-            Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+            Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
         }
         form.setFieldsValue(param)
     }
@@ -563,24 +557,6 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                     }}
                 >
                     <Row gutter={16}>
-                        {/* {!id ?
-                            <Col span={12}>
-                                <Form.Item
-                                    name="is_instance"
-                                    label={<FormattedMessage id="device.server.select"/>}
-                                    rules={[{ required: true, message: formatMessage({id:'please.select'}) }]}
-                                    initialValue={0}
-                                >
-                                    <Select placeholder={<FormattedMessage id="please.select"/>}
-                                        disabled={cloudType != 0} 
-                                        onChange={(value: any) => setIs_instance(value)}>
-                                        <Option value={0}><FormattedMessage id="device.buy.now"/></Option>
-                                        <Option value={1}><FormattedMessage id="device.select.exist"/></Option>
-                                    </Select>
-                                </Form.Item>
-                            </Col> :
-                            null
-                        } */}
                         {!is_instance ?
                             <Col span={12}>
                                 <Form.Item
