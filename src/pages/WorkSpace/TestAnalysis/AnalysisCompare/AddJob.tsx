@@ -93,7 +93,7 @@ export default (props: any) => {
         setLoading(true)
         let result = await queryProductList({ product_id: id, ws_id })
         if (result.code === 200) {
-            let data = result.data.filter((val: any) => val.trim())
+            let data = result.data.filter((val: any) => val?.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
             const defaultProVersion = data.length ? data[0].value : ''

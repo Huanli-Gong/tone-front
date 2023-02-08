@@ -55,7 +55,7 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
                         message.error(msg)
                         return
                     }
-                    message.success(formatMessage({id: 'operation.success'}) );
+                    message.success(formatMessage({ id: 'operation.success' }));
                     callback()
                     handleClose()
                 }
@@ -68,18 +68,18 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={dataSet.id ? <FormattedMessage id="device.edit.tag"/>: <FormattedMessage id="device.create.tag"/>}
+            title={dataSet.id ? <FormattedMessage id="device.edit.tag" /> : <FormattedMessage id="device.create.tag" />}
             width={376}
             onClose={handleClose}
-            visible={visible}
+            open={visible}
             bodyStyle={{ paddingBottom: 80 }}
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Button onClick={handleClose} style={{ marginRight: 8 }}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                     <Button onClick={onSuiteSubmit} type="primary" htmlType="submit" >
-                        {dataSet.id ? <FormattedMessage id="operation.update"/>: <FormattedMessage id="operation.ok"/>}
+                        {dataSet.id ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />}
                     </Button>
                 </div>
             }
@@ -93,35 +93,36 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
             >
                 <Form.Item
                     name="tag_color"
-                    label={<FormattedMessage id="device.tag_color"/>}
-                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                    label={<FormattedMessage id="device.tag_color" />}
+                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                 >
                     <ColorPicker />
                 </Form.Item>
                 <Form.Item
                     name="name"
-                    label={<FormattedMessage id="device.tag.name"/>}
+                    label={<FormattedMessage id="device.tag.name" />}
+                    required
                     rules={[
                         {
                             validator(rule, value) {
-                                if (!value) return Promise.reject(formatMessage({id: 'device.tag.name.message'}) )
-                                if (!value.replace(/\s+/g, "")) return Promise.reject(formatMessage({id: 'device.tag.name.message'}) )
-                                if (!nameReg.test(value)) return Promise.reject(formatMessage({id: 'device.name.message'}) )
+                                if (!value) return Promise.reject(formatMessage({ id: 'device.tag.name.message' }))
+                                if (!value.replace(/\s+/g, "")) return Promise.reject(formatMessage({ id: 'device.tag.name.message' }))
+                                if (!nameReg.test(value)) return Promise.reject(formatMessage({ id: 'device.name.message' }))
                                 return Promise.resolve()
                             }
                         }
                     ]}
                 >
                     <Input
-                        placeholder={formatMessage({id: 'please.enter'}) }
+                        placeholder={formatMessage({ id: 'please.enter' })}
                         autoComplete="off"
                     />
                 </Form.Item>
                 <Form.Item
                     name="description"
-                    label={<FormattedMessage id="device.description"/>}
+                    label={<FormattedMessage id="device.description" />}
                 >
-                    <Input.TextArea rows={3} placeholder={formatMessage({id: 'device.description.placeholder'}) } />
+                    <Input.TextArea rows={3} placeholder={formatMessage({ id: 'device.description.placeholder' })} />
                 </Form.Item>
             </Form>
         </Drawer>

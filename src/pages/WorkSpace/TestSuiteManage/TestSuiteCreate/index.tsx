@@ -12,16 +12,20 @@ import { unionBy } from 'lodash'
 import CodeViewer from '@/components/CodeViewer'
 import { useClientSize } from '@/utils/hooks'
 
+const getConfKeysAndSort = (suites: any[]) => suites.reduce((pre: any[], cur: any) => {
+    return pre.concat(cur.test_case_list.map((i: any) => i.id))
+}, []).sort((a, b) => a - b)
+
 const TestSuiteCreate: React.FC = () => {
     const { formatMessage } = useIntl()
     const { ws_id, test_type }: any = useParams()
 
-    const [leftWsHasSuiteArr, setLeftWsHasSuiteArr] = useState<Array<any>>([])
+    const [leftWsHasSuiteArr, setLeftWsHasSuiteArr] = useState<any[]>([])
     const [flag, setFlag] = useState(true)
     const [btnLoad, setBtnLoad] = useState(false)
-    const [suiteList, setSuiteList] = useState<Array<any>>([])
+    const [suiteList, setSuiteList] = useState<any[]>([])
     const [suiteParams, setSuiteParams] = useState({ domain: '', test_type, name: '', scope: 'brief_case' })
-    const [expandRows, setExpandRows] = useState<Array<number>>([])
+    const [expandRows, setExpandRows] = useState<any[]>([])
     const [addFlag, setAddFlag] = useState(false)
     const [loading, setLoading] = useState(true)
     const [domainList, setDomainList] = useState<any>([])
@@ -30,6 +34,10 @@ const TestSuiteCreate: React.FC = () => {
     const [delType, setDelType] = useState<any>('suite')
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [leftTableLoading, setLeftTableLoading] = useState(true)
+
+    /* ws下初始用例 */
+    const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState([])
+    const [defaultSuiteList, setDefaultSuiteList] = React.useState([])
 
     const { height: layoutHeight } = useClientSize()
     const getDomains = async () => {
@@ -67,7 +75,7 @@ const TestSuiteCreate: React.FC = () => {
             suiteListArr = data.map(
                 (suite: any) => {
                     for (let index = 0; index < wsHasSuiteArr.length; index++) {
-                        let hasSuiteItem = wsHasSuiteArr[index];
+                        const hasSuiteItem = wsHasSuiteArr[index];
 
                         if (suite.id === hasSuiteItem.id) {
                             if (hasSuiteItem.test_case_list.length > 0) {
@@ -79,6 +87,7 @@ const TestSuiteCreate: React.FC = () => {
                                         hasSuiteItem.test_case_list.forEach(
                                             (hasCase: any) => {
                                                 if (hasCase.id === cases.id) {
+                                                    // eslint-disable-next-line no-param-reassign
                                                     cases = { ...cases, isAdd: true }
                                                     addCaseCount++
                                                 }
@@ -105,6 +114,8 @@ const TestSuiteCreate: React.FC = () => {
         computeLeftTableData(suiteListArr, wsHasSuiteArr)
         setFlag(false)
         setSuiteList(suiteListArr)
+        setDefaultSuiteList(suiteListArr)
+        setWsSuiteAllKey(getConfKeysAndSort(wsHasSuiteArr))
         setLoading(false)
         setLeftTableLoading(false)
     }
@@ -124,10 +135,30 @@ const TestSuiteCreate: React.FC = () => {
     }, []);
 
     const handleRestore = () => {
-        window.location.reload();
+        // window.location.reload();
+        setSuiteList(defaultSuiteList)
+        computeLeftTableData(
+            defaultSuiteList,
+            defaultSuiteList.reduce((pre: any[], cur: any) => {
+                const { test_case_list } = cur
+                const cases = test_case_list?.reduce((p: any[], c: any) => {
+                    if (wsSuiteAllKeys.includes(c.id))
+                        return p.concat(c)
+                    return p
+                }, [])
+                if (cases && cases.length > 0)
+                    return pre.concat({
+                        ...cur,
+                        test_case_list: cases
+                    })
+                return pre
+            }, [])
+        )
     }
+
     const handleTestSuiteSearch = () => {
         const suiteSearchFn = () => setSuiteParams({ ...suiteParams, name: searchInp })
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         timer && clearTimeout(timer)
         timer = setTimeout(suiteSearchFn, 300)
     }
@@ -139,9 +170,22 @@ const TestSuiteCreate: React.FC = () => {
 
     const handleBackPage = useCallback(
         () => {
+            /* if (wsSuiteAllKeys.toString() !== getConfKeysAndSort(leftWsHasSuiteArr).toString()) {
+                Modal.confirm({
+                    title: "页面数据有调整，退出后不会保存已更改数据",
+                    onOk() {
+                        console.log('OK');
+                        history.go(-1)
+                    },
+                    onCancel() {
+                        console.log('Cancel');
+                    },
+                })
+                return
+            } */
             history.go(-1)
         },
-        []
+        [wsSuiteAllKeys, leftWsHasSuiteArr]
     )
     // 右侧 二级test suit添加
     const handleTestSuiteChildPlus = (_: any, record: any) => {
@@ -152,7 +196,7 @@ const TestSuiteCreate: React.FC = () => {
 
         let addCaseCount: any = 0
         let hasAdd = record.hasAdd
-        let addCaseList: Array<any> = []
+        const addCaseList: Array<any> = []
 
         const test_case_list = record.test_case_list.map(
             (item: { isAdd: any, id: any }) => {
@@ -164,7 +208,7 @@ const TestSuiteCreate: React.FC = () => {
                 if (item.id === _.id) {
                     hasAdd = true
                     addCaseCount++
-                    let newAddCase = { ...item, isAdd: true }
+                    const newAddCase = { ...item, isAdd: true }
                     addCaseList.push(newAddCase)
                     return newAddCase
                 }
@@ -326,15 +370,15 @@ const TestSuiteCreate: React.FC = () => {
     }
 
     const computeLeftTableData = (suiteListArr: any, leftTableData: any = leftWsHasSuiteArr) => {
-        let leftSuites: any = []
+        const leftSuites: any = []
 
         suiteListArr.forEach(
             (suite: any) => {
                 if (suite.addCaseCount === 'all')
                     leftSuites.push(suite)
                 else if (suite.addCaseCount) {
-                    let test_case_list: any = []
-                    for (let x of suite.test_case_list) {
+                    const test_case_list: any = []
+                    for (const x of suite.test_case_list) {
                         if (x.isAdd) test_case_list.push(x)
                     }
                     leftSuites.push({ ...suite, test_case_list })
@@ -728,7 +772,7 @@ const TestSuiteCreate: React.FC = () => {
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 //onOk={remOuter}
                 onCancel={handleCancel}
                 footer={[
