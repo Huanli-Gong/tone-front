@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typography, Modal, Tooltip, Spin, message } from 'antd'
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
-import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as UnFullExpand } from '@/assets/svg/un_full.svg'
 import { test_type_enum } from '@/utils/utils'
 import { queryTestSuiteList, saveSuiteCaseList, queryWorkspaceSuiteList, queryWsCaseConfirm } from './service'
@@ -15,6 +15,59 @@ import { useClientSize } from '@/utils/hooks'
 const getConfKeysAndSort = (suites: any[]) => suites.reduce((pre: any[], cur: any) => {
     return pre.concat(cur.test_case_list.map((i: any) => i.id))
 }, []).sort((a, b) => a - b)
+
+const SaveTipModal = React.forwardRef((props, ref) => {
+    const { onSave, btnLoad }: any = props
+    const { ws_id, test_type }: any = useParams()
+
+    const [visible, setVisible] = React.useState(false)
+
+    React.useImperativeHandle(ref, () => ({
+        show() {
+            setVisible(true)
+        }
+    }))
+
+    const handleCancel = () => {
+        setVisible(false)
+    }
+
+    return (
+        <Modal
+            title={"提示"}
+            width={600}
+            open={visible}
+            destroyOnClose
+            centered
+            onCancel={handleCancel}
+            maskClosable={false}
+            footer={
+                <Space>
+                    <Button
+                        onClick={() => {
+                            handleCancel()
+                            history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
+                        }}
+                    >
+                        {"不保存"}
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={() => onSave?.(handleCancel)}
+                        loading={btnLoad}
+                    >
+                        {"保存"}
+                    </Button>
+                </Space>
+            }
+        >
+            <Space>
+                <InfoCircleOutlined style={{ color: "#FFA400" }} />
+                <Typography.Text>用例有变动，是否保存？</Typography.Text>
+            </Space>
+        </Modal>
+    )
+})
 
 const TestSuiteCreate: React.FC = () => {
     const { formatMessage } = useIntl()
@@ -38,6 +91,8 @@ const TestSuiteCreate: React.FC = () => {
     /* ws下初始用例 */
     const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState([])
     const [defaultSuiteList, setDefaultSuiteList] = React.useState([])
+
+    const saveTipRef = React.useRef<any>(null)
 
     const { height: layoutHeight } = useClientSize()
     const getDomains = async () => {
@@ -168,25 +223,6 @@ const TestSuiteCreate: React.FC = () => {
         setDomainValue(domain)
     }
 
-    const handleBackPage = useCallback(
-        () => {
-            /* if (wsSuiteAllKeys.toString() !== getConfKeysAndSort(leftWsHasSuiteArr).toString()) {
-                Modal.confirm({
-                    title: "页面数据有调整，退出后不会保存已更改数据",
-                    onOk() {
-                        console.log('OK');
-                        history.go(-1)
-                    },
-                    onCancel() {
-                        console.log('Cancel');
-                    },
-                })
-                return
-            } */
-            history.go(-1)
-        },
-        [wsSuiteAllKeys, leftWsHasSuiteArr]
-    )
     // 右侧 二级test suit添加
     const handleTestSuiteChildPlus = (_: any, record: any) => {
         setAddFlag(true)
@@ -321,7 +357,7 @@ const TestSuiteCreate: React.FC = () => {
         return caseIdList.toString()
     }, [leftWsHasSuiteArr])
 
-    const handleDelete = async () => {
+    const handleDelete = async (callback?: any) => {
         setBtnLoad(true)
         if (ws_id) {
             //setPadding(true)
@@ -335,7 +371,8 @@ const TestSuiteCreate: React.FC = () => {
             if (data.code === 200) {
                 setBtnLoad(false)
                 message.success(formatMessage({ id: 'operation.success' }))
-                history.go(-1)
+                callback?.()
+                history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
             }
             else
                 message.error(formatMessage({ id: 'operation.failed' }))
@@ -350,10 +387,11 @@ const TestSuiteCreate: React.FC = () => {
         window.open(`/ws/${ws_id}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${case_id_list}`)
     }
 
-    const handleSave = async () => {
+    const handleSave = async (callback?: any) => {
         if (addFlag) {
-            handleDelete()
-        } else {
+            handleDelete(callback)
+        }
+        else {
             const data = await queryWsCaseConfirm({
                 flag: 'pass',
                 ws_id,
@@ -364,9 +402,18 @@ const TestSuiteCreate: React.FC = () => {
             if (data.code == 200) {
                 setDeleteVisible(true)
             } else {
-                handleDelete()
+                handleDelete(callback)
             }
         }
+    }
+
+    const handleBackPage = () => {
+        if (wsSuiteAllKeys.toString() !== getConfKeysAndSort(leftWsHasSuiteArr).toString()) {
+            /* 用例修改保存提示 */
+            saveTipRef.current?.show()
+            return
+        }
+        history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
     }
 
     const computeLeftTableData = (suiteListArr: any, leftTableData: any = leftWsHasSuiteArr) => {
@@ -797,6 +844,7 @@ const TestSuiteCreate: React.FC = () => {
                     <FormattedMessage id="suite.view.reference.details" />
                 </div>
             </Modal>
+            <SaveTipModal ref={saveTipRef} onSave={handleSave} btnLoad={btnLoad} />
         </Layout.Content>
     )
 }

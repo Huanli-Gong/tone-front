@@ -174,6 +174,9 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
             .catch((err: any) => {
                 setPadding(false)
                 console.log(err)
+                const { errorFields } = err
+                const { name } = errorFields[0]
+                form.scrollToField(name)
                 document.querySelector('.create_job_type_content').parentNode.scrollTop = 239
             })
     }
