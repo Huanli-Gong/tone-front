@@ -340,7 +340,7 @@ export default (props: any) => {
                         setParams({ ...params, state: val })}
                     stateVal={params.state}
                     tabType={$instance}
-                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved',"Unusable"]}
                 />
             )
         },

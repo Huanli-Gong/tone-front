@@ -364,7 +364,7 @@ const Standalone = (props: any, ref: any) => {
                     confirm={confirm}
                     onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: 1 })}
                     stateVal={urlParmas.state}
-                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
                 />
             )
         },

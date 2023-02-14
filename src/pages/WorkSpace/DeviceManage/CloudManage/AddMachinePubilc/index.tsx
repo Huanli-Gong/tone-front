@@ -1039,6 +1039,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                         disabled={disabledState}>
                                         <Select.Option value="Available"><Badge status="success" text="Available" /></Select.Option>
                                         <Select.Option value="Reserved"><Badge status="default" text="Reserved" /></Select.Option>
+                                        <Select.Option value="Unusable"><Badge status="default" text="Unusable" /></Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>)
