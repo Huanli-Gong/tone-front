@@ -46,21 +46,21 @@ export const EllipsisRect = (props: any) => {
     const { text, flag, isBaseGroup } = props
     let tempText = text
     // 以“对比组”开始，以数字结尾的。
-    if (text.match(/^对比组[0-9]+$/)) {
-        tempText = formatMessage({id: 'analysis.comparison.group'}) + text.slice(3)
+    if (text?.match(/^对比组[0-9]+$/)) {
+        tempText = formatMessage({ id: 'analysis.comparison.group' }) + text.slice(3)
     }
-    const nameStyle = local? styles.workspace_name_en: styles.workspace_name
+    const nameStyle = local ? styles.workspace_name_en : styles.workspace_name
     const dom = (
-        <span className={isBaseGroup ? `${nameStyle} ${styles.base_workspace_name}`: `${nameStyle}`}>
-            {flag ? <Tag color='#0089FF' className={styles.baselineColorFn}><FormattedMessage id="analysis.base"/></Tag> : ''}
+        <span className={isBaseGroup ? `${nameStyle} ${styles.base_workspace_name}` : `${nameStyle}`}>
+            {flag ? <Tag color='#0089FF' className={styles.baselineColorFn}><FormattedMessage id="analysis.base" /></Tag> : ''}
             {tempText}
         </span>
     )
     return (
         <>
-            {isBaseGroup && 
-                <span title={formatMessage({id: 'analysis.benchmark.group'})} style={{ paddingRight: 4, transform: 'translateY(-12px)', width: 16, display: 'inline-block' }}>
-                    <BaseIcon title={formatMessage({id: 'analysis.benchmark.group'})} />
+            {isBaseGroup &&
+                <span title={formatMessage({ id: 'analysis.benchmark.group' })} style={{ paddingRight: 4, transform: 'translateY(-12px)', width: 16, display: 'inline-block' }}>
+                    <BaseIcon title={formatMessage({ id: 'analysis.benchmark.group' })} />
                 </span>}
             <Tooltip title={tempText} overlayStyle={{ wordBreak: 'break-all' }}>
                 {dom}
@@ -69,9 +69,9 @@ export const EllipsisRect = (props: any) => {
     )
 }
 // “对比组”转换国际化方式显示
-export  const groupToLocale = (str: string) => {
+export const groupToLocale = (str: string) => {
     const { formatMessage } = useIntl();
-    return str?.match(/^对比组[0-9]+$/) ? (formatMessage({id: 'analysis.comparison.group'}) + str.slice(3)) : str
+    return str?.match(/^对比组[0-9]+$/) ? (formatMessage({ id: 'analysis.comparison.group' }) + str.slice(3)) : str
 }
 
 export const getListStyle = (draggableStyle: any) => ({

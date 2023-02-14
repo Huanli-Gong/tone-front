@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { FilterFilled } from '@ant-design/icons'
@@ -9,7 +10,7 @@ import CommonPagination from '@/components/CommonPagination';
 import SelectRadio from '@/components/Public/SelectRadio';
 import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash'
-import { Tabs, Select, Divider, Space, Button, DatePicker, Row, Col, Typography } from 'antd';
+import { Tabs, Select, Divider, Space, Button, DatePicker, Row, Col } from 'antd';
 import SearchInput from '@/components/Public/SearchInput'
 import { resizeDocumentHeight } from './CommonMethod'
 import SelectUser from '@/components/Public/SelectUser'
@@ -17,7 +18,7 @@ import { requestCodeMessage } from '@/utils/utils';
 import { getUserFilter } from '@/components/TableFilters'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-const { Option } = Select;
+
 const { RangePicker } = DatePicker
 const defaultResult = {
     all_job: 0,
@@ -43,10 +44,7 @@ const getSelJobFn = (allGroup: any, allNoGroupData: any) => {
     const allJobId = allJob.map((item: any) => _.get(item, 'id'))
     return allJobId
 }
-const DEFAULTPARAM = {
-    page_num: 1,
-    page_size: 10,
-}
+
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
@@ -61,6 +59,12 @@ export default (props: any) => {
     resizeDocumentHeight(scollMaxHeight)
     const { onCancel, onOk, currentGroup } = props
 
+    const DEFAULTPARAM = {
+        page_num: 1,
+        page_size: 10,
+        ws_id,
+    }
+
     let { allGroup, allNoGroupData } = props
     allGroup = _.isArray(allGroup) ? allGroup : []
     const [tabKey, setTabKey] = useState<string>('1')
@@ -70,7 +74,6 @@ export default (props: any) => {
 
     const page_default_params: any = {
         ...DEFAULTPARAM,
-        ws_id,
         state: 'success,fail,skip,stop,running',
         filter_id: selectedId.join(','),
     }
@@ -91,41 +94,42 @@ export default (props: any) => {
     // 获取产品版本数据
     const getProductList = async (id: any) => {
         setLoading(true)
-        let result = await queryProductList({ product_id: id, ws_id })
-        if (result.code === 200) {
-            let data = result.data.filter((val: any) => val.trim())
-            data = data.map((item: any, index: number) => ({ label: index, value: item }))
+        const { code, data, msg } = await queryProductList({ product_id: id, ws_id })
+        if (code === 200) {
             setAllVersion(data)
-            const defaultProVersion = data.length ? data[0].value : ''
-            setPruductVersion(defaultProVersion)
+            if (!currentGroup?.members.length) {
+                const defaultProVersion = data.length ? data[0] : ''
+                setPruductVersion(defaultProVersion)
+            }
         } else {
-            requestCodeMessage(result.code, result.msg)
+            requestCodeMessage(code, msg)
         }
         setLoading(false)
     }
     // 获取产品列表数据
     const getProductData = async () => {
         setLoading(true)
-        let result = await queryProduct({ ws_id })
+        const { code, data, msg } = await queryProduct({ ws_id })
         setLoading(false)
-        if (result.code === 200) {
-            let data = _.isArray(result.data) ? result.data : []
+        if (code === 200) {
             setAllProduct(data)
-            if (data.length) setPruductId(data[0].id)
+            if (!currentGroup.product_id) {
+                if (data.length) setPruductId(data[0].id)
+            }
             return
         } else {
-            requestCodeMessage(result.code, result.msg)
+            requestCodeMessage(code, msg)
         }
     }
 
     // 查询基线数据
     const getBaselineData = async () => {
         setLoading(true)
-        let result = await queryBaelineList({ ...baselineParam, ws_id })
-        if (result.code === 200) {
+        const { code, msg, ...result } = await queryBaelineList({ ...baselineParam, ws_id })
+        if (code === 200) {
             setBaselineData(result)
         } else {
-            requestCodeMessage(result.code, result.msg)
+            requestCodeMessage(code, msg)
         }
         setLoading(false)
     }
@@ -137,13 +141,17 @@ export default (props: any) => {
         setTabKey(key)
     }
     // 监听tab切换数据加载
-    useEffect(() => {
+    /* useEffect(() => {
         if (tabKey === '1') {
             if (!(currentGroup && _.get(currentGroup, 'members').length)) {
                 getProductData()
             }
         }
-    }, [tabKey])
+    }, [tabKey]) */
+
+    React.useEffect(() => {
+        getProductData()
+    }, [currentGroup])
 
     const getJobList = async (params: any) => {
         setLoading(true)
@@ -152,7 +160,7 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-        if (params.product_version && params.product_id) getJobList(params)
+        if (params.product_id) getJobList(params)
     }, [params])
 
     useEffect(() => {
@@ -164,8 +172,14 @@ export default (props: any) => {
     }, [pruductVersion, pruductId])
 
     useEffect(() => {
-        if (pruductId) getProductList(pruductId)
+        pruductId && getProductList(pruductId)
     }, [pruductId])
+
+    React.useEffect(() => {
+        const { product_id, product_version } = currentGroup
+        product_id && setPruductId(product_id)
+        product_version && setPruductVersion(product_version)
+    }, [currentGroup])
 
     const defaultOption = (ret: any) => {
         if (ret.code === 200) {
@@ -186,7 +200,6 @@ export default (props: any) => {
 
     const onProductChange = (value: any) => {
         setPruductId(value)
-        // setParams((p: any) => ({ ...p, product_id: value, product_version: allVersion[0].value })
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
@@ -437,10 +450,15 @@ export default (props: any) => {
         if (tabKey === '1') {
             groupData.members = _.isArray(groupData.members) ? [...groupData.members, ...selectRowData] : selectRowData
             groupData.type = 'job'
+            if (groupData.members.length > 0) {
+                groupData.product_version = groupData.members[0].product_version
+                groupData.product_id = groupData.members[0].product_id
+            }
         } else {
             groupData.members = _.isArray(groupData.members) ? [...groupData.members, ...selectedBaselineData] : selectedBaselineData
             groupData.type = 'baseline'
         }
+
         onOk(groupData)
     }
 
@@ -541,9 +559,13 @@ export default (props: any) => {
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
-                        >
-                            {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
-                        </Select>
+                            options={
+                                allProduct?.map((item: any) => ({
+                                    value: item.id,
+                                    label: item.name
+                                }))
+                            }
+                        />
                     </Col>
                     <Col span={12} >
                         <span><FormattedMessage id="analysis.version.label" /></span>
@@ -558,13 +580,17 @@ export default (props: any) => {
                             filterOption={(input, option: any) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
-                        >
-                            {allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)}
-                        </Select>
+                            options={
+                                allVersion?.map((item: any) => ({
+                                    value: item,
+                                    label: item
+                                }))
+                            }
+                        />
                     </Col>
                 </Row>
                 <Tabs activeKey={tabKey} className={styles.job_test} onChange={handleTabSwitch}>
-                    <Tabs.TabPane tab={<FormattedMessage id="analysis.test.data" />} key="1" disabled={jobDisable}>
+                    <Tabs.TabPane tab={<FormattedMessage id="analysis.job.data" />} key="1" disabled={jobDisable}>
                         <Scrollbars style={scroll} className={styles.scroll}>
                             <ResizeHooksTable
                                 rowSelection={rowSelection as any}

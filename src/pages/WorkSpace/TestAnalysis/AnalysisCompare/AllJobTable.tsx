@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Space, Row, Col, Select, Divider, Button, DatePicker, Typography } from 'antd'
+import { Space, Row, Col, Select, Divider, Button, DatePicker, Modal } from 'antd'
 import { FilterFilled } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words'
 import SearchInput from '@/components/Public/SearchInput'
@@ -35,8 +35,8 @@ const styleObj = {
     button_width: 105
 }
 
-const AllJobTable = (props: any) => {
-    const { onOk, onCancel, noGroupData, groupData } = props
+const AllJobTable: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
+    const { onOk, noGroupData, groupData } = props
     const { ws_id }: any = useParams();
     const page_default_params: any = {
         page_num: 1,
@@ -47,6 +47,7 @@ const AllJobTable = (props: any) => {
 
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
+    const [visible, setVisible] = useState<any>(false)
     const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
     const [allProduct, setAllProduct] = useState([])
     const [allVersion, setAllVersion] = useState<any>([])
@@ -62,6 +63,12 @@ const AllJobTable = (props: any) => {
     const [pruductId, setPruductId] = useState<any>()
     const [pruductVersion, setPruductVersion] = useState<any>()
     const [dataSource, setDataSource] = useState(defaultResult)
+
+    React.useImperativeHandle(ref, () => ({
+        show() {
+            setVisible(true)
+        }
+    }))
 
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
@@ -310,7 +317,7 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys(_.difference(selectedRowKeys, keysArr))
         setSelectRowData(_.differenceBy(selectRowData, arr, 'id'))
     }
-    
+
     const groupDataJobIds = groupData.filter((i: any) => i.type === "job").reduce((p: any, c: any) => {
         const { members } = c
         return p.concat(members.map((i: any) => i.id))
@@ -339,13 +346,17 @@ const AllJobTable = (props: any) => {
         setSelectedRowKeys([]);
         setSelectRowData([]);
     }
-    const handleCancle = () => {
-        onCancel()
+
+    const handleCancel = () => {
+        setVisible(false)
     }
+
     const handleOk = () => {
         onOk(selectRowData)
+        handleCancel()
     }
-    let tableData = _.isArray(dataSource.data) ? dataSource.data : []
+
+    const tableData = _.isArray(dataSource.data) ? dataSource.data : []
     // 滚动条参数
     const scroll = {
         // 最大高度，内容超出该高度会出现滚动条
@@ -353,89 +364,101 @@ const AllJobTable = (props: any) => {
     }
 
     return (
-        <div className={styles.list_container} id="list_container">
-            <div className={styles.select_product}>
-                <Row>
-                    <Col span={12} >
-                        <span><FormattedMessage id="analysis.product.label" /></span>
-                        <Select
-                            showSearch
-                            allowClear={true}
-                            style={{ width: 'calc(100% - 75px)' }}
-                            placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                            value={pruductId}
-                            optionFilterProp="children"
-                            onSelect={onProductChange}
-                            onClear={handleClearProduct}
-                            filterOption={(input, option: any) =>
-                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                        >
-                            {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
-                        </Select>
-                    </Col>
-                    <Col span={12} >
-                        <span><FormattedMessage id="analysis.version.label" /></span>
-                        <Select
-                            showSearch
-                            allowClear={true}
-                            style={{ width: `calc(100% - ${getLocale() === 'en-US' ? 120 : 75}px)` }}
-                            placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                            value={pruductVersion}
-                            optionFilterProp="children"
-                            onSelect={onVersionChange}
-                            onClear={handleClearVersion}
-                            filterOption={(input, option: any) =>
-                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                        >
-                            {allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)}
-                        </Select>
-                    </Col>
-                </Row>
-                <div className={styles.job_text}><FormattedMessage id="analysis.job.table" /></div>
-                <Divider className={styles.line} />
-            </div>
-            <Scrollbars style={scroll} className={styles.scroll}>
-                <ResizeHooksTable
-                    rowSelection={rowSelection as any}
-                    rowKey='id'
-                    columns={columns as any}
-                    name="ws-compare-all-job-list"
-                    refreshDeps={[ws_id, params, autoFocus]}
-                    loading={loading}
-                    dataSource={tableData}
-                    pagination={false}
-                    size="small"
+        <Modal
+            title={formatMessage({ id: "analysis.select.job" })}
+            open={visible}
+            centered={true}
+            width={1000}
+            maskClosable={false}
+            destroyOnClose={true}
+            footer={null}
+            onOk={handleOk}
+            onCancel={handleCancel}
+        >
+            <div className={styles.list_container} id="list_container">
+                <div className={styles.select_product}>
+                    <Row>
+                        <Col span={12} >
+                            <span><FormattedMessage id="analysis.product.label" /></span>
+                            <Select
+                                showSearch
+                                allowClear={true}
+                                style={{ width: 'calc(100% - 75px)' }}
+                                placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
+                                value={pruductId}
+                                optionFilterProp="children"
+                                onSelect={onProductChange}
+                                onClear={handleClearProduct}
+                                filterOption={(input, option: any) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }
+                            >
+                                {allProduct.map((item: any) => <Option value={item.id} key={item.id}>{item.name}</Option>)}
+                            </Select>
+                        </Col>
+                        <Col span={12} >
+                            <span><FormattedMessage id="analysis.version.label" /></span>
+                            <Select
+                                showSearch
+                                allowClear={true}
+                                style={{ width: `calc(100% - ${getLocale() === 'en-US' ? 120 : 75}px)` }}
+                                placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
+                                value={pruductVersion}
+                                optionFilterProp="children"
+                                onSelect={onVersionChange}
+                                onClear={handleClearVersion}
+                                filterOption={(input, option: any) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }
+                            >
+                                {allVersion.map((item: any) => <Option value={item.value} key={item.label}>{item.value}</Option>)}
+                            </Select>
+                        </Col>
+                    </Row>
+                    <div className={styles.job_text}><FormattedMessage id="analysis.job.table" /></div>
+                    <Divider className={styles.line} />
+                </div>
+                <Scrollbars style={scroll} className={styles.scroll}>
+                    <ResizeHooksTable
+                        rowSelection={rowSelection as any}
+                        rowKey='id'
+                        columns={columns as any}
+                        name="ws-compare-all-job-list"
+                        refreshDeps={[ws_id, params, autoFocus]}
+                        loading={loading}
+                        dataSource={tableData}
+                        pagination={false}
+                        size="small"
+                    />
+                </Scrollbars>
+                <CommonPagination
+                    total={dataSource.total}
+                    currentPage={params && params.page_num}
+                    pageSize={params && params.page_size}
+                    onPageChange={(page_num, page_size) => {
+                        setParams({ ...params, page_num, page_size })
+                    }}
                 />
-            </Scrollbars>
-            <CommonPagination
-                total={dataSource.total}
-                currentPage={params && params.page_num}
-                pageSize={params && params.page_size}
-                onPageChange={(page_num, page_size) => {
-                    setParams({ ...params, page_num, page_size })
-                }}
-            />
-            <Divider className={styles.footer_line} />
-            <div className={styles.footer}>
-                <span>
-                    <span><FormattedMessage id="analysis.selected" /></span>
-                    <span className={styles.text_num}>{`${selectRowData.length}`}</span>
-                    <span><FormattedMessage id="analysis.item" /></span>
-                    <span className={styles.text_cancle} onClick={handleSelectCancle}>
-                        <FormattedMessage id="analysis.all.cancel" />
+                <Divider className={styles.footer_line} />
+                <div className={styles.footer}>
+                    <span>
+                        <span><FormattedMessage id="analysis.selected" /></span>
+                        <span className={styles.text_num}>{`${selectRowData.length}`}</span>
+                        <span><FormattedMessage id="analysis.item" /></span>
+                        <span className={styles.text_cancle} onClick={handleSelectCancle}>
+                            <FormattedMessage id="analysis.all.cancel" />
+                        </span>
                     </span>
-                </span>
-                <span>
-                    <Space>
-                        <Button onClick={handleCancle}><FormattedMessage id="operation.cancel" /></Button>
-                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
-                    </Space>
-                </span>
+                    <span>
+                        <Space>
+                            <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
+                            <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.ok" /></Button>
+                        </Space>
+                    </span>
+                </div>
             </div>
-        </div>
+        </Modal>
     )
 }
 
-export default AllJobTable;
+export default React.forwardRef(AllJobTable);

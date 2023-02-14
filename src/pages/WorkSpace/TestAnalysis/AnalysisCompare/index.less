@@ -607,3 +607,23 @@
         }
     } 
 }
+
+.groupOptionIconStyle {
+    :global {
+        .ant-popover-inner-content {
+            padding: 0;
+        }
+
+        .ant-menu.ant-menu-vertical {
+            border-right: none;
+        }
+
+        .ant-menu-item.ant-menu-item-only-child {
+            margin: 0!important;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.06);
+            }
+        }
+    }
+}

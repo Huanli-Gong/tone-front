@@ -2,15 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { queryEenvironmentResultList, queryDomainGroup } from './services'
 import { history, useIntl, FormattedMessage, getLocale, useParams } from 'umi'
-import { message, Layout, Row, Select, Modal, Space, Divider, Button, Alert, Spin, Tooltip, Popconfirm, Typography } from 'antd';
+import { message, Layout, Menu, Select, Space, Divider, Button, Alert, Spin, Tooltip, Popconfirm, Typography, Popover } from 'antd';
+import type { MenuProps } from "antd"
 import styles from './index.less'
-import { PlusOutlined, CaretDownOutlined } from '@ant-design/icons'
+import { PlusOutlined, CaretDownOutlined, MoreOutlined } from '@ant-design/icons'
 import EditMarkDrawer from './EditMark'
-import AddJob from './AddJob'
-import AddPlan from './AddPlan/ViewCollapse'
 import BaseGroupModal from './BaseGroupModal'
 import _ from 'lodash'
-import ProverEllipsis from './ProverEllipsis'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { ReactComponent as ProductIcon } from '@/assets/svg/icon_product.svg'
@@ -25,12 +23,14 @@ import {
     transformIdFn,
     transformNoGroupIdFn,
     EllipsisRect,
-    groupToLocale,
     getListStyle,
     getItemStyle,
     getJobItemStyle
 } from './PublicMethod';
 import AllJobTable from './AllJobTable';
+import { v4 as uuid } from 'uuid';
+import DeleteGroupModal from './Modals/DeleteGroupModal';
+import AddGroupItemModal from './Modals/AddGroupItem';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -38,7 +38,6 @@ const { Option } = Select;
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const local = getLocale() === 'en-US'
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const { ws_id } = useParams() as any
     const { state } = props.location
     let selectedJob: any = _.get(state, `${ws_id}-compareData`)
@@ -50,19 +49,13 @@ export default (props: any) => {
     const { height: layoutHeight } = useClientSize()
     const [groupData, setGroupData] = useState<any>(selectedJob)
     const [noGroupData, setNoGroupData] = useState<any>(noGroupJob)
-    const [currentEditGroup, setCurrentEditGroup] = useState<any>({})
-    const [currentEditGroupIndex, setCurrentEditGroupIndex] = useState<number>(0)
     const [baselineGroup, setBaselineGroup] = useState(selectedJob[0] || {})
     const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(-1)
-    const [visible, setVisible] = useState(false);
-    const [visibleAddGroupItem, setVisibleAddGroupItem] = useState(false);
     const editGroupMark: any = useRef(null)
-    const [disabled, setDisabled] = useState(true)
     const [loading, setLoading] = useState(false)
     const newProductVersionGroup = useRef([]);
     const newNoGroup = useRef([]);
     const [labelBlinking, setLabelBlinking] = useState(false)
-    const [visibleBaseGroup, setVisibleBaseGroup] = useState(false)
     const [currentDelJobDom, setCurrentDelJobDom] = useState<any>(null)
     const [isExpand, seIsExpand] = useState<boolean>(true)
     const [groupingButton, seGroupingButton] = useState<boolean>(false)
@@ -72,6 +65,11 @@ export default (props: any) => {
     const saveReportDraw: any = useRef(null)
 
     document.title = '配置页-T-One'
+
+    const deleteGroupModalRef: any = useRef(null)
+    const addGroupItemModal: any = useRef(null)
+    const startCompareModalRef: any = useRef(null)
+    const allJobSelectRef: any = useRef(null)
 
     useEffect(() => {
         /* 引起热更新新增一个对比组 */
@@ -92,6 +90,17 @@ export default (props: any) => {
         if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
     }, [groupData, baselineGroupIndex])
 
+    const checkSameTitleAndReturnNew = (arr: any[], title: string) => {
+        const trimTitle = title.trim()
+        const samCount = arr.reduce((p: number, c: any) => {
+            const { name } = c
+            if (name.replace(/\(\d+\)/, "") === trimTitle)
+                return p + 1
+            return p
+        }, 0)
+        return samCount > 0 ? `${trimTitle}(${samCount})` : trimTitle
+    }
+
     const versionGroupingFn = (arrGroup: any, newGroup: any) => {
         const arr: [] = arrGroup.filter((item: any) => {
             return item.product_version === arrGroup[0].product_version && item.product_id === arrGroup[0].product_id
@@ -109,17 +118,6 @@ export default (props: any) => {
             })
             newNoGroup.current = newGroup
         }
-    }
-
-    const checkSameTitleAndReturnNew = (arr: any[], title: string) => {
-        const trimTitle = title.trim()
-        const samCount = arr.reduce((p: number, c: any) => {
-            const { product_version } = c
-            if (product_version.replace(/\(\d+\)/, "") === trimTitle)
-                return p + 1
-            return p
-        }, 0)
-        return samCount > 0 ? `${trimTitle}(${samCount})` : trimTitle
     }
 
     const snGroupingFn = (arrGroup: any, newGroup: any) => {
@@ -151,13 +149,14 @@ export default (props: any) => {
                     if (index !== -1) groupDataCopy[index] = matchGroup
                 }
                 if (!matchGroup) {
-                    const name = addGroupNameFn(groupDataCopy)
+                    const name = addGroupNameFn(groupDataCopy, obj.product_version)
                     const addGroup = {
-                        product_version: obj.product_version || name,
+                        product_version: obj.product_version,
                         members: obj.members,
+                        product_id: obj.product_id,
                         name,
                         type: 'job',
-                        id: +new Date() + groupDataCopy.length
+                        id: uuid()
                     }
                     groupDataCopy.push(addGroup)
                 }
@@ -191,13 +190,14 @@ export default (props: any) => {
                     if (index !== -1) groupDataCopy[index] = matchGroup
                 }
                 if (!matchGroup) {
-                    const name = addGroupNameFn(groupDataCopy)
+                    const name = addGroupNameFn(groupDataCopy, obj.product_version)
                     const addGroup = {
-                        product_version: checkSameTitleAndReturnNew(groupDataCopy, obj.product_version) || name,
+                        product_version: obj.product_version,
                         members: obj.members,
+                        product_id: obj.product_id,
                         name,
                         type: 'job',
-                        id: +new Date() + groupDataCopy.length
+                        id: uuid()
                     }
                     groupDataCopy.push(addGroup)
                 }
@@ -207,12 +207,10 @@ export default (props: any) => {
         setGroupData(groupDataCopy)
         setBaselineGroup(groupDataCopy[baselineGroupIndex] || {})
         setNoGroupData(moreSn)
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupDataCopy))
-        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(moreSn))
     }
 
     const handleAddNoVersionJob = () => {
-        setIsModalOpen(true);
+        allJobSelectRef.current?.show();
     }
 
     const cancleGrouping = () => {
@@ -233,23 +231,22 @@ export default (props: any) => {
         setBaselineGroupIndex(-1)
         setBaselineGroup({})
         setNoGroupData(results)
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([]))
-        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(results))
     }
 
-    const addGroupNameFn = (arrGroup = groupData) => {
-        return checkSameTitleAndReturnNew(arrGroup, "对比组")
+    const addGroupNameFn = (arrGroup = groupData, defautTitle = "对比组") => {
+        return checkSameTitleAndReturnNew(arrGroup, defautTitle || "对比组")
     }
 
     const handleAddJobGroup = (type = "") => {
         const arr = _.cloneDeep(groupData)
         const name = addGroupNameFn()
         const addGroup = {
-            product_version: name,
+            product_version: undefined,
+            product_id: undefined,
             members: [],
             name,
             type,
-            id: +new Date() + groupData.length
+            id: uuid()
         }
         arr.push(addGroup)
         setGroupData(arr)
@@ -262,7 +259,6 @@ export default (props: any) => {
             setBaselineGroupIndex(-1)
             setBaselineGroup({})
         }
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
     }
 
     const handleGroupClick = (obj: any, num: number) => {
@@ -285,7 +281,6 @@ export default (props: any) => {
         arr = arr.filter((item: any, indexNum: number) => indexNum !== num)
         setNoGroupData(arr)
         setCurrentDelJobDom(null)
-        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(arr))
     }
     const handleJobDelClick = (e: any, index: number, num: number) => {
         e.stopPropagation();
@@ -298,72 +293,28 @@ export default (props: any) => {
             arr[index].name = name
         }
         setGroupData(arr)
-        setCurrentEditGroup(arr[index])
-        setCurrentEditGroupIndex(index)
         setBaselineGroup(arr[baselineGroupIndex])
         setCurrentDelJobDom(null)
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
     }
 
-    const handleEditMark = () => {
-        const localStr = formatMessage({ id: 'analysis.edit.mark.name' })
-        editGroupMark.current?.show(
-            localStr,
-            _.cloneDeep(currentEditGroup),
-            groupData[currentEditGroupIndex].members[0]?.product_version
-        )
-    }
-    const handleDelGroup = () => {
-        let arr = _.cloneDeep(groupData)
-        arr = arr.filter((item: any, index: number) => index !== currentEditGroupIndex)
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
+    React.useEffect(() => {
+        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupData))
+        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify(noGroupData))
+    }, [groupData, noGroupData, ws_id])
 
-        if (currentEditGroupIndex === baselineGroupIndex && arr.length !== 1) {
-            setBaselineGroupIndex(-1)
-            setBaselineGroup({})
-        }
-        if (arr.length === 1) {
-            setBaselineGroupIndex(0)
-            setBaselineGroup(arr[0] || {})
-        }
-        setVisible(false);
-        setGroupData(arr)
-        setCurrentEditGroup({})
-        setCurrentEditGroupIndex(0)
+    const handleDelGroup = (obj: any) => {
+        setGroupData((p: any) => p.filter((i: any) => i.id !== obj.id))
     }
 
-    const showModal = () => {
-        setVisible(true);
-    };
-    const handleCancel = () => {
-        setVisible(false);
-        destroyAll()
-    };
-
-    const destroyAll = () => {
-        Modal.destroyAll();
-    }
-    const handleEllipsis = (obj: any, num: number) => {
-        setCurrentEditGroup(obj)
-        setCurrentEditGroupIndex(num)
-    }
     const handleEditMarkOk = (obj: any) => {
-        setCurrentEditGroup(obj)
-        const arr = _.cloneDeep(groupData)
-        arr[currentEditGroupIndex] = obj
-        if (currentEditGroupIndex === baselineGroupIndex) setBaselineGroup(obj)
-        setGroupData(arr)
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
+        setGroupData((p: any) => p.map((i: any) => i.id === obj.id ? obj : i))
     }
+
     const handleClear = () => {
         setNoGroupData([])
         setGroupData([])
         setBaselineGroup({})
         setBaselineGroupIndex(-1)
-        setCurrentEditGroup({})
-        setCurrentEditGroupIndex(0)
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([]))
-        window.sessionStorage.setItem(`${ws_id}-noGroupJobData`, JSON.stringify([]))
     }
 
     const canCompare = React.useMemo(() => {
@@ -397,7 +348,7 @@ export default (props: any) => {
             return message.warning(formatMessage({ id: "analysis.please.add.comparison.group" }))
         }
 
-        setVisibleBaseGroup(true)
+        startCompareModalRef?.current.show()
         return
     }
 
@@ -429,7 +380,6 @@ export default (props: any) => {
         const params: any = handleDomainList(suiteData)
         const paramEenvironment = handlEenvironment(suiteData)
 
-        setVisibleBaseGroup(false);
         setLoading(true)
         Promise.all([queryDomainGroupFn(params)])
             .then((result: any) => {
@@ -448,7 +398,6 @@ export default (props: any) => {
                             envDataParam: paramEenvironment,
                         }
                     })
-                    window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupData))
                     return
                 }
             })
@@ -457,8 +406,8 @@ export default (props: any) => {
                 message.error(formatMessage({ id: 'request.failed' }))
                 console.log(e)
             })
-
     }
+
     const creatReportCallback = (reportData: any, suiteData: any) => { // suiteData：已选的
         setLoading(true)
         let func_suite = suiteData.func_suite_dic || {}
@@ -501,7 +450,6 @@ export default (props: any) => {
                             saveReportData: reportData
                         }
                     })
-                    window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(groupData))
                     return
                 }
                 if (result[1].code === 1358) {
@@ -523,8 +471,9 @@ export default (props: any) => {
                 console.log(e)
             })
     }
+
     const handleCreatReportOk = (suiteData: any) => { // suiteData：已选的
-        setVisibleBaseGroup(false);
+        startCompareModalRef.current.hide()
         saveReportDraw.current?.show(suiteData)
     }
 
@@ -559,13 +508,13 @@ export default (props: any) => {
         let compare_groups = []
         if (array.length === 1) {
             base_group = {
-                tag: newGroup[0]?.product_version || '',
+                tag: newGroup[0]?.name || '',
                 base_objs: baseArr
             }
         } else {
             const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
             base_group = {
-                tag: newGroup.length ? newGroup[baseIndex]?.product_version : '',
+                tag: newGroup.length ? newGroup[baseIndex]?.name : '',
                 base_objs: baseArr,
             }
 
@@ -574,7 +523,7 @@ export default (props: any) => {
                 const compareIds = newGroup[index]?.members?.map((i: any) => i.id)
 
                 const groupItem: any = {
-                    tag: newGroup[index]?.product_version,
+                    tag: newGroup[index]?.name,
                     base_objs: compareArr.reduce((p, c) => {
                         const { obj_id } = c
                         if (compareIds.includes(obj_id))
@@ -593,71 +542,50 @@ export default (props: any) => {
         return paramData
     }
 
-    const handleAddGroupItem = (obj: any, index: number) => {
-        setCurrentEditGroup(obj)
-        setCurrentEditGroupIndex(index)
-        setVisibleAddGroupItem(true)
-    }
+    const ContentMark: React.FC<AnyType> = ({ group }) => {
+        const [open, setOpen] = React.useState(false)
 
-    const handleAddGroupItemCancel = () => {
-        setVisibleAddGroupItem(false);
-        destroyAll()
-    }
-
-    const handleBaseGroupModalCancle = () => {
-        setVisibleBaseGroup(false);
-        destroyAll()
-    }
-
-    const handleAddGroupItemOk = (obj: any) => {
-        if ((!obj.product_version || obj.product_version === obj.name) && _.isArray(obj.members)) {
-            if (obj.type === 'baseline' && obj.members[0] && obj.members[0].version) {
-                obj.product_version = obj.members[0].version
+        const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+            if (key === "editMark") {
+                editGroupMark.current?.show(group)
             }
-            if ((obj.type === 'job' || obj.type === 'plan') && obj.members[0] && obj.members[0].product_version) {
-                obj.product_version = obj.members[0].product_version
+            if (key === "deleteMark") {
+                deleteGroupModalRef.current?.show(group)
             }
+            setOpen(false)
         }
-        const arr = _.cloneDeep(groupData)
-        arr[currentEditGroupIndex] = obj
-        if (currentEditGroupIndex === baselineGroupIndex) setBaselineGroup(obj)
-        setCurrentEditGroup(obj)
-        setGroupData(arr)
-        setVisibleAddGroupItem(false);
-        window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify(arr))
-    }
 
-    const addGroupTypeFn = () => {
-        if (!currentEditGroup) return
-        if (currentEditGroup.type === 'plan') {
-            return (
-                <AddPlan
-                    onOk={handleAddGroupItemOk}
-                    onCancel={handleAddGroupItemCancel}
-                    currentGroup={currentEditGroup}
-                />
-            )
-        }
         return (
-            <AddJob
-                onOk={handleAddGroupItemOk}
-                onCancel={handleAddGroupItemCancel}
-                currentGroup={currentEditGroup}
-                allGroup={groupData}
-                allNoGroupData={noGroupData}
-            />
+            <Popover
+                trigger={["click"]}
+                onOpenChange={setOpen}
+                open={open}
+                overlayClassName={styles.groupOptionIconStyle}
+                content={
+                    <Menu
+                        onClick={handleMenuClick}
+                        items={
+                            ["editMark", "deleteMark"]
+                                .map((i: any) => ({
+                                    key: i,
+                                    title: formatMessage({ id: `analysis.${i}` }),
+                                    label: formatMessage({ id: `analysis.${i}` }),
+                                }))
+                        }
+                    />
+                }
+            >
+                <span className={styles.opreate_button}>
+                    <MoreOutlined />
+                </span>
+            </Popover>
         )
     }
 
-    const contentMark = (
-        <div>
-            <p onClick={_.partial(handleEditMark)}><FormattedMessage id="analysis.editMark" /></p>
-            <p onClick={_.partial(showModal)}><FormattedMessage id="analysis.deleteMark" /></p>
-        </div>
-    )
     const handleMouseOver = (e: any) => {
         e.stopPropagation()
     }
+
     const getSnDom = (snArr: any) => {
         if (!snArr.length) return ''
         if (snArr.length === 1) return (
@@ -668,7 +596,7 @@ export default (props: any) => {
                 </>
             </PopoverEllipsis>
         )
-        const text = snArr.map((val: any) => <span>{val}<br /></span>)
+        const text = snArr.map((val: any) => <span key={uuid()}>{val}<br /></span>)
         if (snArr.length > 1) return (
             <Tooltip placement="right" title={text}>
                 <span onMouseOver={handleMouseOver} style={{ color: '#1890FF', boxSizing: 'border-box', display: 'inline-block', maxWidth: '50%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -855,19 +783,11 @@ export default (props: any) => {
                         >
                             <div className={styles.first_part}>
                                 <EllipsisRect
-                                    text={item.product_version}
+                                    text={item.name}
                                     flag={item.type === 'baseline'}
                                     isBaseGroup={index === baselineGroupIndex && groupData.length > 1}
                                 />
-                                <span className={styles.opreate_button}>
-                                    <ProverEllipsis
-                                        current={groupData[index]}
-                                        currentIndex={index}
-                                        contentMark={contentMark}
-                                        handleEllipsis={handleEllipsis}
-                                        currentEditGroupIndex={currentEditGroupIndex}
-                                    />
-                                </span>
+                                <ContentMark group={groupData[index]} />
                                 {
                                     index !== baselineGroupIndex &&
                                     <span
@@ -890,19 +810,11 @@ export default (props: any) => {
             <>
                 <div className={styles.first_part}>
                     <EllipsisRect
-                        text={item.product_version}
+                        text={item.name}
                         flag={item.type === 'baseline'}
                         isBaseGroup={index === baselineGroupIndex && groupData.length > 1}
                     />
-                    <span className={styles.opreate_button}>
-                        <ProverEllipsis
-                            current={groupData[index]}
-                            currentIndex={index}
-                            contentMark={contentMark}
-                            handleEllipsis={handleEllipsis}
-                            currentEditGroupIndex={currentEditGroupIndex}
-                        />
-                    </span>
+                    <ContentMark group={groupData[index]} />
                     {
                         index !== baselineGroupIndex &&
                         <span
@@ -948,15 +860,15 @@ export default (props: any) => {
                                                             <Typography.Text ellipsis={{ tooltip: true }}>{obj.name}</Typography.Text>
                                                             <div>
                                                                 {
-                                                                    obj.product_version &&
+                                                                    obj.name &&
                                                                     <PopoverEllipsis
-                                                                        title={obj.product_version}
+                                                                        title={obj.name}
                                                                         refData={groupData}
                                                                         customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}
                                                                     >
                                                                         <>
                                                                             <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />
-                                                                            {obj.product_version}
+                                                                            {obj.name}
                                                                         </>
                                                                     </PopoverEllipsis>
                                                                 }
@@ -1075,10 +987,10 @@ export default (props: any) => {
                                                             </div>
                                                             <div>
                                                                 {
-                                                                    obj.product_version &&
-                                                                    <PopoverEllipsis title={obj.product_version} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
+                                                                    obj.name &&
+                                                                    <PopoverEllipsis title={obj.name} refData={groupData} customStyle={{ display: 'inline-block', maxWidth: '50%', paddingRight: 8 }}>
                                                                         <>
-                                                                            <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.product_version}
+                                                                            <ProductIcon style={{ marginRight: 2, transform: 'translateY(2px)' }} />{obj.name}
                                                                         </>
                                                                     </PopoverEllipsis>
                                                                 }
@@ -1140,12 +1052,7 @@ export default (props: any) => {
 
     const handleOk = (obj: any) => {
         setNoGroupData(obj)
-        setIsModalOpen(false);
     };
-
-    const handleJobCancel = () => {
-        setIsModalOpen(false);
-    }
 
     return (
         <Layout style={{ paddingRight: 20, paddingBottom: 20, height: layoutHeight - 50, minHeight: 0, overflow: 'auto', background: '#f5f5f5' }} className={styles.compare_job}>
@@ -1227,8 +1134,9 @@ export default (props: any) => {
                                                                             {groupItemReact(item, index)}
                                                                             <div
                                                                                 style={{ cursor: 'pointer' }}
-                                                                                onClick={_.partial(handleAddGroupItem, groupData[index], index)}
-                                                                                className={styles.create_job_type}>
+                                                                                onClick={() => addGroupItemModal.current?.show(groupData[index])}
+                                                                                className={styles.create_job_type}
+                                                                            >
                                                                                 {item.type === 'baseline' ? <FormattedMessage id="analysis.add.baseline" /> : <FormattedMessage id="analysis.add.job" />}
                                                                             </div>
                                                                         </div>
@@ -1285,107 +1193,30 @@ export default (props: any) => {
                 </div>
 
                 <EditMarkDrawer ref={editGroupMark} onOk={handleEditMarkOk} />
-                <Modal
-                    title={<FormattedMessage id="delete.prompt" />}
-                    visible={visible}
-                    width={480}
-                    className={styles.baseline_del_modal}
-                    destroyOnClose={true}
-                    onCancel={handleCancel}
-                    footer={
-                        <Row justify="end">
-                            <Space>
-                                <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
-                                <Button onClick={handleDelGroup} type="primary" danger><FormattedMessage id="operation.delete" /></Button>
-                            </Space>
-                        </Row>
-                    }
-                >
-                    <span><FormattedMessage id="analysis.are.you.sure.delete.group" />{`【${currentEditGroup && groupToLocale(currentEditGroup.product_version)}】`}</span>
-                </Modal>
-                <Modal
-                    title={
-                        <div
-                            style={{
-                                width: '100%',
-                                cursor: 'move',
-                            }}
-                            onMouseOver={() => {
-                                if (disabled) {
-                                    setDisabled(false)
-                                }
-                            }}
-                            onMouseOut={() => {
-                                setDisabled(true)
-                            }}
-                        >
-                            {currentEditGroup && groupToLocale(currentEditGroup.product_version)}
-                        </div>
-                    }
-                    centered={true}
-                    visible={visibleAddGroupItem}
-                    width={1000}
-                    className={styles.baseline_del_modal}
-                    onOk={handleAddGroupItemOk}
-                    onCancel={handleAddGroupItemCancel}
-                    maskClosable={false}
-                    destroyOnClose={true}
-                    wrapClassName={styles.job_Modal}
-                >
-                    {addGroupTypeFn()}
-                </Modal>
-                <Modal
-                    title={
-                        <div
-                            style={{
-                                width: '100%',
-                                cursor: 'move',
-                            }}
-                            onMouseOver={() => {
-                                if (disabled) {
-                                    setDisabled(false)
-                                }
-                            }}
-                            onMouseOut={() => {
-                                setDisabled(true)
-                            }}
-                        >
-                            <FormattedMessage id="analysis.select.benchmark.group" />
-                        </div>
-                    }
-                    centered={true}
-                    open={visibleBaseGroup}
-                    width={1000}
-                    className={styles.baseline_del_modal}
-                    onCancel={handleBaseGroupModalCancle}
-                    maskClosable={false}
-                    destroyOnClose={true}
-                    wrapClassName={`${styles.job_Modal} ${styles.baseline_group_modal}`}
-                >
-                    <BaseGroupModal
-                        baselineGroupIndex={baselineGroupIndex}
-                        baselineGroup={baselineGroup}
-                        handleCancle={handleBaseGroupModalCancle}
-                        onOk={handleSureOk}
-                        creatReportOk={handleCreatReportOk}
-                        allGroupData={groupData}
-                    />
-                </Modal>
-                <Modal
-                    title={
-                        formatMessage({ id: "analysis.select.job" })
-                    }
-                    visible={isModalOpen}
-                    centered={true}
-                    width={1000}
-                    maskClosable={false}
-                    destroyOnClose={true}
-                    footer={null}
-                    onOk={handleOk}
-                    onCancel={handleJobCancel}
-                >
-                    <AllJobTable onOk={handleOk} onCancel={handleJobCancel} groupData={groupData} noGroupData={noGroupData} />
-                </Modal>
+
+                <DeleteGroupModal
+                    ref={deleteGroupModalRef}
+                    onOk={handleDelGroup}
+                />
+
+                <AddGroupItemModal
+                    ref={addGroupItemModal}
+                    allGroupData={groupData}
+                    noGroupData={noGroupData}
+                    onOk={(data: any) => setGroupData((p: any) => p.map((i: any) => data.id === i.id ? data : i))}
+                />
+
+                <BaseGroupModal
+                    ref={startCompareModalRef}
+                    baselineGroupIndex={baselineGroupIndex}
+                    baselineGroup={baselineGroup}
+                    onOk={handleSureOk}
+                    creatReportOk={handleCreatReportOk}
+                    allGroupData={groupData}
+                />
+
+                <AllJobTable ref={allJobSelectRef} onOk={handleOk} groupData={groupData} noGroupData={noGroupData} />
+
                 <SaveReport ref={saveReportDraw} onOk={creatReportCallback} allGroup={groupData} />
             </Spin>
         </Layout>

@@ -75,7 +75,7 @@ export default {
     'analysis.test.env': '测试环境',
     'analysis.model': '机型',
     'analysis.job.table': 'Job 列表',
-    'analysis.test.data': '测试数据',
+    'analysis.job.data': '测试数据',
     'analysis.baseline_name': '基线名称',
     'analysis.comparison.group.name': '对比组名称',
     'analysis.chart.mode': '图表模式',
