@@ -642,6 +642,7 @@ export default (props: any) => {
             groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
         }
         groupArr[endGroupIndex].type = "job"
+        groupArr[endGroupIndex].product_id = _.get(groupArr[endGroupIndex].members[0], 'product_id')
         return { groupArr, noGoupArr }
     };
 
@@ -714,6 +715,8 @@ export default (props: any) => {
             );
             noGroupDataCopy = obj.noGoupArr
             groupDataCopy = obj.groupArr
+
+            console.log("xxx", obj)
         }
         // 元素从已分组拖到未分组
         if (result.source.droppableId !== result.destination.droppableId && result.destination.droppableId === 'noGroup') {

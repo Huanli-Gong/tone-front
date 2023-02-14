@@ -71,7 +71,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
     React.useEffect(() => {
         if (products && products.length > 0)
             setConfs({ product_id: product_id ?? products[0].id, product_version })
-    }, [products, props.product_id, props.product_version])
+    }, [products, product_id, product_version])
 
     React.useEffect(() => {
         if (confs.product_id)
@@ -79,9 +79,11 @@ const AddJobTable: React.FC<AnyType> = (props) => {
     }, [confs])
 
     React.useEffect(() => {
-        if (productVersions && productVersions.length > 0 && !confs.product_version) {
+        if (productVersions && productVersions.length > 0) {
             const newVersion = productVersions[0]
-            setConfs({ ...confs, product_version: newVersion })
+            if (!confs.product_version || !productVersions.includes(confs.product_version)) {
+                setConfs((p: any) => ({ ...p, product_version: newVersion }))
+            }
         }
     }, [productVersions, confs])
 
@@ -286,7 +288,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                                 {...baseSelectProps}
                                 placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
                                 value={confs.product_id}
-                                onSelect={(value: any) => setConfs({ product_id: value, product_version: undefined })}
+                                onSelect={(value: any) => setConfs((p: any) => ({ ...p, product_id: value }))}
                                 options={
                                     products?.map((item: any) => ({
                                         value: item.id,
