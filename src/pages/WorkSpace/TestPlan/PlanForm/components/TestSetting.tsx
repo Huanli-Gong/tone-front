@@ -322,7 +322,7 @@ const TestSetting = (props: any) => {
                                         ))
                                     }
                                     {
-                                        i.template.length < 10 &&
+                                        i.template.length < 15 &&
                                         <ChildAddItem >
                                             <ArrowDashedBlue />
                                             <AddTemplateItem onClick={() => handleAddTemplate(index)}>

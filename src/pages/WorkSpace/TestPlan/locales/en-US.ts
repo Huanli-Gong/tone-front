@@ -117,6 +117,7 @@ export default {
   'plan.report_name.placeholder': 'Please enter a report name，for example：{Job_name}_report-{report_seq_id}',
   'plan.available.placeholders': 'Report names can be represented by placeholders：',
   'plan.select.report.template': 'Select report template',
+  'plan.drawer.template_ellipsis.wraning': "The number of test templates in a single test phase shall not exceed 15！",
   //'plan.group_method': '分组方式',
   'plan.group_method.not': 'No Grouping',
   'plan.group_method.job': 'Group by Job',

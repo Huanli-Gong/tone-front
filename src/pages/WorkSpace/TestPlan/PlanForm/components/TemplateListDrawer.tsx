@@ -73,13 +73,18 @@ const TemplateListDrawer = (props: any, ref: any) => {
         handleClose()
     }
 
-    const handleSingleTemp = (e:any) => {
-        let val = e.target.value
+    const handleSingleTemp = (e: any) => {
+        if (e.target.checked && templates.length >= 15) {
+            message.warning("单个测试阶段中测试模版数量不得超过15个！")
+            return
+        }
+
+        const val = e.target.value
         let temp = templates.slice(0)
-            if(e.target.checked){
+        if (e.target.checked) {
             temp = temp.concat(val)
-        }else{
-            temp = temp.filter((item:any) => item !== val)
+        } else {
+            temp = temp.filter((item: any) => item !== val)
         }
         setTemplates([...new Set([...temp])])
     }
@@ -122,7 +127,10 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 <Spin spinning={loading} >
                     {
                         typeof rowkey !== 'number' ?
-                            <Checkbox.Group style={{ width: '100%' }} value={templates} disabled={templates.length >= 10}>
+                            <Checkbox.Group
+                                style={{ width: '100%' }}
+                                value={templates}
+                            >
                                 {
                                     list.map((i: any) => (
                                         <Checkbox

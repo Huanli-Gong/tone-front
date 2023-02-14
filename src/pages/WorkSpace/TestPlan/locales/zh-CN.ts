@@ -74,6 +74,7 @@ export default {
   'plan.function': '功能',
   'plan.perf_baseline.placeholder': '请选择性能基线',
   'plan.performance': '性能',
+  
   // 'plan.func_baseline_aliyun.placeholder': '请选择云上功能基线',
   // 'plan.cloud.function': '云上｜功能',
   // 'plan.cloud.performance': '云上｜性能',
@@ -119,6 +120,7 @@ export default {
   'plan.report_name.placeholder': '请输入报告名称，例如：{Job_name}_report-{report_seq_id}',
   'plan.available.placeholders': '报告名称可用占位符：',
   'plan.select.report.template': '选择报告模板',
+  'plan.drawer.template_ellipsis.wraning': "单个测试阶段中测试模版数量不得超过15个！",
   //'plan.group_method': '分组方式',
   'plan.group_method.not': '不分组',
   'plan.group_method.job': '以Job维度分组',
