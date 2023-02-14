@@ -48,6 +48,7 @@ const BaseTable: React.FC<IProps> = (props) => {
     const fetchListData = async () => {
         if (!listParams.baseline_id) {
             setSource([])
+            setLoading(false)
             return
         }
         setLoading(true)
