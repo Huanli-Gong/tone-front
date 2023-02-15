@@ -7,8 +7,8 @@ export default (props: any) => {
 	const {
 		styleObj, record, disabled,
 		columnsInner, selectedSuiteKeys, setSelectedCaseKeysFn,
-		selectedCaseObj, checked, contrl,
-		onColumnsChange, columnsChange
+		selectedCaseObj,
+		onColumnsChange, columnsChange, refreshDeps
 	} = props
 	const [selectedKeys, setSelectedKeys] = useState<number[]>([])
 
@@ -31,9 +31,9 @@ export default (props: any) => {
 	return (
 		<ResizeHooksTable
 			style={styleObj}
-			refreshDeps={[checked, contrl, disabled, columnsChange]}
 			hasChange={columnsChange}
 			rowKey={record => record.id + ''}
+			refreshDeps={refreshDeps}
 			className={styles.conf_table}
 			rowSelection={!disabled ? rowSelectionCase : undefined}
 			columns={columnsInner}

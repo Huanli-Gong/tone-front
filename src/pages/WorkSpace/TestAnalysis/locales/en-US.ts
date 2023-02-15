@@ -30,6 +30,7 @@ export default {
     'analysis.edit.mark': 'Edit',
     'analysis.comparison.group.cannot.empty': 'Comparison group cannot be empty',
     'analysis.comparison.group.name.placeholder': 'Please enter comparison group name',
+    'analysis.comparison.base_group.compare_data.empty': "Benchmark group comparison data cannot be empty!",
     // AddJob
     'analysis.product.label': 'Product：',
     'analysis.product.placeholder': 'Please select product',

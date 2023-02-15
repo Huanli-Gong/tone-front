@@ -520,6 +520,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 								styleObj={{ width: width - 14 }}
 								scroll={checked ? { x: innerScrollX } : undefined}
 								record={record}
+								refreshDeps={[checked, contrl, disabled, columnsChange, dataSource]}
 								disabled={disabled}
 								selectedCaseObj={selectedCaseObj}
 								columnsInner={columnsInner.filter(Boolean)}
