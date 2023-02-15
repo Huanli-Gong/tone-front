@@ -1,7 +1,7 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { message, Table, Pagination } from 'antd';
 import { FilterFilled, CaretRightFilled, CaretDownFilled } from '@ant-design/icons';
-import { useIntl, FormattedMessage, getLocale } from 'umi';
+import { useIntl, FormattedMessage, useParams, useLocation } from 'umi';
 import moment from 'moment';
 import SearchInput from '@/components/Public/SearchInput';
 import SelectDrop from '@/components/Public//SelectDrop';
@@ -13,9 +13,10 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 /**
  * ws-业务测试
  */
-export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
+export default () => {
+	const { ws_id } = useParams() as any
 	const { formatMessage } = useIntl()
-	const enLocale = getLocale() === 'en-US'
+	const location = useLocation()
 	const [loading, setLoading] = useState<any>(false)
 	const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1 })
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -48,9 +49,9 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 		setFilterQuery(query)
 		getTableData(query)
 		//过滤字段过滤触发
-	}, [service_name, creator]);
+	}, [service_name, creator, location?.query]);
 
-	let columns: any = [
+	const columns: any = [
 		{
 			title: <FormattedMessage id="suite.business.name" />,
 			dataIndex: 'name',
@@ -64,7 +65,7 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			},
 		},
 		{
@@ -72,7 +73,7 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -80,7 +81,7 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -95,23 +96,25 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			}
 		},
 		{
 			title: <FormattedMessage id="suite.remarks" />,
 			dataIndex: 'description',
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			}
 		},
 	];
 
-	const onChange = (page: number, pageSize: number) => {
-		getTableData({ page_num: page, page_size: pageSize })
+	const onChange = (page: number, page_size: number) => {
+		setPageSize(page_size)
+		getTableData({ page_num: page, page_size })
 	}
 
-	let list = data.data, total = data.total, pageNum = data.page_num
+	const list = data.data, total = data.total, pageNum = data.page_num;
+
 	return (
 		<div>
 			<Table
@@ -121,10 +124,6 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 				rowKey={(record) => record.id}
 				columns={columns}
 				dataSource={list}
-				// page={pageNum}
-				// pageSize={pageSize}
-				// total={total}
-				// handlePage={onChange}
 				expandable={{
 					expandedRowKeys: expandKeys,
 					expandedRowRender: (record: any) => {
@@ -163,5 +162,4 @@ export default forwardRef(({ callback = () => { }, ws_id }: any, ref: any) => {
 			)}
 		</div>
 	)
-
-});
+}

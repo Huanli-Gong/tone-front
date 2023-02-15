@@ -37,7 +37,6 @@ const SuiteManagement: React.FC<any> = (props) => {
 
 	const [loading, setLoading] = useState<boolean>(true)
 	const [expandKey, setExpandKey] = useState<string[]>([])
-	const [filterRefresh, setFilterRefresh] = useState(false)
 	const [show, setShow] = useState<boolean>(false)
 	const [des, setDes] = useState<string>('')
 
@@ -62,8 +61,10 @@ const SuiteManagement: React.FC<any> = (props) => {
 	};
 
 	useEffect(() => {
-		getList(fetchParams)
-		setExpandKey([])
+		if (['functional', 'performance'].includes(fetchParams.test_type)) {
+			getList(fetchParams)
+			setExpandKey([])
+		}
 	}, [fetchParams, refresh])
 
 	const handlePage = (page_num: number, page_size: any) => {
@@ -83,18 +84,17 @@ const SuiteManagement: React.FC<any> = (props) => {
 	const handleTab = (test_type: string) => {
 		if (['functional', 'performance'].includes(test_type)) {
 			setExpandKey([])
-			setFilterRefresh(!filterRefresh)
-			setFetchParams({
-				test_type,
-				name: '',
-				domain: '',
-				owner: '',
-				order: '',
-				run_mode: '',
-				page_num: 1,
-				page_size: 10
-			})
 		}
+		setFetchParams({
+			test_type,
+			name: '',
+			domain: '',
+			owner: '',
+			order: '',
+			run_mode: '',
+			page_num: 1,
+			page_size: 10
+		})
 		history.push(`${location.pathname}?test_type=${test_type}`)
 	}
 
@@ -313,7 +313,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 			}
 
 			{fetchParams.test_type === 'business' && (
-				<BusinessTest ws_id={ws_id} />
+				<BusinessTest />
 			)}
 
 			<Drawer
@@ -322,7 +322,7 @@ const SuiteManagement: React.FC<any> = (props) => {
 				width={376}
 				title={<FormattedMessage id="suite.description.details" />}
 				onClose={() => setShow(false)}
-				visible={show}
+				open={show}
 			>
 				<CodeViewer code={des} />
 			</Drawer>
