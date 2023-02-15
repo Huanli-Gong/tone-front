@@ -76,7 +76,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                         setProductVersions(list)
                         const newVersion = list.length > 0 ? list[0] : undefined
                         setListParams((p: any) => {
-                            if (!p.product_version || !list.includes(p.product_version)) {
+                            if (!product_version) {
                                 return { ...p, ...newData, product_version: newVersion }
                             }
                             return { ...p, ...newData }
