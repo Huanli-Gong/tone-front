@@ -1,6 +1,6 @@
 import { Space, Typography, Badge, message, Button, Modal, Spin } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
-import { history, useModel, FormattedMessage, useIntl, useParams } from 'umi'
+import { history, useModel, FormattedMessage, useIntl, useParams, useLocation } from 'umi'
 import { queryTestTemplateList, deleteTestTemplate, queryTemplateDel } from './service'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import CopyModal from './components/CopyModal'
@@ -13,7 +13,7 @@ import { Access, useAccess } from 'umi'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { tooltipTd } from '../TestResult/Details/components'
 
-export default (props: any) => {
+export default () => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const access = useAccess();
@@ -25,7 +25,7 @@ export default (props: any) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [deleteObj, setDeleteObj] = useState<any>({});
     const copyModal: any = useRef()
-    const { state } = props.location
+    const { state } = useLocation() as any
     const resizeTableRef = useRef<any>()
     const [scrollX, setScrollX] = useState(0)
     const [params, setParams] = useState<any>(state && JSON.stringify(state) !== "{}" ? { ...PAGE_DEFAULT_PARAMS, ...state } : PAGE_DEFAULT_PARAMS)

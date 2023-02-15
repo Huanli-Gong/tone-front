@@ -7,16 +7,17 @@ import ReportSetting from './components/ReportSetting'
 import TouchSetting from './components/TouchSetting'
 
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
-import { ArrowLeftOutlined, ArrowRightOutlined, CheckOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import {
     CreateContainer, ContainerBody, ContainerBreadcrumb, LeftWrapper,
     RightBody, RightNav, RightWrapper, SuccessDescriptionContainer
 } from './styles'
-import { history, useIntl, FormattedMessage, getLocale, Access, useAccess } from 'umi'
+import { history, useIntl, FormattedMessage, getLocale, Access, useAccess, useLocation } from 'umi'
 import { runningTestPlan, creatTestPlan, queryTestPlanDetails, updateTestPlan } from '@/pages/WorkSpace/TestPlan/services'
 import styles from './index.less'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
 import _ from 'lodash'
+import { stringify } from 'querystring'
 
 /** 
  * 计划管理/新建计划（新）
@@ -26,6 +27,8 @@ const TestPlan = (props: any) => {
     const enLocale = getLocale() === 'en-US'
     const access = useAccess();
     const { height: layoutHeight } = useClientSize()
+    const { state } = useLocation() as any
+    console.log(state)
 
     const { route } = props
     // console.log('route.name:', route.name)
@@ -43,9 +46,7 @@ const TestPlan = (props: any) => {
     const reportSettingRef: any = useRef()
 
     const [dataSource, setDataSource] = useState<any>({ basic: {}, pipline: {}, touch: {} })
-
     const [template, setTemplate] = useState<any>(null)
-
     const [successData, setSuccessData] = useState<any>(null)
 
     // 查询
@@ -190,7 +191,8 @@ const TestPlan = (props: any) => {
                 setPedding(false)
                 return;
             }
-            history.push(`/ws/${ws_id}/test_plan`)
+
+            history.push(`/ws/${ws_id}/test_plan?${stringify(state)}`)
         }
         catch (err) {
             console.log(err)
@@ -209,9 +211,7 @@ const TestPlan = (props: any) => {
         }
     }
 
-    const handleBackPlanManage = useCallback(() => {
-        history.push(`/ws/${ws_id}/test_plan`)
-    }, [])
+    const handleBackPlanManage = () => history.push(`/ws/${ws_id}/test_plan?${stringify(state)}`)
 
     const hanldeUpdatePlan = async () => {
         if (pedding) return
@@ -224,7 +224,8 @@ const TestPlan = (props: any) => {
                 setPedding(false)
                 return;
             }
-            history.push(`/ws/${ws_id}/test_plan`)
+            console.log(state)
+            history.push(`/ws/${ws_id}/test_plan?${stringify(state)}`)
         }
         catch (err) {
             console.log(err)
@@ -385,7 +386,11 @@ const TestPlan = (props: any) => {
                                     title={<FormattedMessage id="plan.created.success" />}
                                     subTitle={<FormattedMessage id="plan.the.test.plan.can" />}
                                     extra={[
-                                        <Button type="primary" key="console" onClick={() => history.push(`/ws/${ws_id}/test_plan`)} >
+                                        <Button
+                                            type="primary"
+                                            key="console"
+                                            onClick={() => history.push(`/ws/${ws_id}/test_plan?${stringify(state)}`)}
+                                        >
                                             <FormattedMessage id="plan.return.management" />
                                         </Button>
                                     ]}
