@@ -142,6 +142,7 @@ const BaselineSelect: React.FC<AnyType> = (props) => {
         <Space
             direction="vertical"
             style={{ width: "100%", display: "flex", padding: "0 16px" }}
+            size={0}
         >
             <ResizeHooksTable
                 rowSelection={baselineSelection as any}

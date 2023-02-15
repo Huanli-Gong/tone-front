@@ -46,18 +46,17 @@ const AddJobTable: React.FC<AnyType> = (props) => {
         filter_id: hasIds.toString()
     })
 
-    const [confs, setConfs] = React.useState({ product_id: undefined, product_version: undefined })
     const [autoFocus, setFocus] = React.useState(true)
+    const [productVersions, setProductVersions] = React.useState([])
+
+    const getProductVersionsList = async (id: any) => {
+        const { data, msg, code } = await queryProductList({ ws_id, product_id: id })
+        if (code === 200)
+            return data || []
+        return []
+    }
 
     const { data: { data: products } } = useRequest(() => queryProduct({ ws_id }), { initialData: [] })
-    const { data: { data: productVersions } } = useRequest(
-        () => queryProductList({ ws_id, product_id: confs.product_id }),
-        {
-            initialData: [],
-            refreshDeps: [confs.product_id],
-            ready: !!confs.product_id
-        }
-    )
 
     const { data: jobs, loading } = useRequest(
         () => queryJobList(listParams),
@@ -69,23 +68,22 @@ const AddJobTable: React.FC<AnyType> = (props) => {
     )
 
     React.useEffect(() => {
-        if (products && products.length > 0)
-            setConfs({ product_id: product_id ?? products[0].id, product_version })
-    }, [products, product_id, product_version])
-
-    React.useEffect(() => {
-        if (confs.product_id)
-            setListParams((p: any) => ({ ...p, ...confs, page_num: 1 }))
-    }, [confs])
-
-    React.useEffect(() => {
-        if (productVersions && productVersions.length > 0) {
-            const newVersion = productVersions[0]
-            if (!confs.product_version || !productVersions.includes(confs.product_version)) {
-                setConfs((p: any) => ({ ...p, product_version: newVersion }))
-            }
+        if (products && products.length > 0) {
+            const newData = { product_id: product_id ?? products[0].id, product_version }
+            if (newData.product_id)
+                getProductVersionsList(newData.product_id)
+                    .then(list => {
+                        setProductVersions(list)
+                        const newVersion = list.length > 0 ? list[0] : undefined
+                        setListParams((p: any) => {
+                            if (!p.product_version || !list.includes(p.product_version)) {
+                                return { ...p, ...newData, product_version: newVersion }
+                            }
+                            return { ...p, ...newData }
+                        })
+                    })
         }
-    }, [productVersions, confs])
+    }, [products, product_id, product_version])
 
     const disabled = React.useMemo(() => {
         return product_version && product_id
@@ -278,7 +276,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
     }
 
     return (
-        <Space direction="vertical" style={{ width: "100%", padding: "0 16px" }} size={16}>
+        <Space direction="vertical" style={{ width: "100%", padding: "0 16px" }} size={0}>
             <Row gutter={20}>
                 <Col span={12}>
                     <Row align={"middle"}>
@@ -287,8 +285,15 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                             <Select
                                 {...baseSelectProps}
                                 placeholder={formatMessage({ id: 'analysis.product.placeholder' })}
-                                value={confs.product_id}
-                                onSelect={(value: any) => setConfs((p: any) => ({ ...p, product_id: value }))}
+                                value={listParams.product_id}
+                                onSelect={(value: any) => {
+                                    getProductVersionsList(value)
+                                        .then((list: any) => {
+                                            const newVersion = list && list.length > 0 ? list[0] : undefined
+                                            setListParams((p: any) => ({ ...p, page_num: 1, product_id: value, product_version: newVersion }))
+                                            setProductVersions(list)
+                                        })
+                                }}
                                 options={
                                     products?.map((item: any) => ({
                                         value: item.id,
@@ -306,8 +311,8 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                             <Select
                                 {...baseSelectProps}
                                 placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
-                                value={confs.product_version}
-                                onSelect={(value: any) => setConfs({ ...confs, product_version: value })}
+                                value={listParams.product_version}
+                                onSelect={(value: any) => setListParams({ ...listParams, product_version: value })}
                                 options={
                                     productVersions?.map((item: any) => ({
                                         value: item,
@@ -320,24 +325,26 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                 </Col>
             </Row>
 
-            <ResizeHooksTable
-                rowSelection={rowSelection as any}
-                rowKey='id'
-                name="ws-analysis-compare-job-add"
-                refreshDeps={[ws_id, listParams, selectedRowDatas, disabled, props]}
-                columns={columns as any}
-                loading={loading}
-                dataSource={jobs?.data ?? []}
-                pagination={false}
-                size="small"
-            />
+            <Space direction="vertical" size={0} style={{ width: "100%" }} >
+                <ResizeHooksTable
+                    rowSelection={rowSelection as any}
+                    rowKey='id'
+                    name="ws-analysis-compare-job-add"
+                    refreshDeps={[ws_id, listParams, selectedRowDatas, disabled, props]}
+                    columns={columns as any}
+                    loading={loading}
+                    dataSource={jobs?.data ?? []}
+                    pagination={false}
+                    size="small"
+                />
 
-            <CommonPagination
-                total={jobs?.total}
-                currentPage={listParams?.page_num}
-                pageSize={listParams?.page_size}
-                onPageChange={(page_num, page_size) => setListParams(p => ({ ...p, page_num, page_size }))}
-            />
+                <CommonPagination
+                    total={jobs?.total}
+                    currentPage={listParams?.page_num}
+                    pageSize={listParams?.page_size}
+                    onPageChange={(page_num, page_size) => setListParams(p => ({ ...p, page_num, page_size }))}
+                />
+            </Space>
         </Space>
     )
 }

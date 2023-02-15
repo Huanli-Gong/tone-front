@@ -68,11 +68,6 @@ export const EllipsisRect = (props: any) => {
         </>
     )
 }
-// “对比组”转换国际化方式显示
-export const groupToLocale = (str: string) => {
-    const { formatMessage } = useIntl();
-    return str?.match(/^对比组[0-9]+$/) ? (formatMessage({ id: 'analysis.comparison.group' }) + str.slice(3)) : str
-}
 
 export const getListStyle = (draggableStyle: any) => ({
     // background: isDraggingOver ? 'lightblue' : 'lightgrey',

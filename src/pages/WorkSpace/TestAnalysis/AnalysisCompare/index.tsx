@@ -90,15 +90,16 @@ export default (props: any) => {
         if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
     }, [groupData, baselineGroupIndex])
 
+    const getNameRepeatCount = (name: string) => {
+        const count = name.trim().match(/\(\d+\)$/)?.[0].replace(/[\(\)]/g, "")
+        return count ? + count : 0
+    }
+
     const checkSameTitleAndReturnNew = (arr: any[], title: string) => {
         const trimTitle = title.trim()
-        const samCount = arr.reduce((p: number, c: any) => {
-            const { name } = c
-            if (name.replace(/\(\d+\)/, "") === trimTitle)
-                return p + 1
-            return p
-        }, 0)
-        return samCount > 0 ? `${trimTitle}(${samCount})` : trimTitle
+        const nameCountArr = arr.filter(i => i.name.trim().replace(/\(\d+\)$/, "") === trimTitle).map(i => getNameRepeatCount(i.name)).sort((a, b) => b - a)
+        const hasCount = nameCountArr.at(0)
+        return Object.prototype.toString.call(hasCount) === "[object Number]" ? `${trimTitle}(${hasCount as number + 1})` : trimTitle
     }
 
     const versionGroupingFn = (arrGroup: any, newGroup: any) => {
@@ -233,8 +234,8 @@ export default (props: any) => {
         setNoGroupData(results)
     }
 
-    const addGroupNameFn = (arrGroup = groupData, defautTitle = "对比组") => {
-        return checkSameTitleAndReturnNew(arrGroup, defautTitle || "对比组")
+    const addGroupNameFn = (arrGroup = groupData, defautTitle = formatMessage({ id: 'analysis.comparison.group' })) => {
+        return checkSameTitleAndReturnNew(arrGroup, defautTitle || formatMessage({ id: 'analysis.comparison.group' }))
     }
 
     const handleAddJobGroup = (type = "") => {
@@ -715,8 +716,6 @@ export default (props: any) => {
             );
             noGroupDataCopy = obj.noGoupArr
             groupDataCopy = obj.groupArr
-
-            console.log("xxx", obj)
         }
         // 元素从已分组拖到未分组
         if (result.source.droppableId !== result.destination.droppableId && result.destination.droppableId === 'noGroup') {

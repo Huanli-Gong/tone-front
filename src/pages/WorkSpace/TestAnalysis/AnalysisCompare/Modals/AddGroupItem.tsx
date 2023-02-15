@@ -81,7 +81,7 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
             onCancel={handleCancel}
             maskClosable={false}
             destroyOnClose
-            bodyStyle={{ padding: 0 }}
+            bodyStyle={{ padding: 0, minHeight: 480 }}
             footer={
                 <Row justify={"space-between"} align="middle">
                     <Space>

@@ -508,12 +508,6 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
         )
     }
 
-    // “对比组”转换国际化方式显示
-    const groupToLocale = (str: string) => {
-        const temp = str?.match(/^对比组[0-9]+$/) ? (formatMessage({ id: 'analysis.comparison.group' }) + str.slice(3)) : str
-        return temp
-    }
-
     const allGroupReact = () => {
         const num = /^group[0-9]+$/.test(tab) ? tab.replace('group', '') : 0
         return (
@@ -530,7 +524,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
                                 <Tabs.TabPane
                                     tab={<>
                                         {baselineGroupIndex === index && <span style={{ marginRight: 5 }}><BaseIcon /></span>}
-                                        {groupToLocale(item.group_name)}
+                                        {item.group_name}
                                     </>}
                                     key={`group${index}`}
                                 />
