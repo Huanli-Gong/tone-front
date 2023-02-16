@@ -118,7 +118,11 @@ const UserManagementTable: React.FC<UserList> = ({ onRef, select, RoleChange, on
             ellipsis: {
                 showTitle: false
             },
-            render: (_: number, row: UserTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.email} />,
+            render: (_: number, row: UserTable) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: true }} >
+                    {BUILD_APP_ENV === "opensource" ? row.username : row.email}
+                </ColumnEllipsisText>
+            ),
         },
         {
             title: <FormattedMessage id="user.role_list" />,

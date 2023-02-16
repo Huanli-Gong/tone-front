@@ -1,6 +1,6 @@
 const defaultKey = 'job.form'
 
-const text =  {
+const text = {
   //----后端返的字段----
   'job_name': 'Job名称',
   'project': 'Project选择',
@@ -8,15 +8,15 @@ const text =  {
   'baseline_job': '基线Job',
   //------------------
   'job_name.message': '允许字母、数字、下划线、中划线、{date}占位符，“.”，不允许中文',
-  'job_name.limit.message': 'Job名称最长不超出128字符',  
+  'job_name.limit.message': 'Job名称最长不超出128字符',
   'project.placeholder': '请选择Project',
   'baseline.placeholder': '请选择需要对比的测试基线',
   'baseline_job_id.placeholder': '请选择一个Job作为基线',
-  
+
   //----后端返的字段----
   'reclone': '重装机器',
   'kernel_install': '重装内核',
-  'reboot': '重启机器',  
+  'reboot': '重启机器',
   'global_variable': '全局变量',
   'rpm': '安装RPM',
   'script': '执行脚本',
