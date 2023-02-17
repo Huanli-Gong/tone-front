@@ -77,7 +77,7 @@ export default {
     'analysis.share': 'Share',
     'analysis.test.env': 'Test Evnironment',
     'analysis.model': 'Model',
-    'analysis.test.data': 'Test Data',
+    'analysis.job.data': 'Test Data',
     'analysis.comparison.group.name': 'Comparison Group Name',
     'analysis.chart.mode': 'Chart Mode',
     'analysis.list.mode': 'List Mode',

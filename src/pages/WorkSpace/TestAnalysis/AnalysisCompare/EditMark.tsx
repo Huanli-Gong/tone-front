@@ -1,4 +1,4 @@
-import { Drawer, Space, Button, Form, AutoComplete } from 'antd'
+import { Drawer, Space, Button, Form, Input } from 'antd'
 import React, { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less'
@@ -10,21 +10,18 @@ export default forwardRef(
         const [form] = Form.useForm()
         const [padding, setPadding] = useState(false) // 确定按钮是否置灰
         const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-        const [title, setTitle] = useState('') // 弹框顶部title
+        // const [title, setTitle] = useState('') // 弹框顶部title
         const [editer, setEditer] = useState<any>({}) // 编辑的数据
-        const [options, setOptions] = useState<{ value: string }[]>([]);
+        // const [options, setOptions] = useState<{ value: string }[]>([]);
+
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = formatMessage({id: 'analysis.edit.mark'}), data: any = {}, name:string = '') => {
+                show: (data: any = {}) => {
                     setVisible(true)
-                    setTitle(title)
-                    let mark = _.get(data,'product_version') || ''
-                    mark = mark.replace(/\n/g,' ')
-                    data.product_version = mark
                     setEditer(data)
-                    setOptions([{ value: name }])
-                    form.setFieldsValue({ name: [mark] })
+                    // setOptions([{ value: name }])
+                    form.setFieldsValue(data)
                 }
             })
         )
@@ -33,33 +30,33 @@ export default forwardRef(
             setPadding(false)
             setVisible(false)
         }
-        
-        const onSelect = (data: string) => {
+
+        /* const onSelect = (data: string) => {
             form.setFieldsValue({ name: data })
-        };
-        
+        }; */
+
         const handleOk = () => {
             setPadding(true)
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
-                    const newEditer = editer
-                    newEditer.product_version = values.name
-                    props.onOk(newEditer)
-                    form.setFieldsValue({ name: [] })
+                    props.onOk({ ...editer, ...values })
+                    form.resetFields()
                     setPadding(false)
                     setVisible(false)
                 })
                 .catch(err => console.log(err))
         }
-        
+
         return (
-            <Drawer 
-                maskClosable={ false }
-                keyboard={ false }
-                title={title}
+            <Drawer
+                maskClosable={false}
+                keyboard={false}
+                title={
+                    formatMessage({ id: 'analysis.edit.mark.name' })
+                }
                 width="375"
                 onClose={handleClose}
-                visible={visible}
+                open={visible}
                 className={styles.add_baseline_drawer}
                 footer={
                     <div style={{ textAlign: 'right', }} >
@@ -70,51 +67,22 @@ export default forwardRef(
                     </div>
                 }
             >
-                {/* <Form
-                    form={form}
-                    layout="vertical" // 表单布局 ，垂直
-                    validateTrigger={''}
-                    >
-                    <Form.Item
-                        label="对比组"
-                        name="name"
-                        validateStatus={(!nameStatus) && 'error'}
-                        help={(!nameStatus && `对比组名称不能为空`)}
-                        rules={[{ required: true }]}>
-                        <Select
-                            mode="multiple"
-                            className={styles.pers_select}
-                            getPopupContainer={node => node.parentNode}
-                            onSearch={handleFuncsBaselineSelectSearch}
-                            onBlur={handlePerfBaselineSelectBlur}
-                            onChange={onChange}
-                            title={form.getFieldValue('name')}
-                            dropdownRender={() => {
-                                return (
-                                    <div style={{ maxHeight: 300, overflow: 'auto' }}>
-                                        <Checkbox.Group options={[editer.product_version]} value={markeVal} onChange={onChange} className={styles.eidt_marked} title={editer.product_version}/>
-                                    </div>
-                                )
-                        }}
-                        placeholder="请输入对比组名称"
-                        />
-                    </Form.Item>
-                </Form> */}
                 <Form
                     form={form}
                     layout="vertical" // 表单布局 ，垂直
-                    >
+                >
                     <Form.Item
-                        label={<FormattedMessage id="analysis.comparison.group"/>}
+                        label={<FormattedMessage id="analysis.comparison.group" />}
                         name="name"
-                        rules={[{ required: true, message: formatMessage({id: 'analysis.comparison.group.cannot.empty'}) }]}
+                        rules={[{ required: true, message: formatMessage({ id: 'analysis.comparison.group.cannot.empty' }) }]}
                     >
-                        <AutoComplete
+                        <Input
                             allowClear={true}
-                            options={options}
+                            // options={options}
                             style={{ width: '98%' }}
-                            onSelect={onSelect}
-                            placeholder={formatMessage({id: 'analysis.comparison.group.name.placeholder'})}
+                            autoComplete="off"
+                            // onSelect={onSelect}
+                            placeholder={formatMessage({ id: 'analysis.comparison.group.name.placeholder' })}
                         />
                     </Form.Item>
                 </Form>

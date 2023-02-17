@@ -297,7 +297,7 @@ const Report = (props: any) => {
                                 <TestEnv />
                             }
                             <ModuleWrapper style={{ position: 'relative' }} id="test_data" ref={testDataRef}>
-                                <SubTitle><span className="line"></span><FormattedMessage id="analysis.test.data" /></SubTitle>
+                                <SubTitle><span className="line"></span><FormattedMessage id="analysis.job.data" /></SubTitle>
                                 <PerformanceTest parentDom={testDataRef} scrollLeft={scrollLeft} />
                                 <FunctionalTest scrollLeft={scrollLeft} />
                             </ModuleWrapper>
