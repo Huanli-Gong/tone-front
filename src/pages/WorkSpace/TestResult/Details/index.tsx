@@ -398,7 +398,6 @@ const TestResultDetails: React.FC = () => {
                                         <ViewReport
                                             viewAllReport={allReport}
                                             dreType="bottomRight"
-                                            ws_id={ws_id}
                                             jobInfo={details}
                                             origin={'jobDetail'}
                                             stylesButton={veiwReportHeight.current}

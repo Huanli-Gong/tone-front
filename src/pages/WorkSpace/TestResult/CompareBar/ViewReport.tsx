@@ -10,6 +10,7 @@ import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { useClickAway } from 'ahooks';
 
 const styleObj = {
     container: 245,
@@ -27,6 +28,12 @@ export default (props: any) => {
     const [params, setParams] = useState(page_default_params)
     const [jobRefReport, setJobRefAllReport] = useState([])
     const [visible, setVisible] = useState(false)
+
+    const ref = React.useRef(null)
+
+    useClickAway(() => {
+        setVisible(false)
+    }, [ref])
 
     const handleMemberFilter = (val: [], name: string) => {
         let searchVal: any = val || ''
@@ -73,6 +80,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            className: "report_name_hover",
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}
@@ -97,7 +105,6 @@ export default (props: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
-
                 return (
                     <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                         <Highlighter
@@ -147,7 +154,9 @@ export default (props: any) => {
 
     const getContent = (data: any) => {
         return (
-            <div >
+            <div
+                ref={ref}
+            >
                 <Scrollbars style={{ height: 244 }}>
                     <Table
                         size="small"
@@ -175,11 +184,12 @@ export default (props: any) => {
                 open={visible}
             >
                 {
-                    origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
-                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
-                            {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
-                        </span>
-                    </Typography.Text>
+                    origin === 'jobList' ?
+                        <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
+                            <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
+                                {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
+                            </span>
+                        </Typography.Text>
                         :
                         <Button type="primary"
                             onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
