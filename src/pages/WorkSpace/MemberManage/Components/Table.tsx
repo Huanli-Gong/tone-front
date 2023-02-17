@@ -3,8 +3,7 @@ import { EditableCell } from './EditCell'
 import { queryWorkspaceMember, deleteWorkspaceMember } from '@/services/Workspace'
 import { Table, Space, Avatar, Typography, Popconfirm, Button, message, Tag } from 'antd'
 import CommonPagination from '@/components/CommonPagination'
-import { Access, useAccess, useIntl, FormattedMessage  } from 'umi'
-import { roleList } from '@/pages/SystemConf/UserManagement/service'
+import { useAccess, useIntl, FormattedMessage } from 'umi'
 import { requestCodeMessage } from '@/utils/utils'
 
 const ComplateUsername: React.FC<{ user_info: any }> = ({ user_info }) => {
@@ -35,7 +34,7 @@ export default (props: any) => {
 
     const init = async () => {
         setLoading(true)
-        let data = await queryWorkspaceMember({
+        const data = await queryWorkspaceMember({
             ...pagenat,
             ws_id,
             role,
@@ -51,7 +50,7 @@ export default (props: any) => {
 
     const columns: any = [
         {
-            title: <FormattedMessage id="member.member"/>,
+            title: <FormattedMessage id="member.member" />,
             render: (_: any) => (
                 <Space>
                     <Avatar src={_.user_info.avatar} />
@@ -60,7 +59,7 @@ export default (props: any) => {
                         _.user_info.is_admin
                             ? <div style={{ backgroundColor: '#F9AD10', borderRadius: 2, fontSize: 12, padding: '0 4px' }}>
                                 <span style={{ color: '#fff' }}>
-                                    <FormattedMessage id="member.manage.tag"/>
+                                    <FormattedMessage id="member.manage.tag" />
                                 </span>
                             </div>
                             : null
@@ -68,44 +67,48 @@ export default (props: any) => {
                     {
                         _.user_info.is_self
                             ? <Tag color="rgba(140,140,140,0.1)" style={{ color: 'rgba(0,0,0,0.65)', marginRight: 0 }}>
-                                   <FormattedMessage id="member.oneself" />
-                              </Tag>
+                                <FormattedMessage id="member.oneself" />
+                            </Tag>
                             : null
                     }
                 </Space>
             )
         },
         {
-            title: <FormattedMessage id="member.account"/>,
-            render: (_: any) => (<Typography.Text>{_.user_info.email}</Typography.Text>)
+            title: <FormattedMessage id="member.account" />,
+            render: (_: any) => (
+                <Typography.Text>
+                    {BUILD_APP_ENV === "opensource" ? _.user_info.username : _.user_info.email}
+                </Typography.Text>
+            )
         },
-        
+
         {
-            title: <FormattedMessage id="member.role"/>,
+            title: <FormattedMessage id="member.role" />,
             render: (_: any) => (
                 <EditableCell {..._} select={roleData} handleOk={init} onOk={onOk} />
             ),
         },
         {
-            title: <FormattedMessage id="member.join_date"/>,
+            title: <FormattedMessage id="member.join_date" />,
             dataIndex: 'join_date'
         },
         access.WsBtnPermission() &&
         {
-            title: <FormattedMessage id="Table.columns.operation"/>,
+            title: <FormattedMessage id="Table.columns.operation" />,
             align: 'center',
             render: (_: any) => (
                 _.user_info.is_self || !_.user_info.can_update
-                ? <Button type="link" disabled={true}><FormattedMessage id="member.remove"/></Button>
-                :
-                <Popconfirm
-                    title={<FormattedMessage id="member.Are.you.sure.remove.user"/>}
-                    okText={<FormattedMessage id="operation.ok"/>}
-                    cancelText={<FormattedMessage id="operation.cancel"/>}
-                    onConfirm={() => handleDeleteUser(_.user_info.id)}
-                >
-                    <Button type="link"><FormattedMessage id="member.remove"/></Button>
-                </Popconfirm>
+                    ? <Button type="link" disabled={true}><FormattedMessage id="member.remove" /></Button>
+                    :
+                    <Popconfirm
+                        title={<FormattedMessage id="member.Are.you.sure.remove.user" />}
+                        okText={<FormattedMessage id="operation.ok" />}
+                        cancelText={<FormattedMessage id="operation.cancel" />}
+                        onConfirm={() => handleDeleteUser(_.user_info.id)}
+                    >
+                        <Button type="link"><FormattedMessage id="member.remove" /></Button>
+                    </Popconfirm>
             )
         }
     ].filter(Boolean)
@@ -115,7 +118,7 @@ export default (props: any) => {
         try {
             const data = await deleteWorkspaceMember({ ws_id, user_id })
             if (data.code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 onOk();
             } else {
                 requestCodeMessage(data.code, data.msg)
@@ -124,7 +127,7 @@ export default (props: any) => {
         }
         catch (err) {
             console.log(err)
-            message.error(formatMessage({id: 'member.an.error.occurred,please.try.again'}) )
+            message.error(formatMessage({ id: 'member.an.error.occurred,please.try.again' }))
         }
     }
 

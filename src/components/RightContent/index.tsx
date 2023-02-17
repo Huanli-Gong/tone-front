@@ -1,6 +1,6 @@
-import { Row, Dropdown, Menu, Tabs, Badge, message, Button, Space } from 'antd';
+import { Row, Dropdown, Menu, Tabs, Badge, Button, Space } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
-import { useModel, history, useAccess, Access, useIntl, FormattedMessage } from 'umi';
+import { useModel, history, useAccess, Access, FormattedMessage } from 'umi';
 import SelectLang from './SelectLang'
 import styles from './index.less';
 import { ReactComponent as MessageIcon } from '@/assets/svg/Nav/icon_notice.svg'
@@ -12,7 +12,6 @@ import { allTagRead, allTagApplyRead } from '@/services/Workspace';
 import { requestCodeMessage } from '@/utils/utils';
 import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 import { applyWorkspaceRole } from './services'
-import { isNull } from 'lodash';
 
 import { person_auth } from '@/services/user';
 import { deepObject } from '@/utils/utils';
@@ -30,9 +29,6 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     const handleTabClick = (tab: string) => {
         setTab(tab)
     }
-    if (!initialState || !initialState.settings) {
-        return null;
-    }
     const { msgNum, increment } = useModel('msg', (ret) => ({
         msgNum: ret.msgNum,
         increment: ret.increment,
@@ -46,11 +42,11 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
 
     useEffect(() => {
         setDropVisible(false)
-    }, [window.location.pathname])
+    }, [location.pathname])
 
     useEffect(() => {
         if (!wsId) increment()
-    }, [wsId])
+    }, [wsId, increment])
 
     const routeRight = useMemo(() => {
         return routes.filter(
@@ -59,7 +55,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     }, [routes])
 
     const jumpPage = () => {
-        if(!!routeRight.length){
+        if (!!routeRight.length) {
             const path = routeRight[0].children[0].path
             const realPath = path.replace(':ws_id', wsId)
             if (path && !!realPath.length) {
@@ -82,7 +78,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     const handleVisibleChange = (flag: any) => {
         setDropVisible(flag);
     };
-    
+
     const NoReasonJoinWorkspace: React.FC<any> = () => {
         const handleSubmit = async () => {
             const ws_id = wsId
@@ -99,7 +95,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
 
     const needJoinWorkspace = React.useMemo(() => {
         // const isBoolean = Object.prototype.toString.call(ws_is_common) === "[object Boolean]"
-        const isBoolean = Object.prototype.toString.call(ws_role_title )=== "[object String]"
+        const isBoolean = Object.prototype.toString.call(ws_role_title) === "[object String]"
         const isTourist = ws_role_title === 'ws_tourist' || ''
         return isWs && access.loginBtn() && ws_is_public && (isBoolean && isTourist)
     }, [isWs, access, ws_is_public, ws_role_title])
@@ -116,11 +112,15 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
         }
     }, [initialState.shakeBtn])
 
+    if (!initialState || !initialState.settings) {
+        return null;
+    }
+
     return (
         <Row style={{ width: '100%', position: "relative" }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
             {
-                needJoinWorkspace ?
+                needJoinWorkspace &&
                 <span className={cls("animate__animated", initialState.shakeBtn && "animate__shakeX animate__fast")}>
                     {
                         ws_need_need_approval ?
@@ -128,15 +128,13 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                             <NoReasonJoinWorkspace />
                     }
                 </span>
-                :
-                <></>
             }
             {
                 isWs &&
                 <Access accessible={access.IsWsSetting()}>
                     <SettingIcon
                         onClick={() => jumpPage()}
-                        style={{ /* marginRight : 24 , */ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer' }}
                     />
                 </Access>
             }
@@ -178,8 +176,8 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                             </div>
                         </Menu>
                     }
-                    visible={dropVisible}
-                    onVisibleChange={handleVisibleChange}
+                    open={dropVisible}
+                    onOpenChange={handleVisibleChange}
                     placement="bottomLeft"
                 >
                     {

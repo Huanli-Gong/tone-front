@@ -178,10 +178,15 @@
 .row_table{
     &:hover {
         :global {
-            .ant-table-cell-ellipsis{
+            .report_name_hover {
                 cursor: pointer;
-                color : #1890FF;
-            } 
+                span {
+                    cursor: pointer;
+                    color : #1890FF;
+                    display: inline-block;
+                    width: 100%;
+                } 
+            }
         }
     }
 }

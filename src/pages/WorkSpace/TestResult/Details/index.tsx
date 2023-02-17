@@ -172,6 +172,7 @@ const TestResultDetails: React.FC = () => {
         [
             1, "testResult",
             <TestResultTable
+                key="testResult"
                 creator={details.creator}
                 test_type={details.test_type}
                 job_id={job_id}
@@ -184,6 +185,7 @@ const TestResultDetails: React.FC = () => {
         [
             2, "testProgress",
             <ProcessTable
+                key="testProgress"
                 job_id={job_id}
                 onRef={processTableRef}
                 test_type={details?.test_type}
@@ -193,6 +195,7 @@ const TestResultDetails: React.FC = () => {
         [
             3, "testConfig",
             <TestSettingTable
+                key="testConfig"
                 jt_id={details?.job_type_id}
                 provider_name={transProvider(details?.provider_name)}
                 test_type={details?.test_type}
@@ -395,7 +398,6 @@ const TestResultDetails: React.FC = () => {
                                         <ViewReport
                                             viewAllReport={allReport}
                                             dreType="bottomRight"
-                                            ws_id={ws_id}
                                             jobInfo={details}
                                             origin={'jobDetail'}
                                             stylesButton={veiwReportHeight.current}

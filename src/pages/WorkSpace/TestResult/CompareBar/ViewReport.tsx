@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { Popover, Table, Typography, Button, TableColumnProps } from 'antd'
+import React, { useState } from 'react'
+import { Popover, Table, Typography, Button } from 'antd'
+import type { TableColumnProps } from "antd"
 import styles from './index.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import Highlighter from 'react-highlight-words'
@@ -9,6 +10,7 @@ import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { useClickAway } from 'ahooks';
 
 const styleObj = {
     container: 245,
@@ -18,7 +20,6 @@ const styleObj = {
 export default (props: any) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
-    let timeout: any = null;
     const { dreType, jobInfo, origin, buttonStyle = {}, title } = props
     const viewAllReport = jobInfo && jobInfo.report_li
     const page_default_params: any = { name: '', creator_name: '' }
@@ -27,6 +28,12 @@ export default (props: any) => {
     const [params, setParams] = useState(page_default_params)
     const [jobRefReport, setJobRefAllReport] = useState([])
     const [visible, setVisible] = useState(false)
+
+    const ref = React.useRef(null)
+
+    useClickAway(() => {
+        setVisible(false)
+    }, [ref])
 
     const handleMemberFilter = (val: [], name: string) => {
         let searchVal: any = val || ''
@@ -73,6 +80,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false,
             },
+            className: "report_name_hover",
             filterDropdown: ({ confirm }: any) => <SearchInput
                 confirm={confirm}
                 autoFocus={autoFocus}
@@ -97,7 +105,6 @@ export default (props: any) => {
             },
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => {
-
                 return (
                     <ColumnEllipsisText ellipsis={{ tooltip: row.name }} >
                         <Highlighter
@@ -133,7 +140,6 @@ export default (props: any) => {
     ]
     const handleEdit = async (id: any, name: string) => {
         window.open(`/ws/${ws_id}/test_report/${id}`)
-
     }
     const handleViewReport = (e: any, all: any) => {
         e.stopPropagation()
@@ -145,29 +151,12 @@ export default (props: any) => {
         setVisible(!visible)
         setJobRefAllReport(all)
     }
-    const handleClick = (e: any) => {
-        e.stopPropagation()
-        setVisible(true)
-    }
-    const windowClick = (e: any) => {
-        setVisible(false)
-    }
-    useEffect(() => {
-        window.addEventListener('click', windowClick)
-        return () => {
-            window.removeEventListener('click', windowClick)
-        }
-    }, [])
-    const handleLeave = () => {
-        if (timeout !== null) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            setVisible(false)
-        }, 500);
-    }
 
     const getContent = (data: any) => {
         return (
-            <div onClick={handleClick}>
+            <div
+                ref={ref}
+            >
                 <Scrollbars style={{ height: 244 }}>
                     <Table
                         size="small"
@@ -181,22 +170,26 @@ export default (props: any) => {
             </div>
         );
     }
+
     const isFlag = _.get(jobInfo, 'report_li') && jobInfo.report_li.length
 
     return (
-        <div className={styles.conf_item_box} key={isFlag} onMouseLeave={handleLeave}>
-            <Popover placement={dreType}
+        <div className={styles.conf_item_box} >
+            <Popover
+                placement={dreType}
                 title={<FormattedMessage id="ws.result.list.view.report" />}
                 content={getContent(jobRefReport)}
                 trigger="click"
                 overlayClassName={styles.popover_job}
-                visible={visible}>
+                open={visible}
+            >
                 {
-                    origin === 'jobList' ? <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
-                        <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
-                            {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
-                        </span>
-                    </Typography.Text>
+                    origin === 'jobList' ?
+                        <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
+                            <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
+                                {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
+                            </span>
+                        </Typography.Text>
                         :
                         <Button type="primary"
                             onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
