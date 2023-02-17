@@ -55,16 +55,6 @@ const Standalone = (props: any, ref: any) => {
 
     const [urlParmas, setUrlParams] = useState<any>({
         ws_id,
-        sn: '',
-        description: '',
-        name: '',
-        device_type: '',
-        device_mode: '',
-        channel_type: '',
-        app_group: '',
-        ip: '',
-        state: '',
-        tags: [],
         page_size: 10,
         page_num: 1
     })
@@ -77,7 +67,7 @@ const Standalone = (props: any, ref: any) => {
         { id: 'vm', name: formatMessage({ id: 'device.standalone.vm' }) }
     ]
     const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
-
+    console.log(urlParmas)
     const getTestServerList = async () => {
         setLoading(true)
         const res = await queryTestServerList(urlParmas) || {}
@@ -126,36 +116,15 @@ const Standalone = (props: any, ref: any) => {
             requestCodeMessage(code, msg)
         }
     }
-    // const calcPageNo = (total = 0, pageNo = 1, pageSize = 10, delNum = 1) => {
-    //     console.log(total,pageNo)
-    //     const restNum = total - pageSize * (pageNo - 1)
-    //     let pageNoDiff = Math.floor((delNum - restNum) / pageSize) + 1
-    //     pageNoDiff < 0 && (pageNoDiff = 0)
-    //     pageNo = pageNo - pageNoDiff
-    //     pageNo < 1 && (pageNo = 1)
-    //     return pageNo
-    // }
+
     const calcPageNo = (total: number, page_num: number, pageSize = 10) => {
         let totalPage = Math.ceil(Number(total - 1) / pageSize)
         page_num = page_num > totalPage && totalPage > 0 ? totalPage : page_num
         return page_num
     }
-    // const handleDeleteTestServer = useCallback(async (id: number) => {
-    //     let param = { ws_id: ws_id }
-    //     const data = await deleteTestServer(id, param)
-    //     //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
-    //     let pageNo = calcPageNo(total,urlParmas.page_num,urlParmas.page_size)
-    //     console.log('page',pageNo)
-    //     if (data.code === 200) {
-    //         message.success('操作成功！')
-    //         setDeleteVisible(false)
-    //         setDeleteDefault(false)
-    //         setUrlParams({ ...urlParmas, page_num: pageNo })
-    //     }
-    //     else requestCodeMessage(data.code, data.msg)
-    // }, [])
+
     const handleDeleteTestServer = async (id: number) => {
-        let param = { ws_id: ws_id }
+        let param = { ws_id }
         const data = await deleteTestServer(id, param)
         //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
         let pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
@@ -168,6 +137,7 @@ const Standalone = (props: any, ref: any) => {
         }
         else requestCodeMessage(data.code, data.msg)
     }
+
     useEffect(() => {
         getTestServerList()
     }, [urlParmas])
@@ -394,7 +364,7 @@ const Standalone = (props: any, ref: any) => {
                     confirm={confirm}
                     onConfirm={(val: string) => setUrlParams({ ...urlParmas, state: val, page_num: 1 })}
                     stateVal={urlParmas.state}
-                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
                 />
             )
         },
@@ -512,7 +482,8 @@ const Standalone = (props: any, ref: any) => {
                     >
                         <Space>
                             {
-                                BUILD_APP_ENV && <Typography.Link onClick={() => handleRefresh(_)}>
+                                BUILD_APP_ENV &&
+                                <Typography.Link onClick={() => handleRefresh(_)}>
                                     <FormattedMessage id="device.synchronization.state" />
                                 </Typography.Link>
                             }
@@ -637,7 +608,7 @@ const Standalone = (props: any, ref: any) => {
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteTestServer(deleteObj.id)}>
@@ -661,7 +632,7 @@ const Standalone = (props: any, ref: any) => {
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 centered={true}
-                visible={deleteDefault}
+                open={deleteDefault}
                 onCancel={() => setDeleteDefault(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteTestServer(deleteObj.id)}>

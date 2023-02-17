@@ -278,7 +278,7 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             forceRender={true}
             title={!modifyProps ? <FormattedMessage id="device.add.btn" /> : <FormattedMessage id="device.device.edit" />}
             width="376"
-            visible={visible}
+            open={visible}
             destroyOnClose={true}
             onClose={!padding ? handleClose : () => { }}
             className={styles.form_wrapper_body}

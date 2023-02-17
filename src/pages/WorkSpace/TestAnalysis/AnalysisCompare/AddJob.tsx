@@ -94,8 +94,10 @@ export default (props: any) => {
     // 获取产品版本数据
     const getProductList = async (id: any) => {
         setLoading(true)
-        const { code, data, msg } = await queryProductList({ product_id: id, ws_id })
-        if (code === 200) {
+        let result = await queryProductList({ product_id: id, ws_id })
+        if (result.code === 200) {
+            let data = result.data.filter((val: any) => val?.trim())
+            data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
             if (!currentGroup?.members.length) {
                 const defaultProVersion = data.length ? data[0] : ''

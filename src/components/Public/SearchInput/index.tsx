@@ -31,11 +31,11 @@ const filterRadio: React.FC<any> = (props) => {
 					onChange={(e: any) => setVal(e.target.value)}
 					onSearch={(val: any) => {
 						confirm?.()
-						onConfirm(val.trim())
+						onConfirm(val?.trim())
 					}}
 					onPressEnter={() => {
 						confirm?.()
-						onConfirm(val.trim())
+						onConfirm(val?.trim())
 					}}
 					size="middle"
 					style={{ width: (styleObj && styleObj.container) || 150 }}
@@ -46,7 +46,7 @@ const filterRadio: React.FC<any> = (props) => {
 				<Button
 					onClick={() => {
 						confirm?.()
-						onConfirm(val.trim())
+						onConfirm(val?.trim())
 					}}
 					type="link"
 					size="small"

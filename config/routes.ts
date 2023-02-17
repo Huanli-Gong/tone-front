@@ -411,11 +411,18 @@ const routes = [
 				access: 'IsWsSetting',
 				routes: [
 					{
+						path: '/ws/:ws_id/job/types/create',
+						hideInMenu: true,
+						name: 'CreateJobType',
+						hasLeftNav: false,
+						component: './WorkSpace/JobTypeManage/CreateJobType',
+					},
+					{
 						path: '/ws/:ws_id/job/types',
 						exact: true,
 						name: 'JobTypeManage',
-						component: './WorkSpace/JobTypeManage',
 						access: 'WsMemberNoPermission',
+						component: './WorkSpace/JobTypeManage',
 					},
 					{
 						path: '/ws/:ws_id/job/templates',
@@ -430,14 +437,6 @@ const routes = [
 						component: './WorkSpace/TagManage',
 						access: 'WsMemberNoPermission',
 						exact: true
-					},
-					{
-						path: '/ws/:ws_id/job/create',
-						hideInMenu: true,
-						name: 'CreateJobType',
-						hasLeftNav: false,
-						component: './WorkSpace/JobTypeManage/CreateJobType',
-						access: 'WsMemberNoPermission',
 					},
 					{
 						path: '/ws/:ws_id/job/update/:jt_id',

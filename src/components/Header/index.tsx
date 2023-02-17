@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, useAccess, useParams, useIntl, FormattedMessage } from 'umi'
-import { Typography, Row, Menu, Col, Avatar, Popover, Dropdown, Space } from 'antd'
+import { history, useModel, useRequest, useIntl, FormattedMessage } from 'umi'
+import { Typography, Row, Menu, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
 import TestJobTabs from './components/JobTab'
@@ -32,7 +32,6 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
     const { formatMessage } = useIntl()
     const { initialState, setInitialState } = useModel('@@initialState')
     const { pathname } = location
-    const access = useAccess()
     const [isWs, setIsWs] = useState(false)
     const [backLogo, setBackLogo] = useState(false)
     const [wsId, setWsId] = useState<any>(null)
@@ -141,7 +140,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                     <Row ref={iconRf}>
                         {
                             !isWs &&
-                            <LogoWrapper align="middle" onClick={() => history.push('/')}>
+                            <LogoWrapper align="middle" onClick={() => history.push('/')} style={{ marginRight: 20 }}>
                                 <Avatar shape="square" src={logoPng} size={32} style={{ marginRight: 16 }} />
                                 <Typography.Title level={3} >T-One</Typography.Title>
                             </LogoWrapper>
@@ -155,10 +154,9 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                     onMouseLeave={() => setBackLogo(false)}
                                 >
                                     {
-                                        <Popover style={{ marginRight: 20 }} content={formatMessage({id: 'back.to.home'})}>
+                                        <Popover style={{ marginRight: 20 }} content={formatMessage({ id: 'back.to.home' })}>
                                             {
                                                 backLogo ?
-
                                                     <BackHome
                                                         style={{ width: 32, height: 32, cursor: 'pointer' }}
                                                         onClick={() => history.push('/')}
@@ -227,7 +225,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                         }}
                                                                     >
                                                                         {/* {item.name} */}
-                                                                        <FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE' } />
+                                                                        <FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} />
                                                                     </span>
                                                                     <CaretDownOutlined style={{ fontSize: 10 }} />
                                                                 </Space>
@@ -239,7 +237,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                             }
                                             if (item.children && item.children.length > 0) {
                                                 return (
-                                                    <Menu.Item key={itemPath} title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE' } />}> {/* {item.name} */}
+                                                    <Menu.Item key={itemPath} title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} />}> {/* {item.name} */}
                                                         <Dropdown
                                                             arrow={true}
                                                             overlayClassName={styles.dropdownArrowHide}
@@ -253,11 +251,11 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                             return (
                                                                                 <Menu.Item
                                                                                     key={i.path}
-                                                                                    title={<FormattedMessage id={i.locale || 'DEF_COMMON_FORMATE' } />} // {i.name}
+                                                                                    title={<FormattedMessage id={i.locale || 'DEF_COMMON_FORMATE'} />} // {i.name}
                                                                                     onClick={() => history.push(i.path.replace(':ws_id', ws_id))}
                                                                                 >
                                                                                     {/* {i.name} */}
-                                                                                    <FormattedMessage id={i.locale || 'DEF_COMMON_FORMATE' } />
+                                                                                    <FormattedMessage id={i.locale || 'DEF_COMMON_FORMATE'} />
                                                                                 </Menu.Item>
                                                                             )
                                                                         })
@@ -299,7 +297,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                             <Menu.Item
                                                 onClick={() => history.push(item.path)}
                                                 key={item.path}
-                                                title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE' } />} // {item.name}
+                                                title={<FormattedMessage id={item.locale || 'DEF_COMMON_FORMATE'} />} // {item.name}
                                             >
                                                 <Space>
                                                     {SwithRouteIcon(item.locale)}

@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useEffect, useState } from 'react'
 import { Form, Input, Select, InputNumber } from 'antd'
 import styles from './index.less'
-import { FormProps } from './index'
+import type { FormProps } from './index'
 import { tagList } from '@/pages/WorkSpace/TagManage/service'
 import { TagSelect } from '@/pages/WorkSpace/DeviceManage/GroupManage/Components/index'
 import QuestionCircleComponent from '@/components/Public/QuestionCircle'
@@ -14,7 +14,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const [form] = Form.useForm()
-    const [tags, setTags] = useState<Array<any>>([])
+    const [tags, setTags] = useState<any[]>([])
     const [checkedList, setCheckedList] = React.useState<any>();
     const [reportTemplate, setReportTemplate] = useState<any>([])
     const [defaultTemplate, setDefaultTemplate] = useState({})
@@ -195,7 +195,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                             const reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                             if (value) {
                                 const valArr = value.split(/,|，|\n|\s/g)
-                                let warry = valArr.filter((str: any) => !reg.test(str))
+                                const warry = valArr.filter((str: any) => !reg.test(str))
                                 return warry.length === 0 ? Promise.resolve() : Promise.reject(formatMessage({ id: 'job.form.email.validator' }));
                             }
                             else
@@ -203,7 +203,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {}, isReset
                         },
                     })]}
                 >
-                    <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({ id: 'job.form.email.validator' })} />
+                    <Input autoComplete="off" disabled={disabled} placeholder={formatMessage({ id: 'job.form.email.placeholder' })} />
                 </Form.Item>
             }
             {

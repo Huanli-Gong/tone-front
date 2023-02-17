@@ -20,7 +20,7 @@ const JobTypeTab: React.FC<Record<string, any>> = ({ onOk }) => {
     const access = useAccess()
     const handleCreateJobType = () => {
         onOk()
-        history.push({ pathname: `/ws/${ws_id}/job/create` })
+        history.push({ pathname: `/ws/${ws_id}/job/types/create` })
     }
     const renderChild = (
         <>
@@ -75,7 +75,7 @@ const JobTypeTab: React.FC<Record<string, any>> = ({ onOk }) => {
     React.useEffect(() => {
         setTestType('全部')
     }, [ws_id])
-    
+
     return (
         <Tabs
             defaultActiveKey={tab}

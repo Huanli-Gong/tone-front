@@ -104,7 +104,7 @@ const Cluster = (props: any, ref: any) => {
         {
             title: <FormattedMessage id="device.cluster.name" />,
             dataIndex: 'name',
-            render: (record: any) => (<Typography.Text style={{ color: '#1890ff' }} >{record}</Typography.Text>),
+            render: (record: any) => (<Typography.Text ellipsis={{ tooltip: true }}>{record}</Typography.Text>),
             filterIcon: () => <FilterFilled style={{ color: params.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(name: string) => setParams({ ...params, name })} />
