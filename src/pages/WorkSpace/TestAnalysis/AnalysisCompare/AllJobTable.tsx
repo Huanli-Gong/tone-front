@@ -75,7 +75,7 @@ const AllJobTable = (props: any) => {
         setLoading(true)
         let result = await queryProductList({ ws_id, product_id: id })
         if (result.code === 200) {
-            let data = result.data.filter((val: any) => val.trim())
+            let data = result.data.filter((val: any) => val?.trim())
             data = data.map((item: any, index: number) => ({ label: index, value: item }))
             setAllVersion(data)
             if (!!data.length && pruductId) setPruductVersion(data[0].value)

@@ -61,7 +61,7 @@ const EditServerDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={<FormattedMessage id="device.device.edit"/>}
+            title={<FormattedMessage id="device.device.edit" />}
             forceRender={true}
             visible={visible}
             width="376"
@@ -70,9 +70,9 @@ const EditServerDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right' }} >
                     <Space>
-                        <Button onClick={hanldeClose}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button onClick={hanldeClose}><FormattedMessage id="operation.cancel" /></Button>
                         <Button type="primary" disabled={padding} onClick={onSubmit}>
-                            <FormattedMessage id="operation.update"/>
+                            <FormattedMessage id="operation.update" />
                         </Button>
                     </Space>
                 </div>
@@ -82,29 +82,29 @@ const EditServerDrawer = (props: any, ref: any) => {
                 layout="vertical"
                 form={form}
             >
-                <Form.Item name="ip" label={<FormattedMessage id="device.machine"/>}>
+                <Form.Item name="ip" label={<FormattedMessage id="device.machine" />}>
                     <Input disabled />
                 </Form.Item>
-                <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip.ip"/>}>
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'device.private_ip.ip.placeholder'}) } />
+                <Form.Item name="private_ip" label={<FormattedMessage id="device.private_ip.ip" />}>
+                    <Input autoComplete="off" placeholder={formatMessage({ id: 'device.private_ip.ip.placeholder' })} />
                 </Form.Item>
-                <Form.Item name="channel_type" 
-                    initialValue={'toneagent'} 
-                    label={<FormattedMessage id="device.channel_type"/>}
-                    rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}>
-                    <AgentSelect disabled={BUILD_APP_ENV}/>
+                <Form.Item name="channel_type"
+                    initialValue={'toneagent'}
+                    label={<FormattedMessage id="device.channel_type" />}
+                    rules={[{ required: true, message: formatMessage({ id: 'device.channel_type.message' }) }]}>
+                    <AgentSelect disabled={BUILD_APP_ENV} />
                 </Form.Item>
                 <Form.Item
-                    label={<FormattedMessage id="device.usage.state"/>}
+                    label={<FormattedMessage id="device.usage.state" />}
                     name="state"
                     hasFeedback
-                    rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
+                    rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
                     initialValue={'Available'}
                 >
-                    <Select placeholder={formatMessage({id: 'device.usage.state.message'})}>
-                        <Select.Option value="Available"><Badge status="success" text={"Available"}/></Select.Option>
-                        <Select.Option value="Reserved"><Badge status="success" text="Reserved"/></Select.Option>
-                        <Select.Option value="Unusable"><Badge status="default" text="Unusable"/></Select.Option>
+                    <Select placeholder={formatMessage({ id: 'device.usage.state.message' })}>
+                        <Select.Option value="Available"><Badge status="success" text={"Available"} /></Select.Option>
+                        <Select.Option value="Reserved"><Badge status="success" text="Reserved" /></Select.Option>
+                        <Select.Option value="Unusable"><Badge status="default" text="Unusable" /></Select.Option>
                     </Select>
                 </Form.Item>
                 {/* <Form.Item name="role" label="角色" rules={[{ required: true }]}>
@@ -113,25 +113,25 @@ const EditServerDrawer = (props: any, ref: any) => {
                         <Select.Option value="remote">remote</Select.Option>
                     </Select>
                 </Form.Item> */}
-                <Form.Item name="baseline_server" label={<FormattedMessage id="device.baseline_server"/>}>
+                <Form.Item name="baseline_server" label={<FormattedMessage id="device.baseline_server" />}>
                     <Radio.Group>
-                        <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                        <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                     </Radio.Group>
                 </Form.Item>
-                <Form.Item name="kernel_install" label={<FormattedMessage id="device.kernel_install"/>}>
+                <Form.Item name="kernel_install" label={<FormattedMessage id="device.kernel_install" />}>
                     <Radio.Group>
-                        <Radio value={true}><FormattedMessage id="operation.yes"/></Radio>
-                        <Radio value={false}><FormattedMessage id="operation.no"/></Radio>
+                        <Radio value={true}><FormattedMessage id="operation.yes" /></Radio>
+                        <Radio value={false}><FormattedMessage id="operation.no" /></Radio>
                     </Radio.Group>
                 </Form.Item>
-                <Form.Item name="var_name" label={<FormattedMessage id="device.var_name"/>}
+                <Form.Item name="var_name" label={<FormattedMessage id="device.var_name" />}
                     rules={[{
                         required: true,
                         // pattern: /^[A-Za-z0-9]+$/g,
                         // message: '仅允许包含字母、数字'
-                }]}>
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                    }]}>
+                    <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                 </Form.Item>
             </Form>
         </Drawer>

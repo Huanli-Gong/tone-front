@@ -340,7 +340,7 @@ export default (props: any) => {
                         setParams({ ...params, state: val })}
                     stateVal={params.state}
                     tabType={$instance}
-                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved']}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved',"Unusable"]}
                 />
             )
         },
@@ -650,10 +650,10 @@ export default (props: any) => {
                 open={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
-                    <Button key="submit" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
-                        {!$instance && <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />}
+                    <Button key="submit" type="danger" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
+                        <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />
                     </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteVisible(false)}>
+                    <Button key="back" onClick={() => setDeleteVisible(false)}>
                         <FormattedMessage id="operation.cancel" />
                     </Button>
                 ]}

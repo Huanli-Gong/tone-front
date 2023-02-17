@@ -75,10 +75,6 @@ const CloudConfig: React.FC<any> = (props) => {
 	};
 
 	useEffect(() => {
-		getList(defaultParmas)
-	}, []);
-
-	useEffect(() => {
 		getList(fetchParams)
 	}, [fetchParams]);
 
@@ -772,8 +768,8 @@ const CloudConfig: React.FC<any> = (props) => {
 				}
 			</Row>
 
-			{key === 'ak' && <AddAkDrawer ref={addScript} setPage={setPageFn} onOk={getList} ws_id={ws_id} />}
-			{key === 'image' && <AddImageDrawer ref={addImage} setPage={setPageFn} onOk={getList} ws_id={ws_id} />}
+			{key === 'ak' && <AddAkDrawer ref={addScript} onOk={setPageFn} />}
+			{key === 'image' && <AddImageDrawer ref={addImage} onOk={setPageFn} />}
 		</TabCard>
 	);
 };

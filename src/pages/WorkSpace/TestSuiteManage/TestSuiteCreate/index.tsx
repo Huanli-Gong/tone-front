@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { Table, PageHeader, Layout, Button, Row, Space, Select, Input, Typography, Modal, Tooltip, Spin, message } from 'antd'
 import { history, useParams, useIntl, FormattedMessage } from 'umi'
-import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { PlusCircleFilled, MinusCircleFilled, CaretRightFilled, SearchOutlined, ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { ReactComponent as UnFullExpand } from '@/assets/svg/un_full.svg'
 import { test_type_enum } from '@/utils/utils'
 import { queryTestSuiteList, saveSuiteCaseList, queryWorkspaceSuiteList, queryWsCaseConfirm } from './service'
@@ -12,16 +12,73 @@ import { unionBy } from 'lodash'
 import CodeViewer from '@/components/CodeViewer'
 import { useClientSize } from '@/utils/hooks'
 
+const getConfKeysAndSort = (suites: any[]) => suites.reduce((pre: any[], cur: any) => {
+    return pre.concat(cur.test_case_list.map((i: any) => i.id))
+}, []).sort((a, b) => a - b)
+
+const SaveTipModal = React.forwardRef((props, ref) => {
+    const { onSave, btnLoad }: any = props
+    const { ws_id, test_type }: any = useParams()
+
+    const [visible, setVisible] = React.useState(false)
+
+    React.useImperativeHandle(ref, () => ({
+        show() {
+            setVisible(true)
+        }
+    }))
+
+    const handleCancel = () => {
+        setVisible(false)
+    }
+
+    return (
+        <Modal
+            title={"提示"}
+            width={600}
+            open={visible}
+            destroyOnClose
+            centered
+            onCancel={handleCancel}
+            maskClosable={false}
+            footer={
+                <Space>
+                    <Button
+                        onClick={() => {
+                            handleCancel()
+                            history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
+                        }}
+                    >
+                        {"不保存"}
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={() => onSave?.(handleCancel)}
+                        loading={btnLoad}
+                    >
+                        {"保存"}
+                    </Button>
+                </Space>
+            }
+        >
+            <Space>
+                <InfoCircleOutlined style={{ color: "#FFA400" }} />
+                <Typography.Text>用例有变动，是否保存？</Typography.Text>
+            </Space>
+        </Modal>
+    )
+})
+
 const TestSuiteCreate: React.FC = () => {
     const { formatMessage } = useIntl()
     const { ws_id, test_type }: any = useParams()
 
-    const [leftWsHasSuiteArr, setLeftWsHasSuiteArr] = useState<Array<any>>([])
+    const [leftWsHasSuiteArr, setLeftWsHasSuiteArr] = useState<any[]>([])
     const [flag, setFlag] = useState(true)
     const [btnLoad, setBtnLoad] = useState(false)
-    const [suiteList, setSuiteList] = useState<Array<any>>([])
+    const [suiteList, setSuiteList] = useState<any[]>([])
     const [suiteParams, setSuiteParams] = useState({ domain: '', test_type, name: '', scope: 'brief_case' })
-    const [expandRows, setExpandRows] = useState<Array<number>>([])
+    const [expandRows, setExpandRows] = useState<any[]>([])
     const [addFlag, setAddFlag] = useState(false)
     const [loading, setLoading] = useState(true)
     const [domainList, setDomainList] = useState<any>([])
@@ -30,6 +87,12 @@ const TestSuiteCreate: React.FC = () => {
     const [delType, setDelType] = useState<any>('suite')
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [leftTableLoading, setLeftTableLoading] = useState(true)
+
+    /* ws下初始用例 */
+    const [wsSuiteAllKeys, setWsSuiteAllKey] = React.useState([])
+    const [defaultSuiteList, setDefaultSuiteList] = React.useState([])
+
+    const saveTipRef = React.useRef<any>(null)
 
     const { height: layoutHeight } = useClientSize()
     const getDomains = async () => {
@@ -67,7 +130,7 @@ const TestSuiteCreate: React.FC = () => {
             suiteListArr = data.map(
                 (suite: any) => {
                     for (let index = 0; index < wsHasSuiteArr.length; index++) {
-                        let hasSuiteItem = wsHasSuiteArr[index];
+                        const hasSuiteItem = wsHasSuiteArr[index];
 
                         if (suite.id === hasSuiteItem.id) {
                             if (hasSuiteItem.test_case_list.length > 0) {
@@ -79,6 +142,7 @@ const TestSuiteCreate: React.FC = () => {
                                         hasSuiteItem.test_case_list.forEach(
                                             (hasCase: any) => {
                                                 if (hasCase.id === cases.id) {
+                                                    // eslint-disable-next-line no-param-reassign
                                                     cases = { ...cases, isAdd: true }
                                                     addCaseCount++
                                                 }
@@ -105,6 +169,8 @@ const TestSuiteCreate: React.FC = () => {
         computeLeftTableData(suiteListArr, wsHasSuiteArr)
         setFlag(false)
         setSuiteList(suiteListArr)
+        setDefaultSuiteList(suiteListArr)
+        setWsSuiteAllKey(getConfKeysAndSort(wsHasSuiteArr))
         setLoading(false)
         setLeftTableLoading(false)
     }
@@ -124,10 +190,30 @@ const TestSuiteCreate: React.FC = () => {
     }, []);
 
     const handleRestore = () => {
-        window.location.reload();
+        // window.location.reload();
+        setSuiteList(defaultSuiteList)
+        computeLeftTableData(
+            defaultSuiteList,
+            defaultSuiteList.reduce((pre: any[], cur: any) => {
+                const { test_case_list } = cur
+                const cases = test_case_list?.reduce((p: any[], c: any) => {
+                    if (wsSuiteAllKeys.includes(c.id))
+                        return p.concat(c)
+                    return p
+                }, [])
+                if (cases && cases.length > 0)
+                    return pre.concat({
+                        ...cur,
+                        test_case_list: cases
+                    })
+                return pre
+            }, [])
+        )
     }
+
     const handleTestSuiteSearch = () => {
         const suiteSearchFn = () => setSuiteParams({ ...suiteParams, name: searchInp })
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         timer && clearTimeout(timer)
         timer = setTimeout(suiteSearchFn, 300)
     }
@@ -137,12 +223,6 @@ const TestSuiteCreate: React.FC = () => {
         setDomainValue(domain)
     }
 
-    const handleBackPage = useCallback(
-        () => {
-            history.go(-1)
-        },
-        []
-    )
     // 右侧 二级test suit添加
     const handleTestSuiteChildPlus = (_: any, record: any) => {
         setAddFlag(true)
@@ -152,7 +232,7 @@ const TestSuiteCreate: React.FC = () => {
 
         let addCaseCount: any = 0
         let hasAdd = record.hasAdd
-        let addCaseList: Array<any> = []
+        const addCaseList: Array<any> = []
 
         const test_case_list = record.test_case_list.map(
             (item: { isAdd: any, id: any }) => {
@@ -164,7 +244,7 @@ const TestSuiteCreate: React.FC = () => {
                 if (item.id === _.id) {
                     hasAdd = true
                     addCaseCount++
-                    let newAddCase = { ...item, isAdd: true }
+                    const newAddCase = { ...item, isAdd: true }
                     addCaseList.push(newAddCase)
                     return newAddCase
                 }
@@ -277,7 +357,7 @@ const TestSuiteCreate: React.FC = () => {
         return caseIdList.toString()
     }, [leftWsHasSuiteArr])
 
-    const handleDelete = async () => {
+    const handleDelete = async (callback?: any) => {
         setBtnLoad(true)
         if (ws_id) {
             //setPadding(true)
@@ -291,7 +371,8 @@ const TestSuiteCreate: React.FC = () => {
             if (data.code === 200) {
                 setBtnLoad(false)
                 message.success(formatMessage({ id: 'operation.success' }))
-                history.go(-1)
+                callback?.()
+                history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
             }
             else
                 message.error(formatMessage({ id: 'operation.failed' }))
@@ -306,10 +387,11 @@ const TestSuiteCreate: React.FC = () => {
         window.open(`/ws/${ws_id}/refenerce/1/?test_type=${test_type}&name=${delType}&id=${case_id_list}`)
     }
 
-    const handleSave = async () => {
+    const handleSave = async (callback?: any) => {
         if (addFlag) {
-            handleDelete()
-        } else {
+            handleDelete(callback)
+        }
+        else {
             const data = await queryWsCaseConfirm({
                 flag: 'pass',
                 ws_id,
@@ -320,21 +402,30 @@ const TestSuiteCreate: React.FC = () => {
             if (data.code == 200) {
                 setDeleteVisible(true)
             } else {
-                handleDelete()
+                handleDelete(callback)
             }
         }
     }
 
+    const handleBackPage = () => {
+        if (wsSuiteAllKeys.toString() !== getConfKeysAndSort(leftWsHasSuiteArr).toString()) {
+            /* 用例修改保存提示 */
+            saveTipRef.current?.show()
+            return
+        }
+        history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
+    }
+
     const computeLeftTableData = (suiteListArr: any, leftTableData: any = leftWsHasSuiteArr) => {
-        let leftSuites: any = []
+        const leftSuites: any = []
 
         suiteListArr.forEach(
             (suite: any) => {
                 if (suite.addCaseCount === 'all')
                     leftSuites.push(suite)
                 else if (suite.addCaseCount) {
-                    let test_case_list: any = []
-                    for (let x of suite.test_case_list) {
+                    const test_case_list: any = []
+                    for (const x of suite.test_case_list) {
                         if (x.isAdd) test_case_list.push(x)
                     }
                     leftSuites.push({ ...suite, test_case_list })
@@ -728,7 +819,7 @@ const TestSuiteCreate: React.FC = () => {
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 //onOk={remOuter}
                 onCancel={handleCancel}
                 footer={[
@@ -753,6 +844,7 @@ const TestSuiteCreate: React.FC = () => {
                     <FormattedMessage id="suite.view.reference.details" />
                 </div>
             </Modal>
+            <SaveTipModal ref={saveTipRef} onSave={handleSave} btnLoad={btnLoad} />
         </Layout.Content>
     )
 }

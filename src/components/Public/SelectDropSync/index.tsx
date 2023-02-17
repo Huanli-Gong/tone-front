@@ -33,6 +33,7 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 			case 'Broken': return <Badge status="error" text="Broken" />
 			case 'Online': return <Badge status="success" text="Online" />
 			case 'Offline': return <Badge status="error" text="Offline" />
+			case 'Unusable': return <Badge status="default" text="Unusable" />
 			default: return <></>
 		}
 	}

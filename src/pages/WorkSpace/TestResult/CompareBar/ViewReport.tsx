@@ -55,7 +55,7 @@ export default (props: any) => {
         let refAllJobCopy = _.cloneDeep(arr)
         if (creatorVal) {
             refAllJobCopy = refAllJobCopy.filter((item: any) => {
-                const arr = creatorVal.split(',').map((val: any) => val && val.trim())
+                const arr = creatorVal.split(',').map((val: any) => val && val?.trim())
                 const creator = _.get(item, 'creator')
                 return arr.includes(String(creator))
             })
