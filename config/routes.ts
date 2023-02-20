@@ -561,10 +561,25 @@ const routes = [
 				component: '@/pages/WorkSpace/DevOps'
 			},
 			{
-				path: '*',
 				hideInMenu: true,
+				inNav: true,
+				hasLeftNav: false,
+				path: "/ws/:ws_id/401",
+				component: "@/pages/401"
+			},
+			{
+				hideInMenu: true,
+				inNav: true,
+				hasLeftNav: false,
+				path: "/ws/:ws_id/500",
+				component: "@/pages/500"
+			},
+			{
+				hideInMenu: true,
+				inNav: true,
+				hasLeftNav: false,
 				name: 'DirectRoute',
-				redirect: '/'
+				component: "@/pages/404"
 			}
 		]
 	},
@@ -609,20 +624,17 @@ const routes = [
 	},
 	{
 		path: '/401',
-		layout: false,
 		hideInMenu: true,
 		component: './401',
 	},
 	{
 		path: '/500',
-		layout: false,
 		hideInMenu: true,
 		name: 'server.500',
 		component: './500',
 	},
 	{
 		path: '/404',
-		layout: false,
 		hideInMenu: true,
 		name: 'nofoundpage.404',
 		component: './404',

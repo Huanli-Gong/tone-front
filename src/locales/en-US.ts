@@ -76,6 +76,9 @@ export default {
   'no.data': 'No Data',
   'DEF_COMMON_FORMATE': ' ',
 
+  "page.500.desc": "The system is abnormal. Please contact the system administrator",
+  'page.500.button': "Back to Home",
+
   ...globalHeader,
   ...menu,
   ...settingDrawer,

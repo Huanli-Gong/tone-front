@@ -9,7 +9,7 @@ import PersonCenter from './PersonCenter';
 import TaskInform from './components/TaskInform'
 import SystemInform from './components/SystemInform';
 import { allTagRead, allTagApplyRead } from '@/services/Workspace';
-import { requestCodeMessage } from '@/utils/utils';
+import { redirectUnaccessPage, requestCodeMessage } from '@/utils/utils';
 import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 import { applyWorkspaceRole } from './services'
 
@@ -61,7 +61,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
             if (path && !!realPath.length) {
                 history.push(realPath)
             } else {
-                history.push({ pathname: '/401', state: wsId })
+                redirectUnaccessPage()
             }
         }
     }
