@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { Layout, Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm, Tooltip } from 'antd'
+import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, useParams, useLocation } from 'umi'
 import { requestCodeMessage, AccessTootip } from '@/utils/utils'
@@ -31,11 +31,11 @@ import CodeEditer from '@/components/CodeEditer'
 import { useSize } from 'ahooks'
 
 interface PropsTypes {
-    templateEditFormInfo?: Object,
-    basicFormInfo?: Object,
-    envFormInfo?: Object,
-    moreFormInfo?: Object,
-    new_test_config?: Object
+    templateEditFormInfo?: any,
+    basicFormInfo?: any,
+    envFormInfo?: any,
+    moreFormInfo?: any,
+    new_test_config?: any
 }
 
 const TestJob: React.FC<any> = (props) => {
@@ -869,10 +869,8 @@ const TestJob: React.FC<any> = (props) => {
                             onClick={
                                 () => {
                                     if (name === 'JobTypePreview') history.push(`/ws/${ws_id}/job/types`)
-                                    else access.IsWsSetting() ?
-                                        history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state?.params || {} })
-                                        :
-                                        history.push('./')
+                                    else
+                                        history.push(access.IsWsSetting() ? { pathname: `/ws/${ws_id}/job/templates`, state: state || {} } : "./")
                                 }
                             }
                         >
