@@ -181,7 +181,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 
 	const rowSelection = {
 		selectedRowKeys: metricDelInfo?.selectedRowKeys,
-		getCheckboxProps: (record: AnyType) => ({
+		getCheckboxProps: () => ({
 			disabled: !!selectedRowKeys?.length, // Column configuration not to be checked
 		}),
 		onChange: onSelectChange,
@@ -193,7 +193,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 				columns={columns as any}
 				// scrollType={670}
 				scroll={{ x: 670 }}
-				rowkey="id"
+				rowKey="id"
 				name="sys-suite-manage-basic-metric"
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}

@@ -235,7 +235,6 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             fixed: 'left',
             ellipsis: true,
             filterDropdown: (p) => {
-                console.log(confirm)
                 return (
                     <SearchInput
                         {...p}

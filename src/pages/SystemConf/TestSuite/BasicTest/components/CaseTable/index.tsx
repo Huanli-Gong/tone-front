@@ -215,7 +215,6 @@ export default forwardRef(({ id }: any, ref: any) => {
         else requestCodeMessage(code, msg)
     }
 
-    console.log(expandInnerKey)
     return (
         <div className={`${styles.warp} case_table_wrapper`} >
             {
@@ -229,13 +228,11 @@ export default forwardRef(({ id }: any, ref: any) => {
                     <TabPane
                         tab="Test Conf"
                         key="1"
-                    >
-                    </TabPane>
+                    />
                     <TabPane
                         tab={<FormattedMessage id="TestSuite.conf.metric" />}
                         key="2"
-                    >
-                    </TabPane>
+                    />
                 </Tabs>
             }
             {
