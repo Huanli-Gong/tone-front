@@ -17,7 +17,7 @@ import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent,
 import { useClientSize, useCopyText } from '@/utils/hooks';
 import { requestCodeMessage } from '@/utils/utils';
 
-const Report = (props: any) => {
+const Report: React.FC = () => {
     const { state } = useLocation() as any
     const { formatMessage } = useIntl()
     const { ws_id, form_id } = useParams() as any
@@ -30,7 +30,7 @@ const Report = (props: any) => {
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
     const [environmentResult, setEnvironmentResult] = useState<any>({})
-    const [envData, setEnvData] = useState<Array<{}>>([])
+    const [envData, setEnvData] = useState<any[]>([])
     const [shareWsId, setShareWsId] = useState(undefined)
     const [suiteLen, setSuiteLen] = useState(1)
     const [scrollLeft, setScrollLeft] = useState(0)
