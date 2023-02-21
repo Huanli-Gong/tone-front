@@ -1,8 +1,11 @@
-import { Row, Space, Typography, Radio, Input, RadioChangeEvent } from "antd"
+import { Row, Space, Typography, Radio, Input, Popover, Checkbox } from "antd"
+import type { RadioChangeEvent } from "antd"
 import React from "react"
 import styled from "styled-components"
-import { useAccess, useLocation, useParams, useIntl, FormattedMessage } from "umi"
-import { DownOutlined, UpOutlined } from '@ant-design/icons'
+import { useAccess, useLocation, useIntl, FormattedMessage } from "umi"
+import { DownOutlined, UpOutlined, SettingOutlined } from '@ant-design/icons'
+import { useProvider } from "./provider"
+import produce from "immer"
 
 const activeCss = `
     color: #1890FF;
@@ -17,15 +20,52 @@ const BaseState = styled.span<ActiveStateProps>`
     ${({ active }) => active ? activeCss : ""}
 `
 
-type IProps = {
-    [k: string]: any;
+type IProps = Record<string, any>
+
+const SettingDropdown: React.FC = () => {
+    const { initialColumns, setInitialColumns } = useProvider()
+    const intl = useIntl()
+
+    return (
+        <Popover
+            placement="bottom"
+            content={
+                <Space direction="vertical" size={0}>
+                    {
+                        Object.entries(initialColumns).map((i: any) => {
+                            const [name, value] = i
+                            return (
+                                <Checkbox
+                                    key={name}
+                                    checked={!value?.disabled}
+                                    onChange={({ target }) => {
+                                        setInitialColumns(produce(initialColumns, (draft: any) => {
+                                            draft[name] = {
+                                                ...draft[name],
+                                                disabled: !target.checked
+                                            }
+                                        }))
+                                    }}
+                                >
+                                    {intl.formatMessage({ id: `ws.result.list.${name}` })}
+                                </Checkbox>
+                            )
+                        })
+                    }
+                </Space>
+            }
+        >
+            <Typography.Text style={{ cursor: "pointer" }}>
+                <SettingOutlined />
+            </Typography.Text>
+        </Popover>
+    )
 }
 
 const StateRow: React.FC<IProps> = (props) => {
     const { formatMessage } = useIntl()
     const { pageQuery, setPageQuery, stateCount, onSelectionChange, onFilterChange } = props
 
-    const { ws_id } = useParams() as any
     const { query } = useLocation() as any
     const access = useAccess()
 
@@ -37,11 +77,13 @@ const StateRow: React.FC<IProps> = (props) => {
 
     /* filter change */
     React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         onFilterChange && onFilterChange(filter)
     }, [filter])
 
     /* selection type change */
     React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         onSelectionChange && onSelectionChange(keyType)
     }, [keyType])
 
@@ -71,7 +113,8 @@ const StateRow: React.FC<IProps> = (props) => {
                 }
             </Space>
 
-            <Space>
+            <Space size={16}>
+
                 <Space>
                     <Typography.Text><FormattedMessage id="ws.result.list.selection.function" />：</Typography.Text>
                     <Radio.Group
@@ -82,6 +125,9 @@ const StateRow: React.FC<IProps> = (props) => {
                         {access.WsMemberOperateSelf() && <Radio value={2}><FormattedMessage id="ws.result.list.batch.delete" /></Radio>}
                     </Radio.Group>
                 </Space>
+
+                <SettingDropdown />
+
                 <Input.Search
                     style={{ width: 160 }}
                     allowClear
@@ -97,6 +143,7 @@ const StateRow: React.FC<IProps> = (props) => {
                             <Space><FormattedMessage id="ws.result.list.expand.filter" /><DownOutlined /></Space>
                     }
                 </div>
+
             </Space>
         </Row>
     )

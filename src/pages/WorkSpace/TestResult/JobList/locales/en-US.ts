@@ -26,6 +26,12 @@ const text =  {
   'please.placeholder.project_id': 'Select Project',
   'start_time': 'Start Time',
   'completion_time': 'End Time',
+
+  'project_name': 'Project',
+  'test_result': 'All/Success/Fail',
+  'creator_name': 'Creator',
+  'end_time': 'End Time',
+
   // tab
   'all.job': 'All Jobs',
   'my.job': 'Created Jobs',

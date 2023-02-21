@@ -6,7 +6,8 @@ import { queryTestResultList } from "../services"
 import StateRow from "./StateRow"
 import ListTable from "./ListTable"
 import FilterRow from "./Filters"
-import { columns } from "./Filters/columns"
+import { filterColumns } from "./Filters/columns"
+import { JobListProvider } from "./provider"
 
 const activeCss = `
     color: #1890FF;
@@ -47,8 +48,9 @@ const TabsStyled = styled(Tabs)`
     width: 100%;
     overflow: hidden;
 
-    .ant-tabs-nav {
-        margin: 0;
+    .ant-tabs-nav, 
+    div > .ant-tabs-nav {
+        margin: 0!important;
     }
 
     .ant-tabs-nav-wrap {
@@ -58,13 +60,11 @@ const TabsStyled = styled(Tabs)`
     }
 `
 
-type IProps = {
-    [k: string]: any
-}
+type IProps = Record<string, any>
 
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
-const BaseTab: React.FC<IProps> = (props) => {
+const BaseTab: React.FC<IProps> = () => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { query } = useLocation() as any
@@ -76,22 +76,49 @@ const BaseTab: React.FC<IProps> = (props) => {
     const [selectionType, setSelectionType] = React.useState()
     const [filter, setFilter] = React.useState(false)
 
+    const [initialColumns, setInitialColumns] = React.useState({})
+
+    React.useEffect(() => {
+        const columnStates = localStorage.getItem("test-job-list-columns-state")
+        if (!columnStates) {
+            const base = {
+                name: { order: 0, disabled: false, },
+                test_type: { order: 1, disabled: false, },
+                test_result: { order: 2, disabled: false, },
+                project_name: { order: 3, disabled: false, },
+                creator_name: { order: 4, disabled: false, },
+                start_time: { order: 5, disabled: false, },
+                end_time: { order: 6, disabled: false, },
+            }
+            localStorage.setItem("test-job-list-columns-state", JSON.stringify(base))
+            setInitialColumns(base)
+        }
+        else {
+            setInitialColumns(JSON.parse(columnStates))
+        }
+    }, [])
+
+    React.useEffect(() => {
+        if (JSON.stringify(initialColumns) !== "{}")
+            localStorage.setItem("test-job-list-columns-state", JSON.stringify(initialColumns))
+    }, [initialColumns])
+
     const [source, setSource] = React.useState()
 
-    const fetchTestJobCount = async () => {
-        const { code, msg, ...rest } = await queryTestResultList({ query_count: 1, tab, ws_id })
+    const fetchTestJobCount = React.useCallback(async () => {
+        const { code, ...rest } = await queryTestResultList({ query_count: 1, tab, ws_id })
         if (code !== 200) return
         setSource(rest)
-    }
+    }, [tab, ws_id])
 
     React.useEffect(() => {
         fetchTestJobCount()
-    }, [tab, ws_id])
+    }, [fetchTestJobCount, tab, ws_id])
 
     React.useEffect(() => {
         if (ws_id !== pageQuery.ws_id)
             setPageQuery(({ ...DEFAULT_PAGE_QUERY, tab: "all", ws_id }))
-    }, [ws_id])
+    }, [pageQuery.ws_id, ws_id])
 
     const defaultTabKeys = [
         { tab: formatMessage({ id: 'ws.result.list.all.job' }), key: 'all' },
@@ -101,71 +128,70 @@ const BaseTab: React.FC<IProps> = (props) => {
 
     const hanldeTabClick = (tabKey: string) => {
         setTab(tabKey)
-        setPageQuery((p: any) => ({ tab: tabKey, ...DEFAULT_PAGE_QUERY, ws_id }))
+        setPageQuery({ tab: tabKey, ...DEFAULT_PAGE_QUERY, ws_id })
     }
 
     return (
-        <React.Fragment>
-            <TabsStyled
-                onTabClick={hanldeTabClick}
-                activeKey={tab}
-            >
-                {
-                    defaultTabKeys.map(
-                        ($tab: any) => {
-                            return (
-                                <Tabs.TabPane
-                                    key={$tab.key}
-                                    tab={
-                                        <TabPaneTitle size={4}>
-                                            <span >{$tab.tab}</span>
-                                            <TabPaneTitleCount
-                                                currentActive={tab === $tab.key}
-                                            >
-                                                {
-                                                    source ?
-                                                        source[`${$tab.key === 'all' ? 'ws' : $tab.key}_job`] : 0
-                                                }
-                                            </TabPaneTitleCount>
-                                        </TabPaneTitle>
-                                    }
-                                >
-                                    <StateRow
-                                        stateCount={source}
-                                        pageQuery={pageQuery}
-                                        setPageQuery={setPageQuery}
-                                        onSelectionChange={setSelectionType}
-                                        onFilterChange={setFilter}
-                                    />
-                                    {
-                                        filter &&
-                                        <FilterRow
-                                            columns={
-                                                columns.map((item: any) =>
-                                                ({
-                                                    ...item,
-                                                    placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}` }),
-                                                })
-                                                )
-                                            }
+        <JobListProvider.Provider value={{ initialColumns, setInitialColumns }}>
+            <React.Fragment>
+                <TabsStyled
+                    onTabClick={hanldeTabClick}
+                    activeKey={tab}
+                >
+                    {
+                        defaultTabKeys.map(
+                            ($tab: any) => {
+                                return (
+                                    <Tabs.TabPane
+                                        key={$tab.key}
+                                        tab={
+                                            <TabPaneTitle size={4}>
+                                                <span >{$tab.tab}</span>
+                                                <TabPaneTitleCount
+                                                    currentActive={tab === $tab.key}
+                                                >
+                                                    {
+                                                        source ?
+                                                            source[`${$tab.key === 'all' ? 'ws' : $tab.key}_job`] : 0
+                                                    }
+                                                </TabPaneTitleCount>
+                                            </TabPaneTitle>
+                                        }
+                                    >
+                                        <StateRow
+                                            stateCount={source}
                                             pageQuery={pageQuery}
-                                            onChange={(vals) => setPageQuery((p: any) => ({ tab, ws_id, ...vals, ...DEFAULT_PAGE_QUERY }))}
+                                            setPageQuery={setPageQuery}
+                                            onSelectionChange={setSelectionType}
+                                            onFilterChange={setFilter}
                                         />
-                                    }
-
-                                </Tabs.TabPane>
-                            )
-                        }
-                    )
-                }
-            </TabsStyled>
-            <ListTable
-                pageQuery={pageQuery}
-                countRefresh={fetchTestJobCount}
-                setPageQuery={setPageQuery}
-                radioValue={selectionType}
-            />
-        </React.Fragment>
+                                        {
+                                            filter &&
+                                            <FilterRow
+                                                columns={
+                                                    filterColumns.map((item: any) => ({
+                                                        ...item,
+                                                        placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}` }),
+                                                    }))
+                                                }
+                                                pageQuery={pageQuery}
+                                                onChange={(vals) => setPageQuery({ tab, ws_id, ...vals, ...DEFAULT_PAGE_QUERY })}
+                                            />
+                                        }
+                                    </Tabs.TabPane>
+                                )
+                            }
+                        )
+                    }
+                </TabsStyled>
+                <ListTable
+                    pageQuery={pageQuery}
+                    countRefresh={fetchTestJobCount}
+                    setPageQuery={setPageQuery}
+                    radioValue={selectionType}
+                />
+            </React.Fragment>
+        </JobListProvider.Provider>
     )
 }
 

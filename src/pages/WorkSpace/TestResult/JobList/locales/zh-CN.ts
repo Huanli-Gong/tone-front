@@ -1,6 +1,6 @@
 const defaultKey = 'ws.result.list'
 
-const text =  {
+const text = {
   // select Options
   'job_id': 'JobID',
   'name': 'Job名称',
@@ -11,8 +11,14 @@ const text =  {
   'server': '测试机',
   'test_suite': 'TestSuite',
   'job_type_id': 'Job类型',
-  'test_type': '测试类型',
   'project_id': '所属项目',
+
+  'test_type': '测试类型',
+  'project_name': '所属项目',
+  'test_result': '总计/成功/失败',
+  'creator_name': '创建人',
+  'end_time': '完成时间',
+
   'please.placeholder.job_id': '请输入JobID',
   'please.placeholder.name': '请输入Job名称',
   'please.placeholder.fail_case': '请输入多个失败case,多个以英文逗号分隔',
@@ -48,7 +54,7 @@ const text =  {
   'combining.rule': '合并规则：取所有Job的并集数据；',
   'top.ranked': '如果有重复的，排序靠前的Job优先。',
   'create.report': '生成报告',
-  'compare.analysis': '对比分析', 
+  'compare.analysis': '对比分析',
   'report.name': '报告名称',
   'report.name.placeholder': '支持搜索报告名称',
   'gmt_created': '保存时间',
