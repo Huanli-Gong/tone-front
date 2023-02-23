@@ -76,6 +76,7 @@ export default {
   'no.data': '暂无数据',
   'DEF_COMMON_FORMATE': ' ',
   "page.500.desc": "系统异常，请联系管理员",
+  "page.401.desc": "您没有访问权限。",
   'page.500.button': "返回首页",
 
   ...globalHeader,

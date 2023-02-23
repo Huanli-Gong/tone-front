@@ -37,7 +37,7 @@ const UnaccessPage: React.FC<any> = () => {
                             </Typography.Title>
                             <Space direction="vertical" size={0}>
                                 <Typography.Text style={{ fontSize: 16, color: "rgba(0,0,0,0.45)" }}>
-                                    {intl.formatMessage({ id: `page.500.desc`, defaultMessage: "您不是Workspace 成员，没有访问权限。" })}
+                                    {intl.formatMessage({ id: `page.401.desc`, defaultMessage: "您没有访问权限。" })}
                                 </Typography.Text>
                                 {
                                     JSON.stringify(source) !== "{}" &&
