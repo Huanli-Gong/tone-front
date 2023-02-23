@@ -50,12 +50,13 @@ export default (props: any) => {
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
 
-        if (!ws_is_exist) return history.push(`/404`)
+        if (!ws_is_exist) return history.push(`/ws/${ws_id}/404`)
         if (sys_role_title !== 'sys_admin' && !ws_role_title) return redirectUnaccessPage()
     }
 
     useEffect(() => {
-        checkAccess()
+        if (!["/404", "/401", "/500"].map((i: string) => `/ws/${ws_id}/${i}`).includes(locationHistory.pathname))
+            checkAccess()
     }, [locationHistory.pathname])
 
     return children
