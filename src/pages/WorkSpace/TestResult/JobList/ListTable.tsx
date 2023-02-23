@@ -431,6 +431,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const filterColumns = columns.filter((col: any) => {
         const { dataIndex, key } = col
         if (key) return col
+        if (["id"].includes(dataIndex)) return col
         if (initialColumns[dataIndex]) {
             if (!initialColumns[dataIndex]?.disabled)
                 return col
