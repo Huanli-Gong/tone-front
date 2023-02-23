@@ -85,10 +85,11 @@ const BaseTab: React.FC<IProps> = () => {
                 name: { order: 0, disabled: false, },
                 test_type: { order: 1, disabled: false, },
                 test_result: { order: 2, disabled: false, },
-                project_name: { order: 3, disabled: false, },
-                creator_name: { order: 4, disabled: false, },
-                start_time: { order: 5, disabled: false, },
-                end_time: { order: 6, disabled: false, },
+                state: { order: 3, disabled: false },
+                project_name: { order: 4, disabled: false, },
+                creator_name: { order: 5, disabled: false, },
+                start_time: { order: 6, disabled: false, },
+                end_time: { order: 7, disabled: false, },
             }
             localStorage.setItem("test-job-list-columns-state", JSON.stringify(base))
             setInitialColumns(base)
