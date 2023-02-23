@@ -13,11 +13,15 @@ const text = {
   'job_type_id': 'Job类型',
   'project_id': '所属项目',
 
+  'id': "ID",
   'test_type': '测试类型',
   'project_name': '所属项目',
   'test_result': '总计/成功/失败',
   'creator_name': '创建人',
   'end_time': '完成时间',
+
+  'columns.state.reset': "重置",
+  'columns.state.title': "列展示",
 
   'please.placeholder.job_id': '请输入JobID',
   'please.placeholder.name': '请输入Job名称',

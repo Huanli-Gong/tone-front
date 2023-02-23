@@ -5,7 +5,8 @@ import styled from "styled-components"
 import { useAccess, useLocation, useIntl, FormattedMessage } from "umi"
 import { DownOutlined, UpOutlined, SettingOutlined } from '@ant-design/icons'
 import { useProvider } from "./provider"
-import produce from "immer"
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 
 const activeCss = `
     color: #1890FF;
@@ -23,35 +24,97 @@ const BaseState = styled.span<ActiveStateProps>`
 type IProps = Record<string, any>
 
 const SettingDropdown: React.FC = () => {
-    const { initialColumns, setInitialColumns } = useProvider()
+    const { initialColumns, setInitialColumns, DEFAULT_COLUMNS_SET_DATA } = useProvider()
     const intl = useIntl()
+    const [indeterminate, setIndeterminate] = React.useState(true);
+    const [checkAll, setCheckAll] = React.useState(false);
+
+    const options = Object.entries(initialColumns)
+    const allKey = options.map((i: any) => {
+        const [name] = i
+        return name
+    })
+    const baseList = options.map((i: any) => {
+        const [name, { disabled }] = i
+        if (!disabled)
+            return name
+    }).filter(Boolean)
+
+    const [checkedList, setCheckedList] = React.useState<CheckboxValueType[]>(baseList);
+
+    React.useEffect(() => {
+        setCheckedList(baseList)
+        setIndeterminate(!!baseList.length && baseList.length < options.length);
+        setCheckAll(baseList.length === options.length);
+    }, [initialColumns])
+
+    const setColumnsState = (list: any[]) => {
+        setInitialColumns((p: any) => Object.fromEntries(
+            Object.entries(p).map((i: any) => {
+                const [name, value] = i
+                return [name, { ...value, disabled: !list.includes(name) }]
+            })
+        ), [])
+    }
+
+    const onCheckAllChange = (e: CheckboxChangeEvent) => {
+        const checkValues = e.target.checked ? allKey : []
+        setCheckedList(checkValues);
+        setIndeterminate(false);
+        setCheckAll(e.target.checked);
+        setColumnsState(checkValues)
+    };
+
+    const onChange = (list: CheckboxValueType[]) => {
+        setCheckedList(list);
+        setIndeterminate(!!list.length && list.length < options.length);
+        setCheckAll(list.length === options.length);
+        setColumnsState(list)
+    };
 
     return (
         <Popover
             placement="bottom"
             content={
-                <Space direction="vertical" size={0}>
-                    {
-                        Object.entries(initialColumns).map((i: any) => {
-                            const [name, value] = i
-                            return (
-                                <Checkbox
-                                    key={name}
-                                    checked={!value?.disabled}
-                                    onChange={({ target }) => {
-                                        setInitialColumns(produce(initialColumns, (draft: any) => {
-                                            draft[name] = {
-                                                ...draft[name],
-                                                disabled: !target.checked
-                                            }
-                                        }))
-                                    }}
-                                >
-                                    {intl.formatMessage({ id: `ws.result.list.${name}` })}
-                                </Checkbox>
-                            )
-                        })
-                    }
+                <Space direction="vertical" size={4}>
+                    <Row justify="space-between" align={"middle"} style={{ marginBottom: 16 }}>
+                        <Checkbox
+                            indeterminate={indeterminate}
+                            checked={checkAll}
+                            onChange={onCheckAllChange}
+                        >
+                            <Typography.Text strong>
+                                {intl.formatMessage({ defaultMessage: "列展示", id: "ws.result.list.columns.state.title" })}
+                            </Typography.Text>
+                        </Checkbox>
+                        <Typography.Link
+                            strong
+                            onClick={() => setInitialColumns(DEFAULT_COLUMNS_SET_DATA)}
+                        >
+                            {intl.formatMessage({ defaultMessage: "重置", id: "ws.result.list.columns.state.reset" })}
+                        </Typography.Link>
+                    </Row>
+                    <Checkbox.Group
+                        value={checkedList}
+                        onChange={onChange}
+                    >
+                        <Space direction="vertical" size={4}>
+                            {
+                                Object.entries(initialColumns).map((i: any) => {
+                                    const [name] = i
+                                    return (
+                                        <Checkbox
+                                            key={name}
+                                            value={name}
+                                            disabled={["id"].includes(name)}
+                                        >
+                                            {intl.formatMessage({ id: `ws.result.list.${name}` })}
+                                        </Checkbox>
+                                    )
+                                })
+                            }
+                        </Space>
+                    </Checkbox.Group>
                 </Space>
             }
         >

@@ -64,6 +64,18 @@ type IProps = Record<string, any>
 
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
+const DEFAULT_COLUMNS_SET_DATA = {
+    id: { order: 0, disabled: false },
+    name: { order: 1, disabled: false, },
+    state: { order: 2, disabled: false },
+    test_type: { order: 3, disabled: false, },
+    test_result: { order: 4, disabled: false, },
+    project_name: { order: 5, disabled: false, },
+    creator_name: { order: 6, disabled: false, },
+    start_time: { order: 7, disabled: false, },
+    end_time: { order: 8, disabled: false, },
+}
+
 const BaseTab: React.FC<IProps> = () => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
@@ -81,18 +93,8 @@ const BaseTab: React.FC<IProps> = () => {
     React.useEffect(() => {
         const columnStates = localStorage.getItem("test-job-list-columns-state")
         if (!columnStates) {
-            const base = {
-                name: { order: 0, disabled: false, },
-                test_type: { order: 1, disabled: false, },
-                test_result: { order: 2, disabled: false, },
-                state: { order: 3, disabled: false },
-                project_name: { order: 4, disabled: false, },
-                creator_name: { order: 5, disabled: false, },
-                start_time: { order: 6, disabled: false, },
-                end_time: { order: 7, disabled: false, },
-            }
-            localStorage.setItem("test-job-list-columns-state", JSON.stringify(base))
-            setInitialColumns(base)
+            localStorage.setItem("test-job-list-columns-state", JSON.stringify(DEFAULT_COLUMNS_SET_DATA))
+            setInitialColumns(DEFAULT_COLUMNS_SET_DATA)
         }
         else {
             setInitialColumns(JSON.parse(columnStates))
@@ -133,7 +135,7 @@ const BaseTab: React.FC<IProps> = () => {
     }
 
     return (
-        <JobListProvider.Provider value={{ initialColumns, setInitialColumns }}>
+        <JobListProvider.Provider value={{ initialColumns, setInitialColumns, DEFAULT_COLUMNS_SET_DATA }}>
             <React.Fragment>
                 <TabsStyled
                     onTabClick={hanldeTabClick}
