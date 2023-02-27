@@ -1,14 +1,18 @@
 
 .business_root {
   .businessList {
-    // 覆盖别人写的已有样式
-    :global(.ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell){
-      padding: 8px 0px;
-    }
-    //
-    :global(.ant-table .ant-table-expanded-row-fixed) {
-      padding: 0px 0px 0px 56px;
-      background: #fff;
+    :global {
+      .ant-table-tbody>.ant-table-expanded-row-level-1>.ant-table-cell{
+        padding: 0px 0px;
+      }
+      .ant-table .ant-table-expanded-row-fixed{
+        background: #fff;
+        padding: 0;
+        margin: 0;
+      }
+      .ant-table.ant-table-small .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
+        margin: 0px;
+      }
     }
   }
 
@@ -24,6 +28,7 @@
     position: fixed;
     bottom: 0px;
     background: #fff;
+    z-index: 9999;
   }
 
 }

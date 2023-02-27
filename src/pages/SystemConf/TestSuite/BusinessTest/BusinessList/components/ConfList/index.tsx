@@ -192,7 +192,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			title: <FormattedMessage id="TestSuite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 		},
 		{
 			title: <FormattedMessage id="TestSuite.timeout" />,
@@ -212,7 +212,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			dataIndex: 'ci_type',
 			width: 110,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -220,14 +220,14 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'}</ColumnEllipsisText>
 			}
 		},
 		{
 			title: <FormattedMessage id="TestSuite.desc" />,
 			dataIndex: 'description',
 			width: 200,
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
 		},
 		{
 			title: (
@@ -263,15 +263,17 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 		}
 	}
 
-	let list = data.data, total = data.total, pageNum = data.page_num, pageSize = data.page_size
+	const list = data.data, total = data.total, pageNum = data.page_num, pageSize = data.page_size
 	return (
 		<div>
 			<CommonTable
 				className={styles.confList_root}
 				columns={columns as any}
 				name="sys-suite-bussiness-conf"
+				refreshDeps={[selectedRowKeys]}
 				dataSource={list}
 				loading={loading}
+				rowKey={"id"}
 				page={pageNum}
 				pageSize={pageSize}
 				total={total}
