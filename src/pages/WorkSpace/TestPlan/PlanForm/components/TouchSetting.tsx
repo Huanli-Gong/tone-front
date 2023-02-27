@@ -4,6 +4,7 @@ import { useIntl, FormattedMessage } from 'umi'
 import { Form, Input, Radio, Switch } from 'antd'
 import { checkCronExpression } from '@/pages/WorkSpace/TestPlan/services'
 import RuleQusetionContent from './RuleQusetionContent'
+import cls from "classnames"
 
 const TouchSetting = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
@@ -23,13 +24,7 @@ const TouchSetting = (props: any, ref: any) => {
         if (template && JSON.stringify(template) !== '{}') {
             const { cron_schedule } = template
             setTigger(cron_schedule)
-            if (cron_schedule) {
-                form.setFieldsValue(template)
-            }
-            else {
-                const { cron_schedule, blocking_strategy } = template
-                form.setFieldsValue({ cron_schedule, blocking_strategy })
-            }
+            form.setFieldsValue(template)
         }
     }, [template])
 
@@ -45,64 +40,67 @@ const TouchSetting = (props: any, ref: any) => {
                 style={{ width: '100%' }}
                 colon={false}
                 className={styles.job_plan_form}
+                initialValues={{
+                    blocking_strategy: 1
+                }}
             >
                 <Form.Item name="cron_schedule"
                     label={<FormattedMessage id="plan.timed.trigger" />}
                     valuePropName="checked">
                     <Switch onChange={setTigger} size="default" checked checkedChildren={<FormattedMessage id="operation.open" />} unCheckedChildren={<FormattedMessage id="operation.close" />} />
                 </Form.Item>
-                {
-                    tigger &&
-                    <>
-                        <Form.Item label={<FormattedMessage id="plan.trigger.rule" />}>
-                            <div style={{ position: 'relative' }}>
-                                <Form.Item
-                                    name="cron_info"
-                                    validateTrigger={'onBlur'}
-                                    rules={[
-                                        () => ({
-                                            async validator(rule, value) {
-                                                const { code, data = [] } = await checkCronExpression({ cron_express: value }) || {}
-                                                if (code === 200) {
-                                                    setExpression(data)
-                                                    return Promise.resolve()
-                                                }
-                                                setExpression([])
-                                                return Promise.reject(formatMessage({ id: 'plan.cron_info.reject' }))
+                <div
+                    className={cls(!tigger && "dom-hide")}
+                >
+                    <Form.Item label={<FormattedMessage id="plan.trigger.rule" />}>
+                        <div style={{ position: 'relative' }}>
+                            <Form.Item
+                                name="cron_info"
+                                validateTrigger={'onBlur'}
+                                rules={[
+                                    () => ({
+                                        async validator(rule, value) {
+                                            const { code, data = [] } = await checkCronExpression({ cron_express: value }) || {}
+                                            if (code === 200) {
+                                                setExpression(data)
+                                                return Promise.resolve()
                                             }
-                                        }),
-                                    ]}
-                                >
-                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.trigger.rule' })} />
-                                </Form.Item>
-                                <RuleQusetionContent />
-                            </div>
-                        </Form.Item>
-                        {!!expression?.length && (
-                            <Form.Item label=" ">
-                                <span><FormattedMessage id="plan.next.three.trigger.times" />：</span>
-                                {expression.map((item, index) =>
-                                    <div key={index} style={{ marginLeft: 20 }}>{index + 1}. {item}</div>
-                                )}
+                                            setExpression([])
+                                            return Promise.reject(formatMessage({ id: 'plan.cron_info.reject' }))
+                                        }
+                                    }),
+                                ]}
+                            >
+                                <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.trigger.rule' })} />
                             </Form.Item>
-                        )}
-                        {/* {
+                            <RuleQusetionContent />
+                        </div>
+                    </Form.Item>
+                    {!!expression?.length && (
+                        <Form.Item label=" ">
+                            <span><FormattedMessage id="plan.next.three.trigger.times" />：</span>
+                            {expression.map((item, index) =>
+                                <div key={item} style={{ marginLeft: 20 }}>{index + 1}. {item}</div>
+                            )}
+                        </Form.Item>
+                    )}
+                    {/* {
                             template?.next_time && 
                             <Form.Item label=" ">
                                 <span>下次触发时间：{ template.next_time }</span>
                             </Form.Item>
                         } */}
-                        <Form.Item name="blocking_strategy"
-                            label={<FormattedMessage id="plan.blocking_strategy" />}
-                            initialValue={1}>
-                            <Radio.Group>
-                                <Radio value={1}><FormattedMessage id="plan.blocking_strategy1" /></Radio><br />
-                                <Radio value={2}><FormattedMessage id="plan.blocking_strategy2" /></Radio><br />
-                                <Radio value={3}><FormattedMessage id="plan.blocking_strategy3" /></Radio><br />
-                            </Radio.Group>
-                        </Form.Item>
-                    </>
-                }
+                    <Form.Item
+                        name="blocking_strategy"
+                        label={<FormattedMessage id="plan.blocking_strategy" />}
+                    >
+                        <Radio.Group>
+                            <Radio value={1}><FormattedMessage id="plan.blocking_strategy1" /></Radio><br />
+                            <Radio value={2}><FormattedMessage id="plan.blocking_strategy2" /></Radio><br />
+                            <Radio value={3}><FormattedMessage id="plan.blocking_strategy3" /></Radio><br />
+                        </Radio.Group>
+                    </Form.Item>
+                </div>
             </Form>
         </div>
     )
