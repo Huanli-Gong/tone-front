@@ -233,7 +233,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			title: (
 				<Space>
 					<FormattedMessage id="Table.columns.operation" />
-					<Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })}>
+					<Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })} size="small">
 						<FormattedMessage id="operation.new" />
 					</Button>
 				</Space>
@@ -243,7 +243,7 @@ export default forwardRef(({ suite_id, test_type, domainList, }: any, ref: any) 
 			fixed: 'right',
 			render: (text: any, record: any) => {
 				return (
-					<Space>
+					<Space align="center">
 						<a><span onClick={() => handelAddOrEdit({ type: 'edit', record })}><FormattedMessage id="operation.edit" /></span></a>
 						<a><span onClick={() => queryDeleteSingle({ record })}><FormattedMessage id="operation.delete" /></span></a>
 					</Space>

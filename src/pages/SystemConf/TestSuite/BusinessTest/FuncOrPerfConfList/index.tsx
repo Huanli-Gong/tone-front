@@ -311,7 +311,7 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
             title: (
                 <Space align="center">
                     <FormattedMessage id="Table.columns.operation" />
-                    <Button type='primary' onClick={newCase} >
+                    <Button type='primary' onClick={newCase} size="small">
                         <FormattedMessage id="operation.new" />
                     </Button>
                 </Space>

@@ -338,6 +338,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 						type="primary"
 						onClick={() => handelAddOrEdit({ type: 'add' })}
 						style={{ marginLeft: 8 }}
+						size="small"
 					>
 						<FormattedMessage id="operation.new" />
 					</Button>
