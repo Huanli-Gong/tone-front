@@ -21,7 +21,8 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
 
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
-    const { baselineGroup, onOk, baselineGroupIndex } = props
+    const { onOk, baselineGroupIndex } = props
+    const baselineGroup = props.allGroupData[baselineGroupIndex]
     const groupAll = _.cloneDeep(props.allGroupData)
     groupAll.splice(baselineGroupIndex === -1 ? 0 : baselineGroupIndex, 1)
     const allGroupData = groupAll.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length) // 去掉空组但基线组除外
@@ -92,52 +93,51 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
     React.useImperativeHandle(ref, () => ({
         show() {
             setVisible(true)
-            if (allGroupData && baselineGroup) {
-                let arr = _.get(baselineGroup, 'members')
-                const paramData: any = {
-                    func_data: {
-                        base_job: [],
-                        compare_job: []
-                    },
-                    perf_data: {
-                        base_job: [],
-                        compare_job: []
-                    }
+            let arr = _.get(baselineGroup, 'members')
+            const paramData: any = {
+                func_data: {
+                    base_job: [],
+                    compare_job: []
+                },
+                perf_data: {
+                    base_job: [],
+                    compare_job: []
                 }
-                if (_.isArray(arr)) {
-                    const flag = baselineGroup.type === 'baseline'
-                    const isBaseline = !flag ? 0 : 1
-                    arr.forEach((item: any) => {
-                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                            paramData.func_data.is_baseline = isBaseline
-                            paramData.func_data.base_job.push(item.id)
-                        }
+            }
+            if (_.isArray(arr)) {
+                const flag = baselineGroup.type === 'baseline'
+                const isBaseline = !flag ? 0 : 1
+                arr.forEach((item: any) => {
+                    if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                        paramData.func_data.is_baseline = isBaseline
+                        paramData.func_data.base_job.push(item.id)
+                    }
 
+                    if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                        paramData.perf_data.is_baseline = isBaseline
+                        paramData.perf_data.base_job.push(item.id)
+                    }
+                })
+            }
+            let brrFun: any = []
+            let brrFers: any = []
+            allGroupData.forEach((item: any, index: number) => {
+                let membersArr = _.get(item, 'members')
+                if (_.isArray(membersArr)) {
+                    membersArr.forEach((item: any) => {
+                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                            brrFun.push(item.id)
+                        }
                         if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                            paramData.perf_data.is_baseline = isBaseline
-                            paramData.perf_data.base_job.push(item.id)
+                            brrFers.push(item.id)
                         }
                     })
                 }
-                let brrFun: any = []
-                let brrFers: any = []
-                allGroupData.forEach((item: any, index: number) => {
-                    let membersArr = _.get(item, 'members')
-                    if (_.isArray(membersArr)) {
-                        membersArr.forEach((item: any) => {
-                            if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                                brrFun.push(item.id)
-                            }
-                            if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                                brrFers.push(item.id)
-                            }
-                        })
-                    }
-                })
-                paramData.func_data.compare_job = brrFun
-                paramData.perf_data.compare_job = brrFers
-                getSuitDetail(paramData)
-            }
+            })
+            paramData.func_data.compare_job = brrFun
+            paramData.perf_data.compare_job = brrFers
+            console.log(paramData, props)
+            getSuitDetail(paramData)
         },
         hide() {
             setVisible(false)

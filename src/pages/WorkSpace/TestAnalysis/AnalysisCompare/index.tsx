@@ -1211,7 +1211,6 @@ export default (props: any) => {
                 <BaseGroupModal
                     ref={startCompareModalRef}
                     baselineGroupIndex={baselineGroupIndex}
-                    baselineGroup={baselineGroup}
                     onOk={handleSureOk}
                     creatReportOk={handleCreatReportOk}
                     allGroupData={groupData}
