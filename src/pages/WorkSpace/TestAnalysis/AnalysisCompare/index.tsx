@@ -628,7 +628,9 @@ export default (props: any) => {
         groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
         const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
+            const name = checkSameTitleAndReturnNew(groupArr, productMark)
+            groupArr[endGroupIndex].product_version = productMark
+            groupArr[endGroupIndex].name = name
         }
         groupArr[endGroupIndex].type = groupArr[startGroupIndex].type
         return groupArr;
@@ -640,7 +642,9 @@ export default (props: any) => {
         groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
         const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
+            const name = checkSameTitleAndReturnNew(groupArr, productMark)
+            groupArr[endGroupIndex].product_version = productMark
+            groupArr[endGroupIndex].name = name
         }
         groupArr[endGroupIndex].type = "job"
         groupArr[endGroupIndex].product_id = _.get(groupArr[endGroupIndex].members[0], 'product_id')
@@ -1205,7 +1209,10 @@ export default (props: any) => {
                     ref={addGroupItemModal}
                     allGroupData={groupData}
                     noGroupData={noGroupData}
-                    onOk={(data: any) => setGroupData((p: any) => p.map((i: any) => data.id === i.id ? data : i))}
+                    onOk={(data: any) => setGroupData((p: any) => p.map((i: any) => data.id === i.id ? {
+                        ...data,
+                        name: checkSameTitleAndReturnNew(p, data?.product_version)
+                    } : i))}
                 />
 
                 <BaseGroupModal

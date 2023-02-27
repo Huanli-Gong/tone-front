@@ -136,7 +136,6 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
             })
             paramData.func_data.compare_job = brrFun
             paramData.perf_data.compare_job = brrFers
-            console.log(paramData, props)
             getSuitDetail(paramData)
         },
         hide() {
