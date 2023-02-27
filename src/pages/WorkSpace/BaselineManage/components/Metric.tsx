@@ -63,6 +63,7 @@ const MetricInfo: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const handleDelete = async (current: any) => {
         const { code, msg } = await deletePerfsDetail({ id: current.id, ws_id });
         if (code !== 200) return
+        getLastDetail()
     }
 
     const columns = [
