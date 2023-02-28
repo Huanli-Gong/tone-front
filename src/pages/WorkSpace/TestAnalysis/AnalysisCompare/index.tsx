@@ -583,6 +583,12 @@ export default (props: any) => {
         )
     }
 
+    const handleItemAddOk = (data: any) => {
+        setGroupData((p: any[]) => p.map(
+            (i: any) => data.id === i.id ? { ...data, name: addGroupNameFn(p, data?.product_version) } : i
+        ))
+    }
+
     const handleMouseOver = (e: any) => {
         e.stopPropagation()
     }
@@ -1209,10 +1215,7 @@ export default (props: any) => {
                     ref={addGroupItemModal}
                     allGroupData={groupData}
                     noGroupData={noGroupData}
-                    onOk={(data: any) => setGroupData((p: any) => p.map((i: any) => data.id === i.id ? {
-                        ...data,
-                        name: checkSameTitleAndReturnNew(p, data?.product_version)
-                    } : i))}
+                    onOk={handleItemAddOk}
                 />
 
                 <BaseGroupModal
