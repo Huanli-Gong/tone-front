@@ -68,7 +68,7 @@ const MetricInfo: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         const remainNum = total % page_size === 1
         const totalPage: number = Math.floor(total / page_size)
         if (remainNum && totalPage && totalPage + 1 <= page_num)
-            setParams((p: any) => ({ ...p, total: totalPage }))
+            setParams((p: any) => ({ ...p, page_num: totalPage }))
         else
             getLastDetail()
     }
