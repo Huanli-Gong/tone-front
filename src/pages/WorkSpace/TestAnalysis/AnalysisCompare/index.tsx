@@ -99,7 +99,8 @@ export default (props: any) => {
         const trimTitle = title.trim()
         const nameCountArr = arr.filter(i => i.name.trim().replace(/\(\d+\)$/, "") === trimTitle).map(i => getNameRepeatCount(i.name)).sort((a, b) => b - a)
         const hasCount = nameCountArr.at(0)
-        return Object.prototype.toString.call(hasCount) === "[object Number]" ? `${trimTitle}(${hasCount as number + 1})` : trimTitle
+        console.log(nameCountArr)
+        return Object.prototype.toString.call(hasCount) === "[object Number]" ? `${trimTitle}(${(hasCount as number) + 1})` : trimTitle
     }
 
     const versionGroupingFn = (arrGroup: any, newGroup: any) => {
@@ -629,31 +630,38 @@ export default (props: any) => {
     };
 
     const diferentDeorderOne = (groupArr: any, startIndex: number, endIndex: number, startGroupIndex: number, endGroupIndex: number) => {
-        const arr = _.cloneDeep(groupArr[endGroupIndex].members)
+        const realGroup = groupArr[endGroupIndex]
+        const arr = _.cloneDeep(realGroup.members)
         const [removed] = groupArr[startGroupIndex].members.splice(startIndex, 1);
-        groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
-        const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
+        realGroup.members.splice(endIndex, 0, removed);
+        const productMark = _.get(realGroup.members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            const name = checkSameTitleAndReturnNew(groupArr, productMark)
-            groupArr[endGroupIndex].product_version = productMark
-            groupArr[endGroupIndex].name = name
+            realGroup.product_version = productMark
+            if (realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
+                const name = checkSameTitleAndReturnNew(groupArr, productMark)
+                realGroup.name = name
+            }
         }
-        groupArr[endGroupIndex].type = groupArr[startGroupIndex].type
+        realGroup.type = groupArr[startGroupIndex].type
         return groupArr;
     };
 
     const diferentDeorderTwo = (noGoupArr: any, groupArr: any, startIndex: number, endIndex: number, endGroupIndex: number) => {
-        const arr = _.cloneDeep(groupArr[endGroupIndex].members)
+        // console.log(groupArr)
+        const realGroup = groupArr[endGroupIndex]
+        const arr = _.cloneDeep(realGroup.members)
         const [removed] = noGoupArr.splice(startIndex, 1);
-        groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
-        const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
+        realGroup.members.splice(endIndex, 0, removed);
+        const productMark = _.get(realGroup.members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            const name = checkSameTitleAndReturnNew(groupArr, productMark)
-            groupArr[endGroupIndex].product_version = productMark
-            groupArr[endGroupIndex].name = name
+            realGroup.product_version = productMark
+            if (realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
+                const name = checkSameTitleAndReturnNew(groupArr, productMark)
+                realGroup.name = name
+            }
         }
-        groupArr[endGroupIndex].type = "job"
-        groupArr[endGroupIndex].product_id = _.get(groupArr[endGroupIndex].members[0], 'product_id')
+        realGroup.type = "job"
+        realGroup.product_id = _.get(groupArr[endGroupIndex].members[0], 'product_id')
         return { groupArr, noGoupArr }
     };
 
