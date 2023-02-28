@@ -586,7 +586,14 @@ export default (props: any) => {
 
     const handleItemAddOk = (data: any) => {
         setGroupData((p: any[]) => p.map(
-            (i: any) => data.id === i.id ? { ...data, name: addGroupNameFn(p, data?.product_version) } : i
+            (i: any) => {
+                if (data.id === i.id) {
+                    if (data?.by_edit === 1)
+                        return data
+                    return { ...data, name: addGroupNameFn(p, data?.product_version) }
+                }
+                return i
+            }
         ))
     }
 
@@ -637,7 +644,7 @@ export default (props: any) => {
         const productMark = _.get(realGroup.members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
             realGroup.product_version = productMark
-            if (realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
+            if (realGroup?.by_edit !== 1 && realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
                 const name = checkSameTitleAndReturnNew(groupArr, productMark)
                 realGroup.name = name
             }
@@ -655,7 +662,7 @@ export default (props: any) => {
         const productMark = _.get(realGroup.members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
             realGroup.product_version = productMark
-            if (realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
+            if (realGroup?.by_edit !== 1 && realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
                 const name = checkSameTitleAndReturnNew(groupArr, productMark)
                 realGroup.name = name
             }
