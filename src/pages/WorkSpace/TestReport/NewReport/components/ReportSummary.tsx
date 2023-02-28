@@ -33,11 +33,12 @@ const ReportSummary = () => {
             return val;
         }
     }
+    console.log(logoData)
     // const statisticalWidth = `${String(base_group.all).length * 20}px`  动态计算测试数据的宽度
     const RenderPerfItem: React.FC<any> = () => (
         Array.isArray(logoData) && !!logoData.length ?
             <Result>
-                <PerfResultTitle gLen={groupLen}><FormattedMessage id="performance.test"/></PerfResultTitle>
+                <PerfResultTitle gLen={groupLen}><FormattedMessage id="performance.test" /></PerfResultTitle>
                 {
                     logoData.map((item: any, idx: number) => {
                         const { perfAll, increase, decline } = item.perf_data || item
@@ -45,15 +46,15 @@ const ReportSummary = () => {
                             <PerfResultData gLen={groupLen} key={idx}>
                                 <div style={{ display: 'flex', margin: '18px 0' }}>
                                     <Statistical>
-                                        <i className="logo"><FormattedMessage id="report.all"/></i><br />
+                                        <i className="logo"><FormattedMessage id="report.all" /></i><br />
                                         <b className="all">{conversionNum(perfAll)}</b>
                                     </Statistical>
                                     <Statistical>
-                                        <i className="logo"><FormattedMessage id="report.increase"/></i><br />
+                                        <i className="logo"><FormattedMessage id="report.increase" /></i><br />
                                         <b className="up">{conversionNum(increase)}</b>
                                     </Statistical>
                                     <Statistical >
-                                        <i className="logo"><FormattedMessage id="report.decline"/></i><br />
+                                        <i className="logo"><FormattedMessage id="report.decline" /></i><br />
                                         <b className="down">{conversionNum(decline)}</b>
                                     </Statistical>
                                 </div>
@@ -67,7 +68,7 @@ const ReportSummary = () => {
     const RenderFuncItem: React.FC<any> = () => (
         Array.isArray(logoData) && !!logoData.length ?
             <Result>
-                <FuncResultTitle gLen={groupLen}><FormattedMessage id="functional.test"/></FuncResultTitle>
+                <FuncResultTitle gLen={groupLen}><FormattedMessage id="functional.test" /></FuncResultTitle>
                 {
                     logoData.map((item: any, idx: number) => {
                         const { funcAll, success, fail } = item.func_data || item
@@ -75,15 +76,15 @@ const ReportSummary = () => {
                             <FuncResultData gLen={groupLen} key={idx}>
                                 <div style={{ display: 'flex', margin: '18px 0' }}>
                                     <Statistical >
-                                        <i className="logo"><FormattedMessage id="report.all"/></i><br />
+                                        <i className="logo"><FormattedMessage id="report.all" /></i><br />
                                         <b className="all">{conversionNum(funcAll)}</b>
                                     </Statistical>
                                     <Statistical >
-                                        <i className="logo"><FormattedMessage id="report.success"/></i><br />
+                                        <i className="logo"><FormattedMessage id="report.success" /></i><br />
                                         <b className="up">{conversionNum(success)}</b>
                                     </Statistical>
                                     <Statistical>
-                                        <i className="logo"><FormattedMessage id="report.fail"/></i><br />
+                                        <i className="logo"><FormattedMessage id="report.fail" /></i><br />
                                         <b className="down">{conversionNum(fail)}</b>
                                     </Statistical>
                                 </div>
@@ -97,13 +98,13 @@ const ReportSummary = () => {
 
     const PerfFlag = useMemo(() => {
         let baseIndex = 0
-        if(logoData.length > 1){
+        if (logoData.length > 1) {
             baseIndex = baselineGroupIndex === 0 ? 1 : 0
         }
         return JSON.stringify(logoData[baseIndex]?.perf_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
-    const FuncFlag:any = useMemo(() => {
+    const FuncFlag: any = useMemo(() => {
         return JSON.stringify(logoData[baselineGroupIndex].func_data) !== '{}'
     }, [logoData, baselineGroupIndex])
 
@@ -112,27 +113,27 @@ const ReportSummary = () => {
             <SubTitle><span className="line"></span>Summary</SubTitle>
             <Summary>
                 <Group>
-                    <GroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name"/></GroupTitle>
+                    <GroupTitle gLen={groupLen}><FormattedMessage id="report.comparison.group.name" /></GroupTitle>
                     {
                         Array.isArray(envData) && !!envData.length && envData.map((item: any, idx: number) => {
                             return (
                                 <GroupData gLen={groupLen} key={idx}>
                                     <Space>
-                                    {
-                                        item.is_group && <Tooltip title={<FormattedMessage id="report.benchmark.group" />}>
-                                            <BaseIcon
-                                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                                            />
-                                        </Tooltip>
-                                    }
-                                    {
-                                        item.is_baseline ? <Tooltip title={<FormattedMessage id="report.baseline.group" />}>
-                                            <BaseLine
-                                                style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
-                                            />
-                                            <Typography.Text>（<FormattedMessage id="report.test.baseline" />）</Typography.Text>
-                                        </Tooltip> : null
-                                    }
+                                        {
+                                            item.is_group && <Tooltip title={<FormattedMessage id="report.benchmark.group" />}>
+                                                <BaseIcon
+                                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                                />
+                                            </Tooltip>
+                                        }
+                                        {
+                                            item.is_baseline ? <Tooltip title={<FormattedMessage id="report.baseline.group" />}>
+                                                <BaseLine
+                                                    style={{ marginRight: 4, marginTop: 17, width: 10, height: 14 }}
+                                                />
+                                                <Typography.Text>（<FormattedMessage id="report.test.baseline" />）</Typography.Text>
+                                            </Tooltip> : null
+                                        }
                                     </Space>
                                     <EllipsisPulic title={item.tag} />
                                 </GroupData>

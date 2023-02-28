@@ -635,6 +635,8 @@ export default (props: any) => {
         return result;
     };
 
+    console.log(noGroupData, groupData)
+
     const diferentDeorderOne = (groupArr: any, startIndex: number, endIndex: number, startGroupIndex: number, endGroupIndex: number) => {
         const realGroup = groupArr[endGroupIndex]
         const arr = _.cloneDeep(realGroup.members)
