@@ -1,5 +1,5 @@
 import { Layout, Space, Typography } from 'antd';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Icon from '@/assets/img/loss.png';
 import { useClientSize } from '@/utils/hooks';
 import { useIntl, useParams, history, Helmet } from 'umi';
