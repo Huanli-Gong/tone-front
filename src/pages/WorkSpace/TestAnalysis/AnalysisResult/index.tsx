@@ -123,7 +123,6 @@ const Report = (props: any) => {
                     if (JSON.stringify(res.data) !== '{}' && res.data.test_type === 'performance') {
                         compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
                     }
-
                 }
                 setCompareResult({
                     ...compareResult
@@ -143,8 +142,8 @@ const Report = (props: any) => {
 
     const compareLen = useMemo(() => {
         const { func_data_result, perf_data_result } = compareResult
-        let perf = perf_data_result.length
-        let func = func_data_result.length
+        const perf = perf_data_result.length
+        const func = func_data_result.length
         return perf + func
     }, [compareResult])
 
@@ -156,7 +155,7 @@ const Report = (props: any) => {
 
     const handleReportId = async () => {
         const arr = allGroupData.map((item: any) => {
-            let members = item.members.map((i: any) => i.id)
+            const members = item.members.map((i: any) => i.id)
             return {
                 ...item,
                 members
@@ -225,8 +224,8 @@ const Report = (props: any) => {
         if (JSON.stringify(environmentResult) !== '{}') {
             const deep = _.cloneDeep(environmentResult)
             if (deep.base_group) deep.base_group.is_group = true
-            let compare = deep.compare_groups
-            let base = deep.base_group
+            const compare = deep.compare_groups
+            const base = deep.base_group
             compare.splice(baselineGroupIndex, 0, base)
             setEnvData(compare)
         }
@@ -256,10 +255,10 @@ const Report = (props: any) => {
                 {
                     compareLen !== suiteLen && <MyLoading>
                         <span className="my-loading-span">
-                            <i></i>
-                            <i></i>
-                            <i></i>
-                            <i></i>
+                            <i />
+                            <i />
+                            <i />
+                            <i />
                         </span>
                     </MyLoading>
                 }
@@ -268,7 +267,7 @@ const Report = (props: any) => {
                         <ResultTitle style={{ maxWidth: document.body.clientWidth - 40 + scrollLeft }}>
                             <TypographyText><FormattedMessage id="analysis.comparison.result" /></TypographyText>
                             <span className="btn">
-                                <span className="test_result_copy_link"></span>
+                                <span className="test_result_copy_link" />
                                 {
                                     !form_id &&
                                     <span onClick={handleShare} style={{ cursor: 'pointer' }} >

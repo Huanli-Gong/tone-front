@@ -1,5 +1,5 @@
 import React, { useContext, memo, useMemo } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
+import { FormattedMessage } from 'umi';
 import { ReportContext } from '../Provider';
 import { Space, Tooltip, Typography } from 'antd';
 import { ReactComponent as BaseIcon } from '@/assets/svg/Report/BaseIcon.svg';
@@ -22,7 +22,6 @@ import {
 } from '../ReportUI'
 
 const ReportSummary = () => {
-    const { formatMessage } = useIntl()
     const { logoData, envData, domainResult, groupLen, baselineGroupIndex } = useContext(ReportContext)
     const conversionNum = (val: any) => {
         if (val == 0) {
@@ -33,7 +32,7 @@ const ReportSummary = () => {
             return val;
         }
     }
-    console.log(logoData)
+    // console.log(logoData)
     // const statisticalWidth = `${String(base_group.all).length * 20}px`  动态计算测试数据的宽度
     const RenderPerfItem: React.FC<any> = () => (
         Array.isArray(logoData) && !!logoData.length ?

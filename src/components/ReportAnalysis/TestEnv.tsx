@@ -133,7 +133,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                     <Tooltip
                         title={
                             intl.formatMessage({
-                                id: "report.server.coolapsed.tooltip.title",
+                                id: "report.server.collapsed.tooltip.title",
                                 defaultMessage: "展开查看更多机器信息"
                             })
                         }

@@ -411,13 +411,13 @@ export default (props: any) => {
 
     const creatReportCallback = (reportData: any, suiteData: any) => { // suiteData：已选的
         setLoading(true)
-        let func_suite = suiteData.func_suite_dic || {}
-        let perf_suite = suiteData.perf_suite_dic || {}
+        const func_suite = suiteData.func_suite_dic || {}
+        const perf_suite = suiteData.perf_suite_dic || {}
         const baseIndex = 0;
-        let func_keys = Object.keys(func_suite) || []
-        let perf_keys = Object.keys(perf_suite) || []
+        const func_keys = Object.keys(func_suite) || []
+        const perf_keys = Object.keys(perf_suite) || []
         const duplicate: any = []
-        let newSuiteData = {
+        const newSuiteData = {
             func_suite_dic: getSelectedDataFn(
                 func_suite,
                 groupData,
@@ -536,10 +536,12 @@ export default (props: any) => {
                 return groups
             }, []);
         }
+
         const paramData = {
             base_group,
             compare_groups
         }
+        // console.log(paramData)
         return paramData
     }
 
@@ -634,8 +636,6 @@ export default (props: any) => {
         result.splice(endIndex, 0, removed);
         return result;
     };
-
-    console.log(noGroupData, groupData)
 
     const diferentDeorderOne = (groupArr: any, startIndex: number, endIndex: number, startGroupIndex: number, endGroupIndex: number) => {
         const realGroup = groupArr[endGroupIndex]

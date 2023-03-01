@@ -6,9 +6,9 @@ import _ from 'lodash';
 import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
 export const CreatePageData = (props: any) => {
-    const [logoData, setLogoData] = useState<Array<{}>>([])
-    const [loading, setLoading] = useState<Boolean>(true)
-    const [envData, setEnvData] = useState<Array<{}>>([])
+    const [logoData, setLogoData] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
+    const [envData, setEnvData] = useState<any[]>([])
     const [suiteLen, setSuiteLen] = useState(1)
     const defaultConf = {
         need_test_suite_description: true,
@@ -495,7 +495,7 @@ export const CreatePageData = (props: any) => {
 
     const summaryData = useMemo(() => {
         const { compare_groups } = environmentResult
-        console.log(compare_groups, func_data_result, perf_data_result)
+        // console.log(environmentResult)
         const groupArr = compare_groups.reduce((pre: any, cur: any, idx: number) => {
             const { tag, is_job } = cur
             const compare: any = {
@@ -531,6 +531,7 @@ export const CreatePageData = (props: any) => {
             return pre.concat(compare)
         }, [])
 
+        // console.log(groupArr)
         const newObj: any = {}
         let base_group: any = {
             tag: environmentResult.base_group.tag,
@@ -552,11 +553,9 @@ export const CreatePageData = (props: any) => {
                         }
                     }, { funcAll: 0, success: 0, fail: 0 })
                 }
-
             }
         }
 
-        console.log(base_group, groupArr)
         newObj.custom = '-'
         newObj.summary = {
             base_group,
