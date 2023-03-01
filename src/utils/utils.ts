@@ -18,7 +18,7 @@ export const redirectErrorPage = (stateCode: number | string) => {
   const { page } = query
   if (page) return
   const ws_id = getPageWsid()
-  const link = ws_id ? `/ws/${ws_id}` : ""
+  const link = ws_id && /[a-zA-Z0-9]{8}/.test(ws_id) ? `/ws/${ws_id}` : ""
   history.push(`${link}/${stateCode}?page=${location.href}`)
 }
 
