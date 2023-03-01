@@ -2,7 +2,7 @@
 import React from 'react';
 import { Avatar, Space, Typography } from 'antd';
 import { auth_admin } from '../services/Workspace';
-import { useIntl, useParams, history } from 'umi'
+import { useIntl, useParams, history, Helmet } from 'umi'
 import { useClientSize } from '@/utils/hooks';
 import { ReactComponent as UnaccessIcon } from "@/assets/img/unaccess.svg"
 
@@ -27,6 +27,11 @@ const UnaccessPage: React.FC<any> = () => {
 
     return (
         <Container height={height - 50}>
+            <Helmet>
+                <title>
+                    {intl.formatMessage({ id: `menu.server.401` })}
+                </title>
+            </Helmet>
             <Wrapper>
                 <Space size={20}>
                     <UnaccessIcon />

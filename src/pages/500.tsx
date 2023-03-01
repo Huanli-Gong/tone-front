@@ -5,7 +5,7 @@ import { ReactComponent as PageErrorIcon } from "@/assets/img/page_500.svg"
 import styled from "styled-components"
 import { useClientSize } from "@/utils/hooks"
 
-import { history, useIntl } from "umi"
+import { history, useIntl, Helmet } from "umi"
 
 type ContainerProps = {
     height: any;
@@ -34,6 +34,11 @@ const ErrorPage: React.FC = () => {
 
     return (
         <Container height={height - 50}>
+            <Helmet>
+                <title>
+                    {intl.formatMessage({ id: `menu.server.500` })}
+                </title>
+            </Helmet>
             <Wrapper>
                 <Space size={120}>
                     <PageErrorIcon />

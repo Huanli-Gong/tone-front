@@ -2,23 +2,23 @@ import { Layout, Space, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import Icon from '@/assets/img/loss.png';
 import { useClientSize } from '@/utils/hooks';
-import { useIntl, useParams, history } from 'umi';
+import { useIntl, useParams, history, Helmet } from 'umi';
 
 import { Container, Wrapper } from "./500"
 
 const NoFoundPage: React.FC<{}> = () => {
     const intl = useIntl()
     const { ws_id } = useParams() as any
-
-    useEffect(() => {
-        const otitle = document.getElementsByTagName("title")[0]
-        if (otitle) otitle.innerText = '404页面'
-    }, [])
-
     const { height } = useClientSize()
 
     return (
         <Container height={height - 50}>
+            <Helmet>
+                <title>
+                    {intl.formatMessage({ id: `menu.server.404` })}
+                </title>
+            </Helmet>
+
             <Wrapper >
                 <Space>
                     <div style={{ display: 'inline-block' }}>

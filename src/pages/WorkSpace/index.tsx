@@ -28,6 +28,8 @@ const getRegString = (path: any) => path?.split('/').reduce((p: any, c: any) => 
     return p.concat(c)
 }, []).join('\/')
 
+const ignorePath = ["401", "500", "404", "403"].map((i: string) => `/ws/:ws_id/${i}`)
+
 const WorkspaceLayout: React.FC<AnyType> = (props) => {
     // const { initialState } = useModel('@@initialState')
     const enLocale = getLocale() === 'en-US'
@@ -45,6 +47,8 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const onMenuClick = ({ path }: any) => history.push(path?.replace(':ws_id', ws_id))
 
     useEffect(() => {
+        if (ignorePath.includes(realPath))
+            return
         routes.forEach((item: any) => {
             if (~realPath.indexOf(item.path)) {
                 let title = `Workspace.${item.name}`;
@@ -77,7 +81,7 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const fiterHideRoutes = React.useMemo(() => {
         return filterHideInMenu(filterUnaccessible(routes))
     }, [routes])
-    
+
     const inLeftRoutes = React.useMemo(() => {
         return fiterHideRoutes.filter((route: any) => !route.inNav)
     }, [fiterHideRoutes])
