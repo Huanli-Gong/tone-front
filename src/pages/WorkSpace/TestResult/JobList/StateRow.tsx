@@ -94,12 +94,20 @@ const SettingDropdown: React.FC = () => {
                             {intl.formatMessage({ defaultMessage: "重置", id: "ws.result.list.columns.state.reset" })}
                         </Typography.Link>
                     </Row>
+                    <Checkbox
+                        key={"id"}
+                        checked={true}
+                        disabled={true}
+                    >
+                        {intl.formatMessage({ id: `ws.result.list.id` })}
+                    </Checkbox>
                     <Checkbox.Group
                         value={checkedList}
                         onChange={onChange}
                     >
                         <Space direction="vertical" size={4}>
                             {
+
                                 Object.entries(initialColumns).map((i: any) => {
                                     const [name] = i
                                     return (

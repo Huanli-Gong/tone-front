@@ -140,14 +140,14 @@ const ListTable: React.FC<IProps> = (props) => {
         },
         {
             title: 'Job ID',
-            dataIndex: 'id',
+            key: 'id',
             fixed: 'left',
             width: 80,
             ellipsis: {
                 showTitle: false,
             },
             className: 'result_job_hover_span',
-            render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
+            render: (_: any, row: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)}>{row.id}</span>
         },
         {
             title: <FormattedMessage id="ws.result.list.name" />,

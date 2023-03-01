@@ -65,7 +65,6 @@ type IProps = Record<string, any>
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
 const DEFAULT_COLUMNS_SET_DATA = {
-    id: { order: 0, disabled: false },
     name: { order: 1, disabled: false, },
     state: { order: 2, disabled: false },
     test_type: { order: 3, disabled: false, },
