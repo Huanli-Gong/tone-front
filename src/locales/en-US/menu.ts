@@ -12,13 +12,13 @@ export default {
   'menu.exception.404': '404',
   'menu.exception.500': '500',
 
-  'menu.server.404': '404 - Not Found',
-  'menu.server.500': '500 - System Exception',
-  'menu.server.401': "401 - No Access",
+  'menu.server.404': 'Not Found - T-One',
+  'menu.server.500': 'System Exception - T-One',
+  'menu.server.401': "No Access - T-One",
 
-  'menu.Workspace.500': "500 - System Exception",
-  'menu.Workspace.401': "401 - No Access",
-  'menu.Workspace.404': "404 - Not Found",
+  'menu.Workspace.500': "System Exception - T-One",
+  'menu.Workspace.401': "No Access - T-One",
+  'menu.Workspace.404': "Not Found - T-One",
 
   "menu.home": 'Home',
   "menu.PersonCenter": 'Person Center',
