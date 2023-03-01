@@ -53,10 +53,16 @@ export async function getInitialState(): Promise<any> {
 
     const { data, code } = await person_auth(ws_id ? { ws_id } : {})
 
+    const baseAppState = {
+        ...initialState,
+        authList: data,
+    }
+
     if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
         redirectErrorPage(500)
-        return initialState
+        return baseAppState
     }
+
     if (!ignoreRoutePath.includes(history.location.pathname)) {
         const { ws_is_exist, ws_is_public, user_id, ws_role_title, sys_role_title } = data
 
@@ -64,7 +70,7 @@ export async function getInitialState(): Promise<any> {
             // 这个ws是否存在
             if (!ws_is_exist) {
                 redirectErrorPage(404)
-                return initialState
+                return baseAppState
             }
 
             /** 用户进入ws：case1.首先判断是公开ws还是私密ws；case2.判断进入私密ws时，未登录跳登录。 */
@@ -79,7 +85,7 @@ export async function getInitialState(): Promise<any> {
             /** 有无权限：case1.用户已登录，要查看私密ws时(分享的私密ws链接)，判断有无访问权限。  */
             if (sys_role_title !== 'sys_admin' && !ws_role_title) {
                 redirectErrorPage(401)
-                return initialState
+                return baseAppState
             }
 
             return {
@@ -96,7 +102,7 @@ export async function getInitialState(): Promise<any> {
         }
     }
 
-    return initialState
+    return baseAppState
 }
 
 export const layout = ({
