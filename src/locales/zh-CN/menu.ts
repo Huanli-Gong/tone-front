@@ -11,8 +11,13 @@ export default {
   'menu.exception.403': '403',
   'menu.exception.404': '404',
   'menu.exception.500': '500',
-  'menu.nofoundpage.404': '404页面',
-  'menu.server.500': '500页面',
+  'menu.server.404': '404 - 页面不存在',
+  'menu.server.500': '500 - 系统异常',
+  'menu.server.401': '401 - 无访问权限',
+
+  'menu.Workspace.500': "500 - 系统异常",
+  'menu.Workspace.401': "401 - 无访问权限",
+  'menu.Workspace.404': "404 - 页面不存在",
 
   'menu.home': '首页',
   "menu.PersonCenter": 'Person Center',

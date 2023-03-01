@@ -564,6 +564,7 @@ const routes = [
 				hideInMenu: true,
 				inNav: true,
 				hasLeftNav: false,
+				name: "401",
 				path: "/ws/:ws_id/401",
 				component: "@/pages/401"
 			},
@@ -571,6 +572,7 @@ const routes = [
 				hideInMenu: true,
 				inNav: true,
 				hasLeftNav: false,
+				name: "500",
 				path: "/ws/:ws_id/500",
 				component: "@/pages/500"
 			},
@@ -578,7 +580,7 @@ const routes = [
 				hideInMenu: true,
 				inNav: true,
 				hasLeftNav: false,
-				name: 'DirectRoute',
+				name: "404",
 				component: "@/pages/404"
 			}
 		]
@@ -625,6 +627,7 @@ const routes = [
 	{
 		path: '/401',
 		hideInMenu: true,
+		name: 'server.401',
 		component: './401',
 	},
 	{
@@ -636,7 +639,7 @@ const routes = [
 	{
 		path: '/404',
 		hideInMenu: true,
-		name: 'nofoundpage.404',
+		name: 'server.404',
 		component: './404',
 	},
 	{

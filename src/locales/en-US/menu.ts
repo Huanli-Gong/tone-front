@@ -11,8 +11,14 @@ export default {
   'menu.exception.403': '403',
   'menu.exception.404': '404',
   'menu.exception.500': '500',
-  'menu.nofoundpage.404': '404',
-  'menu.server.500': '500',
+
+  'menu.server.404': '404 - Not Found',
+  'menu.server.500': '500 - System Exception',
+  'menu.server.401': "401 - No Access",
+
+  'menu.Workspace.500': "500 - System Exception",
+  'menu.Workspace.401': "401 - No Access",
+  'menu.Workspace.404': "404 - Not Found",
 
   "menu.home": 'Home',
   "menu.PersonCenter": 'Person Center',
