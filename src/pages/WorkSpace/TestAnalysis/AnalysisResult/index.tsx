@@ -15,7 +15,7 @@ import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonM
 import _ from 'lodash';
 import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent, ModuleWrapper, SubTitle } from './AnalysisUI';
 import { useClientSize, useCopyText } from '@/utils/hooks';
-import { redirectToErrorPage, requestCodeMessage } from '@/utils/utils';
+import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
 
 const Report = (props: any) => {
     const { state } = useLocation() as any
@@ -54,7 +54,7 @@ const Report = (props: any) => {
             setBaselineGroupIndex(data?.data.baselineGroupIndex)
             setShareWsId(data?.data.allGroupData[0]?.members[0]?.ws_id)
         } else if (data.code === 500) {
-            redirectToErrorPage()
+            redirectErrorPage(500)
         } else {
             requestCodeMessage(data.code, data.msg)
         }
@@ -129,7 +129,7 @@ const Report = (props: any) => {
                     ...compareResult
                 })
                 if (res.code === 500) {
-                    redirectToErrorPage()
+                    redirectErrorPage(500)
                     return
                 }
                 if (res.code !== 200) {

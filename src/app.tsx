@@ -8,7 +8,7 @@ import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
 import { marked } from "marked"
-import { getPageWsid, redirectToErrorPage, redirectUnaccessPage } from "@/utils/utils"
+import { getPageWsid, redirectErrorPage } from "@/utils/utils"
 
 import 'animate.css';
 
@@ -48,22 +48,22 @@ export async function getInitialState(): Promise<any> {
     };
 
     const { pathname } = window.location
+    const isWs = wsReg.test(pathname)
+    const ws_id = getPageWsid()
+
+    const { data, code } = await person_auth(ws_id ? { ws_id } : {})
+
+    if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
+        redirectErrorPage(500)
+        return initialState
+    }
     if (!ignoreRoutePath.includes(history.location.pathname)) {
-        const isWs = wsReg.test(pathname)
-        const ws_id = getPageWsid()
-
-        const { data, code } = await person_auth(ws_id && { ws_id })
-        if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
-            redirectToErrorPage()
-            return initialState
-        }
-
         const { ws_is_exist, ws_is_public, user_id, ws_role_title, sys_role_title } = data
 
         if (isWs) {
             // 这个ws是否存在
             if (!ws_is_exist) {
-                history.push('/404')
+                redirectErrorPage(404)
                 return initialState
             }
 
@@ -78,7 +78,7 @@ export async function getInitialState(): Promise<any> {
 
             /** 有无权限：case1.用户已登录，要查看私密ws时(分享的私密ws链接)，判断有无访问权限。  */
             if (sys_role_title !== 'sys_admin' && !ws_role_title) {
-                redirectUnaccessPage()
+                redirectErrorPage(401)
                 return initialState
             }
 
@@ -154,10 +154,10 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
     if (response) {
         const { status, statusText, url } = response
         if (status >= 500) {
-            redirectToErrorPage()
+            redirectErrorPage(500)
         }
         else if (status === 401) {
-            redirectUnaccessPage()
+            redirectErrorPage(401)
             return
         }
         else {

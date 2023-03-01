@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { detailTemplate, reportDetail } from '../services';
 import { message } from 'antd';
-import { requestCodeMessage } from '@/utils/utils';
+import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
 import _ from 'lodash';
 import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonMethod'
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
+import { history } from 'umi';
 export const CreatePageData = (props: any) => {
     const [logoData, setLogoData] = useState<Array<{}>>([])
     const [loading, setLoading] = useState<Boolean>(true)
@@ -399,7 +400,7 @@ export const CreatePageData = (props: any) => {
                                     })
                                 }
                             }
-                        } 
+                        }
                         if (obj.func_item && !!obj.func_item.length) {
                             for (let res = obj.func_item, m = 0; m < res.length; m++) { // 自定义domain分组
                                 if (res[m].is_group) { // 是否有组
@@ -480,7 +481,7 @@ export const CreatePageData = (props: any) => {
                 }
             })
         }
-    }, [domainGroupResult, switchReport, perf_data_result, func_data_result ])
+    }, [domainGroupResult, switchReport, perf_data_result, func_data_result])
 
     /*
         *** 统计性能测试、功能测试总数据
@@ -620,7 +621,7 @@ const changeChild = (data: any, index: number) => {
 }
 
 export const EditPageData = (props: any) => {
-    const [loading, setLoading] = useState<Boolean>(true)
+    const [loading, setLoading] = useState<boolean>(true)
     const [dataSource, setDataSource] = useState<any>({})
     const [allGroupData, setAllGroupData] = useState<any>([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(0)
@@ -634,6 +635,9 @@ export const EditPageData = (props: any) => {
         if (code == 200) {
             setDataSource(data[0])
             window.document.title = data[0]?.name || 'T-one'
+            console.log(data)
+            if (data?.length === 0)
+                return redirectErrorPage(404)
             const { tmpl_id, ws_id, creator } = data[0]
             setCreator(creator)
             const res = await detailTemplate({ id: tmpl_id, ws_id })
@@ -715,16 +719,16 @@ export const EditPageData = (props: any) => {
     }
 
     const saveReportData = {
-        creator_name: dataSource.creator_name,
-        description: dataSource.description,
-        gmt_created: dataSource.gmt_created,
-        id: dataSource.id,
-        name: dataSource.name,
-        template: dataSource.tmpl_id,
-        old_report: dataSource.old_report,
-        report_source: dataSource.report_source,
-        test_background: dataSource.test_background,
-        test_method: dataSource.test_method,
+        creator_name: dataSource?.creator_name,
+        description: dataSource?.description,
+        gmt_created: dataSource?.gmt_created,
+        id: dataSource?.id,
+        name: dataSource?.name,
+        template: dataSource?.tmpl_id,
+        old_report: dataSource?.old_report,
+        report_source: dataSource?.report_source,
+        test_background: dataSource?.test_background,
+        test_method: dataSource?.test_method,
         test_conclusion,
         test_env,
     }
@@ -763,7 +767,7 @@ export const EditPageData = (props: any) => {
         setDomainResult: setTemplate,
         loading,
         saveReportData,
-        wsId: dataSource.ws_id,
+        wsId: dataSource?.ws_id,
         queryReport,
         creator
     }

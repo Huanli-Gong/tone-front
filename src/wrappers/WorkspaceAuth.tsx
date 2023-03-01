@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { history, useModel, useParams, useLocation } from 'umi'
 import { person_auth } from '@/services/user';
 import { enterWorkspaceHistroy } from '@/services/Workspace';
-import { redirectToErrorPage, redirectUnaccessPage } from '@/utils/utils';
+import { redirectErrorPage } from '@/utils/utils';
 
 export default (props: any) => {
     const { children } = props
@@ -40,7 +40,7 @@ export default (props: any) => {
             }
             /* 历史记录接口调取 */
             if (!data) {
-                redirectToErrorPage()
+                redirectErrorPage(500)
                 return
             }
         }
@@ -50,8 +50,9 @@ export default (props: any) => {
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
 
-        if (!ws_is_exist) return history.push(`/ws/${ws_id}/404`)
-        if (sys_role_title !== 'sys_admin' && !ws_role_title) return redirectUnaccessPage()
+        if (!ws_is_exist) return redirectErrorPage(404)
+        if (sys_role_title !== 'sys_admin' && !ws_role_title)
+            return redirectErrorPage(401)
     }
 
     useEffect(() => {

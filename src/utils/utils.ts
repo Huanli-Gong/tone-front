@@ -11,27 +11,15 @@ export const getPageWsid = () => {
   return window.location.pathname.replace(/^\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
 }
 
-export const redirectToErrorPage = () => {
+export const redirectErrorPage = (stateCode: number | string) => {
   const { location } = window
-  if (~location.pathname.indexOf("/500")) return
+  if (~location.pathname.indexOf(`/${stateCode}`)) return
   const query = parse(location.search.substring(1))
-  const { page_500 } = query
-  if (page_500) return
+  const { page } = query
+  if (page) return
   const ws_id = getPageWsid()
   const link = ws_id ? `/ws/${ws_id}` : ""
-  history.push(`${link}/500?page_500=${location.href}`)
-}
-
-export const redirectUnaccessPage = () => {
-  const { location } = window
-  if (~location.pathname.indexOf("/401")) return
-  const ws_id = getPageWsid()
-  const query = parse(location.search.substring(1))
-  const { access_page } = query
-  if (access_page) return
-  if (ws_id)
-    return history.push({ pathname: `/ws/${ws_id}/401?access_page=${location.href}` })
-  history.push(`/401?access_page=${location.href}`)
+  history.push(`${link}/${stateCode}?page=${location.href}`)
 }
 
 export const isUrl = (path: string): boolean => reg.test(path);
