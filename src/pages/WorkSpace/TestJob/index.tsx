@@ -629,20 +629,20 @@ const TestJob: React.FC<any> = (props) => {
     const handleFormatChange = async (operateType: any = '') => {
         let parmas = {}
         const envVal = envForm && envForm.current ? await goValidate(envForm.current.form) : {}
-        let server_provider = detail?.server_type
+        const server_provider = detail?.server_type
         // operateType !== 'template' && setIsloading(true)
         setIsloading(true)
         if (!isYamlFormat) {
-            let formData = await transformDate()
+            const formData = await transformDate()
             const dataCopy = _.cloneDeep(formData)
-            const test_config = _.get(dataCopy, 'test_config')
-            if (_.isArray(test_config)) {
-                test_config.forEach((item: any) => {
+            const $test_config = _.get(dataCopy, 'test_config')
+            if (_.isArray($test_config)) {
+                $test_config.forEach((item: any) => {
                     let cases = _.get(item, 'cases')
                     const runMode = _.get(item, 'run_mode')
                     if (_.isArray(cases)) {
                         cases = cases.map((obj: any) => {
-                            let server: Object | null = {}
+                            let server: AnyType = {}
                             const objCopy = _.cloneDeep(obj)
                             if (_.has(objCopy, 'server_object_id') && objCopy.server_object_id !== undefined) {
                                 // server = {}
@@ -671,7 +671,7 @@ const TestJob: React.FC<any> = (props) => {
                 })
             }
 
-            dataCopy.test_config = test_config
+            dataCopy.test_config = $test_config.map((i: any) => ({ ...i, id: i.test_suite, test_case_list: i.cases.map((t: any) => ({ ...t, id: t.test_case })) }))
             delete dataCopy.moniter_contrl
             delete dataCopy.reclone_contrl
             if (!dataCopy.kernel_version) delete dataCopy.kernel_version
@@ -680,7 +680,7 @@ const TestJob: React.FC<any> = (props) => {
 
         if (isYamlFormat) parmas = { type: 'yaml2json', yaml_data: jobInfo, workspace: ws_id }
 
-        let { code, msg, data } = await formatYamlToJson(parmas)
+        const { code, msg, data } = await formatYamlToJson(parmas)
         // operateType !== 'template' && setIsloading(false)
         setIsloading(false)
         let result = {}
@@ -688,9 +688,9 @@ const TestJob: React.FC<any> = (props) => {
             if (!isYamlFormat) setJobInfo(data)
             if (isYamlFormat) {
                 const dataCopy = _.cloneDeep(data)
-                const test_config = _.get(dataCopy, 'test_config')
-                if (_.isArray(test_config)) {
-                    test_config.forEach((item: any) => {
+                const { test_config: $suite_list } = data
+                if (_.isArray($suite_list)) {
+                    $suite_list.forEach((item: any) => {
                         let cases = _.get(item, 'cases')
                         item.run_mode = 'standalone'
                         if (_.isArray(cases)) {
@@ -728,7 +728,7 @@ const TestJob: React.FC<any> = (props) => {
                         }
                     })
                 }
-                dataCopy.test_config = test_config
+                dataCopy.test_config = $suite_list
                 dataCopy.moniter_contrl = false
                 dataCopy.reclone_contrl = _.get(envVal, 'reclone_contrl') || false
                 if (_.get(dataCopy, 'monitor_info')) dataCopy.moniter_contrl = true
@@ -813,35 +813,26 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const fakeClick = (obj: any) => {
-        var ev = document.createEvent("MouseEvents");
+        const ev = document.createEvent("MouseEvents");
         ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
         obj.dispatchEvent(ev);
     }
 
-    const exportRaw = (name: string, data: any) => {
-        var urlObject = window.URL || window.webkitURL || window;
-        var export_blob = new Blob([data]);
-        var save_link: any = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+    const exportRaw = ($name: string, data: any) => {
+        const urlObject = window.URL || window.webkitURL || window;
+        const export_blob = new Blob([data]);
+        const save_link: any = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
         save_link.href = urlObject.createObjectURL(export_blob);
-        save_link.download = name;
+        save_link.download = $name;
         fakeClick(save_link);
     }
     const handleDownload = async () => {
         // const parmas = { type: 'yaml2json', yaml_data: jobInfo }
         // let { code, data } = await formatYamlToJson(parmas)
-        let fileName = 'job_' + (+new Date())
+        const fileName = 'job_' + (+new Date())
         // if (code === 200 && _.get(data, 'name')) fileName = _.get(data, 'name')
         exportRaw(`${fileName}.yaml`, jobInfo);
     }
-
-    const AuthPop = (
-        <Space>
-            <Typography.Text><FormattedMessage id="ws.test.job.no.permission, please.refer" /></Typography.Text>
-            <a href="/help_doc/2" target="_blank">
-                <FormattedMessage id="ws.test.job.help.docs" />
-            </a>
-        </Space>
-    )
 
     const queryProjectId = (id: any) => {
         setProjectId(id)
@@ -938,8 +929,8 @@ const TestJob: React.FC<any> = (props) => {
                                             <Popover
                                                 overlayClassName={styles.template_popover}
                                                 placement={"bottomRight"}
-                                                visible={templateBtnVisible}
-                                                onVisibleChange={handleTemplatePopoverChange}
+                                                open={templateBtnVisible}
+                                                onOpenChange={handleTemplatePopoverChange}
                                                 title={
                                                     <Input
                                                         autoComplete="off"
