@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Row, Col, Tag, Typography, Tabs, Button, message, Spin, Tooltip, Space, Alert, Popconfirm } from 'antd'
 import styles from './index.less'
-import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, Helmet, useLocation } from 'umi'
+import { history, useModel, Access, useAccess, useParams, useIntl, FormattedMessage, getLocale, useLocation } from 'umi'
 import { querySummaryDetail, updateSuiteCaseOption } from './service'
 
 import { addMyCollection, deleteMyCollection, queryJobState } from '@/pages/WorkSpace/TestResult/services'
@@ -56,6 +56,9 @@ const TestResultDetails: React.FC = () => {
         if (dataSource?.state === 'running')
             setTab(2)
         setDetails(dataSource)
+        setTimeout(() => {
+            document.title = `#${job_id} ${dataSource?.name} - T-One`
+        }, 300)
     }
 
     React.useEffect(() => {
@@ -205,9 +208,6 @@ const TestResultDetails: React.FC = () => {
 
     return (
         <Spin spinning={loading} className={styles.spin_style}>
-            <Helmet>
-                <title>{`#${job_id} ${details?.name} - T-One`}</title>
-            </Helmet>
             {
                 JSON.stringify(details) === '{}' ?
                     <NotFound /> :

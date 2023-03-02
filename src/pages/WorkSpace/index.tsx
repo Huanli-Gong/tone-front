@@ -60,7 +60,7 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
                         }
                     })
                 }
-                document.title = formatMessage({ id: title }) ? formatMessage({ id: title }) + `- T-One` : 'T-One'
+                document.title = formatMessage({ id: title }) ? formatMessage({ id: title }) + ` - T-One` : 'T-One'
             }
         })
     }, [routes, realPath])

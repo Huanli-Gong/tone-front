@@ -1,6 +1,6 @@
 const defaultKey = 'ws.result.list'
 
-const text =  {
+const text = {
   // select Options
   'job_id': 'Job ID',
   'name': 'Job Name',
@@ -26,6 +26,16 @@ const text =  {
   'please.placeholder.project_id': 'Select Project',
   'start_time': 'Start Time',
   'completion_time': 'End Time',
+
+  'id': "ID",
+  'project_name': 'Project',
+  'test_result': 'All/Success/Fail',
+  'creator_name': 'Creator',
+  'end_time': 'End Time',
+
+  'columns.state.reset': "Reset",
+  'columns.state.title': "Column display",
+
   // tab
   'all.job': 'All Jobs',
   'my.job': 'Created Jobs',
@@ -48,7 +58,7 @@ const text =  {
   'combining.rule': 'Merge rule: Take the union data of all jobs;',
   'top.ranked': 'If there are duplicates, the Job with the highest order takes precedence.',
   'create.report': 'Generate Report',
-  'compare.analysis': 'Compare And Analysis', 
+  'compare.analysis': 'Compare And Analysis',
   'report.name': 'Report Name',
   'report.name.placeholder': 'Search by report name is supported.',
   'gmt_created': 'Save Time',
