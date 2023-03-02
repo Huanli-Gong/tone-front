@@ -82,9 +82,9 @@ export default forwardRef(
                 keyboard={false}
                 className={styles.warp}
                 title={<FormattedMessage id={`metricEditer.title.${title}`}/>}
-                width={376}
+                width={480}
                 onClose={handleCancle}
-                visible={visible}
+                open={visible}
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div style={{ textAlign: 'right' }} >

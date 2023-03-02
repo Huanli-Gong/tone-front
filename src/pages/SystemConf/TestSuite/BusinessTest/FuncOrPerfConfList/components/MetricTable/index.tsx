@@ -116,7 +116,14 @@ const MetricTable: React.FC<any> = ({ id, innerKey, componentType }) => {
 		{ title: <FormattedMessage id="TestSuite.cv_threshold" />, dataIndex: 'cv_threshold', width: 130, render(_: any) { return _ ? Number(_).toFixed(2) : _ } },
 		{ title: <FormattedMessage id="TestSuite.direction" />, dataIndex: 'direction', width: 130 },
 		{
-			title: <div><FormattedMessage id="Table.columns.operation" /><Button type='primary' onClick={() => newMetric(id)} style={{ marginLeft: 10 }}><FormattedMessage id="operation.new" /></Button></div>,
+			title: (
+				<Space>
+					<FormattedMessage id="Table.columns.operation" />
+					<Button type='primary' onClick={() => newMetric(id)} size="small">
+						<FormattedMessage id="operation.new" />
+					</Button>
+				</Space>
+			),
 			valueType: 'option',
 			dataIndex: 'id',
 			width: 180,

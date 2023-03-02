@@ -555,7 +555,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
             </Spin>
             {/* 同步遮罩 */}
             <Drawer
-                visible={sync}
+                open={sync}
                 width={0}
                 getContainer={false}
             />

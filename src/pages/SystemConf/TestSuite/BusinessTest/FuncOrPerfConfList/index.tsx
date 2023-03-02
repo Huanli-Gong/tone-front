@@ -305,13 +305,13 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
                 showTitle: false
             },
             width: '190px',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_created}</ColumnEllipsisText>
         },
         {
             title: (
                 <Space align="center">
                     <FormattedMessage id="Table.columns.operation" />
-                    <Button type='primary' onClick={newCase} >
+                    <Button type='primary' onClick={newCase} size="small">
                         <FormattedMessage id="operation.new" />
                     </Button>
                 </Space>
@@ -352,13 +352,11 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
                     <TabPane
                         tab="Test Conf"
                         key="1"
-                    >
-                    </TabPane>
+                    />
                     <TabPane
                         tab={<FormattedMessage id="TestSuite.conf.metric" />}
                         key="2"
-                    >
-                    </TabPane>
+                    />
                 </Tabs>
             }
             {innerKey == '1' ?
@@ -368,6 +366,7 @@ export default forwardRef(({ id, type: test_type, domainList }: any, ref: any) =
                     name="sys-suite-business-fun-or-perf-conf"
                     // scrollType={1400}
                     scroll={{ x: 1400 }}
+                    rowKey={"id"}
                     loading={expandLoading}
                     dataSource={expandList.data}
                     page={expandList.page_num}

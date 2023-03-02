@@ -141,7 +141,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 		{ title: <FormattedMessage id="TestSuite.direction" />, dataIndex: 'direction', width: 130 },
 		{
 			title: (
-				<Row style={{ width: "100%" }} justify="space-between">
+				<Row style={{ width: "100%" }} >
 					<FormattedMessage id="Table.columns.operation" />
 					<Button type='primary' size="small" onClick={() => newMetric()}>
 						<FormattedMessage id="operation.new" />
