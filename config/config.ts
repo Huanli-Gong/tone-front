@@ -11,7 +11,7 @@ export default defineConfig({
     dva: {
         hmr: true,
     },
-    devtool: NODE_ENV === "develepment" ? "eval-source-map" : undefined,
+    devtool: NODE_ENV === "develepment" ? "eval" : undefined,
     layout: {
         name: 'T-One',
         locale: true,
