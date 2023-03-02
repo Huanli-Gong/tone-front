@@ -67,7 +67,7 @@ export default (props: any) => {
 
     const replaceWord = (title: string, word: string) => title.replace(new RegExp(`(${word})`), `<span style="color:#1890ff">$1</span>`)
 
-    const searchResult = (results: Array<any>, name: string) => results.map(
+    const searchResult = (results: any[], name: string) => results.map(
         ({ user_info }) => (
             {
                 value: user_info.last_name,
@@ -85,8 +85,8 @@ export default (props: any) => {
         )
     )
 
-    const handleSearchWorkspaceMember = async(name: string) => {
-        if(name){
+    const handleSearchWorkspaceMember = async (name: string) => {
+        if (name) {
             let { data } = await queryWorkspaceMember({ keyword: name, ws_id })
             setOptions(data ? searchResult(data, name) : [])
         }
@@ -104,14 +104,14 @@ export default (props: any) => {
                 async values => {
                     console.log(values)
                     setPadding(true)
-                    let data = await addWorkspaceMember({
+                    const data = await addWorkspaceMember({
                         ws_id,
                         ...values
                     })
                     setPadding(false)
 
                     if (data.code === 200) {
-                        message.success(formatMessage({id: 'operation.success'}) )
+                        message.success(formatMessage({ id: 'operation.success' }))
                         setVisible(false)
                         //getMemberCounts()
                         setRefresh(!refresh)
@@ -136,10 +136,10 @@ export default (props: any) => {
     }
 
     const childTabs = [
-        { name: `${formatMessage({id: 'member.ws_owner'})} ${memberCounts.ws_owner}`, role: 'ws_owner' },
-        { name: `${formatMessage({id: 'member.ws_admin'})} ${memberCounts?.ws_admin}`, role: 'ws_admin' },
-        { name: `${formatMessage({id: 'member.ws_test_admin'})} ${memberCounts?.ws_test_admin}`, role: 'ws_test_admin' },
-        { name: `${formatMessage({id: 'member.ws_member'})} ${memberCounts.ws_member}`, role: 'ws_member' }
+        { name: `${formatMessage({ id: 'member.ws_owner' })} ${memberCounts.ws_owner}`, role: 'ws_owner' },
+        { name: `${formatMessage({ id: 'member.ws_admin' })} ${memberCounts?.ws_admin}`, role: 'ws_admin' },
+        { name: `${formatMessage({ id: 'member.ws_test_admin' })} ${memberCounts?.ws_test_admin}`, role: 'ws_test_admin' },
+        { name: `${formatMessage({ id: 'member.ws_member' })} ${memberCounts.ws_member}`, role: 'ws_member' }
     ]
 
     const getMemberCounts = async () => {
@@ -158,7 +158,7 @@ export default (props: any) => {
     return (
         <Layout.Content>
             <SingleTabCard
-                title={`${formatMessage({id: 'all'})} ${memberCounts.all_count}`}
+                title={`${formatMessage({ id: 'all' })} ${memberCounts.all_count}`}
                 extra={
                     <Space>
                         <AutoComplete
@@ -169,14 +169,14 @@ export default (props: any) => {
                             onSearch={handleSearchWorkspaceMember}
                         >
                             <Input.Search
-                                placeholder={formatMessage({id: 'member.search.users'})}
+                                placeholder={formatMessage({ id: 'member.search.users' })}
                                 onPressEnter={(evt: any) => setKeyword(evt.target.value)}
                             />
                         </AutoComplete>
                         <Access
                             accessible={access.WsBtnPermission()}
                         >
-                            <Button type="primary" onClick={handleOpenAddMemberModal}><FormattedMessage id="member.add.member"/></Button>
+                            <Button type="primary" onClick={handleOpenAddMemberModal}><FormattedMessage id="member.add.member" /></Button>
                         </Access>
                     </Space>
                 }
@@ -197,15 +197,14 @@ export default (props: any) => {
                                 }
                             </Tabs.TabPane>
                         )
-                    })
-                    }
+                    })}
                 </Tabs>
             </SingleTabCard>
             {
                 visible &&
                 <Modal
-                    title={formatMessage({id: 'member.add.member'})}
-                    visible={visible}
+                    title={formatMessage({ id: 'member.add.member' })}
+                    open={visible}
                     onOk={handleOk}
                     onCancel={handleCancel}
                     maskClosable={false}
@@ -214,11 +213,11 @@ export default (props: any) => {
                         layout="vertical"
                         form={form}
                     >
-                        <Form.Item 
-                            label={<FormattedMessage id="member.user"/>}
+                        <Form.Item
+                            label={<FormattedMessage id="member.user" />}
                             name="emp_id_list"
                             rules={[
-                                { required: true, message: formatMessage({id: 'member.please.select.user'}) }
+                                { required: true, message: formatMessage({ id: 'member.please.select.user' }) }
                             ]}
                         >
                             <Select
@@ -252,19 +251,19 @@ export default (props: any) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item 
-                            label={<FormattedMessage id="member.role"/>}
+                        <Form.Item
+                            label={<FormattedMessage id="member.role" />}
                             name="role_id"
                             rules={[
                                 {
                                     required: true,
-                                    message: formatMessage({id: 'member.please.select.role'}),
+                                    message: formatMessage({ id: 'member.please.select.role' }),
                                 }
                             ]}
                         >
                             <Select
                                 style={{ width: '100%', minHeight: 32 }}
-                                placeholder={formatMessage({id: 'member.please.select.role'})}
+                                placeholder={formatMessage({ id: 'member.please.select.role' })}
                                 allowClear
                                 showArrow
                             >

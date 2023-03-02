@@ -22,7 +22,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     const { ws_id } = useParams<any>()
     const [loading, setLoading] = useState<boolean>(true)
     const [visible, setVisible] = useState<boolean>(false)
-    const [btnLoading,setBtnLoading] = useState<boolean>(false)
+    const [btnLoading, setBtnLoading] = useState<boolean>(false)
     const [keyword, setKeyword] = useState<string>()
     const [user, setUser] = useState<any>([])
     const [fetching, setFetching] = useState<boolean>(true)
@@ -162,7 +162,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 targetOption.children = data && data.map((item: any) => { return { label: item.name, value: item.id } });
                 setOptions([...options])
             } else {
-                setValidateAK({ validate: false, meg: msg || formatMessage({ id:'device.no.compliant.AK'}) });
+                setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) });
                 form.setFieldsValue({ manufacturer: undefined })
             }
         } catch (e) {
@@ -246,7 +246,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     })
                     setValidateAK({ validate: true, meg: '' })
                 } else {
-                    setValidateAK({ validate: false, meg: msg || formatMessage({id:'device.no.compliant.AK'}) })
+                    setValidateAK({ validate: false, meg: msg || formatMessage({ id: 'device.no.compliant.AK' }) })
                 }
                 setRegion(list)
                 setValidateRegion(!!list.length)
@@ -336,14 +336,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             regionResetStatus()
         }
     };
-    const handleTypeChange = (val:any) => {
+    const handleTypeChange = (val: any) => {
         let region = form.getFieldValue('region')
         let manufacturer = form.getFieldValue('manufacturer')
         let param = {
             ak_id: manufacturer[1],
             region: region[0],
             zone: region[1],
-            instance_type:val
+            instance_type: val
         }
         getImageList(param)
     }
@@ -365,7 +365,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         Promise.all([handleSearch(), getAK()]).then(() => { setLoading(false) })
         setTimeout(function () {
             form.setFieldsValue({
-            
+
                 baseline_server: 1,
                 kernel_install: 1,
                 bandwidth: 10,
@@ -484,7 +484,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     let str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
                     param.image = str
                     param.image_name = str
-                } else if(params.image.indexOf(':latest') > 0){
+                } else if (params.image.indexOf(':latest') > 0) {
                     param.image = params.image
                     param.image_name = params.image
                 } else {
@@ -506,7 +506,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
         const res = id ? await editGroupMachine(id, { ...param }) : await addGroupMachine({ ...param })
         if (res.code === 200) {
-            message.success(formatMessage({id: 'operation.success'}) );
+            message.success(formatMessage({ id: 'operation.success' }));
             // case1.初始化状态&&重置表单
             initialState()
             // case2.回调函数
@@ -554,7 +554,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 if (res.code === 200) {
                     callback()
                 } else {
-                    callback(res.msg || formatMessage({id: 'validator.failed'}) )
+                    callback(res.msg || formatMessage({ id: 'validator.failed' }))
                 }
             })
         } else {
@@ -580,7 +580,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     callback()
                 } else {
                     setNameStatus('error')
-                    callback(res.msg || formatMessage({id: 'validator.failed'}) )
+                    callback(res.msg || formatMessage({ id: 'validator.failed' }))
                 }
             })
         } else {
@@ -591,7 +591,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
     // Just show the latest item.
     function displayRender(label: any) {
-        if(label[label.length - 1] !== 'latest'){
+        if (label[label.length - 1] !== 'latest') {
             return label[label.length - 1];
         }
         return `${label[1].props.children}:${label[2].props.children}:latest`
@@ -601,10 +601,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={id ? <FormattedMessage id="device.device.edit"/>: <FormattedMessage id="device.add.btn"/>}
+            title={id ? <FormattedMessage id="device.device.edit" /> : <FormattedMessage id="device.add.btn" />}
             width={724}
             onClose={onClose}
-            visible={visible}
+            open={visible}
             bodyStyle={{ paddingBottom: 80 }}
             destroyOnClose
             footer={
@@ -614,10 +614,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                     }}
                 >
                     <Button onClick={onClose} style={{ marginRight: 8 }}>
-                        <FormattedMessage id="operation.cancel"/>
+                        <FormattedMessage id="operation.cancel" />
                     </Button>
                     <Button onClick={() => onSubmit()} loading={btnLoading} type="primary">
-                        <FormattedMessage id="operation.ok"/>
+                        <FormattedMessage id="operation.ok" />
                     </Button>
                 </div>
             }
@@ -641,15 +641,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="is_instance"
-                                    label={<FormattedMessage id="device.server.select"/>}
-                                    rules={[{ required: true, message: formatMessage({id:'please.select'}) }]}
+                                    label={<FormattedMessage id="device.server.select" />}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     initialValue={0}
                                 >
-                                    <Select placeholder={<FormattedMessage id="please.select"/>}
-                                        disabled={cloudType != 0} 
+                                    <Select placeholder={<FormattedMessage id="please.select" />}
+                                        disabled={cloudType != 0}
                                         onChange={(value: any) => setIs_instance(value)}>
-                                        <Option value={0}><FormattedMessage id="device.buy.now"/></Option>
-                                        <Option value={1}><FormattedMessage id="device.select.exist"/></Option>
+                                        <Option value={0}><FormattedMessage id="device.buy.now" /></Option>
+                                        <Option value={1}><FormattedMessage id="device.select.exist" /></Option>
                                     </Select>
                                 </Form.Item>
                             </Col> :
@@ -659,7 +659,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="name"
-                                    label={<FormattedMessage id="device.name"/>}
+                                    label={<FormattedMessage id="device.name" />}
                                     validateTrigger='onBlur'
                                     rules={[
                                         {
@@ -667,12 +667,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             min: 1,
                                             max: 32,
                                             pattern: /^[A-Za-z][A-Za-z0-9\._-]*$/g,
-                                            message: formatMessage({id: 'device.name.message'})
+                                            message: formatMessage({ id: 'device.name.message' })
                                         },
                                         { validator: checkName },
                                     ]}
                                 >
-                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                                 </Form.Item>
                             </Col> :
                             null
@@ -682,13 +682,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="release_rule"
-                                    label={<FormattedMessage id="device.run.out.release"/>}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    label={<FormattedMessage id="device.run.out.release" />}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={0}><FormattedMessage id="operation.not.release"/></Radio>
-                                        <Radio value={1}><FormattedMessage id="operation.release"/></Radio>
-                                        <Radio value={2}><QusetionIconTootip title={formatMessage({id: 'device.failed.save'})} desc={formatMessage({id: 'device.failed.save.24h'})} /></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.not.release" /></Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.release" /></Radio>
+                                        <Radio value={2}><QusetionIconTootip title={formatMessage({ id: 'device.failed.save' })} desc={formatMessage({ id: 'device.failed.save.24h' })} /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col> :
@@ -698,10 +698,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12}>
                                 <Form.Item
                                     name="manufacturer"
-                                    label={<FormattedMessage id="device.manufacturer/ak"/>}
+                                    label={<FormattedMessage id="device.manufacturer/ak" />}
                                     validateStatus={validateAK.validate ? '' : 'error'}
                                     help={validateAK.validate ? undefined : validateAK.meg}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Cascader
                                         disabled={options?.length === 0 || !!id} // 无数据，不可编辑
@@ -722,8 +722,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     <Form.Item label="Region/Zone"
                                         name="region"
                                         validateStatus={validateRegion ? '' : 'error'}
-                                        help={validateRegion ? undefined : formatMessage({id: 'device.region/zone'}) }
-                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                        help={validateRegion ? undefined : formatMessage({ id: 'device.region/zone' })}
+                                        rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
                                         <Cascader
                                             disabled={region?.length === 0 || !!id || !firstAddDataFlag} // 无数据||编辑||已添加过数据时，不可编辑
@@ -739,16 +739,16 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         {!showZone ? null : !id && is_instance ?
                             <Col span={12}>
-                                <Form.Item 
-                                    label={<FormattedMessage id="device.own.server"/>}
+                                <Form.Item
+                                    label={<FormattedMessage id="device.own.server" />}
                                     name="instance_id"
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Select
                                         showSearch
                                         optionFilterProp="children"
-                                        placeholder={formatMessage({id: 'please.select'})} 
-                                        labelInValue 
+                                        placeholder={formatMessage({ id: 'please.select' })}
+                                        labelInValue
                                         disabled={sever.length == 0}
                                         filterOption={(input, option: any) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -756,8 +756,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     >
                                         {sever.map((item: any, index: number) => {
                                             return <Option value={item.id} key={index}>{item.ip ? `${item.ip}/${item.name}` : item.name}</Option>
-                                        })
-                                        }
+                                        })}
                                     </Select>
                                 </Form.Item>
                             </Col> :
@@ -769,15 +768,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     <Col span={12}>
                                         <Row>
                                             <Col span={8} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                                                <Form.Item 
-                                                    label={<FormattedMessage id="device.instance_type"/>}
+                                                <Form.Item
+                                                    label={<FormattedMessage id="device.instance_type" />}
                                                     name="instance_type_one"
-                                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                                 >
                                                     <InputNumber
                                                         min={1}
                                                         style={{ width: 70 }}
-                                                        placeholder={formatMessage({id: 'device.spec.size'}) }
+                                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                                         disabled={image.length === 0}
                                                     />
                                                 </Form.Item>
@@ -786,12 +785,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             <Col span={16} style={{ display: 'flex', alignItems: 'flex-start', paddingLeft: 6 }}>
                                                 <Form.Item label=""
                                                     name="instance_type_two"
-                                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                                 >
                                                     <InputNumber
                                                         min={1}
                                                         style={{ width: 70, marginTop: 30 }}
-                                                        placeholder={formatMessage({id: 'device.spec.size'}) }
+                                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                                         disabled={image.length === 0}
                                                     />
                                                 </Form.Item>
@@ -801,11 +800,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     </Col>
                                     :
                                     <Col span={12}>
-                                        <Form.Item label={<FormattedMessage id="device.instance_type"/>}
+                                        <Form.Item label={<FormattedMessage id="device.instance_type" />}
                                             name="instance_type"
-                                            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                            rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                         >
-                                            <Select placeholder={formatMessage({id: 'please.select'})}
+                                            <Select placeholder={formatMessage({ id: 'please.select' })}
                                                 disabled={image.length === 0}
                                                 showSearch
                                                 optionFilterProp="children"
@@ -828,11 +827,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         {!showZone ? null : !is_instance ?
                             manufacturerType === 'aliyun_eci' ?
                                 <Col span={12}>
-                                    <Form.Item label={<FormattedMessage id="device.image"/>}
+                                    <Form.Item label={<FormattedMessage id="device.image" />}
                                         name="image"
-                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                        rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
-                                        <Cascader placeholder={formatMessage({id: 'please.select'})} disabled={region?.length === 0 || image.length === 0}
+                                        <Cascader placeholder={formatMessage({ id: 'please.select' })} disabled={region?.length === 0 || image.length === 0}
                                             options={resetECI(image, 'platform')}
                                             // expandTrigger="hover"
                                             displayRender={displayRender}
@@ -843,11 +842,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 </Col>
                                 :
                                 <Col span={12}>
-                                    <Form.Item label={<FormattedMessage id="device.image"/>}
+                                    <Form.Item label={<FormattedMessage id="device.image" />}
                                         name="image"
-                                        rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                        rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                     >
-                                        <Cascader placeholder={formatMessage({id: 'please.select'})} disabled={region?.length === 0 || image.length === 0}
+                                        <Cascader placeholder={formatMessage({ id: 'please.select' })} disabled={region?.length === 0 || image.length === 0}
                                             options={resetImage(image, 'owner_alias', 'platform', 'os_name')}
                                             displayRender={displayRender}
                                             dropdownMenuColumnStyle={{ width: (724 - 48) / 4 }}
@@ -859,13 +858,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         {!showZone ? null : !is_instance ?
                             <Col span={8}>
-                                <Form.Item label={<FormattedMessage id="device.system.disk"/>}
+                                <Form.Item label={<FormattedMessage id="device.system.disk" />}
                                     name="system_disk_category"
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({id: 'device.resource.shortage'})}  disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
                                         :
-                                        <Select placeholder={formatMessage({id: 'please.select'})}>
+                                        <Select placeholder={formatMessage({ id: 'please.select' })}>
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -881,11 +880,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="system_disk_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder={formatMessage({id: 'device.spec.size'})}
+                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                         style={{ width: 70 }}
                                         min={20}
                                         max={500}
@@ -902,12 +901,12 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={4}>
                                 <Form.Item
                                     name="storage_type"
-                                    label={<FormattedMessage id="device.storage_type"/>}
+                                    label={<FormattedMessage id="device.storage_type" />}
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({id: 'device.resource.shortage'})} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
                                         :
-                                        <Select placeholder={formatMessage({id: 'please.select'})} disabled={image.length === 0}>
+                                        <Select placeholder={formatMessage({ id: 'please.select' })} disabled={image.length === 0}>
                                             {categories.map((item: any, index: number) => {
                                                 return <Option value={item.value} key={index}>{item.title}</Option>
                                             })
@@ -923,10 +922,10 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="storage_size"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
-                                        placeholder={formatMessage({id: 'device.spec.size'})}
+                                        placeholder={formatMessage({ id: 'device.spec.size' })}
                                         min={20}
                                         max={500}
                                         style={{ width: 70 }}
@@ -943,11 +942,11 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="storage_number"
                                     label=" "
-                                    rules={[{ required: false, message: formatMessage({id: 'please.enter'}) }]}
+                                    rules={[{ required: false, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <InputNumber
                                         //type="text"
-                                        placeholder={formatMessage({id: 'device.quantity'})}
+                                        placeholder={formatMessage({ id: 'device.quantity' })}
                                         style={{ width: 70 }}
                                         defaultValue={0}
                                         min={0}
@@ -963,14 +962,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                             <Col span={12} className={styles.warp} >
                                 <Form.Item
                                     name="bandwidth"
-                                    label={<FormattedMessage id="device.bandwidth"/>}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                    label={<FormattedMessage id="device.bandwidth" />}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
                                     <Input
                                         type="number"
                                         style={{ width: '100%' }}
                                         addonAfter="Mbit/s"
-                                        placeholder={formatMessage({id: 'please.enter'})}
+                                        placeholder={formatMessage({ id: 'please.enter' })}
                                     />
                                 </Form.Item>
                             </Col> :
@@ -978,13 +977,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         }
                         {is_instance ?
                             <Col span={12}>
-                                <Form.Item label={<FormattedMessage id="device.usage.state"/>}
+                                <Form.Item label={<FormattedMessage id="device.usage.state" />}
                                     name="state"
                                     hasFeedback
-                                    rules={[{ required: true, message: formatMessage({id: 'device.usage.state.message'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'device.usage.state.message' }) }]}
                                     initialValue={'Available'}
                                 >
-                                    <Select placeholder={formatMessage({id: 'device.usage.state.message'})} >
+                                    <Select placeholder={formatMessage({ id: 'device.usage.state.message' })} >
                                         <Select.Option value="Available"><Badge status="success" />Available</Select.Option>
                                         <Select.Option value="Reserved"><Badge status="success" />Reserved</Select.Option>
                                         <Select.Option value="Unusable"><Badge status="default" />Unusable</Select.Option>
@@ -998,18 +997,18 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                         <Col span={12}>
                             <Form.Item
                                 name="kernel_install"
-                                label={<FormattedMessage id="device.kernel_install"/>}
-                                rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                label={<FormattedMessage id="device.kernel_install" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                             >
                                 <Radio.Group>
-                                    <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
-                                    <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
+                                    <Radio value={1}><FormattedMessage id="operation.yes" /></Radio>
+                                    <Radio value={0}><FormattedMessage id="operation.no" /></Radio>
                                 </Radio.Group>
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-                            <Form.Item 
-                                label={<FormattedMessage id="device.var_name"/>}
+                            <Form.Item
+                                label={<FormattedMessage id="device.var_name" />}
                                 name="var_name"
                                 rules={[
                                     {
@@ -1017,7 +1016,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     },
                                 ]}
                             >
-                                <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                                <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
                         {is_instance ?
@@ -1025,32 +1024,32 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                 <Form.Item
                                     name="private_ip"
                                     label={
-                                        <QusetionIconTootip 
-                                            title={formatMessage({id: 'device.private_ip'})}
-                                            desc={formatMessage({id: 'device.private_ip.desc'})} />
+                                        <QusetionIconTootip
+                                            title={formatMessage({ id: 'device.private_ip' })}
+                                            desc={formatMessage({ id: 'device.private_ip.desc' })} />
                                     }
                                 >
-                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                                 </Form.Item>
                             </Col> :
                             null
                         }
                         <Col span={12}>
                             <Form.Item
-                                label={<FormattedMessage id="device.channel_type"/>}
+                                label={<FormattedMessage id="device.channel_type" />}
                                 name="channel_type"
                                 initialValue={'toneagent'}
-                                rules={[{ required: true, message: formatMessage({id: 'device.channel_type.message'}) }]}
+                                rules={[{ required: true, message: formatMessage({ id: 'device.channel_type.message' }) }]}
                             >
                                 <AgentSelect disabled={BUILD_APP_ENV} />
                             </Form.Item>
                         </Col>
 
                         <Col span={12}>
-                            <Form.Item label={<FormattedMessage id="device.description"/>}
+                            <Form.Item label={<FormattedMessage id="device.description" />}
                                 name="description"
                             >
-                                <Input.TextArea rows={3} placeholder={formatMessage({id: 'please.enter'})} />
+                                <Input.TextArea rows={3} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
                     </Row>

@@ -1,4 +1,4 @@
-import { Space, Button, Spin, Table, Typography, Divider, Tabs, Steps, Collapse, Empty } from 'antd'
+import { Space, Button, Spin, Table, Typography, Divider, Tabs, Steps, Collapse, Empty, Modal } from 'antd'
 import { CaretRightFilled, CaretDownFilled, CaretRightOutlined } from '@ant-design/icons'
 import React, { useState, useEffect, useRef } from 'react'
 import { useClientSize } from '@/utils/hooks';
@@ -10,22 +10,22 @@ import { ReactComponent as BaseIcon } from '@/assets/svg/BaseIcon.svg'
 import ExpandTable from './ExpandTable'
 import { getSelectedDataFn } from './CommonMethod';
 import { requestCodeMessage } from '@/utils/utils';
-import { Access, useAccess, useIntl, FormattedMessage, getLocale } from 'umi';
+import { useIntl, FormattedMessage, getLocale } from 'umi';
+
 const { Panel } = Collapse;
 const { Step } = Steps;
-export default (props: any) => {
+
+const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US'
 
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
-    const access = useAccess()
-    const { baselineGroup, handleCancle, onOk, baselineGroupIndex, creatReportOk } = props
+    const { baselineGroup, onOk, baselineGroupIndex } = props
     const groupAll = _.cloneDeep(props.allGroupData)
     groupAll.splice(baselineGroupIndex === -1 ? 0 : baselineGroupIndex, 1)
     const allGroupData = groupAll.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length) // 去掉空组但基线组除外
     const [suitData, setSuitData] = useState<any>({}) // 全量数据
-    // const [copySuitData, setCopySuitData] = useState<any>({}) 
     const [duplicateData, setDuplicateData] = useState<any>([]) // 复制得全量数据
     const [oneLevelFunc, setOneLevelFunc] = useState<any>([])
     const [oneLevelPref, setOneLevelPref] = useState<any>([])
@@ -42,6 +42,8 @@ export default (props: any) => {
     const [currentJobIndex, setCurrentJobIndex] = useState()
     const allFunRowKeys: any = useRef(null)
     const allPersRowKeys: any = useRef(null)
+    const [visible, setVisible] = React.useState(false)
+    const [isFetch, setIsFetch] = React.useState(false)
 
     const handleTabClick = (tab: string) => {
         setTab(tab)
@@ -60,11 +62,10 @@ export default (props: any) => {
         getemptyTableDom()
     }, [suitData, tab, layoutHeight])
 
-    const [isFetch, setIsFetch] = React.useState(false)
     const getSuitDetail = async (params: any) => {
         if (isFetch) return
         setIsFetch(true)
-        let { data, code, msg } = await querySuiteList(params)
+        const { data, code, msg } = await querySuiteList(params)
         if (code === 200) {
             let obj1 = data.func_suite_dic || {}
             let obj2 = data.perf_suite_dic || {}
@@ -88,64 +89,67 @@ export default (props: any) => {
         }
     }
 
+    React.useImperativeHandle(ref, () => ({
+        show() {
+            setVisible(true)
+            if (allGroupData && baselineGroup) {
+                let arr = _.get(baselineGroup, 'members')
+                const paramData: any = {
+                    func_data: {
+                        base_job: [],
+                        compare_job: []
+                    },
+                    perf_data: {
+                        base_job: [],
+                        compare_job: []
+                    }
+                }
+                if (_.isArray(arr)) {
+                    const flag = baselineGroup.type === 'baseline'
+                    const isBaseline = !flag ? 0 : 1
+                    arr.forEach((item: any) => {
+                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                            paramData.func_data.is_baseline = isBaseline
+                            paramData.func_data.base_job.push(item.id)
+                        }
+
+                        if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                            paramData.perf_data.is_baseline = isBaseline
+                            paramData.perf_data.base_job.push(item.id)
+                        }
+                    })
+                }
+                let brrFun: any = []
+                let brrFers: any = []
+                allGroupData.forEach((item: any, index: number) => {
+                    let membersArr = _.get(item, 'members')
+                    if (_.isArray(membersArr)) {
+                        membersArr.forEach((item: any) => {
+                            if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                                brrFun.push(item.id)
+                            }
+                            if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                                brrFers.push(item.id)
+                            }
+                        })
+                    }
+                })
+                paramData.func_data.compare_job = brrFun
+                paramData.perf_data.compare_job = brrFers
+                getSuitDetail(paramData)
+            }
+        },
+        hide() {
+            setVisible(false)
+        }
+    }))
+
     useEffect(() => {
         let flag = JSON.stringify(suitData.func_suite_dic) !== '{}' ? 'functional' : 'performance'
         if (currentStep === 0) setTab(flag)
         if (currentStep === 1) setTab('group0')
     }, [currentStep])
 
-    useEffect(() => {
-        if (allGroupData && baselineGroup) {
-            let arr = _.get(baselineGroup, 'members')
-            const paramData: any = {
-                func_data: {
-                    base_job: [],
-                    compare_job: []
-                },
-                perf_data: {
-                    base_job: [],
-                    compare_job: []
-                }
-            }
-            if (_.isArray(arr)) {
-                const flag = baselineGroup.type === 'baseline'
-                const isBaseline = !flag ? 0 : 1
-                arr.forEach((item: any) => {
-                    if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                        paramData.func_data.is_baseline = isBaseline
-                        paramData.func_data.base_job.push(item.id)
-                    }
-
-                    if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                        paramData.perf_data.is_baseline = isBaseline
-                        paramData.perf_data.base_job.push(item.id)
-                    }
-                })
-            }
-            let brrFun: any = []
-            let brrFers: any = []
-            allGroupData.forEach((item: any, index: number) => {
-                let membersArr = _.get(item, 'members')
-                if (_.isArray(membersArr)) {
-                    membersArr.forEach((item: any) => {
-                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                            brrFun.push(item.id)
-                        }
-                        if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                            brrFers.push(item.id)
-                        }
-                    })
-                }
-            })
-            paramData.func_data.compare_job = brrFun
-            paramData.perf_data.compare_job = brrFers
-            getSuitDetail(paramData)
-        }
-    }, [allGroupData, baselineGroup])
-
-    const handleClose = () => {
-        handleCancle()
-    }
     useEffect(() => {
         let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
         let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
@@ -211,15 +215,12 @@ export default (props: any) => {
         setDuplicateLoading(true)
         let suite_data = tab === 'functional' ? _.cloneDeep(oneLevelFunc) : _.cloneDeep(oneLevelPref)
         if (current === 1) {
-            let group_jobs: any = []
             const groupAll = _.cloneDeep(props.allGroupData)
-            groupAll.map((item: any) => {
-                group_jobs.push({
-                    group_name: item.product_version,
-                    is_baseline: item.type === 'baseline' ? 1 : 0,
-                    test_job_id: [].concat(item.members.map((i: any) => i.id))
-                })
-            })
+            const group_jobs = groupAll.map((item: any) => ({
+                group_name: item.name,
+                is_baseline: item.type === 'baseline' ? 1 : 0,
+                test_job_id: [].concat(item.members.map((i: any) => i.id))
+            }))
             let rowKeys = tab === 'functional' ? selectedFuncRowKeys : selectedPerfRowKeys
             let selectdRows = suite_data.filter((i: any) => rowKeys.includes(String(i.suite_id)))
             let suite_list: any = []
@@ -507,12 +508,6 @@ export default (props: any) => {
         )
     }
 
-    // “对比组”转换国际化方式显示
-    const groupToLocale = (str: string) => {
-        const temp = str?.match(/^对比组[0-9]+$/) ? (formatMessage({ id: 'analysis.comparison.group' }) + str.slice(3)) : str
-        return temp
-    }
-
     const allGroupReact = () => {
         const num = /^group[0-9]+$/.test(tab) ? tab.replace('group', '') : 0
         return (
@@ -525,12 +520,15 @@ export default (props: any) => {
                 >
                     {
                         selSuiteData.map((item: any, index: number) => {
-                            return <Tabs.TabPane
-                                tab={<>
-                                    {baselineGroupIndex === index && <span style={{ marginRight: 5 }}><BaseIcon /></span>}
-                                    {groupToLocale(item.group_name)}
-                                </>}
-                                key={`group${index}`} />
+                            return (
+                                <Tabs.TabPane
+                                    tab={<>
+                                        {baselineGroupIndex === index && <span style={{ marginRight: 5 }}><BaseIcon /></span>}
+                                        {item.group_name}
+                                    </>}
+                                    key={`group${index}`}
+                                />
+                            )
                         })
                     }
                 </Tabs>
@@ -541,66 +539,92 @@ export default (props: any) => {
         )
     }
 
+
+    const handleBaseGroupModalCancle = () => {
+        setVisible(false);
+    }
+
     return (
-        <div className={styles.compare_suite} id="list_container">
-            <div className={styles.server_provider}>
-                <Space>
-                    <Typography.Text className={styles.script_right_name} strong={true}>
-                        <FormattedMessage id="analysis.comparison.group" />
-                    </Typography.Text>
-                    <Typography.Text className={styles.script_right_name} >{baselineGroup && baselineGroup.product_version}</Typography.Text>
-                </Space>
-            </div>
-            <div className={styles.line}>
-                <Divider style={{
-                    borderTop: '10px solid #F5F5F5',
-                    width: 'calc(100% + 48px)',
-                    transform: `translateX(-24px)`
-                }} />
-            </div>
-
-            <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale ? styles.steps_en : styles.steps}>
-                <Step title={<FormattedMessage id="analysis.select.comparison.data" />} />
-                <Step title={<FormattedMessage id="analysis.select.duplicate.data" />} disabled={duplicateLoading} />
-            </Steps>
-
-            <Spin spinning={loading}>
-                <div className={styles.suit_detail}>
-                    {currentStep === 1 && allGroupReact()}
-                    {currentStep === 0 && tabsReact()}
-                    <Scrollbars style={scroll}>
-                        {currentStep === 1 && selectRepeatData()}
-                        {currentStep === 0 && selectCompareData()}
-                    </Scrollbars>
-                </div>
-            </Spin>
-
-            <div className={styles.bottom_button}>
-                <Divider style={{ margin: '38px 0 12px 0', width: 'calc(100% + 48px)', transform: 'translateX(-24px)' }} />
-                {
-                    currentStep === 0 && <Space>
-                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
-                        {/* <Access accessible={access.IsWsSetting()}>
-                            <Button disabled={loading} onClick={_.partial(handleOk, creatReportOk)}><FormattedMessage id="analysis.create.report" /></Button>
-                        </Access>
-                        <Button disabled={loading} onClick={_.partial(handleOk, onOk)}><FormattedMessage id="analysis.start.analysis" /></Button> */}
-                        <Button type="primary" disabled={loading} onClick={_.partial(handleStepChange, 1)} loading={duplicateLoading}><FormattedMessage id="operation.next" /></Button>
+        <Modal
+            title={<FormattedMessage id="analysis.select.benchmark.group" />}
+            centered={true}
+            open={visible}
+            width={1000}
+            className={styles.baseline_del_modal}
+            onCancel={handleBaseGroupModalCancle}
+            maskClosable={false}
+            destroyOnClose={true}
+            wrapClassName={`${styles.job_Modal} ${styles.baseline_group_modal}`}
+        >
+            <div className={styles.compare_suite} id="list_container">
+                <div className={styles.server_provider}>
+                    <Space>
+                        <Typography.Text className={styles.script_right_name} strong={true}>
+                            <FormattedMessage id="analysis.comparison.group" />
+                        </Typography.Text>
+                        <Typography.Text className={styles.script_right_name} >{baselineGroup && baselineGroup.product_version}</Typography.Text>
                     </Space>
-                }
-                {
-                    currentStep === 1 &&
-                    <div>
-                        <Button onClick={_.partial(handleStepChange, 0)} style={{ float: 'left' }}><FormattedMessage id="operation.previous" /></Button>
-                        <Space>
-                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
-                            {/* <Access accessible={access.IsWsSetting()}>
-                                <Button type="primary" disabled={loading} onClick={_.partial(handleOk, creatReportOk)}><FormattedMessage id="analysis.create.report" /></Button>
-                            </Access> */}
-                            <Button type="primary" disabled={loading} onClick={_.partial(handleOk, onOk)}><FormattedMessage id="analysis.start.analysis" /></Button>
-                        </Space>
+                </div>
+                <div className={styles.line}>
+                    <Divider style={{
+                        borderTop: '10px solid #F5F5F5',
+                        width: 'calc(100% + 48px)',
+                        transform: `translateX(-24px)`
+                    }} />
+                </div>
+
+                <Steps size="small" current={currentStep} onChange={handleStepChange} className={locale ? styles.steps_en : styles.steps}>
+                    <Step title={<FormattedMessage id="analysis.select.comparison.data" />} />
+                    <Step title={<FormattedMessage id="analysis.select.duplicate.data" />} disabled={duplicateLoading} />
+                </Steps>
+
+                <Spin spinning={loading}>
+                    <div className={styles.suit_detail}>
+                        {currentStep === 1 && allGroupReact()}
+                        {currentStep === 0 && tabsReact()}
+                        <Scrollbars style={scroll}>
+                            {currentStep === 1 && selectRepeatData()}
+                            {currentStep === 0 && selectCompareData()}
+                        </Scrollbars>
                     </div>
-                }
+                </Spin>
+
+                <div className={styles.bottom_button}>
+                    <Divider style={{ margin: '38px 0 12px 0', width: 'calc(100% + 48px)', transform: 'translateX(-24px)' }} />
+                    {
+                        currentStep === 0 &&
+                        <Space>
+                            <Button onClick={handleBaseGroupModalCancle}><FormattedMessage id="operation.cancel" /></Button>
+                            <Button
+                                type="primary"
+                                disabled={loading}
+                                onClick={_.partial(handleStepChange, 1)}
+                                loading={duplicateLoading}
+                            >
+                                <FormattedMessage id="operation.next" />
+                            </Button>
+                        </Space>
+                    }
+                    {
+                        currentStep === 1 &&
+                        <div>
+                            <Button onClick={_.partial(handleStepChange, 0)} style={{ float: 'left' }}><FormattedMessage id="operation.previous" /></Button>
+                            <Space>
+                                <Button onClick={handleBaseGroupModalCancle}><FormattedMessage id="operation.cancel" /></Button>
+                                <Button
+                                    type="primary"
+                                    disabled={loading}
+                                    onClick={_.partial(handleOk, onOk)}
+                                >
+                                    <FormattedMessage id="analysis.start.analysis" />
+                                </Button>
+                            </Space>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
+        </Modal>
     )
 }
+
+export default React.forwardRef(BaseGroupModal)

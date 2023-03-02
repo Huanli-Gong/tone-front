@@ -1,24 +1,23 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { Layout, Menu, Space, Popover } from 'antd'
 import styles from './index.less'
-import { FormattedMessage, history, useIntl, useParams, getLocale } from 'umi'
+import { FormattedMessage, history, useIntl, useParams, getLocale, useLocation } from 'umi'
 import { useClientSize } from '@/utils/hooks'
 import { WorkspaceMenuIcon } from '@/utils/menuIcon'
 import AdCompoent from './components/Ad'
 
 const { document }: any = window
 
-const WorkspaceLayout = (props: any) => {
+const WorkspaceLayout: React.FC<AnyType> = (props) => {
     // const { initialState } = useModel('@@initialState')
-    const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
+    const { route: { routes } } = props
 
     const { ws_id }: any = useParams()
-    const { pathname } = props.location
-    const { routes } = props.route
-    const { height: windowHeight } = useClientSize()
+    const { pathname } = useLocation()
+    const { formatMessage } = useIntl()
 
-    const intl = useIntl()
+    const { height: windowHeight } = useClientSize()
 
     const [openKeys, setOpenKeys] = useState<any>([])
 
@@ -46,7 +45,7 @@ const WorkspaceLayout = (props: any) => {
                         }
                     })
                 }
-                document.title = intl.messages[title] ? intl.messages[title] + `- T-One` : 'T-One'
+                document.title = formatMessage({ id: title }) ? formatMessage({ id: title }) + `- T-One` : 'T-One'
             }
         })
     }, [routes, realPath])
@@ -106,6 +105,20 @@ const WorkspaceLayout = (props: any) => {
         }
     }, [rootSubmenuKeys, openKeys]);
 
+    const selectedKeys = React.useMemo(() => {
+        const rp = pathname.replace(ws_id, ':ws_id')
+        const parentPath = routes.map((i: any) => i.path).filter((i: any) => ~rp.indexOf(i))[0]
+        if (rp === parentPath) return [rp]
+        const pathKeys: any = []
+        const componentPath = rp.split(parentPath).filter(Boolean)[0]
+        componentPath.split("/").reduce((p, c) => {
+            const z = p + (!c ? "/" : "") + c
+            pathKeys.push(parentPath + z)
+            return z
+        }, "")
+        return pathKeys
+    }, [pathname])
+
     if (!hasLeftMenu)
         return (
             <div style={{ minHeight: windowHeight - 50, background: "#fff" }}>
@@ -131,7 +144,7 @@ const WorkspaceLayout = (props: any) => {
         <Layout className={styles.layout} >
             <Layout.Sider theme="light" className={styles.ws_slider}>
                 <Menu
-                    selectedKeys={[realPath]}
+                    selectedKeys={selectedKeys}
                     className={styles.ws_menu_styles}
                     mode="inline"
                     triggerSubMenuAction={'hover'}

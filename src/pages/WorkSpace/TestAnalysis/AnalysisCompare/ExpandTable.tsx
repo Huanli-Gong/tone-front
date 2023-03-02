@@ -68,7 +68,7 @@ export default (props: any) => {
                         }
                     } else {
                         refAllJobCopy = _.cloneDeep(refAllJob)
-                        refAllJobCopy = refAllJobCopy.filter((item: any) => String(_.get(item, 'job_id')) === val.trim())
+                        refAllJobCopy = refAllJobCopy.filter((item: any) => String(_.get(item, 'job_id')) === val?.trim())
                     }
 
                     setRefAllJob(refAllJobCopy)
@@ -105,7 +105,7 @@ export default (props: any) => {
                         refAllJobCopy = _.cloneDeep(refAllJob)
                         refAllJobCopy = refAllJobCopy.filter((item: any) => {
                             const name = _.get(item, 'job_name')
-                            return name.includes(val.trim())
+                            return name.includes(val?.trim())
                         })
                     }
                     setRefAllJob(refAllJobCopy)

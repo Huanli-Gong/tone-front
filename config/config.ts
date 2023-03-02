@@ -43,9 +43,9 @@ export default defineConfig({
         // ...darkTheme,
         'primary-color': defaultSettings.primaryColor,
     },
-    alias: {
+    /* alias: {
         "lodash/debounce": 'lodash.debounce',
-    },
+    }, */
     favicon: '/favicon.ico',
     esbuild: {},
     webpack5: {},

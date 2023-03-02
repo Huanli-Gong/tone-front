@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks'
 import { Space, Tabs, Button, message, Popconfirm, Spin } from 'antd'
-import { history, useIntl, FormattedMessage, Access, useAccess } from 'umi'
+import { history, useIntl, FormattedMessage, Access, useAccess, useParams, useLocation } from 'umi'
 import CommonPagination from '@/components/CommonPagination'
 
 import styled from 'styled-components'
@@ -27,7 +27,8 @@ const OptButton = styled.span<OptionBtnProp>`
 const TestPlanManage = (props: any) => {
     const { formatMessage } = useIntl()
     const { route } = props
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
+    const { query } = useLocation() as any
     const access = useAccess()
     writeDocumentTitle(`Workspace.TestPlan.${route.name}`)
 
@@ -35,14 +36,14 @@ const TestPlanManage = (props: any) => {
     const viewSettingRef: any = useRef()
     const [data, setData] = useState<any>([])
     const [loading, setLoading] = useState<boolean>(true)
-    const [pageParams, setPageParams] = useState<any>({ ws_id, page_num: 1, page_size: 10 })
+    const [pageParams, setPageParams] = useState<any>(query && JSON.stringify(query) !== "{}" ? query : { ws_id, page_num: 1, page_size: 10 })
 
     const queryPlanList = async () => {
-        const data = await queryPlanManageList(pageParams)
-        if (data.code === 200) {
-            setData(data)
+        const { code, msg, ...rest } = await queryPlanManageList(pageParams)
+        if (code === 200) {
+            setData(rest)
         } else {
-            requestCodeMessage(data.code, data.msg)
+            requestCodeMessage(code, msg)
         }
         setLoading(false)
     }
@@ -53,7 +54,7 @@ const TestPlanManage = (props: any) => {
 
     const handleRun = async (row: any) => {
         if (!row.enable) return;
-        history.push(`/ws/${ws_id}/test_plan/${row.id}/run`)
+        history.push(`/ws/${ws_id}/test_plan/${row.id}/run`, pageParams)
     }
 
     const handleView = (row: any) => {
@@ -71,7 +72,7 @@ const TestPlanManage = (props: any) => {
     }
 
     const handleEdit = (row: any) => {
-        history.push(`/ws/${ws_id}/test_plan/${row.id}/edit`)
+        history.push(`/ws/${ws_id}/test_plan/${row.id}/edit`, pageParams)
     }
 
     const handleDelete = async (row: any) => {

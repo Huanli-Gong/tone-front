@@ -30,7 +30,7 @@ export default (props:any) => {
             placement='bottom'
             content={contentMark}
             overlayClassName={`${styles.popover_mark} ${styles[typeName]}`}
-            visible={visiblePopover && currentEditGroupIndex === currentIndex}
+            open={visiblePopover && currentEditGroupIndex === currentIndex}
         >
            <Ellipsis className={styles.icon} onClick={handleClick} style={iconStyles}/>
         </Popover>

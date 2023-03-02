@@ -185,7 +185,7 @@ export default (props: any) => {
     ]
 
     const handleCreate = useCallback(
-        () => history.push(`/ws/${ws_id}/job/create`), []
+        () => history.push(`/ws/${ws_id}/job/types/create`), []
     )
 
     return (

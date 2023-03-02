@@ -174,6 +174,9 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
             .catch((err: any) => {
                 setPadding(false)
                 console.log(err)
+                const { errorFields } = err
+                const { name } = errorFields[0]
+                form.scrollToField(name)
                 document.querySelector('.create_job_type_content').parentNode.scrollTop = 239
             })
     }
@@ -303,13 +306,13 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
                 <Form
                     form={form}
                     layout="horizontal"
-                    hideRequiredMark
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 21 }}
                 >
                     <Form.Item
                         label={<FormattedMessage id="job.types.job.name" />}
                         name="name"
+                        required
                         rules={[
                             { required: true, message: formatMessage({ id: 'job.types.job.name.rules1' }) },
                             { max: 20, message: formatMessage({ id: 'job.types.job.name.rules2' }) }
