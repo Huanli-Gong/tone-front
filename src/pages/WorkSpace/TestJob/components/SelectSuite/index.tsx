@@ -186,7 +186,6 @@ const SelectSuite: React.FC<any> = ({
 	}
 
 	const handleTestConfig = ($list: any[]) => {
-		console.log($list, treeData)
 		const list = $list?.reduce((pre, cur) => {
 			const { test_suite_id, cases, setup_info } = cur
 			const hasSuiteId = treeData.findIndex(({ id }: any) => id === test_suite_id)
