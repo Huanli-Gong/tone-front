@@ -7,9 +7,9 @@ import { fillData } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/CommonM
 import { queryCompareResultList } from '@/pages/WorkSpace/TestAnalysis/AnalysisCompare/services'
 import { history } from 'umi';
 export const CreatePageData = (props: any) => {
-    const [logoData, setLogoData] = useState<Array<{}>>([])
-    const [loading, setLoading] = useState<Boolean>(true)
-    const [envData, setEnvData] = useState<Array<{}>>([])
+    const [logoData, setLogoData] = useState<any[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
+    const [envData, setEnvData] = useState<any[]>([])
     const [suiteLen, setSuiteLen] = useState(1)
     const defaultConf = {
         need_test_suite_description: true,
@@ -45,7 +45,7 @@ export const CreatePageData = (props: any) => {
 
     const { ws_id } = props.match.params
 
-    let {
+    const {
         environmentResult = {},
         baselineGroupIndex = 0,
         allGroupData = [],
@@ -105,9 +105,8 @@ export const CreatePageData = (props: any) => {
     const { func_data_result, perf_data_result } = compareResult
 
     const compareLen = useMemo(() => {
-        const { func_data_result, perf_data_result } = compareResult
-        let perf = perf_data_result.length
-        let func = func_data_result.length
+        const perf = perf_data_result.length
+        const func = func_data_result.length
         return perf + func
     }, [compareResult])
 
@@ -127,15 +126,15 @@ export const CreatePageData = (props: any) => {
     useEffect(() => {
         // setLoading(true)
         if (switchReport) {
-            let obj: any = new Object;
-            let newFunc: any = []
-            let newPerf: any = []
+            const obj: any = new Object;
+            const newFunc: any = []
+            const newPerf: any = []
             Object.keys(domainGroupResult).forEach((t: any, idx: number) => {
                 const feild = domainGroupResult[t]
                 if (t == 'functional') {
                     Object.keys(feild).forEach((x: any) => {
                         const item = feild[x]
-                        let list: any = []
+                        const list: any = []
                         Object.keys(item).forEach((y: any) => {
                             const suite = item[y]
                             list.push({
@@ -151,7 +150,7 @@ export const CreatePageData = (props: any) => {
                 } else {
                     Object.keys(feild).forEach((x: any) => {
                         const item = feild[x]
-                        let list: any = []
+                        const list: any = []
                         Object.keys(item).forEach((y: any) => {
                             const suite = item[y]
                             list.push({
@@ -497,9 +496,10 @@ export const CreatePageData = (props: any) => {
 
     const summaryData = useMemo(() => {
         const { compare_groups } = environmentResult
+        // console.log(environmentResult)
         const groupArr = compare_groups.reduce((pre: any, cur: any, idx: number) => {
             const { tag, is_job } = cur
-            let compare: any = {
+            const compare: any = {
                 tag,
                 is_job,
                 func_data: {},
@@ -515,9 +515,11 @@ export const CreatePageData = (props: any) => {
             }
 
             if (perf_data_result && !!perf_data_result.length) {
-                let perfAll = perf_data_result.reduce((pre: any, cur: any) => {
-                    const { all } = cur.base_count
-                    return pre += all
+                const perfAll = perf_data_result.reduce((pa: any, c: any) => {
+                    const { all } = c.base_count
+                    if (all)
+                        return pa + all
+                    return pa
                 }, 0)
 
                 const perfCount = countCase(perf_data_result, 'compare_count', { all: 0, decline: 0, increase: 0 }, idx)
@@ -530,7 +532,8 @@ export const CreatePageData = (props: any) => {
             return pre.concat(compare)
         }, [])
 
-        let newObj: any = {}
+        // console.log(groupArr)
+        const newObj: any = {}
         let base_group: any = {
             tag: environmentResult.base_group.tag,
             is_job: 1,
@@ -545,35 +548,35 @@ export const CreatePageData = (props: any) => {
                     ...func_data_result.reduce((pre: any, cur: any) => {
                         const { all_case, success_case, fail_case } = cur.base_count
                         return {
-                            funcAll: pre.funcAll += all_case,
-                            success: pre.success += success_case,
-                            fail: pre.fail += fail_case
+                            funcAll: pre.funcAll + all_case,
+                            success: pre.success + success_case,
+                            fail: pre.fail + fail_case
                         }
                     }, { funcAll: 0, success: 0, fail: 0 })
                 }
-
             }
         }
-        newObj.custom = '-',
-            newObj.summary = {
-                base_group,
-                compare_groups: groupArr
-            }
+
+        newObj.custom = '-'
+        newObj.summary = {
+            base_group,
+            compare_groups: groupArr
+        }
         return newObj
     }, [environmentResult, compareResult])
 
     useMemo(() => {
         const deep = _.cloneDeep(summaryData)
-        let compare = deep?.summary.compare_groups
-        let base = deep?.summary.base_group
+        const compare = deep?.summary.compare_groups
+        const base = deep?.summary.base_group
         compare.splice(baselineGroupIndex, 0, base)
         setLogoData(compare)
     }, [summaryData])
 
     useMemo(() => {
         const deep = _.cloneDeep(environmentResult)
-        let compare = deep.compare_groups
-        let base = deep.base_group
+        const compare = deep.compare_groups
+        const base = deep.base_group
         compare.splice(baselineGroupIndex, 0, base)
         if (compare.length > 1 && baselineGroupIndex !== -1) {
             compare[baselineGroupIndex].is_group = true
