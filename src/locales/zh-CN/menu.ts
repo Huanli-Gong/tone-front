@@ -11,8 +11,13 @@ export default {
   'menu.exception.403': '403',
   'menu.exception.404': '404',
   'menu.exception.500': '500',
-  'menu.nofoundpage.404': '404页面',
-  'menu.server.500': '500页面',
+  'menu.server.404': '页面不存在 - T-One',
+  'menu.server.500': '系统异常 - T-One',
+  'menu.server.401': '无访问权限 - T-One',
+
+  'menu.Workspace.500': "系统异常 - T-One",
+  'menu.Workspace.401': "无访问权限 - T-One",
+  'menu.Workspace.404': "页面不存在 - T-One",
 
   'menu.home': '首页',
   "menu.PersonCenter": 'Person Center',

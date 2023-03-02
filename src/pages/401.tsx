@@ -1,64 +1,78 @@
 
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Avatar } from 'antd';
-import RoleIcon from '@/assets/svg/roleIcon.svg';
+import React from 'react';
+import { Avatar, Space, Typography } from 'antd';
 import { auth_admin } from '../services/Workspace';
-import { history } from 'umi'
+import { useIntl, useParams, history, Helmet } from 'umi'
 import { useClientSize } from '@/utils/hooks';
+import { ReactComponent as UnaccessIcon } from "@/assets/img/unaccess.svg"
 
-const rolepage: React.FC<any> = (props: any) => {
-    const { height: layoutHeight } = useClientSize()
-    const { state } = props.location
+import { Container, Wrapper } from './500'
 
-    const [person, setPerson] = useState<any>([])
-    const [ws, setWsName] = useState<any>({})
+const UnaccessPage: React.FC<any> = () => {
+    const { height } = useClientSize()
+    const intl = useIntl()
+    const { ws_id } = useParams() as any
 
-    useEffect(() => {
-        window.addEventListener("popstate", function (e) {
-            history.push('/');
-        }, false);
-        return () => {
-            window.addEventListener("popstate", function (e) {
-                history.push('/');
-            }, false);
-        }
-    }, [])
+    const [source, setSource] = React.useState<any>({})
 
     const authAdmin = async () => {
-        const data = await auth_admin({ ws_id: state })
-        if (data.code === 200) {
-            setPerson(data.data || [])
-            setWsName(data.ws_info || {})
-        }
+        if (!ws_id) return
+        if (!/[a-zA-Z0-9]{8}/.test(ws_id)) return
+        const { code, ...rest } = await auth_admin({ ws_id })
+        if (code === 200) setSource(rest)
     }
 
-    useEffect(() => {
-        state && authAdmin()
-    }, [state])
+    React.useEffect(() => {
+        authAdmin()
+    }, [ws_id])
 
     return (
-        <div style={{ height: layoutHeight, minHeight: 0, overflow: 'auto' }}>
-            <div style={{ width: '600px', height: '400px', background: '#fff', textAlign: 'center', margin: '0 auto', position: 'relative', top: '50%', transform: 'translateY(-50%)' }}>
-                <Row>
-                    <Col span={8} style={{ marginTop: 120 }}>
-                        <img alt="icon" src={RoleIcon}></img>
-                    </Col>
-                    <Col span={16} style={{ marginTop: 124 }}>
-                        <div style={{ color: '#000', fontSize: 24, textAlign: 'left' }}>无权限</div>
-                        <div style={{ color: 'rgba(0,0,0,0.85)', fontSize: 14, marginTop: 8, textAlign: 'left' }}>您不是Workspace 成员，没有访问权限。</div>
-                        <div style={{ color: 'rgba(0,0,0,0.85)', fontSize: 14, marginTop: 8, textAlign: 'left' }}>请联系 <span style={{ color: '#1890FF' }}>{ws.show_name}</span>  管理员
-                            {
-                                person.map((item: any, index: number) => {
-                                    return <span style={{ marginLeft: 6 }} key={index}><Avatar size={28} src={item.avatar} /><span style={{ marginLeft: 6 }}>{item.name}</span></span>
-                                })
-                            }
-                        </div>
-                        <div style={{ color: '#1890FF', fontSize: 14, marginTop: 33, textAlign: 'left', cursor: 'pointer' }} onClick={() => location.href = '/'}>返回首页</div>
-                    </Col>
-                </Row>
-            </div>
-        </div>
+        <Container height={height - 50}>
+            <Helmet>
+                <title>
+                    {intl.formatMessage({ id: `menu.server.401` })}
+                </title>
+            </Helmet>
+            <Wrapper>
+                <Space size={20}>
+                    <UnaccessIcon />
+                    <Space direction="vertical" size={28}>
+                        <Space direction="vertical" size={8}>
+                            <Typography.Title level={3} style={{ margin: 0, fontSize: 56 }}>
+                                无权限
+                            </Typography.Title>
+                            <Space direction="vertical" size={0}>
+                                <Typography.Text style={{ fontSize: 16, color: "rgba(0,0,0,0.45)" }}>
+                                    {intl.formatMessage({ id: `page.401.desc`, defaultMessage: "您没有访问权限。" })}
+                                </Typography.Text>
+                                {
+                                    JSON.stringify(source) !== "{}" &&
+                                    <Space wrap={true} size={8}>
+                                        <Typography.Text>
+                                            请联系
+                                            <Typography.Link style={{ cursor: "default" }}>“{source?.ws_info?.show_name}”</Typography.Link>
+                                            管理员
+                                        </Typography.Text>
+                                        {
+                                            source?.data?.map((item: any) => (
+                                                <Space key={item.name} size={4}>
+                                                    <Avatar src={item.avatar} size={28} />
+                                                    <Typography.Text>{item.name}</Typography.Text>
+                                                </Space>
+                                            ))
+                                        }
+                                    </Space>
+                                }
+                            </Space>
+                        </Space>
+                        <Typography.Link onClick={() => history.push(`/`)}>
+                            {intl.formatMessage({ defaultMessage: "返回首页", id: "page.500.button" })}
+                        </Typography.Link>
+                    </Space>
+                </Space>
+            </Wrapper>
+        </Container>
     )
 }
 
-export default rolepage;
+export default UnaccessPage;

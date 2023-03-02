@@ -8,6 +8,28 @@ import AdCompoent from './components/Ad'
 
 const { document }: any = window
 
+const filterUnaccessible = (arr: any[]) => arr.reduce((pre, cur) => {
+    const { routes, unaccessible } = cur
+    if (!unaccessible)
+        return pre.concat({ ...cur, routes: routes && routes.length > 0 ? filterUnaccessible(routes) : [] })
+    return pre
+}, [])
+
+const filterHideInMenu = (arr: any[]) => arr.reduce((pre, cur) => {
+    const { routes, hideInMenu } = cur
+    if (!hideInMenu)
+        return pre.concat({ ...cur, routes: routes && routes.length > 0 ? filterHideInMenu(routes) : [] })
+    return pre
+}, [])
+
+const getRegString = (path: any) => path?.split('/').reduce((p: any, c: any) => {
+    if (~c.indexOf(':'))
+        return p.concat(~c.indexOf(':ws_id') ? '([a-zA-Z0-9]{8})' : '.+')
+    return p.concat(c)
+}, []).join('\/')
+
+const ignorePath = ["401", "500", "404", "403"].map((i: string) => `/ws/:ws_id/${i}`)
+
 const WorkspaceLayout: React.FC<AnyType> = (props) => {
     // const { initialState } = useModel('@@initialState')
     const enLocale = getLocale() === 'en-US'
@@ -16,24 +38,17 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const { ws_id }: any = useParams()
     const { pathname } = useLocation()
     const { formatMessage } = useIntl()
-
-    const { height: windowHeight } = useClientSize()
+    const { height } = useClientSize()
 
     const [openKeys, setOpenKeys] = useState<any>([])
 
     const realPath = pathname.replace(ws_id, ':ws_id')
 
-    const routeRight = useMemo(() => {
-        return routes.filter(
-            (cur: any) => !cur.inNav && !cur.unaccessible
-        )
-    }, [routes])
-
-    const onMenuClick = useCallback(({ path }) => {
-        history.push(path.replace(':ws_id', ws_id))
-    }, [ws_id])
+    const onMenuClick = ({ path }: any) => history.push(path?.replace(':ws_id', ws_id))
 
     useEffect(() => {
+        if (ignorePath.includes(realPath))
+            return
         routes.forEach((item: any) => {
             if (~realPath.indexOf(item.path)) {
                 let title = `Workspace.${item.name}`;
@@ -53,30 +68,36 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
     const hasLeftMenu = useMemo(() => {
         for (const route of routes) {
             const { path, inNav } = route
-            const regStr = path.split('/').reduce((p: any, c: any) => {
-                if (~c.indexOf(':'))
-                    return p.concat(~c.indexOf(':ws_id') ? '([a-zA-Z0-9]{8})' : '.+')
-                return p.concat(c)
-            }, []).join('\/')
-            const exp = new RegExp(`^${regStr}`)
-            const reg = exp.test(pathname)
-            if (reg) return !inNav
+            const regStr = getRegString(path)
+            if (regStr) {
+                const exp = new RegExp(`^${regStr}`)
+                const reg = exp.test(pathname)
+                if (reg) return !inNav
+            }
         }
-        return true
+        return false
     }, [routes, pathname])
 
+    const fiterHideRoutes = React.useMemo(() => {
+        return filterHideInMenu(filterUnaccessible(routes))
+    }, [routes])
+
+    const inLeftRoutes = React.useMemo(() => {
+        return fiterHideRoutes.filter((route: any) => !route.inNav)
+    }, [fiterHideRoutes])
+
     const rootSubmenuKeys = useMemo(() => {
-        return routeRight.reduce((pre: any, item: any) => {
+        return inLeftRoutes.reduce((pre: any, item: any) => {
             if (item.children && item.children.length > 0) return pre.concat(item.path)
             return pre
         }, [])
-    }, [routeRight])
+    }, [inLeftRoutes])
 
-    const getOpenKeys = useCallback(
+    const getOpenKeys = useMemo(
         () => {
-            if (routeRight && routeRight.length > 0) {
-                for (let x = 0, len = routeRight.length; x < len; x++) {
-                    const routerItem = routeRight[x]
+            if (inLeftRoutes && inLeftRoutes.length > 0) {
+                for (let x = 0, len = inLeftRoutes.length; x < len; x++) {
+                    const routerItem = inLeftRoutes[x]
                     if (routerItem.path === realPath)
                         return [realPath];
                     if (routerItem.children) {
@@ -89,12 +110,12 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
                 }
             }
             return []
-        }, [routeRight, realPath]
+        }, [inLeftRoutes, realPath]
     )
 
     useEffect(() => {
-        setOpenKeys(getOpenKeys())
-    }, [routeRight, pathname])
+        setOpenKeys(getOpenKeys)
+    }, [inLeftRoutes, pathname])
 
     const onOpenChange = useCallback((keys: any) => {
         const latestOpenKey: any = keys.find((key: any) => openKeys.indexOf(key) === -1);
@@ -119,14 +140,6 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
         return pathKeys
     }, [pathname])
 
-    if (!hasLeftMenu)
-        return (
-            <div style={{ minHeight: windowHeight - 50, background: "#fff" }}>
-                {props.children}
-                <AdCompoent />
-            </div>
-        )
-
     // 国际化英文模式，菜单项内容过长缩略问题
     const EllipsisDiv = ({ placement = 'top', style = {}, item = {}, child = {} }: any) => {
         const caseRoute = ["TestTemplateManage", "GroupBaseline", "ClusterBaseline", "GroupManage"].includes(child.name)
@@ -140,60 +153,71 @@ const WorkspaceLayout: React.FC<AnyType> = (props) => {
             <div>{text}</div>
     }
 
-    return (
-        <Layout className={styles.layout} >
-            <Layout.Sider theme="light" className={styles.ws_slider}>
-                <Menu
-                    selectedKeys={selectedKeys}
-                    className={styles.ws_menu_styles}
-                    mode="inline"
-                    triggerSubMenuAction={'hover'}
-                    openKeys={openKeys}
-                    onOpenChange={onOpenChange}
-                >
-                    {
-                        routeRight.map(
-                            (item: any) => {
-                                if (item.hideInMenu) return false
-                                if (item.routes && item.routes.length > 0) {
-                                    return (
-                                        <Menu.SubMenu key={item.path}
-                                            title={<Space>{WorkspaceMenuIcon(item.name)}<FormattedMessage id={`Workspace.${item.name}`} /></Space>}
-                                            popupClassName={styles.ws_sb_st}
-                                        >
-                                            {item.routes.map((child: any): any => {
-                                                if (!child.hideInMenu && !child.unaccessible) {
-                                                    return (
-                                                        <Menu.Item key={child.path} onClick={() => onMenuClick(child)}>
-                                                            {/* {formatMessage({id: `Workspace.${item.name}.${child.name}`})} */}
-                                                            <EllipsisDiv item={item} child={child} />
-                                                        </Menu.Item>
-                                                    )
+    if (hasLeftMenu)
+        return (
+            <Layout className={styles.layout} >
+                <Layout.Sider theme="light" className={styles.ws_slider}>
+                    <Menu
+                        selectedKeys={selectedKeys}
+                        className={styles.ws_menu_styles}
+                        mode="inline"
+                        triggerSubMenuAction={'hover'}
+                        openKeys={openKeys}
+                        onOpenChange={onOpenChange}
+                    >
+                        {
+                            inLeftRoutes.map(
+                                (item: any) => {
+                                    if (item.routes && item.routes.length > 0) {
+                                        return (
+                                            <Menu.SubMenu
+                                                key={item.path}
+                                                title={
+                                                    <Space>
+                                                        {WorkspaceMenuIcon(item.name)}
+                                                        <FormattedMessage id={`Workspace.${item.name}`} />
+                                                    </Space>
                                                 }
-                                            })}
-                                        </Menu.SubMenu>
+                                                popupClassName={styles.ws_sb_st}
+                                            >
+                                                {item.routes.map((child: any): any => (
+                                                    <Menu.Item key={child.path} onClick={() => onMenuClick(child)}>
+                                                        <EllipsisDiv item={item} child={child} />
+                                                    </Menu.Item>
+                                                ))}
+                                            </Menu.SubMenu>
+                                        )
+                                    }
+                                    return (
+                                        <Menu.Item
+                                            key={item.path}
+                                            onClick={() => onMenuClick(item)}
+                                        >
+                                            <Space>
+                                                {WorkspaceMenuIcon(item.name)}
+                                                <FormattedMessage id={`Workspace.${item.name}`} />
+                                            </Space>
+                                        </Menu.Item>
                                     )
                                 }
-                                return (
-                                    <Menu.Item key={item.path} onClick={() => onMenuClick(item)}>
-                                        <Space>
-                                            {WorkspaceMenuIcon(item.name)}
-                                            <FormattedMessage id={`Workspace.${item.name}`} />
-                                        </Space>
-                                    </Menu.Item>
-                                )
-                            }
-                        )
-                    }
-                </Menu>
-            </Layout.Sider>
-            <Layout.Content className={styles.content} style={{ minHeight: windowHeight - 50 }}>
-                <div style={{ background: "#fff", margin: 0, padding: 0, height: "100%" }}>
-                    {props.children}
-                </div>
-            </Layout.Content>
+                            )
+                        }
+                    </Menu>
+                </Layout.Sider>
+                <Layout.Content className={styles.content} style={{ minHeight: height - 50 }}>
+                    <div style={{ background: "#fff", margin: 0, padding: 0, height: "100%" }}>
+                        {props.children}
+                    </div>
+                </Layout.Content>
+                <AdCompoent />
+            </Layout>
+        )
+
+    return (
+        <div style={{ minHeight: height - 50, background: "#fff" }}>
+            {props.children}
             <AdCompoent />
-        </Layout>
+        </div>
     )
 }
 

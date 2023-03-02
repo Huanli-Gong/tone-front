@@ -1,12 +1,14 @@
 import React from 'react';
-import { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layout';
+import type { BasicLayoutProps, Settings as ProSettings } from '@ant-design/pro-layout';
 
 import { notification, ConfigProvider, version } from 'antd';
-import { history, RequestConfig } from 'umi';
+import { history } from 'umi';
+import type { RequestConfig } from "umi"
 import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
 import { marked } from "marked"
+import { getPageWsid, redirectErrorPage } from "@/utils/utils"
 
 import 'animate.css';
 
@@ -46,24 +48,29 @@ export async function getInitialState(): Promise<any> {
     };
 
     const { pathname } = window.location
+    const isWs = wsReg.test(pathname)
+    const ws_id = getPageWsid()
+
+    const { data, code } = await person_auth(ws_id && /[a-zA-Z0-9]{8}/.test(ws_id) ? { ws_id } : {})
+
+    const baseAppState = {
+        ...initialState,
+        authList: data,
+    }
+
+    if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
+        redirectErrorPage(500)
+        return baseAppState
+    }
+
     if (!ignoreRoutePath.includes(history.location.pathname)) {
-        const isWs = wsReg.test(pathname)
-        const matchArr = pathname.match(wsReg)
-        const ws_id = matchArr ? matchArr[1] : undefined
-
-        const { data, code } = await person_auth(ws_id && { ws_id })
-        if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
-            history.push(`/500?page=${location.href}`)
-            return initialState
-        }
-
         const { ws_is_exist, ws_is_public, user_id, ws_role_title, sys_role_title } = data
 
         if (isWs) {
             // 这个ws是否存在
             if (!ws_is_exist) {
-                history.push('/404')
-                return initialState
+                redirectErrorPage(404)
+                return baseAppState
             }
 
             /** 用户进入ws：case1.首先判断是公开ws还是私密ws；case2.判断进入私密ws时，未登录跳登录。 */
@@ -77,8 +84,8 @@ export async function getInitialState(): Promise<any> {
 
             /** 有无权限：case1.用户已登录，要查看私密ws时(分享的私密ws链接)，判断有无访问权限。  */
             if (sys_role_title !== 'sys_admin' && !ws_role_title) {
-                history.push({ pathname: '/401', state: ws_id })
-                return initialState
+                redirectErrorPage(401)
+                return baseAppState
             }
 
             return {
@@ -95,7 +102,7 @@ export async function getInitialState(): Promise<any> {
         }
     }
 
-    return initialState
+    return baseAppState
 }
 
 export const layout = ({
@@ -153,13 +160,10 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
     if (response) {
         const { status, statusText, url } = response
         if (status >= 500) {
-            history.push(`/500?page=${location.href}`)
+            redirectErrorPage(500)
         }
         else if (status === 401) {
-            const { pathname } = location
-            const matchArr = pathname.match(wsReg)
-            const ws_id = matchArr ? matchArr[1] : undefined
-            history.push({ pathname: "/401", state: ws_id })
+            redirectErrorPage(401)
             return
         }
         else {

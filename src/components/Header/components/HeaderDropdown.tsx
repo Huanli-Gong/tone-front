@@ -8,7 +8,7 @@ import { history, useModel, Redirect } from 'umi'
 import _ from 'lodash'
 
 import styled from 'styled-components'
-import { jumpWorkspace } from '@/utils/utils'
+import { jumpWorkspace, redirectErrorPage } from '@/utils/utils'
 
 const WorkspaceTitle = styled(Row)`
     width:210px;
@@ -120,7 +120,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
         }
     }
 
-    if (index === -2) return <Redirect to="/500" />
+    if (index === -2) return redirectErrorPage(500)
 
     if (workspaces.length === 0)
         return (
