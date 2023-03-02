@@ -126,6 +126,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
     useEffect(() => {
         if (!editor) return
         const _dom: any = document.querySelector(".ProseMirror")
+        if (!_dom) return
         _dom.addEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
         return () => {
             _dom.removeEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
