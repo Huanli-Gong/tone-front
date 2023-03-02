@@ -510,7 +510,7 @@ const TestSuiteCreate: React.FC = () => {
                         </Button>
                         <Button
                             type="primary"
-                            onClick={handleSave}
+                            onClick={() => handleSave()}
                             disabled={btnLoad}
                             loading={btnLoad}
                         >

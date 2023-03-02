@@ -207,7 +207,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         const remainNum = dataSource.total % page_size === 1
         const totalPage: number = Math.floor(dataSource.total / page_size)
         if (remainNum && totalPage && totalPage + 1 <= page_num)
-            setPageParams((p: any) => ({ ...p, total: totalPage }))
+            setPageParams((p: any) => ({ ...p, page_num: totalPage }))
         else
             getList()
     }
