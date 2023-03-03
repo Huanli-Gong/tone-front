@@ -28,6 +28,16 @@ const optionLists = [
         isLeaf: false,
     },
 ];
+
+const isEmptyArray = (obj: any) => Object.prototype.toString.call(obj) === "[object Array]"
+const isEmptyObject = (obj: any) => Object.prototype.toString.call(obj) === "[object Object]"
+
+const getInitialExtra = (obj: any) => {
+    const initial = [{ param_key: '', param_value: '' }]
+    if (isEmptyArray(obj) && JSON.stringify(obj) === "[]") return initial
+    if (isEmptyObject(obj) && JSON.stringify(obj) === "{}") return initial
+    return obj
+}
 /**
  * 
  * 云上单机 - 机器配置/机器实例 - 添加机器
@@ -346,29 +356,33 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
         setVisible(true)
         const list = row.tag_list.map((item: any) => item.id)
         setTagFlag({ ...tagFlag, isQuery: 'edit', list })
-        let param = { ...row }
-        param.extra_param = JSON.stringify(param.extra_param) === '{}' ? [{ param_key: '', param_value: '' }] : param.extra_param
+        const param = { ...row }
+
+        param.extra_param = getInitialExtra(param.extra_param)
         param.tags = param.tag_list?.map((item: any) => { return item.id }) || []
         param.is_instance = param.is_instance ? 1 : 0
         param.manufacturer = [param.manufacturer, param.ak_id]
         param.region = [param.region, param.zone]
         param.kernel_install = param.kernel_install ? 1 : 0
         setChangeManufacturer(row.manufacturer)
-        let params = {
+        const params = {
             ak_id: param.ak_id,
             region: param.region[0],
             zone: param.region[1],
             id: param.manufacturer[0]
         }
         if (param.ak_name == 'aliyun_eci') {
-            let t = param.instance_type
-            let type1 = t.indexOf('C')
-            let type2 = t.indexOf('G')
+            const t = param.instance_type
+            const type1 = t.indexOf('C')
+            const type2 = t.indexOf('G')
             param.instance_type_one = Number(t.substring(0, type1))
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
         if (!!is_instance) {
-            Promise.all([getShowRegion(params), getSeverList(params)]).then(() => { setLoading(false), setDisabled(false) })
+            Promise.all([getShowRegion(params), getSeverList(params)]).then(() => {
+                setLoading(false)
+                setDisabled(false)
+            })
         } else {
             Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params)]).then(() => { setLoading(false), setDisabled(false) })
         }
@@ -397,7 +411,9 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
 
     const submit = async (params: any) => {
         setBtnLoading(true)
-        let param = { ...params, ws_id, is_instance }
+        const extra_param = params.extra_param.filter((i: any) => i.param_key)
+        const param = { ...params, ws_id, is_instance, extra_param }
+
         if (params.hasOwnProperty('manufacturer')) {
             param.manufacturer = params?.manufacturer[0]
             param.ak_id = params.manufacturer[1]
@@ -427,7 +443,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                 param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
             } else {
                 if (params.image[3] === 'latest') {
-                    let str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
+                    const str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
                     param.image = str
                     param.image_name = str
                 } else if (params.image.indexOf(':latest') > 0) {
@@ -465,13 +481,15 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             }
             setVisible(false)
         } else if (res.code === 201) {
-            let msg = res.msg
-            let link_msg = res.link_msg
-            let endMsg = <span dangerouslySetInnerHTML=
-                {{
-                    __html: msg.replace(link_msg, `<a href="/system/user" target="_blank">$&</a>`)
-                }}
-            />
+            const msg = res.msg
+            const link_msg = res.link_msg
+            const endMsg = (
+                <span
+                    dangerouslySetInnerHTML={{
+                        __html: msg.replace(link_msg, `<a href="/system/user" target="_blank">$&</a>`)
+                    }}
+                />
+            )
             message.warning(endMsg)
         } else {
             requestCodeMessage(res.code, res.msg)
@@ -481,10 +499,10 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
 
     const onSubmit = () => {
         form.validateFields().then(val => {
-            let arr = val.extra_param || []
+            const arr = val.extra_param || []
             if (!!arr.length) {
-                let names = arr.map((item: any) => item["param_key"]);
-                let nameSet = new Set(names);
+                const names = arr.map((item: any) => item["param_key"]);
+                const nameSet = new Set(names);
                 if (nameSet.size == names.length) {
                     submit(val)
                 } else {
@@ -909,7 +927,9 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                                                             <span >Key:</span>
                                                                         </Col>
                                                                         <Col span={20}>
-                                                                            <Form.Item name={[field.name, 'param_key']} >
+                                                                            <Form.Item
+                                                                                name={[field.name, 'param_key']}
+                                                                            >
                                                                                 <Input />
                                                                             </Form.Item>
                                                                         </Col>
