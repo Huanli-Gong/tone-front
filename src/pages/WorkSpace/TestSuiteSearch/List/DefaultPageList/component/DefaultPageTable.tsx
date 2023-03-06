@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Table, message } from 'antd'
 import { CaretRightFilled, CaretDownFilled, DownOutlined } from '@ant-design/icons';
 import { ReactComponent as IconSafetyCertificate } from '@/assets/svg/icon_SafetyCertificate.svg';

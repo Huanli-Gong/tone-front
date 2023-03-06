@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { history, useIntl, FormattedMessage, useParams } from 'umi'
-import { Spin, Input, Tabs, Space, Badge, BackTop } from 'antd';
+import { Input, Space } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import DefaultPageList from './component/DefaultPageTable';
 import { queryTotalNum } from '../../service';

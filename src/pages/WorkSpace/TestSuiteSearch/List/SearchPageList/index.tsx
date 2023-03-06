@@ -6,7 +6,6 @@ import { querySearchListQuantity } from '../../service';
 import styles from './index.less';
 import { useIntl, history, useParams, useLocation } from 'umi'
 import { useClientSize } from '@/utils/hooks';
-import { getQuery } from '@/utils/utils';
 
 const { Search } = Input;
 const { TabPane } = Tabs;
@@ -59,7 +58,7 @@ const TestSuiteSearch: React.FC<any> = () => {
   const onSearch = (value: string) => {
     if (value) {
       // case1.仅修改url地址，但不刷新页面
-      keyword && window.history.pushState({}, 0, window.location.origin + window.location.pathname);
+      // keyword && window.history.pushState({}, 0, window.location.origin + window.location.pathname);
       // case2.搜索
       getSearchListQuantity({ search_key: value })
       history.push({
