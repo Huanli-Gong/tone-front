@@ -12,6 +12,19 @@ import { getPageWsid, redirectErrorPage } from "@/utils/utils"
 
 import 'animate.css';
 
+const jumpLoginPage = () => {
+    const loginInfo = JSON.parse(window.localStorage.getItem("tone-anolis") || "")
+    const { login_url } = loginInfo || {}
+    if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
+        return
+    if (BUILD_APP_ENV === 'opensource') {
+        history.push(`/login?redirect_url=${window.location.pathname}`)
+        return
+    }
+    if (login_url) {
+        window.location.href = login_url
+    }
+}
 console.log(version)
 
 marked.setOptions({
@@ -58,6 +71,9 @@ export async function getInitialState(): Promise<any> {
         authList: data,
     }
 
+    if (BUILD_APP_ENV === 'openanolis')
+        window.localStorage.setItem("tone-anolis", JSON.stringify(data?.login_info))
+
     if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
         redirectErrorPage(500)
         return baseAppState
@@ -75,11 +91,8 @@ export async function getInitialState(): Promise<any> {
 
             /** 用户进入ws：case1.首先判断是公开ws还是私密ws；case2.判断进入私密ws时，未登录跳登录。 */
             if (!ws_is_public && !user_id) {
-                if (BUILD_APP_ENV === 'openanolis') {
-                    const { login_url } = data?.login_info || {}
-                    return window.location.href = login_url
-                }
-                return history.push(`/login?redirect_url=${window.location.pathname}`)
+                jumpLoginPage()
+                return
             }
 
             /** 有无权限：case1.用户已登录，要查看私密ws时(分享的私密ws链接)，判断有无访问权限。  */
@@ -164,6 +177,10 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
         }
         else if (status === 401) {
             redirectErrorPage(401)
+            return
+        }
+        else if (status === 403) {
+            jumpLoginPage()
             return
         }
         else {
