@@ -22,7 +22,7 @@ const jumpLoginPage = () => {
         return
     }
     if (login_url) {
-        window.location.href = login_url
+        window.location.href = login_url + window.location.pathname
     }
 }
 console.log(version)
