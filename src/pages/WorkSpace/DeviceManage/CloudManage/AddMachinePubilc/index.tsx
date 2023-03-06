@@ -411,7 +411,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
 
     const submit = async (params: any) => {
         setBtnLoading(true)
-        const extra_param = params.extra_param.filter((i: any) => i.param_key)
+        const extra_param = params.extra_param?.filter((i: any) => i.param_key)
         const param = { ...params, ws_id, is_instance, extra_param }
 
         if (params.hasOwnProperty('manufacturer')) {
