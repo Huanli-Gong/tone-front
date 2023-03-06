@@ -328,6 +328,14 @@ export default (props: any) => {
     const handleStartAnalysis = () => {
         if (canCompare) return;
 
+        for (let i = 0, len = groupData.length; i < len; i++) {
+            const term = groupData[i]
+            if (term.members && term.members.length === 0) {
+                message.warning(formatMessage({ id: "analysis.comparison.group.compare_data.empty" }))
+                return
+            }
+        }
+
         if (baselineGroupIndex !== -1 && groupData[baselineGroupIndex]?.members?.length === 0) {
             return message.warning(formatMessage({ id: "analysis.comparison.base_group.compare_data.empty" }))
         }

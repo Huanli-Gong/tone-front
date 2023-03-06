@@ -1,108 +1,107 @@
-import React , { useState , useEffect } from 'react'
-import { Table, message , Row , Space , Button , Checkbox , Typography , Avatar, Tag, Badge } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Table, message, Row, Space, Button, Checkbox, Typography, Avatar, Tag, Badge } from 'antd'
 import { useIntl, FormattedMessage } from "umi"
-import { queryWorkspaceApproveList , optWorkspaceApprove } from '@/services/Workspace'
-import { ReactComponent as JoinWorkspace } from '@/assets/svg/join.svg'
+import { queryWorkspaceApproveList, optWorkspaceApprove } from '@/services/Workspace'
 import { requestCodeMessage } from '@/utils/utils'
 
-export default ( props : any ) => {
+export default (props: any) => {
     const { formatMessage } = useIntl()
     const { onChange } = props
     const { ws_id } = props.match.params
     const status = props.status
 
-    const [ dataSource , setDataSource ] = useState<any>([])
-    const [ loading , setLoading ] = useState( true )
-    const [ selectedRowKeys , setSelectedRowKeys ] = useState<Array<any>>([])
+    const [dataSource, setDataSource] = useState<any>([])
+    const [loading, setLoading] = useState(true)
+    const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
 
-    const [ pedding , setPedding ] = useState( false )
+    const [pedding, setPedding] = useState(false)
 
-    const [ total , setTotal ] = useState(0)
-    const [ pagenat , setPagenat ] = useState<any>({
-        page_num : 1 ,
-        page_size : 20
+    const [total, setTotal] = useState(0)
+    const [pagenat, setPagenat] = useState<any>({
+        page_num: 1,
+        page_size: 20
     })
 
     const rowSelection = + status === 0 ? {
         selectedRowKeys,
-        onChange: ( selectedRowKeys : any[] ) => {
-            setSelectedRowKeys( selectedRowKeys )
+        onChange: (keys: any[]) => {
+            setSelectedRowKeys(keys)
         }
     } : undefined
 
-    const SwitchApproveClass = ( _ : any ) => {
+    const SwitchApproveClass = (_: any) => {
         // return (<JoinWorkspace />)
-        switch ( _.object_type ) {
-            case 'workspace' : return (
+        switch (_.object_type) {
+            case 'workspace': return (
                 <div>
-                    <Tag color="#1890FF"><FormattedMessage id="add"/></Tag>
-                    <Typography.Text><FormattedMessage id="join.workspace"/></Typography.Text>
+                    <Tag color="#1890FF"><FormattedMessage id="add" /></Tag>
+                    <Typography.Text><FormattedMessage id="join.workspace" /></Typography.Text>
                 </div>
             )
-            default : return (<Space></Space>)
+            default: return (<Space></Space>)
         }
     }
 
-    const hanldeOption = async (action : {
-        id : number,
-        name : string,
+    const hanldeOption = async (action: {
+        id: number,
+        name: string,
     }) => {
-        if ( pedding ) return 
-        setPedding( true )
-        const {code , msg } = await optWorkspaceApprove({ action : action.name , id : action.id, ws_id })
-        
-        if ( code === 200 ) {
+        if (pedding) return
+        setPedding(true)
+        const { code, msg } = await optWorkspaceApprove({ action: action.name, id: action.id, ws_id })
+
+        if (code === 200) {
             initData()
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
             onChange()
         }
-        else requestCodeMessage( code , msg )
-        setPedding( false )
+        else requestCodeMessage(code, msg)
+        setPedding(false)
     }
 
-    let columns : any[] = [
+    let columns: any[] = [
         {
-            title: <FormattedMessage id="application.type"/>,
-            dataIndex : 'name',
-            render : ( _ : any , record : any ) => (
-                <SwitchApproveClass { ...record }/>
+            title: <FormattedMessage id="application.type" />,
+            dataIndex: 'name',
+            render: (_: any, record: any) => (
+                <SwitchApproveClass {...record} />
             )
         },
         {
-            title: <FormattedMessage id="proposer_name"/>,
-            dataIndex : 'name',
-            render : ( _ : any , record : any ) => (
+            title: <FormattedMessage id="proposer_name" />,
+            dataIndex: 'name',
+            render: (_: any, record: any) => (
                 <Space>
-                    <Avatar size={ 25 } src={ record.proposer_avatar }/>
-                    <Typography.Text>{ record.proposer_name }</Typography.Text>
+                    <Avatar size={25} src={record.proposer_avatar} />
+                    <Typography.Text>{record.proposer_name}</Typography.Text>
                 </Space>
             )
         },
         {
-            title: <FormattedMessage id="application.reason"/>,
-            dataIndex : 'reason'
+            title: <FormattedMessage id="application.reason" />,
+            dataIndex: 'reason'
         },
         {
-            title: <FormattedMessage id="application.time"/>,
-            dataIndex : 'gmt_created'
+            title: <FormattedMessage id="application.time" />,
+            dataIndex: 'gmt_created'
         },
     ]
 
-    if ( status === '1' ) {
+    if (status === '1') {
         columns = [
             ...columns,
             {
-                title : <FormattedMessage id="approval.time"/>,
-                dataIndex : 'gmt_modified'
+                title: <FormattedMessage id="approval.time" />,
+                dataIndex: 'gmt_modified'
             },
             {
-                title : <FormattedMessage id="approval.result"/>,
-                render : ( _ : any ) => (
+                title: <FormattedMessage id="approval.result" />,
+                render: (_: any) => (
                     <Space>
-                        <Badge status={ _.status === 'passed' ? 'success' : 'warning' }/>
+                        <Badge status={_.status === 'passed' ? 'success' : 'warning'} />
                         <Typography.Text>
                             {
-                                _.status === 'passed' ? <FormattedMessage id="passed"/> : <FormattedMessage id="rejected"/>
+                                _.status === 'passed' ? <FormattedMessage id="passed" /> : <FormattedMessage id="rejected" />
                             }
                         </Typography.Text>
                     </Space>
@@ -114,22 +113,22 @@ export default ( props : any ) => {
         columns = [
             ...columns,
             {
-                title : <FormattedMessage id="Table.columns.operation"/>,
-                render : ( _ : any ) => (
+                title: <FormattedMessage id="Table.columns.operation" />,
+                render: (_: any) => (
                     <Space>
-                        <Button 
-                            style={{ padding : 0 }} 
-                            type="link" 
-                            onClick={ () => hanldeOption({ id : _.id , name : 'pass' }) }
+                        <Button
+                            style={{ padding: 0 }}
+                            type="link"
+                            onClick={() => hanldeOption({ id: _.id, name: 'pass' })}
                         >
-                            <FormattedMessage id="operation.pass"/>
+                            <FormattedMessage id="operation.pass" />
                         </Button>
-                        <Button 
-                            style={{ padding : 0 }} 
-                            type="link" 
-                            onClick={ () => hanldeOption({ id : _.id , name : 'refuse' }) }
+                        <Button
+                            style={{ padding: 0 }}
+                            type="link"
+                            onClick={() => hanldeOption({ id: _.id, name: 'refuse' })}
                         >
-                            <FormattedMessage id="operation.refuse"/>
+                            <FormattedMessage id="operation.refuse" />
                         </Button>
                     </Space>
                 )
@@ -138,50 +137,51 @@ export default ( props : any ) => {
     }
 
     const initData = async () => {
-        setLoading( true )
-        const { page_num : pageTotal , data , code , msg } = await queryWorkspaceApproveList({
-            status : props.status,
-            object_id : ws_id,
+        setLoading(true)
+        const { total: pageTotal, data, code, msg } = await queryWorkspaceApproveList({
+            status: props.status,
+            object_id: ws_id,
             ws_id,
-            action : 'join', 
+            action: 'join',
             ...pagenat
         })
-        if ( code === 200 ) {
-            setDataSource( data )
-            setTotal( pageTotal )
+
+        if (code === 200) {
+            setDataSource(data)
+            setTotal(pageTotal)
         }
-        else requestCodeMessage( code , msg )
-        setLoading( false )
+        else requestCodeMessage(code, msg)
+        setLoading(false)
     }
 
-    const handleBatchOption = async( action : string ) => {
-        const { code , msg } = await optWorkspaceApprove({
+    const handleBatchOption = async (action: string) => {
+        const { code, msg } = await optWorkspaceApprove({
             ws_id,
-            id_list : selectedRowKeys,
+            id_list: selectedRowKeys,
             action
         })
 
-        if ( code === 200 ) {
+        if (code === 200) {
             setSelectedRowKeys([])
             initData()
-            message.success(formatMessage({id: 'operation.success'}) )
+            message.success(formatMessage({ id: 'operation.success' }))
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
 
     useEffect(() => {
         initData()
-    }, [ pagenat ])
-    
+    }, [pagenat])
+
     return (
         <>
-            <Table 
+            <Table
                 size="small"
-                columns={ columns }
+                columns={columns}
                 rowKey="id"
-                rowSelection={ rowSelection }
-                loading={ loading }
-                dataSource={ dataSource }
+                rowSelection={rowSelection}
+                loading={loading}
+                dataSource={dataSource}
                 // onHeaderRow={( column, index ) => {
                 //     return {
                 //         onClick: event => { 
@@ -193,7 +193,7 @@ export default ( props : any ) => {
                     //hideOnSinglePage: true,
                     showQuickJumper: true,
                     defaultCurrent: 1,
-                    showTotal: t => formatMessage({id: 'pagination.total.strip'}, {data: t}),
+                    showTotal: t => formatMessage({ id: 'pagination.total.strip' }, { data: t }),
                     total: total,
                     pageSize: pagenat.page_size,
                     onChange: (page_num, page_size) => setPagenat({
@@ -204,29 +204,29 @@ export default ( props : any ) => {
                 }}
             />
             {
-                selectedRowKeys.length > 0 && 
-                <Row 
-                    justify="space-between" 
-                    style={{ 
-                        paddingRight : 20 , 
-                        height:64,
-                        position :'absolute',
-                        left:0,
-                        bottom:-64,
-                        width:'100%',
-                        background:'#fff',
-                        paddingLeft:24,
-                        boxShadow:'0 -9px 28px 8px rgba(0,0,0,0.05), 0 -6px 16px 0 rgba(0,0,0,0.08), 0 -3px 6px -4px rgba(0,0,0,0.12)' 
+                selectedRowKeys.length > 0 &&
+                <Row
+                    justify="space-between"
+                    style={{
+                        paddingRight: 20,
+                        height: 64,
+                        position: 'absolute',
+                        left: 0,
+                        bottom: -64,
+                        width: '100%',
+                        background: '#fff',
+                        paddingLeft: 24,
+                        boxShadow: '0 -9px 28px 8px rgba(0,0,0,0.05), 0 -6px 16px 0 rgba(0,0,0,0.08), 0 -3px 6px -4px rgba(0,0,0,0.12)'
                     }}
                 >
                     <Space>
-                        <Checkbox indeterminate={ true }/>
-                        <Typography.Text>{formatMessage({id: 'selected.item'}, {data: selectedRowKeys.length})}</Typography.Text>
-                        <Button type="link" onClick={ () => setSelectedRowKeys([]) }><FormattedMessage id="operation.cancel"/></Button>
+                        <Checkbox indeterminate={true} />
+                        <Typography.Text>{formatMessage({ id: 'selected.item' }, { data: selectedRowKeys.length })}</Typography.Text>
+                        <Button type="link" onClick={() => setSelectedRowKeys([])}><FormattedMessage id="operation.cancel" /></Button>
                     </Space>
                     <Space>
-                        <Button onClick={() => handleBatchOption( 'refuse' )}><FormattedMessage id="batch.reject"/></Button>
-                        <Button onClick={() => handleBatchOption( 'pass' )} type="primary"><FormattedMessage id="batch.pass"/></Button>
+                        <Button onClick={() => handleBatchOption('refuse')}><FormattedMessage id="batch.reject" /></Button>
+                        <Button onClick={() => handleBatchOption('pass')} type="primary"><FormattedMessage id="batch.pass" /></Button>
                     </Space>
                 </Row>
             }
