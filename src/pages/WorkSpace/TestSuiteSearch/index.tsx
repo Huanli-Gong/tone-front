@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Spin, Input, Tabs, Space, Badge } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams, history } from 'umi'
 import DefaultPageList from './List/DefaultPageList/component/DefaultPageTable';
 import SearchPageList from './List/SearchPageList/SearchPageTable';
 import { queryTotalNum, querySearchListQuantity } from './service';
@@ -18,7 +18,7 @@ const { TabPane } = Tabs;
 const TestSuiteSearch: React.FC<any> = (props) => {
   const { formatMessage } = useIntl()
   writeDocumentTitle(`Workspace.${props.route.name}`)
-  const { ws_id } = props.match.params
+  const { ws_id } = useParams() as any
   // 滚动区域可视高度
   // 总数
   const [itemSelected, setItemSelected] = useState('performance');
@@ -29,7 +29,6 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const [loading, setLoading] = useState(false)
   const [refresh, setRefresh] = useState(false)
   const [tabKey, setTabKey] = useState('all');
-  const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [itemTotal, setItemTotal] = useState<any>({
     "total_num": 0,
     "suite_num": 0,
@@ -71,13 +70,18 @@ const TestSuiteSearch: React.FC<any> = (props) => {
         setShowInitialList(false);
       }
       getSearchListQuantity({ search_key: value })
-      setSearchKeyword(value)
       setRefresh(!refresh)
+      history.push({
+        pathname: `/ws/${ws_id}/suite_search/key`,
+        query: {
+          keyword: value,
+        }
+      });
     }
   }
 
-  const onTabsChange = (key: string) => {
-    setTabKey(key)
+  const onTabsChange = ($key: string) => {
+    setTabKey($key)
   }
 
   // 发起回调
@@ -97,10 +101,10 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   }
 
   const tabList = [
-    { name: formatMessage({id: 'test.suite.all'}), key: 'all', fieldName: 'total_num' },
+    { name: formatMessage({ id: 'test.suite.all' }), key: 'all', fieldName: 'total_num' },
     { name: 'Suite', key: 'suite', fieldName: 'suite_num' },
     { name: 'Conf', key: 'conf', fieldName: 'conf_num' },
-    { name: formatMessage({id: 'test.suite.domain'}), key: 'domain', fieldName: 'domain_num' },
+    { name: formatMessage({ id: 'test.suite.domain' }), key: 'domain', fieldName: 'domain_num' },
   ]
   const selectedStyle = { backgroundColor: '#E6F7FF', color: '#1890FF', marginTop: -3 }
   const othersStyle = { backgroundColor: '#0000000a', color: '#000', marginTop: -3 }
@@ -113,9 +117,9 @@ const TestSuiteSearch: React.FC<any> = (props) => {
       <div className={styles.content} style={{ minHeight: (height - 270), ...initialStyle }}>
         <Search className={styles.content_search}
           prefix={<SearchOutlined style={{ color: '#bfbfbf', marginTop: 4, marginRight: 8 }} />}
-          placeholder={formatMessage({id: 'test.suite.search.placeholder'})}
+          placeholder={formatMessage({ id: 'test.suite.search.placeholder' })}
           allowClear
-          enterButton={formatMessage({id: 'test.suite.search'})}
+          enterButton={formatMessage({ id: 'test.suite.search' })}
           onSearch={onSearch}
         />
         {showInitialList ? (
@@ -125,14 +129,14 @@ const TestSuiteSearch: React.FC<any> = (props) => {
                 <span onClick={handleClick('performance')}
                   style={{ color: itemSelected === 'performance' ? '#1890FF' : 'rgba(0, 0, 0, 0.65)', cursor: 'pointer' }}
                 >
-                  <FormattedMessage id="performance.test"/>({totalNum.performance_num})
+                  <FormattedMessage id="performance.test" />({totalNum.performance_num})
                 </span>
               </div>
               <div className={styles.headerInfo}>
                 <span onClick={handleClick('functional')}
                   style={{ color: itemSelected === 'functional' ? '#1890FF' : 'rgba(0, 0, 0, 0.65)', cursor: 'pointer' }}
                 >
-                  <FormattedMessage id="functional.test"/>({totalNum.functional_num})
+                  <FormattedMessage id="functional.test" />({totalNum.functional_num})
                 </span>
               </div>
             </Space>
@@ -152,7 +156,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
               ))}
             </Tabs>
             <Spin spinning={loading}>
-              <SearchPageList searchKey={searchKeyword} tabKey={tabKey} ws_id={ws_id} refresh={refresh} loadingCallback={setLoading} />
+              <SearchPageList tabKey={tabKey} ws_id={ws_id} refresh={refresh} loadingCallback={setLoading} />
             </Spin>
           </div>
         )

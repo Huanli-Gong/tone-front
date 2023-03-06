@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Spin, Input, Tabs, Form, Badge, BackTop } from 'antd';
+import { Spin, Input, Tabs, Badge } from 'antd';
 import { SearchOutlined, UpOutlined } from '@ant-design/icons';
 import SearchPageList from './SearchPageTable';
 import { querySearchListQuantity } from '../../service';
 import styles from './index.less';
-import { useParams, useIntl, FormattedMessage } from 'umi'
+import { useIntl, history, useParams, useLocation } from 'umi'
 import { useClientSize } from '@/utils/hooks';
 import { getQuery } from '@/utils/utils';
 
@@ -14,15 +14,14 @@ const { TabPane } = Tabs;
  * test suite搜索
  * @param props
  */
-const TestSuiteSearch: React.FC<any> = (props) => {
+const TestSuiteSearch: React.FC<any> = () => {
   const { formatMessage } = useIntl()
-  const { keyword }: any = getQuery('')
-  const searchKey = keyword
+  const { query: { keyword } }: any = useLocation()
+  const { ws_id } = useParams() as any
   // 滚动区域可视高度
   // 搜索栏
   const [loading, setLoading] = useState(false)
   const [tabKey, setTabKey] = useState('all');
-  const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [itemTotal, setItemTotal] = useState<any>({
     "total_num": 0,
     "suite_num": 0,
@@ -51,19 +50,24 @@ const TestSuiteSearch: React.FC<any> = (props) => {
   const { height } = useClientSize()
 
   useEffect(() => {
-    if (searchKey) {
-      getSearchListQuantity({ search_key: searchKey })
+    if (keyword) {
+      getSearchListQuantity({ search_key: keyword })
     }
-  }, [searchKey]);
+  }, [keyword]);
 
   // 搜索
   const onSearch = (value: string) => {
     if (value) {
       // case1.仅修改url地址，但不刷新页面
-      searchKey && window.history.pushState({}, 0, window.location.origin + window.location.pathname);
+      keyword && window.history.pushState({}, 0, window.location.origin + window.location.pathname);
       // case2.搜索
       getSearchListQuantity({ search_key: value })
-      setSearchKeyword(value)
+      history.push({
+        pathname: `/ws/${ws_id}/suite_search/key`,
+        query: {
+          keyword: value
+        }
+      })
     }
   }
 
@@ -97,7 +101,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
       <div className={styles.header} style={{ display: 'block' }} />
       <div className={styles.content} style={{ minHeight: (height - 270) }}>
         <Search className={styles.content_search}
-          defaultValue={searchKey}
+          defaultValue={keyword}
           prefix={<SearchOutlined style={{ color: '#bfbfbf', marginTop: 4, marginRight: 8 }} />}
           placeholder={formatMessage({ id: 'test.suite.search.placeholder' })}
           allowClear
@@ -115,7 +119,7 @@ const TestSuiteSearch: React.FC<any> = (props) => {
             ))}
           </Tabs>
           <Spin spinning={loading}>
-            <SearchPageList searchKey={searchKeyword} tabKey={tabKey} loadingCallback={setLoading} />
+            <SearchPageList searchKey={keyword} tabKey={tabKey} loadingCallback={setLoading} />
           </Spin>
         </div>
       </div>
