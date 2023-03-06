@@ -39,7 +39,7 @@ export default forwardRef(
             setPadding(true)
             form.validateFields() // 触发表单验证，返回Promise
                 .then(async (values) => {
-                    props.onOk({ ...editer, ...values })
+                    props.onOk({ ...editer, ...values, by_edit: 1 })
                     form.resetFields()
                     setPadding(false)
                     setVisible(false)

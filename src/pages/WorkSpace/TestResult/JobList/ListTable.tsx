@@ -20,6 +20,7 @@ import ViewReport from '../CompareBar/ViewReport'
 import styles from "../index.less"
 import { ResizeHooksTable } from "@/utils/table.hooks"
 import { ColumnEllipsisText } from "@/components/ColumnComponents"
+import { useProvider } from "./provider"
 
 const Offline = styled.div`
     background: #1890FF;
@@ -50,6 +51,7 @@ type IProps = Record<string, any>
 const DEFAULT_PAGE_QUERY = { page_num: 1, page_size: 20 }
 
 const ListTable: React.FC<IProps> = (props) => {
+    const { initialColumns } = useProvider()
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const { pageQuery, setPageQuery, radioValue = 1, countRefresh } = props
@@ -82,7 +84,7 @@ const ListTable: React.FC<IProps> = (props) => {
             setPageQuery((p: any) => ({ ...p, ...DEFAULT_PAGE_QUERY, ws_id }))
             setSortOrder({})
         }
-    }, [ws_id])
+    }, [setPageQuery, ws_id])
 
     const handleClickStar = async ({ collection, id }: any, flag: any) => {
         const { msg, code } = !collection ?
@@ -138,14 +140,14 @@ const ListTable: React.FC<IProps> = (props) => {
         },
         {
             title: 'Job ID',
-            dataIndex: 'id',
+            key: 'id',
             fixed: 'left',
             width: 80,
             ellipsis: {
                 showTitle: false,
             },
             className: 'result_job_hover_span',
-            render: (_: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${_}`)}>{_}</span>
+            render: (_: any, row: any) => <span onClick={() => targetJump(`/ws/${ws_id}/test_result/${row.id}`)}>{row.id}</span>
         },
         {
             title: <FormattedMessage id="ws.result.list.name" />,
@@ -426,12 +428,23 @@ const ListTable: React.FC<IProps> = (props) => {
         }
     }
 
+    const filterColumns = columns.filter((col: any) => {
+        const { dataIndex, key } = col
+        if (key) return col
+        if (initialColumns[dataIndex]) {
+            if (!initialColumns[dataIndex]?.disabled)
+                return col
+        }
+    })
+
     return (
         <Row style={basePadding}>
             <ResizeHooksTable
                 rowKey="id"
-                columns={columns}
-                refreshDeps={[access, ws_id, locale, sortOrder]}
+                columns={filterColumns}
+                refreshDeps={[
+                    access, ws_id, locale, sortOrder, initialColumns
+                ]}
                 name="test-job-list"
                 loading={loading}
                 dataSource={source?.data}

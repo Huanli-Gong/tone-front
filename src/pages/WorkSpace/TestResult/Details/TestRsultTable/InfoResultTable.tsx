@@ -216,12 +216,12 @@ export default (props: any) => {
             width: 180,
             ellipsis: true,
             render: (_: any, row: any) => {
-                let context = row.bug
+                const context = row.bug
                 let urlHref = ''
                 if (context) {
                     urlHref = context
-                    let reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
-                    if (!reg.test(context)) urlHref = `${window.origin}/404`
+                    const reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/;
+                    if (!reg.test(context)) urlHref = `${window.origin}/ws/${ws_id}404?page=${location.href}`
                 }
 
                 return (

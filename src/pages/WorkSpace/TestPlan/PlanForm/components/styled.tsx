@@ -53,13 +53,13 @@ export const LineStyle = `
     background:#CECECE;
 `
 export const StepOptionLeft = styled.div`
-    ${ LineStyle }
+    ${ LineStyle };
     width:20px;
-    left:-20px
+    left:-20px;
 `
 
 export const StepOptionRight = styled.div`
-    ${ LineStyle }
+    ${ LineStyle };
     width:32px;
     right : -32px;
 `

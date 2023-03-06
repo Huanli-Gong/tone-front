@@ -10,18 +10,18 @@ import { ReactComponent as BaseIcon } from '@/assets/svg/BaseIcon.svg'
 import ExpandTable from './ExpandTable'
 import { getSelectedDataFn } from './CommonMethod';
 import { requestCodeMessage } from '@/utils/utils';
-import { useIntl, FormattedMessage, getLocale } from 'umi';
+import { FormattedMessage, getLocale } from 'umi';
 
 const { Panel } = Collapse;
 const { Step } = Steps;
 
 const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
-    const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US'
 
     const { height: layoutHeight } = useClientSize()
     const maxHeight = layoutHeight >= 728 ? layoutHeight - 128 : 600
-    const { baselineGroup, onOk, baselineGroupIndex } = props
+    const { onOk, baselineGroupIndex } = props
+    const baselineGroup = props.allGroupData[baselineGroupIndex === -1 ? 0 : baselineGroupIndex]
     const groupAll = _.cloneDeep(props.allGroupData)
     groupAll.splice(baselineGroupIndex === -1 ? 0 : baselineGroupIndex, 1)
     const allGroupData = groupAll.filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length) // 去掉空组但基线组除外
@@ -67,13 +67,13 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
         setIsFetch(true)
         const { data, code, msg } = await querySuiteList(params)
         if (code === 200) {
-            let obj1 = data.func_suite_dic || {}
-            let obj2 = data.perf_suite_dic || {}
+            const obj1 = data.func_suite_dic || {}
+            const obj2 = data.perf_suite_dic || {}
             const arrKey1 = Object.keys(obj1).map((keys: any) => String(keys))
             const arrKey2 = Object.keys(obj2).map((keys: any) => String(keys))
             allFunRowKeys.current = [...arrKey1]
             allPersRowKeys.current = [...arrKey2]
-            let tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
+            const tabValue = !allFunRowKeys.current.length && allPersRowKeys.current.length
             if (tabValue) setTab('performance')
             setSelectedFuncRowKeys([...arrKey1])
             setSelectedPerfRowKeys([...arrKey2])
@@ -92,52 +92,51 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
     React.useImperativeHandle(ref, () => ({
         show() {
             setVisible(true)
-            if (allGroupData && baselineGroup) {
-                let arr = _.get(baselineGroup, 'members')
-                const paramData: any = {
-                    func_data: {
-                        base_job: [],
-                        compare_job: []
-                    },
-                    perf_data: {
-                        base_job: [],
-                        compare_job: []
-                    }
-                }
-                if (_.isArray(arr)) {
-                    const flag = baselineGroup.type === 'baseline'
-                    const isBaseline = !flag ? 0 : 1
-                    arr.forEach((item: any) => {
-                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                            paramData.func_data.is_baseline = isBaseline
-                            paramData.func_data.base_job.push(item.id)
-                        }
 
+            const arr = _.get(baselineGroup, 'members')
+            const paramData: any = {
+                func_data: {
+                    base_job: [],
+                    compare_job: []
+                },
+                perf_data: {
+                    base_job: [],
+                    compare_job: []
+                }
+            }
+            if (_.isArray(arr)) {
+                const flag = baselineGroup.type === 'baseline'
+                const isBaseline = !flag ? 0 : 1
+                arr.forEach((item: any) => {
+                    if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                        paramData.func_data.is_baseline = isBaseline
+                        paramData.func_data.base_job.push(item.id)
+                    }
+
+                    if (["性能", "性能测试", "performance"].includes(item.test_type)) {
+                        paramData.perf_data.is_baseline = isBaseline
+                        paramData.perf_data.base_job.push(item.id)
+                    }
+                })
+            }
+            const brrFun: any = []
+            const brrFers: any = []
+            allGroupData.forEach((item: any, index: number) => {
+                let membersArr = _.get(item, 'members')
+                if (_.isArray(membersArr)) {
+                    membersArr.forEach((item: any) => {
+                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
+                            brrFun.push(item.id)
+                        }
                         if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                            paramData.perf_data.is_baseline = isBaseline
-                            paramData.perf_data.base_job.push(item.id)
+                            brrFers.push(item.id)
                         }
                     })
                 }
-                let brrFun: any = []
-                let brrFers: any = []
-                allGroupData.forEach((item: any, index: number) => {
-                    let membersArr = _.get(item, 'members')
-                    if (_.isArray(membersArr)) {
-                        membersArr.forEach((item: any) => {
-                            if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                                brrFun.push(item.id)
-                            }
-                            if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                                brrFers.push(item.id)
-                            }
-                        })
-                    }
-                })
-                paramData.func_data.compare_job = brrFun
-                paramData.perf_data.compare_job = brrFers
-                getSuitDetail(paramData)
-            }
+            })
+            paramData.func_data.compare_job = brrFun
+            paramData.perf_data.compare_job = brrFers
+            getSuitDetail(paramData)
         },
         hide() {
             setVisible(false)
@@ -145,14 +144,14 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
     }))
 
     useEffect(() => {
-        let flag = JSON.stringify(suitData.func_suite_dic) !== '{}' ? 'functional' : 'performance'
+        const flag = JSON.stringify(suitData.func_suite_dic) !== '{}' ? 'functional' : 'performance'
         if (currentStep === 0) setTab(flag)
         if (currentStep === 1) setTab('group0')
     }, [currentStep])
 
     useEffect(() => {
-        let obj1 = _.cloneDeep(suitData).func_suite_dic || {}
-        let obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
+        const obj1 = _.cloneDeep(suitData).func_suite_dic || {}
+        const obj2 = _.cloneDeep(suitData).perf_suite_dic || {}
         if (tab === 'functional') {
             setOneLevelFunc(Object.values(obj1))
         } else {
@@ -182,7 +181,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
     useEffect(() => {
         const confData = tab === 'functional' ? confDataFunc : confDataPref
         if (confData) {
-            let id: any = Object.keys(confData).map((keys: any) => String(keys))
+            const id: any = Object.keys(confData).map((keys: any) => String(keys))
             let result = []
             let selectedKeys: any = []
             result = Object.values(confData).map((item: any, index: number) => {

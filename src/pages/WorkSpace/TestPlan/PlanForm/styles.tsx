@@ -16,6 +16,10 @@ export const ContainerBody = styled( Row )<Props>`
     width : 100%;
     padding-left : 20px;
     background : #fff;
+
+    .dom-hide {
+        display: none;
+    }
 `
 
 interface LeftWrapperProps {

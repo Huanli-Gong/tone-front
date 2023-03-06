@@ -62,7 +62,7 @@ export default {
 
   'Workspace.TestAnalysis': '测试分析',
 
-  'Workspace.TestSuiteSearch': 'TestSuite检索',
+  'Workspace.TestSuiteSearch.IndexPage': 'TestSuite检索',
   'Workspace.IndexPage': 'Test Suite 检索',
   'Workspace.ConfDetail': 'Conf详情',
   'Workspace.SuiteDetail': 'Suite详情',

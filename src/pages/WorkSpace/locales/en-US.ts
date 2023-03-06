@@ -58,7 +58,7 @@ export default {
 
   'Workspace.TestAnalysis': 'Test Analysis',
 
-  'Workspace.TestSuiteSearch': 'Search TestSuite',
+  'Workspace.TestSuiteSearch.IndexPage': 'Search TestSuite',
   'Workspace.IndexPage': 'Search Test Suite',
   'Workspace.ConfDetail': 'Conf Detail',
   'Workspace.SuiteDetail': 'Suite Detail',

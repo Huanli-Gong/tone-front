@@ -83,7 +83,7 @@ export default forwardRef((props: any, ref: any) => {
 	// 确定删除
 	const handelDelete = async (record: any) => {
 		setLoading(true)
-		onCancel()
+		onCancel?.()
 		try {
 			const { code, msg }: any = await deleteBusiness(record) || {};
 			if (code === 200) {
@@ -122,7 +122,7 @@ export default forwardRef((props: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			},
 		},
 		{
@@ -130,7 +130,7 @@ export default forwardRef((props: any, ref: any) => {
 			dataIndex: 'gmt_created',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -138,7 +138,7 @@ export default forwardRef((props: any, ref: any) => {
 			dataIndex: 'gmt_modified',
 			onCell: () => ({ style: { minWidth: 170 } }),
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -153,20 +153,19 @@ export default forwardRef((props: any, ref: any) => {
 				}
 			},
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			}
 		},
 		{
 			title: <FormattedMessage id="TestSuite.description" />,
 			dataIndex: 'description',
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>
 			}
 		},
 		{
 			title: <FormattedMessage id="Table.columns.operation" />,
 			width: 150,
-			align: 'center',
 			fixed: 'right',
 			key: "operation",
 			render: (text: any, record: any) => {
@@ -180,8 +179,8 @@ export default forwardRef((props: any, ref: any) => {
 		}
 	];
 
-	const onChange = (page: number, pageSize: number) => {
-		getTableData({ page_num: page, page_size: pageSize })
+	const onChange = (page: number, page_size: number) => {
+		getTableData({ page_num: page, page_size })
 	}
 
 	// 批量选择操作
@@ -213,7 +212,9 @@ export default forwardRef((props: any, ref: any) => {
 	// 监听当前页面宽度尺寸变化
 	const { width: layoutWidth } = useClientSize()
 
-	let list = data.data, total = data.total, pageNum = data.page_num
+	const list = data.data, total = data.total, pageNum = data.page_num
+
+	console.log(expandKeys)
 	return (
 		<TestContext.Provider
 			value={{
@@ -221,12 +222,15 @@ export default forwardRef((props: any, ref: any) => {
 				selectedRow: [],
 			}}
 		>
-			<div className={styles.business_root}>
+			<div
+				className={styles.business_root}
+			>
 				<CommonTable
 					className={styles.businessList}
 					columns={columns as any}
 					name="sys-suite-business-list"
-					refreshDeps={[service_name, creator, autoFocus]}
+					rowKey={"id"}
+					refreshDeps={[service_name, creator, autoFocus, expandKeys, selectedSuites, restId, restFlag, deleteAllId]}
 					dataSource={list}
 					scroll={{ x: '100%' }}
 					// loading={true}
@@ -237,10 +241,16 @@ export default forwardRef((props: any, ref: any) => {
 					handlePage={onChange}
 					// rowSelection={rowSelection}
 					expandable={{
-						expandedRowRender: (record: any) => {
-							return <SuiteList business_id={record.id} ref={suiteTable} rowSelectionCallback={rowSelectionCallback}
-								restId={restId} restFlag={restFlag} deleteAllId={deleteAllId} />
-						},
+						expandedRowRender: (record: any) => (
+							<SuiteList
+								business_id={record.id}
+								ref={suiteTable}
+								rowSelectionCallback={rowSelectionCallback}
+								restId={restId}
+								restFlag={restFlag}
+								deleteAllId={deleteAllId}
+							/>
+						),
 						onExpand: (_: any, record: any) => {
 							if (_) {
 								setExpandKeys([record.id]);
@@ -261,7 +271,7 @@ export default forwardRef((props: any, ref: any) => {
 					centered={true}
 					okText={<FormattedMessage id="operation.delete" />}
 					cancelText={<FormattedMessage id="operation.cancel" />}
-					visible={deleteVisible}
+					open={deleteVisible}
 					onCancel={onCancel}
 					width={300}
 					maskClosable={false}

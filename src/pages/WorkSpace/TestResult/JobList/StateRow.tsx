@@ -1,8 +1,12 @@
-import { Row, Space, Typography, Radio, Input, RadioChangeEvent } from "antd"
+import { Row, Space, Typography, Radio, Input, Popover, Checkbox } from "antd"
+import type { RadioChangeEvent } from "antd"
 import React from "react"
 import styled from "styled-components"
-import { useAccess, useLocation, useParams, useIntl, FormattedMessage } from "umi"
-import { DownOutlined, UpOutlined } from '@ant-design/icons'
+import { useAccess, useLocation, useIntl, FormattedMessage } from "umi"
+import { DownOutlined, UpOutlined, SettingOutlined } from '@ant-design/icons'
+import { useProvider } from "./provider"
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 
 const activeCss = `
     color: #1890FF;
@@ -17,15 +21,122 @@ const BaseState = styled.span<ActiveStateProps>`
     ${({ active }) => active ? activeCss : ""}
 `
 
-type IProps = {
-    [k: string]: any;
+type IProps = Record<string, any>
+
+const SettingDropdown: React.FC = () => {
+    const { initialColumns, setInitialColumns, DEFAULT_COLUMNS_SET_DATA } = useProvider()
+    const intl = useIntl()
+    const [indeterminate, setIndeterminate] = React.useState(true);
+    const [checkAll, setCheckAll] = React.useState(false);
+
+    const options = Object.entries(initialColumns)
+    const allKey = options.map((i: any) => {
+        const [name] = i
+        return name
+    })
+    const baseList = options.map((i: any) => {
+        const [name, { disabled }] = i
+        if (!disabled)
+            return name
+    }).filter(Boolean)
+
+    const [checkedList, setCheckedList] = React.useState<CheckboxValueType[]>(baseList);
+
+    React.useEffect(() => {
+        setCheckedList(baseList)
+        setIndeterminate(!!baseList.length && baseList.length < options.length);
+        setCheckAll(baseList.length === options.length);
+    }, [initialColumns])
+
+    const setColumnsState = (list: any[]) => {
+        setInitialColumns((p: any) => Object.fromEntries(
+            Object.entries(p).map((i: any) => {
+                const [name, value] = i
+                return [name, { ...value, disabled: !list.includes(name) }]
+            })
+        ), [])
+    }
+
+    const onCheckAllChange = (e: CheckboxChangeEvent) => {
+        const checkValues = e.target.checked ? allKey : []
+        setCheckedList(checkValues);
+        setIndeterminate(false);
+        setCheckAll(e.target.checked);
+        setColumnsState(checkValues)
+    };
+
+    const onChange = (list: CheckboxValueType[]) => {
+        setCheckedList(list);
+        setIndeterminate(!!list.length && list.length < options.length);
+        setCheckAll(list.length === options.length);
+        setColumnsState(list)
+    };
+
+    return (
+        <Popover
+            placement="bottom"
+            content={
+                <Space direction="vertical" size={4}>
+                    <Row justify="space-between" align={"middle"} style={{ marginBottom: 16 }}>
+                        <Checkbox
+                            indeterminate={indeterminate}
+                            checked={checkAll}
+                            onChange={onCheckAllChange}
+                        >
+                            <Typography.Text strong>
+                                {intl.formatMessage({ defaultMessage: "列展示", id: "ws.result.list.columns.state.title" })}
+                            </Typography.Text>
+                        </Checkbox>
+                        <Typography.Link
+                            strong
+                            onClick={() => setInitialColumns(DEFAULT_COLUMNS_SET_DATA)}
+                        >
+                            {intl.formatMessage({ defaultMessage: "重置", id: "ws.result.list.columns.state.reset" })}
+                        </Typography.Link>
+                    </Row>
+                    <Checkbox
+                        key={"id"}
+                        checked={true}
+                        disabled={true}
+                    >
+                        {intl.formatMessage({ id: `ws.result.list.id` })}
+                    </Checkbox>
+                    <Checkbox.Group
+                        value={checkedList}
+                        onChange={onChange}
+                    >
+                        <Space direction="vertical" size={4}>
+                            {
+
+                                Object.entries(initialColumns).map((i: any) => {
+                                    const [name] = i
+                                    return (
+                                        <Checkbox
+                                            key={name}
+                                            value={name}
+                                            disabled={["id"].includes(name)}
+                                        >
+                                            {intl.formatMessage({ id: `ws.result.list.${name}` })}
+                                        </Checkbox>
+                                    )
+                                })
+                            }
+                        </Space>
+                    </Checkbox.Group>
+                </Space>
+            }
+        >
+            <Typography.Text style={{ cursor: "pointer" }}>
+                <SettingOutlined />
+            </Typography.Text>
+        </Popover>
+    )
 }
 
 const StateRow: React.FC<IProps> = (props) => {
     const { formatMessage } = useIntl()
     const { pageQuery, setPageQuery, stateCount, onSelectionChange, onFilterChange } = props
 
-    const { ws_id } = useParams() as any
     const { query } = useLocation() as any
     const access = useAccess()
 
@@ -37,11 +148,13 @@ const StateRow: React.FC<IProps> = (props) => {
 
     /* filter change */
     React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         onFilterChange && onFilterChange(filter)
     }, [filter])
 
     /* selection type change */
     React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         onSelectionChange && onSelectionChange(keyType)
     }, [keyType])
 
@@ -71,7 +184,8 @@ const StateRow: React.FC<IProps> = (props) => {
                 }
             </Space>
 
-            <Space>
+            <Space size={16}>
+
                 <Space>
                     <Typography.Text><FormattedMessage id="ws.result.list.selection.function" />：</Typography.Text>
                     <Radio.Group
@@ -82,6 +196,9 @@ const StateRow: React.FC<IProps> = (props) => {
                         {access.WsMemberOperateSelf() && <Radio value={2}><FormattedMessage id="ws.result.list.batch.delete" /></Radio>}
                     </Radio.Group>
                 </Space>
+
+                <SettingDropdown />
+
                 <Input.Search
                     style={{ width: 160 }}
                     allowClear
@@ -97,6 +214,7 @@ const StateRow: React.FC<IProps> = (props) => {
                             <Space><FormattedMessage id="ws.result.list.expand.filter" /><DownOutlined /></Space>
                     }
                 </div>
+
             </Space>
         </Row>
     )

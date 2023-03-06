@@ -99,7 +99,7 @@ export default (props: any) => {
         const trimTitle = title.trim()
         const nameCountArr = arr.filter(i => i.name.trim().replace(/\(\d+\)$/, "") === trimTitle).map(i => getNameRepeatCount(i.name)).sort((a, b) => b - a)
         const hasCount = nameCountArr.at(0)
-        return Object.prototype.toString.call(hasCount) === "[object Number]" ? `${trimTitle}(${hasCount as number + 1})` : trimTitle
+        return Object.prototype.toString.call(hasCount) === "[object Number]" ? `${trimTitle}(${(hasCount as number) + 1})` : trimTitle
     }
 
     const versionGroupingFn = (arrGroup: any, newGroup: any) => {
@@ -419,13 +419,13 @@ export default (props: any) => {
 
     const creatReportCallback = (reportData: any, suiteData: any) => { // suiteData：已选的
         setLoading(true)
-        let func_suite = suiteData.func_suite_dic || {}
-        let perf_suite = suiteData.perf_suite_dic || {}
+        const func_suite = suiteData.func_suite_dic || {}
+        const perf_suite = suiteData.perf_suite_dic || {}
         const baseIndex = 0;
-        let func_keys = Object.keys(func_suite) || []
-        let perf_keys = Object.keys(perf_suite) || []
+        const func_keys = Object.keys(func_suite) || []
+        const perf_keys = Object.keys(perf_suite) || []
         const duplicate: any = []
-        let newSuiteData = {
+        const newSuiteData = {
             func_suite_dic: getSelectedDataFn(
                 func_suite,
                 groupData,
@@ -544,10 +544,12 @@ export default (props: any) => {
                 return groups
             }, []);
         }
+
         const paramData = {
             base_group,
             compare_groups
         }
+        // console.log(paramData)
         return paramData
     }
 
@@ -591,6 +593,19 @@ export default (props: any) => {
         )
     }
 
+    const handleItemAddOk = (data: any) => {
+        setGroupData((p: any[]) => p.map(
+            (i: any) => {
+                if (data.id === i.id) {
+                    if (data?.by_edit === 1)
+                        return data
+                    return { ...data, name: addGroupNameFn(p, data?.product_version) }
+                }
+                return i
+            }
+        ))
+    }
+
     const handleMouseOver = (e: any) => {
         e.stopPropagation()
     }
@@ -631,27 +646,38 @@ export default (props: any) => {
     };
 
     const diferentDeorderOne = (groupArr: any, startIndex: number, endIndex: number, startGroupIndex: number, endGroupIndex: number) => {
-        const arr = _.cloneDeep(groupArr[endGroupIndex].members)
+        const realGroup = groupArr[endGroupIndex]
+        const arr = _.cloneDeep(realGroup.members)
         const [removed] = groupArr[startGroupIndex].members.splice(startIndex, 1);
-        groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
-        const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
+        realGroup.members.splice(endIndex, 0, removed);
+        const productMark = _.get(realGroup.members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
+            realGroup.product_version = productMark
+            if (realGroup?.by_edit !== 1 && realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
+                const name = checkSameTitleAndReturnNew(groupArr, productMark)
+                realGroup.name = name
+            }
         }
-        groupArr[endGroupIndex].type = groupArr[startGroupIndex].type
+        realGroup.type = groupArr[startGroupIndex].type
         return groupArr;
     };
 
     const diferentDeorderTwo = (noGoupArr: any, groupArr: any, startIndex: number, endIndex: number, endGroupIndex: number) => {
-        const arr = _.cloneDeep(groupArr[endGroupIndex].members)
+        // console.log(groupArr)
+        const realGroup = groupArr[endGroupIndex]
+        const arr = _.cloneDeep(realGroup.members)
         const [removed] = noGoupArr.splice(startIndex, 1);
-        groupArr[endGroupIndex].members.splice(endIndex, 0, removed);
-        const productMark = _.get(groupArr[endGroupIndex].members[0], 'product_version')
+        realGroup.members.splice(endIndex, 0, removed);
+        const productMark = _.get(realGroup.members[0], 'product_version')
         if ((!arr || !arr.length) && productMark) {
-            groupArr[endGroupIndex].product_version = checkSameTitleAndReturnNew(groupArr, productMark)
+            realGroup.product_version = productMark
+            if (realGroup?.by_edit !== 1 && realGroup.name.replace(/\(\d+\)$/, "") !== realGroup.product_version) {
+                const name = checkSameTitleAndReturnNew(groupArr, productMark)
+                realGroup.name = name
+            }
         }
-        groupArr[endGroupIndex].type = "job"
-        groupArr[endGroupIndex].product_id = _.get(groupArr[endGroupIndex].members[0], 'product_id')
+        realGroup.type = "job"
+        realGroup.product_id = _.get(groupArr[endGroupIndex].members[0], 'product_id')
         return { groupArr, noGoupArr }
     };
 
@@ -1213,13 +1239,12 @@ export default (props: any) => {
                     ref={addGroupItemModal}
                     allGroupData={groupData}
                     noGroupData={noGroupData}
-                    onOk={(data: any) => setGroupData((p: any) => p.map((i: any) => data.id === i.id ? data : i))}
+                    onOk={handleItemAddOk}
                 />
 
                 <BaseGroupModal
                     ref={startCompareModalRef}
                     baselineGroupIndex={baselineGroupIndex}
-                    baselineGroup={baselineGroup}
                     onOk={handleSureOk}
                     creatReportOk={handleCreatReportOk}
                     allGroupData={groupData}
