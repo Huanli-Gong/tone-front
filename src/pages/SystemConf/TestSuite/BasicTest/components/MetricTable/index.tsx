@@ -193,7 +193,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 				columns={columns as any}
 				// scrollType={670}
 				scroll={{ x: 670 }}
-				rowkey="id"
+				rowKey="id"
 				name="sys-suite-manage-basic-metric"
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}
