@@ -62,6 +62,9 @@ export default forwardRef(
 
         const handleSelect = () => {
             setChoose(true)
+            const list = form.getFieldValue('name') || []
+            setCheckedAll(list?.length === metricNames.length);
+            setIndeterminate(!!list?.length && list?.length < metricNames.length);
         }
 
         const handleBlur = () => {
@@ -75,7 +78,7 @@ export default forwardRef(
                 }
                 if (search && !metricNames.map(({ name }: any) => name).includes(search))
                     setMetricNames((p: any) => p.concat({ name: search }))
-                    
+
                 setSearch("")
                 setChoose(false)
             }
