@@ -75,7 +75,8 @@ export default forwardRef(
                 }
                 if (search && !metricNames.map(({ name }: any) => name).includes(search))
                     setMetricNames((p: any) => p.concat({ name: search }))
-
+                    
+                setSearch("")
                 setChoose(false)
             }
         }
