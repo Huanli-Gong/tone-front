@@ -141,7 +141,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 		{ title: <FormattedMessage id="TestSuite.direction" />, dataIndex: 'direction', width: 130 },
 		{
 			title: (
-				<Row style={{ width: "100%" }} >
+				<Row style={{ width: "100%" }} justify="space-between">
 					<FormattedMessage id="Table.columns.operation" />
 					<Button type='primary' size="small" onClick={() => newMetric()}>
 						<FormattedMessage id="operation.new" />
@@ -150,7 +150,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 			),
 			valueType: 'option',
 			dataIndex: 'id',
-			width: 140,
+			width: 107,
 			fixed: 'right',
 			render: (_: number, row: any) => (
 				<Space>
@@ -193,7 +193,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 				columns={columns as any}
 				// scrollType={670}
 				scroll={{ x: 670 }}
-				rowkey="id"
+				rowKey="id"
 				name="sys-suite-manage-basic-metric"
 				loading={expandInnerLoading}
 				dataSource={expandInnerList.data}
