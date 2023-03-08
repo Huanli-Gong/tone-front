@@ -87,7 +87,7 @@ export default (props: any) => {
             const { members } = c
             return p.concat(members)
         }, []).length)
-        if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
+        setBaselineGroup(groupData[baselineGroupIndex === -1 ? 0 : baselineGroupIndex])
     }, [groupData, baselineGroupIndex])
 
     const getNameRepeatCount = (name: string) => {
