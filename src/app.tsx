@@ -64,7 +64,7 @@ export async function getInitialState(): Promise<any> {
     const isWs = wsReg.test(pathname)
     const ws_id = getPageWsid()
 
-    const { data, code } = await person_auth(ws_id && /[a-zA-Z0-9]{8}/.test(ws_id) ? { ws_id } : {})
+    const { data, code } = await person_auth(ws_id && /^[a-zA-Z0-9]{8}$/.test(ws_id) ? { ws_id } : {})
 
     const baseAppState = {
         ...initialState,
