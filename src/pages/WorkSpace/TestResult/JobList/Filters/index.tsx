@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { Col, Row, Space, Typography, Divider, DatePicker, Button, message } from "antd"
 import FilterItem from "./Item"
-import { columns } from "./columns"
+import { filterColumns } from "./columns"
 import moment from "moment"
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
 import Clipboard from "clipboard"
@@ -141,9 +141,10 @@ const FilterForm: React.FC<IProps> = (props) => {
     useEffect(() => {
         const { search, page_size } = pageQuery
         setValues({ ...left, ...right, search, page_num: 1, page_size })
-    }, [left, right])
+    }, [left, pageQuery, right])
 
     const queryValue = React.useMemo(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { ws_id, page_size, page_num, tab, search, ...rest } = pageQuery
         const { completion_time, creation_time, ...leftValues } = rest
         const transObj = (vals: any) => {
@@ -188,7 +189,7 @@ const FilterForm: React.FC<IProps> = (props) => {
                         ref={domRef}
                         title={formatMessage({ id: 'ws.result.list.select.condition' })}
                         columns={
-                            columns.map((item: any) => ({
+                            filterColumns.map((item: any) => ({
                                 ...item,
                                 placeholder: formatMessage({ id: `ws.result.list.please.placeholder.${item.name}` }),
                             }))

@@ -153,8 +153,8 @@ const BaselineManage: React.FC<IProps> = (props) => {
                         </Space>
                         <BaselineFilter
                             search={listParams?.name}
-                            onSearch={(name?: string) => {
-                                queryData({ ...listParams, name })
+                            onSearch={($name?: string) => {
+                                queryData({ ...listParams, name: $name, page_num: 1 })
                             }}
                         />
                     </LeftFilterRow>

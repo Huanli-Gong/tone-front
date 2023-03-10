@@ -17,6 +17,11 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
 
     const [activeKey, setActiveKey] = React.useState<"job" | "baseline">("job")
 
+    const onTabClick = ($active: any) => {
+        setActiveKey($active)
+        setSelectedRowDatas($active === group?.type ? group?.members : [])
+    }
+
     React.useImperativeHandle(ref, () => {
         return {
             show($row: any) {
@@ -43,12 +48,11 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
         }
         const result = {
             ...group,
-            members: Object.prototype.toString.call(group?.members) === "[object Array]" ?
-                selectedRowDatas.concat(group?.members)
-                : selectedRowDatas,
+            members: selectedRowDatas,
             ...baseObj,
             type: activeKey
         }
+
         onOk?.(result)
         handleCancel()
     }
@@ -60,10 +64,6 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
         selectedRowDatas,
         setSelectedRowDatas,
     }
-
-    React.useEffect(() => {
-        setSelectedRowDatas([])
-    }, [activeKey])
 
     const getCurrentEditType = ($type: any) => {
         if (!group?.type) return false
@@ -103,7 +103,7 @@ const AddGroupItem: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, r
         >
             <Tabs
                 activeKey={activeKey}
-                onTabClick={($active: any) => setActiveKey($active)}
+                onTabClick={onTabClick}
                 items={
                     ["job", "baseline"].map((i: any) => {
                         return ({

@@ -1,5 +1,6 @@
 import React from "react"
-import { Select, SelectProps, Spin, Tag, Empty, Input } from "antd"
+import { Select, Spin, Tag, Empty, Input } from "antd"
+import type { SelectProps } from "antd"
 import { useRequest, useParams, request, FormattedMessage } from "umi"
 import {
     queryCreators,
@@ -46,6 +47,7 @@ const BasicSelect: React.FC<SelectProps & any> = (props) => {
     if (!api)
         return <Select {...rest} />
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { data, loading, run } = useRequest(
         (params = { ws_id, page_num: 1, page_size: 500 }) => api(params),
         { debounceInterval: 300 }
@@ -179,7 +181,7 @@ const ServerSelect: React.FC<any> = (props) => {
     )
 }
 
-export const columns = [
+export const filterColumns = [
     {
         name: "job_id",
         label: <FormattedMessage id="ws.result.list.job_id" />,

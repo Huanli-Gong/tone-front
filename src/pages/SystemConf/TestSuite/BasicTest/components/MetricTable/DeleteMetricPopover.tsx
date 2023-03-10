@@ -43,7 +43,7 @@ const DeleteMetricPopover: React.FC<AnyType> = ({ onOk, isBatch }) => {
                 centered={true}
                 className={styles.modalChange}
                 okText={<FormattedMessage id="operation.delete" />}
-                visible={visible}
+                open={visible}
                 onOk={handleOk}
                 onCancel={() => handleCancel(false)}
                 width={480}

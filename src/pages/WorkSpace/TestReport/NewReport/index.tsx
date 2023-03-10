@@ -24,7 +24,7 @@ const Report = (props: any) => {
     const access = useAccess();
     const { ws_id } = props.match.params
     const { report_id } = useParams() as any;
-    const [btnState, setBtnState] = useState<Boolean>(false)
+    const [btnState, setBtnState] = useState<boolean>(false)
     const [btnConfirm, setBtnConfirm] = useState<boolean>(false)
     const [collapsed, setCollapsed] = useState(false)
     const { height: windowHeight } = useClientSize()

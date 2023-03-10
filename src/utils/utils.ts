@@ -1,12 +1,26 @@
 import React from 'react';
 import { message } from 'antd';
 import { parse } from 'querystring';
-import { useIntl, getLocale } from 'umi'
+import { getLocale, history } from 'umi'
 import { listRender, enumer, textRender } from './hooks';
 import _ from 'lodash';
 
-/* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
+
+export const getPageWsid = () => {
+  return window.location.pathname.replace(/^\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
+}
+
+export const redirectErrorPage = (stateCode: number | string) => {
+  const { location } = window
+  if (~location.pathname.indexOf(`/${stateCode}`)) return
+  const query = parse(location.search.substring(1))
+  const { page } = query
+  if (page) return
+  const ws_id = getPageWsid()
+  const link = ws_id && /[a-zA-Z0-9]{8}/.test(ws_id) ? `/ws/${ws_id}` : ""
+  history.push(`${link}/${stateCode}?page=${location.href}`)
+}
 
 export const isUrl = (path: string): boolean => reg.test(path);
 
@@ -551,8 +565,8 @@ export const handlePageNum = (pageCurrent: any, totalCurrent: any) => {
   let page_current = 1
   const { page_num, page_size } = pageCurrent.current
   const { total } = totalCurrent.current
-  let totalPage = Math.ceil((total - 1) / page_size)
-  let currentPage = page_num > totalPage ? totalPage : page_num
+  const totalPage = Math.ceil((total - 1) / page_size)
+  const currentPage = page_num > totalPage ? totalPage : page_num
   page_current = currentPage < 1 ? 1 : currentPage
   return page_current
 }

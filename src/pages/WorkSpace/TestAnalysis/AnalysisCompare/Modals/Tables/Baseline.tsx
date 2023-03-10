@@ -10,7 +10,6 @@ import SearchInput from '@/components/Public/SearchInput'
 import { FilterFilled } from '@ant-design/icons'
 import SelectRadio from '@/components/Public/SelectRadio';
 import { getUserFilter } from '@/components/TableFilters'
-import { filterJobIds } from "./Job"
 
 const DEFAULTPARAM = {
     page_num: 1,
@@ -18,8 +17,7 @@ const DEFAULTPARAM = {
 }
 
 const BaselineSelect: React.FC<AnyType> = (props) => {
-    const { selectedRowDatas, setSelectedRowDatas, allGroupData, activeKey } = props
-    const hasIds = filterJobIds(allGroupData, activeKey)
+    const { selectedRowDatas, setSelectedRowDatas } = props
     
     const { ws_id } = useParams() as any
     const { formatMessage } = useIntl()
@@ -45,7 +43,7 @@ const BaselineSelect: React.FC<AnyType> = (props) => {
         preserveSelectedRowKeys: false,
         getCheckboxProps: (record: any) => {
             return ({
-                disabled: hasIds.includes(record?.id), // Column configuration not to be checked
+                // disabled: hasIds.includes(record?.id), // Column configuration not to be checked
                 name: record.name,
             })
         },

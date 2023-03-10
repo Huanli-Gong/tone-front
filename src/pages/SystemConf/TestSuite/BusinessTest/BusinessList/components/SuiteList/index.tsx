@@ -263,13 +263,13 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			dataIndex: 'name',
 			fixed: 'left',
 			width: 120,
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
 		},
 		{
 			title: <FormattedMessage id="TestSuite.domain" />,
 			dataIndex: 'domain_name_list',
 			width: 100,
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text || '-'}</ColumnEllipsisText>
 		},
 		{
 			title: <FormattedMessage id="TestSuite.test_type" />,
@@ -313,7 +313,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			dataIndex: 'gmt_created',
 			width: 170,
 			render: (text: any) => {
-				return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text || '-'} />
+				return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text || '-'}</ColumnEllipsisText>
 			}
 		},
 		{
@@ -328,10 +328,22 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 			title: <FormattedMessage id="TestSuite.remarks" />,
 			dataIndex: 'description',
 			onCell: () => ({ style: { maxWidth: 150 } }),
-			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+			render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
 		},
 		{
-			title: (<div><FormattedMessage id="Table.columns.operation" /><Button type="primary" onClick={() => handelAddOrEdit({ type: 'add' })} style={{ marginLeft: 8 }}><FormattedMessage id="operation.new" /></Button></div>),
+			title: (
+				<Space>
+					<FormattedMessage id="Table.columns.operation" />
+					<Button
+						type="primary"
+						onClick={() => handelAddOrEdit({ type: 'add' })}
+						style={{ marginLeft: 8 }}
+						size="small"
+					>
+						<FormattedMessage id="operation.new" />
+					</Button>
+				</Space>
+			),
 			width: 150,
 			fixed: 'right',
 			key: "operation",
@@ -365,13 +377,14 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 		}
 	}
 
-	let list = data.data, total = data.total, pageNum = data.page_num, pageSize = data.page_size
+	const list = data.data, total = data.total, pageNum = data.page_num, pageSize = data.page_size
 	return (
 		<div>
 			<CommonTable
 				className={styles.suitList_root}
 				columns={columns as any}
 				name="sys-suite-business-suite"
+				rowKey={"id"}
 				dataSource={list}
 				loading={loading}
 				page={pageNum}
@@ -393,6 +406,7 @@ export default forwardRef(({ business_id, rowSelectionCallback = () => { }, rest
 						}
 						return <div>{null}</div>
 					},
+					columnWidth: 35,
 					onExpand: (_: any, record: any) => {
 						if (_) {
 							setExpandKeys([record.id])

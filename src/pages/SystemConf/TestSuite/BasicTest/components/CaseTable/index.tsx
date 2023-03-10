@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, } from 'react';
-import { Button, Space, Tabs, message, Row, Typography, TableColumnProps } from 'antd';
+import { Button, Space, Tabs, message, Row, Typography } from 'antd';
+import type { TableColumnProps } from "antd"
 import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
 import { editCase, delCase, openSuite } from '../../../service';
 import styles from '../../style.less';
@@ -215,7 +216,6 @@ export default forwardRef(({ id }: any, ref: any) => {
         else requestCodeMessage(code, msg)
     }
 
-    console.log(expandInnerKey)
     return (
         <div className={`${styles.warp} case_table_wrapper`} >
             {
@@ -229,13 +229,11 @@ export default forwardRef(({ id }: any, ref: any) => {
                     <TabPane
                         tab="Test Conf"
                         key="1"
-                    >
-                    </TabPane>
+                    />
                     <TabPane
                         tab={<FormattedMessage id="TestSuite.conf.metric" />}
                         key="2"
-                    >
-                    </TabPane>
+                    />
                 </Tabs>
             }
             {
@@ -253,6 +251,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                         total={expandList.total}
                         pageSize={expandList.page_size}
                         handlePage={handlePage}
+                        className={styles.caseTableCls}
                         expandable={
                             query.test_type == 'performance' ?
                                 {

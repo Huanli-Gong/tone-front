@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Col, Space, Typography, Table, Popconfirm, Tooltip, } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { queryPerformanceBaseline, deletePerfsDetail } from '../services'
@@ -23,10 +23,10 @@ const MetricInfo: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         page_num: 1,
         page_size: 10
     }  // 有用
-    const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
-    const [visible, setVisible] = useState(false) // 控制弹框的显示与隐藏
-    const [list, setList] = useState<any>()
-    const [loading, setLoading] = useState(false)
+    const [params, setParams] = React.useState<any>(PAGE_DEFAULT_PARAMS)
+    const [visible, setVisible] = React.useState(false) // 控制弹框的显示与隐藏
+    const [list, setList] = React.useState<any>()
+    const [loading, setLoading] = React.useState(false)
     const [expandedRowKeys, setExpandedRowKeys] = React.useState<React.Key[]>([])
 
     const getLastDetail = async () => {
@@ -61,8 +61,16 @@ const MetricInfo: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     )
 
     const handleDelete = async (current: any) => {
-        const { code, msg } = await deletePerfsDetail({ id: current.id, ws_id });
+        const { code } = await deletePerfsDetail({ id: current.id, ws_id });
         if (code !== 200) return
+        const { page_size, page_num } = params
+        const { total } = list
+        const remainNum = total % page_size === 1
+        const totalPage: number = Math.floor(total / page_size)
+        if (remainNum && totalPage && totalPage + 1 <= page_num)
+            setParams((p: any) => ({ ...p, page_num: totalPage }))
+        else
+            getLastDetail()
     }
 
     const columns = [

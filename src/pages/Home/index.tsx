@@ -14,7 +14,7 @@ import { queryDocList } from '@/pages/DOC/services'
 import HomePush from './Component/HomePush'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
-import { jumpWorkspace } from '@/utils/utils'
+import { jumpWorkspace, redirectErrorPage } from '@/utils/utils'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 const { TabPane } = Tabs;
@@ -190,7 +190,7 @@ export default (): React.ReactNode => {
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }
 
-        history.push({ pathname: '/401', state: record.id })
+        redirectErrorPage(401)
     }
 
     const columns: Array<any> = [

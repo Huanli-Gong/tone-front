@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Col, Row, Spin, Tag, List, Table, message } from 'antd';
-import { history, useIntl, FormattedMessage } from 'umi';
+import { Col, Row, Tag, Table, message } from 'antd';
+import { history, useIntl, FormattedMessage, useParams, Helmet } from 'umi';
 import CodeViewer from '@/components/CodeViewer';
 import ContentContainer from '@/components/Public/ContentHeader';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
 import { getQuery, matchType } from '@/utils/utils';
 import { ReactComponent as IconArrowOn } from '@/assets/svg/icon_arrow_on.svg'
 import { BreadcrumbMatch } from '../components/Breadcrumb';
-import NotResult from '../404';
 import { queryTestConf, queryTestConfRetrieve, queryTestConfMetric } from '../../service';
 import styles from './index.less';
 
-const Index: React.FC<any> = (props: any) => {
+const Index: React.FC<any> = () => {
   const { formatMessage } = useIntl()
-  const { pathname } = new URL(window.location.href)
-  const ws_id = pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
+  const { ws_id } = useParams() as any
   const path = `/ws/${ws_id}/suite_search`
   //
   const { suite_id, case_id, suite_name, conf_name }: any = getQuery('')
@@ -34,8 +32,6 @@ const Index: React.FC<any> = (props: any) => {
     pageSize: 20,
     total: 0,
   })
-  const [noPage, setNoPage] = useState(false)
-
   // 1.请求数据
   const getListDataBasic = async (query: any) => {
     const res = await queryTestConf(query) || {}
@@ -43,7 +39,7 @@ const Index: React.FC<any> = (props: any) => {
       const { data = {} } = res
       setDataSet(data)
     } else if (res.code === 404) {
-      setNoPage(true)
+      history.push(`/ws/:ws_id`)
     } else {
       setDataSet({})
     }
@@ -62,7 +58,7 @@ const Index: React.FC<any> = (props: any) => {
           total: res.total,
         })
       } else if (res.code === 404) {
-        setNoPage(true)
+        history.push(`/ws/:ws_id`)
       } else if (res.code !== 200) {
         setDataSourceRetrieve([])
         setPaginationRetrieve({
@@ -70,7 +66,7 @@ const Index: React.FC<any> = (props: any) => {
           pageSize: 20,
           total: 0,
         })
-        message.error(res.msg || formatMessage({id: 'request.failed'}) )
+        message.error(res.msg || formatMessage({ id: 'request.failed' }))
       }
       setLoadingRetrieve(false)
     } catch (e) {
@@ -91,7 +87,7 @@ const Index: React.FC<any> = (props: any) => {
           total: res.total,
         })
       } else if (res.code === 404) {
-        setNoPage(true)
+        history.push(`/ws/:ws_id`)
       } else if (res.code !== 200) {
         setDataSourceMetric([])
         setPaginationMetric({
@@ -99,7 +95,7 @@ const Index: React.FC<any> = (props: any) => {
           pageSize: 20,
           total: 0,
         })
-        message.error(res.msg || formatMessage({id: 'request.failed'}) )
+        message.error(res.msg || formatMessage({ id: 'request.failed' }))
       }
       setLoadingMetric(false)
     } catch (e) {
@@ -126,12 +122,13 @@ const Index: React.FC<any> = (props: any) => {
   useEffect(() => {
     window.document.title = conf_name
     const timer = setTimeout(() => {
-      window.document.title = conf_name || 'T-One'
-    }, 1000)
+      window.document.title = conf_name + ' - T-One'
+    }, 500)
     return () => {
-      timer && clearTimeout(timer)
+      if (timer)
+        clearTimeout(timer)
     }
-  }, [conf_name, window.document.title])
+  }, [conf_name])
 
   useEffect(() => {
     if (case_id) {
@@ -146,21 +143,21 @@ const Index: React.FC<any> = (props: any) => {
   // 匹配类型
   const TypeTag = ({ type: param }: any) => {
     switch (param) {
-      case 0: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="performance.test"/></Tag>)
-      case 1: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="functional.test"/></Tag>)
-      case 2: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="io.test"/></Tag>)
+      case 0: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="performance.test" /></Tag>)
+      case 1: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="functional.test" /></Tag>)
+      case 2: return (<Tag color='#F2F4F6' style={{ color: '#515B6A' }}><FormattedMessage id="io.test" /></Tag>)
       default: return <></>
     }
   };
 
-  const handleClick = (obj:any) => {
-    const { ws_id, job_id } = obj
-      // 跳最近运行的Job
-      // const a = document.createElement('a');
-      // a.target = "_blank";
-      // a.rel = "noopener noreferrer"
-      // a.href = `/ws/${ws_id}/test_result/${id}`;
-      // a.click();
+  const handleClick = (obj: any) => {
+    const { job_id } = obj
+    // 跳最近运行的Job
+    // const a = document.createElement('a');
+    // a.target = "_blank";
+    // a.rel = "noopener noreferrer"
+    // a.href = `/ws/${ws_id}/test_result/${id}`;
+    // a.click();
     const win: any = window.open("");
     setTimeout(function () { win.location.href = `/ws/${ws_id}/test_result/${job_id}` })
   }
@@ -197,112 +194,107 @@ const Index: React.FC<any> = (props: any) => {
   return (
     <ContentContainer>
       <div className={styles.TestSuiteDetails_wrap}>
-        {noPage ? (
-          <NotResult />
-        ) : (
-          <div className={styles.content} style={{ width: 1000 }}>
-            <BreadcrumbMatch suiteName={suite_name} confName={conf_name} suiteId={suite_id} />
-            <span className={styles['details-title']}>
-              <IconArrowOn className={styles.conf_name_icon} />{conf_name}
-            </span>
-            <div className={styles['details-description-tag']}>
-              {dataSet.test_type && <TypeTag type={dataSet.test_type} />}
-              {dataSet.domain_name_list && dataSet.domain_name_list.split(',').map((item: string) =>
-                <Tag color='#F2F4F6' style={{ color: '#515B6A' }} key={item}>{item}</Tag>
-              )}
+        <div className={styles.content} style={{ width: 1000 }}>
+          <BreadcrumbMatch suiteName={suite_name} confName={conf_name} suiteId={suite_id} />
+          <span className={styles['details-title']}>
+            <IconArrowOn className={styles.conf_name_icon} />{conf_name}
+          </span>
+          <div className={styles['details-description-tag']}>
+            {dataSet.test_type && <TypeTag type={dataSet.test_type} />}
+            {dataSet.domain_name_list && dataSet.domain_name_list.split(',').map((item: string) =>
+              <Tag color='#F2F4F6' style={{ color: '#515B6A' }} key={item}>{item}</Tag>
+            )}
+          </div>
+          <Row className={styles['details-founder-row']}>
+            <Col span={4}>
+              <span className={styles['details-description-label']}><FormattedMessage id="test.suite.created" />
+              </span>
+              {dataSet.creator_name}
+            </Col>
+            <Col span={4}>
+              <span className={styles['details-description-label']}><FormattedMessage id="test.suite.run_mode" /></span>
+              {matchType(dataSet.run_mode, formatMessage)}
+            </Col>
+            <Col span={3}>
+              <span className={styles['details-description-label']}><FormattedMessage id="test.suite.run_num" /></span>
+              {dataSet.repeat}
+            </Col>
+            <Col span={6}>
+              <EllipsisPulic title={dataSet.suite_name} placement="top">
+                <span className={styles['details-description-label']}>TestSuite</span>
+                <span className={styles['details-description-click-text']} onClick={suiteNameClick}>{dataSet.suite_name}</span>
+              </EllipsisPulic>
+            </Col>
+            <Col span={7}>
+              <span className={styles['details-description-label']}><FormattedMessage id="test.suite.integration" /></span>
+              {dataSet.gmt_created}
+            </Col>
+          </Row>
+          <span><FormattedMessage id="test.suite.explain" />：</span>
+          {dataSet.doc && <CodeViewer code={dataSet.doc} />}
+          <div style={{ display: 'flex' }}>
+            <div className={styles.content_left}>
+              <div className={styles[`${borderStyle(paginationRetrieve)}`]} style={{ marginRight: 20 }}>
+                <Table size="small"
+                  rowKey={row => row.id}
+                  dataSource={dataSourceRetrieve}
+                  loading={loadingRetrieve}
+                  columns={[{
+                    title: <><FormattedMessage id="test.suite.peer" />({paginationRetrieve.total})</>,
+                    dataIndex: 'name',
+                    render: (text: string, record: any) => {
+                      return <span className={styles['click-a-text']} onClick={() => confNameClick(record)}>{text}</span>
+                    }
+                  }]}
+                  expandable={{
+                    expandIcon: () => (
+                      <IconArrowOn className={styles.enterOutlined} />
+                    )
+                  }}
+                  pagination={paginationRe} />
+              </div>
             </div>
-            <Row className={styles['details-founder-row']}>
-              <Col span={4}>
-                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.created"/>
-                </span>
-                {dataSet.creator_name}
-              </Col>
-              <Col span={4}>
-                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.run_mode"/></span>
-                {matchType(dataSet.run_mode, formatMessage)}
-              </Col>
-              <Col span={3}>
-                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.run_num"/></span>
-                {dataSet.repeat}
-              </Col>
-              <Col span={6}>
-                  <EllipsisPulic title={dataSet.suite_name} placement="top">
-                    <span className={styles['details-description-label']}>TestSuite</span>
-                    <span className={styles['details-description-click-text']} onClick={suiteNameClick}>{dataSet.suite_name}</span>
-                  </EllipsisPulic>
-              </Col>
-              <Col span={7}>
-                <span className={styles['details-description-label']}><FormattedMessage id="test.suite.integration"/></span>
-                {dataSet.gmt_created}
-              </Col>
-            </Row>
-            <span><FormattedMessage id="test.suite.explain"/>：</span>
-            {dataSet.doc && <CodeViewer code={dataSet.doc} />}
-            <div style={{ display: 'flex' }}>
-              <div className={styles.content_left}>
-                <div className={styles[`${borderStyle(paginationRetrieve)}`]} style={{ marginRight: 20 }}>
+
+            <div className={styles.content_right}>
+              {dataSet['recently_job'] ? (
+                <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>
+                  <div className={styles.card_head}><FormattedMessage id="test.suite.recently.run.job" /></div>
+                  <div className={styles.card_content}>
+                    {
+                      !!dataSet?.recently_job_list.length && dataSet?.recently_job_list.map((item: any, idx: number) => {
+                        return (
+                          <div key={idx}>
+                            <span className={styles['columns-Job-name']} onClick={() => handleClick(item)}>#{item.job_id}</span>
+                          </div>
+                        )
+                      })
+                    }
+
+                  </div>
+                </div>
+              ) : null
+              }
+
+              {dataSet.test_type !== 'functional' &&
+                <div className={styles[`${borderStyle(paginationMetric)}`]}>
                   <Table size="small"
-                    rowKey={row => row.id}
-                    dataSource={dataSourceRetrieve}
-                    loading={loadingRetrieve}
+                    rowKey={record => record.id}
+                    dataSource={dataSourceMetric}
+                    loading={loadingMetric}
                     columns={[{
-                      title: <><FormattedMessage id="test.suite.peer"/>({paginationRetrieve.total})</>,
+                      title: <><FormattedMessage id="test.suite.evaluating.indicator" />({paginationMetric.total})</>,
                       dataIndex: 'name',
-                      render: (text: string, record: any) => {
-                        return <span className={styles['click-a-text']} onClick={() => confNameClick(record)}>{text}</span>
+                      render: (text: string) => {
+                        return <span style={{ paddingLeft: 10 }}>{text}</span>
                       }
                     }]}
-                    expandable={{
-                      expandIcon: () => (
-                        <IconArrowOn className={styles.enterOutlined} />
-                      )
-                    }}
-                    pagination={paginationRe} />
+                    pagination={paginationMe} />
                 </div>
-              </div>
-
-              <div className={styles.content_right}>
-                {dataSet['recently_job'] ? (
-                  <div className={styles.detailInfo_card} style={{ marginBottom: 20 }}>
-                    <div className={styles.card_head}><FormattedMessage id="test.suite.recently.run.job"/></div>
-                    <div className={styles.card_content}>
-                      {
-                        !!dataSet?.recently_job_list.length && dataSet?.recently_job_list.map((item: any, idx: number) => {
-                          return (
-                            <div key={idx}>
-                              <span className={styles['columns-Job-name']} onClick={()=>handleClick(item)}>#{item.job_id}</span>
-                            </div>
-                          )
-                        })
-                      }
-
-                    </div>
-                  </div>
-                ) : null
-                }
-
-                {dataSet.test_type !== 'functional' &&
-                  <div className={styles[`${borderStyle(paginationMetric)}`]}>
-                    <Table size="small"
-                      rowKey={record => record.id}
-                      dataSource={dataSourceMetric}
-                      loading={loadingMetric}
-                      columns={[{
-                        title: <><FormattedMessage id="test.suite.evaluating.indicator"/>({paginationMetric.total})</>,
-                        dataIndex: 'name',
-                        render: (text: string) => {
-                          return <span style={{ paddingLeft: 10 }}>{text}</span>
-                        }
-                      }]}
-                      pagination={paginationMe} />
-                  </div>
-                }
-              </div>
+              }
             </div>
-            <div className={styles.footer} />
           </div>
-        )}
-
+          <div className={styles.footer} />
+        </div>
       </div>
     </ContentContainer>
   );
