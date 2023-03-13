@@ -5,13 +5,22 @@ import routes from './routes';
 
 const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list, NODE_ENV } = process.env;
 
+const isDev = NODE_ENV === 'develepment';
+/* REPLACE_KEY 用作后端替换字符串，具体字符串可以与后端沟通协定 */
+const REPLACE_KEY = 'TONE_WEB_RENDER_TONE_FRONT_REPLACE_KEY'
+
+const buildPublicPath = `{${REPLACE_KEY}}/`;
+const publicPath = isDev ? '/' : buildPublicPath;
+
 export default defineConfig({
     hash: false,
     antd: {},
+    runtimePublicPath: !isDev,
+    publicPath: publicPath,
     dva: {
         hmr: true,
     },
-    devtool: NODE_ENV === "develepment" ? "eval-source-map" : undefined,
+    devtool: isDev ? "eval-source-map" : undefined,
     layout: {
         name: 'T-One',
         locale: true,
@@ -30,9 +39,7 @@ export default defineConfig({
         antd: true,
         baseNavigator: false,
     },
-    dynamicImport: BUILD_APP_ENV !== 'openanolis' && {
-        loading: '@/components/PageLoading/index',
-    },
+    dynamicImport: BUILD_APP_ENV !== 'openanolis' && { loading: '@/components/PageLoading/index' },
     targets: {
         ie: 11,
     },
@@ -46,14 +53,13 @@ export default defineConfig({
     /* alias: {
         "lodash/debounce": 'lodash.debounce',
     }, */
-    favicon: '/favicon.ico',
+    // favicon: '/favicon.ico',
     esbuild: {},
     webpack5: {},
     fastRefresh: {},
     nodeModulesTransform: {
         type: 'none',
     },
-    runtimePublicPath: true,
     ignoreMomentLocale: true,
     proxy: proxy[REACT_APP_ENV || 'dev'],
     manifest: {
