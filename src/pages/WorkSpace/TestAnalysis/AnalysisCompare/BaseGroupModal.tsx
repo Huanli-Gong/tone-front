@@ -94,7 +94,6 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
         show() {
             setVisible(true)
 
-            console.log(props)
             const arr = _.get(baselineGroup, 'members')
             const paramData: any = {
                 func_data: {

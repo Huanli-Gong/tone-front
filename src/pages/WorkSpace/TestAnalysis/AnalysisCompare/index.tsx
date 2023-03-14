@@ -75,8 +75,6 @@ export default (props: any) => {
         return groupData.findIndex(({ is_base_group }: any) => is_base_group)
     }, [groupData])
 
-    console.log(baseGroupIndex)
-
     useEffect(() => {
         /* 引起热更新新增一个对比组 */
         if (originType !== 'test_result') handleAddJobGroup()
@@ -366,6 +364,10 @@ export default (props: any) => {
         }
         if (num === 1 && flag) {
             return message.warning(formatMessage({ id: "analysis.please.add.comparison.group" }))
+        }
+
+        if (groupData.length === 1 && baseGroupIndex === -1) {
+            setGroupData((p: any) => p.map((i: any) => ({ ...i, is_base_group: true })))
         }
 
         startCompareModalRef?.current.show()
