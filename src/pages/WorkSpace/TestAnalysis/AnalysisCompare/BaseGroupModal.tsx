@@ -121,15 +121,15 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
             }
             const brrFun: any = []
             const brrFers: any = []
-            allGroupData.forEach((item: any, index: number) => {
-                let membersArr = _.get(item, 'members')
+            allGroupData.forEach((item: any) => {
+                const membersArr = _.get(item, 'members')
                 if (_.isArray(membersArr)) {
-                    membersArr.forEach((item: any) => {
-                        if (["功能", "功能测试", "functional"].includes(item.test_type)) {
-                            brrFun.push(item.id)
+                    membersArr.forEach(($item: any) => {
+                        if (["功能", "功能测试", "functional"].includes($item.test_type)) {
+                            brrFun.push($item.id)
                         }
-                        if (["性能", "性能测试", "performance"].includes(item.test_type)) {
-                            brrFers.push(item.id)
+                        if (["性能", "性能测试", "performance"].includes($item.test_type)) {
+                            brrFers.push($item.id)
                         }
                     })
                 }

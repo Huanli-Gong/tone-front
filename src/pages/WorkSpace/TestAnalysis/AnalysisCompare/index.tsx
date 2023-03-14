@@ -304,7 +304,11 @@ export default (props: any) => {
     }, [groupData, noGroupData, ws_id])
 
     const handleDelGroup = (obj: any) => {
-        setGroupData((p: any) => p.filter((i: any) => i.id !== obj.id))
+        setGroupData((p: any) => {
+            const list = p.filter((i: any) => i.id !== obj.id)
+            if (list.length === 1) setBaselineGroupIndex(0)
+            return list
+        })
     }
 
     const handleEditMarkOk = (obj: any) => {
@@ -920,7 +924,7 @@ export default (props: any) => {
                                                                     cancelText={<FormattedMessage id="operation.cancel" />}
                                                                     arrowPointAtCenter={true}
                                                                     trigger="click"
-                                                                    onVisibleChange={_.partial(handleVisibleChange, _, index, num)}
+                                                                    onOpenChange={_.partial(handleVisibleChange, _, index, num)}
                                                                 >
                                                                     <span
                                                                         style={{ opacity: currentDelJobDom === `${index}${num}` ? 1 : 0 }}
