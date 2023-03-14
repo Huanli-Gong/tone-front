@@ -66,6 +66,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
         if (isFetch) return
         setIsFetch(true)
         const { data, code, msg } = await querySuiteList(params)
+        setIsFetch(false)
         if (code === 200) {
             const obj1 = data.func_suite_dic || {}
             const obj2 = data.perf_suite_dic || {}
@@ -93,6 +94,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
         show() {
             setVisible(true)
 
+            console.log(props)
             const arr = _.get(baselineGroup, 'members')
             const paramData: any = {
                 func_data: {
@@ -561,7 +563,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
                         <Typography.Text className={styles.script_right_name} strong={true}>
                             <FormattedMessage id="analysis.comparison.group" />
                         </Typography.Text>
-                        <Typography.Text className={styles.script_right_name} >{baselineGroup && baselineGroup.product_version}</Typography.Text>
+                        <Typography.Text className={styles.script_right_name} >{baselineGroup && baselineGroup?.name}</Typography.Text>
                     </Space>
                 </div>
                 <div className={styles.line}>
