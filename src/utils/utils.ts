@@ -7,6 +7,12 @@ import _ from 'lodash';
 
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
+export const OPENANOLIS_DOMAIN = "https://passport.openanolis.cn/"
+
+export const OPENANOLIS_LOGIN_URL = OPENANOLIS_DOMAIN + "login?callback=" + window.location.origin
+export const OPENANOLIS_LOGOUT_URL = OPENANOLIS_DOMAIN + "logout?callback=" + window.location.origin
+export const OPENANOLIS_REGIST_URL = OPENANOLIS_DOMAIN + "register"
+
 export const getPageWsid = () => {
   return window.location.pathname.replace(/^\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1')
 }

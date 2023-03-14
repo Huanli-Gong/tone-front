@@ -8,22 +8,18 @@ import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
 import { marked } from "marked"
-import { getPageWsid, redirectErrorPage } from "@/utils/utils"
+import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL } from "@/utils/utils"
 
 import 'animate.css';
 
 const jumpLoginPage = () => {
-    const loginInfo = JSON.parse(window.localStorage.getItem("tone-anolis") || "")
-    const { login_url } = loginInfo || {}
     if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
         return
     if (BUILD_APP_ENV === 'opensource') {
         history.push(`/login?redirect_url=${window.location.pathname}`)
         return
     }
-    if (login_url) {
-        window.location.href = login_url + window.location.pathname
-    }
+    window.location.href = OPENANOLIS_LOGIN_URL + window.location.pathname
 }
 console.log(version)
 
@@ -70,9 +66,6 @@ export async function getInitialState(): Promise<any> {
         ...initialState,
         authList: data,
     }
-
-    if (BUILD_APP_ENV === 'openanolis')
-        window.localStorage.setItem("tone-anolis", JSON.stringify(data?.login_info))
 
     if (code !== 200 || Object.prototype.toString.call(data) !== "[object Object]") {
         redirectErrorPage(500)

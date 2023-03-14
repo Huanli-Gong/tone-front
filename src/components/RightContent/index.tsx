@@ -9,7 +9,7 @@ import PersonCenter from './PersonCenter';
 import TaskInform from './components/TaskInform'
 import SystemInform from './components/SystemInform';
 import { allTagRead, allTagApplyRead } from '@/services/Workspace';
-import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
+import { OPENANOLIS_LOGIN_URL, OPENANOLIS_REGIST_URL, redirectErrorPage, requestCodeMessage } from '@/utils/utils';
 import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 import { applyWorkspaceRole } from './services'
 
@@ -38,7 +38,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
     }
-    const { login_url, register_url, ws_need_need_approval, ws_is_public, ws_role_title } = initialState?.authList || {};
+    const { ws_need_need_approval, ws_is_public, ws_role_title } = initialState?.authList || {};
 
     useEffect(() => {
         setDropVisible(false)
@@ -200,10 +200,10 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(login_url)}>
+                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(OPENANOLIS_LOGIN_URL)}>
                                         <FormattedMessage id="right.content.login" />
                                     </Button>
-                                    <Button type="primary" onClick={() => location.replace(register_url)}>
+                                    <Button type="primary" onClick={() => location.replace(OPENANOLIS_REGIST_URL)}>
                                         <FormattedMessage id="right.content.register" />
                                     </Button>
                                 </Space> :
