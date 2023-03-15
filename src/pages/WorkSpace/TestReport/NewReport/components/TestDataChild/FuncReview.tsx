@@ -226,7 +226,6 @@ const FuncDataIndex: React.FC<any> = (props) => {
                         if (isOldReport) {
                             item.compare_data.splice(baseIndex, 0, item.result)
                         }
-                        console.log(props, item.compare_data)
                         return (
                             <TestSubCase key={idx}>
                                 <DelBtnEmpty />
