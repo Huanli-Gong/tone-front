@@ -18,7 +18,6 @@ export default (props: any) => {
 
     const initPage = async () => {
         const { data, code, msg } = await queryWorkspaceApproveQuantity({ ws_id, action: 'join' })
-        console.log(data)
         if (code === 200) {
             setTabNumbers(data)
         }

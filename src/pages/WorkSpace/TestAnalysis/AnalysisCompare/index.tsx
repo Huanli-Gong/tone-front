@@ -49,8 +49,8 @@ export default (props: any) => {
     const { height: layoutHeight } = useClientSize()
     const [groupData, setGroupData] = useState<any>(selectedJob)
     const [noGroupData, setNoGroupData] = useState<any>(noGroupJob)
-    const [baselineGroup, setBaselineGroup] = useState(selectedJob[0] || {})
-    const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(-1)
+    // const [baselineGroup, setBaselineGroup] = useState(selectedJob[0] || {})
+    // const [baselineGroupIndex, setBaselineGroupIndex] = useState<number>(-1)
     const editGroupMark: any = useRef(null)
     const [loading, setLoading] = useState(false)
     const newProductVersionGroup = useRef([]);
@@ -71,6 +71,10 @@ export default (props: any) => {
     const startCompareModalRef: any = useRef(null)
     const allJobSelectRef: any = useRef(null)
 
+    const baseGroupIndex = React.useMemo(() => {
+        return groupData.findIndex(({ is_base_group }: any) => is_base_group)
+    }, [groupData])
+
     useEffect(() => {
         /* 引起热更新新增一个对比组 */
         if (originType !== 'test_result') handleAddJobGroup()
@@ -87,8 +91,8 @@ export default (props: any) => {
             const { members } = c
             return p.concat(members)
         }, []).length)
-        if (baselineGroupIndex === -1) setBaselineGroup(groupData[0])
-    }, [groupData, baselineGroupIndex])
+        // setBaselineGroup(groupData[baselineGroupIndex === -1 ? 0 : baselineGroupIndex])
+    }, [groupData, /* baselineGroupIndex */])
 
     const getNameRepeatCount = (name: string) => {
         const count = name.trim().match(/\(\d+\)$/)?.[0].replace(/[\(\)]/g, "")
@@ -206,7 +210,7 @@ export default (props: any) => {
         }
         setGroupMethod(type)
         setGroupData(groupDataCopy)
-        setBaselineGroup(groupDataCopy[baselineGroupIndex] || {})
+        /* setBaselineGroup(groupDataCopy[baselineGroupIndex] || {}) */
         setNoGroupData(moreSn)
     }
 
@@ -229,8 +233,8 @@ export default (props: any) => {
 
         setGroupMethod(null)
         setGroupData(groupData.filter((item: any) => item.type === 'baseline'))
-        setBaselineGroupIndex(-1)
-        setBaselineGroup({})
+        // setBaselineGroupIndex(-1)
+        // setBaselineGroup({})
         setNoGroupData(results)
     }
 
@@ -251,7 +255,7 @@ export default (props: any) => {
         }
         arr.push(addGroup)
         setGroupData(arr)
-        if (arr.length === 1) {
+        /* if (arr.length === 1) {
             setBaselineGroupIndex(0)
             setBaselineGroup(addGroup)
         }
@@ -259,14 +263,15 @@ export default (props: any) => {
         if (arr.length === 2) {
             setBaselineGroupIndex(-1)
             setBaselineGroup({})
-        }
+        } */
     }
 
     const handleGroupClick = (obj: any, num: number) => {
-        setBaselineGroupIndex(num)
-        setBaselineGroup(obj)
-
+        /* setBaselineGroupIndex(num)
+        setBaselineGroup(obj) */
+        setGroupData((p: any) => p.map((i: any, idx: number) => ({ ...i, is_base_group: num === idx })))
     }
+
     const handleNoGroupJobDel = (num: number) => {
         setCurrentDelJobDom(`ongroup${num}`)
     }
@@ -294,7 +299,7 @@ export default (props: any) => {
             arr[index].name = name
         }
         setGroupData(arr)
-        setBaselineGroup(arr[baselineGroupIndex])
+        /* setBaselineGroup(arr[baselineGroupIndex]) */
         setCurrentDelJobDom(null)
     }
 
@@ -304,7 +309,11 @@ export default (props: any) => {
     }, [groupData, noGroupData, ws_id])
 
     const handleDelGroup = (obj: any) => {
-        setGroupData((p: any) => p.filter((i: any) => i.id !== obj.id))
+        setGroupData((p: any) => {
+            const list = p.filter((i: any) => i.id !== obj.id)
+            // if (list.length === 1) setBaselineGroupIndex(0)
+            return list
+        })
     }
 
     const handleEditMarkOk = (obj: any) => {
@@ -314,8 +323,8 @@ export default (props: any) => {
     const handleClear = () => {
         setNoGroupData([])
         setGroupData([])
-        setBaselineGroup({})
-        setBaselineGroupIndex(-1)
+        /* setBaselineGroup({})
+        setBaselineGroupIndex(-1) */
     }
 
     const canCompare = React.useMemo(() => {
@@ -328,9 +337,17 @@ export default (props: any) => {
     const handleStartAnalysis = () => {
         if (canCompare) return;
 
-        if (baselineGroupIndex !== -1 && groupData[baselineGroupIndex]?.members?.length === 0) {
-            return message.warning(formatMessage({ id: "analysis.comparison.base_group.compare_data.empty" }))
+        for (let i = 0, len = groupData.length; i < len; i++) {
+            const term = groupData[i]
+            if (term.members && term.members.length === 0) {
+                message.warning(formatMessage({ id: "analysis.comparison.group.compare_data.empty" }))
+                return
+            }
         }
+
+        /* if (baselineGroupIndex !== -1 && groupData[baselineGroupIndex]?.members?.length === 0) {
+            return message.warning(formatMessage({ id: "analysis.comparison.base_group.compare_data.empty" }))
+        } */
 
         let num = 0
         let flag = false
@@ -340,13 +357,17 @@ export default (props: any) => {
                 flag = item.type === 'baseline'
             }
         })
-        if (num > 1 && baselineGroupIndex === -1) {
+        if (num > 1 && baseGroupIndex === -1) {
             setLabelBlinking(true)
             const localStr = formatMessage({ id: 'analysis.please.set.the.benchmark.group' })
             return message.warning(localStr)
         }
         if (num === 1 && flag) {
             return message.warning(formatMessage({ id: "analysis.please.add.comparison.group" }))
+        }
+
+        if (groupData.length === 1 && baseGroupIndex === -1) {
+            setGroupData((p: any) => p.map((i: any) => ({ ...i, is_base_group: true })))
         }
 
         startCompareModalRef?.current.show()
@@ -390,7 +411,7 @@ export default (props: any) => {
                         pathname: `/ws/${ws_id}/test_analysis/result`,
                         state: {
                             wsId: ws_id,
-                            baselineGroupIndex: baselineGroupIndex,
+                            baselineGroupIndex: baseGroupIndex,
                             allGroupData: handleGroupData(),
                             // compareResult: _.cloneDeep(result[0].data),
                             compareGroupData: paramEenvironment,
@@ -443,7 +464,7 @@ export default (props: any) => {
                         pathname: `/ws/${ws_id}/test_create_report`,
                         state: {
                             environmentResult: result[0].data,
-                            baselineGroupIndex: baselineGroupIndex,
+                            baselineGroupIndex: baseGroupIndex,
                             allGroupData: handleGroupData(),
                             testDataParam: _.cloneDeep(newSuiteData),
                             domainGroupResult: result[1].data,
@@ -503,7 +524,7 @@ export default (props: any) => {
             newGroup = newProductVersionGroup.current.flat()
         }
 
-        const arr = groupData.filter((item: any, index: any) => index !== baselineGroupIndex).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
+        const arr = groupData.filter((item: any, index: any) => index !== baseGroupIndex).filter((item: any) => _.get(item, 'members') && _.get(item, 'members').length)
         const array = groupData.filter((item: any, index: any) => _.get(item, 'members') && _.get(item, 'members').length)
         let base_group = {}
         let compare_groups = []
@@ -513,9 +534,9 @@ export default (props: any) => {
                 base_objs: baseArr
             }
         } else {
-            const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
+            // const baseIndex = _.findIndex(newGroup, function (o: any) { return String(o.id) === String(baselineGroup.id) });
             base_group = {
-                tag: newGroup.length ? newGroup[baseIndex]?.name : '',
+                tag: newGroup.length ? newGroup[baseGroupIndex]?.name : '',
                 base_objs: baseArr,
             }
 
@@ -757,8 +778,8 @@ export default (props: any) => {
         }
         setGroupData(groupDataCopy)
         setNoGroupData(noGroupDataCopy)
-        if (baselineGroupIndex === number) setBaselineGroup(groupDataCopy[number])
-        if (baselineGroupIndex === desNumber) setBaselineGroup(groupDataCopy[desNumber])
+        /* if (baselineGroupIndex === number) setBaselineGroup(groupDataCopy[number])
+        if (baselineGroupIndex === desNumber) setBaselineGroup(groupDataCopy[desNumber]) */
     }
 
     const onGroupDragEnd = (result: any) => {
@@ -772,12 +793,12 @@ export default (props: any) => {
                 result.source.index,
                 result.destination.index
             );
-            itemObj.forEach((item: any, num) => {
+            /* itemObj.forEach((item: any, num) => {
                 if (item && item.id === baselineGroup.id) {
                     setBaselineGroupIndex(num)
                     setBaselineGroup(item)
                 }
-            })
+            }) */
             setGroupData(itemObj)
         } else {
             onDragEnd(result)
@@ -813,11 +834,11 @@ export default (props: any) => {
                                 <EllipsisRect
                                     text={item.name}
                                     flag={item.type === 'baseline'}
-                                    isBaseGroup={index === baselineGroupIndex && groupData.length > 1}
+                                    isBaseGroup={index === baseGroupIndex}
                                 />
                                 <ContentMark group={groupData[index]} />
                                 {
-                                    index !== baselineGroupIndex &&
+                                    index !== baseGroupIndex &&
                                     <span
                                         className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn}
                                         onClick={_.partial(handleGroupClick, groupData[index], index)}
@@ -840,11 +861,11 @@ export default (props: any) => {
                     <EllipsisRect
                         text={item.name}
                         flag={item.type === 'baseline'}
-                        isBaseGroup={index === baselineGroupIndex && groupData.length > 1}
+                        isBaseGroup={index === baseGroupIndex}
                     />
                     <ContentMark group={groupData[index]} />
                     {
-                        index !== baselineGroupIndex &&
+                        index !== baseGroupIndex &&
                         <span
                             className={labelBlinking ? styles.baseTag : styles.baseGroupColorFn}
                             onClick={_.partial(handleGroupClick, groupData[index], index)}
@@ -912,7 +933,7 @@ export default (props: any) => {
                                                                     cancelText={<FormattedMessage id="operation.cancel" />}
                                                                     arrowPointAtCenter={true}
                                                                     trigger="click"
-                                                                    onVisibleChange={_.partial(handleVisibleChange, _, index, num)}
+                                                                    onOpenChange={_.partial(handleVisibleChange, _, index, num)}
                                                                 >
                                                                     <span
                                                                         style={{ opacity: currentDelJobDom === `${index}${num}` ? 1 : 0 }}
@@ -1236,7 +1257,7 @@ export default (props: any) => {
 
                 <BaseGroupModal
                     ref={startCompareModalRef}
-                    baselineGroupIndex={baselineGroupIndex}
+                    baselineGroupIndex={baseGroupIndex}
                     onOk={handleSureOk}
                     creatReportOk={handleCreatReportOk}
                     allGroupData={groupData}
