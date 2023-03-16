@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, useParams, useLocation } from 'umi'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip, redirectErrorPage } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
@@ -37,6 +37,8 @@ interface PropsTypes {
     moreFormInfo?: any,
     new_test_config?: any
 }
+
+const isEmpty = (s: any) => [null, undefined, ""].includes(s)
 
 const TestJob: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
@@ -95,6 +97,20 @@ const TestJob: React.FC<any> = (props) => {
         setModifyTemplate(true)
     }
 
+    const goValidate = (form: any) => {
+        return new Promise(
+            (resolve, reject) => (
+                form
+                    .validateFields()
+                    .then(resolve)
+                    .catch(() => {
+                        reject()
+                        setFetching(false)
+                    })
+            )
+        )
+    }
+
     const getPageData = async () => {
         setLoading(true)
         let job_type_id = jt_id
@@ -116,7 +132,12 @@ const TestJob: React.FC<any> = (props) => {
                 template_id = jt_id
 
             if (template_id) {
-                const { data: [datas] } = await queryTestTemplateData({ template_id })
+                const { code, data } = await queryTestTemplateData({ template_id })
+                if (code === 500) {
+                    redirectErrorPage(500)
+                    return
+                }
+                const [datas] = data
                 job_type_id = datas.job_type_id
                 setTemplateDatas(datas)
                 setTest_config(datas.test_config)
@@ -149,16 +170,24 @@ const TestJob: React.FC<any> = (props) => {
 
     const handleCopyText = useCopyText(formatMessage({ id: 'request.copy.success' }))
 
+    const handleReset = (flag = false) => {
+        setIsReset(flag)
+        setJobInfo('')
+        templateEditForm.current?.reset()
+        basicForm.current?.reset()
+        moreForm.current?.reset()
+        envForm.current?.reset()
+        suiteTable.current?.reset()
+    }
+
     //数据初始化 init hooks //新建job 1 jobType预览 2 模板预览 3 模板测试 4
     useEffect(() => {
         handleReset()
         getPageData()
     }, [pathname, query])
 
-    const isEmpty = (s: any) => [null, undefined, ""].includes(s)
-
     const compact = (obj: any) => {
-        let result = {}
+        const result = {}
         Object.keys(obj).forEach(
             key => {
                 const z = obj[key]
@@ -171,8 +200,8 @@ const TestJob: React.FC<any> = (props) => {
                             let noData = false
                             Object.keys(item).forEach(
                                 ctx => {
-                                    const t = item[ctx]
-                                    if (t === null || t === undefined || t === '')
+                                    const o = item[ctx]
+                                    if (o === null || o === undefined || o === '')
                                         noData = true
                                 }
                             )
@@ -194,19 +223,6 @@ const TestJob: React.FC<any> = (props) => {
         return Object.assign({}, result)
     }
 
-    const goValidate = (form: any) => {
-        return new Promise(
-            (resolve, reject) => (
-                form
-                    .validateFields()
-                    .then(resolve)
-                    .catch(() => {
-                        reject()
-                        setFetching(false)
-                    })
-            )
-        )
-    }
 
     const transformDate = async (result: PropsTypes | null = null) => {
         let data: any = {}
@@ -249,7 +265,7 @@ const TestJob: React.FC<any> = (props) => {
                 scriptInfo = scriptInfo ? scriptInfo.map((i: any) => ({ ...i, pos: 'before' })) : undefined
             }
 
-            let envProps: any = {
+            const envProps: any = {
                 env_info: envStr ? envStr : '',
                 rpm_info: rpmInfo,
                 script_info: scriptInfo,
@@ -265,7 +281,6 @@ const TestJob: React.FC<any> = (props) => {
             else envProps.kernel_info = kernel_info
 
             data = Object.assign(data, compact(envProps), { monitor_info })
-
         }
 
         if (JSON.stringify(items.more) !== '{}') {
@@ -273,7 +288,9 @@ const TestJob: React.FC<any> = (props) => {
             const email = moreVal.email ? moreVal.email.replace(/\s/g, ',') : null
             data = Object.assign(data, compact({ ...moreVal, email }))
         }
+
         const testConfigData = result ? result.new_test_config : test_config
+        
         if (testConfigData.length > 0) {
             const test_conf = testConfigData.map((item: any) => {
                 const {
@@ -367,6 +384,148 @@ const TestJob: React.FC<any> = (props) => {
         return data
     }
 
+    const handleFormatChange = async (operateType: any = '') => {
+        let parmas = {}
+        const envVal = envForm && envForm.current ? await goValidate(envForm.current.form) : {}
+        const server_provider = detail?.server_type
+        // operateType !== 'template' && setIsloading(true)
+        setIsloading(true)
+        if (!isYamlFormat) {
+            const formData = await transformDate()
+            const dataCopy = _.cloneDeep(formData)
+            const $test_config = _.get(dataCopy, 'test_config')
+            if (_.isArray($test_config)) {
+                $test_config.forEach((item: any) => {
+                    let cases = _.get(item, 'cases')
+                    const runMode = _.get(item, 'run_mode')
+                    if (_.isArray(cases)) {
+                        cases = cases.map((obj: any) => {
+                            let server: AnyType = {}
+                            const objCopy = _.cloneDeep(obj)
+                            if (_.has(objCopy, 'server_object_id') && objCopy.server_object_id !== undefined) {
+                                // server = {}
+                                const is_instance = _.get(objCopy, 'is_instance')
+                                let key = 'id'
+                                if (is_instance === 0 && server_provider === 'aliyun') key = 'config'
+                                if (is_instance === 1 && server_provider === 'aliyun') key = 'instance'
+                                if (runMode === 'cluster') key = 'cluster'
+                                server[key] = _.get(objCopy, 'server_object_id')
+                            }
+                            if (_.has(objCopy, 'server_tag_id') && objCopy.server_tag_id.length) server = { tag: _.get(objCopy, 'server_tag_id') }
+                            if (_.get(objCopy, 'customer_server')) {
+                                const customServer = _.get(objCopy, 'customer_server')
+                                server = { channel_type: customServer.custom_channel, ip: customServer.custom_ip }
+                            }
+                            if (server) obj.server = server
+                            delete obj.server_object_id
+                            delete obj.server_tag_id
+                            delete item.run_mode
+                            delete obj.is_instance
+                            delete obj.customer_server
+                            return obj
+                        })
+                        item.cases = cases
+                    }
+                })
+            }
+
+            dataCopy.test_config = $test_config
+            delete dataCopy.moniter_contrl
+            delete dataCopy.reclone_contrl
+            if (!dataCopy.kernel_version) delete dataCopy.kernel_version
+            parmas = { type: 'json2yaml', json_data: dataCopy, workspace: ws_id }
+        }
+
+        if (isYamlFormat) parmas = { type: 'yaml2json', yaml_data: jobInfo, workspace: ws_id }
+
+        const { code, msg, data } = await formatYamlToJson(parmas)
+        // operateType !== 'template' && setIsloading(false)
+        setIsloading(false)
+        let result = {}
+        if (code === 200) {
+            if (!isYamlFormat) setJobInfo(data)
+            if (isYamlFormat) {
+                const dataCopy = _.cloneDeep(data)
+                const { test_config: $suite_list } = data
+                if (_.isArray($suite_list)) {
+                    $suite_list.forEach((item: any) => {
+                        let cases = _.get(item, 'cases')
+                        item.run_mode = 'standalone'
+                        if (_.isArray(cases)) {
+                            cases = cases.map((obj: any) => {
+                                const server = _.get(obj, 'server')
+                                if (_.has(server, 'id')) {
+                                    obj.server_object_id = _.get(server, 'id')
+                                }
+                                if (_.get(server, 'config')) {
+                                    obj.server_object_id = _.get(server, 'config')
+                                    obj.is_instance = 0
+                                }
+                                if (_.get(server, 'instance')) {
+                                    obj.server_object_id = _.get(server, 'instance')
+                                    obj.is_instance = 1
+                                }
+                                if (_.get(server, 'cluster')) {
+                                    obj.server_object_id = _.get(server, 'cluster')
+                                    item.run_mode = 'cluster'
+                                }
+                                if (_.get(server, 'tag') && _.get(server, 'tag').length) obj.server_tag_id = _.get(server, 'tag')
+                                if (_.get(server, 'channel_type') && _.get(server, 'ip')) {
+                                    obj.customer_server = { custom_channel: _.get(server, 'channel_type'), custom_ip: _.get(server, 'ip') }
+                                    obj.ip = _.get(server, 'ip')
+                                }
+                                if (_.get(server, 'name')) {
+                                    let ip = server.name
+                                    if (_.isArray(ip)) ip = ip.join(',')
+                                    obj.ip = ip
+                                }
+                                delete obj.server
+                                return obj
+                            })
+                            item.cases = cases
+                        }
+                    })
+                }
+                dataCopy.test_config = $suite_list.map((i: any) => ({ ...i, test_suite_id: i.test_suite, cases: i.cases.map((t: any) => ({ ...t, test_case_id: t.test_case })) }))
+                dataCopy.moniter_contrl = false
+                dataCopy.reclone_contrl = _.get(envVal, 'reclone_contrl') || false
+                if (_.get(dataCopy, 'monitor_info')) dataCopy.moniter_contrl = true
+                // 以下是表单值的同步
+                result = getFormData(dataCopy)
+            }
+            if (operateType !== 'template' && operateType !== 'submit')
+                setIsYamlFormat(!isYamlFormat)
+        } else {
+            requestCodeMessage(code, msg)
+        }
+        return { code, result }
+    }
+
+    const handleServerChannel = (testConfig: any[]) => {
+        const flag = location.search.indexOf('inheriting_machine') !== -1
+        return testConfig.map((item: any) => {
+            const cases = _.get(item, 'cases') || []
+            item.cases = cases.map((ctx: any) => {
+                const { customer_server, server_object_id } = ctx || {}
+                const channel_type = _.get(customer_server, 'custom_channel')
+                const ip = _.get(customer_server, 'custom_ip')
+                if (channel_type && ip) {
+                    ctx.server = {
+                        ip,
+                        channel_type
+                    }
+                    delete ctx.customer_server
+                }
+                if (flag && server_object_id) {
+                    delete ctx.server_tag_id
+                }
+                return ctx
+            })
+
+            return item
+        })
+    }
+
     const handleSubmit = async () => {
         if (fetching) return false
         setEnvErrorFlag(false)
@@ -410,9 +569,9 @@ const TestJob: React.FC<any> = (props) => {
             return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
         }
         // console.log(data.test_config)
-        const test_config = handleServerChannel(data.test_config)
+        const $test_config = handleServerChannel(data.test_config)
         try {
-            let { code, msg } = await createWsJobTest({ ...data, test_config })
+            const { code, msg } = await createWsJobTest({ ...data, test_config: $test_config })
             if (code === 200) {
                 setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
                 history.push(`/ws/${ws_id}/test_result`)
@@ -430,30 +589,7 @@ const TestJob: React.FC<any> = (props) => {
         }
         setFetching(false)
     }
-    const handleServerChannel = (testConfig: any[]) => {
-        let flag = location.search.indexOf('inheriting_machine') !== -1
-        return testConfig.map((item: any) => {
-            const cases = _.get(item, 'cases') || []
-            item.cases = cases.map((ctx: any) => {
-                const { customer_server, server_object_id } = ctx || {}
-                const channel_type = _.get(customer_server, 'custom_channel')
-                const ip = _.get(customer_server, 'custom_ip')
-                if (channel_type && ip) {
-                    ctx.server = {
-                        ip,
-                        channel_type
-                    }
-                    delete ctx.customer_server
-                }
-                if (flag && server_object_id) {
-                    delete ctx.server_tag_id
-                }
-                return ctx
-            })
 
-            return item
-        })
-    }
     const isMonitorEmpty = (data: any) => {
         let flag = false
         if (data && data.moniter_contrl) {
@@ -461,286 +597,6 @@ const TestJob: React.FC<any> = (props) => {
             flag = arrData.some((item: any) => item && item.monitor_type === 'custom_machine' && !item.server)
         }
         return flag
-    }
-    const handleOpenTemplate = async () => {
-        let resultData = {}
-        if (isYamlFormat) {
-            const { code, result } = await handleFormatChange('template')
-            resultData = result
-            if (code !== 200) return
-        }
-        const data = isYamlFormat ? await transformDate(resultData) : await transformDate()
-        if (isMonitorEmpty(data)) return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
-        if (!data.test_config) return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
-        name === 'TestJob' || name === 'TestExport' ?
-            saveTemplateDrawer.current.show() :
-            handleSaveTemplateOk({})
-    }
-
-    const handleSaveTemplateOk = async (vals: any) => {
-        if (fetching) return false
-        setFetching(true)
-        let data = await transformDate()
-        if (isMonitorEmpty(data)) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
-        }
-        if (!data.test_config) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
-        }
-        data = {
-            workspace: ws_id,
-            ...data,
-            job_type: detail.id
-        }
-        const test_config = handleServerChannel(data.test_config)
-        const { code, msg } = await saveTestTemplate({ ...data, test_config, ...vals })
-
-        if (code === 200) {
-            message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
-            saveTemplateDrawer.current.hide()
-            templatePopoverRefresh()
-            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
-        }
-        else
-            requestCodeMessage(code, msg)
-        setFetching(false)
-    }
-
-    const handleReset = (flag = false) => {
-        setIsReset(flag)
-        setJobInfo('')
-        templateEditForm.current?.reset()
-        basicForm.current?.reset()
-        moreForm.current?.reset()
-        envForm.current?.reset()
-        suiteTable.current?.reset()
-    }
-
-    const handleChangeTemplateName = ({ target }: any) => {
-        requestTemplateRun({ job_type_id: detail.id, name: target.value })
-    }
-
-    const handleSaveTemplateModify = async () => {
-        if (fetching) return
-        setFetching(true)
-        let data = await transformDate()
-        if (isMonitorEmpty(data)) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
-        }
-        if (!data.test_config) {
-            setFetching(false)
-            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
-            return
-        }
-        if (!data.baseline) {
-            data.baseline = null
-        }
-        if (!data.baseline_job_id) {
-            data.baseline_job_id = null
-        }
-        if (!data.cleanup_info) {
-            data.cleanup_info = ""
-        }
-        const test_config = handleServerChannel(data.test_config)
-        const { code, msg } = await updateTestTemplate({
-            template_id: templateDatas.id,
-            workspace: ws_id,
-            job_type: detail.id,
-            ...data,
-            test_config
-        })
-
-        if (code === 200) {
-            const { data: [datas] } = await queryTestTemplateData({ template_id: templateDatas.id })
-            setTemplateDatas(datas)
-            setModifyTemplate(false)
-            setDisabled(true)
-            setTemplateEnable(data.enable)
-            message.success(formatMessage({ id: 'operation.success' }))
-            if (name !== 'TemplatePreview')
-                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
-        }
-        else
-            requestCodeMessage(code, msg)
-        setFetching(false)
-    }
-
-
-    const handleSaveCreateSubmit = async () => {
-        if (fetching) return
-        setFetching(true)
-
-        let data = await transformDate()
-        if (isMonitorEmpty(data)) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
-        }
-        if (!data.test_config) {
-            setFetching(false)
-            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
-        }
-        if (!data.baseline) {
-            data.baseline = null
-        }
-        const test_config = handleServerChannel(data.test_config)
-        const { code, msg } = await updateTestTemplate({
-            template_id: templateDatas.id,
-            workspace: ws_id,
-            job_type: detail.id,
-            ...data,
-            test_config
-        })
-
-        if (code === 200) {
-            message.success(formatMessage({ id: 'request.save.success' }))
-            history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
-        }
-        else requestCodeMessage(code, msg)
-        setFetching(false)
-    }
-
-    const handleTemplatePopoverChange = (v: any) => {
-        setTemplateBtnVisible(v)
-    }
-
-    const modalProps = {
-        disabled, ws_id,
-        template: templateDatas,
-        test_type: detail?.test_type,
-        business_type: detail?.business_type || '',
-        server_provider: detail?.server_type,
-        server_type: detail?.server_type,
-    }
-    const bodyPaddding = useMemo(() => {
-        if (layoutWidth >= 1240) return (1240 - 1000) / 2
-        return 20
-    }, [layoutWidth])
-
-    const bodySize = useSize(bodyRef)
-
-    const layoutCss = useMemo(() => {
-        const defaultCss = { minHeight: layoutHeight, overflow: 'auto', background: "#f5f5f5" }
-        return hasNav ? { ...defaultCss, paddingTop: 50 } : defaultCss
-    }, [layoutHeight, hasNav])
-
-    const handleFormatChange = async (operateType: any = '') => {
-        let parmas = {}
-        const envVal = envForm && envForm.current ? await goValidate(envForm.current.form) : {}
-        let server_provider = detail?.server_type
-        // operateType !== 'template' && setIsloading(true)
-        setIsloading(true)
-        if (!isYamlFormat) {
-            let formData = await transformDate()
-            const dataCopy = _.cloneDeep(formData)
-            const test_config = _.get(dataCopy, 'test_config')
-            if (_.isArray(test_config)) {
-                test_config.forEach((item: any) => {
-                    let cases = _.get(item, 'cases')
-                    const runMode = _.get(item, 'run_mode')
-                    if (_.isArray(cases)) {
-                        cases = cases.map((obj: any) => {
-                            let server: Object | null = {}
-                            const objCopy = _.cloneDeep(obj)
-                            if (_.has(objCopy, 'server_object_id') && objCopy.server_object_id !== undefined) {
-                                // server = {}
-                                const is_instance = _.get(objCopy, 'is_instance')
-                                let key = 'id'
-                                if (is_instance === 0 && server_provider === 'aliyun') key = 'config'
-                                if (is_instance === 1 && server_provider === 'aliyun') key = 'instance'
-                                if (runMode === 'cluster') key = 'cluster'
-                                server[key] = _.get(objCopy, 'server_object_id')
-                            }
-                            if (_.has(objCopy, 'server_tag_id') && objCopy.server_tag_id.length) server = { tag: _.get(objCopy, 'server_tag_id') }
-                            if (_.get(objCopy, 'customer_server')) {
-                                const customServer = _.get(objCopy, 'customer_server')
-                                server = { channel_type: customServer.custom_channel, ip: customServer.custom_ip }
-                            }
-                            if (server) obj.server = server
-                            delete obj.server_object_id
-                            delete obj.server_tag_id
-                            delete item.run_mode
-                            delete obj.is_instance
-                            delete obj.customer_server
-                            return obj
-                        })
-                        item.cases = cases
-                    }
-                })
-            }
-
-            dataCopy.test_config = test_config
-            delete dataCopy.moniter_contrl
-            delete dataCopy.reclone_contrl
-            if (!dataCopy.kernel_version) delete dataCopy.kernel_version
-            parmas = { type: 'json2yaml', json_data: dataCopy, workspace: ws_id }
-        }
-
-        if (isYamlFormat) parmas = { type: 'yaml2json', yaml_data: jobInfo, workspace: ws_id }
-
-        let { code, msg, data } = await formatYamlToJson(parmas)
-        // operateType !== 'template' && setIsloading(false)
-        setIsloading(false)
-        let result = {}
-        if (code === 200) {
-            if (!isYamlFormat) setJobInfo(data)
-            if (isYamlFormat) {
-                const dataCopy = _.cloneDeep(data)
-                const test_config = _.get(dataCopy, 'test_config')
-                if (_.isArray(test_config)) {
-                    test_config.forEach((item: any) => {
-                        let cases = _.get(item, 'cases')
-                        item.run_mode = 'standalone'
-                        if (_.isArray(cases)) {
-                            cases = cases.map((obj: any) => {
-                                const server = _.get(obj, 'server')
-                                if (_.has(server, 'id')) {
-                                    obj.server_object_id = _.get(server, 'id')
-                                }
-                                if (_.get(server, 'config')) {
-                                    obj.server_object_id = _.get(server, 'config')
-                                    obj.is_instance = 0
-                                }
-                                if (_.get(server, 'instance')) {
-                                    obj.server_object_id = _.get(server, 'instance')
-                                    obj.is_instance = 1
-                                }
-                                if (_.get(server, 'cluster')) {
-                                    obj.server_object_id = _.get(server, 'cluster')
-                                    item.run_mode = 'cluster'
-                                }
-                                if (_.get(server, 'tag') && _.get(server, 'tag').length) obj.server_tag_id = _.get(server, 'tag')
-                                if (_.get(server, 'channel_type') && _.get(server, 'ip')) {
-                                    obj.customer_server = { custom_channel: _.get(server, 'channel_type'), custom_ip: _.get(server, 'ip') }
-                                    obj.ip = _.get(server, 'ip')
-                                }
-                                if (_.get(server, 'name')) {
-                                    let ip = server.name
-                                    if (_.isArray(ip)) ip = ip.join(',')
-                                    obj.ip = ip
-                                }
-                                delete obj.server
-                                return obj
-                            })
-                            item.cases = cases
-                        }
-                    })
-                }
-                dataCopy.test_config = test_config
-                dataCopy.moniter_contrl = false
-                dataCopy.reclone_contrl = _.get(envVal, 'reclone_contrl') || false
-                if (_.get(dataCopy, 'monitor_info')) dataCopy.moniter_contrl = true
-                // 以下是表单值的同步
-                result = getFormData(dataCopy)
-            }
-            operateType !== 'template' && operateType !== 'submit' && setIsYamlFormat(!isYamlFormat)
-        } else {
-            requestCodeMessage(code, msg)
-        }
-        return { code, result }
-
     }
 
     const getFormData = (dataCopy: any) => {
@@ -798,6 +654,161 @@ const TestJob: React.FC<any> = (props) => {
         return { templateEditFormInfo, basicFormInfo, envFormInfo, moreFormInfo, new_test_config }
     }
 
+    const handleSaveTemplateOk = async (vals: any) => {
+        if (fetching) return false
+        setFetching(true)
+        let data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
+        }
+        data = {
+            workspace: ws_id,
+            ...data,
+            job_type: detail.id
+        }
+        const $test_config = handleServerChannel(data.test_config)
+        const { code, msg } = await saveTestTemplate({ ...data, test_config: $test_config, ...vals })
+
+        if (code === 200) {
+            message.success(formatMessage({ id: 'ws.test.job.operation.success' }))
+            saveTemplateDrawer.current.hide()
+            templatePopoverRefresh()
+            setInitialState({ ...initialState, refreshMenu: !initialState?.refreshMenu })
+        }
+        else
+            requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+
+    const handleOpenTemplate = async () => {
+        let resultData = {}
+        if (isYamlFormat) {
+            const { code, result } = await handleFormatChange('template')
+            resultData = result
+            if (code !== 200) return
+        }
+        const data = isYamlFormat ? await transformDate(resultData) : await transformDate()
+        if (isMonitorEmpty(data)) return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        if (!data.test_config) return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
+        if (name === 'TestJob' || name === 'TestExport')
+            saveTemplateDrawer.current.show()
+        else
+            handleSaveTemplateOk({})
+    }
+
+    const handleChangeTemplateName = ({ target }: any) => {
+        requestTemplateRun({ job_type_id: detail.id, name: target.value })
+    }
+
+    const handleSaveTemplateModify = async () => {
+        if (fetching) return
+        setFetching(true)
+        const data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
+            return
+        }
+        if (!data.baseline) {
+            data.baseline = null
+        }
+        if (!data.baseline_job_id) {
+            data.baseline_job_id = null
+        }
+        if (!data.cleanup_info) {
+            data.cleanup_info = ""
+        }
+        const $test_config = handleServerChannel(data.test_config)
+        const { code, msg } = await updateTestTemplate({
+            template_id: templateDatas.id,
+            workspace: ws_id,
+            job_type: detail.id,
+            ...data,
+            test_config: $test_config
+        })
+
+        if (code === 200) {
+            const { data: [datas] } = await queryTestTemplateData({ template_id: templateDatas.id })
+            setTemplateDatas(datas)
+            setModifyTemplate(false)
+            setDisabled(true)
+            setTemplateEnable(data.enable)
+            message.success(formatMessage({ id: 'operation.success' }))
+            if (name !== 'TemplatePreview')
+                history.push({ pathname: `/ws/${ws_id}/job/templates`, state: state || {} })
+        }
+        else
+            requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+
+
+    const handleSaveCreateSubmit = async () => {
+        if (fetching) return
+        setFetching(true)
+
+        const data = await transformDate()
+        if (isMonitorEmpty(data)) {
+            setFetching(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.machine.cannot.be.empty' }))
+        }
+        if (!data.test_config) {
+            setFetching(false)
+            return message.warning(formatMessage({ id: 'ws.test.job.suite.cannot.be.empty' }))
+        }
+        if (!data.baseline) {
+            data.baseline = null
+        }
+        const $test_config = handleServerChannel(data.test_config)
+        const { code, msg } = await updateTestTemplate({
+            template_id: templateDatas.id,
+            workspace: ws_id,
+            job_type: detail.id,
+            ...data,
+            test_config: $test_config
+        })
+
+        if (code === 200) {
+            message.success(formatMessage({ id: 'request.save.success' }))
+            history.push(`/ws/${ws_id}/test_job/${detail.id}?template_id=${templateDatas.id}`)
+        }
+        else requestCodeMessage(code, msg)
+        setFetching(false)
+    }
+
+    const handleTemplatePopoverChange = (v: any) => {
+        setTemplateBtnVisible(v)
+    }
+
+    const modalProps = {
+        disabled, ws_id,
+        template: templateDatas,
+        test_type: detail?.test_type,
+        business_type: detail?.business_type || '',
+        server_provider: detail?.server_type,
+        server_type: detail?.server_type,
+    }
+    const bodyPaddding = useMemo(() => {
+        if (layoutWidth >= 1240) return (1240 - 1000) / 2
+        return 20
+    }, [layoutWidth])
+
+    const bodySize = useSize(bodyRef)
+
+    const layoutCss = useMemo(() => {
+        const defaultCss = { minHeight: layoutHeight, overflow: 'auto', background: "#f5f5f5" }
+        return hasNav ? { ...defaultCss, paddingTop: 50 } : defaultCss
+    }, [layoutHeight, hasNav])
+
     const handleTestYaml = async () => {
         const parmas = { yaml_data: jobInfo, workspace: ws_id }
         const { code, msg } = await testYaml(parmas)
@@ -813,35 +824,26 @@ const TestJob: React.FC<any> = (props) => {
     }
 
     const fakeClick = (obj: any) => {
-        var ev = document.createEvent("MouseEvents");
+        const ev = document.createEvent("MouseEvents");
         ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
         obj.dispatchEvent(ev);
     }
 
-    const exportRaw = (name: string, data: any) => {
-        var urlObject = window.URL || window.webkitURL || window;
-        var export_blob = new Blob([data]);
-        var save_link: any = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+    const exportRaw = ($name: string, data: any) => {
+        const urlObject = window.URL || window.webkitURL || window;
+        const export_blob = new Blob([data]);
+        const save_link: any = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
         save_link.href = urlObject.createObjectURL(export_blob);
-        save_link.download = name;
+        save_link.download = $name;
         fakeClick(save_link);
     }
     const handleDownload = async () => {
         // const parmas = { type: 'yaml2json', yaml_data: jobInfo }
         // let { code, data } = await formatYamlToJson(parmas)
-        let fileName = 'job_' + (+new Date())
+        const fileName = 'job_' + (+new Date())
         // if (code === 200 && _.get(data, 'name')) fileName = _.get(data, 'name')
         exportRaw(`${fileName}.yaml`, jobInfo);
     }
-
-    const AuthPop = (
-        <Space>
-            <Typography.Text><FormattedMessage id="ws.test.job.no.permission, please.refer" /></Typography.Text>
-            <a href="/help_doc/2" target="_blank">
-                <FormattedMessage id="ws.test.job.help.docs" />
-            </a>
-        </Space>
-    )
 
     const queryProjectId = (id: any) => {
         setProjectId(id)
@@ -938,8 +940,8 @@ const TestJob: React.FC<any> = (props) => {
                                             <Popover
                                                 overlayClassName={styles.template_popover}
                                                 placement={"bottomRight"}
-                                                visible={templateBtnVisible}
-                                                onVisibleChange={handleTemplatePopoverChange}
+                                                open={templateBtnVisible}
+                                                onOpenChange={handleTemplatePopoverChange}
                                                 title={
                                                     <Input
                                                         autoComplete="off"

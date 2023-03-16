@@ -292,6 +292,7 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                                             const newVersion = list && list.length > 0 ? list[0] : undefined
                                             setListParams((p: any) => ({ ...p, page_num: 1, product_id: value, product_version: newVersion }))
                                             setProductVersions(list)
+                                            setSelectedRowDatas([])
                                         })
                                 }}
                                 options={
@@ -312,7 +313,10 @@ const AddJobTable: React.FC<AnyType> = (props) => {
                                 {...baseSelectProps}
                                 placeholder={formatMessage({ id: 'analysis.version.placeholder' })}
                                 value={listParams.product_version}
-                                onSelect={(value: any) => setListParams({ ...listParams, product_version: value })}
+                                onSelect={(value: any) => {
+                                    setListParams({ ...listParams, product_version: value })
+                                    setSelectedRowDatas([])
+                                }}
                                 options={
                                     productVersions?.map((item: any) => ({
                                         value: item,

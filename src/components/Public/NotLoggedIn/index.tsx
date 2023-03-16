@@ -1,7 +1,8 @@
 import React from 'react';
 import { Alert } from 'antd';
-import { history, useModel, useIntl, FormattedMessage } from 'umi'
+import { history, useModel, useIntl } from 'umi'
 import styled from 'styled-components';
+import { OPENANOLIS_LOGIN_URL } from '@/utils/utils';
 
 const SpanText = styled.span`
   font-family: PingFangSC;
@@ -14,12 +15,10 @@ const SpanText = styled.span`
 `
 export default (props: any) => {
   const { formatMessage } = useIntl()
-  const { initialState, setInitialState } = useModel('@@initialState')
 
   const notLoginToLogin = () => {
-    const { login_url } = initialState?.authList || {}
     if (BUILD_APP_ENV === 'openanolis') {
-        return window.location.href = login_url + location.pathname + location.search
+      return window.location.href = OPENANOLIS_LOGIN_URL + location.pathname + location.search
     }
     return history.push(`/login?redirect_url=${window.location.pathname}`)
   }
@@ -27,14 +26,14 @@ export default (props: any) => {
   return (
     <Alert message={
       <div>
-        <span>{formatMessage({id: 'you.haven.not.signed.in'})}</span>
+        <span>{formatMessage({ id: 'you.haven.not.signed.in' })}</span>
         <SpanText onClick={notLoginToLogin}>
-          {formatMessage({id: 'go.to.login'})}
+          {formatMessage({ id: 'go.to.login' })}
         </SpanText>
       </div>
     }
       type="info"
-      showIcon 
+      showIcon
       closable />
   )
 }

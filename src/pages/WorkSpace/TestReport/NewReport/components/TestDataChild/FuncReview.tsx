@@ -234,7 +234,7 @@ const FuncDataIndex: React.FC<any> = (props) => {
                                 </SubCaseTitle>
                                 {
                                     !!item.compare_data.length ?
-                                        item.compare_data.map((cur: any, idx: number) => {
+                                        item.compare_data?.slice(0, groupLen).map((cur: any, idx: number) => {
                                             return (
                                                 <SubCaseText gLen={groupLen} btnState={btnState} key={idx}>
                                                     <Typography.Text style={{ color: handleCaseColor(cur) }}>{cur || '-'}</Typography.Text>

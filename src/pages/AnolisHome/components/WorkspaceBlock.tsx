@@ -5,7 +5,7 @@ import { useModel, history } from "umi"
 
 import styled from "styled-components"
 import { useSize } from "ahooks"
-import { jumpWorkspace } from '@/utils/utils'
+import { jumpWorkspace, OPENANOLIS_LOGIN_URL } from '@/utils/utils'
 
 const Container = styled.div`
     height: 96px;
@@ -31,7 +31,7 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
     const { show_name, owner_name, avatar, description, is_public, id } = props
 
     const { initialState } = useModel("@@initialState")
-    const { user_id, login_url } = initialState?.authList || {}
+    const { user_id, } = initialState?.authList || {}
 
     const ref = React.useRef(null)
     const size = useSize(ref)
@@ -39,7 +39,7 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
     const handleEnterWs = async () => {
         if (!user_id && !is_public) {
             if (BUILD_APP_ENV === 'openanolis') {
-                return window.location.href = login_url
+                return window.location.href = OPENANOLIS_LOGIN_URL
             }
             return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
         }

@@ -124,7 +124,7 @@ const TestJobSuiteTable: React.FC<Record<string, any>> = (props) => {
 					)
 				}
 
-				const text = !['随机'].includes($ip) ? $ip : random
+				const text = $ip && !['随机'].includes($ip) ? $ip : random
 				return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{text || "-"}</ColumnEllipsisText>
 			},
 		},

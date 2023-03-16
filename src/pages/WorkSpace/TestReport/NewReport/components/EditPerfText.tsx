@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Input, notification, message } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import { useIntl, Access, useAccess } from 'umi';
+import { useIntl, Access, useAccess, useLocation } from 'umi';
 import { AccessTootip } from '@/utils/utils';
 import styled from 'styled-components';
 import _ from 'lodash';
@@ -35,7 +35,8 @@ export const PerfTextArea = ({
         defaultHolder?: string,
     }) => {
     const access = useAccess();
-    const { formatMessage } = useIntl() 
+    const { pathname } = useLocation()
+    const { formatMessage } = useIntl()
     const [btn, setBtn] = useState(false)
     const [title, setTitle] = useState('')
 
@@ -58,7 +59,7 @@ export const PerfTextArea = ({
         }
         return list[name];
     }
-    
+
     const handleBlur = async () => {
         const { item_suite_id, suite_name } = suite
         let obj: any = {
@@ -79,41 +80,42 @@ export const PerfTextArea = ({
         return title || '-'
     }
 
+    if (!!~pathname.indexOf("/test_create_report"))
+        return (
+            <div style={{ width: '100%', ...style }}>
+                <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+            </div>
+        )
+
+    if (btn) {
+        return (
+            <div style={{ marginBottom: space }}>
+                <TextAreaWarrper
+                    autoComplete="off"
+                    size="small"
+                    placeholder={defaultHolder}
+                    style={{ padding: '10px', ...fontStyle }}
+                    value={title}
+                    onChange={evt => setTitle(evt.target.value)}
+                    onBlur={handleBlur}
+                />
+            </div>
+        )
+    }
     return (
-        <>
-            {
-                btn ?
-                    <>
-                        {
-                            <div style={{ marginBottom: space }}>
-                                <TextAreaWarrper
-                                    autoComplete="off"
-                                    size="small"
-                                    placeholder={defaultHolder}
-                                    style={{ padding: '10px', ...fontStyle }}
-                                    value={title}
-                                    onChange={evt => setTitle(evt.target.value)}
-                                    onBlur={handleBlur}
-                                />
-                            </div>
-                        }
-                    </>
-                    :
-                    <div style={{ width: '100%', ...style }}>
-                        <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
-                        <Access accessible={access.WsTourist()}>
-                            <Access
-                                accessible={access.WsMemberOperateSelf(Number(window.location.search.substring(5, window.location.search.length)))}
-                                fallback={
-                                    <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
-                                }
-                            >
-                                <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
-                            </Access>
-                        </Access>
-                    </div>
-            }
-        </>
+        <div style={{ width: '100%', ...style }}>
+            <Typography.Text style={fontStyle}>{handleChange(title)}</Typography.Text>
+            <Access accessible={access.WsTourist()}>
+                <Access
+                    accessible={access.WsMemberOperateSelf(Number(window.location.search.substring(5, window.location.search.length)))}
+                    fallback={
+                        <EditOutlined onClick={() => AccessTootip()} style={{ paddingLeft: 10 }} />
+                    }
+                >
+                    <EditOutlined style={{ paddingLeft: 10 }} onClick={() => setBtn(true)} />
+                </Access>
+            </Access>
+        </div>
     )
 }
 
@@ -178,6 +180,7 @@ export const GroupItemText = ({
         if (_.isNull(title) || _.isUndefined(title)) return formatMessage({ id: 'report.not.filled.in' })
         return title
     }
+
     return (
         <>
             {
