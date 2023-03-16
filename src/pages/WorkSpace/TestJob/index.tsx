@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Row, Tag, Space, Button, Col, Spin, Typography, message, Menu, Input, Popover, Popconfirm } from 'antd'
 
 import { history, useRequest, useModel, useAccess, Access, useIntl, FormattedMessage, useParams, useLocation } from 'umi'
-import { requestCodeMessage, AccessTootip } from '@/utils/utils'
+import { requestCodeMessage, AccessTootip, redirectErrorPage } from '@/utils/utils'
 import { useClientSize, writeDocumentTitle, useCopyText } from '@/utils/hooks'
 import styles from './index.less'
 import EllipsisPulic from '@/components/Public/EllipsisPulic'
@@ -116,7 +116,12 @@ const TestJob: React.FC<any> = (props) => {
                 template_id = jt_id
 
             if (template_id) {
-                const { data: [datas] } = await queryTestTemplateData({ template_id })
+                const { code, data } = await queryTestTemplateData({ template_id })
+                if (code === 500) {
+                    redirectErrorPage(500)
+                    return
+                }
+                const [datas] = data
                 job_type_id = datas.job_type_id
                 setTemplateDatas(datas)
                 setTest_config(datas.test_config)

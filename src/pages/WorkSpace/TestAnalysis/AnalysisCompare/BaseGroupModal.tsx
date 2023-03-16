@@ -66,6 +66,7 @@ const BaseGroupModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props,
         if (isFetch) return
         setIsFetch(true)
         const { data, code, msg } = await querySuiteList(params)
+        setIsFetch(false)
         if (code === 200) {
             const obj1 = data.func_suite_dic || {}
             const obj2 = data.perf_suite_dic || {}
