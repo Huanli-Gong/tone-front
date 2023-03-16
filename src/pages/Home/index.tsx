@@ -14,7 +14,7 @@ import { queryDocList } from '@/pages/DOC/services'
 import HomePush from './Component/HomePush'
 import AvatarCover from '@/components/AvatarCover'
 import CommonPagination from '@/components/CommonPagination'
-import { jumpWorkspace, redirectErrorPage } from '@/utils/utils'
+import { jumpWorkspace, OPENANOLIS_LOGIN_URL, redirectErrorPage } from '@/utils/utils'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
 const { TabPane } = Tabs;
@@ -92,7 +92,7 @@ export default (): React.ReactNode => {
     const [loading, setLoading] = useState(true)
     const [wsLoading, setWsLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
-    const { user_id, login_url } = initialState?.authList || {}
+    const { user_id, } = initialState?.authList || {}
     const [wsParmas, setWsPasmas] = useState<wsParmas>({
         page_size: 50,
         page_num: 1,
@@ -185,7 +185,7 @@ export default (): React.ReactNode => {
 
         if (!user_id && !record.is_public) {
             if (BUILD_APP_ENV === 'openanolis') {
-                return window.location.href = login_url
+                return window.location.href = OPENANOLIS_LOGIN_URL
             }
             return history.push(`/login?redirect_url=${jumpWorkspace(record.id)}`)
         }

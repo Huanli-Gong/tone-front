@@ -46,7 +46,9 @@ export default (props: any) => {
         }
 
         /* 刷新直接进入ws，有ws_id但无记录，没有请求过history，请求记录历史接口 */
-        if (!fetchHistory) getHistoryFetcher()
+        if (!fetchHistory) {
+            getHistoryFetcher()
+        }
 
         const { ws_role_title, ws_is_exist, sys_role_title } = flag
 
@@ -56,9 +58,9 @@ export default (props: any) => {
     }
 
     useEffect(() => {
-        if (!["/404", "/401", "/500"].map((i: string) => `/ws/${ws_id}/${i}`).includes(locationHistory.pathname))
+        if (![404, 401, 500].map((i: number) => `/ws/${ws_id}/${i}`).includes(locationHistory.pathname))
             checkAccess()
-    }, [locationHistory.pathname])
+    }, [locationHistory.pathname, ws_id])
 
     return children
 }
