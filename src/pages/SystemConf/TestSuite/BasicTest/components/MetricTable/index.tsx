@@ -181,7 +181,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 
 	const rowSelection = {
 		selectedRowKeys: metricDelInfo?.selectedRowKeys,
-		getCheckboxProps: (record: AnyType) => ({
+		getCheckboxProps: () => ({
 			disabled: !!selectedRowKeys?.length, // Column configuration not to be checked
 		}),
 		onChange: onSelectChange,
