@@ -1,13 +1,13 @@
 import React, { useEffect } from "react"
-import { Col, Row, Space, Typography, Divider, DatePicker, Button, message } from "antd"
+import { Col, Row, Space, Typography, Divider, DatePicker, Button } from "antd"
 import FilterItem from "./Item"
 import { filterColumns } from "./columns"
 import moment from "moment"
 import { ReactComponent as CopyLink } from '@/assets/svg/TestResult/icon_link.svg'
-import Clipboard from "clipboard"
 import { stringify } from "querystring"
 import { useIntl, FormattedMessage } from "umi"
 import { transQuery } from "../utils"
+import { useCopyText } from "@/utils/hooks"
 
 const TimerPick: React.FC = (props) => (
     <DatePicker.RangePicker
@@ -69,7 +69,7 @@ const FilterForm: React.FC<IProps> = (props) => {
     const handleLeftChange = (vals: any) => {
         const result = Object.entries(vals).reduce((pre: any, cur: any) => {
             const [name, value] = cur;
-            if (["creators", "tags", "test_suite"].includes(name)) {
+            if (["creators", "tags", "test_suite", "server"].includes(name)) {
                 if (value && value.length === 0) {
                     pre[name] = undefined
                     return pre
@@ -119,23 +119,13 @@ const FilterForm: React.FC<IProps> = (props) => {
         onChange?.(fetchData)
     }
 
-    const copy = () => {
-        const dom = document.createElement("a")
-        dom.style.width = "0px";
-        dom.style.height = "0px"
-        document.body.appendChild(dom)
+    const handleCopyText = useCopyText(formatMessage({ id: 'ws.result.details.copied' }))
 
+    const handleShare = () => {
         const t = transQuery(pageQuery)
         const text = location.origin + location.pathname + "?" + stringify(t)
-        const cp = new Clipboard(dom, {
-            text: () => text
-        })
-        cp.on("success", () => {
-            message.success(formatMessage({ id: 'ws.result.details.copied' }))
-        })
-        dom.click()
-        cp.destroy()
-        document.body.removeChild(dom)
+
+        handleCopyText(text)
     }
 
     useEffect(() => {
@@ -225,7 +215,7 @@ const FilterForm: React.FC<IProps> = (props) => {
                     <Space style={{ paddingLeft: 65 }}>
                         <Button type="primary" onClick={() => onChange && onChange(values)}><FormattedMessage id="operation.filter" /></Button>
                         <Button onClick={reset}><FormattedMessage id="operation.reset" /></Button>
-                        <Typography.Link onClick={copy}>
+                        <Typography.Link onClick={handleShare}>
                             <Space size={4}>
                                 <CopyLink />
                                 <Typography.Text><FormattedMessage id="operation.share" /></Typography.Text>
