@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Space, Pagination, message, Typography } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import { useIntl, FormattedMessage, useParams } from 'umi'
+import { useIntl, FormattedMessage, useParams, useLocation } from 'umi'
 import { matchType } from '@/utils/utils'
 import { querySearchList } from '../../service'
 import styles from './SearchPageTable.less'
@@ -10,7 +10,8 @@ import styles from './SearchPageTable.less'
 const SearchPageList: React.FC<any> = (props: any) => {
   const { formatMessage } = useIntl()
   const { ws_id } = useParams() as any
-  const { searchKey = "", tabKey, loadingCallback = () => { } } = props
+  const { tabKey, loadingCallback = () => { } } = props
+  const { query: { keyword } } = useLocation() as any
 
   // 分页数据
   const [dataSource, setDataSource] = useState<any>([])
@@ -24,7 +25,7 @@ const SearchPageList: React.FC<any> = (props: any) => {
   const getListData = async (query: any) => {
     try {
       loadingCallback(true)
-      const res = await querySearchList({ search_key: searchKey, search_type: tabKey, ...query }) || {}
+      const res = await querySearchList({ search_key: keyword, search_type: tabKey, ...query }) || {}
       const { data = {} }: any = res
       if (res.code === 200 && Array.isArray(data.data) && data.data.length && tabKey === 'all') {
         // all的数据结构
@@ -67,10 +68,10 @@ const SearchPageList: React.FC<any> = (props: any) => {
   }
 
   useEffect(() => {
-    if (searchKey) {
+    if (keyword) {
       getListData({ page_num: pagination.pageNum, page_size: pagination.pageSize })
     }
-  }, [searchKey, tabKey])
+  }, [keyword, tabKey])
 
   const handleClick = (item: any) => {
     if (item.id && item.test_suite_id) {
@@ -90,9 +91,9 @@ const SearchPageList: React.FC<any> = (props: any) => {
 
   // 让字符串中特定字符红色显示
   const matchTextColor = (params: string) => {
-    if (params && searchKey) {
-      var reg = new RegExp("(" + searchKey + ")", "g");
-      let newStr: any = params.replace(reg, `<span style='color: #f00;opacity:1'>${searchKey}</span>`)
+    if (params && keyword) {
+      var reg = new RegExp("(" + keyword + ")", "g");
+      let newStr: any = params.replace(reg, `<span style='color: #f00;opacity:1'>${keyword}</span>`)
       return <span dangerouslySetInnerHTML={{ __html: newStr }} />
     }
     return params
