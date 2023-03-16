@@ -3,12 +3,21 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="referrer" content="unsafe-url">
+    <meta name="referrer" content="unsafe-url" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+
     <title>T-One</title>
-    <meta name="description" content="T-One（testing in one）提供一站式自动化测试集成、管理、执行、分析，以及跨团队、跨企业质量协作能力。">
-    <meta property="og:description" content="T-One（testing in one）提供一站式自动化测试集成、管理、执行、分析，以及跨团队、跨企业质量协作能力。">
+
+    <meta name="keywords" content="T-One Openanolis openanolis anolis 自动化测试 操作系统" />
+    <meta name="description" content="T-One（testing in one）提供一站式自动化测试集成、管理、执行、分析，以及跨团队、跨企业质量协作能力。" />
+    <meta name="description" content="T-One(Testing in One) provides one-stop automatic test integration, management, execution, analysis and quality collaboration capabilities across teams and enterprises." />
+    <meta property="og:description" content="T-One（testing in one）提供一站式自动化测试集成、管理、执行、分析，以及跨团队、跨企业质量协作能力。" />
+    <meta property="og:description" content="T-One(Testing in One) provides one-stop automatic test integration, management, execution, analysis and quality collaboration capabilities across teams and enterprises." />
+    
+    <meta property="og:image" content="<%= context.config.publicPath +'favicon.png'%>">
+    <link rel="shortcut icon" type="image/png" href="<%= context.config.publicPath +'favicon.png'%>" />
+    <link rel="shortcut icon" type="image/x-icon" href="<%= context.config.publicPath +'favicon.ico'%>" />
 </head>
 <body>
     <noscript>Missing network , Please refresh this page!</noscript>
@@ -23,7 +32,7 @@
             }
 
             #root {
-                background-image: url('/home_bg.png');
+                background-image: url("<%= context.config.publicPath + 'home_bg.png'%>");
                 background-repeat: no-repeat;
                 background-size: 100% auto;
             }
@@ -171,14 +180,9 @@
                 }
             }
         </style>
-        <div style="
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          flex-direction: column;
-          min-height: 420px;
-          height: 100%;
-        ">
+        <div 
+            style="display: flex;justify-content: center;align-items: center;flex-direction: column;min-height: 420px;height: 100%;"
+        >
             <div class="page-loading-warp">
                 <div class="ant-spin ant-spin-lg ant-spin-spinning">
                     <span class="ant-spin-dot ant-spin-dot-spin"><i class="ant-spin-dot-item"></i><i
@@ -188,7 +192,6 @@
             </div>
         </div>
     </div>
-    <div id="router-prompt"></div>
 </body>
 
 </html>
