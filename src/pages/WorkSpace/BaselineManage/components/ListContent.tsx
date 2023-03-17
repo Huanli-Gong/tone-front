@@ -103,7 +103,7 @@ const ListContent: React.FC<IProps> = (props) => {
                                 {item?.name || "-"}
                             </Title>
                             <Access
-                                accessible={access.WsMemberOperateSelf()}
+                                accessible={access.WsMemberOperateSelf(item?.creator)}
                                 fallback={
                                     <MinusCircleOutlined onClick={() => AccessTootip()} />
                                 }
