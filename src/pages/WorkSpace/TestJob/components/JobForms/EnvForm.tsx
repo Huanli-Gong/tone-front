@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react'
-import { Form, Radio, Row, Col, Select, Input } from 'antd'
+import { Form, Radio, Row, Col, Select, Input, Space, Typography } from 'antd'
 import styles from './index.less'
 import type { FormProps } from './'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
@@ -306,17 +306,22 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                     <QuestionCircleComponent
                         style={{ transform: "unset", top: 6 }}
                         contextNode={
-                            <ul style={{ listStyle: 'auto', paddingInlineStart: 20, paddingTop: 8, maxWidth: 525 }}>
+                            <div style={{ maxWidth: 525 }}>
                                 {
                                     new Array(6).fill("").map((i: any, idx: number) => (
-                                        <li key={uuid()}>
-                                            {formatMessage({
-                                                id: `job.form.env_info.${idx + 1}`
-                                            })}
-                                        </li>
+                                        <Space key={uuid()} align="start">
+                                            <Typography.Text style={{ whiteSpace: "nowrap" }}>
+                                                {idx + 1}.
+                                            </Typography.Text>
+                                            <div >
+                                                {formatMessage({
+                                                    id: `job.form.env_info.${idx + 1}`
+                                                })}
+                                            </div>
+                                        </Space>
                                     ))
                                 }
-                            </ul>
+                            </div>
                         }
                     />
                 </Form.Item>
