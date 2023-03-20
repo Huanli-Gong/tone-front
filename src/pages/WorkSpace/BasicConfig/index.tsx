@@ -28,11 +28,11 @@ const { Text } = Typography
 const WorkspaceBasicConfig: React.FC = () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
+    const { historyList, setHistoryList } = useModel('workspaceHistoryList');
 
     const { ws_id } = useParams() as any
 
     const access = useAccess();
-    const { setInitialState } = useModel<any>('@@initialState')
 
     const [detail, setDetail] = useState<any>()
     const [firstDetail, setFirstDetail] = useState()
@@ -50,19 +50,17 @@ const WorkspaceBasicConfig: React.FC = () => {
         const regDescription = !(/^([\w\W]){1,200}$/.test(description))
         setErrorReg({ regShowName, regName, regDescription })
     }
-    
+
     const workspaceInit = async () => {
         const { data, code, msg } = await queryWorkspaceDetail(ws_id)
         if (code === 200) {
             setDetail(_.cloneDeep(data))
             setInitFormStatus(data)
             setFirstDetail(data)
-            setInitialState((p: any) => ({
-                ...p, workspaceHistoryList: p.workspaceHistoryList.reduce((pre: any, cur: any) => {
-                    if (cur.id === ws_id) return pre.concat(data)
-                    return pre.concat(cur)
-                }, [])
-            }))
+            setHistoryList((p: any) => (p.reduce((pre: any, cur: any) => {
+                if (cur.id === ws_id) return pre.concat(data)
+                return pre.concat(cur)
+            }, [])))
         }
         else requestCodeMessage(code, msg)
     }

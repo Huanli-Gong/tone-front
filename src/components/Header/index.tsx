@@ -31,6 +31,7 @@ const defaultParams = { enable: "True", page_num: 1, page_size: 999 }
 const Header: React.FC<Record<string, any>> = (props: any) => {
     const { formatMessage } = useIntl()
     const { initialState, setInitialState } = useModel('@@initialState')
+
     const { pathname } = useLocation()
     const [isWs, setIsWs] = useState(false)
     const [backLogo, setBackLogo] = useState(false)

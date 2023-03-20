@@ -70,7 +70,7 @@ const WorkspaceDropdownMenu = styled(Menu)`
 
 export const HearderDropdown: React.FC<any> = (props) => {
     const { ws_id } = props
-    const { initialState, setInitialState } = useModel('@@initialState')
+    const { historyList, setHistoryList } = useModel('workspaceHistoryList');
 
     const DEFAULT_PAGE_PARAMS = { page_num: 1, page_size: 20, call_page: 'menu', ws_id }
     const [pageParams, setPageParams] = useState(DEFAULT_PAGE_PARAMS)
@@ -83,28 +83,25 @@ export const HearderDropdown: React.FC<any> = (props) => {
             redirectErrorPage(500)
             return
         }
-        setInitialState((p: any) => {
-            if (!p.workspaceHistoryList) return { ...p, workspaceHistoryList: data }
-            const obj = p.workspaceHistoryList.concat(data).reduce((pre: any, cur: any) => {
+        setHistoryList((p: any) => {
+            if (!p) return data
+            const obj = p.concat(data).reduce((pre: any, cur: any) => {
                 pre[cur.id] = cur
                 return pre
             }, {})
-            return {
-                ...p,
-                workspaceHistoryList: Object.entries(obj).map((item: any) => {
-                    const [, val] = item
-                    return val
-                })
-            }
+            return Object.entries(obj).map((item: any) => {
+                const [, val] = item
+                return val
+            })
         })
     }
 
     const current = React.useMemo(() => {
-        if (!initialState.workspaceHistoryList) return {}
-        const [workspace] = initialState.workspaceHistoryList?.filter(({ id }: any) => id === ws_id)
+        if (!historyList) return {}
+        const [workspace] = historyList?.filter(({ id }: any) => id === ws_id)
         if (workspace) return workspace
         return {}
-    }, [initialState.workspaceHistoryList, ws_id])
+    }, [historyList, ws_id])
 
     useEffect(() => {
         queryWorkspaceList(pageParams)
@@ -127,7 +124,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
         }
     }
 
-    if (initialState.workspaceHistoryList?.length === 0)
+    if (historyList?.length === 0)
         return (
             <WorkspaceTitle align="middle" justify="space-between">
                 <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
@@ -144,7 +141,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
                         onScroll={hanldeScroll}
                     >
                         {
-                            initialState?.workspaceHistoryList?.map(
+                            historyList?.map(
                                 (workspace: any) => {
                                     const isActive = ws_id === workspace.id
                                     return (
