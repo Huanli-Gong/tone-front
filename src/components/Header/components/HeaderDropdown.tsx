@@ -5,7 +5,6 @@ import { CaretDownOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/i
 import { queryWorkspaceHistory } from '@/services/Workspace'
 import styles from './index.less'
 import { history, useModel } from 'umi'
-import _ from 'lodash'
 
 import styled from 'styled-components'
 import { jumpWorkspace, redirectErrorPage } from '@/utils/utils'
@@ -77,14 +76,27 @@ export const HearderDropdown: React.FC<any> = (props) => {
     const [pageParams, setPageParams] = useState(DEFAULT_PAGE_PARAMS)
     const [isOver, setIsOver] = useState(false)
 
-    const queryWorkspaceList = async (params: any) => {
+    const queryWorkspaceList = async (params: any = DEFAULT_PAGE_PARAMS) => {
         const { data = [], code, next } = await queryWorkspaceHistory(params)
         if (!next) setIsOver(true)
         if (code !== 200) {
             redirectErrorPage(500)
             return
         }
-        setInitialState((p: any) => ({ ...p, workspaceHistoryList: p.workspaceHistoryList ? p.workspaceHistoryList.concat(data) : data }))
+        setInitialState((p: any) => {
+            if (!p.workspaceHistoryList) return { ...p, workspaceHistoryList: data }
+            const obj = p.workspaceHistoryList.concat(data).reduce((pre: any, cur: any) => {
+                pre[cur.id] = cur
+                return pre
+            }, {})
+            return {
+                ...p,
+                workspaceHistoryList: Object.entries(obj).map((item: any) => {
+                    const [, val] = item
+                    return val
+                })
+            }
+        })
     }
 
     const current = React.useMemo(() => {
@@ -97,17 +109,21 @@ export const HearderDropdown: React.FC<any> = (props) => {
     useEffect(() => {
         queryWorkspaceList(pageParams)
         return () => {
-            setPageParams(DEFAULT_PAGE_PARAMS)
-            setInitialState((p: any) => ({ ...p, workspaceHistoryList: [] }))
             setIsOver(false)
         }
-    }, [])
+    }, [pageParams])
+
+    /* React.useEffect(() => {
+        return () => {
+            setInitialState((p: any) => ({ ...p, workspaceHistoryList: [] }))
+        }
+    }, [ws_id]) */
 
     const hanldeScroll = ({ target }: any) => {
         const { clientHeight, scrollTop, scrollHeight } = target
         if (clientHeight + scrollTop === scrollHeight && !isOver) {
-            setPageParams({ ...pageParams, page_num: pageParams.page_num + 1 })
-            queryWorkspaceList({ ...pageParams, page_num: pageParams.page_num + 1 })
+            const params = { ...pageParams, page_num: pageParams.page_num + 1 }
+            setPageParams(params)
         }
     }
 
