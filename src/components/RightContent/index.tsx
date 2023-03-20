@@ -26,18 +26,18 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     const [tab, setTab] = useState('1')
     const [dropVisible, setDropVisible] = useState(false)
     const access = useAccess()
-    const handleTabClick = (tab: string) => {
-        setTab(tab)
+    const handleTabClick = ($tab: string) => {
+        setTab($tab)
     }
     const { msgNum, increment } = useModel('msg', (ret) => ({
         msgNum: ret.msgNum,
         increment: ret.increment,
     }));
-    const { navTheme, layout } = initialState.settings;
+    /* const { navTheme, layout } = initialState.settings;
     let className = styles.right;
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
-    }
+    } */
     const { ws_need_need_approval, ws_is_public, ws_role_title } = initialState?.authList || {};
 
     useEffect(() => {
@@ -97,7 +97,12 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
         // const isBoolean = Object.prototype.toString.call(ws_is_common) === "[object Boolean]"
         const isBoolean = Object.prototype.toString.call(ws_role_title) === "[object String]"
         const isTourist = ws_role_title === 'ws_tourist' || ''
-        return isWs && access.loginBtn() && ws_is_public && (isBoolean && isTourist)
+        /* 
+            isWs && access.loginBtn() && ws_is_public && (isBoolean && isTourist)
+        */
+        if (isWs && access.loginBtn() && ws_is_public)
+            if (isBoolean && isTourist) return true
+        return false
     }, [isWs, access, ws_is_public, ws_role_title])
 
     React.useEffect(() => {
@@ -159,17 +164,27 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                                         </Button>
                                     }
                                 >
-                                    <Tabs.TabPane key="1" tab={
-                                        <Badge dot={msgNum.task_msg_state}><FormattedMessage id="right.content.task.notification" /></Badge>
-                                    }>
+                                    <Tabs.TabPane key="1"
+                                        tab={
+                                            <Badge dot={msgNum.task_msg_state}>
+                                                <FormattedMessage id="right.content.task.notification" />
+                                            </Badge>
+                                        }
+                                    >
                                         <TaskInform tab={tab} />
                                     </Tabs.TabPane>
-                                    <Tabs.TabPane key="2" tab={
-                                        <Badge count={msgNum.apply_msg_unread_num} size="small" offset={[msgNum.apply_msg_unread_num < 10 ? 6 : 12, 0]}>
-                                            {/* 系统通知 */}
-                                            <FormattedMessage id="right.content.system.notification" />
-                                        </Badge>
-                                    }>
+                                    <Tabs.TabPane key="2"
+                                        tab={
+                                            <Badge
+                                                count={msgNum.apply_msg_unread_num}
+                                                size="small"
+                                                offset={[msgNum.apply_msg_unread_num < 10 ? 6 : 12, 0]}
+                                            >
+                                                {/* 系统通知 */}
+                                                <FormattedMessage id="right.content.system.notification" />
+                                            </Badge>
+                                        }
+                                    >
                                         <SystemInform tab={tab} />
                                     </Tabs.TabPane>
                                 </Tabs>
@@ -185,7 +200,12 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                             <Badge dot={msgNum?.task_msg_state} style={{ cursor: 'pointer' }}>
                                 <MessageIcon />
                             </Badge> :
-                            <Badge className={styles.badge_item} count={msgNum?.apply_msg_unread_num} style={{ cursor: 'pointer' }} overflowCount={99}>
+                            <Badge
+                                className={styles.badge_item}
+                                count={msgNum?.apply_msg_unread_num}
+                                style={{ cursor: 'pointer' }}
+                                overflowCount={99}
+                            >
                                 <MessageIcon />
                             </Badge>
                     }
@@ -200,10 +220,18 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
                         fallback={
                             BUILD_APP_ENV === 'openanolis' ?
                                 <Space>
-                                    <Button type="text" size="small" style={{ color: '#fff', fontWeight: 500 }} onClick={() => location.replace(OPENANOLIS_LOGIN_URL)}>
+                                    <Button
+                                        type="text"
+                                        size="small"
+                                        style={{ color: '#fff', fontWeight: 500 }}
+                                        onClick={() => location.replace(OPENANOLIS_LOGIN_URL)}
+                                    >
                                         <FormattedMessage id="right.content.login" />
                                     </Button>
-                                    <Button type="primary" onClick={() => location.replace(OPENANOLIS_REGIST_URL)}>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => location.replace(OPENANOLIS_REGIST_URL)}
+                                    >
                                         <FormattedMessage id="right.content.register" />
                                     </Button>
                                 </Space> :
