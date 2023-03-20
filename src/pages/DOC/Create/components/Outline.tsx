@@ -43,11 +43,11 @@ const Outline: React.FC<IProps> = ({ json }) => {
 
     // console.log(result)
     const hanldeClick = React.useCallback((node: any) => {
-        const { content, attrs } = node
-        const { text } = content[0]
+        const { content: $content, attrs } = node
+        const { text } = $content[0]
         const { level } = attrs
-        document.querySelectorAll(`h${level}`).forEach((ele) => {
-            if (ele.innerHTML === text)
+        document.querySelectorAll(`.ProseMirror h${level}`).forEach((ele: any) => {
+            if (ele.innerText === text)
                 scrollIntoView(ele, {
                     behavior: 'smooth',
                     block: 'start',
