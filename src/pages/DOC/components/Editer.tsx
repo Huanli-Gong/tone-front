@@ -8,7 +8,6 @@ import { queryDocList } from '../services'
 import Loading from './Loading';
 import Empty from './Empty'
 import Catalog from './Catalog'
-import moment from 'moment';
 import lodash from 'lodash'
 import { tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
@@ -158,7 +157,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
                                         </Access>
                                     </EditorTitle>
                                     <Typography.Text type="secondary">
-                                        更新时间：{gmt_modified && moment(gmt_modified).format('YYYY-MM-DD hh:mm:ss')}
+                                        更新时间：{gmt_modified}
                                     </Typography.Text>
                                 </>
                             }
