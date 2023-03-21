@@ -62,17 +62,18 @@ const Outline: React.FC<IProps> = ({ json }) => {
                 <Typography.Title level={4} style={{ fontWeight: 'normal', margin: 0 }}>大纲</Typography.Title>
                 <Divider style={{ margin: 0 }} />
                 {
-                    result?.map(({ level, text, index, node }: OutlineItem) => (
-                        <TitleWrap
-                            key={index}
-                            textIndent={level}
-                            onClick={() => hanldeClick(node)}
-                        >
-                            <Typography.Text ellipsis={{ tooltip: true }} style={{ width: 250 }}>
-                                {text}
-                            </Typography.Text>
-                        </TitleWrap>
-                    ))
+                    result?.filter(({ text }: OutlineItem) => !!text.trim())
+                        .map(({ level, text, index, node }: OutlineItem) => (
+                            <TitleWrap
+                                key={index}
+                                textIndent={level}
+                                onClick={() => hanldeClick(node)}
+                            >
+                                <Typography.Text ellipsis={{ tooltip: true }} style={{ width: 250 }}>
+                                    {text}
+                                </Typography.Text>
+                            </TitleWrap>
+                        ))
                 }
             </Space>
         </Wrapper>
