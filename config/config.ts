@@ -5,7 +5,7 @@ import routes from './routes';
 
 const { REACT_APP_ENV, BUILD_APP_ENV, logoutUrl, self_agent, self_agent_name, agent_list, NODE_ENV } = process.env;
 
-const isDev = NODE_ENV === 'develepment';
+const isDev = NODE_ENV === 'development';
 /* REPLACE_KEY 用作后端替换字符串，具体字符串可以与后端沟通协定 */
 const REPLACE_KEY = 'TONE_WEB_RENDER_TONE_FRONT_REPLACE_KEY'
 

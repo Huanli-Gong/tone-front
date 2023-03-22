@@ -3,6 +3,7 @@ import { Button, Pagination, Row, Space, Spin, Typography } from "antd"
 import { useIntl, useLocation, useParams } from 'umi'
 import { queryBaselineList } from './services'
 import { requestCodeMessage } from '@/utils/utils';
+import { ImportOutlined } from "@ant-design/icons"
 import styled from 'styled-components'
 
 import AddModal from "./components/AddModal"
@@ -139,12 +140,17 @@ const BaselineManage: React.FC<IProps> = (props) => {
             <Body>
                 <Left >
                     <LeftTopButton>
-                        <Button
-                            type="primary"
-                            onClick={() => addBaselineModal.current?.show()}
-                        >
-                            {intl.formatMessage({ id: `baseline.create.btn` })}
-                        </Button>
+                        <Row justify={"space-between"}>
+                            <Button
+                                type="primary"
+                                onClick={() => addBaselineModal.current?.show()}
+                            >
+                                {intl.formatMessage({ id: `baseline.create.btn` })}
+                            </Button>
+                            <Button type="link">
+                                <ImportOutlined />
+                            </Button>
+                        </Row>
                     </LeftTopButton>
                     <LeftFilterRow>
                         <Space>
