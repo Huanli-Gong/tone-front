@@ -95,6 +95,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
 
     const needJoinWorkspace = React.useMemo(() => {
         // const isBoolean = Object.prototype.toString.call(ws_is_common) === "[object Boolean]"
+        if (BUILD_APP_ENV === "openanolis") return false
         const isBoolean = Object.prototype.toString.call(ws_role_title) === "[object String]"
         const isTourist = ws_role_title === 'ws_tourist' || ''
         return isWs && access.loginBtn() && ws_is_public && (isBoolean && isTourist)

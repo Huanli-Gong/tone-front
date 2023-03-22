@@ -109,12 +109,16 @@ export const TableRow: React.FC<Record<string, any>> = (props) => {
 
     const handleClick = () => {
         if (access.IsAdmin() || is_member || is_public) return handleJumpWs()
-        if (!user_id && !is_public) {
-            if (BUILD_APP_ENV === 'openanolis') {
-                return window.location.href = OPENANOLIS_LOGIN_URL
+        if (!is_public) {
+            if (!user_id) {
+                if (BUILD_APP_ENV === 'openanolis') {
+                    return window.location.href = OPENANOLIS_LOGIN_URL
+                }
+                return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
             }
-            return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
+            if (!is_member) return
         }
+
         return ref.current?.show()
     }
 

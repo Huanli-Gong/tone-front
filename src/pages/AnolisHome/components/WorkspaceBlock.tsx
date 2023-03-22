@@ -40,12 +40,16 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
     const [open, setOpen] = React.useState(false)
 
     const handleEnterWs = async () => {
-        if (!user_id && !is_public) {
-            if (BUILD_APP_ENV === 'openanolis') {
-                return window.location.href = OPENANOLIS_LOGIN_URL
+        if (!is_public) {
+            if (!user_id) {
+                if (BUILD_APP_ENV === 'openanolis') {
+                    return window.location.href = OPENANOLIS_LOGIN_URL
+                }
+                return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
             }
-            return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
+            if (!is_member) return
         }
+
         history.push(jumpWorkspace(id))
     }
 
