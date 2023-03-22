@@ -71,12 +71,14 @@ const WorkspaceDropdownMenu = styled(Menu)`
 export const HearderDropdown: React.FC<any> = (props) => {
     const { ws_id } = props
     const { historyList, setHistoryList } = useModel('workspaceHistoryList');
+    const { initialState } = useModel("@@initialState")
 
     const DEFAULT_PAGE_PARAMS = { page_num: 1, page_size: 20, call_page: 'menu', ws_id }
     const [pageParams, setPageParams] = useState(DEFAULT_PAGE_PARAMS)
     const [isOver, setIsOver] = useState(false)
 
     const queryWorkspaceList = async (params: any = DEFAULT_PAGE_PARAMS) => {
+        if (!initialState.fetchHistory) return
         const { data = [], code, next } = await queryWorkspaceHistory(params)
         if (!next) setIsOver(true)
         if (code !== 200) {
@@ -108,7 +110,7 @@ export const HearderDropdown: React.FC<any> = (props) => {
         return () => {
             setIsOver(false)
         }
-    }, [pageParams])
+    }, [pageParams, initialState.fetchHistory])
 
     /* React.useEffect(() => {
         return () => {

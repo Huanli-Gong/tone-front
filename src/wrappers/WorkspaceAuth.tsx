@@ -12,7 +12,7 @@ export default (props: any) => {
     const { authList, fetchHistory } = initialState
 
     const getHistoryFetcher = () => enterWorkspaceHistroy({ ws_id })
-        .then((res) => {
+        .then(async (res) => {
             const { code } = res
             if (code === 200)
                 setInitialState((p: any) => ({
