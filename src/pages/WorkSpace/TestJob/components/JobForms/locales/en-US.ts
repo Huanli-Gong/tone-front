@@ -34,12 +34,12 @@ const text = {
 
   'env_info.placeholder': 'Format: key = value, multiple spaces or line breaks',
 
-  'env_ Info. 1 ': 'Supports defining multiple global variables, requiring the use of spaces and line breaks. [e.g.  x=1 y=2] ',
-  'env_ Info. 2 ': 'Support for containing special symbols. [e.g.  expression="a==b"] ',
-  'env_ Info. 3 ': 'Supports defining an array. [e.g., fruits=(apple banana lemon)] ',
-  'env_ Info. 4 ': `Supports the use of single and double quote nesting. [e.g.  test='The capital letter of a is "A" 'or test="The capital letter of a is' A'"]`,
-  'env_ Info. 5 ': `If you want value to be enclosed in quotation marks, use single and double quotation marks together. '. [e.g.  key="'value '" or key=' "value" ']`,
-  'env_ Info. 6 ': `If value is required to be empty, single or double quotation marks will be passed in. [e.g.  '' or '']`,
+  'env_info.1': 'Supports defining multiple global variables, requiring the use of spaces and line breaks. [e.g.  x=1 y=2]',
+  'env_info.2': 'Support for containing special symbols. [e.g.  expression="a==b"]',
+  'env_info.3': 'Supports defining an array. [e.g., fruits=(apple banana lemon)]',
+  'env_info.4': `Supports the use of single and double quote nesting. [e.g.  test='The capital letter of a is "A"' or test="The capital letter of a is'A'"]`,
+  'env_info.5': `If you want value to be enclosed in quotation marks, use single and double quotation marks together. '. [e.g.  key="'value '" or key='"value"']`,
+  'env_info.6': `If value is required to be empty, single or double quotation marks will be passed in. [e.g.  \' \' or " "]`,
 
   'execution.time': 'Execution time',
   'restart.before': 'Before Reset',

@@ -39,7 +39,7 @@ const text = {
   'env_info.3': '支持定义一个数组。 【如：fruits=(apple banana lemon)】',
   'env_info.4': `支持使用单引号和双引号嵌套。【如：test='The capital letter of a is "A"' or test="The capital letter of a is 'A'"】`,
   'env_info.5': `如果需value被引号括起需单双引号复合使用。【如：key="'value'" or key='"value"'】`,
-  'env_info.6': `如果需要value为空，则传入单引号或者双引号。【如：'' or  ""】`,
+  'env_info.6': `如果需要value为空，则传入单引号或者双引号。【如：\' \' or  ""】`,
 
   'execution.time': '执行时机',
   'restart.before': '重启前',
