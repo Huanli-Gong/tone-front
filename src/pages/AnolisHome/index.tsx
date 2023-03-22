@@ -38,11 +38,11 @@ const AnolisHome: React.FC<Record<string, any>> = () => {
 
     return (
         <HomeContainer>
-            <TSpace gap={20} direction="column">
+            <TSpace gap={10} direction="column">
                 <HomeBanner />
-                <TSpace gap={20}>
+                <TSpace gap={10}>
                     <TopWorkspaces />
-                    <TSpace direction="column" gap={20} >
+                    <TSpace direction="column" gap={10} >
                         {
                             Object.entries(docs).map((item => {
                                 const [$type, list]: any = item
@@ -54,7 +54,7 @@ const AnolisHome: React.FC<Record<string, any>> = () => {
                                         firstTagColor={$type === "help_doc" ? "#108ee9" : '#FF4D4D'}
                                         title={$type}
                                         path={`/${$type}`}
-                                        list={(list || []).slice(0, $type === "help_doc" ? 5 : 2)}
+                                        list={(list || []).slice(0, $type === "help_doc" ? 6 : 2)}
                                     />
                                 )
                             }))
