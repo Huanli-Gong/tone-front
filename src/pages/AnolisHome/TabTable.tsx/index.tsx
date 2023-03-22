@@ -15,6 +15,10 @@ const BaseTabs = styled(Tabs)`
         &::before { border: none; }
     }
     .ant-tabs-nav-wrap { padding: 0; }
+
+    .ant-tabs-tab {
+        padding-top: 10px;
+    }
 `
 const BaseBoard = styled.div`
     width: 100%;
@@ -71,7 +75,7 @@ const WorkspaceTabs: React.FC = () => {
     }, [tabkey])
 
     return (
-        <Whiteboard style={{ width: "100%", padding: "8px 20px" }} direction="vertical">
+        <Whiteboard style={{ width: "100%", padding: "0 20px" }} direction="vertical">
             <Row style={{ background: "#fff", width: "100%" }} justify="space-between" align="middle">
                 <BaseTabs
                     defaultActiveKey={tabkey}
