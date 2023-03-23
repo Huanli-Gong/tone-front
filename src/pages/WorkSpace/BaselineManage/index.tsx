@@ -3,8 +3,9 @@ import { Button, Pagination, Row, Space, Spin, Tooltip, Typography } from "antd"
 import { useIntl, useLocation, useParams } from 'umi'
 import { queryBaselineList } from './services'
 import { requestCodeMessage } from '@/utils/utils';
-import { ImportOutlined } from "@ant-design/icons"
 import styled from 'styled-components'
+
+import { ReactComponent as ImportOutlined } from "@/assets/svg/import.svg"
 
 import AddModal from "./components/AddModal"
 import BaselineFilter from "./components/BaselineSearch"
@@ -55,7 +56,21 @@ const Left = styled.div`
 
 const LeftTopButton = styled.div`
     padding: 20px;  
-    padding-right: 10px;
+    padding-right: 6px;
+    .import_btn {
+        transform: translateY(4px);
+        transition: none;
+        svg g { 
+            fill: #bfbfbf;
+        }
+        &:hover {
+            color: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.04);
+            svg g {
+                fill: rgba(0, 0, 0, 0.45);
+            }
+        }
+    }
 `
 
 const LeftFilterRow = styled.div`
@@ -64,7 +79,7 @@ const LeftFilterRow = styled.div`
     height: 32px;
     background-color: rgba(0,0,0,.02);
     padding-left: 20px;
-    padding-right: 10px;
+    padding-right: 6px;
     line-height: 32px;
     font-size: 14px;
     font-weight: 700;
@@ -153,9 +168,13 @@ const BaselineManage: React.FC<IProps> = (props) => {
                             <Tooltip
                                 title="导入基线"
                             >
-                                <Button size="small" type="link" onClick={() => importBaselineModal.current?.show()}>
-                                    <ImportOutlined />
-                                </Button>
+                                <Button
+                                    icon={<ImportOutlined />}
+                                    size="small"
+                                    className='import_btn'
+                                    type="link"
+                                    onClick={() => importBaselineModal.current?.show()}
+                                />
                             </Tooltip>
                         </Row>
                     </LeftTopButton>
