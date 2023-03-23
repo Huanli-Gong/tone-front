@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Pagination, Row, Space, Spin, Typography } from "antd"
+import { Button, Pagination, Row, Space, Spin, Tooltip, Typography } from "antd"
 import { useIntl, useLocation, useParams } from 'umi'
 import { queryBaselineList } from './services'
 import { requestCodeMessage } from '@/utils/utils';
@@ -10,6 +10,7 @@ import AddModal from "./components/AddModal"
 import BaselineFilter from "./components/BaselineSearch"
 import ListContent from "./components/ListContent"
 import RightContent from "./components/RightContent"
+import ImportModal from './components/ImportModal';
 
 const gap = "16px";
 
@@ -53,7 +54,8 @@ const Left = styled.div`
 `
 
 const LeftTopButton = styled.div`
-    padding: 20px;    
+    padding: 20px;  
+    padding-right: 10px;
 `
 
 const LeftFilterRow = styled.div`
@@ -87,6 +89,7 @@ const BaselineManage: React.FC<IProps> = (props) => {
     const { baseline_id } = query
 
     const addBaselineModal = React.useRef<any>(null)
+    const importBaselineModal = React.useRef<any>(null)
 
     const PAGE_DEFAULT_PARAMS: any = {
         test_type: name,
@@ -147,9 +150,13 @@ const BaselineManage: React.FC<IProps> = (props) => {
                             >
                                 {intl.formatMessage({ id: `baseline.create.btn` })}
                             </Button>
-                            <Button type="link">
-                                <ImportOutlined />
-                            </Button>
+                            <Tooltip
+                                title="导入基线"
+                            >
+                                <Button size="small" type="link" onClick={() => importBaselineModal.current?.show()}>
+                                    <ImportOutlined />
+                                </Button>
+                            </Tooltip>
                         </Row>
                     </LeftTopButton>
                     <LeftFilterRow>
@@ -210,6 +217,11 @@ const BaselineManage: React.FC<IProps> = (props) => {
                     <Spin spinning={loading} />
                 </LoadingWrapper>
             }
+            <ImportModal
+                ref={importBaselineModal}
+                {...props}
+                onOk={() => queryData(listParams)}
+            />
         </Container>
     )
 }
