@@ -38,7 +38,18 @@ const FilterItem: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 }
             )
         )
-    }, [hasFields])
+    }, [columns, hasFields])
+
+    const handleValueChange = (values: any) => {
+        setFilter(values)
+        onChange?.(
+            values.reduce((p: any, c: any) => {
+                const [field, val]: any = Object.values(c)
+                p[field] = val
+                return p
+            }, {})
+        )
+    }
 
     const handleFieldChange = (evt: any, index: number) => {
         const val = Object.prototype.toString.call(evt) === "[object Object]" && evt.target ? evt.target.value : evt
@@ -68,21 +79,9 @@ const FilterItem: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         handleValueChange(filter.filter((i: any, idx: number) => index !== idx))
     }
 
-    const handleValueChange = (values: any) => {
-        setFilter(values)
-        onChange &&
-            onChange(
-                values.reduce((p: any, c: any) => {
-                    const [field, val]: any = Object.values(c)
-                    p[field] = val
-                    return p
-                }, {})
-            )
-    }
-
     const handleAddField = () => {
-        const hasFields = leftSelectOption.filter(({ disabled }: any) => !disabled)
-        const field = hasFields[0]
+        const f = leftSelectOption.filter(({ disabled }: any) => !disabled)
+        const field = f[0]
         const { value }: any = field
         setFilter((p: any) => p.concat({ name: value, value: undefined }))
     }

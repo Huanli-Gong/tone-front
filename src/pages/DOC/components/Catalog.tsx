@@ -56,24 +56,25 @@ const Catalog: React.FC<IProps> = ({ source, position, setPosition }) => {
     return (
         <Wrapper>
             {
-                source?.map((l: any, idx: number) => (
-                    <CatalogItem
-                        key={l.index}
-                        onClick={() => hanldeClick(l)}
-                        className={
-                            cls(
-                                setActiveClass(idx) && 'item-active'
-                            )
-                        }
-                    >
-                        <Typography.Text
-                            style={{ textIndent: l.level - 1 + "em" }}
-                            ellipsis={{ tooltip: true }}
+                source?.filter(({ text }: any) => !!text.trim())
+                    .map((l: any, idx: number) => (
+                        <CatalogItem
+                            key={l.index}
+                            onClick={() => hanldeClick(l)}
+                            className={
+                                cls(
+                                    setActiveClass(idx) && 'item-active'
+                                )
+                            }
                         >
-                            {l.text}
-                        </Typography.Text>
-                    </CatalogItem>
-                ))
+                            <Typography.Text
+                                style={{ textIndent: l.level - 1 + "em" }}
+                                ellipsis={{ tooltip: true }}
+                            >
+                                {l.text}
+                            </Typography.Text>
+                        </CatalogItem>
+                    ))
             }
         </Wrapper>
     )

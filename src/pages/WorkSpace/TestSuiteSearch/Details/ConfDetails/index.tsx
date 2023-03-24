@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Tag, Table, message } from 'antd';
-import { history, useIntl, FormattedMessage, useParams, Helmet } from 'umi';
+import { history, useIntl, FormattedMessage, useParams } from 'umi';
 import CodeViewer from '@/components/CodeViewer';
 import ContentContainer from '@/components/Public/ContentHeader';
 import EllipsisPulic from '@/components/Public/EllipsisPulic';
@@ -39,7 +39,7 @@ const Index: React.FC<any> = () => {
       const { data = {} } = res
       setDataSet(data)
     } else if (res.code === 404) {
-      history.push(`/ws/:ws_id`)
+      history.push(`/ws/${ws_id}/404`)
     } else {
       setDataSet({})
     }
@@ -58,7 +58,7 @@ const Index: React.FC<any> = () => {
           total: res.total,
         })
       } else if (res.code === 404) {
-        history.push(`/ws/:ws_id`)
+        history.push(`/ws/${ws_id}/404`)
       } else if (res.code !== 200) {
         setDataSourceRetrieve([])
         setPaginationRetrieve({
@@ -87,7 +87,7 @@ const Index: React.FC<any> = () => {
           total: res.total,
         })
       } else if (res.code === 404) {
-        history.push(`/ws/:ws_id`)
+        history.push(`/ws/${ws_id}/404`)
       } else if (res.code !== 200) {
         setDataSourceMetric([])
         setPaginationMetric({

@@ -17,7 +17,7 @@ import { MyLoading, AnalysisWarpper, ResultTitle, TypographyText, ResultContent,
 import { useClientSize, useCopyText } from '@/utils/hooks';
 import { redirectErrorPage, requestCodeMessage } from '@/utils/utils';
 
-const Report = (props: any) => {
+const Report: React.FC = () => {
     const { state } = useLocation() as any
     const { formatMessage } = useIntl()
     const { ws_id, form_id } = useParams() as any
@@ -30,7 +30,7 @@ const Report = (props: any) => {
     const [allGroupData, setAllGroupData] = useState([])
     const [baselineGroupIndex, setBaselineGroupIndex] = useState(0)
     const [environmentResult, setEnvironmentResult] = useState<any>({})
-    const [envData, setEnvData] = useState<Array<{}>>([])
+    const [envData, setEnvData] = useState<any[]>([])
     const [shareWsId, setShareWsId] = useState(undefined)
     const [suiteLen, setSuiteLen] = useState(1)
     const [scrollLeft, setScrollLeft] = useState(0)
@@ -114,19 +114,8 @@ const Report = (props: any) => {
         let resLen: any = []
         resLen = perfArr.concat(funcArr)
         setSuiteLen(resLen.length)
-        resLen.map((item: any, i: number) => queryCompareResultFn(item)
-            .then(res => {
-                if (res.code === 200) {
-                    if (JSON.stringify(res.data) !== '{}' && res.data.test_type === 'functional') {
-                        compareResult.func_data_result = compareResult.func_data_result.concat(res.data)
-                    }
-                    if (JSON.stringify(res.data) !== '{}' && res.data.test_type === 'performance') {
-                        compareResult.perf_data_result = compareResult.perf_data_result.concat(res.data)
-                    }
-                }
-                setCompareResult({
-                    ...compareResult
-                })
+        resLen.map((item: any) => queryCompareResultFn(item)
+            .then(({ code, data }) => {
                 if (res.code === 500) {
                     redirectErrorPage(500)
                     return
@@ -134,6 +123,14 @@ const Report = (props: any) => {
                 if (res.code !== 200) {
                     message.error(res.msg)
                     return
+                }
+                const { test_type } = data
+                if (code === 200 && JSON.stringify(data) !== '{}' && ["functional", "performance"].includes(test_type)) {
+                    const field = test_type === "functional" ? "func_data_result" : "perf_data_result"
+                    setCompareResult((p: any) => ({
+                        ...p,
+                        [field]: p[field].concat(data)
+                    }))
                 }
             })
         )
@@ -193,6 +190,7 @@ const Report = (props: any) => {
     const handleCreatReportOk = () => { // suiteData：已选的
         saveReportDraw.current?.show({})
     }
+    
     const creatReportCallback = (reportData: any) => { // suiteData：已选的
         history.push({
             pathname: `/ws/${ws_id}/test_create_report`,

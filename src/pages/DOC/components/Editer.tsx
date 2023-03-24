@@ -8,7 +8,6 @@ import { queryDocList } from '../services'
 import Loading from './Loading';
 import Empty from './Empty'
 import Catalog from './Catalog'
-import moment from 'moment';
 import lodash from 'lodash'
 import { tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
@@ -97,22 +96,25 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
         if (!editor) return []
 
         const { content } = editor.getJSON()
-        return content?.filter(({ type }: any) => type === "heading")
+        return content?.filter(({ type, content: textContent }: any) => type === "heading" && textContent)
             .reduce((p: any, l: any, index: any) => {
                 const { attrs } = l
                 if (!l.content) return p
-                const { text }: any = l.content && l.content.length > 0 ? l.content[0] : {}
+                const { text: $text }: any = l.content && l.content.length > 0 ? l.content[0] : {}
                 const { level } = attrs
                 let dom = undefined
-                document.querySelectorAll(`h${level}`).forEach((ele) => {
-                    if (ele.innerHTML === text)
+                document.querySelectorAll(`.ProseMirror h${level}`).forEach((ele: any) => {
+                    if (ele.innerText === $text)
                         dom = ele
                 })
                 if (dom) {
                     const { offsetTop }: any = dom
 
                     return p.concat({
-                        level, text, node: l, index,
+                        level,
+                        text: $text,
+                        node: l,
+                        index,
                         dom,
                         position: offsetTop
                     })
@@ -126,6 +128,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
     useEffect(() => {
         if (!editor) return
         const _dom: any = document.querySelector(".ProseMirror")
+        if (!_dom) return
         _dom.addEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
         return () => {
             _dom.removeEventListener('scroll', lodash.debounce(hanldeEditorContainerScroll, 100))
@@ -154,7 +157,7 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
                                         </Access>
                                     </EditorTitle>
                                     <Typography.Text type="secondary">
-                                        更新时间：{gmt_modified && moment(gmt_modified).format('YYYY-MM-DD hh:mm:ss')}
+                                        更新时间：{gmt_modified}
                                     </Typography.Text>
                                 </>
                             }

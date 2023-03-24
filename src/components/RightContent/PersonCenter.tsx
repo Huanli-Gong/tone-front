@@ -5,6 +5,7 @@ import ClickParam from 'antd/es/menu';
 import { useModel, useIntl, FormattedMessage, request } from 'umi';
 import styles from './index.less';
 import AvatarCover from '../AvatarCover';
+import { OPENANOLIS_LOGOUT_URL } from '@/utils/utils';
 
 /**
  * 退出登录，并且将当前的 url 保存
@@ -27,7 +28,7 @@ const PersonCenter = () => {
                     return
                 }
                 if (BUILD_APP_ENV === 'openanolis') {
-                    return window.location.href = authList.logout_url
+                    return window.location.href = OPENANOLIS_LOGOUT_URL
                 }
             }
 

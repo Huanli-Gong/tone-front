@@ -8,10 +8,19 @@ import Headers from '@/components/Header'
 import { person_auth } from '@/services/user';
 import defaultSettings from '../config/defaultSettings';
 import { marked } from "marked"
-import { getPageWsid, redirectErrorPage } from "@/utils/utils"
+import { getPageWsid, redirectErrorPage, OPENANOLIS_LOGIN_URL } from "@/utils/utils"
 
 import 'animate.css';
 
+const jumpLoginPage = () => {
+    if (["opensource", "openanolis"].includes(BUILD_APP_ENV || "") && ~window.location.pathname.indexOf(`/login`))
+        return
+    if (BUILD_APP_ENV === 'opensource') {
+        history.push(`/login?redirect_url=${window.location.pathname}`)
+        return
+    }
+    window.location.href = OPENANOLIS_LOGIN_URL + window.location.pathname
+}
 console.log(version)
 
 marked.setOptions({
@@ -51,7 +60,7 @@ export async function getInitialState(): Promise<any> {
     const isWs = wsReg.test(pathname)
     const ws_id = getPageWsid()
 
-    const { data, code } = await person_auth(ws_id && /[a-zA-Z0-9]{8}/.test(ws_id) ? { ws_id } : {})
+    const { data, code } = await person_auth(ws_id && /^[a-zA-Z0-9]{8}$/.test(ws_id) ? { ws_id } : {})
 
     const baseAppState = {
         ...initialState,
@@ -75,11 +84,8 @@ export async function getInitialState(): Promise<any> {
 
             /** 用户进入ws：case1.首先判断是公开ws还是私密ws；case2.判断进入私密ws时，未登录跳登录。 */
             if (!ws_is_public && !user_id) {
-                if (BUILD_APP_ENV === 'openanolis') {
-                    const { login_url } = data?.login_info || {}
-                    return window.location.href = login_url
-                }
-                return history.push(`/login?redirect_url=${window.location.pathname}`)
+                jumpLoginPage()
+                return
             }
 
             /** 有无权限：case1.用户已登录，要查看私密ws时(分享的私密ws链接)，判断有无访问权限。  */
@@ -164,6 +170,10 @@ const errorHandler = (error: { response: Response }): Response | undefined => {
         }
         else if (status === 401) {
             redirectErrorPage(401)
+            return
+        }
+        else if (status === 403) {
+            jumpLoginPage()
             return
         }
         else {

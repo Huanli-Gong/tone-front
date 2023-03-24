@@ -185,8 +185,8 @@ const SelectSuite: React.FC<any> = ({
 		return obj
 	}
 
-	const handleTestConfig = (suiteList: any[]) => {
-		const list = suiteList?.reduce((pre, cur) => {
+	const handleTestConfig = ($list: any[]) => {
+		const list = $list?.reduce((pre, cur) => {
 			const { test_suite_id, cases, setup_info } = cur
 			const hasSuiteId = treeData.findIndex(({ id }: any) => id === test_suite_id)
 			if (~hasSuiteId) {
@@ -227,6 +227,8 @@ const SelectSuite: React.FC<any> = ({
 		}
 	}, [template, defaultTreeData])
 
+	const validWidth = () => setWidth(outTable.current.clientWidth)
+
 	useEffect(() => {
 		validWidth()
 		window.addEventListener('resize', validWidth);
@@ -236,19 +238,17 @@ const SelectSuite: React.FC<any> = ({
 	}, [])
 
 	useEffect(() => {
-		let control: any = []
+		const $control: any[] = []
 		Object.keys(contrl).map(key => {
-			if (contrl[key].config_index == 3) control.push(contrl[key].name)
+			if (contrl[key].config_index == 3) $control.push(contrl[key].name)
 		})
-		setControl(control)
+		setControl($control)
 	}, [contrl])
-
-	const validWidth = () => setWidth(outTable.current.clientWidth)
 
 	useEffect(() => {
 		handleData(test_config)
-		let standaloneConf: any = []
-		let clusterConf: any = []
+		const standaloneConf: any = []
+		const clusterConf: any = []
 		test_config.forEach((i: any) => {
 			if (i.run_mode === 'cluster')
 				clusterConf.push(i)
@@ -261,12 +261,12 @@ const SelectSuite: React.FC<any> = ({
 
 	const handleSelect = (data: any) => {
 		if (data.length === 0) return setTest_config([])
-		let newData: any = []
+		const newData: any = []
 		data.forEach((i: any) => {
-			let idx = test_config.findIndex((t: any) => t.id === i.id)
+			const idx = test_config.findIndex((t: any) => t.id === i.id)
 			if (idx === -1) newData.push(i)
 			else {
-				let newCaseList: any = []
+				const newCaseList: any = []
 				const confCases = test_config[idx].test_case_list
 				i.test_case_list.forEach((c: any) => {
 					const index = confCases.findIndex((ele: any) => ele.id === c.id)
@@ -366,7 +366,7 @@ const SelectSuite: React.FC<any> = ({
 							>
 								{
 									memoDeleteIp.map((item: any) => (
-										<Typography.Text>
+										<Typography.Text key={item.ip}>
 											{`${item.ip}/${item.sn}`}
 										</Typography.Text>
 									))

@@ -17,7 +17,7 @@ const UnaccessPage: React.FC<any> = () => {
 
     const authAdmin = async () => {
         if (!ws_id) return
-        if (!/[a-zA-Z0-9]{8}/.test(ws_id)) return
+        if (!/^[a-zA-Z0-9]{8}$/.test(ws_id)) return
         const { code, ...rest } = await auth_admin({ ws_id })
         if (code === 200) setSource(rest)
     }
