@@ -38,7 +38,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
         className = `${styles.right}`;
     } */
-    const { ws_need_need_approval, ws_is_public, ws_role_title } = initialState?.authList || {};
+    const { ws_need_need_approval, ws_is_public, ws_role_title, ws_is_common } = initialState?.authList || {};
 
     useEffect(() => {
         setDropVisible(false)
@@ -96,14 +96,16 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     const needJoinWorkspace = React.useMemo(() => {
         const isString = Object.prototype.toString.call(ws_role_title) === "[object String]"
         const isTourist = ws_role_title === 'ws_tourist' || ''
+
+        if (ws_is_common) return false
         if (!ws_is_public && BUILD_APP_ENV === "openanolis") return false
         if (ws_is_public && isWs) {
             if (access.loginBtn()) {
                 if (isString && isTourist) return true
             }
         }
-        return false
-    }, [isWs, access, ws_is_public, ws_role_title])
+        return undefined
+    }, [isWs, access, ws_is_public, ws_role_title, ws_is_common])
 
     React.useEffect(() => {
         if (!initialState.shakeBtn) return
@@ -125,7 +127,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
         <Row style={{ width: '100%', position: "relative" }} align="middle" justify="end" className={styles.header_warp}>
             {/* {isWs && <ApplyJoinWorkspace ws_id={ wsId }/> } */}
             {
-                needJoinWorkspace &&
+                (Object.prototype.toString.call(needJoinWorkspace) === "[object Boolean]" && needJoinWorkspace) &&
                 <span className={cls("animate__animated", initialState.shakeBtn && "animate__shakeX animate__fast")}>
                     {
                         ws_need_need_approval ?
