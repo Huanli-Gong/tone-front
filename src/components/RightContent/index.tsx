@@ -94,17 +94,15 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     }
 
     const needJoinWorkspace = React.useMemo(() => {
-        const isBoolean = Object.prototype.toString.call(ws_role_title) === "[object String]"
+        const isString = Object.prototype.toString.call(ws_role_title) === "[object String]"
         const isTourist = ws_role_title === 'ws_tourist' || ''
-        /* 
-            isWs && access.loginBtn() && ws_is_public && (isBoolean && isTourist)
-        */
-        if (isWs && access.loginBtn() && ws_is_public) {
-            if (!ws_need_need_approval) return false
-            if (isBoolean && isTourist) return true
+        if (ws_is_public && isWs) {
+            if (access.loginBtn()) {
+                if (isString && isTourist) return true
+            }
         }
         return false
-    }, [isWs, access, ws_is_public, ws_role_title, ws_need_need_approval])
+    }, [isWs, access, ws_is_public, ws_role_title])
 
     React.useEffect(() => {
         if (!initialState.shakeBtn) return
