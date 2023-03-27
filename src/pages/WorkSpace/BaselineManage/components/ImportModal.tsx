@@ -180,7 +180,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                         <Upload.Dragger
                             name="files"
                             action=""
-                            accept=".tar"
+                            accept=".tar,application/x-tar"
                             multiple={false}
                             beforeUpload={() => false}
                             onChange={(info: UploadChangeParam<UploadFile<any>>) => {
@@ -218,6 +218,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                 >
                     <Input
                         allowClear
+                        onChange={() => form.setFields([{ name: "name", errors: [] }])}
                         placeholder={intl.formatMessage({
                             defaultMessage: "输入基线名称，默认读取上传文件名",
                             id: "baseline.import.modal.form.name.placeholder"
