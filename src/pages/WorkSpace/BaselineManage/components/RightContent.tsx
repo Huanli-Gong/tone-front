@@ -3,8 +3,9 @@ import styled from "styled-components"
 import { Row, Col, Typography, Dropdown, Menu, message } from "antd"
 import { useIntl, Access, useAccess } from "umi"
 import { useSize } from "ahooks"
-import { MoreOutlined, ExportOutlined, EditOutlined } from "@ant-design/icons"
+import { MoreOutlined, EditOutlined } from "@ant-design/icons"
 import BaseTable from "./SuiteTable"
+import { ReactComponent as ExportBtn } from "@/assets/svg/export_baseline.svg"
 
 import { exportBaseline, exportBaselineQueryState } from "../services"
 
@@ -184,7 +185,7 @@ const RightContent: React.FC<IProps> = (props) => {
                                     <Menu.Item onClick={hanldeEdit} icon={<EditOutlined />}>
                                         {intl.formatMessage({ id: "baseline.edit.info" })}
                                     </Menu.Item>
-                                    <Menu.Item onClick={handleExport} icon={<ExportOutlined />}>
+                                    <Menu.Item onClick={handleExport} icon={<ExportBtn />}>
                                         {intl.formatMessage({ id: "baseline.detail.menu.export" })}
                                     </Menu.Item>
                                 </Menu>
