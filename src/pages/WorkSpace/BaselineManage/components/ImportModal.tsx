@@ -11,6 +11,7 @@ export const zhCN_locales = {
     "baseline.import.modal.form.file.text": "单击或拖动文件到此区域进行上传",
     "baseline.import.modal.form.file.hint": "支持单次上传，仅可上传.tar后缀文件",
     "baseline.import.modal.form.rule.empty": "上传文件不能为空！",
+    "baseline.import.form.file.type.error": "所选文件格式错误，请选择以 .tar 为后缀的文件导入。",
 
     "baseline.import.modal.form.name": "基线名称",
     "baseline.import.modal.form.name.rule.exists": "基线名称已存在，请重新输入",
@@ -23,11 +24,13 @@ export const enUS_locales = {
     "baseline.import.modal.form.file.text": 'Click or drag files to this aera to upload',
     "baseline.import.modal.form.file.hint": 'Only one file can be updated at a time,with .tar as the suffix. ',
     "baseline.import.modal.form.rule.empty": 'The file attachment cannot be empty.',
+    "baseline.import.form.file.type.error": "The selected file format is incorrect. Please select a file with the suffix. tar to import.",
 
     "baseline.import.modal.form.name": 'Baseline Name',
     "baseline.import.modal.form.name.rule.exists": 'The baseline name already exists, please re-enter it.',
     "baseline.import.modal.form.name.placeholder": 'Please enter the baseline name, which displays the uploaded file name by default.',
 }
+
 
 const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, ref) => {
     const intl = useIntl()
@@ -185,6 +188,15 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                             beforeUpload={() => false}
                             onChange={(info: UploadChangeParam<UploadFile<any>>) => {
                                 const { file } = info
+                                if (file.type && !["application/x-tar"].includes(file.type)) {
+                                    form.setFields([{
+                                        name: "file", errors: [
+                                            intl.formatMessage({ id: "baseline.import.form.file.type.error" })
+                                        ]
+                                    }])
+                                    return
+                                }
+                                form.setFields([{ name: "file", errors: [] }])
                                 form.setFieldsValue({ name: file.name.split(".")[0] })
                             }}
                             maxCount={1}
