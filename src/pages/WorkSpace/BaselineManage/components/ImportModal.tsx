@@ -3,6 +3,7 @@ import React from "react";
 import { InboxOutlined } from "@ant-design/icons"
 import { useIntl, useParams, useRouteMatch } from "umi";
 import { baselineNameCheck, importBaseline } from "../services";
+import type { UploadChangeParam, UploadFile } from "antd/lib/upload";
 
 export const zhCN_locales = {
     "baseline.import.modal.title": "导入{test_type}",
@@ -60,6 +61,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     }))
 
     const handleClose = () => {
+        form.resetFields()
         setOpen(false)
     }
 
@@ -102,15 +104,23 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                     const formData = new FormData();
                     const params = {
                         ...values, ws_id,
-                        file: values.file[0].originFileObj
+                        file: values.file[0].originFileObj,
+                        test_type
                     }
                     Object.keys(params).forEach(key => {
                         if (params[key]) { // 过滤掉无效参数
                             formData.append(key, params[key]);
                         }
                     })
-                    const { data, code } = await importBaseline(formData)
+                    const { data, code, msg } = await importBaseline(formData)
                     setFetching(false)
+                    if (code !== 200) {
+                        form.setFields([{
+                            name: "file",
+                            errors: [msg]
+                        }])
+                        return
+                    }
                     if (code === 200) {
                         onOk()
                         message.success(intl.formatMessage({ id: "operation.success" }))
@@ -173,6 +183,10 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                             accept=".tar"
                             multiple={false}
                             beforeUpload={() => false}
+                            onChange={(info: UploadChangeParam<UploadFile<any>>) => {
+                                const { file } = info
+                                form.setFieldsValue({ name: file.name.split(".")[0] })
+                            }}
                             maxCount={1}
                         >
                             <p className="ant-upload-drag-icon">
