@@ -42,6 +42,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const [open, setOpen] = React.useState(false)
     const [fetching, setFetching] = React.useState(false)
+    const [fileList, setFileList] = React.useState<UploadFile[]>([]);
 
     const [form] = Form.useForm()
 
@@ -66,6 +67,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
     const handleClose = () => {
         form.resetFields()
         setOpen(false)
+        setFileList([])
     }
 
     const handleCheckName = async (name: string) => {
@@ -182,10 +184,24 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                     >
                         <Upload.Dragger
                             name="files"
-                            action=""
                             accept=".tar,application/x-tar"
                             multiple={false}
-                            beforeUpload={() => false}
+                            onRemove={
+                                (file) => {
+                                    const index = fileList.indexOf(file);
+                                    const newFileList = fileList.slice();
+                                    newFileList.splice(index, 1);
+                                    setFileList(newFileList);
+                                }
+                            }
+                            beforeUpload={
+                                (file) => {
+                                    setFileList([...fileList, file]);
+                                    return false;
+                                }
+                            }
+                            fileList={fileList}
+                            // beforeUpload={(file) => file}
                             onChange={(info: UploadChangeParam<UploadFile<any>>) => {
                                 const { file } = info
                                 if (file.type && !["application/x-tar"].includes(file.type)) {
@@ -238,7 +254,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                     />
                 </Form.Item>
             </Form>
-        </Modal>
+        </Modal >
     )
 }
 
