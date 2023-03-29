@@ -3,7 +3,7 @@ import { history, useAccess, useIntl, FormattedMessage } from 'umi'
 import classes from 'classnames'
 import styles from './index.less'
 import { Layout, Row, Col, Form, Input, Radio, Button, Upload, Space, Typography, message, notification } from 'antd'
-import { QuestionCircleOutlined, CloseOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
+import { QuestionCircleOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { CheckCircleFilled } from '@ant-design/icons'
 import { createWorkspace, checkWorkspace } from '@/services/Workspace'
 import CropperImage from '@/components/CropperImage'
@@ -11,11 +11,10 @@ import _ from 'lodash'
 import { requestCodeMessage } from '@/utils/utils';
 
 const QuestionTip = (props: {
-    tip: String,
-    path: String,
-    name: String
+    tip: string,
+    path: string,
+    name: string
 }): React.ReactElement => {
-    const { formatMessage } = useIntl()
     const [visible, setVisible] = useState(false)
     // onClick={ () => history.push() }
     return (
@@ -43,7 +42,7 @@ const QuestionTip = (props: {
     )
 }
 
-export default (props: any): React.ReactElement => {
+export default (): React.ReactElement => {
     const { formatMessage } = useIntl()
     const [imgUrl, setImgUrl] = useState({ path: '', link: '' })
     const access = useAccess();
@@ -84,13 +83,13 @@ export default (props: any): React.ReactElement => {
     }
 
     const queryCreateWs = async (wsInto: any) => {
-        let { data, code, msg } = await createWorkspace(wsInto)
+        const { data, code, msg } = await createWorkspace(wsInto)
         if (code === 200) {
             clearInterval(timer.current)
             history.push(`/ws/${data.id}/workspace/initSuccess`)
         }
         else {
-            message.error(msg || formatMessage({id: 'workspace.submit.failed'}), 2, () => {
+            message.error(msg || formatMessage({ id: 'workspace.submit.failed' }), 2, () => {
                 clearInterval(timer.current)
                 setIsWsInit(false)
             })
@@ -169,15 +168,15 @@ export default (props: any): React.ReactElement => {
                                         setPedding(false)
                                     }
                                     else {
-                                        let data = await createWorkspace({
+                                        const data = await createWorkspace({
                                             ...values,
                                             logo: imgUrl.path
                                         })
 
                                         if (data.code === 200) {
                                             notification.open({
-                                                message: <FormattedMessage id="workspace.submit.success"/>,
-                                                description: <span><FormattedMessage id="workspace.submit.desc1"/><span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => history.push('/personCenter?person=approve')}><FormattedMessage id="workspace.submit.desc2"/></span></span>,
+                                                message: <FormattedMessage id="workspace.submit.success" />,
+                                                description: <span><FormattedMessage id="workspace.submit.desc1" /><span style={{ color: '#1890FF', cursor: 'pointer' }} onClick={() => history.push('/personCenter?person=approve')}><FormattedMessage id="workspace.submit.desc2" /></span></span>,
                                                 icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
                                                 duration: 3,
                                             })
@@ -194,7 +193,7 @@ export default (props: any): React.ReactElement => {
                         >
                             <Form.Item label=" ">
                                 <Space>
-                                    <Typography.Title level={3}><FormattedMessage id="workspace.ws.create"/></Typography.Title>
+                                    <Typography.Title level={3}><FormattedMessage id="workspace.ws.create" /></Typography.Title>
                                 </Space>
                             </Form.Item>
                             <Form.Item
@@ -203,21 +202,21 @@ export default (props: any): React.ReactElement => {
                                         required: true,
                                         validator: async (rule, value) => {
                                             if (!value)
-                                                return Promise.reject(formatMessage({id: 'workspace.show_name.rules1'}))
+                                                return Promise.reject(formatMessage({ id: 'workspace.show_name.rules1' }))
 
                                             if (!/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/.test(value))
-                                                return Promise.reject(formatMessage({id: 'workspace.show_name.rules2'}))
+                                                return Promise.reject(formatMessage({ id: 'workspace.show_name.rules2' }))
 
                                             return Promise.resolve()
                                         }
                                     }
                                 ]}
-                                label={<FormattedMessage id="workspace.show_name.s"/>}
+                                label={<FormattedMessage id="workspace.show_name.s" />}
                                 name="show_name"
                             >
                                 <Input
                                     autoComplete="off"
-                                    placeholder={formatMessage({id: 'workspace.show_name.placeholder'})}
+                                    placeholder={formatMessage({ id: 'workspace.show_name.placeholder' })}
                                     allowClear
                                 />
                             </Form.Item>
@@ -227,10 +226,10 @@ export default (props: any): React.ReactElement => {
                                         required: true,
                                         validator: async (rule, value) => {
                                             if (!value)
-                                                return Promise.reject(formatMessage({id: 'workspace.ws.name.rules1'}) )
+                                                return Promise.reject(formatMessage({ id: 'workspace.ws.name.rules1' }))
 
                                             if (!/^[a-z0-9_-]{0,30}$/.test(value))
-                                                return Promise.reject(formatMessage({id: 'workspace.ws.name.rules2'}) )
+                                                return Promise.reject(formatMessage({ id: 'workspace.ws.name.rules2' }))
 
                                             return Promise.resolve()
                                         }
@@ -238,8 +237,8 @@ export default (props: any): React.ReactElement => {
                                 ]}
                                 label={
                                     <QuestionTip
-                                        name={<FormattedMessage id="workspace.ws.name"/>}
-                                        tip={<FormattedMessage id="workspace.ws.tip"/>}
+                                        name={<FormattedMessage id="workspace.ws.name" />}
+                                        tip={<FormattedMessage id="workspace.ws.tip" />}
                                         path=""
                                     />
                                 }
@@ -247,30 +246,30 @@ export default (props: any): React.ReactElement => {
                             >
                                 <Input
                                     autoComplete="off"
-                                    placeholder={formatMessage({id: 'workspace.ws.name.placeholder'})}
+                                    placeholder={formatMessage({ id: 'workspace.ws.name.placeholder' })}
                                     allowClear
                                 />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
-                                label={<FormattedMessage id="workspace.description"/>}
+                                label={<FormattedMessage id="workspace.description" />}
                                 name="description"
                             >
                                 <Input.TextArea
                                     rows={3}
                                     allowClear
-                                    placeholder={formatMessage({id: 'workspace.description.placeholder'})}
+                                    placeholder={formatMessage({ id: 'workspace.description.placeholder' })}
                                 />
                             </Form.Item>
                             <Form.Item
                                 rules={[{ required: true, max: 200 }]}
-                                label={<FormattedMessage id="workspace.reason"/>}
+                                label={<FormattedMessage id="workspace.reason" />}
                                 name="reason"
                             >
                                 <Input.TextArea
                                     allowClear
                                     rows={4}
-                                    placeholder={formatMessage({id: 'workspace.reason.placeholder'})}
+                                    placeholder={formatMessage({ id: 'workspace.reason.placeholder' })}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -278,23 +277,23 @@ export default (props: any): React.ReactElement => {
                                 name="is_public"
                                 label={
                                     <QuestionTip
-                                        name={<FormattedMessage id="workspace.is_public"/>}
-                                        tip={<FormattedMessage id="workspace.is_public.tip"/>}
+                                        name={<FormattedMessage id="workspace.is_public" />}
+                                        tip={<FormattedMessage id="workspace.is_public.tip" />}
                                         path=""
                                     />
                                 }
                             >
                                 <Radio.Group>
                                     <Radio value={false} className={styles.mb_16}>
-                                        <span><FormattedMessage id="workspace.private.ps"/></span>
+                                        <span><FormattedMessage id="workspace.private.ps" /></span>
                                     </Radio>
                                     <br />
                                     <Radio value={true}>
-                                        <span><FormattedMessage id="workspace.public.ps"/></span>
+                                        <span><FormattedMessage id="workspace.public.ps" /></span>
                                     </Radio>
                                 </Radio.Group>
                             </Form.Item>
-                            <Form.Item label={<FormattedMessage id="workspace.project.cover"/>}>
+                            <Form.Item label={<FormattedMessage id="workspace.project.cover" />}>
                                 <Form.Item name="logo" noStyle>
                                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                                         <div style={{ marginRight: 16 }}>
@@ -329,10 +328,10 @@ export default (props: any): React.ReactElement => {
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <Row>
                                                 <Col span={24}>
-                                                    <FormattedMessage id="workspace.cover.drag"/>
+                                                    <FormattedMessage id="workspace.cover.drag" />
                                                 </Col>
                                                 <Col span={24}>
-                                                    <FormattedMessage id="workspace.cover.size"/>
+                                                    <FormattedMessage id="workspace.cover.size" />
                                                 </Col>
                                             </Row>
                                         </div>
@@ -340,31 +339,31 @@ export default (props: any): React.ReactElement => {
                                 </Form.Item>
                             </Form.Item>
                             <Form.Item style={{ marginTop: 30 }}>
-                                <Button type="primary" disabled={pedding} htmlType="submit"><FormattedMessage id="workspace.submit.review"/></Button>
+                                <Button type="primary" disabled={pedding} htmlType="submit"><FormattedMessage id="workspace.submit.review" /></Button>
                             </Form.Item>
                         </Form>
                     </Col>
                 </Col>
                 <Col span={14} className={styles.rigth_content} id="rigthContent">
                     <Row>
-                        <Col offset={3} span={3} style={{ borderLeft: '1px solid rgba(0,0,0,.06)' }}></Col>
+                        <Col offset={3} span={3} style={{ borderLeft: '1px solid rgba(0,0,0,.06)' }} />
                         <Col span={12}>
-                            <Row className={styles.create_banner}></Row>
-                            <Row className={styles.issue_title}><FormattedMessage id="workspace.ws.about"/></Row>
+                            <Row className={styles.create_banner} />
+                            <Row className={styles.issue_title}><FormattedMessage id="workspace.ws.about" /></Row>
                             <Row>
                                 <ul className={styles.performance_ul}>
-                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li1"/></Typography.Text></li>
-                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li2"/></Typography.Text></li>
-                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li3"/></Typography.Text></li>
+                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li1" /></Typography.Text></li>
+                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li2" /></Typography.Text></li>
+                                    <li><Typography.Text type="secondary"><FormattedMessage id="workspace.li3" /></Typography.Text></li>
                                 </ul>
                             </Row>
                             <Row >
-                                <Button type="link" onClick={() => history.push('/help_doc')}><FormattedMessage id="workspace.see.more"/></Button>
+                                <Button type="link" onClick={() => history.push('/help_doc')}><FormattedMessage id="workspace.see.more" /></Button>
                             </Row>
                         </Col>
                     </Row>
                 </Col>
-                <Button className={styles.close_btn} onClick={() => history.go(-1)}><CloseOutlined /><FormattedMessage id="operation.close"/></Button>
+                <Button className={styles.close_btn} onClick={() => history.go(-1)}><CloseOutlined /><FormattedMessage id="operation.close" /></Button>
                 <CropperImage
                     ref={cropperRef}
                     onOk={
@@ -381,7 +380,7 @@ export default (props: any): React.ReactElement => {
                         <div className={styles.init_container}>
                             <div className={styles.icon_gif} />
                             <div className={styles.init_text}>
-                                <FormattedMessage id="workspace.system.initialization"/>
+                                <FormattedMessage id="workspace.system.initialization" />
                                 <span className="dot" />
                                 <span className="dot" />
                                 <span className="dot" />

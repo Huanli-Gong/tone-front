@@ -49,7 +49,6 @@ export async function getInitialState(): Promise<any> {
     const initialState = {
         settings: defaultSettings,
         refreshMenu: false,
-        refreshWorkspaceList: undefined,
         jobTypeList: [],
         authList: {},
         hasAdWs: [AD_WS_ID],
