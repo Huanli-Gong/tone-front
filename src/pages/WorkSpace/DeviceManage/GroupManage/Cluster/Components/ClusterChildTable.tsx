@@ -80,8 +80,7 @@ export default (props: any) => {
 
     // 删除
     const handleDeleteServer = async (id: number) => {
-        let params = { ws_id: ws_id }
-        const data = await deleteClusterServer(id, params)
+        const data = await deleteClusterServer(id, { ws_id })
         defaultFetchOption(data)
     }
 
@@ -149,7 +148,7 @@ export default (props: any) => {
                 showTitle: false
             },
             key: 'tsn',
-            render: (record: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={record.test_server.tsn} />
+            render: (record: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{record.test_server.tsn}</ColumnEllipsisText>
         },
         !BUILD_APP_ENV &&
         {
@@ -159,7 +158,11 @@ export default (props: any) => {
                 showTitle: false
             },
             key: "machine",
-            render: (record: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={<Typography.Link>{record.test_server.name}</Typography.Link>} />
+            render: (record: any) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: true }} >
+                    {<Typography.Link>{record.test_server.name}</Typography.Link>}
+                </ColumnEllipsisText>
+            )
         },
         {
             title: <FormattedMessage id="device.private_ip.s" />,
@@ -280,10 +283,11 @@ export default (props: any) => {
                             <Typography.Link onClick={() => handleOpenEditDrawer(_)}>
                                 <FormattedMessage id="operation.edit" /></Typography.Link>
                             <Popconfirm
-                                title={<FormattedMessage id="delete.prompt" />}
+                                title={formatMessage({ id: "delete.prompt", }, { data: row.test_server.ip })}
                                 okText={<FormattedMessage id="operation.ok" />}
                                 cancelText={<FormattedMessage id="operation.cancel" />}
                                 onConfirm={() => handleDeleteServer(_.id)}
+                                overlayInnerStyle={{ minWidth: 245 }}
                             >
                                 <Typography.Link >
                                     <FormattedMessage id="operation.delete" />

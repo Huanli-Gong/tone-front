@@ -20,13 +20,14 @@ const NoticeBlock: React.FC<Record<string, any>> = (props) => {
     return (
         <Whiteboard
             style={{
-                width: 336, overflow: "hidden",
-                height: title === "notice" ? 136 : 232,
-                display: "flex", alignItems: "start"
+                width: 310, overflow: "hidden",
+                height: title === "notice" ? 116 : 240,
+                display: "flex", alignItems: "start",
+                padding: 10
             }}
         >
             <FullSpace direction="vertical">
-                <Row justify="space-between" align="middle" style={{ width: (336 - 40), height: 32 }}>
+                <Row justify="space-between" align="middle" style={{ height: 32, width: 290 }}>
                     <Typography.Text
                         style={{
                             fontWeight: 500,
@@ -47,10 +48,10 @@ const NoticeBlock: React.FC<Record<string, any>> = (props) => {
                         {intl.formatMessage({ id: "pages.home.view.all" })}
                     </Typography.Text>
                 </Row>
-                <Space style={{ width: "100%" }} direction="vertical" size={12}>
+                <Space style={{ width: 290 }} direction="vertical" size={10}>
                     {
                         list.map((doc: any, index: number) => {
-                            const { tags, title, id } = doc
+                            const { tags, title: $title, id } = doc
                             return (
                                 <Space
                                     key={id}
@@ -67,7 +68,7 @@ const NoticeBlock: React.FC<Record<string, any>> = (props) => {
                                         ellipsis={{ tooltip: true }}
                                         style={{ width: "calc(336px - 40px - 40px - 8px)" }}
                                     >
-                                        {title}
+                                        {$title}
                                     </Typography.Text>
                                 </Space>
                             )

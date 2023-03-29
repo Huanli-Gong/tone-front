@@ -1,6 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
 import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip, AutoComplete } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
 import Owner from '@/components/Owner/index';
 import styles from './index.less'
@@ -9,7 +9,8 @@ import { AgentSelect } from '@/components/utils';
 
 const CreateClusterDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
-    const { onFinish, ws_id } = props
+    const { onFinish } = props
+    const { ws_id } = useParams()
     const [form] = Form.useForm()
     const [options, setOptions] = useState<{ value: string }[]>([]);
     const [ips, setIps] = useState({ success: [], errors: [] })

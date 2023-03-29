@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useImperativeHandle, useRef, useMemo } from 'react';
 import styles from '../style.less';
 import { useIntl, FormattedMessage, getLocale } from 'umi'
-import { WorkspaceTable, WorkspaceList, TableListParams } from '../../data.d';
+import type { WorkspaceTable, WorkspaceList } from '../../data.d';
 import { Avatar, Space, Switch, Table, Typography, Row, message } from 'antd';
 import { HolderOutlined } from '@ant-design/icons'
 import { workspaceList, updateTopWorkspaceOrder, getWrokspaces } from '../../service';
@@ -31,11 +31,11 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
     const [page, setPage] = useState<number>(initParams.page_num);
     const [size, setSize] = useState<number>(initParams.page_size);
 
-    const getList = async (initParams: TableListParams) => {
+    const getList = async (params: any = initParams) => {
         setLoading(true)
-        const data = tab !== '1' ? await workspaceList(initParams) : await getWrokspaces(initParams)
-        setData(data || [])
-        setShowNum(data?.show_total)
+        const source = tab !== '1' ? await workspaceList(params) : await getWrokspaces(params)
+        setData(source || [])
+        setShowNum(source?.show_total)
         setLoading(false)
     };
 
@@ -44,15 +44,13 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
     }, []);
 
     const onChange = (page_num: any, page_size: any) => {
-        const initParams = { page_num, page_size, is_approved: 1, is_public, keyword }
-        getList(initParams)
+        getList({ page_num, page_size, is_approved: 1, is_public, keyword })
         setPage(page_num)
         setSize(page_size)
     }
 
     const refresh = () => {
-        let params = { page_num: page, page_size: size, is_approved: 1, is_public, keyword }
-        getList(params)
+        getList({ page_num: page, page_size: size, is_approved: 1, is_public, keyword })
     }
 
     useImperativeHandle(onRef, () => ({
@@ -67,7 +65,13 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
         detailModalRef.current?.show(id)
     }
 
-    const canTopWsNumb = BUILD_APP_ENV === "opensource" ? 9 : 12
+    const canTopWsNumb = BUILD_APP_ENV === "opensource" ? 9 : 15
+
+    const onTopChange = async (row: any) => {
+        const { is_show, id } = row
+        const { code } = await saveWorkspaceConfig({ is_show: !is_show, id })
+        if (code === 200) refresh()
+    }
 
     const columns: any[] = useMemo(() => {
         return (
@@ -95,7 +99,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                     dataIndex: 'show_name',
                     className: 'row_cursor',
                     width: 180,
-                    render: (_: number, row: WorkspaceTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.show_name || ''} />,
+                    render: (_: number, row: WorkspaceTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.show_name || ''}</ColumnEllipsisText>,
                 }, {
                     title: <FormattedMessage id="workspace.owner" />,
                     dataIndex: 'owner_name',
@@ -114,7 +118,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                         showTitle: false
                     },
                     width: 210,
-                    render: (_: number, row: WorkspaceTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description || ''} />,
+                    render: (_: number, row: WorkspaceTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.description || ''}</ColumnEllipsisText>,
                 }, {
                     title: <FormattedMessage id="workspace.number" />,
                     dataIndex: 'member_count',
@@ -164,7 +168,7 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
                                             onTopChange(row)
                                         } else {
                                             // message.error(`最多配置${canTopWsNumb}个推荐Workspace`)
-                                            message.error(formatMessage({ id: `workspace.configure.up.to.${canTopWsNumb}.recommended` }))
+                                            message.error(formatMessage({ id: `workspace.configure.up.recommended` }, { numb: canTopWsNumb }))
                                         }
                                     } else {
                                         onTopChange(row)
@@ -183,12 +187,6 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
         )
     }, [data, showNum, enLocale])
 
-    const onTopChange = async (row: any) => {
-        const { is_show, id } = row
-        const { code } = await saveWorkspaceConfig({ is_show: !is_show, id })
-        if (code === 200) refresh()
-    }
-
     const components = {
         body: {
             row: DragableBodyRow,
@@ -199,14 +197,6 @@ const UserTable: React.FC<WorkspaceList> = ({ is_public, onRef, top, tab }) => {
         if (dragIndex === hoverIndex) return
         const { code } = await updateTopWorkspaceOrder({ from: dragIndex, to: hoverIndex })
         if (code === 200) refresh()
-        // const dragRow = data.data[dragIndex];
-        // const putData = update(data.data, {
-        //     $splice: [
-        //         [dragIndex, 1],
-        //         [hoverIndex, 0, dragRow],
-        //     ],
-        // })
-        // setData({ ...data, data: putData });
     }
 
     const tableProps = useMemo(() => {

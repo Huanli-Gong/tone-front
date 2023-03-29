@@ -33,11 +33,14 @@ const text = {
   'install_build_kernel': 'Build内核',
 
   'env_info.placeholder': '格式：key=value，多个用空格或换行进行分割',
-  'env_info.li1': '定义多个全局变量，请使用空格和换行分割',
-  'env_info.li2': '必须是字母、数字和下划线组合',
-  'env_info.li3': '支持 value 中有双等号',
-  'env_info.li4': '可以定义一个数组（使用括号）',
-  'env_info.li5': 'value中包含空格，则必须用双引号括起来',
+
+  'env_info.1': '支持定义多个全局变量，需使用空格和换行分割。【如：x=1 y=2】',
+  'env_info.2': '支持包含特殊符号。【如：expression="a == b"】',
+  'env_info.3': '支持定义一个数组。 【如：fruits=(apple banana lemon)】',
+  'env_info.4': `支持使用单引号和双引号嵌套。【如：test='The capital letter of a is "A"' or test="The capital letter of a is 'A'"】`,
+  'env_info.5': `如果需value被引号括起需单双引号复合使用。【如：key="'value'" or key='"value"'】`,
+  'env_info.6': `如果需要value为空，则传入单引号或者双引号。【如：\' \' or  ""】`,
+
   'execution.time': '执行时机',
   'restart.before': '重启前',
   'restart.after': '重启后',

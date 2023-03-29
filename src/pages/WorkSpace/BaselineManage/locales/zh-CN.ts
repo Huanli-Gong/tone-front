@@ -1,4 +1,9 @@
+import { zhCN_locales as importModalZh } from "../components/ImportModal"
+import { baseline_detail_zhCn } from "../components/RightContent";
+
 export default {
+  ...baseline_detail_zhCn,
+  ...importModalZh,
   // baseline manage
   'baseline.functional': '功能基线',
   'baseline.performance': '性能基线',

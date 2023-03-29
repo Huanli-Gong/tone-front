@@ -1,5 +1,6 @@
 import React from "react"
-import { Table, TableColumnProps, Typography } from "antd"
+import { Table, Typography } from "antd"
+import type { TableColumnProps } from "antd"
 import { useSize } from "ahooks"
 import { CaretRightFilled, CaretDownFilled, FilterFilled } from '@ant-design/icons'
 import { useIntl, useLocation } from "umi"
@@ -21,16 +22,21 @@ const BaseTable: React.FC<IProps> = (props) => {
     const { test_type, current } = props
     const { id: baseline_id } = current
 
-    const PAGE_DEFAULT_PARAMS: any = { test_type, baseline_id, search_suite: '' }  // 有用
+    const basicParams = React.useMemo(() => ({ test_type, baseline_id, search_suite: "" }), [test_type, baseline_id])
+    // const PAGE_DEFAULT_PARAMS: any = { test_type, baseline_id, search_suite: '' }  // 有用
 
     const intl = useIntl()
     const { query } = useLocation() as any
 
-    const [listParams, setListParams] = React.useState(PAGE_DEFAULT_PARAMS)
+    const [listParams, setListParams] = React.useState<any>({})
     const [source, setSource] = React.useState([])
     const [loading, setLoading] = React.useState(true)
     const [expandKey, setExpandKey] = React.useState<React.Key[]>([])
     const ref = React.useRef(null)
+
+    React.useEffect(() => {
+        setListParams(basicParams)
+    }, [basicParams])
 
     React.useMemo(() => {
         if (query?.test_suite_id) {
@@ -38,15 +44,8 @@ const BaseTable: React.FC<IProps> = (props) => {
         }
     }, [query, source])
 
-    React.useEffect(() => {
-        setListParams({ test_type, baseline_id, search_suite: '' })
-        return () => {
-            setExpandKey([])
-        }
-    }, [current])
-
     const fetchListData = async () => {
-        if (!listParams.baseline_id) {
+        if (!listParams?.baseline_id) {
             setSource([])
             setLoading(false)
             return
@@ -62,6 +61,11 @@ const BaseTable: React.FC<IProps> = (props) => {
 
     React.useEffect(() => {
         fetchListData()
+        return () => {
+            setLoading(true)
+            setExpandKey([])
+            setSource([])
+        }
     }, [listParams])
 
     const { height } = useSize(ref)
@@ -101,7 +105,7 @@ const BaseTable: React.FC<IProps> = (props) => {
     }
 
     return (
-        <div ref={ref}>
+        <div ref={ref} >
             <TableCls
                 dataSource={source || []}
                 columns={columns}
@@ -115,7 +119,9 @@ const BaseTable: React.FC<IProps> = (props) => {
                     columnWidth: 32,
                     expandedRowRender: record => {
                         return (
+                            !loading &&
                             <ConfTable
+                                loading={loading}
                                 baseline_id={baseline_id}
                                 test_type={test_type}
                                 {...record}
@@ -123,13 +129,14 @@ const BaseTable: React.FC<IProps> = (props) => {
                         )
                     },
                     onExpand: (_, record: any) => {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                         _ ? onExpand(record) : setExpandKey([])
                     },
                     expandedRowKeys: expandKey,
-                    expandIcon: ({ expanded, onExpand, record }: any) => (
+                    expandIcon: ({ expanded, onExpand: $expandFn, record }: any) => (
                         expanded ?
-                            (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
-                            (<CaretRightFilled onClick={e => onExpand(record, e)} />)
+                            (<CaretDownFilled onClick={e => $expandFn(record, e)} />) :
+                            (<CaretRightFilled onClick={e => $expandFn(record, e)} />)
                     )
                 }}
             />

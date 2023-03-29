@@ -43,11 +43,11 @@ const Outline: React.FC<IProps> = ({ json }) => {
 
     // console.log(result)
     const hanldeClick = React.useCallback((node: any) => {
-        const { content, attrs } = node
-        const { text } = content[0]
+        const { content: $content, attrs } = node
+        const { text } = $content[0]
         const { level } = attrs
-        document.querySelectorAll(`h${level}`).forEach((ele) => {
-            if (ele.innerHTML === text)
+        document.querySelectorAll(`.ProseMirror h${level}`).forEach((ele: any) => {
+            if (ele.innerText === text)
                 scrollIntoView(ele, {
                     behavior: 'smooth',
                     block: 'start',
@@ -62,17 +62,18 @@ const Outline: React.FC<IProps> = ({ json }) => {
                 <Typography.Title level={4} style={{ fontWeight: 'normal', margin: 0 }}>大纲</Typography.Title>
                 <Divider style={{ margin: 0 }} />
                 {
-                    result?.map(({ level, text, index, node }: OutlineItem) => (
-                        <TitleWrap
-                            key={index}
-                            textIndent={level}
-                            onClick={() => hanldeClick(node)}
-                        >
-                            <Typography.Text ellipsis={{ tooltip: true }} style={{ width: 250 }}>
-                                {text}
-                            </Typography.Text>
-                        </TitleWrap>
-                    ))
+                    result?.filter(({ text }: OutlineItem) => !!text.trim())
+                        .map(({ level, text, index, node }: OutlineItem) => (
+                            <TitleWrap
+                                key={index}
+                                textIndent={level}
+                                onClick={() => hanldeClick(node)}
+                            >
+                                <Typography.Text ellipsis={{ tooltip: true }} style={{ width: 250 }}>
+                                    {text}
+                                </Typography.Text>
+                            </TitleWrap>
+                        ))
                 }
             </Space>
         </Wrapper>

@@ -2,7 +2,7 @@ import { Row, Form, Checkbox, Radio, Select, Typography, Divider, Breadcrumb } f
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
 import { Link, useParams } from 'umi'
 import styled from 'styled-components'
-import { RadioChangeEvent } from 'antd/lib/radio'
+import type { RadioChangeEvent } from 'antd/lib/radio'
 import type { FormInstance } from 'antd/lib/form'
 
 const Wrapper = styled(Row)`

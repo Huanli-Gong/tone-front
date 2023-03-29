@@ -33,6 +33,8 @@ const locales = {
     "button.join": "Join",
     "button.enter": "Enter",
     "button.apply_join": "Apply to Join",
+
+    "no_pub_tooltip_title": "Private Workspace is not accessible to non members",
 }
 
 export default Object.keys(locales).reduce((p, key) => {

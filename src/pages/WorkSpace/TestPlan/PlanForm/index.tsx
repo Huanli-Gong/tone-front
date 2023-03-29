@@ -28,7 +28,6 @@ const TestPlan = (props: any) => {
     const access = useAccess();
     const { height: layoutHeight } = useClientSize()
     const { state } = useLocation() as any
-    console.log(state)
 
     const { route } = props
     // console.log('route.name:', route.name)
@@ -110,7 +109,6 @@ const TestPlan = (props: any) => {
         }
         catch (err) {
             console.log(err, 8888)
-
         }
         setPedding(false)
     }
@@ -162,6 +160,7 @@ const TestPlan = (props: any) => {
             },
             ...reportValues,
             ...touch,
+            cron_info: touch?.cron_info ?? dataSource?.cron_info,
             ...pipline
         }
     }
@@ -224,7 +223,6 @@ const TestPlan = (props: any) => {
                 setPedding(false)
                 return;
             }
-            console.log(state)
             history.push(`/ws/${ws_id}/test_plan?${stringify(state)}`)
         }
         catch (err) {

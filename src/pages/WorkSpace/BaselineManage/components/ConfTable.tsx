@@ -1,5 +1,5 @@
 import { Table, Layout, Spin, Row, Typography } from 'antd'
-import React, { useRef, useEffect } from 'react'
+import React, { useRef } from 'react'
 import { useLocation } from 'umi'
 
 import { queryFunctionalBaseline, queryPerformanceBaseline } from '@/pages/WorkSpace/BaselineManage/services'
@@ -16,11 +16,9 @@ const ConfTable: React.FC<Iprops> = (props) => {
     const { test_type, baseline_id, test_suite_id, server_sn } = props
     const { query }: any = useLocation()
 
-    const background = `url(${treeSvg}) center center / 38.6px 32px `
-    const PAGE_DEFAULT_PARAMS: any = { test_type, baseline_id, test_suite_id, server_sn }  // 有用
+    const background = `url(${treeSvg}) center center / 38.6px 32px `  // 有用
     // 性能基线
 
-    const [listParams, setListParams] = React.useState(PAGE_DEFAULT_PARAMS)
     const [data, setData] = React.useState<[]>([])
     const [loading, setLoading] = React.useState(true)
 
@@ -67,9 +65,10 @@ const ConfTable: React.FC<Iprops> = (props) => {
         }
     }, [query, data])
 
-    useEffect(() => {
-        getThirdDetail(listParams)
-    }, [listParams])
+    React.useEffect(() => {
+        if (!baseline_id) return
+        getThirdDetail({ test_type, baseline_id, test_suite_id, server_sn })
+    }, [baseline_id])
 
     return (
         <Layout.Content>
@@ -110,7 +109,6 @@ const ConfTable: React.FC<Iprops> = (props) => {
                 />
             </Spin>
         </Layout.Content>
-
     )
 }
 

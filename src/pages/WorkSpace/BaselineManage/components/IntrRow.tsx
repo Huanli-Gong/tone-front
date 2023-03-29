@@ -67,7 +67,9 @@ const IntroRow: React.FC<IProps> = (props) => {
                     const val = env_info[f]
                     if (!val) return
                     return (
-                        <ItemRow>
+                        <ItemRow
+                            key={title}
+                        >
                             <ItemTitle strong>
                                 {title}
                             </ItemTitle>

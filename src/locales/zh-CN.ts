@@ -10,7 +10,7 @@ export default {
   'navbar.lang': 'En',
   //
   'delete.tips': '删除提示',
-  'delete.prompt': '确定要删除吗？',
+  'delete.prompt': '确定要删除{data}吗？',
   'Table.columns.result': '结果',
   'Table.columns.date': '日期',
   'common.startTime': '开始时间',
