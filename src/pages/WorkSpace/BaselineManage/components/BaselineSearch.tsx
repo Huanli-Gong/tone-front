@@ -35,6 +35,21 @@ const SearchContainer = styled(Row)`
     transform: translateY(100%);
 `
 
+const FilterSpanWrapper = styled.span`
+    height: 100%;
+    padding-left: 4px;
+    padding-right: 4px;
+    display: inline-block;
+    color: #bfbfbf;
+    &:hover {
+        color: rgba(0, 0, 0, 0.45);
+        background: rgba(0, 0, 0, 0.04);
+        span {
+            color: rgba(0, 0, 0, 0.45);
+        }
+    }
+`
+
 type IProps = {
     search?: string;
     onSearch?: (name?: string) => void
@@ -75,7 +90,9 @@ const BaselineSearch: React.FC<IProps> = (props) => {
             ref={dom}
             onClick={() => setOpen(true)}
         >
-            <FilterFilled style={{ color: search ? '#1890ff' : undefined }} />
+            <FilterSpanWrapper>
+                <FilterFilled style={{ color: search ? '#1890ff' : undefined }} />
+            </FilterSpanWrapper>
             {
                 open &&
                 <SearchContainer>

@@ -82,8 +82,11 @@ const ListContent: React.FC<IProps> = (props) => {
     }
 
     const handleClick = (item?: Workspace.BaselineItem) => {
-        setCurrent?.(item)
-        history.replace(`/ws/${ws_id}/baseline/${test_type}?baseline_id=${item?.id}`)
+        setCurrent?.({})
+        setTimeout(() => {
+            setCurrent?.(item)
+            history.replace(`/ws/${ws_id}/baseline/${test_type}?baseline_id=${item?.id}`)
+        }, 10)
     }
 
     return (

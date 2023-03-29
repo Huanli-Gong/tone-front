@@ -1,5 +1,5 @@
 import { request } from 'umi'
-import { has } from 'lodash'
+
 // 获取左侧所有集团功能基线分类、根据suite名称搜索suite
 export const queryBaselineList = async (params: any) => {
     return request(`/api/baseline/list/`, { params })
@@ -43,5 +43,21 @@ export const deletePerfsDetail = async (data: any) => {
     return request(`/api/baseline/perfs/detail/`, { method: 'delete', data })
 }
 
+export const exportBaseline = async (params: { baseline_id: string }) => {
+    return request(`/api/baseline/download/`, { params })
+}
 
+export const exportBaselineQueryState = async (params: { baseline_id: string }) => {
+    return request(`/api/baseline/download/query/`, { params })
+}
 
+export const importBaseline = async (data: { name?: string, file: File[], ws_id: string } | any) => {
+    return request(`/api/baseline/upload/`, {
+        method: "post",
+        data,
+    })
+}
+
+export const baselineNameCheck = async (params: { ws_id: string, name: string, test_type?: string }) => {
+    return request(`/api/baseline/list_by_name/`, { params })
+}

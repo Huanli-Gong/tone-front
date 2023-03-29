@@ -168,7 +168,7 @@ const BasicSetting = (props: any, ref: any) => {
                                     baselineList.filter((i: any) => i.test_type === 'performance').map(
                                         (item: any) => ({
                                             value: item.id,
-                                            lable: item.name
+                                            label: item.name
                                         })
                                     )
                                 }
