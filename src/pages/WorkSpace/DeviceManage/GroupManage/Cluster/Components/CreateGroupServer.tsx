@@ -1,14 +1,15 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
-import { useIntl, FormattedMessage } from 'umi'
-import { Drawer, Form, Input, Space, Button, message, Spin } from 'antd'
-import { queryServerTagList, createServerGroup, updateServerGroup } from '../../services'
+import { useIntl, FormattedMessage, useParams } from 'umi'
+import { Drawer, Form, Input, Space, Button, message } from 'antd'
+import { createServerGroup, updateServerGroup } from '../../services'
 import Owner from '@/components/Owner/index'
 import { requestCodeMessage } from '@/utils/utils'
 import MachineTags from '@/components/MachineTags';
 
 const CreateGroupDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id, run_mode, run_environment, onFinish } = props
+    const { ws_id } = useParams()
+    const { onFinish } = props
     const [tagFlag, setTagFlag] = useState({
         list: [],
         isQuery: '',
@@ -51,7 +52,7 @@ const CreateGroupDrawer = (props: any, ref: any) => {
                     data = await updateServerGroup(source.id, { ...values, ws_id })
 
                 if (data.code === 200) {
-                    message.success(formatMessage({id: 'operation.success'}) )
+                    message.success(formatMessage({ id: 'operation.success' }))
                     onFinish()
                     handleCancel()
                 }
@@ -75,7 +76,7 @@ const CreateGroupDrawer = (props: any, ref: any) => {
         <Drawer
             maskClosable={false}
             keyboard={false}
-            title={!source ? <FormattedMessage id="device.cluster.btn"/>: <FormattedMessage id="device.cluster.edit"/>}
+            title={!source ? <FormattedMessage id="device.cluster.btn" /> : <FormattedMessage id="device.cluster.edit" />}
             forceRender={true}
             visible={visible}
             onClose={handleCancel}
@@ -84,9 +85,9 @@ const CreateGroupDrawer = (props: any, ref: any) => {
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel"/></Button>
+                        <Button onClick={handleCancel}><FormattedMessage id="operation.cancel" /></Button>
                         <Button type="primary" disabled={padding} onClick={handleFinish}>
-                            {!source ? <FormattedMessage id="operation.ok"/>: <FormattedMessage id="operation.update"/>}
+                            {!source ? <FormattedMessage id="operation.ok" /> : <FormattedMessage id="operation.update" />}
                         </Button>
                     </Space>
                 </div>
@@ -98,21 +99,21 @@ const CreateGroupDrawer = (props: any, ref: any) => {
                 form={form}
                 name="createGroup"
             >
-                <Form.Item name="name" label={<FormattedMessage id="device.cluster.name.s"/>}
-                    rules={[{ 
-                        message: formatMessage({id: 'device.cluster.name.s.message'}), 
-                        required: true 
-                }]}>
-                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                <Form.Item name="name" label={<FormattedMessage id="device.cluster.name.s" />}
+                    rules={[{
+                        message: formatMessage({ id: 'device.cluster.name.s.message' }),
+                        required: true
+                    }]}>
+                    <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                 </Form.Item>
                 {
                     visible &&
                     <Owner />
                 }
-                <MachineTags {...tagFlag}/>
-                <Form.Item name="description" label={<FormattedMessage id="device.description"/>}>
+                <MachineTags {...tagFlag} />
+                <Form.Item name="description" label={<FormattedMessage id="device.description" />}>
                     <Input.TextArea
-                        placeholder={formatMessage({id: 'device.description.placeholder'})}
+                        placeholder={formatMessage({ id: 'device.description.placeholder' })}
                     />
                 </Form.Item>
             </Form>

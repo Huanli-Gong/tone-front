@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import styles from './index.less'
-import { useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { Layout, Button, Space, Tag, message, Typography, Spin, Modal, Table } from 'antd'
 import { deleteServerGroup, queryServerDel } from '../services'
 import { CaretRightFilled, FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons'
@@ -18,14 +18,16 @@ import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import { Access, useAccess } from 'umi';
 import OverflowList from '@/components/TagOverflow/index'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+import { v4 as uuid } from 'uuid'
 
+import DelConfirmModal from "@/pages/WorkSpace/DeviceManage/components/DelConfirmModal"
 
 /**
  * 内网集群
  */
 const Cluster = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
     const access = useAccess();
     const { loading, dataSource, params, total, refresh, setParams, setRefresh } = usePageInit(ws_id)
     // 刷新子表格的标记
@@ -34,11 +36,11 @@ const Cluster = (props: any, ref: any) => {
     const [refreshChild, setRefreshChild] = useState(null)
 
     const [deleteVisible, setDeleteVisible] = useState(false);
-    const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const logDrawer: any = useRef()
     const createClusterRef: any = useRef(null)
     const addClusterServerRef: any = useRef(null)
+    const delConfirm: any = useRef(null)
 
     useImperativeHandle(ref, () => ({
         open: createClusterRef.current.show
@@ -52,7 +54,7 @@ const Cluster = (props: any, ref: any) => {
         if (data.data.length > 0) {
             setDeleteVisible(true)
         } else {
-            setDeleteDefault(true)
+            delConfirm.current.show(row, `(${row.name})`)
         }
     }
 
@@ -61,7 +63,6 @@ const Cluster = (props: any, ref: any) => {
             setRefresh(!refresh)
             message.success(formatMessage({ id: 'operation.success' }))
             setDeleteVisible(false)
-            setDeleteDefault(false)
         }
         else
             requestCodeMessage(data.code, data.msg)
@@ -124,11 +125,13 @@ const Cluster = (props: any, ref: any) => {
             dataIndex: 'tag_list',
             width: 240,
             render: (record: any) => (
-                <OverflowList list={
-                    record.map((item: any, index: number) => {
-                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
-                    })
-                } />
+                <OverflowList
+                    list={
+                        record.map((item: any) => {
+                            return <Tag color={item.tag_color} key={uuid()}>{item.name}</Tag>
+                        })
+                    }
+                />
             ),
             filterIcon: () => <FilterFilled style={{ color: params.tags ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
@@ -148,7 +151,7 @@ const Cluster = (props: any, ref: any) => {
                 <SearchInput confirm={confirm} onConfirm={(description: string) => setParams({ ...params, description })} />
             ),
             render(_: any) {
-                return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
             }
         },
         {
@@ -221,7 +224,6 @@ const Cluster = (props: any, ref: any) => {
             </Spin>
             <OperationLog ref={logDrawer} operation_object="machine_cluster_aligroup" />
             <CreateGroupServer
-                ws_id={ws_id}
                 run_environment="aligroup"
                 run_mode="cluster"
                 ref={createClusterRef}
@@ -230,7 +232,6 @@ const Cluster = (props: any, ref: any) => {
                 }}
             />
             <AddClusterServer
-                ws_id={ws_id}
                 onFinish={handleAddClusterServerFinish}
                 run_environment="aligroup"
                 run_mode="cluster"
@@ -239,7 +240,7 @@ const Cluster = (props: any, ref: any) => {
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
                     <Button key="submit" onClick={() => handleDeleteServer(deleteObj.id)}>
@@ -260,26 +261,10 @@ const Cluster = (props: any, ref: any) => {
                     <FormattedMessage id="view.quote.details" />
                 </div>
             </Modal>
-            <Modal
-                title={<FormattedMessage id="delete.tips" />}
-                centered={true}
-                visible={deleteDefault}
-                onCancel={() => setDeleteDefault(false)}
-                footer={[
-                    <Button key="submit" onClick={() => handleDeleteServer(deleteObj.id)}>
-                        <FormattedMessage id="operation.delete" />
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel" />
-                    </Button>
-                ]}
-                width={300}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt" />
-                </div>
-            </Modal>
+            <DelConfirmModal
+                ref={delConfirm}
+                onOk={handleDeleteServer}
+            />
         </Layout.Content>
     )
 }

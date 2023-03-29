@@ -12,6 +12,8 @@ import styles from './style.less';
 import { useParams, useIntl, FormattedMessage } from 'umi';
 import { AgentSelect } from '@/components/utils'
 import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 /**
  * 
  * 云上集群 - 添加机器
@@ -60,6 +62,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     const [manufacturerType, setChangeManufacturer] = React.useState(''); // 云厂商 切换 规格
     const [nameStatus, setNameStatus] = React.useState<any>(""); // 校验输入框的状态
     const [firstAddDataFlag, setFirstAddDataFlag] = useState<any>(true) // 是第一次添加数据
+
+    const [form] = Form.useForm();
 
     // 1.查询云类型
     const getCloudType = async (param: any) => {
@@ -135,7 +139,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         if (keyword == param) return
         setKeyword(param)
         setFetching(true)
-        let { data } = await queryMember({ keyword: param,/* scope:'aligroup' */ })
+        const { data } = await queryMember({ keyword: param,/* scope:'aligroup' */ })
         setUser(data || [])
         setFetching(false)
     }
@@ -210,13 +214,16 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 // case2.查询各选框数据源。
                 setLoading(true)
                 const regionZone = form.getFieldValue('region')
-                let param = {
+                const param = {
                     ak_id: value[1],
                     region: regionZone[0],
                     zone: regionZone[1],
                 }
                 if (is_instance) {
-                    Promise.all([getSeverList(param)]).then(() => { setLoading(false), setDisabled(false) })
+                    Promise.all([getSeverList(param)]).then(() => {
+                        setLoading(false)
+                        setDisabled(false)
+                    })
                 } else {
                     Promise.all([getInstancegList(param), getImageList(param), getCategoriesList(param)]).then(() => { setLoading(false), setDisabled(false) })
                 }
@@ -268,14 +275,14 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         const { data: akData = [] } = await querysAK({ ws_id, provider: param.id })
         const { data = [] } = await querysRegion({ ak_id: param.ak_id })
         const { data: query = [] } = await queryZone({ ak_id: param.ak_id, region: param.region })
-        let list = data.map((item: any) => {
+        const list = data.map((item: any) => {
             if (item.id == param.region) {
                 return {
                     value: item.id,
                     label: textRender(item.id),
                     ak_id: param.ak_id,
                     isLeaf: false,
-                    children: query.map((item: any) => { return { label: item.id, value: item.id } })
+                    children: query.map(($item: any) => { return { label: $item.id, value: $item.id } })
                 }
             }
             return {
@@ -285,13 +292,13 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 isLeaf: false,
             }
         })
-        let lists = optionLists.map((item: any) => {
+        const lists = optionLists.map((item: any) => {
             if (item.value === param.id) {
                 return {
                     value: param.id,
                     label: param.id,
                     isLeaf: false,
-                    children: akData.map((item: any) => { return { label: item.name, value: item.id } })
+                    children: akData.map(($item: any) => { return { label: $item.name, value: $item.id } })
                 }
             }
             return item
@@ -307,7 +314,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
     const onRegionChange = (value: any, selectedOptions: any) => {
         if (Array.isArray(selectedOptions) && selectedOptions.length) {
-            let param = {
+            const param = {
                 ak_id: selectedOptions[0].ak_id,
                 region: value[0],
                 zone: value[1]
@@ -447,7 +454,6 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }
     }, [image])
 
-    const [form] = Form.useForm();
     const submit = async (params: any) => {
         setBtnLoading(true)
         let param = { ...params, ws_id }
@@ -754,8 +760,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
                                     >
-                                        {sever.map((item: any, index: number) => {
-                                            return <Option value={item.id} key={index}>{item.ip ? `${item.ip}/${item.name}` : item.name}</Option>
+                                        {sever.map((item: any) => {
+                                            return <Option value={item.id} key={uuid()}>{item.ip ? `${item.ip}/${item.name}` : item.name}</Option>
                                         })}
                                     </Select>
                                 </Form.Item>
@@ -862,7 +868,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     name="system_disk_category"
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })}>
                                             {categories.map((item: any, index: number) => {
@@ -904,7 +910,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                     label={<FormattedMessage id="device.storage_type" />}
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })} disabled={image.length === 0}>
                                             {categories.map((item: any, index: number) => {

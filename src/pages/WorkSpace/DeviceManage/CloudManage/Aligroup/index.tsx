@@ -12,7 +12,7 @@ import SelectTags from '@/components/Public/SelectTags';
 import Highlighter from 'react-highlight-words';
 import AddCluster from './AddGroup'
 import { FilterFilled } from '@ant-design/icons';
-import { useParams, useIntl, FormattedMessage } from 'umi';
+import { useParams, useIntl, FormattedMessage, useLocation, history } from 'umi';
 import { useClientSize } from '@/utils/hooks';
 import { AccessTootip, handlePageNum, requestCodeMessage, useStateRef } from '@/utils/utils';
 import { Access, useAccess } from 'umi'
@@ -20,6 +20,10 @@ import Log from '@/components/Public/Log';
 import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { stringify } from 'querystring';
+import { v4 as uuid } from 'uuid';
+import DelConfirmModal from '../../components/DelConfirmModal';
+
 /**
  * 云上集群
  * 
@@ -45,6 +49,7 @@ const DEFAULT_PARAM = {
     is_instance: 0,
 }
 const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
+    const { pathname, query } = useLocation() as any
     const { formatMessage } = useIntl()
     const { ws_id }: any = useParams()
     const [form] = Form.useForm();
@@ -52,7 +57,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const aloneMachine = useRef<any>(null)
     const tree = useRef<any>(null)
     const outTable = useRef<any>(null)
-    const [isInstance, setIsInstance] = useState<number>(0)
+    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<any>({});
     const [params, setParams] = useState<AligroupParams>(DEFAULT_PARAM)
@@ -61,10 +66,10 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const [expandKey, setExpandKey] = useState<string[]>([])
     const top = 39, size = 41;
     const [deleteVisible, setDeleteVisible] = useState(false);
-    const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const [autoFocus, setFocus] = useState<boolean>(true)
     const logDrawer: any = useRef()
+    const delConfirm: any = useRef()
 
     const pageCurrent = useStateRef(params)
     const handleOpenLogDrawer = useCallback(
@@ -98,13 +103,14 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         setTagFlag({ ...tagFlag, isQuery: 'edit', list })
         setOutParam({ ...row })
     }
+
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
         const data = await queryServerDel({ server_id: row.id, run_mode: 'cluster', server_provider: 'aliyun' })
         if (data.data.length > 0) {
             setDeleteVisible(true)
         } else {
-            setDeleteDefault(true)
+            delConfirm.current?.show(row, `(${row.name})`)
         }
     }
 
@@ -115,7 +121,6 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         if (code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
             setDeleteVisible(false)
-            setDeleteDefault(false)
             setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
         } else {
             requestCodeMessage(code, msg)
@@ -189,7 +194,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                     setFocus(!autoFocus)
                 }
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.owner_name} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.owner_name}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.tag" />,
@@ -210,8 +215,8 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             ),
             render: (_: any, row: any) => (
                 <OverflowList list={
-                    row.tag_list.map((item: any, index: number) => {
-                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                    row.tag_list.map((item: any) => {
+                        return <Tag color={item.tag_color} key={uuid()}>{item.name}</Tag>
                     })
                 } />
             )
@@ -250,7 +255,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                 >
                     <Space>
                         <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => modifyGroup(row)}><FormattedMessage id="operation.edit" /></Button>
-                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer({ ...row })}><FormattedMessage id="operation.delete" /></Button>
+                        <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleDelServer(row)}><FormattedMessage id="operation.delete" /></Button>
                     </Space>
                 </Access>
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => handleOpenLogDrawer(row.id)}><FormattedMessage id="operation.log" /></Button>
@@ -258,17 +263,20 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         },
     ];
 
-    const RadioChange = (val: any) => {
+    const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
+        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
     }
+
     const $insdance = + isInstance
 
     return (
         <div className={styles.warp}>
             <Tabs
                 type="card"
-                onTabClick={RadioChange}
+                onTabClick={tabRadioChange}
+                activeKey={isInstance + ""}
                 tabBarExtraContent={
                     <Button type="primary" onClick={newGroup}>
                         {!$insdance
@@ -349,26 +357,10 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                 </div>
                 <div style={{ color: '#1890FF', cursor: 'pointer' }} onClick={handleDetail}><FormattedMessage id="view.quote.details" /></div>
             </Modal>
-            <Modal
-                title={<FormattedMessage id="delete.tips" />}
-                centered={true}
-                visible={deleteDefault}
-                onCancel={() => setDeleteDefault(false)}
-                footer={[
-                    <Button key="submit" onClick={() => removeGroup(deleteObj.id)}>
-                        <FormattedMessage id="operation.confirm.delete" />
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel" />
-                    </Button>
-                ]}
-                width={300}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt" />
-                </div>
-            </Modal>
+            <DelConfirmModal
+                ref={delConfirm}
+                onOk={({ id }: any) => removeGroup(id)}
+            />
         </div>
     )
 }

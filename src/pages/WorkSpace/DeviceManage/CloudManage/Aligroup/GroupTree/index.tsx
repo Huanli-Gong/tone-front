@@ -92,7 +92,7 @@ const GroupTree: React.FC<any> = (props) => {
                         provider={"aliyun"}
                         machine_pool={true}
                     /> :
-                    <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.name} />
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.name}</ColumnEllipsisText>
             )
         },
         !!is_instance &&
@@ -103,7 +103,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.sn} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.sn}</ColumnEllipsisText>
         },
         BUILD_APP_ENV && !!is_instance &&
         {
@@ -113,7 +113,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.tsn} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.tsn}</ColumnEllipsisText>
         },
         !BUILD_APP_ENV && !!is_instance &&
         {
@@ -131,7 +131,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.manufacturer}/${row.ak_name}`} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.manufacturer}/${row.ak_name}`}</ColumnEllipsisText>
         },
         {
             title: 'Region/Zone',
@@ -140,7 +140,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'region',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.region}/${row.zone}`} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.region}/${row.zone}`}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.instance_type" />,
@@ -149,7 +149,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.instance_type} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.instance_type}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.image" />,
@@ -181,7 +181,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'console_conf',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.console_conf} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.console_conf}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.release_rule" />,
@@ -199,7 +199,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'private_ip',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.private_ip} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.private_ip}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.channel_type" />,
@@ -208,7 +208,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.channel_type} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.channel_type}</ColumnEllipsisText>
         },
         {
             title: 'Owner',
@@ -217,7 +217,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'owner_name',
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.owner_name} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.owner_name}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.local.server" />,
@@ -288,7 +288,7 @@ const GroupTree: React.FC<any> = (props) => {
                 showTitle: false,
             },
             dataIndex: 'description',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description} width={100} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} width={100} >{row.description}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -328,7 +328,11 @@ const GroupTree: React.FC<any> = (props) => {
                                 <FormattedMessage id="operation.edit" />
                             </Typography.Link>
                             <Popconfirm
-                                title={<div style={{ color: 'red' }}><FormattedMessage id="delete.prompt" /></div>}
+                                title={
+                                    <Typography.Text type="danger">
+                                        {formatMessage({ id: "delete.prompt" }, { data: `(${row.name})` })}
+                                    </Typography.Text>
+                                }
                                 placement="topRight"
                                 okText={<FormattedMessage id="operation.cancel" />}
                                 cancelText={<FormattedMessage id="operation.confirm.delete" />}
