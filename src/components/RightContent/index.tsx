@@ -94,8 +94,7 @@ const GlobalHeaderRight: React.FC<{ isWs: boolean, wsId: string, routes: any }> 
     }
 
     const needJoinWorkspace = React.useMemo(() => {
-        // const isBoolean = Object.prototype.toString.call(ws_is_common) === "[object Boolean]"
-        const isBoolean = Object.prototype.toString.call(ws_role_title) === "[object String]"
+        const isString = Object.prototype.toString.call(ws_role_title) === "[object String]"
         const isTourist = ws_role_title === 'ws_tourist' || ''
 
         if (ws_is_common) return false
