@@ -42,19 +42,25 @@ const TopWorkspaces: React.FC = () => {
             direction="column"
             gap={12}
             style={{
-                height: 388, width: "calc(100% - 336px - 20px)",
+                width: "calc(100% - 310px - 10px)",
                 background: "#fff",
                 borderRadius: 2,
-                padding: 20,
+                padding: 10,
             }}
         >
             <BaseTitle>
                 {intl.formatMessage({ id: `pages.home.recommend.Workspace` })}
             </BaseTitle>
             <WokspacesContainer >
-                <Row gutter={12}>
+                <Row style={{ gap: 10 }}>
                     {
-                        workspaces.map((ws: any) => <WorkspaceBlock key={ws.id} {...ws} />)
+                        workspaces.map((ws: any) => (
+                            <WorkspaceBlock
+                                width={`calc((100% - 40px) / 5)`}
+                                key={ws.id}
+                                {...ws}
+                            />
+                        ))
                     }
                 </Row>
                 {

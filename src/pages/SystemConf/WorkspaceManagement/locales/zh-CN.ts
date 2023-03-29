@@ -13,8 +13,7 @@ export default {
   'workspace.home.recommended': '首页推荐',
   'workspace.recommended1': '状态为“是”，展示在首页“推荐Worksapce”模块',
   'workspace.recommended2': '可通过上下拖动调整显示顺序，首页显示顺序同该表格',
-  'workspace.configure.up.to.9.recommended': '最多配置9个推荐Workspace',
-  'workspace.configure.up.to.12.recommended': '最多配置12个推荐Workspace',
+  'workspace.configure.up.recommended': '最多配置{numb}个推荐Workspace',
   // Modal
   'workspace.ws.details': 'Workspace详情',
   'workspace.ws.log.out': '注销workspace',
