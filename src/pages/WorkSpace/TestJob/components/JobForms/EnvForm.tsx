@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle, useEffect } from 'react'
-import { Form, Radio, Row, Col, Select, Input } from 'antd'
+import { Form, Radio, Row, Col, Select, Input, Space, Typography } from 'antd'
 import styles from './index.less'
-import { FormProps } from './index'
+import type { FormProps } from './'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
 import QuestionCircleComponent from '@/components/Public/QuestionCircle'
 import IsPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/IsPushForm'
@@ -13,6 +13,7 @@ import MonitorList from './MonitorList'
 
 import { useRequest, useIntl, FormattedMessage } from 'umi'
 import _ from 'lodash'
+import { v4 as uuid } from 'uuid'
 
 /**
  * 环境配置
@@ -43,6 +44,7 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 setKernal("no") /* project_id ? 'install_build_kernel' : 'no' */
             },
             setVal: (data: Object) => {
+                // eslint-disable-next-line prefer-const
                 let { rpm_info, script_info, kernel_version, kernel_info, build_pkg_info }: any = data
                 rpm_info = rpm_info || [{ pos: 'before', rpm: '' }]
                 script_info = script_info || [{ pos: 'before', script: '' }]
@@ -224,9 +226,11 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                         </Row>
                     </Form.Item>
                     <Form.Item name="vm" label={<FormattedMessage id="job.form.vm" />}>
-                        <Select getPopupContainer={node => node.parentNode}
+                        <Select
+                            getPopupContainer={node => node.parentNode}
                             placeholder={<FormattedMessage id="job.form.vm.config" />}
-                            disabled={disabled}></Select>
+                            disabled={disabled}
+                        />
                     </Form.Item>
                 </Form.Item>
             }
@@ -302,14 +306,24 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                     <QuestionCircleComponent
                         style={{ transform: "unset", top: 6 }}
                         contextNode={
-                            <ul style={{ listStyle: 'auto', paddingInlineStart: 20, paddingTop: 15 }}>
-                                <li><FormattedMessage id="job.form.env_info.li1" /></li>
-                                <li><FormattedMessage id="job.form.env_info.li2" /></li>
-                                <li><FormattedMessage id="job.form.env_info.li3" /></li>
-                                <li><FormattedMessage id="job.form.env_info.li4" /></li>
-                                <li><FormattedMessage id="job.form.env_info.li5" /></li>
-                            </ul>
-                        } />
+                            <div style={{ maxWidth: 525 }}>
+                                {
+                                    new Array(6).fill("").map((i: any, idx: number) => (
+                                        <Space key={uuid()} align="start">
+                                            <Typography.Text style={{ whiteSpace: "nowrap" }}>
+                                                {idx + 1}.
+                                            </Typography.Text>
+                                            <div >
+                                                {formatMessage({
+                                                    id: `job.form.env_info.${idx + 1}`
+                                                })}
+                                            </div>
+                                        </Space>
+                                    ))
+                                }
+                            </div>
+                        }
+                    />
                 </Form.Item>
             }
             {
@@ -368,6 +382,6 @@ export default ({ contrl, disabled = false, envErrorFlag, project_id, onRef = nu
                 monitor &&
                 <MonitorList disabled={disabled} formComponent={form} template={template} />
             }
-        </Form>
+        </Form >
     )
 }
