@@ -486,7 +486,7 @@ const TestJob: React.FC<any> = (props) => {
                         }
                     })
                 }
-                dataCopy.test_config = $suite_list.map((i: any) => ({ ...i, test_suite_id: i.test_suite, cases: i.cases.map((t: any) => ({ ...t, test_case_id: t.test_case })) }))
+                dataCopy.test_config = $suite_list?.map((i: any) => ({ ...i, test_suite_id: i.test_suite, cases: i.cases.map((t: any) => ({ ...t, test_case_id: t.test_case })) }))
                 dataCopy.moniter_contrl = false
                 dataCopy.reclone_contrl = _.get(envVal, 'reclone_contrl') || false
                 if (_.get(dataCopy, 'monitor_info')) dataCopy.moniter_contrl = true
