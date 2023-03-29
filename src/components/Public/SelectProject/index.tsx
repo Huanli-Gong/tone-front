@@ -4,7 +4,7 @@ import { useIntl, FormattedMessage } from 'umi';
 import { projectList } from './service';
 import styles from './style.less';
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, ws_id }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, ws_id }) => {
 	const [project, setProject] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>()
@@ -96,6 +96,6 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

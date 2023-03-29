@@ -5,7 +5,7 @@ import { member,queryCloudAk } from '../../../service';
 import _ from 'lodash'
 import styles from './index.less'
 
-const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
+const FilterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 	const { formatMessage } = useIntl()
 	const [user, setUser ] = useState<any>([])
 	const [keyword,setKeyword] = useState<string>()
@@ -119,6 +119,6 @@ const filterRadio: React.FC<any> = ({confirm,onConfirm,name,ws_id}) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

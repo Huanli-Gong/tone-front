@@ -3,7 +3,7 @@ import { Space, Button, Select, Divider, Spin } from 'antd';
 import { FormattedMessage, useIntl } from 'umi'
 import { member } from './service';
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, pageSize = 999, initVal }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, pageSize = 999, initVal }) => {
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<number | undefined>(initVal?.name)
@@ -85,6 +85,6 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, pageSize = 
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 
