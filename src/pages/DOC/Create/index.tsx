@@ -2,16 +2,15 @@ import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Row, Button, Input, message } from 'antd'
 import type { FormInstance } from 'antd/lib/form'
-import { useParams, history, useAccess } from 'umi';
+import { useParams, history, useAccess, Helmet } from 'umi';
 import DocLayout from '../components/DocLayout';
 import { createDoc, queryDocList, updateDoc } from '../services'
 import Setting from './components/Setting';
 import Outline from './components/Outline';
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import Loading from '../components/Loading';
-import Helmet from 'react-helmet'
 import RichEditor from '@/components/RichEditor';
-import { Editor } from '@tiptap/core';
+import type { Editor } from '@tiptap/core';
 import { replaceEmoji, tarnsformEmoji } from '@/components/RichEditor/components/Emoji/emojiReplacer';
 
 const Content = styled.div`
@@ -169,7 +168,12 @@ const CreateDoc: React.FC = () => {
 
                 <Editer ref={editWrapper}>
                     <TitleWrapper>
-                        <Input value={title} placeholder="请输入标题" onChange={handleTitleChange} />
+                        <Input
+                            value={title}
+                            placeholder="请输入标题"
+                            autoComplete="off"
+                            onChange={handleTitleChange}
+                        />
                     </TitleWrapper>
                     <EditerWrapper ref={ele} >
                         <RichEditor
