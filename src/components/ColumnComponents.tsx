@@ -15,8 +15,10 @@ export const ColumnEllipsisText: React.FC<AnyType> = (props) => {
     const { ellipsis, children = "-", placement = "topLeft", ...rest } = props
 
     const ref = React.useRef<any>()
+    const textRef = React.useRef<any>()
 
-    const [ell, setEll] = React.useState(false);
+    const [open, setOpen] = React.useState(false)
+    const [show, setShow] = React.useState(false)
     const [realWidth, setRealWidth] = React.useState<any>();
     const { tooltip } = ellipsis
 
@@ -37,26 +39,43 @@ export const ColumnEllipsisText: React.FC<AnyType> = (props) => {
         }
     }, [])
 
+    React.useEffect(() => {
+        if (!textRef.current) return
+        const { scrollWidth, clientWidth } = textRef.current
+        setShow(clientWidth < scrollWidth)
+    }, [realWidth])
+
+    const handleMouseOver = () => {
+        if (show) setOpen(true)
+    }
+
+    const handleMouseLeave = () => {
+        setOpen(false)
+    }
+
     if (!ellipsis || Object.prototype.toString.call(ellipsis) === "[object Boolean]")
         return <Typography.Text {...props} />
 
-    ellipsis.onEllipsis = () => setEll(true)
-
-    if (!ell)
-        return (
-            <Typography.Text ref={ref} {...props}  >
-                {children || "-"}
-            </Typography.Text>
-        );
-
     return (
-        <Tooltip
-            title={tooltip && Object.prototype.toString.call(tooltip) !== "[object Boolean]" ? tooltip : children}
-            placement={placement}
+        <div
+            ref={ref}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseLeave}
         >
-            <TextCls width={realWidth} ellipsis {...rest}  >
-                {children || "-"}
-            </TextCls>
-        </Tooltip>
+            <Tooltip
+                title={tooltip && Object.prototype.toString.call(tooltip) !== "[object Boolean]" ? tooltip : children}
+                placement={placement}
+                open={open}
+            >
+                <TextCls
+                    width={realWidth}
+                    ellipsis
+                    {...rest}
+                    ref={textRef}
+                >
+                    {children || "-"}
+                </TextCls>
+            </Tooltip>
+        </div>
     )
 }

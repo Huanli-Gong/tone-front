@@ -166,6 +166,9 @@ const SuiteManagement: React.FC<any> = () => {
 		{
 			title: <FormattedMessage id="device.description" />,
 			dataIndex: 'description',
+			ellipsis: {
+				showTitle: false,
+			},
 			width: 100,
 			filterIcon: () => <FilterFilled style={{ color: listParams?.description ? '#1890ff' : undefined }} />,
 			filterDropdown: ({ confirm }: any) => (
