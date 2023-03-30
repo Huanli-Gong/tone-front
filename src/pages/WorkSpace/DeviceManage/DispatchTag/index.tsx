@@ -1,22 +1,58 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Space, Tag, message, Popconfirm, Pagination, Spin, Tooltip, Table, Row } from 'antd';
+import { Button, Space, Tag, message, Popconfirm, Pagination, Spin, Tooltip, Table, Row, Typography } from 'antd';
 import { tagList, delSuite } from './service';
 import styles from './style.less';
 import SearchInput from '@/components/Public/SearchInput';
 import Log from '@/components/Public/Log';
 import { FilterFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 import { SingleTabCard } from '@/components/UpgradeUI';
-import { useDetectZoom } from '@/utils/hooks';
 import { useParams, useIntl, FormattedMessage } from 'umi'
 import AddModel from './components/AddModel'
 import { Access, useAccess } from 'umi'
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
+const ResizeTag: React.FC = ({ name, tag_color }) => {
+
+	const ref = React.useRef<any>()
+	const [realWidth, setRealWidth] = React.useState<any>();
+
+	React.useEffect(() => {
+		const { offsetParent } = ref.current
+		if (!offsetParent) return
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				if (entry.contentRect) {
+					const { width } = entry.contentRect
+					setRealWidth(width)
+				}
+			}
+		});
+		resizeObserver.observe(offsetParent);
+		return () => {
+			resizeObserver.unobserve(offsetParent)
+		}
+	}, [])
+
+	return (
+		<div ref={ref} >
+			<Tag color={tag_color} style={{ marginRight: 0 }}>
+				<Typography.Text
+					ellipsis={{
+						tooltip: name,
+					}}
+					style={{ maxWidth: realWidth - 20, color: tag_color && "#fff" }}
+				>
+					{name}
+				</Typography.Text>
+			</Tag>
+		</div>
+	)
+}
+
 const SuiteManagement: React.FC<any> = props => {
 	const { formatMessage } = useIntl()
 	const { ws_id } = useParams() as any
 	const access = useAccess();
-	const ratio = useDetectZoom()
 	const [dataSource, setDataSource] = useState<any>({});
 	const [name, setName] = useState<string>();
 	const [description, setDescription] = useState<string>();
@@ -84,16 +120,18 @@ const SuiteManagement: React.FC<any> = props => {
 			},
 			filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
 			render: (_: string, row: any) => (
-				<Tooltip title={row.name}>
-					<Tag color={row.tag_color}>
-						{
-							row.name.toString().length > 10 ?
-								row.name.toString().substr(0, 10).concat('...') :
-								row.name.toString()
-						}
-					</Tag>
-				</Tooltip>
+				<ResizeTag {...row} />
 			)
+			/* 
+						<Tooltip title={row.name}>
+								<Tag color={row.tag_color}>
+									{
+										row.name.toString().length > 10 ?
+											row.name.toString().substr(0, 10).concat('...') :
+											row.name.toString()
+									}
+								</Tag>
+							</Tooltip> */
 		},
 		{
 			title: <FormattedMessage id="device.description" />,
@@ -107,7 +145,7 @@ const SuiteManagement: React.FC<any> = props => {
 				}
 			},
 			render: (_: string, row: any) => (
-				<ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.description} />
+				<ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.description}</ColumnEllipsisText>
 			)
 		},
 		{
@@ -119,7 +157,7 @@ const SuiteManagement: React.FC<any> = props => {
 			},
 			render(_: string, row: any) {
 				return (
-					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }}  >{_ || '-'}</ColumnEllipsisText>
 				)
 			}
 		},
@@ -132,7 +170,7 @@ const SuiteManagement: React.FC<any> = props => {
 			width: 90,
 			render(_: string, row: any) {
 				return (
-					<ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+					<ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
 				)
 			}
 		},
@@ -141,7 +179,7 @@ const SuiteManagement: React.FC<any> = props => {
 			dataIndex: 'gmt_created',
 			width: 200,
 			render: (_: string, row: any) => {
-				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
+				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_created}</ColumnEllipsisText>
 				return "-"
 			}
 		},
@@ -150,7 +188,7 @@ const SuiteManagement: React.FC<any> = props => {
 			dataIndex: 'gmt_modified',
 			width: 200,
 			render: (_: string, row: any) => {
-				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
+				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_modified}</ColumnEllipsisText>
 				return "-"
 			}
 		},
