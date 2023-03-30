@@ -3,9 +3,9 @@
         "type": "command",
         "command": {
             "cmd": [
-                "tnpm install pnpm -g",
+                "tnpm install pnpm@7 -g",
                 "pnpm install",
-                "pnpm run build",
+                "pnpm build",
                 "mv ./dist $BUILD_DEST"
             ]
         }

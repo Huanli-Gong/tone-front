@@ -1,6 +1,5 @@
 import AvatarCover from "@/components/AvatarCover"
 import { Avatar, Button, Space, Typography, Tooltip } from "antd"
-// import { Tooltip } from "react-tooltip"
 import React from "react"
 import styled from "styled-components"
 import { history, useModel, useIntl, useAccess } from "umi"
@@ -9,7 +8,6 @@ import ApplyJoinWorkspace from '@/components/ApplyJoinPopover'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
 import { jumpWorkspace, OPENANOLIS_LOGIN_URL } from '@/utils/utils'
-// import 'react-tooltip/dist/react-tooltip.css'
 
 const TableCellColumn = styled.div`
     background-color: #FFFFFF;

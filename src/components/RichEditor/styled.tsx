@@ -197,6 +197,9 @@ export const EditorCls = styled.div<{ editable?: boolean }>`
         &:focus-visible {
             outline:none;
         }
+        a span {
+            color: #1890ff !important;
+        }
         ul,
         ol {
             padding: 0 1rem;
