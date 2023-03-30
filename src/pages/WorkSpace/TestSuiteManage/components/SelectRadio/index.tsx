@@ -3,7 +3,7 @@ import { Radio, Button, Divider } from 'antd';
 import { useIntl, FormattedMessage } from 'umi'
 import styles from '../../style.less';
 
-const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
+const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 	const [val, setVal] = useState<number>()
 	const handleDomainRadio = (e: any) => {
 		setVal(e.target.value)
@@ -53,6 +53,6 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

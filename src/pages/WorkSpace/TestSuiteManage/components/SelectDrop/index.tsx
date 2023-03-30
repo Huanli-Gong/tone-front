@@ -5,7 +5,7 @@ import { member } from '../../service';
 
 import styles from './index.less'
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm }) => {
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>()
@@ -83,6 +83,6 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm }) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

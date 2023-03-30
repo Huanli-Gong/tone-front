@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Badge } from 'antd';
 import { FormattedMessage } from 'umi'
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dataArr }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dataArr }) => {
 	const [optionData, setOptionData] = useState<string[]>([])
 	const [val, setVal] = useState<string | undefined>(stateVal)
 
@@ -89,6 +89,6 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, stateVal, tabType, dat
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

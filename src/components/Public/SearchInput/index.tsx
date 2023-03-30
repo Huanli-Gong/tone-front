@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Space, Button, Input, Divider } from 'antd';
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 
-const filterRadio: React.FC<any> = (props) => {
+const FilterRadio: React.FC<any> = (props) => {
 	const { confirm, onConfirm, initVal, autoFocus, placeholder, styleObj, currentData } = props
 	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<any>()
@@ -71,6 +71,6 @@ const filterRadio: React.FC<any> = (props) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

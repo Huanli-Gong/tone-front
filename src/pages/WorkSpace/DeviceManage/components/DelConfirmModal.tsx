@@ -16,14 +16,16 @@ const DelConfirmModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
     const defaultOptionFun = () => {
         setOpen(false)
         setWords("")
-    }
-
-    const handleOk = () => {
-        onOk?.(source)
+        setSource([])
     }
 
     const handleCancel = () => {
         defaultOptionFun()
+    }
+
+    const handleOk = () => {
+        onOk?.(source)
+        handleCancel()
     }
 
     React.useEffect(() => {
