@@ -71,9 +71,18 @@ const SelectSuite: React.FC<any> = ({
 				}
 			})
 		})
-		return list
+
+		return Object.entries(list?.reduce((pre: any, cur: any) => {
+			const { sn, ip } = cur
+			pre[`${sn}-${ip}`] = cur
+			return pre
+		}, {})).map((item: any) => {
+			const [, vals] = item
+			return vals
+		})
 	}, [test_config])
 
+	console.log(memoDeleteIp)
 	const SuiteSelect = () => {
 		drawer.current?.openDrawer({ test_config })
 	}
