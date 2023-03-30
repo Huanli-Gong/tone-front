@@ -64,7 +64,7 @@ const DelConfirmModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
                 <Typography.Text type="danger">
                     {
                         intl.formatMessage({
-                            id: "delete.prompt",
+                            id: "device.delete.prompt",
                         }, {
                             data: words
                         })
