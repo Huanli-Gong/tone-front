@@ -10,11 +10,19 @@ import { useParams, useIntl, FormattedMessage } from 'umi'
 import AddModel from './components/AddModel'
 import { Access, useAccess } from 'umi'
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { ResizeHooksTable } from '@/utils/table.hooks';
 
-const ResizeTag: React.FC = ({ name, tag_color }) => {
+type TagValueProps = {
+	name: string;
+	tag_color: string;
+}
 
+const ResizeTag: React.FC<TagValueProps> = ({ name, tag_color }) => {
 	const ref = React.useRef<any>()
+	const textRef = React.useRef<any>()
 	const [realWidth, setRealWidth] = React.useState<any>();
+	const [open, setOpen] = React.useState(false)
+	const [show, setShow] = React.useState(false)
 
 	React.useEffect(() => {
 		const { offsetParent } = ref.current
@@ -33,38 +41,63 @@ const ResizeTag: React.FC = ({ name, tag_color }) => {
 		}
 	}, [])
 
+	React.useEffect(() => {
+		if (!textRef.current) return
+		const { scrollWidth, clientWidth } = textRef.current
+		setShow(clientWidth < scrollWidth)
+	}, [realWidth])
+
+	const handleMouseOver = () => {
+		if (show) setOpen(true)
+	}
+
+	const handleMouseLeave = () => {
+		setOpen(false)
+	}
+
 	return (
-		<div ref={ref} >
-			<Tag color={tag_color} style={{ marginRight: 0 }}>
-				<Typography.Text
-					ellipsis={{
-						tooltip: name,
-					}}
-					style={{ maxWidth: realWidth - 20, color: tag_color && "#fff" }}
-				>
-					{name}
-				</Typography.Text>
-			</Tag>
+		<div
+			ref={ref}
+			onMouseOver={handleMouseOver}
+			onMouseLeave={handleMouseLeave}
+		>
+			<Tooltip
+				title={name}
+				open={open}
+			>
+				<Tag color={tag_color} style={{ marginRight: 0 }}>
+					<Typography.Text
+						ref={textRef}
+						ellipsis
+						style={{ maxWidth: realWidth - 20, color: tag_color && "#fff" }}
+					>
+						{name}
+					</Typography.Text>
+				</Tag>
+			</Tooltip>
 		</div>
 	)
 }
 
-const SuiteManagement: React.FC<any> = props => {
+const SuiteManagement: React.FC<any> = () => {
 	const { formatMessage } = useIntl()
 	const { ws_id } = useParams() as any
 	const access = useAccess();
+
+	const DEFAULT_LIST_PARAMS_VALUE = {
+		ws_id,
+		page_num: 1,
+		page_size: 10,
+	}
 	const [dataSource, setDataSource] = useState<any>({});
-	const [name, setName] = useState<string>();
-	const [description, setDescription] = useState<string>();
-	const [autoFocus, setFocus] = useState<boolean>(true)
-	const [page, setPage] = useState<number>(1)
-	const [pageSize, setPageSize] = useState<number>(10)
+	const [listParams, setListParams] = React.useState<any>(DEFAULT_LIST_PARAMS_VALUE)
+	const [focus, setFocus] = React.useState(false)
 	const [refresh, setRefresh] = useState<boolean>(true)
 	const [loading, setLoading] = useState<boolean>(true)
 
 	const addModelRef: any = useRef()
 	// const [environment, setEnvironment] = useState<string>()
-	const getList = async (params: any = {}) => {
+	const getList = async (params: any = listParams) => {
 		setLoading(true)
 		const data: any = await tagList({ ...params })
 		data && setDataSource(data.code !== 200 ? {} : data)
@@ -73,13 +106,11 @@ const SuiteManagement: React.FC<any> = props => {
 	//run_mode: mode, run_environment: environment, 
 	// mode, environment, 
 	useEffect(() => {
-		const params = { ws_id: ws_id, name: name, description: description, page_num: page, page_size: pageSize }
-		getList(params)
-	}, [name, description, page, pageSize, refresh]);
+		getList()
+	}, [listParams, refresh]);
 
 	const handlePage = (page_num: number, page_size: any) => {
-		setPage(page_num)
-		setPageSize(page_size)
+		setListParams((p: any) => ({ ...p, page_num, page_size }))
 	}
 	// const [pid, setPid] = useState<number>(0)
 	const logDrawer: any = useRef()
@@ -112,36 +143,41 @@ const SuiteManagement: React.FC<any> = props => {
 			title: <FormattedMessage id="device.tag.name" />,
 			dataIndex: 'name',
 			width: 170,
-			filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
+			filterDropdown: ({ confirm }: any) => (
+				<SearchInput
+					confirm={confirm}
+					autoFocus={focus}
+					onConfirm={(val: string) => setListParams((p: any) => ({ ...p, page_num: 1, name: val }))}
+				/>
+			),
+			ellipsis: {
+				showTitle: false,
+			},
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
-					setFocus(!autoFocus)
+					setFocus(!focus)
 				}
 			},
-			filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
+			filterIcon: () => <FilterFilled style={{ color: listParams?.name ? '#1890ff' : undefined }} />,
 			render: (_: string, row: any) => (
 				<ResizeTag {...row} />
 			)
-			/* 
-						<Tooltip title={row.name}>
-								<Tag color={row.tag_color}>
-									{
-										row.name.toString().length > 10 ?
-											row.name.toString().substr(0, 10).concat('...') :
-											row.name.toString()
-									}
-								</Tag>
-							</Tooltip> */
 		},
 		{
 			title: <FormattedMessage id="device.description" />,
 			dataIndex: 'description',
 			width: 100,
-			filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
-			filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setDescription(val) }} />,
+			filterIcon: () => <FilterFilled style={{ color: listParams?.description ? '#1890ff' : undefined }} />,
+			filterDropdown: ({ confirm }: any) => (
+				<SearchInput
+					confirm={confirm}
+					autoFocus={focus}
+					onConfirm={(val: string) => setListParams((p: any) => ({ ...p, page_num: 1, description: val }))}
+				/>
+			),
 			onFilterDropdownVisibleChange: (visible: any) => {
 				if (visible) {
-					setFocus(!autoFocus)
+					setFocus(!focus)
 				}
 			},
 			render: (_: string, row: any) => (
@@ -155,7 +191,7 @@ const SuiteManagement: React.FC<any> = props => {
 			ellipsis: {
 				showTitle: false
 			},
-			render(_: string, row: any) {
+			render(_: string) {
 				return (
 					<ColumnEllipsisText ellipsis={{ tooltip: true }}  >{_ || '-'}</ColumnEllipsisText>
 				)
@@ -168,7 +204,7 @@ const SuiteManagement: React.FC<any> = props => {
 				showTitle: false
 			},
 			width: 90,
-			render(_: string, row: any) {
+			render(_: string) {
 				return (
 					<ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
 				)
@@ -179,7 +215,8 @@ const SuiteManagement: React.FC<any> = props => {
 			dataIndex: 'gmt_created',
 			width: 200,
 			render: (_: string, row: any) => {
-				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_created}</ColumnEllipsisText>
+				if (row.create_user !== '系统预设')
+					return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_created}</ColumnEllipsisText>
 				return "-"
 			}
 		},
@@ -188,7 +225,8 @@ const SuiteManagement: React.FC<any> = props => {
 			dataIndex: 'gmt_modified',
 			width: 200,
 			render: (_: string, row: any) => {
-				if (row.create_user !== '系统预设') return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_modified}</ColumnEllipsisText>
+				if (row.create_user !== '系统预设')
+					return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_modified}</ColumnEllipsisText>
 				return "-"
 			}
 		},
@@ -231,13 +269,17 @@ const SuiteManagement: React.FC<any> = props => {
 			}
 		>
 			<Spin spinning={loading}>
-				<Table
+				<ResizeHooksTable
+					name="ws-device-dispatch-list"
+					refreshDeps={[dataSource, listParams]}
+					loading={loading}
+					scroll={{ x: '100%' }}
 					size={'small'}
 					className={styles.pro_table_card}
 					columns={columns}
 					dataSource={dataSource?.data || []}
-					rowKey={'id'}
 					pagination={false}
+					rowKey={'id'}
 				/>
 				<Row justify="space-between" style={{ padding: '16px 20px 0' }}>
 					<div className={!dataSource?.total ? styles.hidden : ''}>
@@ -248,7 +290,7 @@ const SuiteManagement: React.FC<any> = props => {
 						className={!dataSource?.total ? styles.hidden : ''}
 						showQuickJumper
 						showSizeChanger
-						current={page}
+						current={listParams.page_num}
 						defaultCurrent={1}
 						onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
 						onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
