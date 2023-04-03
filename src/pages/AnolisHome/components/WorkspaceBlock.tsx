@@ -47,7 +47,7 @@ const WorkspaceBlock: React.FC<Record<string, any>> = (props) => {
                 }
                 return history.push(`/login?redirect_url=${jumpWorkspace(id)}`)
             }
-            if (!is_member) return
+            if (!access.IsAdmin() && !is_member) return
         }
 
         history.push(jumpWorkspace(id))
