@@ -1,4 +1,5 @@
 import { textTip, serverLinkTip, commitLinkTip } from '.'
+
 const PerfLineOption: any = ({ dataSource, ws_id, formatMessage }: any) => {
     const { result_data, baseline_data } = dataSource || {}
     let option = {}
@@ -33,7 +34,7 @@ const PerfLineOption: any = ({ dataSource, ws_id, formatMessage }: any) => {
             baselineSerie = {
                 type: 'line', name: formatMessage({ id: 'analysis.baseline.avg' }), symbol: 'none', tooltip: { show: false },
                 lineStyle: { width: 1, color: '#2FC25B', type: 'dashed' }, itemStyle: { color: '#2FC25B' },
-                data: xAxis.map((i: any, index: number) => ({ date: i, value: baseline_data.value })),
+                data: xAxis.map((i: any) => ({ date: i, value: baseline_data.value })),
             }
         }
 
