@@ -77,7 +77,7 @@ export default () => {
         filterDropdown: ({ confirm }: any) => (
             <SearchInput
                 confirm={confirm}
-                onConfirm={(val: string) => setParams({ ...params, [dataIndex]: val })}
+                onConfirm={(val: string) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
         ),
         onFilterDropdownVisibleChange: (visible: any) => {
@@ -94,7 +94,7 @@ export default () => {
             <SelectCheck
                 list={list}
                 confirm={confirm}
-                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val })}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
         ),
     })
@@ -105,7 +105,7 @@ export default () => {
             <SelectRadio
                 list={list}
                 confirm={confirm}
-                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val })}
+                onConfirm={(val: any) => setParams({ ...params, [dataIndex]: val, page_num: 1 })}
             />
         ),
     })
@@ -314,7 +314,7 @@ export default () => {
                 <SelectCheck
                     list={channelTypeList}
                     confirm={confirm}
-                    onConfirm={(channel_type: any) => setParams({ ...params, channel_type })}
+                    onConfirm={(channel_type: any) => setParams({ ...params, channel_type, page_num: 1 })}
                 />
             ),
         },
@@ -338,8 +338,7 @@ export default () => {
             filterDropdown: ({ confirm }: any) => (
                 <SelectDropSync
                     confirm={confirm}
-                    onConfirm={(val: string) =>
-                        setParams({ ...params, state: val })}
+                    onConfirm={(val: string) => setParams({ ...params, state: val, page_num: 1 })}
                     stateVal={params.state}
                     tabType={$instance}
                     dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
@@ -367,7 +366,7 @@ export default () => {
                 <SelectDropSync
                     confirm={confirm}
                     onConfirm={(val: string) =>
-                        setParams({ ...params, real_state: val })}
+                        setParams({ ...params, real_state: val, page_num: 1 })}
                     stateVal={params.real_state}
                     tabType={$instance}
                     dataArr={['Online', 'Offline']}
@@ -385,7 +384,7 @@ export default () => {
             filterDropdown: ({ confirm }: any) => (
                 <SelectUser
                     confirm={confirm}
-                    onConfirm={(val: number) => { setParams({ ...params, owner: val }) }}
+                    onConfirm={(val: number) => { setParams({ ...params, owner: val, page_num: 1 }) }}
                 />
             ),
         },
@@ -403,7 +402,7 @@ export default () => {
                     run_mode={'standalone'}
                     autoFocus={autoFocus}
                     confirm={confirm}
-                    onConfirm={(val: number) => { setParams({ ...params, tags: val }) }}
+                    onConfirm={(val: number) => { setParams({ ...params, tags: val, page_num: 1 }) }}
                 />
             ),
             render: (_: any, row: any) => (
