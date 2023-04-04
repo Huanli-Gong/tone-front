@@ -197,7 +197,9 @@ const TabPaneCard: React.FC<any> = (props) => {
                 let start = start_time
                 let end = end_time || moment().format("YYYY-MM-DD")
 
-                if (days) {
+                const hasNearDay = !isNaN(+ days) && Object.prototype.toString.call(+ days) === "[object Number]"
+
+                if (hasNearDay) {
                     start = moment().subtract(days - 1, "days")
                     end = moment()
                 }
@@ -214,7 +216,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                 })
                 if (title) requestAnalysisData(params)
 
-                if (days) {
+                if (hasNearDay) {
                     form.setFieldsValue({ time: [moment(start), moment()] })
                 }
                 else if (start_time)
