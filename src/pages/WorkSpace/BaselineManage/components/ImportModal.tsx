@@ -55,7 +55,7 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
         const [f] = fileField
         const { name } = f
         if (!name) return
-        form.setFieldsValue({ name: name.split(".")[0] })
+        form.setFieldsValue({ name: name.substr(0, name.lastIndexOf(".")) })
     }, [fileField, newName, form])
 
     React.useImperativeHandle(ref, () => ({
