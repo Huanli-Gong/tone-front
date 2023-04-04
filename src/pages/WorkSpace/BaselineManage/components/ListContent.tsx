@@ -61,14 +61,14 @@ const Title = styled(Typography.Text)`
 `
 
 type IProps = Workspace.BaselineListQuery & {
-    refresh?: () => void;
+    refresh?: (page_num: any) => void;
     current?: Workspace.BaselineItem;
     setCurrent?: (val?: Workspace.BaselineItem) => void;
     test_type?: string;
 }
 
 const ListContent: React.FC<IProps> = (props) => {
-    const { data, refresh, current, setCurrent, test_type } = props
+    const { data, refresh, current, setCurrent, test_type, page_size = 20, page_num, total = 0 } = props
     const { ws_id } = useParams() as any
     const intl = useIntl()
     const access = useAccess()
@@ -78,7 +78,10 @@ const ListContent: React.FC<IProps> = (props) => {
         if (code !== 200)
             return
 
-        refresh?.()
+        const remainNum = total % page_size === 1
+        const totalPage: number = Math.floor(total / page_size)
+        /* @ts-ignore */
+        refresh?.((remainNum && totalPage && totalPage + 1 <= page_num) ? totalPage : undefined)
     }
 
     const handleClick = (item?: Workspace.BaselineItem) => {
