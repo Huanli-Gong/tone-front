@@ -1,6 +1,6 @@
 export interface UserTable {
 	id: number;
-    action?: string;
+	action?: string;
 	approver?: any;
 	approver_name?: string;
 	description?: string;
@@ -15,21 +15,21 @@ export interface UserTable {
 	reason?: string;
 	status?: string;
 	title?: string;
-	is_public?:true;
-    ws_logo?:string
+	is_public?: true;
+	ws_logo?: string
 }
 
 export interface TableListParams {
-	action?:string;
-	status?:number;
-	page_num?:number;
-	page_size?:number;
+	action?: string;
+	status?: number;
+	page_num?: number;
+	page_size?: number;
 }
 
 export interface ApproveParams {
-	action?:string;
-	id:number;
-	reason?:string;
+	action?: string;
+	id: number;
+	reason?: string;
 }
 
 export interface Count {
@@ -41,5 +41,5 @@ export interface Count {
 export interface UserList {
 	status: number;
 	onRef: any;
-	getNum? :any;
+	getNum?: any;
 }
