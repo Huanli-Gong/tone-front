@@ -12,7 +12,7 @@ export default () => {
     const { pathname, query: { t } } = useLocation() as any
 
     const { TabPane } = Tabs;
-    const [tab, setTab] = useState(t ?? '1')
+    const [tab, setTab] = useState(t ?? 'standalone')
 
     const handleTabClick = useCallback(($t) => {
         setTab($t)
@@ -27,13 +27,13 @@ export default () => {
                     onTabClick={handleTabClick}
                     activeKey={tab}
                 >
-                    <TabPane tab={<FormattedMessage id="standalone" />} key={'1'} />
-                    <TabPane tab={<FormattedMessage id="cluster" />} key={'2'} />
+                    <TabPane tab={<FormattedMessage id="standalone" />} key={'standalone'} />
+                    <TabPane tab={<FormattedMessage id="cluster" />} key={'cluster'} />
                 </Tabs>
             }
         >
             {
-                tab === '1' ?
+                tab === 'standalone' ?
                     <Standalone /> :
                     <Aligroup />
             }

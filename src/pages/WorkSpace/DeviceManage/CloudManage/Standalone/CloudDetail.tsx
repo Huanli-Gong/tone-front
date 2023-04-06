@@ -61,7 +61,7 @@ const ViewDetailDrawer = forwardRef(
                 forceRender={true}
                 title={<FormattedMessage id="device.details"/>}
                 width="510"
-                visible={visible}
+                open={visible}
                 onClose={handleOnClose}
             >
                 <Spin spinning={loading}>

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useImperativeHandle } from 'react';
-import { Button, Card, Empty, Badge, Typography, Space, Row, Col, Alert } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Empty, Badge, Typography, Space, Alert } from 'antd'
 import _ from 'lodash'
 import BusinessTestSelectDrawer from './BusinessTestSelectDrawer'
 import SelectDrawer from './SelectDrawer'
@@ -8,6 +7,7 @@ import { suiteList } from './service';
 import SuiteTable from './SuiteTable'
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage } from 'umi';
+import DeletedAlert from './DeletedAlert';
 
 const SelectSuite: React.FC<any> = ({
 	handleData,
@@ -62,27 +62,6 @@ const SelectSuite: React.FC<any> = ({
 		return count
 	}, [test_config])
 
-	const memoDeleteIp = useMemo(() => {
-		let list: any = []
-		test_config.map((item: any) => {
-			item.test_case_list.map((l: any) => {
-				if (l.server_is_deleted) {
-					list = list.concat(l.server_deleted)
-				}
-			})
-		})
-
-		return Object.entries(list?.reduce((pre: any, cur: any) => {
-			const { sn, ip } = cur
-			pre[`${sn}-${ip}`] = cur
-			return pre
-		}, {})).map((item: any) => {
-			const [, vals] = item
-			return vals
-		})
-	}, [test_config])
-
-	console.log(memoDeleteIp)
 	const SuiteSelect = () => {
 		drawer.current?.openDrawer({ test_config })
 	}
@@ -121,7 +100,7 @@ const SelectSuite: React.FC<any> = ({
 		const { var: confVar, title, name } = $case
 		const {
 			server_is_deleted, test_case_id,
-			repeat, need_reboot, is_instance, server_deleted,
+			repeat, need_reboot, is_instance,
 			priority, console: $console, monitor_info
 		} = conf
 		let conf_var = [];
@@ -150,7 +129,6 @@ const SelectSuite: React.FC<any> = ({
 			console: $console,
 			monitor_info,
 			server_is_deleted,
-			server_deleted,
 			server_object_id: null,
 			custom_channel: null,
 			custom_ip: null,
@@ -168,7 +146,7 @@ const SelectSuite: React.FC<any> = ({
 			custom_ip = customer_server.custom_ip
 		}
 
-		let obj = {
+		const obj = {
 			...conf,
 			...$data,
 			custom_channel,
@@ -364,30 +342,10 @@ const SelectSuite: React.FC<any> = ({
 				/>
 			}
 
-			{
-				!!memoDeleteIp.length &&
-				<div style={{ background: '#FFFBE6', border: '1px solid #FFE58F', marginBottom: 12 }}>
-					<Row style={{ padding: '10px' }}>
-						<Col span={24} style={{ display: 'flex' }} >
-							<ExclamationCircleOutlined style={{ color: '#FAAD14', marginRight: 8, marginTop: 4 }} />
-							<div
-								style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" }}
-							>
-								{
-									memoDeleteIp.map((item: any) => (
-										<Typography.Text key={item.ip}>
-											{`${item.ip}/${item.sn}`}
-										</Typography.Text>
-									))
-								}
-								<Typography.Text style={{ color: 'rgba(0,0,0,0.85)' }}>
-									<FormattedMessage id="select.suite.removed" />
-								</Typography.Text>
-							</div>
-						</Col>
-					</Row>
-				</div>
-			}
+			<DeletedAlert
+				sources={template?.server_deleted}
+			/>
+
 			{
 				test_type === 'business' ?
 					<BusinessTestSelectDrawer  // 业务测试(选择用例)
