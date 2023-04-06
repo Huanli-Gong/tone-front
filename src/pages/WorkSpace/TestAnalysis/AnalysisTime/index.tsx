@@ -17,16 +17,16 @@ const AnalysisTime: React.FC<any> = (props) => {
     const routeIntlName = `Workspace.TestAnalysis.${route.name}`
     writeDocumentTitle(routeIntlName)
     const { height: layoutHeight } = useClientSize()
-    const [testType, setTestType] = useState(query.test_type || 'performance')
-    // const [ testType, setTestType ] = useState( query.test_type || 'functional' )
-    const [provider, setProvider] = useState(query.provider_env || tabName)
-    const [showType, setShowType] = useState(query.show_type || 'pass_rate')
+    const [testType, setTestType] = useState(query?.test_type || 'performance')
+    // const [ testType, setTestType ] = useState( query?.test_type || 'functional' )
+    const [provider, setProvider] = useState(query?.provider_env || tabName)
+    const [showType, setShowType] = useState(query?.show_type || 'pass_rate')
     const [instance, setInstance] = useState<any>(null)
 
     const clearModalProvider = () => {
         if (!instance) return
         const { project_id, tag, start_time, end_time } = instance
-        setInstance((p: any) => ({ project_id, tag, start_time, end_time }))
+        setInstance({ project_id, tag, start_time, end_time })
     }
 
     const handleProviderChange = ({ target }: any) => {
@@ -98,7 +98,7 @@ const AnalysisTime: React.FC<any> = (props) => {
                     >
                         {
                             tabData.map((i: any) => (
-                                <Tabs.TabPane {...i} key={uuid()} />
+                                <Tabs.TabPane {...i} />
                             ))
                         }
                     </Tabs>
