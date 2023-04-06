@@ -18,20 +18,20 @@ const AddCluster = (props: any) => {
     }
     useEffect(() => {
         form.resetFields()
-        if(JSON.stringify(outParam) !== '{}'){
+        if (JSON.stringify(outParam) !== '{}') {
             setTimeout(function () {
-                let tags =  outParam.tag_list?.map((item: any) => { return item.id }) || []
+                let tags = outParam.tag_list?.map((item: any) => { return item.id }) || []
                 form.setFieldsValue({ ...outParam, tags })
             }, 1)
         }
-    },[ outParam ])
+    }, [outParam])
 
     useEffect(() => {
-        if(JSON.stringify(tagFlag) !== '{}' && !!tagFlag.isQuery.length) {
+        if (JSON.stringify(tagFlag) !== '{}' && !!tagFlag.isQuery.length) {
             setVisible(true)
         }
-    },[ tagFlag ])
-    
+    }, [tagFlag])
+
     const submit = async (param: any) => {
         if (JSON.stringify(outParam) !== '{}') {
             let obj: any = {
@@ -76,7 +76,7 @@ const AddCluster = (props: any) => {
             title={JSON.stringify(outParam) !== '{}' ? <FormattedMessage id="device.cluster.edit" /> : <FormattedMessage id="device.cluster.btn" />}
             width={376}
             onClose={() => setVisible(false)}
-            visible={visible}
+            open={visible}
             bodyStyle={{ paddingBottom: 80 }}
             footer={
                 <div style={{ textAlign: 'right' }}>

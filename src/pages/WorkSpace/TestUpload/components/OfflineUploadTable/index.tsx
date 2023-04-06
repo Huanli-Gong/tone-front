@@ -1,8 +1,9 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { message, Space, Popover, Popconfirm, TableColumnsType } from 'antd';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, forwardRef, useImperativeHandle, useState } from 'react';
+import { message, Space, Popover, Popconfirm } from 'antd';
+import type { TableColumnsType } from "antd"
 import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
 import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
@@ -12,7 +13,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents';
 export default forwardRef((props: any, ref: any) => {
     const { formatMessage } = useIntl();
     const { ws_id } = props;
-    const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
+    const [source, setSource] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
     const [visible, setVisible] = useState(false);
     const access = useAccess();
     // 1.请求数据
@@ -22,7 +23,7 @@ export default forwardRef((props: any, ref: any) => {
             const res = await queryTableData({ ws_id, ...query }) || {}
             if (res.code === 200) {
                 const { data = [], total = 0, page_num = 1, page_size = 20 } = res
-                setData({
+                setSource({
                     data, total, page_num, page_size
                 })
                 // 将total回传给父级组件
@@ -40,7 +41,7 @@ export default forwardRef((props: any, ref: any) => {
         queryDelete({ pk: record.id }).then((res) => {
             if (res.code === 200) {
                 message.success(formatMessage({ id: 'request.delete.success' }));
-                const { page_num, page_size } = data
+                const { page_num, page_size } = source
                 getTableData({ page_num, page_size });
             } else {
                 message.error(res.msg || formatMessage({ id: 'request.delete.failed' }));
@@ -52,7 +53,7 @@ export default forwardRef((props: any, ref: any) => {
     };
 
     useEffect(() => {
-        const { page_num, page_size } = data
+        const { page_num, page_size } = source
         getTableData({ page_num, page_size })
     }, []);
 
@@ -68,7 +69,7 @@ export default forwardRef((props: any, ref: any) => {
     const hiddenModalCallback = (info: any) => {
         const { title } = info;
         if (title === 'ok') {
-            getTableData({ page_num: 1, page_size: 20 });
+            setListParams(DEFAULT_QUERY_PARAMS)
         }
         setVisible(false);
     };
@@ -220,10 +221,10 @@ export default forwardRef((props: any, ref: any) => {
                 columns={columns}
                 name="ws-offline-upload"
                 refreshDeps={[access,]}
-                total={data.total}
-                page={data.page_num}
-                pageSize={data.page_size}
-                dataSource={data.data}
+                total={source.total}
+                page={source.page_num}
+                pageSize={source.page_size}
+                dataSource={source.data}
                 handlePage={onChange}
             />
 

@@ -135,7 +135,8 @@ const SettingDropdown: React.FC = () => {
 
 const StateRow: React.FC<IProps> = (props) => {
     const { formatMessage } = useIntl()
-    const { pageQuery, setPageQuery, stateCount, onSelectionChange, onFilterChange } = props
+
+    const { pageQuery, setPageQuery, stateCount, selectionType, onSelectionChange, onFilterChange } = props
 
     const { query } = useLocation() as any
     const access = useAccess()
@@ -144,19 +145,12 @@ const StateRow: React.FC<IProps> = (props) => {
 
     const [inp, setInp] = React.useState("")
     const [filter, setFilter] = React.useState(JSON.stringify(query) !== "{}")
-    const [keyType, setKeyType] = React.useState(1)
 
     /* filter change */
     React.useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         onFilterChange && onFilterChange(filter)
     }, [filter])
-
-    /* selection type change */
-    React.useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        onSelectionChange && onSelectionChange(keyType)
-    }, [keyType])
 
     const jobStateKeys = [
         { name: formatMessage({ id: 'all' }), key: 'all_job', val: undefined, },
@@ -189,8 +183,8 @@ const StateRow: React.FC<IProps> = (props) => {
                 <Space>
                     <Typography.Text><FormattedMessage id="ws.result.list.selection.function" />：</Typography.Text>
                     <Radio.Group
-                        onChange={({ target }: RadioChangeEvent) => setKeyType(target.value)}
-                        value={keyType}
+                        onChange={({ target }: RadioChangeEvent) => onSelectionChange(target.value)}
+                        value={selectionType}
                     >
                         <Radio value={1}><FormattedMessage id="ws.result.list.report.and.analysis" /></Radio>
                         {access.WsMemberOperateSelf() && <Radio value={2}><FormattedMessage id="ws.result.list.batch.delete" /></Radio>}
