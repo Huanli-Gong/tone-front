@@ -17,7 +17,7 @@ type TagValueProps = {
 	tag_color: string;
 }
 
-const ResizeTag: React.FC<TagValueProps> = ({ name, tag_color }) => {
+export const ResizeTag: React.FC<TagValueProps> = ({ name, tag_color }) => {
 	const ref = React.useRef<any>()
 	const textRef = React.useRef<any>()
 	const [realWidth, setRealWidth] = React.useState<any>();
