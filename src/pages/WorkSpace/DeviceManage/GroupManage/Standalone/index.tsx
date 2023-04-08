@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, memo } from 'react'
 import { Space, Button, Tag, message, Typography, Row, Checkbox, Modal, Spin, Tooltip, Menu, Dropdown } from 'antd'
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons'
 import DeviceDetail from '../Components/DeviceDetail'
 import AddDevice from './Components/AddDevice'
@@ -16,7 +16,6 @@ import { queryTestServerList, updateTestServer, deleteTestServer, batchUpdateTes
 import { ReactComponent as TreeSvg } from '@/assets/svg/tree.svg'
 import styles from './index.less'
 import { useClientSize } from '@/utils/hooks'
-import ResizeTable from '@/components/ResizeTable';
 import { requestCodeMessage, AccessTootip } from '@/utils/utils';
 import ServerLink from '@/components/MachineWebLink/index';
 import SelectVmServer from './Components/SelectVmServer';
@@ -25,6 +24,8 @@ import SelectUser from '@/components/Public/SelectUser';
 import OverflowList from '@/components/TagOverflow/index'
 import { ResizeHooksTable } from '@/utils/table.hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
+import DelConfirmModal from "@/pages/WorkSpace/DeviceManage/components/DelConfirmModal"
+
 /**
  * 内网单机
  */
@@ -32,7 +33,7 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents'
 const Standalone = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
     const access = useAccess();
     const [dataSource, setDataSource] = useState<any>([])
     const [loading, setLoading] = useState(true)
@@ -42,10 +43,10 @@ const Standalone = (props: any, ref: any) => {
     // const [page, setPage] = useState(0)
     const [selectRowKeys, setSelectRowKeys] = useState([])
     const [deleteVisible, setDeleteVisible] = useState(false);
-    const [deleteDefault, setDeleteDefault] = useState(false);
     const [deleteObj, setDeleteObj] = useState<any>({});
     const viewDetailRef: any = useRef(null)
     const addDeviceRef: any = useRef(null)
+    const delConfirm: any = React.useRef(null)
 
     useImperativeHandle(ref, () => ({
         open: addDeviceRef.current.show
@@ -67,7 +68,6 @@ const Standalone = (props: any, ref: any) => {
         { id: 'vm', name: formatMessage({ id: 'device.standalone.vm' }) }
     ]
     const channelTypeList = agent_list.map((i: any) => ({ id: i.value, name: i.label }))
-    console.log(urlParmas)
     const getTestServerList = async () => {
         setLoading(true)
         const res = await queryTestServerList(urlParmas) || {}
@@ -89,20 +89,11 @@ const Standalone = (props: any, ref: any) => {
         if (data.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }))
             setDeleteVisible(false)
-            setDeleteDefault(false)
         }
         else requestCodeMessage(data.code, data.msg)
         setSyncLoading(false)
     }, [])
-    // const defaultFetchOption = useCallback(async (ret: any) => {
-    //     console.log('urlParmas',urlParmas)
-    //     if (ret.code === 200) {
-    //         message.success('操作成功！')
-    //         setDeleteVisible(false)
-    //         setDeleteDefault(false)
-    //     }
-    //     else requestCodeMessage(ret.code, ret.msg)
-    // }, [])
+
     const handleDelServer = async (row: any) => {
         setDeleteObj(row)
         const { data, code, msg } = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aligroup' })
@@ -110,29 +101,27 @@ const Standalone = (props: any, ref: any) => {
             if (data.length > 0) {
                 setDeleteVisible(true)
             } else {
-                setDeleteDefault(true)
+                delConfirm.current?.show(row, `(${row.ip})`)
             }
         } else {
             requestCodeMessage(code, msg)
         }
     }
 
-    const calcPageNo = (total: number, page_num: number, pageSize = 10) => {
-        let totalPage = Math.ceil(Number(total - 1) / pageSize)
-        page_num = page_num > totalPage && totalPage > 0 ? totalPage : page_num
-        return page_num
+    const calcPageNo = ($total: number, page_num: number, pageSize = 10) => {
+        const totalPage = Math.ceil(Number($total - 1) / pageSize)
+        return page_num > totalPage && totalPage > 0 ? totalPage : page_num
     }
 
     const handleDeleteTestServer = async (id: number) => {
-        let param = { ws_id }
+        const param = { ws_id }
         const data = await deleteTestServer(id, param)
         //let totalPage = Math.ceil(Number(total) / urlParmas.page_size )
-        let pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
+        const pageNo = calcPageNo(total, urlParmas.page_num, urlParmas.page_size)
         if (data.code === 200) {
             message.success(formatMessage({ id: 'operation.success' }))
             setSelectRowKeys(selectRowKeys.filter((i: any) => i !== id))
             setDeleteVisible(false)
-            setDeleteDefault(false)
             setUrlParams({ ...urlParmas, page_num: pageNo })
         }
         else requestCodeMessage(data.code, data.msg)
@@ -243,7 +232,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />,
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>,
         },
         !BUILD_APP_ENV &&
         {
@@ -253,7 +242,7 @@ const Standalone = (props: any, ref: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
             filterIcon: () => <FilterFilled style={{ color: urlParmas.name ? '#1890ff' : undefined }} />,
             filterDropdown: ({ confirm }: any) => (
                 <SearchInput confirm={confirm} onConfirm={(name: any) => setUrlParams({ ...urlParmas, name, page_num: 1 })} />
@@ -629,26 +618,10 @@ const Standalone = (props: any, ref: any) => {
                     <FormattedMessage id="view.quote.details" />
                 </div>
             </Modal>
-            <Modal
-                title={<FormattedMessage id="delete.tips" />}
-                centered={true}
-                open={deleteDefault}
-                onCancel={() => setDeleteDefault(false)}
-                footer={[
-                    <Button key="submit" onClick={() => handleDeleteTestServer(deleteObj.id)}>
-                        <FormattedMessage id="operation.confirm.delete" />
-                    </Button>,
-                    <Button key="back" type="primary" onClick={() => setDeleteDefault(false)}>
-                        <FormattedMessage id="operation.cancel" />
-                    </Button>
-                ]}
-                width={300}
-            >
-                <div style={{ color: 'red', marginBottom: 5 }}>
-                    <ExclamationCircleOutlined style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    <FormattedMessage id="delete.prompt" />
-                </div>
-            </Modal>
+            <DelConfirmModal
+                ref={delConfirm}
+                onOk={(row: any) => handleDeleteTestServer(row.id)}
+            />
             <SelectVmServer ref={selectVmServerList} onOk={getTestServerList} />
         </Spin>
     )

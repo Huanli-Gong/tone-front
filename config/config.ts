@@ -39,7 +39,7 @@ export default defineConfig({
         antd: true,
         baseNavigator: false,
     },
-    dynamicImport: BUILD_APP_ENV !== 'openanolis' && { loading: '@/components/PageLoading/index' },
+    dynamicImport: { loading: '@/components/PageLoading/index' },
     targets: {
         ie: 11,
     },

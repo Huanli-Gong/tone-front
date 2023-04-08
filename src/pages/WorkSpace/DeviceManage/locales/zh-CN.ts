@@ -8,6 +8,7 @@ export default {
   'device.cluster.edit': '编辑集群',
   'device.standalone.phy_server': '物理机',
   'device.standalone.vm': '虚拟机',
+  "device.delete.prompt": "确定要删除{data}吗？",
 
   'synchronization.success': '同步成功',
   'intranet.machine': '内网机器',
@@ -39,8 +40,8 @@ export default {
   'batch.edit': '批量编辑',
   'batch.synchronization': '批量同步',
   'device.delete.tips': '已有模板配置了该机器，删除机器后对应的测试机配置会自动改为随机，请谨慎删除！！',
-  'device.poolFlag': '机器已存在于单机池，修改【控制通道】、【使用状态】信息请前往单机池管理页面。',  
-  
+  'device.poolFlag': '机器已存在于单机池，修改【控制通道】、【使用状态】信息请前往单机池管理页面。',
+
   'view.quote.details': '查看引用详情',
   'view.details': '查看详情',
   'device.detail.info': '详细信息',
@@ -51,7 +52,7 @@ export default {
   'device.machine.IP.placeholder1': '输入机器IP，多个以空格或英文逗号分隔',
   'device.machine.IP.placeholder2': '输入IP/SN，多个以空格或英文逗号分隔',
   'device.machine': '机器',
-  'device.machine.select.message': '请选择机器',  
+  'device.machine.select.message': '请选择机器',
   'device.machine.name': '机器名称',
   'device.machine.message': '请输入机器名称',
   'device.usage.state.message': '请选择机器状态',
@@ -98,7 +99,7 @@ export default {
   'device.application.group': '应用分组',
   'device.application.state': '应用状态',
   'device.server.state': '机器状态',
-  'device.redeploy': '重新部署',  
+  'device.redeploy': '重新部署',
   'device.state': '状态',
   'device.scheduling.label': '调度标签',
   'device.others.info': '其它信息',
@@ -127,14 +128,14 @@ export default {
   'device.local.server': '是否Local机器',
   'device.private_ip.ip': '私有IP',
   'device.private_ip.ip.placeholder': '请输入私有IP',
-   
+
   // 云上机器
   // 'standalone': '单机',
   // 'cluster': '集群',
   'device.add.server.config': '添加机器配置',
-  'device.add.server.instance':'添加机器实例',
+  'device.add.server.instance': '添加机器实例',
   'device.add.cluster.config': '添加集群配置',
-  'device.add.cluster.instance':'添加集群实例',
+  'device.add.cluster.instance': '添加集群实例',
   'device.server.config': '机器配置',
   'device.server.instance': '机器实例',
   'device.cluster.config': '集群配置',
@@ -229,7 +230,7 @@ export default {
   'device.image.id.cannot.empty': 'Image ID不能为空',
   'device.image.version.cannot.empty': 'Image Version不能为空',
   'device.access_id.cannot.empty': 'Access ID不能为空',
-  'device.access_key.cannot.empty': 'Access Key不能为空',  
+  'device.access_key.cannot.empty': 'Access Key不能为空',
   'device.vm_quota.cannot.empty': '机器限额不能为空',
   'device.ak.name.enter': '请输入AK Name',
   'device.image.group.enter': '请输入Image Group',

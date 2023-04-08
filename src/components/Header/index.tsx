@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightContent from '@/components/RightContent'
-import { history, useModel, useRequest, useIntl, FormattedMessage } from 'umi'
+import { history, useModel, useRequest, useIntl, FormattedMessage, useLocation } from 'umi'
 import { Typography, Row, Menu, Avatar, Popover, Dropdown, Space } from 'antd'
 import { ReactComponent as BackHome } from '@/assets/svg/back_home.svg'
 import styles from './index.less'
@@ -31,7 +31,8 @@ const defaultParams = { enable: "True", page_num: 1, page_size: 999 }
 const Header: React.FC<Record<string, any>> = (props: any) => {
     const { formatMessage } = useIntl()
     const { initialState, setInitialState } = useModel('@@initialState')
-    const { pathname } = location
+
+    const { pathname } = useLocation()
     const [isWs, setIsWs] = useState(false)
     const [backLogo, setBackLogo] = useState(false)
     const [wsId, setWsId] = useState<any>(null)
@@ -92,8 +93,9 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
         setRoutes(wsRoutes)
         setIsWs(is_ws)
 
-        if (is_ws && /\/ws\/([a-zA-Z0-9]{8})\/.*/.test(pathname))
+        if (is_ws && /\/ws\/([a-zA-Z0-9]{8})\/.*/.test(pathname)) {
             setWsId(pathname.replace(/\/ws\/([a-zA-Z0-9]{8})\/.*/, '$1'))
+        }
 
         for (const route of wsRoutes) {
             const { path } = route
@@ -185,7 +187,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                         >
                             {
                                 routes.map(
-                                    (item: any, index: number) => {
+                                    (item: any) => {
                                         const itemPath = item.path
 
                                         if (isWs) {
@@ -216,7 +218,7 @@ const Header: React.FC<Record<string, any>> = (props: any) => {
                                                                         style={{ height: '100%', display: "inline-block" }}
                                                                         onClick={() => {
                                                                             if (jobTypes.length > 0) {
-                                                                                const isDefaultIdx = jobTypes.findIndex((item: any) => item.is_first)
+                                                                                const isDefaultIdx = jobTypes.findIndex(($item: any) => $item.is_first)
                                                                                 if (isDefaultIdx > -1)
                                                                                     history.push(`/ws/${ws_id}/test_job/${jobTypes[isDefaultIdx].id}`)
                                                                                 else

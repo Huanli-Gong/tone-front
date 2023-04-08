@@ -17,7 +17,7 @@ export const HomeContainer = styled.div`
 export const Whiteboard = styled(FullSpace)`
     background-color: #fff;
     border-radius: 2px;
-    padding: 20px;
+    padding: 10px;
 `
 
 export const BaseTitle = styled(Typography)`

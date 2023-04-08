@@ -4,7 +4,7 @@ import { useIntl, FormattedMessage } from 'umi'
 
 import styles from './index.less'
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus }) => {
 	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<any>()
 	const input: any = useRef(null);
@@ -59,6 +59,6 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus }) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

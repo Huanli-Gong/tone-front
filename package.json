@@ -35,7 +35,8 @@
     "test:component": "umi test ./src/components",
     "tsc": "tsc",
     "use-stash": "git stash apply 0 && git restore --staged .env",
-    "daily-build-upload": "pnpm build:openanolis && node ../upload.mjs -p tone"
+    "daily-build-upload": "pnpm build:openanolis && node ../upload.mjs",
+    "mk-env": "node ../mk-env.mjs"
   },
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",

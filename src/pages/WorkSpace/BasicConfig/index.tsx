@@ -28,13 +28,13 @@ const { Text } = Typography
 const WorkspaceBasicConfig: React.FC = () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
+    const { historyList, setHistoryList } = useModel('workspaceHistoryList');
 
     const { ws_id } = useParams() as any
 
     const access = useAccess();
-    const { initialState, setInitialState } = useModel<any>('@@initialState')
 
-    const [detail, setDetail]: Array<any> = useState()
+    const [detail, setDetail] = useState<any>()
     const [firstDetail, setFirstDetail] = useState()
 
     const [errorReg, setErrorReg] = useState({
@@ -43,40 +43,39 @@ const WorkspaceBasicConfig: React.FC = () => {
         regDescription: false
     })
 
+    const setInitFormStatus = (data: any) => {
+        const { show_name, name, description } = data
+        const regShowName = !(/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/g.test(show_name))
+        const regName = !(/^[a-z0-9_-]{1,30}$/.test(name))
+        const regDescription = !(/^([\w\W]){1,200}$/.test(description))
+        setErrorReg({ regShowName, regName, regDescription })
+    }
+
     const workspaceInit = async () => {
         const { data, code, msg } = await queryWorkspaceDetail(ws_id)
         if (code === 200) {
             setDetail(_.cloneDeep(data))
             setInitFormStatus(data)
             setFirstDetail(data)
+            setHistoryList((p: any) => (p.reduce((pre: any, cur: any) => {
+                if (cur.id === ws_id) return pre.concat(data)
+                return pre.concat(cur)
+            }, [])))
         }
         else requestCodeMessage(code, msg)
     }
 
     const refresh = async () => {
         await workspaceInit()
-        handleChangeWsList()
     }
 
     useEffect(() => {
         workspaceInit()
     }, [location.pathname])
 
-    const setInitFormStatus = (data: any) => {
-        const { show_name, name, description } = data
-        let regShowName = !(/^[A-Za-z0-9\u4e00-\u9fa5\._-]{1,30}$/g.test(show_name))
-        let regName = !(/^[a-z0-9_-]{1,30}$/.test(name))
-        let regDescription = !(/^([\w\W]){1,200}$/.test(description))
-        setErrorReg({ regShowName, regName, regDescription })
-    }
-
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 20 },
-    }
-
-    const handleChangeWsList = () => {
-        setInitialState({ ...initialState, refreshWorkspaceList: !initialState?.refreshWorkspaceList })
     }
 
     const handleSave = async () => {
@@ -90,7 +89,7 @@ const WorkspaceBasicConfig: React.FC = () => {
         })
         if (code === 200) {
             refresh()
-            message.success(formatMessage({id: 'request.save.success'}) )
+            message.success(formatMessage({ id: 'request.save.success' }))
         }
         else {
             requestCodeMessage(code, msg)
@@ -107,24 +106,24 @@ const WorkspaceBasicConfig: React.FC = () => {
         && _.get(detail, 'description') === _.get(firstDetail, 'description')
         && _.get(detail, 'is_public') === _.get(firstDetail, 'is_public'))
 
-    const widthLocale = enLocale ? 120: 70
+    const widthLocale = enLocale ? 120 : 70
     const wsInfoStyles = { width: widthLocale, textAlign: 'right' }
 
     return (
-        <Layout.Content style={{ background: '#f5f5f5',overflowY:'auto' }}>
+        <Layout.Content style={{ background: '#f5f5f5', overflowY: 'auto' }}>
             <Row className={styles.row_box}>
                 <Form
                     {...layout}
                     layout="vertical"
                     style={{ width: '100%' }}
                 >
-                    <PartDom text={formatMessage({id: 'ws.config.cover.info'})} />
+                    <PartDom text={formatMessage({ id: 'ws.config.cover.info' })} />
                     <Cover intro={detail} refresh={refresh} />
                     <Form.Item
-                        label={<FormattedMessage id="ws.config.show_name"/>}
+                        label={<FormattedMessage id="ws.config.show_name" />}
                         name="show_name"
                         validateStatus={errorReg.regShowName ? 'error' : undefined}
-                        help={errorReg.regShowName ? formatMessage({id: 'ws.config.show_name.help'}) : undefined}
+                        help={errorReg.regShowName ? formatMessage({ id: 'ws.config.show_name.help' }) : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -136,10 +135,10 @@ const WorkspaceBasicConfig: React.FC = () => {
                         />
                     </Form.Item>
                     <Form.Item
-                        label={<FormattedMessage id="ws.config.name"/>}
+                        label={<FormattedMessage id="ws.config.name" />}
                         name="name"
                         validateStatus={errorReg.regName ? 'error' : undefined}
-                        help={errorReg.regName ? formatMessage({id: 'ws.config.name.help'}) : undefined}
+                        help={errorReg.regName ? formatMessage({ id: 'ws.config.name.help' }) : undefined}
                     >
                         <SettingEdit
                             keyName="show_name"
@@ -152,9 +151,9 @@ const WorkspaceBasicConfig: React.FC = () => {
                         />
                     </Form.Item>
                     <Form.Item
-                        label={<FormattedMessage id="ws.config.description"/>}
+                        label={<FormattedMessage id="ws.config.description" />}
                         validateStatus={errorReg.regDescription ? 'error' : undefined}
-                        help={errorReg.regDescription ? formatMessage({id: 'ws.config.description.help'}) : undefined}
+                        help={errorReg.regDescription ? formatMessage({ id: 'ws.config.description.help' }) : undefined}
                         name="description">
                         <SettingEdit
                             type="textarea"
@@ -167,7 +166,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                             setErrorReg={setErrorReg}
                         />
                     </Form.Item>
-                    <Form.Item label={<FormattedMessage id="ws.config.is_public"/>}
+                    <Form.Item label={<FormattedMessage id="ws.config.is_public" />}
                         style={{ marginBottom: 16 }} name="is_public">
                         <IsPublicComponent
                             title={detail?.is_public}
@@ -185,7 +184,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                             onClick={isOk ? () => { } : handleSave}
                             type="primary"
                         >
-                            <FormattedMessage id="operation.ok"/>
+                            <FormattedMessage id="operation.ok" />
                         </Button>
                     </Access>
                 </Form>
@@ -195,10 +194,10 @@ const WorkspaceBasicConfig: React.FC = () => {
                     {...layout}
                     style={{ width: '100%' }}
                 >
-                    <PartDom text={formatMessage({id: 'ws.config.workspace.info'})} />
+                    <PartDom text={formatMessage({ id: 'ws.config.workspace.info' })} />
                     <div className={styles.second_part}>
                         <span style={wsInfoStyles}>
-                            <FormattedMessage id="ws.config.owner"/>：
+                            <FormattedMessage id="ws.config.owner" />：
                         </span>
                         <Row style={{ width: `calc(100% - ${widthLocale}px)` }}>
                             <Col span={24}>
@@ -214,13 +213,13 @@ const WorkspaceBasicConfig: React.FC = () => {
                     </div>
                     <div className={styles.second_part}>
                         <span style={wsInfoStyles}>
-                            <FormattedMessage id="ws.config.creation.time"/>：
+                            <FormattedMessage id="ws.config.creation.time" />：
                         </span>
                         <Text>{detail?.gmt_created}</Text>
                     </div>
                     <div className={styles.second_part} style={{ marginBottom: 16 }}>
                         <span style={wsInfoStyles}>
-                            <FormattedMessage id="ws.config.member_count"/>：
+                            <FormattedMessage id="ws.config.member_count" />：
                         </span>
                         <Text>{detail?.member_count}</Text>
                     </div>
@@ -238,7 +237,7 @@ const WorkspaceBasicConfig: React.FC = () => {
                         style={{ width: '100%' }}
                         className={styles.three_part}
                     >
-                        <PartDom text={formatMessage({id: 'ws.config.more.operation'})} />
+                        <PartDom text={formatMessage({ id: 'ws.config.more.operation' })} />
                         <Form.Item>
                             <Space>
                                 <Transfer refresh={refresh} />

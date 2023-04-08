@@ -33,6 +33,8 @@ const locales = {
     "button.join": "加入",
     "button.enter": "进入",
     "button.apply_join": "申请加入",
+
+    "no_pub_tooltip_title": "私密Workspace非成员不可进入",
 }
 
 export default Object.keys(locales).reduce((p, key) => {

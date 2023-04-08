@@ -4,7 +4,7 @@ import { FormattedMessage, useParams } from 'umi'
 import { member } from './service';
 import styles from './style.less';
 
-const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, mode = 'multiple' }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, mode = 'multiple' }) => {
 	const { ws_id } = useParams() as any
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
@@ -95,6 +95,6 @@ const filterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

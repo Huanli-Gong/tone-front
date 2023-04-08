@@ -1,4 +1,9 @@
+import { enUS_locales as importModalEn } from "../components/ImportModal"
+import { baseline_detail_enUs } from "../components/RightContent"
+
 export default {
+  ...importModalEn,
+  ...baseline_detail_enUs,
   // baseline manage
   'baseline.functional': 'Functional Baseline',
   'baseline.performance': 'Performance Baseline',

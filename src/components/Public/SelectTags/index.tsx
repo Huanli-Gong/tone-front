@@ -5,7 +5,7 @@ import { member } from './service';
 import styles from './style.less';
 import { useIntl, FormattedMessage  } from 'umi'
 
-const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_mode}) => {
+const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_mode}) => {
 	const { formatMessage } = useIntl()
 	const [tagsPagination, setTagsPagination] =  useState({ total: 0, page_num: 1, page_size: 10 });
 	const [isEnd,setIsEnd] = useState(false)
@@ -137,4 +137,4 @@ const filterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;

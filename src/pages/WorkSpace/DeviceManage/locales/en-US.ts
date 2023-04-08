@@ -8,6 +8,7 @@ export default {
   'device.cluster.edit': 'Edit Cluster',
   'device.standalone.phy_server': 'Physical Server',
   'device.standalone.vm': 'Virtual Server',
+  "device.delete.prompt": "Are you sure you want to delete {data}",
 
   'synchronization.success': 'Sync Succeeded',
   'intranet.machine': 'Reserved Server',

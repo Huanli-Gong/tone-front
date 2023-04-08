@@ -3,7 +3,7 @@ import { Checkbox, Button, Divider, Space } from 'antd';
 import { useIntl, FormattedMessage } from 'umi'
 import styles from './index.less';
 
-const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
+const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<number[]>([])
 	const [all, setAll] = useState<boolean>(false)
@@ -82,6 +82,6 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm }) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

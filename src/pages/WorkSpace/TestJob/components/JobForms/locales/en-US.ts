@@ -1,6 +1,6 @@
 const defaultKey = 'job.form'
 
-const text =  {
+const text = {
   //----后端返的字段----
   'job_name': 'Job Name',
   'project': 'Project',
@@ -12,11 +12,11 @@ const text =  {
   'project.placeholder': 'Select Project',
   'baseline.placeholder': 'Select the test baseline you want to compare',
   'baseline_job_id.placeholder': 'Select a Job as the baseline',
-  
+
   //----后端返的字段----
   'reclone': 'Reload Server',
   'kernel_install': 'Reinstall Kernel',
-  'reboot': 'Restart Server',  
+  'reboot': 'Restart Server',
   'global_variable': 'Global Variable',
   'rpm': 'Install RPM',
   'script': 'Execute Script',
@@ -33,11 +33,14 @@ const text =  {
   'install_build_kernel': 'Build Kernel',
 
   'env_info.placeholder': 'Format: key = value, multiple spaces or line breaks',
-  'env_info.li1': 'To define multiple global variables, use spaces and newline segmentation',
-  'env_info.li2': 'Must be a combination of letters, numbers and underscores',
-  'env_info.li3': 'Support double equal sign in value',
-  'env_info.li4': 'You can define an array (use parentheses)',
-  'env_info.li5': 'the value contains spaces, it must be enclosed in double quotation marks',
+
+  'env_info.1': 'Supports defining multiple global variables, requiring the use of spaces and line breaks. [e.g.  x=1 y=2]',
+  'env_info.2': 'Support for containing special symbols. [e.g.  expression="a==b"]',
+  'env_info.3': 'Supports defining an array. [e.g., fruits=(apple banana lemon)]',
+  'env_info.4': `Supports the use of single and double quote nesting. [e.g.  test='The capital letter of a is "A"' or test="The capital letter of a is'A'"]`,
+  'env_info.5': `If you want value to be enclosed in quotation marks, use single and double quotation marks together. '. [e.g.  key="'value '" or key='"value"']`,
+  'env_info.6': `If value is required to be empty, single or double quotation marks will be passed in. [e.g.  \' \' or " "]`,
+
   'execution.time': 'Execution time',
   'restart.before': 'Before Reset',
   'restart.after': 'After Reset',
@@ -84,7 +87,7 @@ const text =  {
   'callback_api.help.document': 'help docs for details',
   'job_timeout.label': 'Job Timeout',
   'job_timeout.placeholder': 'Enter the URL of the Job Timeout',
-  
+
 };
 
 export default Object.keys(text).reduce((p, key) => {

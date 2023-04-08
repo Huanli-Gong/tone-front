@@ -4,8 +4,7 @@ import { Dropdown, Menu, Space, Avatar, Typography, Row, Spin } from 'antd'
 import { CaretDownOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons'
 import { queryWorkspaceHistory } from '@/services/Workspace'
 import styles from './index.less'
-import { history, useModel, Redirect } from 'umi'
-import _ from 'lodash'
+import { history, useModel } from 'umi'
 
 import styled from 'styled-components'
 import { jumpWorkspace, redirectErrorPage } from '@/utils/utils'
@@ -49,7 +48,7 @@ const WorkspaceCover: React.FC<any> = ({ logo, show_name, theme_color }) => logo
         size={24}
         src={logo}
     /> :
-    <Cover size={24} theme_color={theme_color}>{show_name.slice(0, 1)}</Cover>
+    <Cover size={24} theme_color={theme_color}>{show_name?.slice(0, 1)}</Cover>
 
 const WorkspaceDropdownMenu = styled(Menu)`
     width: 220px;
@@ -70,59 +69,64 @@ const WorkspaceDropdownMenu = styled(Menu)`
 `
 
 export const HearderDropdown: React.FC<any> = (props) => {
-    const ws_id = props.ws_id
-    const { initialState } = useModel('@@initialState')
-
-    const [workspaces, setWorkspaces] = useState<Array<any>>([])
-    const [ws, setWs] = useState<any>({ logo: '', show_name: '' })
-    const [index, setIndex] = useState(1)
+    const { ws_id } = props
+    const { historyList, setHistoryList } = useModel('workspaceHistoryList');
+    const { initialState } = useModel("@@initialState")
 
     const DEFAULT_PAGE_PARAMS = { page_num: 1, page_size: 20, call_page: 'menu', ws_id }
     const [pageParams, setPageParams] = useState(DEFAULT_PAGE_PARAMS)
     const [isOver, setIsOver] = useState(false)
 
-    const queryWorkspaceList = async (params: any) => {
+    const queryWorkspaceList = async (params: any = DEFAULT_PAGE_PARAMS) => {
+        if (!initialState.fetchHistory) return
         const { data = [], code, next } = await queryWorkspaceHistory(params)
-        if (code === 200) {
-            const index = _.findIndex(data, function (o: any) { return o.id === ws_id })
-            setIndex(index)
-        }
         if (!next) setIsOver(true)
-        if (code !== 200) setIndex(-2)
-        setWorkspaces(workspaces.concat(data))
-        const [current] = data.filter(({ id }: any) => id === ws_id)
-        current && setWs(current)
+        if (code !== 200) {
+            redirectErrorPage(500)
+            return
+        }
+        setHistoryList((p: any) => {
+            if (!p) return data
+            const obj = p.concat(data).reduce((pre: any, cur: any) => {
+                pre[cur.id] = cur
+                return pre
+            }, {})
+            return Object.entries(obj).map((item: any) => {
+                const [, val] = item
+                return val
+            })
+        })
     }
 
-    useEffect(() => {
-        const { refreshWorkspaceList } = initialState
-        if (refreshWorkspaceList !== undefined) {
-            setPageParams(DEFAULT_PAGE_PARAMS)
-            queryWorkspaceList(DEFAULT_PAGE_PARAMS)
-            setIsOver(false)
-        }
-    }, [initialState?.refreshWorkspaceList])
+    const current = React.useMemo(() => {
+        if (!historyList) return {}
+        const [workspace] = historyList?.filter(({ id }: any) => id === ws_id)
+        if (workspace) return workspace
+        return {}
+    }, [historyList, ws_id])
 
     useEffect(() => {
         queryWorkspaceList(pageParams)
         return () => {
-            setPageParams(DEFAULT_PAGE_PARAMS)
-            setWorkspaces([])
             setIsOver(false)
         }
-    }, [])
+    }, [pageParams, initialState.fetchHistory])
+
+    /* React.useEffect(() => {
+        return () => {
+            setInitialState((p: any) => ({ ...p, workspaceHistoryList: [] }))
+        }
+    }, [ws_id]) */
 
     const hanldeScroll = ({ target }: any) => {
         const { clientHeight, scrollTop, scrollHeight } = target
         if (clientHeight + scrollTop === scrollHeight && !isOver) {
-            setPageParams({ ...pageParams, page_num: pageParams.page_num + 1 })
-            queryWorkspaceList({ ...pageParams, page_num: pageParams.page_num + 1 })
+            const params = { ...pageParams, page_num: pageParams.page_num + 1 }
+            setPageParams(params)
         }
     }
 
-    if (index === -2) return redirectErrorPage(500)
-
-    if (workspaces.length === 0)
+    if (historyList?.length === 0)
         return (
             <WorkspaceTitle align="middle" justify="space-between">
                 <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
@@ -139,14 +143,13 @@ export const HearderDropdown: React.FC<any> = (props) => {
                         onScroll={hanldeScroll}
                     >
                         {
-                            workspaces.map(
-                                (workspace: any, index: number) => {
-                                    const isActive = ws.show_name === workspace.show_name
+                            historyList?.map(
+                                (workspace: any) => {
+                                    const isActive = ws_id === workspace.id
                                     return (
                                         <Menu.Item
-                                            key={index}
+                                            key={workspace.id}
                                             onClick={() => {
-                                                setWs(workspace)
                                                 history.push(jumpWorkspace(workspace.id))
                                             }}
                                             className={isActive ? 'current_ws' : ''}
@@ -179,12 +182,11 @@ export const HearderDropdown: React.FC<any> = (props) => {
         >
             <WorkspaceTitle align="middle" justify="space-between">
                 <Space>
-                    <WorkspaceCover {...ws} />
-                    <ShowName ellipsis>{ws.show_name}</ShowName>
+                    <WorkspaceCover {...current} />
+                    <ShowName ellipsis>{current.show_name}</ShowName>
                 </Space>
                 <CaretDownOutlined style={{ fontSize: 10, marginLeft: 14 }} />
             </WorkspaceTitle>
         </Dropdown>
     )
-
 }

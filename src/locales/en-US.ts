@@ -10,7 +10,7 @@ export default {
   'navbar.lang': '中',
   //
   'delete.tips': 'Delete the prompt',
-  'delete.prompt': 'Are you sure you want to delete it?',
+  'delete.prompt': 'Are you sure you want to delete?',
   'Table.columns.result': 'Result',
   'Table.columns.date': 'Date',
   'common.startTime': 'Start Time',

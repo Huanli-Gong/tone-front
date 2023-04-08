@@ -15,7 +15,7 @@ import { cloudList, delCloud, stateRefresh } from '../service';
 import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
-import { useParams, useIntl, FormattedMessage, getLocale } from 'umi'
+import { useParams, useIntl, FormattedMessage, getLocale, history, useLocation } from 'umi'
 import _ from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
@@ -26,7 +26,8 @@ import OverflowList from '@/components/TagOverflow/index';
 import CommonPagination from '@/components/CommonPagination'
 import { ResizeHooksTable } from '@/utils/table.hooks';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-
+import { stringify } from 'querystring';
+import { v4 as uuid } from 'uuid';
 /**
  * 云上单机
  *
@@ -51,13 +52,14 @@ const DEFAULT_PARAM = {
     page_num: 1,
     page_size: 10,
 }
-export default (props: any) => {
+export default () => {
+    const { pathname, query } = useLocation() as any
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
     const { ws_id }: any = useParams()
     const access = useAccess();
     const aloneMachine = useRef<any>(null)
-    const [isInstance, setIsInstance] = useState<number>(0)
+    const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [data, setData] = useState<any>({});
@@ -185,7 +187,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.sn} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.sn}</ColumnEllipsisText>
         },
         (BUILD_APP_ENV && !!$instance) &&
         {
@@ -195,7 +197,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.tsn} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.tsn}</ColumnEllipsisText>
         },
         !!$instance &&
         {
@@ -206,7 +208,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.instance_id} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.instance_id}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.manufacturer/ak" />,
@@ -216,7 +218,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.manufacturer}/${row.ak_name}`} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.manufacturer}/${row.ak_name}`}</ColumnEllipsisText>
         },
         {
             title: 'Region/Zone',
@@ -226,7 +228,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={`${row.region}/${row.zone}`} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{`${row.region}/${row.zone}`}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.instance_type" />,
@@ -236,7 +238,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.instance_type} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.instance_type}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.image" />,
@@ -246,7 +248,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.image} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.image}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.bandwidth" />,
@@ -256,7 +258,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.storage_type" />,
@@ -298,7 +300,7 @@ export default (props: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.channel_type" />,
@@ -340,7 +342,7 @@ export default (props: any) => {
                         setParams({ ...params, state: val })}
                     stateVal={params.state}
                     tabType={$instance}
-                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved',"Unusable"]}
+                    dataArr={['Available', 'Occupied', 'Broken', 'Reserved', "Unusable"]}
                 />
             )
         },
@@ -406,8 +408,8 @@ export default (props: any) => {
             ),
             render: (_: any, row: any) => (
                 <OverflowList
-                    list={row.tag_list.map((item: any, index: number) => {
-                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
+                    list={row.tag_list.map((item: any) => {
+                        return <Tag color={item.tag_color} key={uuid()}>{item.name}</Tag>
                     })}
                 />
             )
@@ -578,10 +580,12 @@ export default (props: any) => {
         getList()
     }, [params, isInstance]);
 
-    const RadioChange = (val: any) => {
+    const tabRadioChange = (val: any) => {
         setIsInstance(val)
         setParams(DEFAULT_PARAM)
+        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
     }
+
     const addMachine = () => {
         aloneMachine.current?.newMachine(undefined)
     }
@@ -589,7 +593,7 @@ export default (props: any) => {
     const editMachine = (row: any) => {
         aloneMachine.current?.editMachine(row)
     }
-    const onSuccess = (is_instance: any, id: number) => {
+    const onSuccess = (is_instance: any) => {
         if ($instance == is_instance) {
             getList()
         } else {
@@ -603,10 +607,13 @@ export default (props: any) => {
         <div className={styles.warp}>
             <Tabs
                 type="card"
-                onTabClick={RadioChange}
+                onTabClick={tabRadioChange}
+                activeKey={isInstance + ""}
                 tabBarExtraContent={
                     <Button type="primary" onClick={addMachine}>
-                        {(!$instance) ? <FormattedMessage id="device.add.server.config" /> : <FormattedMessage id="device.add.server.instance" />}
+                        {(!$instance) ?
+                            <FormattedMessage id="device.add.server.config" /> :
+                            <FormattedMessage id="device.add.server.instance" />}
                     </Button>
                 }
             >

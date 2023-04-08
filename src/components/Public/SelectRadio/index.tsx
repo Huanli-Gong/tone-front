@@ -4,7 +4,7 @@ import styles from './style.less';
 import { switchUserRole2 } from '@/utils/utils';
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 
-const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
+const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 	// console.log(list,confirm, onConfirm, roleType)
 	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<number>()
@@ -58,6 +58,6 @@ const filterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 	);
 };
 
-export default filterRadio;
+export default FilterRadio;
 
 

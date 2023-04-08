@@ -82,8 +82,11 @@ const ListContent: React.FC<IProps> = (props) => {
     }
 
     const handleClick = (item?: Workspace.BaselineItem) => {
-        setCurrent?.(item)
-        history.replace(`/ws/${ws_id}/baseline/${test_type}?baseline_id=${item?.id}`)
+        setCurrent?.({})
+        setTimeout(() => {
+            setCurrent?.(item)
+            history.replace(`/ws/${ws_id}/baseline/${test_type}?baseline_id=${item?.id}`)
+        }, 10)
     }
 
     return (
@@ -103,7 +106,7 @@ const ListContent: React.FC<IProps> = (props) => {
                                 {item?.name || "-"}
                             </Title>
                             <Access
-                                accessible={access.WsMemberOperateSelf()}
+                                accessible={access.WsMemberOperateSelf(item?.creator)}
                                 fallback={
                                     <MinusCircleOutlined onClick={() => AccessTootip()} />
                                 }

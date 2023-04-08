@@ -11,10 +11,14 @@ import CommonPagination from "@/components/CommonPagination"
 
 const BaseTabs = styled(Tabs)`
     .ant-tabs-nav {
-        margin: 0;
+        margin-bottom: 4px !important;
         &::before { border: none; }
     }
     .ant-tabs-nav-wrap { padding: 0; }
+
+    .ant-tabs-tab {
+        padding-top: 10px;
+    }
 `
 const BaseBoard = styled.div`
     width: 100%;
@@ -66,11 +70,12 @@ const WorkspaceTabs: React.FC = () => {
     }, [params])
 
     React.useEffect(() => {
-        tabkey !== params.scope && setParams(p => ({ ...p, scope: tabkey, ...DEFAULT_PAGE_QUERY }))
+        if (tabkey !== params.scope)
+            setParams(p => ({ ...p, scope: tabkey, ...DEFAULT_PAGE_QUERY }))
     }, [tabkey])
 
     return (
-        <Whiteboard style={{ width: "100%", padding: "8px 20px" }} direction="vertical">
+        <Whiteboard style={{ width: "100%", padding: "0 20px" }} direction="vertical">
             <Row style={{ background: "#fff", width: "100%" }} justify="space-between" align="middle">
                 <BaseTabs
                     defaultActiveKey={tabkey}

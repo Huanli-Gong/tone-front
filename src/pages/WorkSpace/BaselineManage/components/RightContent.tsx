@@ -1,10 +1,21 @@
 import React from "react"
 import styled from "styled-components"
-import { Row, Col, Typography, Dropdown, Menu } from "antd"
+import { Row, Col, Typography, Dropdown, Menu, message } from "antd"
 import { useIntl, Access, useAccess } from "umi"
 import { useSize } from "ahooks"
-import { MoreOutlined } from "@ant-design/icons"
+import { MoreOutlined, EditOutlined } from "@ant-design/icons"
 import BaseTable from "./SuiteTable"
+import { ReactComponent as ExportBtn } from "@/assets/svg/export_baseline.svg"
+
+import { exportBaseline, exportBaselineQueryState } from "../services"
+
+export const baseline_detail_zhCn = {
+    "baseline.detail.menu.export": "导出基线",
+}
+
+export const baseline_detail_enUs = {
+    "baseline.detail.menu.export": 'Export Baseline',
+}
 
 const ContentCls = styled.div`
     width: 100%;
@@ -78,9 +89,59 @@ const RightContent: React.FC<IProps> = (props) => {
     const { current, data, editRef } = props
     const intl = useIntl()
     const access = useAccess()
+    const LOADING_MESSAGE_KEY = `download_running_${current?.id || ""}`
+
+    const exportRef = React.useRef<HTMLAnchorElement>(null)
+
+    const [start, setStart] = React.useState(false)
 
     const hanldeEdit = () => {
         editRef.current?.show(current)
+    }
+
+    const getExportState = async () => {
+        const { data: source, code } = await exportBaselineQueryState({ baseline_id: current?.id + "" })
+        if (code !== 200) return
+        const { state, target_url } = source
+        if (state === "fail") {
+            setStart(false)
+            message.destroy(LOADING_MESSAGE_KEY)
+            message.error("系统错误，请重新操作！")
+            return
+        }
+        if (state !== "success") {
+            message.loading({
+                key: LOADING_MESSAGE_KEY,
+                content: intl.formatMessage({ id: `ws.result.details.breadcrumb.button.download.running` }),
+                duration: 0,
+            });
+            setStart(true)
+            return
+        }
+        setStart(false)
+        message.destroy(LOADING_MESSAGE_KEY)
+        if (exportRef.current) {
+            exportRef.current.href = target_url
+            exportRef.current.setAttribute("download", "基线下载.tar")
+            exportRef.current?.click()
+        }
+    }
+
+    React.useEffect(() => {
+        if (!start) return
+        const timer = setInterval(getExportState, 3000)
+        return () => {
+            if (timer)
+                clearInterval(timer)
+        }
+    }, [start])
+
+    const handleExport = async () => {
+        if (start) return
+        const { code } = await exportBaseline({ baseline_id: current?.id + "" })
+        if (code !== 200)
+            return message.error("系统错误，请重新操作！")
+        getExportState()
     }
 
     return (
@@ -121,8 +182,11 @@ const RightContent: React.FC<IProps> = (props) => {
                         <Dropdown
                             overlay={
                                 <Menu>
-                                    <Menu.Item onClick={hanldeEdit}>
+                                    <Menu.Item onClick={hanldeEdit} icon={<EditOutlined />}>
                                         {intl.formatMessage({ id: "baseline.edit.info" })}
+                                    </Menu.Item>
+                                    <Menu.Item onClick={handleExport} icon={<ExportBtn />}>
+                                        {intl.formatMessage({ id: "baseline.detail.menu.export" })}
                                     </Menu.Item>
                                 </Menu>
                             }
@@ -142,6 +206,11 @@ const RightContent: React.FC<IProps> = (props) => {
             <ListBody>
                 <BaseTable {...props} />
             </ListBody>
+            <a
+                ref={exportRef}
+                style={{ display: "none" }}
+                rel="noreferrer"
+            />
         </ContentCls>
     )
 }
