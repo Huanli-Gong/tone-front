@@ -46,17 +46,19 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
 
     const [form] = Form.useForm()
 
-    const fileField = Form.useWatch("file", form)
-    const newName = Form.useWatch("name", form)
+    /* const fileField = Form.useWatch("file", form)
+    const newName = Form.useWatch("name", form) */
 
-    React.useEffect(() => {
-        if (Object.prototype.toString.call(newName) === "[object String]") return
+    /* React.useEffect(() => {
         if (!fileField) return
         const [f] = fileField
         const { name } = f
-        if (!name) return
-        form.setFieldsValue({ name: name.split(".")[0] })
-    }, [fileField, newName, form])
+        if (Object.prototype.toString.call(name) === "[object String]") return
+        console.log(name)
+        if (name) return
+        const $name = name.substr(0, name.lastIndexOf("."))
+        form.setFieldsValue({ name: $name })
+    }, [fileField, form]) */
 
     React.useImperativeHandle(ref, () => ({
         show() {
@@ -213,7 +215,8 @@ const ImportModal: React.ForwardRefRenderFunction<AnyType, AnyType> = (props, re
                                     return
                                 }
                                 form.setFields([{ name: "file", errors: [] }])
-                                form.setFieldsValue({ name: file.name.split(".")[0] })
+                                const $name = file?.name?.substring(0, file?.name.lastIndexOf("."))
+                                form.setFieldsValue({ name: $name })
                             }}
                             maxCount={1}
                         >

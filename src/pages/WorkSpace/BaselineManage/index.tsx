@@ -195,7 +195,9 @@ const BaselineManage: React.FC<IProps> = (props) => {
                         current={current}
                         setCurrent={setCurrent as any}
                         {...list}
-                        refresh={() => queryData(listParams)}
+                        refresh={(page_num) => {
+                            queryData(page_num ? { ...listParams, page_num } : listParams)
+                        }}
                     />
                     <Row
                         justify="space-between"
