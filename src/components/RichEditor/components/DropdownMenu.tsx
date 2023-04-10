@@ -7,30 +7,36 @@ import { useClickAway } from "ahooks"
 import { ToolMenu, ToolMenuWrapper } from "../styled"
 
 import { ReactComponent as DownOutline } from "../assets/down.svg"
-import { Tooltip } from "react-tooltip"
-import 'react-tooltip/dist/react-tooltip.css'
-import { v4 as uuid } from "uuid"
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 const DorpdownMenu: React.FC<Record<string, any>> = ({ menu, children, title }) => {
     const [open, setOpen] = React.useState(false)
-    const dom = React.useRef<HTMLSpanElement>(null)
+    const dom = React.useRef<HTMLDivElement>(null)
 
     useClickAway(() => {
         setOpen(false)
     }, dom)
 
-    const anchorId = uuid()
+    React.useEffect(() => {
+        if (!title) return
+        if (!dom.current) return
+        tippy(dom.current, {
+            content: title,
+        })
+    }, [title])
+
     return (
         <ToolMenu
-            ref={dom}
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
         >
-            <ToolMenuWrapper id={anchorId} data-tip={title}>
+            <ToolMenuWrapper
+                ref={dom}
+            >
                 {children}
                 <DownOutline />
             </ToolMenuWrapper>
-            <Tooltip anchorId={anchorId} place="top" data-type="dark" content={title} />
             {
                 open &&
                 menu
