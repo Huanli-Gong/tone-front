@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Tabs } from 'antd';
 import JoinTable from './components/JoinTable';
 import { quantity } from './service';
-import { Count } from './data';
+import type { Count } from './data';
 import { FormattedMessage } from 'umi';
 import styles from '@/pages/SystemConf/MenuLayout/style.less'
 import { TabCard } from '@/components/UpgradeUI';
@@ -17,11 +17,11 @@ const UserManagement: React.FC<{}> = () => {
 		finished_count: 0
 	})
 
-	const [ tab , setTab ] = useState('1')
+	const [tab, setTab] = useState('1')
 	const getNum = async () => {
 		const data = await quantity()
 		if (data.code === 200) {
-      setNum(data.data)
+			setNum(data.data)
 		}
 	};
 
@@ -40,10 +40,10 @@ const UserManagement: React.FC<{}> = () => {
 			default:
 				break;
 		}
-		setTab( key )
+		setTab(key)
 		getNum()
 	}
-	
+
 	return (
 		<TabCard
 			title={

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
-import { UserTable, TableListParams, ApproveParams, UserList } from '../../data';
-import { Modal, Row, Col, Avatar, Space, Button, message, Spin, Badge, Typography, TableColumnProps } from 'antd';
+import type { UserTable, TableListParams, ApproveParams, UserList } from '../../data';
+import { Modal, Row, Col, Avatar, Space, Button, message, Spin, Badge, Typography } from 'antd';
+import type { TableColumnProps } from "antd"
 import { joinList, approve, info } from '../../service';
 import styles from './style.less';
 import CommonTable from '@/components/Public/CommonTable';
@@ -124,11 +125,11 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                     {row.object_type == 'workspace' && row.action == 'create' ?
                         <>
                             <WScreate style={{ float: 'left', marginRight: '5px', height: 20 }} />
-                            <PopoverEllipsis title={row.title}></PopoverEllipsis>
+                            <PopoverEllipsis title={row.title} />
                         </> :
                         <>
                             <WScancel style={{ float: 'left', marginRight: '5px', height: 20 }} />
-                            <PopoverEllipsis title={row.title}></PopoverEllipsis>
+                            <PopoverEllipsis title={row.title} />
                         </>
                     }
                 </div>
@@ -150,7 +151,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: number, row: UserTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.reason} />,
+            render: (_: number, row: UserTable) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.reason}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id={"JoinApprove.table.start"} />,
@@ -160,7 +161,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
             },
             width: 150,
             render(_, row) {
-                return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_created}</ColumnEllipsisText>
             }
         },
         status == 1 &&
@@ -172,7 +173,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
                 showTitle: false
             },
             render(_, row) {
-                return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} />
+                return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_modified}</ColumnEllipsisText>
             }
         },
         status == 1 &&
@@ -190,6 +191,7 @@ const JoinTable: React.FC<UserList> = ({ status, onRef, getNum }) => {
             ),
             width: 150
         },
+        status == 0 &&
         {
             title: <FormattedMessage id={"JoinApprove.table.operation"} />,
             key: "operation",
