@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Space, Drawer, Form, Tag, Input, message, Popconfirm, Pagination, Spin, Popover, Table, Row } from 'antd';
-import { FormattedMessage, useIntl } from 'umi'
+import { Button, Space, Drawer, Form, Input, message, Popconfirm, Pagination, Spin, Row } from 'antd';
+import { FormattedMessage, useIntl, useParams } from 'umi'
 import { tagList, addTag, editTag, delSuite } from './service';
 import styles from './style.less';
 import ColorPicker from './components/ColorPicker';
@@ -12,17 +12,18 @@ import { SingleTabCard } from '@/components/UpgradeUI';
 import { requestCodeMessage } from '@/utils/utils';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 import { tooltipTd } from '../TestResult/Details/components';
+import { ResizeHooksTable } from '@/utils/table.hooks';
+import { ResizeTag } from "@/pages/WorkSpace/DeviceManage/DispatchTag"
 
-const SuiteManagement: React.FC<any> = props => {
+const SuiteManagement: React.FC<any> = () => {
     const { formatMessage } = useIntl()
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
+    const DEFAULT_QUERY_PARAMS = { ws_id, page_num: 1, page_size: 10 }
     const [formSuite] = Form.useForm();
+    const [listParams, setListParams] = React.useState<any>(DEFAULT_QUERY_PARAMS)
+
     const [data, setData] = useState<any>([]);
-    const [name, setName] = useState<string>();
-    const [description, setDescription] = useState<string>();
     const [autoFocus, setFocus] = useState<boolean>(true)
-    const [page, setPage] = useState<number>(1)
-    const [pageSize, setPageSize] = useState<number>(10)
     const [refresh, setRefresh] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)
     const [visible, setVisible] = useState<boolean>(false)
@@ -30,24 +31,23 @@ const SuiteManagement: React.FC<any> = props => {
     const [outId, setOutId] = useState<number>()
     const [msg, setMsg] = useState<string>()
     const [validateStatus, setValidateStatus] = useState<string>()
-    const [creator_id, setCreator] = useState<number>()
-    const [update_id, setUpdater] = useState<number>()
-    const getList = async (params: any = {}) => {
+
+    const getList = async (params: any = listParams) => {
         setLoading(true)
         setData({ data: [] })
-        const data: any = await tagList({ ...params })
+        const data: any = await tagList(params)
         data && setData(data)
         setLoading(false)
     };
 
     useEffect(() => {
-        const params = { ws_id, name, description, update_user: update_id, creator: creator_id, page_num: page, page_size: pageSize }
-        getList(params)
-    }, [update_id, name, creator_id, description, page, pageSize, refresh]);
+        getList()
+    }, [refresh, listParams]);
+
     const handlePage = (page_num: number, page_size: any) => {
-        setPage(page_num)
-        setPageSize(page_size)
+        setListParams((p: any) => ({ ...p, page_num, page_size }))
     }
+
     const editOuter = (row: any) => {
         formSuite.resetFields()
         setValidateStatus('success')
@@ -58,6 +58,7 @@ const SuiteManagement: React.FC<any> = props => {
             formSuite.setFieldsValue(row)
         }, 1)
     }
+
     const submitSuite = async (data: any) => {
         if (fetching) {
             return
@@ -91,8 +92,9 @@ const SuiteManagement: React.FC<any> = props => {
             setFetching(false)
         }, 1)
         message.success(formatMessage({ id: 'operation.success' }));
-        outId ? setRefresh(!refresh) : page == 1 ? setRefresh(!refresh) : setPage(1)
+        outId ? setRefresh(!refresh) : listParams?.page_num == 1 ? setRefresh(!refresh) : setListParams((p: any) => ({ ...p, page_num: 1 }))
     }
+
     const onSuiteSubmit = () => {
         formSuite.validateFields().then(val => {
             const reg = new RegExp(/^[A-Za-z0-9\._-]*$/g);
@@ -114,6 +116,7 @@ const SuiteManagement: React.FC<any> = props => {
             }
         })
     }
+
     const newSuite = () => {
         setOutId(undefined)
         setVisible(true)
@@ -130,7 +133,7 @@ const SuiteManagement: React.FC<any> = props => {
             requestCodeMessage(res.code, res.msg)
             return
         }
-        setPage(Math.round((data.total - 1) / pageSize) || 1)
+        setListParams((p: any) => ({ ...p, page_num: Math.round((data.total - 1) / listParams.page_size) || 1 }))
         message.success(formatMessage({ id: 'operation.success' }));
         setRefresh(!refresh)
     }
@@ -141,46 +144,66 @@ const SuiteManagement: React.FC<any> = props => {
             title: <FormattedMessage id="job.tags.tag.name" />,
             dataIndex: 'name',
             width: 120,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setName(val) }} />,
+            ellipsis: {
+                showTitle: false,
+            },
+            filterDropdown: ({ confirm }: any) => (
+                <SearchInput
+                    confirm={confirm}
+                    autoFocus={autoFocus}
+                    onConfirm={(val: string) => {
+                        setListParams((p: any) => ({ ...p, page_num: 1, name: val }))
+                    }}
+                />
+            ),
             onFilterDropdownVisibleChange: (v: any) => {
                 if (v) {
                     setFocus(!autoFocus)
                 }
             },
-            filterIcon: () => <FilterFilled style={{ color: name ? '#1890ff' : undefined }} />,
+            filterIcon: () => <FilterFilled style={{ color: listParams?.name ? '#1890ff' : undefined }} />,
             render: (_: any, row: any) => (
-                <Popover title={row.name} placement="right" trigger="hover" content={false}
-                    overlayClassName={styles.tag_popover_style}
-                    arrowPointAtCenter={true}
-                >
-                    <Tag color={row.tag_color}>
-                        {
-                            row.name.toString().length > 10 ?
-                                row.name.toString().substr(0, 10).concat('...') :
-                                row.name.toString()
-                        }
-                    </Tag>
-                </Popover>
+                <ResizeTag {...row} />
             )
         },
         {
             title: <FormattedMessage id="job.tags.source_tag" />,
             dataIndex: 'source_tag',
+            ellipsis: {
+                showTitle: false,
+            },
             width: 100,
         },
         {
             title: <FormattedMessage id="job.tags.creator_name" />,
             dataIndex: 'creator_name',
+            ellipsis: {
+                showTitle: false,
+            },
             width: 100,
-            filterIcon: () => <FilterFilled style={{ color: creator_id ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectDrop confirm={confirm} onConfirm={(val: number) => { setPage(1), setCreator(val) }} />,
+            filterIcon: () => <FilterFilled style={{ color: listParams?.creator ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectDrop
+                    confirm={confirm}
+                    onConfirm={(val: number) => {
+                        setListParams((p: any) => ({ ...p, page_num: 1, creator: val }))
+                    }}
+                />
+            ),
         },
         {
             title: <FormattedMessage id="job.tags.update_user" />,
             dataIndex: 'update_user',
             width: 100,
-            filterIcon: () => <FilterFilled style={{ color: update_id ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SelectDrop confirm={confirm} onConfirm={(val: number) => { setPage(1), setUpdater(val) }} />,
+            filterIcon: () => <FilterFilled style={{ color: listParams?.update_user ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SelectDrop
+                    confirm={confirm}
+                    onConfirm={(val: number) => {
+                        setListParams((p: any) => ({ ...p, update_user: val, page_num: 1 }))
+                    }}
+                />
+            ),
             ...tooltipTd("-")
         },
         {
@@ -190,7 +213,7 @@ const SuiteManagement: React.FC<any> = props => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => row.source_tag !== '系统标签' ? <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} /> : "-"
+            render: (_: any, row: any) => row.source_tag !== '系统标签' ? <ColumnEllipsisText ellipsis={{ tooltip: true }}  >{row.gmt_created}</ColumnEllipsisText> : "-"
         },
         {
             title: <FormattedMessage id="job.tags.gmt_modified" />,
@@ -199,14 +222,25 @@ const SuiteManagement: React.FC<any> = props => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => row.source_tag !== '系统标签' ? <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_modified} /> : "-"
+            render: (_: any, row: any) => row.source_tag !== '系统标签' ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_modified} </ColumnEllipsisText> : "-"
         },
         {
             title: <FormattedMessage id="job.tags.remarks" />,
             dataIndex: 'description',
             width: 100,
-            filterIcon: () => <FilterFilled style={{ color: description ? '#1890ff' : undefined }} />,
-            filterDropdown: ({ confirm }: any) => <SearchInput confirm={confirm} autoFocus={autoFocus} onConfirm={(val: string) => { setPage(1), setDescription(val) }} />,
+            ellipsis: {
+                showTitle: false,
+            },
+            filterIcon: () => <FilterFilled style={{ color: listParams?.description ? '#1890ff' : undefined }} />,
+            filterDropdown: ({ confirm }: any) => (
+                <SearchInput
+                    confirm={confirm}
+                    autoFocus={autoFocus}
+                    onConfirm={(val: string) => {
+                        setListParams((p: any) => ({ ...p, description: val, page_num: 1 }))
+                    }}
+                />
+            ),
             onFilterDropdownVisibleChange: (v: any) => {
                 if (v) {
                     setFocus(!autoFocus)
@@ -216,7 +250,7 @@ const SuiteManagement: React.FC<any> = props => {
                 <ColumnEllipsisText ellipsis={{ tooltip: row.description }} >
                     <Highlighter
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[description || '']}
+                        searchWords={[listParams?.description || '']}
                         autoEscape
                         textToHighlight={row.description ? row.description.toString() : '-'}
                     />
@@ -227,11 +261,16 @@ const SuiteManagement: React.FC<any> = props => {
             title: <FormattedMessage id="Table.columns.operation" />,
             valueType: 'option',
             dataIndex: 'creator',
-            width: 150,
             render: (_: any, row: any) => (
                 row.source_tag !== '系统标签' &&
                 <Space>
-                    <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => editOuter({ ...row })}><FormattedMessage id="operation.edit" /></Button>
+                    <Button
+                        type="link"
+                        style={{ padding: 0, height: 'auto' }}
+                        onClick={() => editOuter({ ...row })}
+                    >
+                        <FormattedMessage id="operation.edit" />
+                    </Button>
                     <Popconfirm
                         title={<div style={{ color: 'red' }}><FormattedMessage id="job.tags.delete.prompt" /></div>}
                         placement="topRight"
@@ -254,7 +293,9 @@ const SuiteManagement: React.FC<any> = props => {
             extra={<Button key="3" type="primary" onClick={newSuite}><FormattedMessage id="job.tags.create" /></Button>}
         >
             <Spin spinning={loading}>
-                <Table
+                <ResizeHooksTable
+                    name="ws-job-type-tag-list"
+                    refreshDeps={[data, autoFocus, listParams]}
                     pagination={false}
                     rowKey={record => record.id + ''}
                     columns={columns}
@@ -270,7 +311,7 @@ const SuiteManagement: React.FC<any> = props => {
                         className={data.total == 0 ? styles.hidden : ''}
                         showQuickJumper
                         showSizeChanger
-                        current={page}
+                        current={listParams?.page_num}
                         defaultCurrent={1}
                         onChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
                         onShowSizeChange={(page_num: number, page_size: any) => handlePage(page_num, page_size)}
@@ -285,7 +326,7 @@ const SuiteManagement: React.FC<any> = props => {
                 title={outId ? <FormattedMessage id="job.tags.edit.tag" /> : <FormattedMessage id="job.tags.create.tag" />}
                 width={376}
                 onClose={() => setVisible(false)}
-                visible={visible}
+                open={visible}
                 bodyStyle={{ paddingBottom: 80 }}
                 footer={
                     <div
