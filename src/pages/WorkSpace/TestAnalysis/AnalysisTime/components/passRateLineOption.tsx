@@ -1,6 +1,6 @@
 import { textTip, commitLinkTip } from './'
 
-const passRateLineOption : any = ( dataSource : any , ws_id : any, formatMessage: any) => {
+const passRateLineOption: any = (dataSource: any, ws_id: any, formatMessage: any) => {
     const source = Object.keys(dataSource).map(key => {
         if (dataSource[key]) {
             return {
@@ -48,7 +48,7 @@ const passRateLineOption : any = ( dataSource : any , ws_id : any, formatMessage
         },
         series: [{
             type: 'line',
-            name: formatMessage({id: 'analysis.TestConf.pass_rate'}),
+            name: formatMessage({ id: 'analysis.TestConf.pass_rate' }),
             symbol: 'circle',
             encode: {
                 x: 'date',
@@ -78,12 +78,12 @@ const passRateLineOption : any = ( dataSource : any , ws_id : any, formatMessage
                 const item = params.data
                 return `<div>
                     ${params.marker} ${item.start_time} <br />
-                    ${commitLinkTip('JobID' , item.job_id, ws_id)}
-                    ${textTip('commit' , item.commit)}
-                    ${formatMessage({id: 'analysis.pass_rate'})}: ${Number(item.pass_rate).toFixed(2)}%<br />
-                    ${textTip(formatMessage({id: 'analysis.table.total'}), item.all_case)}
-                    ${textTip(formatMessage({id: 'analysis.pass_num'}), item.pass_case)}
-                    ${textTip(formatMessage({id: 'analysis.table.column.note'}), item.note)}
+                    ${commitLinkTip('JobID', item.job_id, ws_id)}
+                    ${textTip('commit', item.commit)}
+                    ${formatMessage({ id: 'analysis.pass_rate' })}: ${Number(item.pass_rate).toFixed(2)}%<br />
+                    ${textTip(formatMessage({ id: 'analysis.table.total' }), item.all_case)}
+                    ${textTip(formatMessage({ id: 'analysis.pass_num' }), item.pass_case)}
+                    ${textTip(formatMessage({ id: 'analysis.table.column.note' }), item.note)}
                 </div>`
             }
         }

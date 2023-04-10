@@ -2,7 +2,7 @@ export function textTip(title: string, data: any) {
     return data ? `${title}：${data}<br />` : ''
 }
 
-export function commitLinkTip( title:string, commit: any, ws_id: any ) {
+export function commitLinkTip(title: string, commit: any, ws_id: any) {
     return commit ? `${title}: <a href=${`/ws/${ws_id}/test_result/${commit}`} target="_blank">#${commit}</a><br />` : ''
 }
 
