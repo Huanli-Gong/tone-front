@@ -160,7 +160,7 @@ const PerfLineOption: any = ({ dataSource, ws_id, provider, formatMessage }: any
                             </div>`
                                 .trim()
                         )
-                        return pre += `<div style="display:flex;">${element}</div>`
+                        return pre.concat(`<div style="display:flex;">${element}</div>`)
                     }, "")
 
                     if (tips.length === 0) return ""
