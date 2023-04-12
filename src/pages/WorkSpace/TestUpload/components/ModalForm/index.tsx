@@ -3,18 +3,17 @@ import { Modal, Space, Spin, Alert, Form, Button, message, Input, Select, Row } 
 import { useParams, FormattedMessage, useIntl } from 'umi';
 import { isNaN } from 'lodash'
 import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
-import { queryBaselineList, } from '@/pages/WorkSpace/BaselineManage/services';
+// import { queryBaselineList, } from '@/pages/WorkSpace/BaselineManage/services';
 import { queryJobTypeList, } from '@/pages/WorkSpace/JobTypeManage/services';
 import { switchTestType, switchServerType } from '@/utils/utils';
 import { createProject } from '../../services';
 import BizUpload from './component/BizUpload';
 import styles from './style.less';
-const { Option } = Select;
 
 const DrawerForm = forwardRef((props: any, ref: any) => {
   const { formatMessage } = useIntl();
   const { ws_id } = useParams() as any
-  const { visible }: any = props
+  const { visible, baselines }: any = props
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   // 产品数据源
@@ -28,7 +27,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   const [serverType, setServerType] = useState('');
   const [testType, setTestType] = useState('');
   const [hasBaseline, setHasBaseline] = useState(''); // 是否有基线选项。
-  const [baselinePagination, setBaselinePagination] = useState({ data: [], total: 0, page_num: 1, page_size: 20 });
+  // const [baselinePagination, setBaselinePagination] = useState({ data: [], total: 0, page_num: 1, page_size: 20 });
   // Job类型数据源
   const [jobTypeList, setJobTypeList] = useState([]);
   const [jobId, setJobId] = useState('');
@@ -88,7 +87,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
     }
   }
   // 3.请求数据
-  const fetchBaselineList = async (query: any, option = "concat") => {
+  /* const fetchBaselineList = async (query: any, option = "concat") => {
     try {
       const res = await queryBaselineList({ ws_id, test_type: testType, ...query });
       if (res.code === 200) {
@@ -107,7 +106,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
     } catch (e) {
       console.log(e)
     }
-  }
+  } */
   // 4.请求数据
   const fetchJobTypeList = async (query: any) => {
     try {
@@ -157,13 +156,13 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
 
   // 初始化状态
   const initialState = () => {
-    setProductPagination({ data: [], total: 0, page_num: 1, page_size: 20 });
+    // setProductPagination({ data: [], total: 0, page_num: 1, page_size: 20 });
     setProductId('');
     setProjectList([]);
     setServerType('');
     setTestType('');
     setHasBaseline('');
-    setBaselinePagination({ data: [], total: 0, page_num: 1, page_size: 20 });
+    // setBaselinePagination({ data: [], total: 0, page_num: 1, page_size: 20 });
     setJobTypeList([]);
     setJobId('')
   }
@@ -221,6 +220,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
     //
     validateFields()
   }
+
   const handlePopupScroll = ({ target }: any) => {
     const { page_num, page_size, total, } = productPagination
     const { clientHeight, scrollHeight, scrollTop } = target
@@ -241,7 +241,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
       setServerType(server_type)
       setTestType(test_type)
       setHasBaseline(has_baseline)
-      fetchBaselineList({ test_type, page_num: 1, page_size: 20 }, 'reset');
+      // fetchBaselineList({ test_type, page_num: 1, page_size: 20 }, 'reset');
     }
   }
   const jobOnClear = () => {
@@ -253,13 +253,13 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   }
 
   // 基线
-  const baselinePopupScroll = ({ target }: any) => {
+  /* const baselinePopupScroll = ({ target }: any) => {
     const { page_num, page_size, total, } = baselinePagination
     const { clientHeight, scrollHeight, scrollTop } = target
     if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
       fetchBaselineList({ page_num: page_num + 1, page_size }, 'concat')
     }
-  }
+  } */
 
   const requiredMessage = formatMessage({ id: 'please.select' });
 
@@ -312,7 +312,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                   return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
                 options={
-                  productPagination.data?.map((item: any) => ({
+                  productPagination?.data?.map((item: any) => ({
                     value: item.id,
                     label: item.name
                   }))
@@ -377,7 +377,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                   return option.search?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
                 options={
-                  jobTypeList.map((item: any) => ({
+                  jobTypeList?.map((item: any) => ({
                     value: item.id,
                     search: item.name,
                     label: (
@@ -401,18 +401,20 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 <Select
                   allowClear={true}
                   placeholder={<FormattedMessage id="upload.list.Drawer.baseline.placeholder" />}
-                  onPopupScroll={baselinePopupScroll}
+                  // onPopupScroll={baselinePopupScroll}
                   getPopupContainer={node => node.parentNode}
-                  disabled={!jobId || !baselinePagination.data?.length}
+                  disabled={!jobId || !baselines?.length}
                   showSearch
                   filterOption={(input, option: any) =>
-                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
-                >
-                  {baselinePagination.data?.map((item: any) => (
-                    <Option key={item.id} value={item.id}>{item.name}</Option>
-                  ))}
-                </Select>
+                  options={
+                    baselines?.map((item: any) => ({
+                      label: item.name,
+                      value: item.id
+                    }))
+                  }
+                />
               </Form.Item>
               : null}
             {/** ----------end 选基线------------------------ */}

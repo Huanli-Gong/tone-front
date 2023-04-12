@@ -177,7 +177,7 @@ export const getCheckboxFilter = (props: any, setProps: any, list: any, name: st
             initVal={props[name]}
             list={list}
             confirm={confirm}
-            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
             styleObj={styleObj}
         />
     ),
@@ -203,7 +203,7 @@ export const getRadioFilter = (props: any, setProps: any, list: any, name: strin
             initVal={props[name]}
             list={list}
             confirm={confirm}
-            onConfirm={(val: string) => setProps({ ...props, [name]: val })}
+            onConfirm={(val: string) => setProps({ ...props, [name]: val, page_num: 1 })}
         />
     ),
     filterIcon: <FilterFilled style={{ color: props[name] || props[name] === 0 ? '#1890ff' : undefined }} />
