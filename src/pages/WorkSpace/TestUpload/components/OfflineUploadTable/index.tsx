@@ -9,9 +9,9 @@ import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
 import { queryTableData, queryDelete } from '../../services';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-import { getUserFilter, getCheckboxFilter, getSearchFilter } from "@/components/TableFilters"
+import { getUserFilter, getCheckboxFilter } from "@/components/TableFilters"
 import Highlighter from 'react-highlight-words';
-import { queryProjectList } from '@/pages/WorkSpace/Product/services';
+import { queryProjectList, queryProductList } from '@/pages/WorkSpace/Product/services';
 import { queryBaselineList } from '@/pages/WorkSpace/BaselineManage/services';
 
 export default forwardRef((props: any, ref: any) => {
@@ -24,6 +24,7 @@ export default forwardRef((props: any, ref: any) => {
     const [listParams, setListParams] = React.useState<any>(DEFAULT_QUERY_PARAMS)
 
     const { data: projects } = useRequest(() => queryProjectList({ ws_id, page_size: 999 }), { initialData: [] })
+    const { data: products } = useRequest(() => queryProductList({ ws_id, page_size: 999 }), { initialData: [] })
     const { data: baselines } = useRequest(() => queryBaselineList({ ws_id }), { initialData: [] })
 
     // 1.请求数据
@@ -110,7 +111,7 @@ export default forwardRef((props: any, ref: any) => {
 
     /* 
     @params
-    product_name    @string
+    product_id    @string
     project_id      @number[]
     state           @string[]       ['file', 'running', 'fail','success']
     test_type       @string[]       ['functional','performance']
@@ -125,7 +126,12 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            ...getSearchFilter(listParams, setListParams, "product_name"),
+            ...getCheckboxFilter(
+                listParams,
+                setListParams,
+                products?.map((i: any) => ({ name: i.name, value: i.id })),
+                "product_id"
+            ),
             render: (_, row) => (
                 <ColumnEllipsisText ellipsis={{ tooltip: row?.product_name }}  >
                     <Highlighter
@@ -282,6 +288,8 @@ export default forwardRef((props: any, ref: any) => {
                 visible={visible}
                 callback={hiddenModalCallback}
                 baselines={baselines}
+                products={products}
+                projects={projects}
             />
         </div>
     )
