@@ -115,9 +115,9 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     }
 
     const removeGroup = async (id: number) => {
-        let data = { ws_id: ws_id }
+        const $data = { ws_id }
         const { page_size } = pageCurrent.current
-        const { code, msg } = await delGroup(id, data)
+        const { code, msg } = await delGroup(id, $data)
         if (code === 200) {
             message.success(formatMessage({ id: 'operation.success' }));
             setDeleteVisible(false)
@@ -337,7 +337,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
             <Modal
                 title={<FormattedMessage id="delete.tips" />}
                 centered={true}
-                visible={deleteVisible}
+                open={deleteVisible}
                 //onOk={remOuter}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
