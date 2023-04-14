@@ -328,68 +328,74 @@ const SelectSuite: React.FC<any> = ({
 				}
 			</div>
 
-			{
-				showSuiteDeleteAlart &&
-				<Alert
-					message={formatMessage({
-						id: "select.suite.table.is_delete.alart",
-						defaultMessage: "所选用例已不存在"
-					})}
-					style={{ marginBottom: 12 }}
-					type="warning"
-					showIcon
-					closable
-				/>
-			}
-
-			<DeletedAlert
-				sources={template?.server_deleted}
-			/>
-
-			{
-				test_type === 'business' ?
-					<BusinessTestSelectDrawer  // 业务测试(选择用例)
-						testType={test_type}
-						onRef={drawer}
-						handleSelect={handleSelect}
-						control={control}
-						treeData={treeData}
-						loading={loading}
-					/> :
-					<SelectDrawer // 功能、性能(选择用例)
-						testType={test_type}
-						onRef={drawer}
-						handleSelect={handleSelect}
-						control={control}
-						treeData={treeData}
-						loading={loading}
+			<Space direction="vertical" size={6} style={{ width: "100%" }}>
+				{
+					showSuiteDeleteAlart &&
+					<Alert
+						message={formatMessage({
+							id: "select.suite.table.is_delete.alart",
+							defaultMessage: "所选用例已不存在"
+						})}
+						type="warning"
+						showIcon
+						closable
 					/>
-			}
+				}
 
-			{
-				(standalone.length === 0 && cluster.length === 0) &&
-				<Card bodyStyle={{ width: width || '100%' }}>
-					<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.please.select.case" />} />
-				</Card>
-			}
-
-			{
-				standalone.length > 0 &&
-				<SuiteTable
-					{...TableProps}
-					dataSource={standalone}
-					run_mode="standalone"
+				<DeletedAlert
+					sources={template?.server_deleted}
+					isDelete
 				/>
-			}
 
-			{
-				cluster.length > 0 &&
-				<SuiteTable
-					{...TableProps}
-					dataSource={cluster}
-					run_mode="cluster"
+				<DeletedAlert
+					sources={template?.server_no_allocated}
 				/>
-			}
+
+				{
+					test_type === 'business' ?
+						<BusinessTestSelectDrawer  // 业务测试(选择用例)
+							testType={test_type}
+							onRef={drawer}
+							handleSelect={handleSelect}
+							control={control}
+							treeData={treeData}
+							loading={loading}
+						/> :
+						<SelectDrawer // 功能、性能(选择用例)
+							testType={test_type}
+							onRef={drawer}
+							handleSelect={handleSelect}
+							control={control}
+							treeData={treeData}
+							loading={loading}
+						/>
+				}
+
+				{
+					(standalone.length === 0 && cluster.length === 0) &&
+					<Card bodyStyle={{ width: width || '100%' }}>
+						<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="select.suite.please.select.case" />} />
+					</Card>
+				}
+
+				{
+					standalone.length > 0 &&
+					<SuiteTable
+						{...TableProps}
+						dataSource={standalone}
+						run_mode="standalone"
+					/>
+				}
+
+				{
+					cluster.length > 0 &&
+					<SuiteTable
+						{...TableProps}
+						dataSource={cluster}
+						run_mode="cluster"
+					/>
+				}
+			</Space>
 		</div>
 	);
 };

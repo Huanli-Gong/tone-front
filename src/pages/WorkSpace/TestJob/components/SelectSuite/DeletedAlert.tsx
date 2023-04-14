@@ -10,37 +10,42 @@ const BasicAlert = styled(Alert)`
     & .anticon.anticon-exclamation-circle.ant-alert-icon {
         margin-top: 4px;
     }
+    & .ant-alert-close-icon {
+        margin-top: 5px;
+    }
 `
 
 type IProps = {
+    isDelete?: boolean;
     sources: {
         ips: any[];
         dispatch_tags: any[];
-        instance: any[];
-    }
+        instance_setting: any[];
+        instance_name: any[];
+    },
 }
 /* 
-dispatch_tags: [{id:"xxx",name: "xxx"}]
-ips: [{ip: 1.1.1,sn:xxxx}],
-instance_name: [{id:"xxx",name: "xxx"}]
-instance_setting: [{ip: 1.1.1,sn:xxxx}],
+    调度标签：dispatch_tags: [{id:"xxx",name: "xxx"}]
+    指定机器：ips: [{ip: 1.1.1,sn:xxxx}],
+    机器实例：instance_name: [{id:"xxx",name: "xxx"}]
+    机器配置：instance_setting: [{ip: 1.1.1,sn:xxxx}],
 */
 const getMessage = (keyStr: string, source: any[]) => {
-    if (["ips", "instance_setting"].includes(keyStr)) {
+    if (["ips", "instance_name"].includes(keyStr)) {
         return source?.map(({ ip, sn }: any) => `${ip}/${sn}`)
     }
     return source?.map(({ name }: any) => name)
 }
 
 const DeletedAlert: React.FC<IProps> = (props) => {
-    const { sources } = props
+    const { sources, isDelete } = props
     const intl = useIntl()
 
     if (!sources) return <></>
     if (JSON.stringify(sources) === "{}") return <></>
 
     return (
-        <Space direction="vertical" style={{ width: "100%", marginBottom: 6 }}>
+        <>
             {
                 Object.keys(sources).map((item: any) => (
                     item?.length > 0 &&
@@ -48,6 +53,7 @@ const DeletedAlert: React.FC<IProps> = (props) => {
                         showIcon
                         key={uuid()}
                         type="warning"
+                        closable
                         message={
                             <Space wrap >
                                 {
@@ -62,14 +68,14 @@ const DeletedAlert: React.FC<IProps> = (props) => {
                                     )
                                 }
                                 <Typography.Text>
-                                    {intl.formatMessage({ id: "select.suite.removed" })}
+                                    {intl.formatMessage({ id: `select.suite.${isDelete ? "removed" : "existent"}` })}
                                 </Typography.Text>
                             </Space>
                         }
                     />
                 )).filter(Boolean)
             }
-        </Space>
+        </>
     )
 }
 

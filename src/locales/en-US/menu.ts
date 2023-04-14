@@ -34,7 +34,7 @@ export default {
   'menu.TestParmSetting': 'Testfarm Config',
   'menu.DirectRoute': 'DirectRoute',
 
-  'menu.ShareReport': 'Report',
+  'menu.ShareReport': 'Test Report',
 
   'menu.JobTypePreview': 'Template Preview',
   'menu.TemplateEdit': 'Template Edit',
@@ -55,18 +55,18 @@ export default {
   'menu.Workspace.TestResult': 'Test Result',
   'menu.Workspace.TestResult.TestResult': 'Test Result',
 
-  'menu.Workspace.TestReport': 'Report',
+  'menu.Workspace.TestReport': 'Test Report',
   'menu.Workspace.TestReport.TemplateCreate': 'Create Report Template',
   'menu.Workspace.TestReport.ReportTemplatePreview': 'Report Template Preview',
   'menu.Workspace.TestReport.TemplateEdit': 'Edit Report Template',
-  'menu.Workspace.TestReport.Report': 'Report',
+  'menu.Workspace.TestReport.Report': 'Test Report',
   'menu.Workspace.TestReport.EditReport': 'Edit Report',
   // "menu.Workspace.TestReport.ShareReport": '分享报告',
   'menu.Workspace.TestReport.CompareAnalysisConf': 'Result',
 
   'menu.Workspace.CreateReport': 'Create Report',
 
-  'menu.Workspace.TestSuiteSearch': 'Cases',
+  'menu.Workspace.TestSuiteSearch': 'Test Cases',
   'menu.Workspace.TestSuiteSearch.TestSuiteSearchResult': 'Search Result',
   'menu.Workspace.TestSuiteSearch.IndexPage': 'Search Case',
   'menu.Workspace.TestSuiteSearch.ConfDetail': 'Conf Detail',
@@ -127,7 +127,7 @@ export default {
   'menu.Workspace.baseline.performance': "Performance Baseline",
   'menu.Workspace.baseline.functional': "Functional Baseline",
 
-  'menu.Workspace.TestPlan': 'Plan',
+  'menu.Workspace.TestPlan': 'Test Plan',
   'menu.Workspace.TestPlan.Manage': 'Plan Manage',
   'menu.Workspace.TestPlan.Create': 'Create Plan',
   'menu.Workspace.TestPlan.Run': 'Run Plan',
