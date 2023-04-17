@@ -138,7 +138,7 @@ export default forwardRef((props: any, ref: any) => {
                         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                         searchWords={[listParams?.product_name || '']}
                         autoEscape
-                        textToHighlight={row?.product_name.toString()}
+                        textToHighlight={row?.product_name}
                     />
                 </ColumnEllipsisText>
             )
