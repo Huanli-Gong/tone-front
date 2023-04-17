@@ -9,7 +9,7 @@ import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
 import { queryTableData, queryDelete } from '../../services';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
-import { getUserFilter, getCheckboxFilter } from "@/components/TableFilters"
+import { getUserFilter, getCheckboxFilter, getRangeDatePickerFilter } from "@/components/TableFilters"
 import Highlighter from 'react-highlight-words';
 import { queryProjectList, queryProductList } from '@/pages/WorkSpace/Product/services';
 import { queryBaselineList } from '@/pages/WorkSpace/BaselineManage/services';
@@ -212,6 +212,17 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
+            ...getRangeDatePickerFilter(
+                [listParams?.start_time, listParams?.end_time],
+                (date: any) => {
+                    console.log(date)
+                    setListParams((p: any) => ({
+                        ...p,
+                        page_num: 1,
+                        ...date
+                    }))
+                }
+            ),
             render: (text: any) => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '-'}</span>,
         },
         {

@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Row, Col, Divider, Typography, Radio, Checkbox, Space } from 'antd'
+import { Row, Col, Divider, Typography, Radio, Checkbox, Space, DatePicker, Button } from 'antd'
 import { FilterFilled } from '@ant-design/icons'
-import { FormattedMessage } from 'umi'
+import { FormattedMessage, useIntl } from 'umi'
 import SelectDrop from '@/components/Public/SelectDrop'
 import styles from './index.less'
 import SearchInput from '@/components/Public/SearchInput';
+import moment from "moment"
 
 const RadioGroupTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVal }) => {
     const [val, setVal] = useState<any>(initVal === undefined ? '' : initVal)
@@ -156,6 +157,74 @@ const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVal 
             </Row>
         </Space>
     )
+}
+
+export const DateRangeTimePickerComponent: React.FC<AnyType> = ({ value, onOk, confirm }) => {
+    const intl = useIntl()
+    const [val, setVal] = React.useState<any>(value)
+
+    const handleChange = (date: any) => {
+        setVal(date)
+    }
+
+    const handleReset = () => {
+        setVal(undefined)
+        onOk?.({ start_time: undefined, end_time: undefined })
+        confirm?.()
+    }
+
+    const handleOk = () => {
+        const [start_time, end_time] = val
+        onOk?.({
+            start_time: start_time ? moment(start_time).format("YYYY-MM-DD HH:mm:ss") : undefined,
+            end_time: end_time ? moment(end_time).format("YYYY-MM-DD HH:mm:ss") : undefined
+        })
+        confirm?.()
+    }
+
+    return (
+        <Space
+            direction="vertical"
+            size={4}
+            style={{ padding: 6 }}
+        >
+            <DatePicker.RangePicker
+                size="middle"
+                format="YYYY-MM-DD HH:mm:ss"
+                // showTime={{ format: 'HH:mm:ss' }}
+                onChange={handleChange}
+                autoComplete="off"
+                allowClear
+                showNow
+                value={val}
+            />
+            <Divider style={{ margin: 0 }} />
+            <Row>
+                <Col span={12} style={{ textAlign: "center" }} onClick={handleOk}>
+                    <Button type="link" style={{ width: "100%" }} size="small">
+                        {intl?.formatMessage({ id: "operation.ok" })}
+                    </Button>
+                </Col>
+                <Col span={12} style={{ textAlign: "center", cursor: "pointer" }} onClick={handleReset}>
+                    {intl?.formatMessage({ id: "operation.reset" })}
+                </Col>
+            </Row>
+        </Space>
+    )
+}
+
+export const getRangeDatePickerFilter = (value: any, onOk: any) => {
+    const [start_time, end_time] = value
+    return {
+        filterDropdown: ({ confirm }: any) => (
+            <DateRangeTimePickerComponent
+                onOk={onOk}
+                value={value}
+                confirm={confirm}
+            />
+        ),
+        filterIcon: () => <FilterFilled style={{ color: start_time || end_time ? '#1890ff' : undefined }} />,
+    }
 }
 // 复选框过滤
 export const getCheckboxFilter = (props: any, setProps: any, list: any, name: string) => ({
