@@ -164,7 +164,7 @@ export default forwardRef((props: any, ref: any) => {
                 listParams,
                 setListParams,
                 [
-                    { name: "Upload", value: "upload" },
+                    { name: "Upload", value: "running" },
                     { name: "Success", value: "success" },
                     { name: "Fail", value: "fail" },
                 ],

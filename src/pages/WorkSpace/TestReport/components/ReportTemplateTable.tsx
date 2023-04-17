@@ -72,11 +72,6 @@ const ReportTemplateTable: React.FC<any> = (props) => {
         return data && _.isArray(data.data) ? data.data : []
     }, [data])
 
-    const styleObj = {
-        container: 180,
-        button_width: 90
-    }
-
     const columns: any = [
         {
             dataIndex: 'name',
@@ -90,7 +85,6 @@ const ReportTemplateTable: React.FC<any> = (props) => {
                 setParams,
                 'name',
                 formatMessage({ id: 'report.columns.template.placeholder' }),
-                styleObj,
             ),
             render: (_: any, row: any) => {
                 return (

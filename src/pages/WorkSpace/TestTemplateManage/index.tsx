@@ -153,7 +153,6 @@ export default () => {
                 setParams,
                 initialState?.jobTypeList.map(({ id, name }: any) => ({ name, value: id })),
                 'job_type_id',
-                { marginTop: 80 }
             )
         },
         {

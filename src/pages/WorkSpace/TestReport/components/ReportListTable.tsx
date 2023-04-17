@@ -54,10 +54,6 @@ const ReportListTable = (props: any) => {
             requestCodeMessage(code, msg)
         }
     }
-    const styleObj = {
-        container: 180,
-        button_width: 90
-    }
 
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
@@ -80,7 +76,6 @@ const ReportListTable = (props: any) => {
             setPageParam,
             'name',
             formatMessage({ id: 'report.columns.name.placeholder' }),
-            styleObj,
         ),
         render: (_: any, row: any) => {
             return (
