@@ -81,9 +81,8 @@ export default forwardRef((props: any, ref: any) => {
         setVisible(false);
     };
 
-
-    const onChange = (page: number, pageSize: number) => {
-        getTableData({ page_num: page, page_size: pageSize })
+    const onChange = (page_num: number, page_size: number) => {
+        setListParams((p: any) => ({ ...p, page_num, page_size }))
     }
 
     const Question = ({ content = '' }) => (
