@@ -223,7 +223,7 @@ export default forwardRef((props: any, ref: any) => {
                     }))
                 }
             ),
-            render: (text: any) => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '-'}</span>,
+            render: (text: any) => <span>{text || '-'}</span>,
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,

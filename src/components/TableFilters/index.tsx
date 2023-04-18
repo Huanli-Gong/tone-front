@@ -190,7 +190,7 @@ export const DateRangeTimePickerComponent: React.FC<AnyType> = ({ value, onOk, c
         >
             <DatePicker.RangePicker
                 size="middle"
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD"
                 // showTime={{ format: 'HH:mm:ss' }}
                 onChange={handleChange}
                 autoComplete="off"
