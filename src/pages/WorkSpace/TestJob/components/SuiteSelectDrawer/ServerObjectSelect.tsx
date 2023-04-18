@@ -17,7 +17,7 @@ const filterRepeat = (olds: any = [], vals: any = []) => {
     return vals?.reduce((pre: any, cur: any) => {
         if (ids.includes(cur.id)) return pre
         return pre.concat(cur)
-    }, [])
+    }, []).concat(olds)
 }
 
 const ServerObjectSelect = (props: any) => {
@@ -114,12 +114,11 @@ const ServerObjectSelect = (props: any) => {
         }, [serverObjectType]
     )
 
-    const renderServerItem = useMemo(() => {
-        if (["ip", "server_tag_id"].includes(serverObjectType)) return <></>
-        let options = []
+    const options = useMemo(() => {
+        let $options = []
         if (serverObjectType === 'server_object_id') {
             if (run_mode === 'standalone')
-                options = serverList.map((item: any) => {
+                $options = serverList.map((item: any) => {
                     const text = item.ip || item.sn
                     return {
                         value: item.id,
@@ -133,14 +132,14 @@ const ServerObjectSelect = (props: any) => {
                     }
                 })
             else
-                options = serverList.map((item: any) => ({
+                $options = serverList.map((item: any) => ({
                     value: item.id,
                     label: item.name,
                     search_key: item.name
                 }))
         }
         if (serverObjectType === 'instance')
-            options = serverList.filter((i: any) => i.is_instance).map((item: any) => {
+            $options = serverList.filter((i: any) => i.is_instance).map((item: any) => {
                 const ip = BUILD_APP_ENV ? item.private_ip : item.pub_ip
                 const text = ip ? `${ip} / ${item.instance_name}` : item.instance_name
                 return {
@@ -156,42 +155,46 @@ const ServerObjectSelect = (props: any) => {
             })
 
         if (serverObjectType === 'setting')
-            options = serverList.filter((i: any) => !i.is_instance).map((item: any) => ({
+            $options = serverList.filter((i: any) => !i.is_instance).map((item: any) => ({
                 value: item.id,
                 label: <Typography.Text ellipsis={{ tooltip: true }}>{item.template_name}</Typography.Text>,
                 search_key: item.template_name
             }))
 
-        return (
-            <Form.Item noStyle>
-                <Form.Item
-                    name="server_object_id"
-                    rules={[{ required: true, message: switchServerMessage }]}
-                >
-                    <Select
-                        allowClear
-                        style={{ width: '100%' }}
-                        placeholder={switchServerMessage}
-                        dropdownMatchSelectWidth={340}
-                        showSearch
-                        loading={fetching}
-                        onPopupScroll={handleServerPopupScroll}
-                        popupClassName="job_select_drop_cls"
-                        dropdownRender={(menu: any) => (
-                            <DropdownRender
-                                menu={menu}
-                                uri={`/ws/${ws_id}/device/${server_type === "aliyun" ? "cloud" : "group"}?t=${run_mode}&isInstance=${serverObjectType === "instance" ? 1 : 0}`}
-                            />
-                        )}
-                        optionFilterProp="children"
-                        filterOption={(input, option) => (option?.search_key ?? '').toLowerCase().includes(input.toLowerCase())}
-                        options={options}
-                    />
-                </Form.Item>
-            </Form.Item>
-        )
-    }, [serverList, fetching])
+        return $options
+    }, [serverList, serverObjectType, run_mode])
 
-    return renderServerItem
+    if (["ip", "server_tag_id"].includes(serverObjectType))
+        return <></>
+        
+    return (
+        <Form.Item noStyle>
+            <Form.Item
+                name="server_object_id"
+                rules={[{ required: true, message: switchServerMessage }]}
+            >
+                <Select
+                    allowClear
+                    style={{ width: '100%' }}
+                    placeholder={switchServerMessage}
+                    dropdownMatchSelectWidth={340}
+                    showSearch
+                    loading={fetching}
+                    onPopupScroll={handleServerPopupScroll}
+                    popupClassName="job_select_drop_cls"
+                    dropdownRender={(menu: any) => (
+                        <DropdownRender
+                            menu={menu}
+                            uri={`/ws/${ws_id}/device/${server_type === "aliyun" ? "cloud" : "group"}?t=${run_mode}&isInstance=${serverObjectType === "instance" ? 1 : 0}`}
+                        />
+                    )}
+                    optionFilterProp="children"
+                    filterOption={(input, option) => (option?.search_key ?? '').toLowerCase().includes(input.toLowerCase())}
+                    options={options}
+                />
+            </Form.Item>
+        </Form.Item>
+    )
 }
+
 export default ServerObjectSelect
