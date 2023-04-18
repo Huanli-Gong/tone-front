@@ -159,6 +159,7 @@ const CheckboxTableFilter: React.FC<any> = ({ confirm, onConfirm, list, initVal 
     )
 }
 
+const format = "YYYY-MM-DD"
 export const DateRangeTimePickerComponent: React.FC<AnyType> = ({ value, onOk, confirm }) => {
     const intl = useIntl()
     const [val, setVal] = React.useState<any>(value)
@@ -176,8 +177,8 @@ export const DateRangeTimePickerComponent: React.FC<AnyType> = ({ value, onOk, c
     const handleOk = () => {
         const [start_time, end_time] = val
         onOk?.({
-            start_time: start_time ? moment(start_time).format("YYYY-MM-DD HH:mm:ss") : undefined,
-            end_time: end_time ? moment(end_time).format("YYYY-MM-DD HH:mm:ss") : undefined
+            start_time: start_time ? moment(start_time).format(format) : undefined,
+            end_time: end_time ? moment(end_time).format(format) : undefined
         })
         confirm?.()
     }
@@ -190,7 +191,7 @@ export const DateRangeTimePickerComponent: React.FC<AnyType> = ({ value, onOk, c
         >
             <DatePicker.RangePicker
                 size="middle"
-                format="YYYY-MM-DD"
+                format={format}
                 // showTime={{ format: 'HH:mm:ss' }}
                 onChange={handleChange}
                 autoComplete="off"
