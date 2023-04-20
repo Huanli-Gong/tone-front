@@ -263,7 +263,7 @@ const Cluster = (props: any, ref: any) => {
             </Modal>
             <DelConfirmModal
                 ref={delConfirm}
-                onOk={handleDeleteServer}
+                onOk={({ id }: any) => handleDeleteServer(id)}
             />
         </Layout.Content>
     )
