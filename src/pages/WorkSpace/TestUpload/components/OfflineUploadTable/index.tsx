@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
 import { message, Space, Popover, Popconfirm } from 'antd';
 import type { TableColumnsType } from "antd"
 import { useIntl, FormattedMessage, Access, useAccess, useRequest, useParams } from 'umi';
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
 import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
@@ -50,7 +50,7 @@ export default forwardRef((props: any, ref: any) => {
             if (res.code === 200) {
                 message.success(formatMessage({ id: 'request.delete.success' }));
                 const { page_num, page_size } = data
-                getTableData({ page_num, page_size });
+                setListParams((p: any) => ({ ...p, page_num, page_size }))
             } else {
                 message.error(res.msg || formatMessage({ id: 'request.delete.failed' }));
             }
@@ -76,7 +76,7 @@ export default forwardRef((props: any, ref: any) => {
     const hiddenModalCallback = (info: any) => {
         const { title } = info;
         if (title === 'ok') {
-            getTableData({ page_num: 1, page_size: 20 });
+            setListParams(DEFAULT_QUERY_PARAMS)
         }
         setVisible(false);
     };
