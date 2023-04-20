@@ -1,4 +1,6 @@
-import { Space, Tooltip, Input, Button, Typography, TableColumnProps } from 'antd'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Space, Tooltip, Input, Button, Typography } from 'antd'
+import type { TableColumnProps } from "antd"
 import { SearchOutlined } from '@ant-design/icons'
 
 import React, { useRef, useEffect } from 'react'
@@ -56,7 +58,7 @@ export default (props: any) => {
         }
     )
 
-    const handleSearch = (selectedKeys: any, confirm: any, dataIndex: any) => {
+    const handleSearch = (selectedKeys: any, confirm: any) => {
         confirm?.();
         setInterfaceSearchKeys((p: any) => ({ ...p, sub_case_name: selectedKeys[0], page_num: 1, page_size: 10 }))
     };
@@ -65,7 +67,7 @@ export default (props: any) => {
         clearFilters();
     };
 
-    const getColumnSearchProps = (dataIndex: any, name: any) => ({
+    const getColumnSearchProps = (name: any) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
             <div style={{ padding: 8 }}>
                 <Input
@@ -73,13 +75,13 @@ export default (props: any) => {
                     placeholder={`${formatMessage({ id: 'operation.search' })} ${name}`}
                     value={selectedKeys[0]}
                     onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm)}
                     style={{ width: 188, marginBottom: 8, display: 'block' }}
                 />
                 <Space>
                     <Button
                         type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        onClick={() => handleSearch(selectedKeys, confirm)}
                         icon={<SearchOutlined />}
                         size="small"
                         style={{ width: 90 }}
@@ -150,7 +152,7 @@ export default (props: any) => {
             fixed: "left",
             width: 400,
             ...tooltipTd(),
-            ...getColumnSearchProps('sub_case_name', 'Test Case'),
+            ...getColumnSearchProps('Test Case'),
         },
         {
             dataIndex: 'result',
@@ -252,7 +254,7 @@ export default (props: any) => {
             fixed: "right",
             width: 200,
             render: (_: any) => {
-                let flag = _.result === 'Fail' && !_.bug
+                const flag = _.result === 'Fail' && !_.bug
                 return (
                     <Access accessible={access.WsTourist()}>
                         <Access
@@ -299,7 +301,7 @@ export default (props: any) => {
                                 page_size
                             }))
                         },
-                        showTotal(total, range) {
+                        showTotal(total) {
                             return formatMessage({ id: 'pagination.total.strip' }, { data: total })
                         },
                     }}

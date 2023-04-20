@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useRef, useEffect } from 'react'
 import { Access, useAccess, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryTestResult } from '../service'
@@ -53,7 +54,7 @@ const TestResultTable: React.FC<any> = (props) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
     const [openAllRows, setOpenAllRows] = useState(false)
     const [suiteCaseSelectKeys, setSuiteCaseSelectKeys] = useState<any>([])
-    const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
+    const [expandedRowKeys, setExpandedRowKeys] = useState<any[]>([])
     const [expandedCaseRowKeys, setExpandedCaseRowKeys] = React.useState<any[]>([])
     const joinBaselineDrawer: any = useRef(null)
     const contrastBaselineDrawer: any = useRef(null)
@@ -80,6 +81,42 @@ const TestResultTable: React.FC<any> = (props) => {
             queryDefaultTestData()
     }, [job_id, refreshResult])
 
+    const handleSuiteStateChange = (row: any, state: string) => {
+        setExpandedRowKeys((l: any[]) => l.concat(row.suite_id))
+        setExpandedCaseRowKeys((l: any[]) => l.concat(row.suite_id))
+        setFilterData((source: any) => {
+            return source?.map((item: any) => {
+                if (item.suite_id === row.suite_id)
+                    return {
+                        ...item, expandedState: state,
+                    }
+                return item
+            })
+        })
+    }
+
+    const handleContrastBaseline = (_: any) => {
+        contrastBaselineDrawer.current.show({ ..._, job_id })
+    }
+
+    const handleContrastBaselineOk = () => {
+        queryDefaultTestData()
+        setSuiteCaseSelectKeys([])
+        setSelectedRowKeys([])
+        setRefreshCaseTable(uuid())
+    }
+
+    const handleJoinBaseline = (_: any) => {
+        joinBaselineDrawer.current.show({ ..._, job_id })
+    }
+
+    const suiteCaseExpandedContrl = (isExpanded: boolean) => {
+        const openKeys = isExpanded ? filterData.map(({ suite_id }: any) => suite_id) : []
+        setOpenAllRows(isExpanded)
+        setExpandedRowKeys(openKeys)
+        setExpandedCaseRowKeys(openKeys)
+    }
+
     const states = ['functional', 'business_functional'].includes(testType) ? funcStates
         : (testType === 'business_business' ? businessBusinessStates : perfStates)
 
@@ -100,7 +137,7 @@ const TestResultTable: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => {
+            render: (_: any) => {
                 const strLocale = matchTestType(_)
                 return <span><FormattedMessage id={`${strLocale}.test`} defaultMessage={_} /></span>
             },
@@ -113,7 +150,7 @@ const TestResultTable: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id="ws.result.details.the.server" />,
@@ -250,10 +287,6 @@ const TestResultTable: React.FC<any> = (props) => {
         }
     ]
 
-    const handleContrastBaseline = (_: any) => {
-        contrastBaselineDrawer.current.show({ ..._, job_id })
-    }
-
     const handleBatchContrastBaseline = () => {
         contrastBaselineDrawer.current.show({
             job_id,
@@ -262,21 +295,10 @@ const TestResultTable: React.FC<any> = (props) => {
         })
     }
 
-    const handleContrastBaselineOk = () => {
-        queryDefaultTestData()
-        setSuiteCaseSelectKeys([])
-        setSelectedRowKeys([])
-        setRefreshCaseTable(uuid())
-    }
-
     const handleJoinBaselineOk = () => {
         queryDefaultTestData()
         setSuiteCaseSelectKeys([])
         setSelectedRowKeys([])
-    }
-
-    const handleJoinBaseline = (_: any) => {
-        joinBaselineDrawer.current.show({ ..._, job_id })
     }
 
     const handleBatchJoinBaseline = () => {
@@ -313,27 +335,6 @@ const TestResultTable: React.FC<any> = (props) => {
         }
     }
 
-    const handleSuiteStateChange = (row: any, state: string) => {
-        setExpandedRowKeys((l: any[]) => l.concat(row.suite_id))
-        setExpandedCaseRowKeys((l: any[]) => l.concat(row.suite_id))
-        setFilterData((source: any) => {
-            return source?.map((item: any) => {
-                if (item.suite_id === row.suite_id)
-                    return {
-                        ...item, expandedState: state,
-                    }
-                return item
-            })
-        })
-    }
-
-    const suiteCaseExpandedContrl = (isExpanded: boolean) => {
-        const openKeys = isExpanded ? filterData.map(({ suite_id }: any) => suite_id) : []
-        setOpenAllRows(isExpanded)
-        setExpandedRowKeys(openKeys)
-        setExpandedCaseRowKeys(openKeys)
-    }
-
     const handleStateChange = (state: string) => {
         setSelectSuiteState(state)
         setFilterData((source: any) => {
@@ -361,8 +362,8 @@ const TestResultTable: React.FC<any> = (props) => {
     const rowSelection = testType === 'performance' ? {
         columnWidth: 40,
         selectedRowKeys,
-        onChange: (selectedRowKeys: any[]) => {
-            setSelectedRowKeys(selectedRowKeys)
+        onChange: ($selectedRowKeys: any[]) => {
+            setSelectedRowKeys($selectedRowKeys)
         }
     } : undefined
 

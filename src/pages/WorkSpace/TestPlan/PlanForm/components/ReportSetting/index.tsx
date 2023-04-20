@@ -1,4 +1,7 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
 import { Form, Input, Radio, Switch, Cascader, Select, Row, Typography } from 'antd'
 import { queryReportTemplateList } from '@/pages/WorkSpace/TestJob/services'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'
@@ -29,7 +32,7 @@ export default forwardRef((props: any, ref: any) => {
         try {
             const { code, data } = await queryReportTemplateList({ ws_id, page_size: 99999 })
             if (code === 200) {
-                let dataSource = _.isArray(data) ? data : []
+                const dataSource = _.isArray(data) ? data : []
                 const defaultTem = _.find(dataSource, { is_default: true })
                 setReportTemplate(dataSource)
                 if (route.name === "Create")
@@ -143,20 +146,20 @@ export default forwardRef((props: any, ref: any) => {
                 className={styles.job_plan_form}
                 initialValues={{ group_method: "no" }}
             >
-                <Form.Item label={<FormattedMessage id="plan.generate.reports"/>}
+                <Form.Item label={<FormattedMessage id="plan.generate.reports" />}
                     name="auto_report">
                     <Switch onChange={setTrigger} checked={trigger}
-                        size="default" 
-                        checkedChildren={<FormattedMessage id="plan.checked"/>}
-                        unCheckedChildren={<FormattedMessage id="plan.unChecked"/>}
+                        size="default"
+                        checkedChildren={<FormattedMessage id="plan.checked" />}
+                        unCheckedChildren={<FormattedMessage id="plan.unChecked" />}
                     />
                 </Form.Item>
                 {trigger && (
                     <>
-                        <Form.Item label={<FormattedMessage id="plan.report_name"/>}>
+                        <Form.Item label={<FormattedMessage id="plan.report_name" />}>
                             <div style={{ position: 'relative' }}>
                                 <Form.Item name="report_name">
-                                    <Input autoComplete="off" placeholder={formatMessage({id: 'plan.report_name.placeholder'}, {Job_name: '{Job_name}', report_seq_id: '{report_seq_id}'} )} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'plan.report_name.placeholder' }, { Job_name: '{Job_name}', report_seq_id: '{report_seq_id}' })} />
                                 </Form.Item>
                                 <div style={{ position: 'absolute', right: -22, top: -4 }}>
                                     <QusetionIconTootip
@@ -164,7 +167,7 @@ export default forwardRef((props: any, ref: any) => {
                                         placement="bottomRight"
                                         desc={
                                             <>
-                                                <Row><Typography.Text><FormattedMessage id="plan.available.placeholders"/></Typography.Text></Row>
+                                                <Row><Typography.Text><FormattedMessage id="plan.available.placeholders" /></Typography.Text></Row>
                                                 <Row><Typography.Text>{`{date} {plan_name} {plan_id} {product_version}`}</Typography.Text></Row>
                                             </>
                                         }
@@ -173,11 +176,11 @@ export default forwardRef((props: any, ref: any) => {
                             </div>
                         </Form.Item>
                         <Form.Item
-                            label={<FormattedMessage id="plan.select.report.template"/>}
+                            label={<FormattedMessage id="plan.select.report.template" />}
                             name="report_template_id"
                         >
                             <Select
-                                placeholder={formatMessage({id: 'please.select'})}
+                                placeholder={formatMessage({ id: 'please.select' })}
                                 getPopupContainer={node => node.parentNode}
                                 showSearch
                                 optionFilterProp="children"
@@ -191,33 +194,33 @@ export default forwardRef((props: any, ref: any) => {
                             </Select>
                         </Form.Item>
 
-                        <Form.Item label={<FormattedMessage id="plan.group_method"/>}
+                        <Form.Item label={<FormattedMessage id="plan.group_method" />}
                             name="group_method"
                         >
                             <Radio.Group onChange={(e) => { setGroupMethod(e.target.value) }}>
-                                <Radio value={"no"}><FormattedMessage id="plan.group_method.not"/></Radio>
-                                <Radio value={'job'}><FormattedMessage id="plan.group_method.job"/></Radio>
-                                <Radio value={'stage'}><FormattedMessage id="plan.group_method.stage"/></Radio>
+                                <Radio value={"no"}><FormattedMessage id="plan.group_method.not" /></Radio>
+                                <Radio value={'job'}><FormattedMessage id="plan.group_method.job" /></Radio>
+                                <Radio value={'stage'}><FormattedMessage id="plan.group_method.stage" /></Radio>
                             </Radio.Group>
                         </Form.Item>
                         {groupMethod === 'job' && (
                             <Form.Item
-                                label={<FormattedMessage id="plan.select.base_group"/>}
+                                label={<FormattedMessage id="plan.select.base_group" />}
                                 name="base_group_job"
                                 rules={[
-                                    { required: true, message: formatMessage({id: 'plan.select.base_group.message'}) }
+                                    { required: true, message: formatMessage({ id: 'plan.select.base_group.message' }) }
                                 ]}>
-                                <Cascader placeholder={formatMessage({id: 'plan.select.base_group.message'})} options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
+                                <Cascader placeholder={formatMessage({ id: 'plan.select.base_group.message' })} options={envPrep || []} expandTrigger="hover" className={styles.cascaderStyle} />
                             </Form.Item>
                         )}
                         {groupMethod === 'stage' && (
                             <Form.Item
-                                label={<FormattedMessage id="plan.select.base_group"/>}
+                                label={<FormattedMessage id="plan.select.base_group" />}
                                 name="base_group_stage"
                                 rules={[
-                                    { required: true, message: formatMessage({id: 'plan.select.base_group.message'}) }
+                                    { required: true, message: formatMessage({ id: 'plan.select.base_group.message' }) }
                                 ]}>
-                                <Select placeholder={formatMessage({id: 'plan.select.base_group.message'})} getPopupContainer={node => node.parentNode}>
+                                <Select placeholder={formatMessage({ id: 'plan.select.base_group.message' })} getPopupContainer={node => node.parentNode}>
                                     {testConfig.map((item: any, index: number) =>
                                         <Select.Option key={index + 1} value={index + 1}>{item.name}</Select.Option>
                                     )}
@@ -225,13 +228,13 @@ export default forwardRef((props: any, ref: any) => {
                             </Form.Item>
                         )}
 
-                        <Form.Item label={<FormattedMessage id="plan.report_description"/>}
+                        <Form.Item label={<FormattedMessage id="plan.report_description" />}
                             name="report_description"
                             rules={[
                                 { required: false },
-                                { max: 500, message: formatMessage({id: 'plan.limit.characters'}) },
+                                { max: 500, message: formatMessage({ id: 'plan.limit.characters' }) },
                             ]}>
-                            <Input.TextArea placeholder={formatMessage({id: 'plan.report_description.placeholder'})} />
+                            <Input.TextArea placeholder={formatMessage({ id: 'plan.report_description.placeholder' })} />
                         </Form.Item>
                     </>
                 )}

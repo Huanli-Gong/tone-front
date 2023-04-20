@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useImperativeHandle, useEffect, useState } from 'react'
 import { Form, Input, Card, Row, Col, Popover, Select, InputNumber } from 'antd'
 import styles from './index.less'
@@ -17,7 +18,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
     const [form] = Form.useForm()
-    const [tags, setTags] = useState<Array<any>>([])
+    const [tags, setTags] = useState<any[]>([])
     const [checkedList, setCheckedList] = React.useState<any>();
     const [reportTemplate, setReportTemplate] = useState<any>([])
     const [defaultTemplate, setDefaultTemplate] = useState<any>({})
@@ -41,7 +42,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
         try {
             const { code, data } = await queryReportTemplateList({ ws_id, page_size: 99999 })
             if (code === 200) {
-                let dataSource = _.isArray(data) ? data : []
+                const dataSource = _.isArray(data) ? data : []
 
                 const defaultTem = _.find(dataSource, { is_default: true })
                 setReportTemplate(dataSource)
@@ -68,7 +69,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
         }
         if (JSON.stringify(template) !== '{}') {
             let notice_subject, email, ding_token
-            const { cleanup_info, tags, notice_info, report_name, callback_api } = template
+            const { cleanup_info, tags: $tags, notice_info, report_name, callback_api } = template
             let report_template_id = template.report_template_id
             if (_.isArray(notice_info)) {
                 notice_info.forEach(
@@ -87,7 +88,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
             form.setFieldsValue({
                 ...template,
                 cleanup_info,
-                tags,
+                tags: $tags,
                 notice_subject,
                 email,
                 ding_token,
@@ -224,7 +225,7 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                                     }
                                 >
                                     {
-                                        reportTemplate.map((obj: any) => <Option value={obj.id}>{obj.name}</Option>)
+                                        reportTemplate.map((obj: any) => <Option key={obj.id} value={obj.id}>{obj.name}</Option>)
                                     }
                                 </Select>
                             </Form.Item>

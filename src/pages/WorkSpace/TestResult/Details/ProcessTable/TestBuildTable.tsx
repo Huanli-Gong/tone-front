@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/jsx-no-target-blank */
 import React, { useEffect, useState } from 'react'
 
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
@@ -21,13 +23,13 @@ const BuildTable = styled(Table)`
 
 const CopyLink: React.FC<{ name: string, link: string }> = ({ name, link }) => {
     const { formatMessage } = useIntl()
-    const handleCopy = (link: string) => {
+    const handleCopy = ($link: string) => {
         const dom = document.createElement("a")
         dom.style.width = "0px";
         dom.style.height = "0px"
         document.body.appendChild(dom)
         const cp = new Clipboard(dom, {
-            text: () => link
+            text: () => $link
         })
 
         cp.on("success", () => {
@@ -62,10 +64,9 @@ type IProps = {
 }
 
 const BuildKernelTable: React.FC<IProps> = (props) => {
-    const { formatMessage } = useIntl()
     const { id: job_id } = useParams() as any
     const { refresh = false } = props
-    const [dataSource, setDataSource] = useState<Array<{}>>([])
+    const [dataSource, setDataSource] = useState<any[]>([])
 
     const { loading, run, data } = useRequest(
         () => queryBuildList({ job_id }),

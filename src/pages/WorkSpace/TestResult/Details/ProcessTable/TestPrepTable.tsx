@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { CaretDownFilled, CaretRightFilled } from '@ant-design/icons'
-import { Table, Card, Typography, TableColumnsType } from 'antd'
+import { Table, Card, Typography } from 'antd'
+import type { TableColumnsType } from "antd"
 import { evnPrepareState, tooltipTd } from '../components/index'
 import ProcessExpandTable from './ProcessExpandTable'
 import ServerLink from '@/components/MachineWebLink/index';
@@ -50,7 +51,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
             },
             render: (_: any, row: any) => {
                 if (row.server_type === "cluster") {
-                    return <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+                    return <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
                 }
                 return (
                     <ServerLink
@@ -88,7 +89,7 @@ const TestPrepTable: React.FC<AnyType> = (props) => {
                 showTitle: false,
             },
             title: <FormattedMessage id="ws.result.details.output.results" />,
-            render(_, row) {
+            render(_) {
                 return <ColumnEllipsisText ellipsis={{ tooltip: true }}>{_ || "-"}</ColumnEllipsisText>
             }
         },

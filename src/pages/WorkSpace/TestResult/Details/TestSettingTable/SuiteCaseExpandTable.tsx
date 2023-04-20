@@ -1,4 +1,3 @@
-import React from 'react'
 import { Tooltip } from 'antd'
 import { ServerTooltip } from './ServerTooltip'
 import { useIntl, FormattedMessage } from 'umi'
@@ -53,12 +52,13 @@ export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsC
             render: (_: any) => {
                 const envStr = _.env_info && JSON.stringify(_.env_info) !== '{}' ?
                     Object.keys(_.env_info).reduce(
+                        // eslint-disable-next-line no-param-reassign
                         (r, k, i) => r += `${i === 0 ? '' : ';'}${k}=${_.env_info[k]}`,
                         ''
                     ) : '-'
 
                 return (
-                    <ColumnEllipsisText ellipsis={{ tooltip: true }} children={envStr} />
+                    <ColumnEllipsisText ellipsis={{ tooltip: true }} >{envStr}</ColumnEllipsisText>
                 )
             }
         },
@@ -96,7 +96,7 @@ export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsC
             ellipsis: {
                 showTitle: false
             },
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id="ws.result.details.monitor" />,
@@ -105,7 +105,7 @@ export default ({ data = [], testType, provider_name, columnsRefresh, onColumnsC
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => ('-')
+            render: () => ('-')
         },
         {
             title: <FormattedMessage id="ws.result.details.priority" />,

@@ -1,6 +1,7 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import styled from 'styled-components'
-import { Drawer, Row, Col, Space, Button, message, Badge } from 'antd'
+import { Drawer, Row, Space, Button, Badge } from 'antd'
 
 import { queryTestPlanDetails } from '@/pages/WorkSpace/TestPlan/services'
 import { history, useIntl, FormattedMessage, Access, useAccess } from 'umi'
