@@ -1,34 +1,22 @@
 import React, { forwardRef, useState, useEffect } from 'react'
 import { Modal, Space, Spin, Alert, Form, Button, message, Input, Select, Row } from 'antd'
 import { useParams, FormattedMessage, useIntl } from 'umi';
-import { isNaN } from 'lodash'
-import { queryProductList, queryProjectList } from '@/pages/WorkSpace/Product/services';
-import { queryBaselineList, } from '@/pages/WorkSpace/BaselineManage/services';
 import { queryJobTypeList, } from '@/pages/WorkSpace/JobTypeManage/services';
 import { switchTestType, switchServerType } from '@/utils/utils';
 import { createProject } from '../../services';
 import BizUpload from './component/BizUpload';
 import styles from './style.less';
-const { Option } = Select;
 
 const DrawerForm = forwardRef((props: any, ref: any) => {
   const { formatMessage } = useIntl();
   const { ws_id } = useParams() as any
-  const { visible }: any = props
+  const { visible, baselines, projects, products }: any = props
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   // 产品数据源
-  const [fetching, setFetching] = useState(false);
-  // const [productKeyword, setProductKeyword] = useState('');
-  const [productPagination, setProductPagination] = useState({ data: [], total: 0, page_num: 1, page_size: 20 });
-  const [productId, setProductId] = useState('');
-  // 项目数据源
-  const [projectList, setProjectList] = useState([]);
-  // 为获取基线数据源
   const [serverType, setServerType] = useState('');
   const [testType, setTestType] = useState('');
   const [hasBaseline, setHasBaseline] = useState(''); // 是否有基线选项。
-  const [baselinePagination, setBaselinePagination] = useState({ data: [], total: 0, page_num: 1, page_size: 20 });
   // Job类型数据源
   const [jobTypeList, setJobTypeList] = useState([]);
   const [jobId, setJobId] = useState('');
@@ -36,78 +24,25 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   const [submitDisable, setSubmitDisable] = useState(true);
 
   const $project_id = Form.useWatch("project_id", form)
+  const $product_id = Form.useWatch("product_id", form)
+
+  const projectList = React.useMemo(() => {
+    if (!projects.length) return []
+    if (Object.prototype.toString.call($product_id) !== '[object Number]') return []
+    return projects.filter(({ product_id }: any) => product_id === $product_id)
+  }, [projects, $product_id])
 
   React.useEffect(() => {
     if ($project_id) {
-      for (let len = projectList.length, i = 0; i < len; i++) {
-        const { id, product_version } = projectList[i]
+      for (let len = projects.length, i = 0; i < len; i++) {
+        const { id, product_version } = projects[i]
         if (id === $project_id) {
           form.setFieldValue("product_version", product_version)
         }
       }
     }
-  }, [$project_id, projectList])
+  }, [$project_id, projects])
 
-  // 1.请求数据
-  const fetchProductList = async (query: any, option = "concat") => {
-    const tempValue = { ws_id, ...query };
-    try {
-      setFetching(true)
-      const res = await queryProductList(tempValue);
-      if (res.code === 200) {
-        // 分页数据合并。
-        if (option === 'concat') {
-          const { data } = productPagination
-          res.data = data.concat(res.data || [])
-          setProductPagination(res);
-        } else if (option === 'reset') {
-          // 新的数据。
-          setProductPagination(res);
-        }
-
-      } else {
-        message.error(res.msg || formatMessage({ id: 'request.failed' }));
-      }
-      setFetching(false);
-    } catch (e) {
-      setFetching(false);
-    }
-  }
-  // 2.请求数据
-  const fetchProjectList = async (query: any) => {
-    const tempValue = { ws_id, ...query };
-    try {
-      const res = await queryProjectList(tempValue);
-      if (res.code === 200) {
-        setProjectList(res.data || []);
-      } else {
-        message.error(res.msg || formatMessage({ id: 'request.failed' }));
-      }
-    } catch (e) {
-      console.log(e)
-    }
-  }
-  // 3.请求数据
-  const fetchBaselineList = async (query: any, option = "concat") => {
-    try {
-      const res = await queryBaselineList({ ws_id, test_type: testType, ...query });
-      if (res.code === 200) {
-        if (option === 'concat') {
-          // 分页数据合并。
-          const { data } = baselinePagination
-          res.data = data.concat(res.data)
-          setBaselinePagination(res);
-        } else if (option === 'reset') {
-          // 新的数据。
-          setBaselinePagination(res);
-        }
-      } else {
-        message.error(res.msg || formatMessage({ id: 'request.failed' }));
-      }
-    } catch (e) {
-      console.log(e)
-    }
-  }
   // 4.请求数据
   const fetchJobTypeList = async (query: any) => {
     try {
@@ -125,8 +60,6 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
 
   useEffect(() => {
     if (visible) {
-      const { page_num, page_size } = productPagination
-      fetchProductList({ page_num, page_size }, 'reset');
       fetchJobTypeList({})
     }
   }, [visible])
@@ -157,13 +90,9 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
 
   // 初始化状态
   const initialState = () => {
-    setProductPagination({ data: [], total: 0, page_num: 1, page_size: 20 });
-    setProductId('');
-    setProjectList([]);
     setServerType('');
     setTestType('');
     setHasBaseline('');
-    setBaselinePagination({ data: [], total: 0, page_num: 1, page_size: 20 });
     setJobTypeList([]);
     setJobId('')
   }
@@ -209,25 +138,16 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
   // 选产品
   const productOnChange = (value: any) => {
     // case1.重置控件
-    setProductId(value);
     form.setFieldsValue({ project_id: undefined });
     // case2.根据选择的产品，请求项目。
-    fetchProjectList({ product_id: value })
+    // fetchProjectList({ product_id: value })
   }
   // 删除产品
   const handleClear = () => {
-    setProductId('');
     form.setFieldsValue({ project_id: undefined });
-    //
     validateFields()
   }
-  const handlePopupScroll = ({ target }: any) => {
-    const { page_num, page_size, total, } = productPagination
-    const { clientHeight, scrollHeight, scrollTop } = target
-    if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
-      fetchProductList({ page_num: page_num + 1, page_size }, 'concat')
-    }
-  }
+
 
   // 选job
   const jobOnChange = (value: any) => {
@@ -241,7 +161,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
       setServerType(server_type)
       setTestType(test_type)
       setHasBaseline(has_baseline)
-      fetchBaselineList({ test_type, page_num: 1, page_size: 20 }, 'reset');
+      // fetchBaselineList({ test_type, page_num: 1, page_size: 20 }, 'reset');
     }
   }
   const jobOnClear = () => {
@@ -250,15 +170,6 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
     form.setFieldsValue({ baseline_id: undefined });
     //
     validateFields()
-  }
-
-  // 基线
-  const baselinePopupScroll = ({ target }: any) => {
-    const { page_num, page_size, total, } = baselinePagination
-    const { clientHeight, scrollHeight, scrollTop } = target
-    if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num) {
-      fetchBaselineList({ page_num: page_num + 1, page_size }, 'concat')
-    }
   }
 
   const requiredMessage = formatMessage({ id: 'please.select' });
@@ -301,10 +212,10 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 allowClear
                 style={{ width: '100%' }}
                 placeholder={<FormattedMessage id="upload.list.Drawer.product.placeholder" />}
-                notFoundContent={fetching ? <Spin size="small" /> : null}
+                // notFoundContent={fetching ? <Spin size="small" /> : null}
                 getPopupContainer={node => node.parentNode}
                 onChange={productOnChange}
-                onPopupScroll={handlePopupScroll}
+                // onPopupScroll={handlePopupScroll}
                 onClear={handleClear}
                 autoFocus={true}
                 showSearch
@@ -312,7 +223,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                   return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
                 options={
-                  productPagination.data?.map((item: any) => ({
+                  products?.map((item: any) => ({
                     value: item.id,
                     label: item.name
                   }))
@@ -331,13 +242,13 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
               <Select
                 placeholder={<FormattedMessage id="upload.list.Drawer.project.placeholder" />}
                 getPopupContainer={node => node.parentNode}
-                disabled={!productId || !projectList.length}
+                disabled={!$product_id || !projectList?.length}
                 showSearch
                 filterOption={(input, option: any) => {
                   return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
                 options={
-                  (projectList || [])?.map((item: any) => ({
+                  projectList?.map((item: any) => ({
                     value: item.id,
                     label: item.name,
                   }))
@@ -377,7 +288,7 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                   return option.search?.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }}
                 options={
-                  jobTypeList.map((item: any) => ({
+                  jobTypeList?.map((item: any) => ({
                     value: item.id,
                     search: item.name,
                     label: (
@@ -401,18 +312,20 @@ const DrawerForm = forwardRef((props: any, ref: any) => {
                 <Select
                   allowClear={true}
                   placeholder={<FormattedMessage id="upload.list.Drawer.baseline.placeholder" />}
-                  onPopupScroll={baselinePopupScroll}
+                  // onPopupScroll={baselinePopupScroll}
                   getPopupContainer={node => node.parentNode}
-                  disabled={!jobId || !baselinePagination.data?.length}
+                  disabled={!jobId || !baselines?.length}
                   showSearch
                   filterOption={(input, option: any) =>
-                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
-                >
-                  {baselinePagination.data?.map((item: any) => (
-                    <Option key={item.id} value={item.id}>{item.name}</Option>
-                  ))}
-                </Select>
+                  options={
+                    baselines?.map((item: any) => ({
+                      label: item.name,
+                      value: item.id
+                    }))
+                  }
+                />
               </Form.Item>
               : null}
             {/** ----------end 选基线------------------------ */}

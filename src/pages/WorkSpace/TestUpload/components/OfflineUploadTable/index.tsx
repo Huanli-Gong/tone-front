@@ -1,6 +1,7 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { message, Space, Popover, Popconfirm, TableColumnsType } from 'antd';
-import { useIntl, FormattedMessage, Access, useAccess } from 'umi';
+import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
+import { message, Space, Popover, Popconfirm } from 'antd';
+import type { TableColumnsType } from "antd"
+import { useIntl, FormattedMessage, Access, useAccess, useRequest, useParams } from 'umi';
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import moment from 'moment';
 import CommonTable from '@/components/Public/CommonTable';
@@ -8,27 +9,35 @@ import { test_type_enum, AccessTootip } from '@/utils/utils';
 import ModalForm from '../ModalForm';
 import { queryTableData, queryDelete } from '../../services';
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
+import { getUserFilter, getCheckboxFilter, getRangeDatePickerFilter } from "@/components/TableFilters"
+import Highlighter from 'react-highlight-words';
+import { queryProjectList, queryProductList } from '@/pages/WorkSpace/Product/services';
+import { queryBaselineList } from '@/pages/WorkSpace/BaselineManage/services';
 
 export default forwardRef((props: any, ref: any) => {
     const { formatMessage } = useIntl();
-    const { ws_id } = props;
-    const [data, setData] = useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
-    const [visible, setVisible] = useState(false);
+    const { ws_id } = useParams() as any;
+    const [data, setData] = React.useState<any>({ data: [], total: 0, page_num: 1, page_size: 20 });
+    const [visible, setVisible] = React.useState(false);
     const access = useAccess();
+    const DEFAULT_QUERY_PARAMS = { page_num: 1, page_size: 20, ws_id }
+    const [listParams, setListParams] = React.useState<any>(DEFAULT_QUERY_PARAMS)
+
+    const { data: projects } = useRequest(() => queryProjectList({ ws_id, page_size: 999 }), { initialData: [] })
+    const { data: products } = useRequest(() => queryProductList({ ws_id, page_size: 999 }), { initialData: [] })
+    const { data: baselines } = useRequest(() => queryBaselineList({ ws_id }), { initialData: [] })
+
     // 1.请求数据
-    const getTableData = async (query: any) => {
+    const getTableData = async (query: any = listParams) => {
         props.loadingCallback({ loading: true })
         try {
-            const res = await queryTableData({ ws_id, ...query }) || {}
-            if (res.code === 200) {
-                const { data = [], total = 0, page_num = 1, page_size = 20 } = res
-                setData({
-                    data, total, page_num, page_size
-                })
+            const { code, msg, total, ...rest } = await queryTableData(query) || {}
+            if (code === 200) {
+                setData({ ...rest, total })
                 // 将total回传给父级组件
                 props.refreshCallback(total)
             } else {
-                message.error(res.msg || formatMessage({ id: 'request.failed' }))
+                message.error(msg || formatMessage({ id: 'request.failed' }))
             }
             props.loadingCallback({ loading: false })
         } catch (e) {
@@ -52,9 +61,8 @@ export default forwardRef((props: any, ref: any) => {
     };
 
     useEffect(() => {
-        const { page_num, page_size } = data
-        getTableData({ page_num, page_size })
-    }, []);
+        getTableData()
+    }, [listParams]);
 
     useImperativeHandle(
         ref,
@@ -73,9 +81,8 @@ export default forwardRef((props: any, ref: any) => {
         setVisible(false);
     };
 
-
-    const onChange = (page: number, pageSize: number) => {
-        getTableData({ page_num: page, page_size: pageSize })
+    const onChange = (page_num: number, page_size: number) => {
+        setListParams((p: any) => ({ ...p, page_num, page_size }))
     }
 
     const Question = ({ content = '' }) => (
@@ -101,6 +108,16 @@ export default forwardRef((props: any, ref: any) => {
         }
     }
 
+    /* 
+    @params
+    product_id    @string
+    project_id      @number[]
+    state           @string[]       ['file', 'running', 'fail','success']
+    test_type       @string[]       ['functional','performance']
+    baseline_id     @number[]
+    uploader        @number
+    */
+
     const columns: TableColumnsType<AnyType> = [
         {
             title: <FormattedMessage id="upload.list.table.product" />,
@@ -108,8 +125,22 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            // onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 150 }, }),
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            ...getCheckboxFilter(
+                listParams,
+                setListParams,
+                products?.map((i: any) => ({ name: i.name, value: i.id })),
+                "product_id"
+            ),
+            render: (_, row) => (
+                <ColumnEllipsisText ellipsis={{ tooltip: row?.product_name }}  >
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[listParams?.product_name || '']}
+                        autoEscape
+                        textToHighlight={row?.product_name}
+                    />
+                </ColumnEllipsisText>
+            )
         },
         {
             title: <FormattedMessage id="upload.list.table.project" />,
@@ -117,19 +148,41 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            // onCell: () => ({ style: { whiteSpace: 'nowrap', minWidth: 100 }, }),
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            ...getCheckboxFilter(
+                listParams,
+                setListParams,
+                projects?.map((i: any) => ({ name: i.name, value: i.id })),
+                "project_id"
+            ),
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id="upload.list.table.state" />,
             dataIndex: 'state',
-            // onCell: () => ({ style: { whiteSpace: 'nowrap', maxWidth: 100 }, }),
+            ...getCheckboxFilter(
+                listParams,
+                setListParams,
+                [
+                    { name: "Upload", value: "running" },
+                    { name: "Success", value: "success" },
+                    { name: "Fail", value: "fail" },
+                ],
+                "state"
+            ),
             render: (text: any, record: any) => <StateFlag title={text} content={record.state_desc} />,
         },
         {
             title: <FormattedMessage id="upload.list.table.testType" />,
             dataIndex: 'test_type',
-            // onCell: () => ({ style: { minWidth: 100 } }),
+            ...getCheckboxFilter(
+                listParams,
+                setListParams,
+                test_type_enum.map((item: any) => ({
+                    name: formatMessage({ id: item.value }),
+                    value: item.value
+                })),
+                "test_type"
+            ),
             render: (text: any) => <span>{test_type_enum.filter((item: any) => item.value == text).map((item: any) => formatMessage({ id: item.value }))}</span>,
         },
         {
@@ -138,14 +191,19 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            // onCell: () => ({ style: { minWidth: 100 } }),
-            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+            ...getCheckboxFilter(
+                listParams,
+                setListParams,
+                baselines?.map((i: any) => ({ name: i.name, value: i.id })),
+                "baseline_id"
+            ),
+            render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id="upload.list.table.uploader" />,
             dataIndex: 'uploader',
+            ...getUserFilter(listParams, setListParams, 'uploader'),
             ellipsis: true,
-            // onCell: () => ({ style: { minWidth: 100 } }),
             render: (text: any) => <span>{text || '-'}</span>,
         },
         {
@@ -154,8 +212,18 @@ export default forwardRef((props: any, ref: any) => {
             ellipsis: {
                 showTitle: false
             },
-            // onCell: () => ({ style: { maxWidth: 170 } }),
-            render: (text: any) => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '-'}</span>,
+            ...getRangeDatePickerFilter(
+                [listParams?.start_time, listParams?.end_time],
+                (date: any) => {
+                    console.log(date)
+                    setListParams((p: any) => ({
+                        ...p,
+                        page_num: 1,
+                        ...date
+                    }))
+                }
+            ),
+            render: (text: any) => <span>{text || '-'}</span>,
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
@@ -165,7 +233,6 @@ export default forwardRef((props: any, ref: any) => {
             width: 180,
             fixed: "right",
             key: "operation",
-            // onCell: () => ({ style: { minWidth: 118 } }),
             render: (text: any, record: any) => (
                 <Space>
                     {['file', 'running', 'fail'].includes(record.state) ? (
@@ -219,7 +286,7 @@ export default forwardRef((props: any, ref: any) => {
                 loading={false}
                 columns={columns}
                 name="ws-offline-upload"
-                refreshDeps={[access,]}
+                refreshDeps={[access, listParams, projects, baselines]}
                 total={data.total}
                 page={data.page_num}
                 pageSize={data.page_size}
@@ -227,9 +294,14 @@ export default forwardRef((props: any, ref: any) => {
                 handlePage={onChange}
             />
 
-            <ModalForm ws_id={ws_id} visible={visible} callback={hiddenModalCallback} />
+            <ModalForm
+                visible={visible}
+                callback={hiddenModalCallback}
+                baselines={baselines}
+                products={products}
+                projects={projects}
+            />
         </div>
-
     )
 });
 

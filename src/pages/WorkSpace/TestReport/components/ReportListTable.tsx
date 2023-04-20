@@ -54,10 +54,6 @@ const ReportListTable = (props: any) => {
             requestCodeMessage(code, msg)
         }
     }
-    const styleObj = {
-        container: 180,
-        button_width: 90
-    }
 
     const handleSelectTime = (date: any, dateStrings: any, confirm: any) => {
         const start_time = dateStrings[0]
@@ -80,7 +76,6 @@ const ReportListTable = (props: any) => {
             setPageParam,
             'name',
             formatMessage({ id: 'report.columns.name.placeholder' }),
-            styleObj,
         ),
         render: (_: any, row: any) => {
             return (
@@ -110,7 +105,7 @@ const ReportListTable = (props: any) => {
             ws_id={ws_id}
         />,
         filterIcon: () => <FilterFilled style={{ color: pageParam.project_id ? '#1890ff' : undefined }} />,
-        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
     },
     {
         dataIndex: 'product_version',
@@ -126,14 +121,14 @@ const ReportListTable = (props: any) => {
             ws_id={ws_id}
         />,
         filterIcon: () => <FilterFilled style={{ color: pageParam.product_version ? '#1890ff' : undefined }} />,
-        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
     },
     {
         dataIndex: 'creator',
         width: 150,
         title: <FormattedMessage id="report.columns.creator" />,
         ...getUserFilter(pageParam, setPageParam, 'creator'),
-        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
     },
     {
         dataIndex: 'description',
@@ -142,7 +137,7 @@ const ReportListTable = (props: any) => {
         ellipsis: {
             shwoTitle: false,
         },
-        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+        render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
     },
     {
         dataIndex: 'gmt_modified',
@@ -155,7 +150,7 @@ const ReportListTable = (props: any) => {
                     showTime={{ format: 'HH:mm:ss' }}
                     format="YYYY-MM-DD HH:mm:ss"
                     onChange={_.partial(handleSelectTime, _, _, confirm)}
-                />,
+                />
                 <Divider style={{ marginTop: '10px', marginBottom: '4px' }} />
                 <Button
                     type="text"
@@ -167,7 +162,6 @@ const ReportListTable = (props: any) => {
                 </Button>
             </>
         ),
-
         filterIcon: () => <FilterFilled style={{ color: pageParam.gmt_modified ? '#1890ff' : undefined }} />,
         ellipsis: true,
         render: (record: any) => {
