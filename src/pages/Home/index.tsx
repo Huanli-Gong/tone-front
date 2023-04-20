@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.less'
 import { history, useModel, Access, useAccess, FormattedMessage, useIntl } from 'umi'
@@ -9,7 +11,7 @@ import { ReactComponent as HomeBackground } from '@/assets/svg/home/home_backgro
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
 import { ReactComponent as NPublicIcon } from '@/assets/svg/no_public.svg'
 import LogoEllipsis from '@/components/LogoEllipsis/index'
-import _ from 'lodash'
+import lodash from 'lodash'
 import { queryDocList } from '@/pages/DOC/services'
 import HomePush from './Component/HomePush'
 import AvatarCover from '@/components/AvatarCover'
@@ -87,8 +89,8 @@ export default (): React.ReactNode => {
         tab: formatMessage({ id: 'pages.home.tab.all' }), key: 'all'
     },]
 
-    const [wsData, setWsData]: Array<any> = useState([])
-    const [wsPublic, setWsPublic] = useState<Array<unknown>>([])
+    const [wsData, setWsData]: any = useState([])
+    const [wsPublic, setWsPublic] = useState<any>([])
     const [loading, setLoading] = useState(true)
     const [wsLoading, setWsLoading] = useState(true)
     const { initialState } = useModel('@@initialState');
@@ -98,7 +100,7 @@ export default (): React.ReactNode => {
         page_num: 1,
         scope: access.loginBtn() ? 'history' : 'all'
     })
-    const [helps, setHelps] = useState<Array<any>>([])
+    const [helps, setHelps] = useState<any>([])
     const [topWs, setTopWs] = useState([])
 
     const homePushRef = useRef<any>(null);
@@ -109,7 +111,7 @@ export default (): React.ReactNode => {
         const { code, msg } = data
         if (code === 200) {
             if (parmas.scope === 'public') {
-                setWsPublic(_.get(data, 'data') || [])
+                setWsPublic(lodash.get(data, 'data') || [])
                 return
             }
             setWsData(data || [])
@@ -193,7 +195,7 @@ export default (): React.ReactNode => {
         redirectErrorPage(401)
     }
 
-    const columns: Array<any> = [
+    const columns: any = [
         {
             title: 'show_name',
             dataIndex: 'show_name',
@@ -264,7 +266,7 @@ export default (): React.ReactNode => {
         const aDoms = document.querySelectorAll('.notice_content')
         aDoms.forEach((item: any, index: number) => {
             let str = noticeAll[index]?.brief_content || ''
-            str = _.replace(str, '<p><br></p>', '')
+            str = lodash.replace(str, '<p><br></p>', '')
             item.innerHTML = str
         })
     }, [helps])
@@ -304,6 +306,7 @@ export default (): React.ReactNode => {
                                                 return (
                                                     <div
                                                         className={styles.workspace}
+                                                        // eslint-disable-next-line react/no-array-index-key
                                                         key={number}
                                                         style={{ marginRight: (number + 1) % 3 ? 12 : 0, }}
                                                         onClick={() => enterWorkspace(item)}
@@ -314,7 +317,7 @@ export default (): React.ReactNode => {
                                                                 <div className={styles.right_part}>
                                                                     <b className={styles.ws_name}>{item.show_name}</b>
                                                                     <Space size={3}>
-                                                                        <Avatar size={16} src={item.avatar}></Avatar>
+                                                                        <Avatar size={16} src={item.avatar} />
                                                                         <Typography.Text type="secondary" ellipsis={true}>{item.owner_name} </Typography.Text>
                                                                     </Space>
                                                                     <EllipsisRect text={item.description} wsPublic={wsPublic} />

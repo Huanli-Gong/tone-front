@@ -1,63 +1,62 @@
-import React, { forwardRef, useImperativeHandle , useState , useCallback } from 'react'
-import { Drawer , Button , Input } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { forwardRef, useImperativeHandle, useState, useCallback } from 'react'
+import { Drawer, Button, Input } from 'antd'
+import { FormattedMessage } from 'umi'
 
 //快速修改说明
 export default forwardRef(
-    ({ onOk } : any , ref : any ) => {
-        const { formatMessage } = useIntl()
-        const [ val , setVal ] = useState<any>('')
-        const [ visible , setVisible ] = useState( false )
-        const [ data , setData ] = useState<any>({})
+    ({ onOk }: any, ref: any) => {
+        const [val, setVal] = useState<any>('')
+        const [visible, setVisible] = useState(false)
+        const [data, setData] = useState<any>({})
 
-        useImperativeHandle( ref , () => ({
-            show : ( _ : any ) => {
-                setVisible( true )
-                setVal( _.doc )
-                setData( _ )
+        const handleCancle = useCallback(() => {
+            setVal('')
+            setVisible(false)
+            setData({})
+        }, [])
+
+        useImperativeHandle(ref, () => ({
+            show: (_: any) => {
+                setVisible(true)
+                setVal(_.doc)
+                setData(_)
             },
-            hide : handleCancle
+            hide: handleCancle
         }))
 
         const handleOk = () => {
             onOk({
                 ...data,
-                doc : val
+                doc: val
             })
         }
 
-        const handleCancle = useCallback(() => {
-            setVal( '' )
-            setVisible( false )
-            setData({})
-        },[])
-
-        const handleChange = useCallback(({ target } : any ) => setVal( target.value ) , [])
+        const handleChange = useCallback(({ target }: any) => setVal(target.value), [])
 
         return (
-            <Drawer 
-                maskClosable={ false }
-                keyboard={ false }
-                width={ 376 }
-                title={<FormattedMessage id="TestSuite.description.details"/>}
-                onClose={ handleCancle }
-                visible={ visible }
+            <Drawer
+                maskClosable={false}
+                keyboard={false}
+                width={376}
+                title={<FormattedMessage id="TestSuite.description.details" />}
+                onClose={handleCancle}
+                visible={visible}
                 footer={
-                    <div style={{textAlign: 'right'}} >
-                        <Button onClick={ handleCancle } style={{ marginRight: 8 }}>
-                            <FormattedMessage id="operation.cancel"/>
+                    <div style={{ textAlign: 'right' }} >
+                        <Button onClick={handleCancle} style={{ marginRight: 8 }}>
+                            <FormattedMessage id="operation.cancel" />
                         </Button>
-                        <Button onClick={ handleOk } type="primary" htmlType="submit" >
-                            <FormattedMessage id="operation.ok"/>
+                        <Button onClick={handleOk} type="primary" htmlType="submit" >
+                            <FormattedMessage id="operation.ok" />
                         </Button>
                     </div>
                 }
             >
-                <Input.TextArea 
-                    style={{ height: '100%' }} 
-                    rows={ 6 } 
-                    value={ val } 
-                    onChange={ handleChange } 
+                <Input.TextArea
+                    style={{ height: '100%' }}
+                    rows={6}
+                    value={val}
+                    onChange={handleChange}
                 />
             </Drawer>
         )

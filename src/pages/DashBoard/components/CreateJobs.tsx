@@ -1,19 +1,18 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { queryChartData } from '../services';
-import { message } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import * as antv from '@antv/g2';
 import { Container, Title } from './styled'
 
-import { gblen , gblenStr, requestCodeMessage } from '@/utils/utils'
+import { gblen, gblenStr, requestCodeMessage } from '@/utils/utils'
 const { Chart } = antv
-const CreateJobs = (props: any) => {
+const CreateJobs = () => {
     const myChart: any = useRef()
     const DEFAULT_CHART_TYPE = 'ws_create_job'
 
     const getChartData = async () => {
         const { data, code, msg } = await queryChartData({ chart_type: DEFAULT_CHART_TYPE })
-        if (code !== 200) return requestCodeMessage( code , msg )
+        if (code !== 200) return requestCodeMessage(code, msg)
 
         const chart = new Chart({
             container: myChart.current,
@@ -24,7 +23,7 @@ const CreateJobs = (props: any) => {
         chart.interval().position('show_name*count').size(18);
         chart.scale('show_name', {
             nice: true,
-            type : 'cat'
+            type: 'cat'
         });
         chart.axis('show_name', {
             label: {
@@ -49,7 +48,7 @@ const CreateJobs = (props: any) => {
 
     return (
         <Container >
-            <Title><FormattedMessage id="sys.dashboard.create.jobs"/></Title>
+            <Title><FormattedMessage id="sys.dashboard.create.jobs" /></Title>
             <div style={{ height: 'calc(100% - 25px - 8px)' }} ref={myChart} />
         </Container>
     )

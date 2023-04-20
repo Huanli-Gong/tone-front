@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import { Row, Button, Typography } from 'antd'
 import styled from 'styled-components'
@@ -59,16 +60,16 @@ const Docs: React.FC<IProps> = ({ onChange }) => {
         return data
     }
 
+    const setDocData = (ct: DocItem) => {
+        setCurrent({ ...ct })
+        onChange({ ...ct })
+    }
+
     useEffect(() => {
         if (docs.length) {
             setDocData(doc_id ? docs.filter((i: DocItem) => i.id === +doc_id)[0] : docs[0])
         }
     }, [doc_id, docs])
-
-    const setDocData = (ct: DocItem) => {
-        setCurrent({ ...ct })
-        onChange({ ...ct })
-    }
 
     useEffect(() => {
         getDocs()

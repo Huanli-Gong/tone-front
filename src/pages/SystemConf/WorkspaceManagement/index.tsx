@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useEffect, useState, useRef } from 'react';
 import { Tabs, Input, Button, Space } from 'antd';
 import { history, useIntl, FormattedMessage } from 'umi'
 import WorkspaceTable from './components/WorkspaceTable';
 import { quantity } from './service';
-import { Count } from './data';
+import type { Count } from './data';
 import styles from '@/pages/SystemConf/MenuLayout/style.less'
 import { TabCard } from '@/components/UpgradeUI';
 
 const { TabPane } = Tabs;
 const { Search } = Input;
 
-const WorkspaceManagement: React.FC<{}> = () => {
+const WorkspaceManagement: React.FC = () => {
 	const { formatMessage } = useIntl()
 	const [index, setIndex] = useState<string>('1');
 	const all = useRef<any>(null)
@@ -47,12 +48,12 @@ const WorkspaceManagement: React.FC<{}> = () => {
 
 	const operations = <Space>
 		<Search
-			placeholder={formatMessage({id: 'workspace.ws.search'}) }
+			placeholder={formatMessage({ id: 'workspace.ws.search' })}
 			onSearch={onSearch}
 			style={{ width: 200 }}
 		/>
 		<Button type="primary" onClick={() => history.push('/workspace/create')}>
-			<FormattedMessage id="workspace.ws.new"/>
+			<FormattedMessage id="workspace.ws.new" />
 		</Button>
 	</Space>
 
@@ -64,16 +65,16 @@ const WorkspaceManagement: React.FC<{}> = () => {
 					onChange={handleTab}
 					className={styles.tab_style}
 				>
-					<TabPane tab={`${formatMessage({id: 'workspace.all'})} ${num.total_count}`} key="1" />
-					<TabPane tab={`${formatMessage({id: 'workspace.public'})} ${num.public_count}`} key="2" />
-					<TabPane tab={`${formatMessage({id: 'workspace.private'})} ${num.un_public_count}`} key="3" />
+					<TabPane tab={`${formatMessage({ id: 'workspace.all' })} ${num.total_count}`} key="1" />
+					<TabPane tab={`${formatMessage({ id: 'workspace.public' })} ${num.public_count}`} key="2" />
+					<TabPane tab={`${formatMessage({ id: 'workspace.private' })} ${num.un_public_count}`} key="3" />
 				</Tabs>
 			}
 			extra={operations}
 		>
-			{index === '1' && <WorkspaceTable tab={ index } onRef={all} top />}
-			{index === '2' && <WorkspaceTable tab={ index } onRef={overt} is_public={1} />}
-			{index === '3' && <WorkspaceTable tab={ index } onRef={secret} is_public={0} />}
+			{index === '1' && <WorkspaceTable tab={index} onRef={all} top />}
+			{index === '2' && <WorkspaceTable tab={index} onRef={overt} is_public={1} />}
+			{index === '3' && <WorkspaceTable tab={index} onRef={secret} is_public={0} />}
 		</TabCard>
 	);
 };
