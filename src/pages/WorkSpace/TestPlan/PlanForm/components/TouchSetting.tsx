@@ -1,10 +1,10 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
 import styles from './index.less'
 import { useIntl, FormattedMessage } from 'umi'
 import { Form, Input, Radio, Switch } from 'antd'
 import { checkCronExpression } from '@/pages/WorkSpace/TestPlan/services'
 import RuleQusetionContent from './RuleQusetionContent'
-import cls from "classnames"
 
 const TouchSetting = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
@@ -52,7 +52,7 @@ const TouchSetting = (props: any, ref: any) => {
                 {
                     tigger &&
                     <>
-                        <Form.Item label={<FormattedMessage id="plan.trigger.rule" />}>
+                        <Form.Item label={<FormattedMessage id="plan.trigger.rule" />} required>
                             <div style={{ position: 'relative' }}>
                                 <Form.Item
                                     name="cron_info"
@@ -60,12 +60,13 @@ const TouchSetting = (props: any, ref: any) => {
                                     rules={[
                                         () => ({
                                             async validator(rule, value) {
+                                                setExpression([])
+                                                if (!value) return Promise.reject(formatMessage({ id: "plan.cron_info.empty" }))
                                                 const { code, data = [] } = await checkCronExpression({ cron_express: value }) || {}
                                                 if (code === 200) {
                                                     setExpression(data)
                                                     return Promise.resolve()
                                                 }
-                                                setExpression([])
                                                 return Promise.reject(formatMessage({ id: 'plan.cron_info.reject' }))
                                             }
                                         }),

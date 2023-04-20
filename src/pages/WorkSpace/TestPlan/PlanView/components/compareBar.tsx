@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useRef } from 'react';
 import { Space, Button, } from 'antd';
 import { history, useParams, FormattedMessage } from 'umi'
-import _ from 'lodash'
 import styles from './compareBar.less'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { RightOutlined } from '@ant-design/icons'
@@ -122,9 +122,9 @@ export default (props: any) => {
                                 const left = getLeftVal(index)
                                 return (
                                     <li
+                                        key={item.id}
                                         style={{ borderRight: allGroup.length > 1 && index !== allGroup.length - 1 ? '1px dashed rgba(151, 151, 151, 0.4)' : 'none', position: 'absolute', left: `${left}px` }}>
                                         <div className={styles.job_group_title}>{`Group${index + 1}(Job Num:${item.job_total && item.job_total.length || 0})`}</div>
-
                                     </li>
                                 )
                             })

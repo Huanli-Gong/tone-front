@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react'
 import { Collapse, Space, Row, Empty, Spin } from 'antd'
 import { RenderDataRow } from './'
 import { CaretRightOutlined } from '@ant-design/icons'
@@ -10,7 +11,7 @@ import { requestCodeMessage } from '@/utils/utils'
 const ViewCollapse = (props: any) => {
     const { ws_id } = props
 
-    const [expandRow, setExpandRow] = useState<Array<number>>([])
+    const [expandRow, setExpandRow] = useState<any>([])
     const [dataSource, setDataSource] = useState({ data: [], total: 1 })
     // const [pageParam, setPageParam] = useState({ ws_id }) //, page_num : 1 , page_size : 10 
 
@@ -29,7 +30,7 @@ const ViewCollapse = (props: any) => {
     useEffect(() => {
         queryPlanViewListData()
     }, [])
-    
+
     return (
         <Spin spinning={loading}>
             <Space direction="vertical" style={{ width: '100%', paddingLeft: 20, paddingRight: 20 }}>
@@ -45,7 +46,7 @@ const ViewCollapse = (props: any) => {
                                             const temp = expandRow.concat([i.id])
                                             setExpandRow(temp)
                                         } else if (!isActive && expandRow.indexOf(i.id) >= 0) {
-                                            const temp = expandRow.filter((item) => item !== i.id)
+                                            const temp = expandRow.filter((item: any) => item !== i.id)
                                             setExpandRow(temp)
                                         }
                                         return <CaretRightOutlined rotate={isActive ? 90 : 0} />
@@ -65,7 +66,7 @@ const ViewCollapse = (props: any) => {
                                     }
                                     key={i.id}
                                 >
-                                    <ViewTable ws_id={ws_id} plan_id={i.id} callBackViewTotal={queryPlanViewListData}/>
+                                    <ViewTable ws_id={ws_id} plan_id={i.id} callBackViewTotal={queryPlanViewListData} />
                                 </Collapse.Panel>
                             </Collapse>
                         )) :
