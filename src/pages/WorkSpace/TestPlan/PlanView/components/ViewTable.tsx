@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { Space, Popconfirm, message, Spin, Tooltip, Typography, TableColumnProps } from 'antd'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Space, Popconfirm, message, Spin, Tooltip, } from 'antd'
+import type { TableColumnProps } from "antd"
 import styled from 'styled-components'
 import { StateTagRender, RenderCountTags } from './'
 import { useRequest, history, Access, useAccess, useIntl, FormattedMessage } from 'umi'
@@ -8,7 +10,6 @@ import CommonPagination from '@/components/CommonPagination'
 import { getSearchFilter, getCheckboxFilter } from '@/components/TableFilters'
 import CompareBar from './compareBar'
 import styles from './compareBar.less'
-import _ from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils'
 import ViewReport from '@/pages/WorkSpace/TestResult/CompareBar/ViewReport'
 import { ResizeHooksTable } from '@/utils/table.hooks'

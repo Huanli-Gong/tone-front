@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Drawer, Space, Button, Form, Input, Select, Radio, Spin, message, Divider } from 'antd'
 import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { useParams, useIntl, FormattedMessage } from 'umi'
@@ -5,7 +6,6 @@ import { queryBaselineList, perfJoinBaseline, perfJoinBaselineBatch, createFuncs
 import styles from './index.less'
 import { PlusOutlined } from '@ant-design/icons'
 import BaselineCreate from './BaselineCreate'
-import _ from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { createBaseline } from '@/pages/WorkSpace/BaselineManage/services'
 import { requestCodeMessage } from '@/utils/utils'
@@ -17,7 +17,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     const [form] = Form.useForm()
     const [visible, setVisible] = useState(false)
-    const [data, setData] = useState<any>({ suite_list: [], suite_data: [] })
+    const [source, setSource] = useState<any>({ suite_list: [], suite_data: [] })
     const [padding, setPadding] = useState(false)
     const [loading, setLoading] = useState(false)
     const [baselineFuncList, setBaselineFuncList] = useState([])
@@ -28,6 +28,20 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
     const baselineCreateModal: any = useRef(null)
     const funcsBaselineSelect: any = useRef(null)
     const perBaselineSelect: any = useRef(null)
+
+    const getBaselinePerfData = async () => {
+        setLoading(true)
+        const { data, code } = await queryBaselineList({
+            ws_id,
+            test_type,
+            // server_provider  不区分环境
+        })
+        if (code === 200) {
+            const list = data.map((item: any) => ({ label: item.name, key: item.id, value: item.id }))
+            test_type === 'functional' ? setBaselineFuncList(list) : setBaselinePerfList(list)
+            setLoading(false)
+        }
+    }
 
     const requestJoinBaseline = async (name: any) => {
         if (!name) return
@@ -51,20 +65,6 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         return data
     }
 
-    const getBaselinePerfData = async () => {
-        setLoading(true)
-        const { data, code } = await queryBaselineList({
-            ws_id,
-            test_type,
-            // server_provider  不区分环境
-        })
-        if (code === 200) {
-            const list = data.map((item: any) => ({ label: item.name, key: item.id, value: item.id }))
-            test_type === 'functional' ? setBaselineFuncList(list) : setBaselinePerfList(list)
-            setLoading(false)
-        }
-    }
-
     useImperativeHandle(
         ref, () => ({
             show: (_: any = false) => {
@@ -72,7 +72,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 getBaselinePerfData()
                 if (_) {
                     console.log(_)
-                    setData(_)
+                    setSource(_)
                 }
                 setPerfChangeVal(undefined)
                 setFuncsSelectVal(undefined)
@@ -84,7 +84,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
         setVisible(false)
         form.resetFields()
         setPadding(false)
-        setData({})
+        setSource({})
         setFuncsSelectVal(undefined)
     }
 
@@ -106,9 +106,9 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             .then(
                 async (values: any) => {
                     const baseParams = { ...values, ws_id, test_type }
-                    if (data.suite_list || data.suite_data) {
-                        if (data.suite_list.length || data.suite_data.length) {
-                            const { suite_list, suite_data, job_id } = data
+                    if (source?.suite_list || source?.suite_data) {
+                        if (source?.suite_list.length || source?.suite_data.length) {
+                            const { suite_list, suite_data, job_id } = source
                             const { code, msg } = await perfJoinBaselineBatch({ ...baseParams, suite_list, suite_data, job_id })
                             defaultOption(code, msg)
                             return
@@ -116,12 +116,12 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     }
 
                     if (test_type === 'functional') {
-                        const { suite_id: test_suite_id, test_case_id, job_id: test_job_id, id } = data
+                        const { suite_id: test_suite_id, test_case_id, job_id: test_job_id, id } = source
                         const { code, msg } = await createFuncsDetail({ ...baseParams, test_job_id, test_suite_id, test_case_id, result_id: id })
                         defaultOption(code, msg)
                     }
                     else {
-                        const { suite_id, test_case_id: case_id, job_id } = data
+                        const { suite_id, test_case_id: case_id, job_id } = source
                         const { code, msg } = case_id ? await perfJoinBaseline({ ...baseParams, job_id, suite_id, case_id }) :
                             await perfJoinBaselineBatch({ ...baseParams, job_id, suite_list: [suite_id] })
                         defaultOption(code, msg)
@@ -171,7 +171,7 @@ const JoinBaseline: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
 
     const renderSelects = (list: any[]) => (
         list.map(
-            (item: any, index: number) => (
+            (item: any) => (
                 <Select.Option key={item.key} value={item.value} label={item.label}>
                     <Highlighter
                         highlightStyle={{ color: '#1890FF', padding: 0, background: 'unset' }}

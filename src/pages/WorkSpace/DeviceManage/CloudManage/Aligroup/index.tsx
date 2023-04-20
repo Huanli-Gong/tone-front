@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useRef, useCallback, forwardRef } from 'react';
 import { Button, Space, Tag, Row, Form, message, Table, Modal, Tabs } from 'antd';
 import styles from './style.less';
@@ -59,7 +61,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
     const outTable = useRef<any>(null)
     const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState<any>({});
+    const [source, setSource] = useState<any>({});
     const [params, setParams] = useState<AligroupParams>(DEFAULT_PARAM)
     const [tagFlag, setTagFlag] = useState({ list: [], isQuery: '' })
     const [outParam, setOutParam] = useState<any>({})
@@ -79,13 +81,13 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         []
     )
 
-    const getList = async (params: any = {}) => {
+    const getList = async ($params: any = {}) => {
         setLoading(true)
-        const data: any = await querysCluster({ ...params })
-        data && setData(data)
+        const data: any = await querysCluster({ ...$params })
+        data && setSource(data)
         setLoading(false)
     };
-    const totalCurrent = useStateRef(data)
+    const totalCurrent = useStateRef(source)
     const newGroup = () => {
         setOutParam({})
         setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
@@ -127,7 +129,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
         }
     }
 
-    const onExpand = async (_: boolean, record: any) => {
+    const handleExpand = async (_: boolean, record: any) => {
         const currentId = record.id + ''
         const expandKeyList = _ ? expandKey.concat([currentId]) : expandKey.filter((item) => item !== currentId)
         setExpandKey(expandKeyList)
@@ -292,7 +294,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                 size={'small'}
                 loading={loading}
                 columns={columns}
-                dataSource={data.data}
+                dataSource={source.data}
                 rowKey={record => record.id + ''}
                 pagination={false}
                 expandable={{
@@ -307,7 +309,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
                         />
                     ),
                     onExpand: (_, record) => {
-                        onExpand(_, record)
+                        handleExpand(_, record)
                     },
                     expandedRowKeys: expandKey,
                     expandIcon: ({ expanded, onExpand, record }) =>
@@ -318,7 +320,7 @@ const Aligroup: React.ForwardRefRenderFunction<any, any> = () => {
 
             <Row justify="space-between" style={{ padding: '16px 20px 0' }} ref={outTable}>
                 <CommonPagination
-                    total={data.total}
+                    total={source.total}
                     pageSize={params.page_size}
                     currentPage={params.page_num}
                     onPageChange={

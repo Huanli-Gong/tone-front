@@ -1,55 +1,40 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin, Tag, message } from 'antd';
 import { isNaN } from 'lodash'
 import { member } from './service';
 import styles from './style.less';
-import { useIntl, FormattedMessage  } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 
-const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_mode}) => {
+const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm }) => {
 	const { formatMessage } = useIntl()
-	const [tagsPagination, setTagsPagination] =  useState({ total: 0, page_num: 1, page_size: 10 });
-	const [isEnd,setIsEnd] = useState(false)
+	const [tagsPagination, setTagsPagination] = useState({ total: 0, page_num: 1, page_size: 10 });
+	const [isEnd, setIsEnd] = useState(false)
 	const [tags, setTags] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>([])
 	const [fetching, setFetching] = useState<boolean>(true)
 	const { Option } = Select;
-	const [focus,setFous] = useState<boolean>(false)
-	useEffect(() => {
-		handleSearch()
-	}, []);
-	
-	const handleSearch = async (word?: string) => {
-		const param = word && word.replace(/\s*/g, "")
-		if (keyword && keyword == param) return
-		setKeyword(param)
-		requestData({ name: param, page_num: 1, page_size: 10, ws_id }, 'reset')
-	}
-  const handlePopupScroll = (e: any) => {
-    const { page_num, page_size, total, } = tagsPagination
-    const { clientHeight, scrollHeight, scrollTop} = e.target
-    if ( clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total/page_size) > page_num && !isEnd) {
-      requestData({ name: keyword, page_num: page_num + 1, page_size, ws_id }, 'concat')
-    }
-  }
-	const requestData = async (query: any, option="concat") => {
+	const [focus, setFous] = useState<boolean>(false)
+
+	const requestData = async (query: any, option = "concat") => {
 		setFetching(true)
 		try {
-			let res = await member(query)
+			const res = await member(query)
 			if (res.code === 200) {
 				// 分页数据合并。
 				if (option === 'concat') {
 					const data = tags.concat(res.data || [])
 					setTags(data || [])
 					setTagsPagination(res);
-					if(data.length === res.total) setIsEnd(true)
+					if (data.length === res.total) setIsEnd(true)
 				} else if (option === 'reset') {
 					// 新的数据。
 					setTags(res.data || [])
 					setTagsPagination(res);
 				}
 			} else {
-				message.error(res.msg || formatMessage({id: 'request.failed'})  );
+				message.error(res.msg || formatMessage({ id: 'request.failed' }));
 			}
 			setFetching(false)
 		} catch (err) {
@@ -57,6 +42,23 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 		}
 	}
 
+	const handleSearch = async (word?: string) => {
+		const param = word && word.replace(/\s*/g, "")
+		if (keyword && keyword == param) return
+		setKeyword(param)
+		requestData({ name: param, page_num: 1, page_size: 10, ws_id }, 'reset')
+	}
+	const handlePopupScroll = (e: any) => {
+		const { page_num, page_size, total, } = tagsPagination
+		const { clientHeight, scrollHeight, scrollTop } = e.target
+		if (clientHeight + scrollTop + 1 >= scrollHeight && !isNaN(page_num) && Math.ceil(total / page_size) > page_num && !isEnd) {
+			requestData({ name: keyword, page_num: page_num + 1, page_size, ws_id }, 'concat')
+		}
+	}
+
+	useEffect(() => {
+		handleSearch()
+	}, []);
 
 	const tagRender = (props: any) => {
 		const { label, closable, onClose } = props;
@@ -70,12 +72,11 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 		<div style={{ padding: 8, width: 200 }}>
 			<div className={styles.cover}
 				onClick={() => {
-					if(!focus){
+					if (!focus) {
 						confirm?.()
 					}
 				}}
-			>
-			</div>
+			/>
 			<Select
 				mode="multiple"
 				allowClear
@@ -83,16 +84,16 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 				filterOption={false}
 				showSearch
 				onSearch={handleSearch}
-				onPopupScroll={fetching? ()=> {}: handlePopupScroll} // 防抖
+				onPopupScroll={fetching ? () => { } : handlePopupScroll} // 防抖
 				style={{ width: '100%' }}
 				onChange={(value: any) => setVal(value)}
 				showArrow={false}
 				autoFocus={true}
-				onFocus={()=>{setFous(true)}}
-				onBlur={()=>{
-					setTimeout(function(){
+				onFocus={() => { setFous(true) }}
+				onBlur={() => {
+					setTimeout(function () {
 						setFous(false)
-					},200)
+					}, 200)
 				}}
 				value={val}
 				tagRender={tagRender}
@@ -117,7 +118,7 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 					style={{ width: 75 }}
 				>
 					<FormattedMessage id="operation.search" />
-			  </Button>
+				</Button>
 				<Button
 					type="text"
 					onClick={() => {
@@ -131,7 +132,7 @@ const FilterRadio: React.FC<any> = ({ ws_id, confirm, onConfirm, autoFocus,run_m
 					style={{ width: 75, border: 'none' }}
 				>
 					<FormattedMessage id="operation.reset" />
-			</Button>
+				</Button>
 			</Space>
 		</div>
 	);

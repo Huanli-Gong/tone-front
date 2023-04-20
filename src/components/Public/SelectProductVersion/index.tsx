@@ -1,26 +1,30 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import { queryProductList } from './service';
 import styles from './style.less';
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, ws_id }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, page_size, ws_id }) => {
 	const [project, setProject] = useState<any>([])
 	const [val, setVal] = useState<any>()
 	const [fetching, setFetching] = useState<boolean>(true)
 	const [focus, setFous] = useState<boolean>(false)
 	const { Option } = Select;
-	useEffect(() => {
-		handleSearch()
-	}, []);
+
 	const handleSearch = async () => {
 		setFetching(true)
-		let { data } = await queryProductList({ page_size: page_size || 10, page_num: 1, ws_id })
+		const { data } = await queryProductList({ page_size: page_size || 10, page_num: 1, ws_id })
 		let dataCopy = Array.isArray(data) ? data : []
-		dataCopy = dataCopy.filter(val => val)
+		dataCopy = dataCopy.filter($val => $val)
 		setProject(dataCopy)
 		setFetching(false)
 	}
+
+	useEffect(() => {
+		handleSearch()
+	}, []);
+
 	return (
 		<div style={{ padding: 8 }}>
 			<div className={styles.cover}
@@ -29,8 +33,7 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 						confirm?.()
 					}
 				}}
-			>
-			</div>
+			/>
 			<Select
 				showSearch
 				allowClear

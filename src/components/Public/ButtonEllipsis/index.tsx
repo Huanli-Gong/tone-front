@@ -5,10 +5,6 @@ import { FileTextOutlined } from '@ant-design/icons';
 import CodeViewer from '@/components/CodeViewer';
 
 const ButtonEllipsis: React.FC<any> = ({ title, width = 150, onClick = () => { }, children, isCode = false }) => {
-	useEffect(() => {
-		isEllipsis()
-	}, []);
-
 	const ellipsis = useRef<any>(null)
 	const [show, setShow] = useState<boolean>(false)
 	const isEllipsis = () => {
@@ -16,6 +12,11 @@ const ButtonEllipsis: React.FC<any> = ({ title, width = 150, onClick = () => { }
 		const scrollWidth = ellipsis.current.scrollWidth
 		setShow(clientWidth < scrollWidth)
 	};
+
+	useEffect(() => {
+		isEllipsis()
+	}, []);
+
 	const renderChildren = () => {
 		return (
 			children ? React.cloneElement(children) : title || '-'

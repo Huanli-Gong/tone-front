@@ -3,9 +3,7 @@ import { Tooltip } from "antd"
 import styles from './style.less';
 const ButtonEllipsis: React.FC<any> = ({ title, width = '100%', children, refData, customStyle }) => {
 	const setStyles = customStyle || { width: width }
-	useEffect(() => {
-		isEllipsis()
-	}, [refData]);
+
 	const ellipsis = useRef<any>(null)
 	const [show, setShow] = useState<boolean>(false)
 	const isEllipsis = () => {
@@ -13,6 +11,11 @@ const ButtonEllipsis: React.FC<any> = ({ title, width = '100%', children, refDat
 		const scrollWidth = ellipsis.current.scrollWidth
 		setShow(clientWidth < scrollWidth)
 	};
+
+	useEffect(() => {
+		isEllipsis()
+	}, [refData]);
+
 	const renderChildren = () => {
 		return (
 			children ? React.cloneElement(children) : title || '-'

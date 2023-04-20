@@ -232,7 +232,7 @@ const TestSuiteCreate: React.FC = () => {
 
         let addCaseCount: any = 0
         let hasAdd = record.hasAdd
-        const addCaseList: Array<any> = []
+        const addCaseList: any[] = []
 
         const test_case_list = record.test_case_list.map(
             (item: { isAdd: any, id: any }) => {

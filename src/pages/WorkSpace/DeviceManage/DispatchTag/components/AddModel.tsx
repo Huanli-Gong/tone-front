@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import { Drawer, Button, Form, Input, message } from 'antd'
 import ColorPicker from './ColorPicker';
@@ -6,7 +7,7 @@ import { useParams, useIntl, FormattedMessage } from 'umi'
 
 const nameReg = /^[A-Za-z0-9\._-]{0,32}$/
 
-const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = ({ callback }, ref) => {
+const AddModel: React.ForwardRefRenderFunction<AnyType, { callback: () => void }> = ({ callback }, ref) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
 
@@ -25,12 +26,6 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
             setVisible(true)
         }
     }))
-
-    React.useEffect(() => {
-        () => {
-            handleClose()
-        }
-    }, [])
 
     const handleClose = () => {
         setDataSet({})
@@ -59,7 +54,7 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
                     callback()
                     handleClose()
                 }
-            ).catch(err => {
+            ).catch(() => {
                 setFetching(false)
             })
     }
@@ -71,6 +66,7 @@ const AddModel: React.ForwardRefRenderFunction<{}, { callback: () => void }> = (
             title={dataSet.id ? <FormattedMessage id="device.edit.tag" /> : <FormattedMessage id="device.create.tag" />}
             width={376}
             onClose={handleClose}
+            destroyOnClose
             open={visible}
             bodyStyle={{ paddingBottom: 80 }}
             footer={

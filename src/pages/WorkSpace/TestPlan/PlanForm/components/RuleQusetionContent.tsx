@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from "react";
 import { useIntl } from "umi";
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestResult/Details/components'

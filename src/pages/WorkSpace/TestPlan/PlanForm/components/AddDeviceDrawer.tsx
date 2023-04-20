@@ -1,6 +1,6 @@
-import React, { useState, useImperativeHandle, forwardRef, useMemo } from 'react'
+import { useState, useImperativeHandle, forwardRef, useMemo } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
-import { Drawer, Space, Button, Form, Input, Select } from 'antd'
+import { Drawer, Space, Button, Form, Input } from 'antd'
 import styled from 'styled-components'
 import { checkTestServerIps } from '@/pages/WorkSpace/DeviceManage/GroupManage/services'
 import { AgentSelect } from '@/components/utils'
@@ -27,7 +27,7 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 form.setFieldsValue(data)
             }
         }
-    }), [])
+    }))
 
     const handleClose = () => {
         setVisible(false)
@@ -45,13 +45,13 @@ const TemplateListDrawer = (props: any, ref: any) => {
                 await onOk(values, idx)
                 handleClose()
             })
-            .catch(err => {
+            .catch(() => {
                 setPedding(false)
             })
     }
 
     const title = useMemo(() => {
-        return typeof idx === 'number' ? <FormattedMessage id="plan.edit.machine"/>: <FormattedMessage id="plan.add.machine"/>
+        return typeof idx === 'number' ? <FormattedMessage id="plan.edit.machine" /> : <FormattedMessage id="plan.add.machine" />
     }, [idx])
 
     return (
@@ -81,9 +81,9 @@ const TemplateListDrawer = (props: any, ref: any) => {
                     name="channel_type"
                     label={<FormattedMessage id="plan.channel_type" />}
                     initialValue={BUILD_APP_ENV ? open_agent : self_agent}
-                    rules={[{ required: true, message: formatMessage({id: 'plan.channel_type.message'}) }]}
+                    rules={[{ required: true, message: formatMessage({ id: 'plan.channel_type.message' }) }]}
                 >
-                    <AgentSelect placeholder={formatMessage({id: 'plan.channel_type.placeholder'})} />
+                    <AgentSelect placeholder={formatMessage({ id: 'plan.channel_type.placeholder' })} />
                 </Form.Item>
                 <Form.Item
                     name="machine"
@@ -105,14 +105,14 @@ const TemplateListDrawer = (props: any, ref: any) => {
                         }),
                     ]}
                 >
-                    <Input placeholder={`${formatMessage({id: 'plan.please.enter.IP'})}${!BUILD_APP_ENV ? "/SN" : ""}`} autoComplete="off" />
+                    <Input placeholder={`${formatMessage({ id: 'plan.please.enter.IP' })}${!BUILD_APP_ENV ? "/SN" : ""}`} autoComplete="off" />
                 </Form.Item>
                 <Form.Item
                     name="script"
                     label={<FormattedMessage id="plan.custom.script" />}
-                    rules={[{ required: true, message: formatMessage({id: 'plan.custom.script.cannot.empty'}) }]}
+                    rules={[{ required: true, message: formatMessage({ id: 'plan.custom.script.cannot.empty' }) }]}
                 >
-                    <Input.TextArea rows={4} placeholder={formatMessage({id: 'plan.custom.script'})} />
+                    <Input.TextArea rows={4} placeholder={formatMessage({ id: 'plan.custom.script' })} />
                 </Form.Item>
             </FormWrapper>
         </Drawer>

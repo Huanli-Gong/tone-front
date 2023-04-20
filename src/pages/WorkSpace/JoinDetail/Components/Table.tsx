@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react'
 import { Table, message, Row, Space, Button, Checkbox, Typography, Avatar, Tag, Badge } from 'antd'
 import { useIntl, FormattedMessage } from "umi"
 import { queryWorkspaceApproveList, optWorkspaceApprove } from '@/services/Workspace'
@@ -22,6 +23,25 @@ export default (props: any) => {
         page_size: 20
     })
 
+
+    const initData = async () => {
+        setLoading(true)
+        const { total: pageTotal, data, code, msg } = await queryWorkspaceApproveList({
+            status: props.status,
+            object_id: ws_id,
+            ws_id,
+            action: 'join',
+            ...pagenat
+        })
+
+        if (code === 200) {
+            setDataSource(data)
+            setTotal(pageTotal)
+        }
+        else requestCodeMessage(code, msg)
+        setLoading(false)
+    }
+
     const rowSelection = + status === 0 ? {
         selectedRowKeys,
         onChange: (keys: any[]) => {
@@ -38,7 +58,7 @@ export default (props: any) => {
                     <Typography.Text><FormattedMessage id="join.workspace" /></Typography.Text>
                 </div>
             )
-            default: return (<Space></Space>)
+            default: return (<Space />)
         }
     }
 
@@ -134,24 +154,6 @@ export default (props: any) => {
                 )
             }
         ]
-    }
-
-    const initData = async () => {
-        setLoading(true)
-        const { total: pageTotal, data, code, msg } = await queryWorkspaceApproveList({
-            status: props.status,
-            object_id: ws_id,
-            ws_id,
-            action: 'join',
-            ...pagenat
-        })
-
-        if (code === 200) {
-            setDataSource(data)
-            setTotal(pageTotal)
-        }
-        else requestCodeMessage(code, msg)
-        setLoading(false)
     }
 
     const handleBatchOption = async (action: string) => {

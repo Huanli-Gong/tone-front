@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { Row, Space, Typography, Divider } from 'antd'
 import React from 'react'
@@ -42,6 +43,7 @@ const Outline: React.FC<IProps> = ({ json }) => {
         }, [])
 
     // console.log(result)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const hanldeClick = React.useCallback((node: any) => {
         const { content: $content, attrs } = node
         const { text } = $content[0]

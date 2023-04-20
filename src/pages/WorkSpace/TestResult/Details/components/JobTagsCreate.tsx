@@ -1,6 +1,6 @@
 import { Modal, Spin, Form, Input, message } from 'antd'
-import React, { useState, useImperativeHandle, forwardRef } from 'react'
-import { useIntl, FormattedMessage  } from 'umi'
+import { useState, useImperativeHandle, forwardRef } from 'react'
+import { useIntl, FormattedMessage } from 'umi'
 import ColorPicker from '../../../TagManage/components/ColorPicker';
 import { addTag } from '../service'
 
@@ -16,12 +16,12 @@ export default forwardRef(
             () => ({
                 show: () => {
                     setVisible(true)
-                    setMsg(formatMessage({ id: "please.enter.message"}))
+                    setMsg(formatMessage({ id: "please.enter.message" }))
                     form.setFieldsValue({ tag_color: 'rgb(255,157,78,1)' })
                 }
             }),
         )
-     
+
 
         const handleCancel = () => {
             form.resetFields()
@@ -37,19 +37,19 @@ export default forwardRef(
             setMsg(undefined)
             form.validateFields().then(
                 async (val: any) => {
-                    const { code, msg } = await addTag({ ws_id: props.ws_id, ...val })
+                    const { code, msg: $msg } = await addTag({ ws_id: props.ws_id, ...val })
                     if (code === 200) {
                         props.onOk()
                         handleCancel()
-                        message.success(formatMessage({id: 'operation.success'}) )
+                        message.success(formatMessage({ id: 'operation.success' }))
                     } else if (code === 1302) {
-                        setMsg(formatMessage({id: 'ws.result.details.tag_name.already.exists'}) )
+                        setMsg(formatMessage({ id: 'ws.result.details.tag_name.already.exists' }))
                     } else {
                         setPadding(false)
-                        message.error(msg)
+                        message.error($msg)
                     }
                 })
-                .catch(err => {
+                .catch(() => {
                     setPadding(false)
                 })
         }
@@ -69,7 +69,7 @@ export default forwardRef(
                     <Form
                         form={form}
                         layout="vertical"
-                        /*hideRequiredMark*/
+                    /*hideRequiredMark*/
                     >
                         <Form.Item
                             name="tag_color"
@@ -80,12 +80,12 @@ export default forwardRef(
                         <Form.Item
                             name="name"
                             label={<FormattedMessage id="ws.result.details.tag_name" />}
-                            help = {msg}
+                            help={msg}
                             rules={
                                 [{
                                     required: true,
                                     max: 32,
-                                    message: formatMessage({ id: "please.enter.message"}),
+                                    message: formatMessage({ id: "please.enter.message" }),
                                     pattern: /^[A-Za-z0-9\._-]*$/g
                                 }]
                             }
@@ -96,7 +96,7 @@ export default forwardRef(
                             name="description"
                             label={<FormattedMessage id="ws.result.details.test_summary" />}
                         >
-                            <Input.TextArea rows={4} placeholder={formatMessage({ id: "ws.result.details.please.enter.remarks"}) } />
+                            <Input.TextArea rows={4} placeholder={formatMessage({ id: "ws.result.details.please.enter.remarks" })} />
                         </Form.Item>
                     </Form>
                 </Spin>

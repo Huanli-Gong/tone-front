@@ -1,6 +1,6 @@
-import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
+import { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { Drawer, Typography, Row, Col, Layout, Spin, Tag } from 'antd'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import styles from './index.less'
 import DeployModal from '../Standalone/Components/DeployModal'
 import { queryTestServerDetail, queryChannelState } from '../services'
@@ -9,7 +9,6 @@ import { useParams } from "umi"
 
 const ViewDetailDrawer = forwardRef(
     (props, ref) => {
-        const { formatMessage } = useIntl()
         const { ws_id } = useParams() as any
         const [details, setDetails] = useState<any>()
         const [channelState, setChannelState] = useState(false)
@@ -18,13 +17,6 @@ const ViewDetailDrawer = forwardRef(
         // 部署Agent对话框
         const deployModal: any = useRef(null)
         // const deployServerRef: any = useRef(null)
-
-        useImperativeHandle(ref, () => ({
-            show: (_: any) => {
-                setVisible(true)
-                initDetails(_)
-            }
-        }))
 
         const initDetails = async (id: number) => {
             setLoading(true)
@@ -40,6 +32,13 @@ const ViewDetailDrawer = forwardRef(
             setLoading(false)
         }
 
+        useImperativeHandle(ref, () => ({
+            show: (_: any) => {
+                setVisible(true)
+                initDetails(_)
+            }
+        }))
+
         const handleOnClose = () => {
             setVisible(false)
             setDetails(null)
@@ -50,7 +49,7 @@ const ViewDetailDrawer = forwardRef(
             deployModal.current?.show({ ...details, detailData: [details?.ip] });
         }
         // 部署回调
-        const deployCallback = (info: any) => {
+        const deployCallback = () => {
             // case1. 部署结果信息
             // const { success_servers = [], fail_servers = [] } = info;
             // case2. 刷新数据
@@ -63,7 +62,7 @@ const ViewDetailDrawer = forwardRef(
                 forceRender={true}
                 title={<FormattedMessage id="device.details" />}
                 width="510"
-                visible={visible}
+                open={visible}
                 onClose={handleOnClose}
             >
                 <Spin spinning={loading}>

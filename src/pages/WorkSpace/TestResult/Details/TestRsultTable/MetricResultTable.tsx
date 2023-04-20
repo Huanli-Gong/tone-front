@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect } from 'react'
 import { Tooltip } from 'antd'
 import { QusetionIconTootip, ResultTdPopver, compareResultFontColor, compareResultSpan } from '../components'
 import { queryCaseResultPerformance } from '../service'
@@ -58,7 +59,7 @@ export default ({ test_case_id, suite_id, state: compare_result, refreshId, setR
             dataIndex: 'test_value',
             ellipsis: true,
             width: 120,
-            render: (_: any, row: any, index: number) => (
+            render: (_: any, row: any) => (
                 <ResultTdPopver
                     {...row}
                     title={formatMessage({ id: 'ws.result.details.compared.results' })}

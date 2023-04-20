@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Radio, Button, Divider, Space } from 'antd';
 import styles from './style.less';
 import { switchUserRole2 } from '@/utils/utils';
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 
 const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm, roleType }) => {
 	// console.log(list,confirm, onConfirm, roleType)

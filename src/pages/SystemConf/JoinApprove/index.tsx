@@ -9,7 +9,7 @@ import { TabCard } from '@/components/UpgradeUI';
 
 const { TabPane } = Tabs;
 
-const UserManagement: React.FC<{}> = () => {
+const UserManagement: React.FC = () => {
 	const approve = useRef<any>(null)
 	const record = useRef<any>(null)
 	const [num, setNum] = useState<Count>({

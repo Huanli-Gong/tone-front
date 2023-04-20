@@ -19,7 +19,7 @@ import { useClientSize } from '@/utils/hooks';
 export default (props: any) => {
   const { ws, test_type } = props.location.query
   // 右边数据
-  const [rightDataSource, setRightDataSource] = useState<Array<any>>([])
+  const [rightDataSource, setRightDataSource] = useState<any[]>([])
   const [queryParams, setQueryParams] = useState({ domain: '', name: '' })
   // 左边数据
   const [leftDataSource, setLeftDataSource] = useState<any>([])

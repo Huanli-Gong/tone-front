@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from "react";
 import {
     MachineGroup,
@@ -92,7 +93,7 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                             </MachineGroupL>
                                             {
                                                 new Array(group).fill("").map((item: any, index: number) => {
-                                                    const title = envData[index]?.server_info?.[idx]?.[field] || "-"
+                                                    const $title = envData[index]?.server_info?.[idx]?.[field] || "-"
                                                     return (
                                                         <MachineGroupR
                                                             gLen={group}
@@ -104,14 +105,14 @@ export const TestEnv: React.FC<EnvType> = ({ envData, environmentResult, group }
                                                                         title: (
                                                                             <span
                                                                                 dangerouslySetInnerHTML={{
-                                                                                    __html: title.replace(/\n/g, "<br />")
+                                                                                    __html: $title.replace(/\n/g, "<br />")
                                                                                 }}
                                                                             />
                                                                         )
                                                                     }
                                                                 }}
                                                             >
-                                                                {title}
+                                                                {$title}
                                                             </Typography.Text>
                                                         </MachineGroupR>
                                                     )

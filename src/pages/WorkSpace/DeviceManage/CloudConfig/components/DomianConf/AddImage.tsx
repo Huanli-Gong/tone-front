@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Drawer, Space, Button, Form, Input, message, Select } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { useIntl, FormattedMessage, useParams } from 'umi'
 import { createCloudImage, updateCloudImage, queryCloudAk, queryRegionCloudAk } from '../../service'
 
@@ -24,27 +25,6 @@ export default forwardRef(
         const [regionList, setRegionList] = useState<any>([])
         const [providerType, setProviderType] = useState<any>() // 编辑的数据
 
-        useImperativeHandle(
-            ref,
-            () => ({
-                show: (title: string = "new", data: any = {}) => {
-                    let type = ''
-                    if (data && data.provider) {
-                        type = data.provider
-                        getAkList({ ...defaultParmasAk, provider: type })
-                    }
-                    const { ak_id } = data
-                    // console.log('ak_id:', ak_id);
-                    ak_id && getRegionList({ ak_id });
-                    setVisible(true)
-                    setTitle(title)
-                    setEditer(data)
-                    setProviderType(type)
-                    form.setFieldsValue(data) // 动态改变表单值
-                }
-            })
-        )
-
         const getAkList = async (params: any) => {
             const { data } = await queryCloudAk(params)
             setAkData(data || [])
@@ -55,6 +35,27 @@ export default forwardRef(
             setRegionList(data || [])
         };
 
+        useImperativeHandle(
+            ref,
+            () => ({
+                show: ($title: string = "new", data: any = {}) => {
+                    let type = ''
+                    if (data && data.provider) {
+                        type = data.provider
+                        getAkList({ ...defaultParmasAk, provider: type })
+                    }
+                    const { ak_id } = data
+                    // console.log('ak_id:', ak_id);
+                    ak_id && getRegionList({ ak_id });
+                    setVisible(true)
+                    setTitle($title)
+                    setEditer(data)
+                    setProviderType(type)
+                    form.setFieldsValue(data) // 动态改变表单值
+                }
+            })
+        )
+
         const handleClose = () => {
             form.resetFields() // 重置一组字段到 initialValues
             setPadding(false)
@@ -62,7 +63,7 @@ export default forwardRef(
             setEditer({})
         }
 
-        const defaultOption = (code: number, msg: string, type: string) => {
+        const defaultOption = (code: number, msg: string) => {
             setPadding(false)
             if (code === 200) {
                 props.onOk()
@@ -96,11 +97,11 @@ export default forwardRef(
                     values.ak_id = akId
                     if (title === 'new') {
                         const { code, msg } = await createCloudImage({ ...values, ws_id })
-                        defaultOption(code, msg, 'new')
+                        defaultOption(code, msg)
                     }
                     else {
                         const { code, msg } = await updateCloudImage({ id: editer.id, ...values, ws_id })
-                        defaultOption(code, msg, 'edit')
+                        defaultOption(code, msg)
                     }
                 })
                 .catch(err => {

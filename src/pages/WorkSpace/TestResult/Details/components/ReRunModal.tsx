@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 
 import { Modal, Row, Col, Form, Checkbox } from 'antd'
@@ -5,8 +6,6 @@ import styled from 'styled-components'
 import { useParams, FormattedMessage } from 'umi'
 import { stringify } from 'querystring'
 import { targetJump } from '@/utils/utils'
-
-const reRunCheckedText = 'reRun.checked.inheriting_machine'
 
 const Content = styled(Modal)`
     .ant-modal-body {
@@ -21,12 +20,13 @@ const Content = styled(Modal)`
 
 const ReRunModal = (props: any, ref: any) => {
     const { ws_id } = useParams<any>()
+    const [form] = Form.useForm()
 
     const [visible, setVisible] = useState(false)
     const [source, setSource] = useState<any>(null)
     // 重跑选项之一
     const [reRunChecked, setReRunChecked] = useState(false)
-    
+
     const hanldeCancle = () => {
         setVisible(false)
         setReRunChecked(false)
@@ -40,7 +40,7 @@ const ReRunModal = (props: any, ref: any) => {
         form
             .validateFields()
             .then(values => {
-                let obj: any = {}
+                const obj: any = {}
                 Object.keys(values).forEach(
                     key => {
                         if (values[key]) {
@@ -59,7 +59,6 @@ const ReRunModal = (props: any, ref: any) => {
         okLink && targetJump(okLink)
     }
 
-    const [form] = Form.useForm()
 
     const fail_case = Form.useWatch('fail_case', form);
     const suite = Form.useWatch('suite', form);
