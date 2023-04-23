@@ -82,7 +82,6 @@ const SelectSuite: React.FC<any> = ({
 		})
 	}, [test_config])
 
-	console.log(memoDeleteIp)
 	const SuiteSelect = () => {
 		drawer.current?.openDrawer({ test_config })
 	}
@@ -355,7 +354,7 @@ const SelectSuite: React.FC<any> = ({
 				<Alert
 					message={formatMessage({
 						id: "select.suite.table.is_delete.alart",
-						defaultMessage: "所选用例已不存在"
+						defaultMessage: "所选用例不存在或重跑job中无失败用例"
 					})}
 					style={{ marginBottom: 12 }}
 					type="warning"

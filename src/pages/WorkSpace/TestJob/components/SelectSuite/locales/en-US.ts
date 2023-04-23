@@ -77,7 +77,7 @@ const text =  {
   'repeat.tootip1': 'Applies to all Conf files under the Suite selected, range 1-10000',
   'repeat.tootip2': 'Range 1-10000',
 
-  "select.suite.table.is_delete.alart": "The selected example does not exist or there are no failed cases in the rerun job.",
+  "table.is_delete.alart": "The selected example does not exist or there are no failed cases in the rerun job.",
 };
 
 export default Object.keys(text).reduce((p, key) => {
