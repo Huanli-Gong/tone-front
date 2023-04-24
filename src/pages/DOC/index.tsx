@@ -4,8 +4,7 @@ import styled from 'styled-components'
 import DocList from './components/Docs';
 import Editer from './components/Editer';
 import { useClientSize } from '@/utils/hooks'
-import Helmet from 'react-helmet';
-import { useParams } from 'umi';
+import { useParams, Helmet } from 'umi';
 import { DocProvider } from './Provider';
 
 const Container = styled(Row) <{ height: number }>`

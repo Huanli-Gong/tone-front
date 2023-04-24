@@ -32,7 +32,8 @@ const fontStyle = {
 }
 
 const SuiteConfMetric = (props: any) => {
-    let str = props.title?.split('/')
+    const str = props.title?.split('/')
+
     return (
         <div style={{ color: '#000' }}>
             <Descriptions column={1}>
@@ -119,7 +120,7 @@ const TabPaneCard: React.FC<any> = (props) => {
     }
 
     const fetchAnalysis = (data: any) => {
-        let params: any = testType === 'functional' ? { show_type: showType } : { provider_env: provider }
+        const params: any = testType === 'functional' ? { show_type: showType } : { provider_env: provider }
         const values = form.getFieldsValue()
         const { project_id, tag, time } = values
 
@@ -142,7 +143,7 @@ const TabPaneCard: React.FC<any> = (props) => {
     }
 
     const handleFormChange = (changedFields: any, allFields: any) => {
-        let params: any = { provider_env: provider, show_type: showType }
+        const params: any = { provider_env: provider, show_type: showType }
         allFields.forEach((i: any) => {
             if (i.name.toString() === 'project_id' && i.value) params.project_id = i.value
             if (i.name.toString() === 'tag' && i.value) params.tag = i.value
@@ -177,22 +178,35 @@ const TabPaneCard: React.FC<any> = (props) => {
         if (query && JSON.stringify(query) !== '{}') {
             const {
                 test_type, project_id, tag, start_time, end_time, provider_env,
-                metric, title, test_suite_id, test_case_id, sub_case_name
+                metric, title, test_suite_id, test_case_id, sub_case_name, days
             } = query
 
             if (test_type === testType) {
-                /* project_id && run({ project_id, page_size: 999 }) */
-
                 form.setFieldsValue({
                     project_id: project_id ? + project_id : undefined,
                     tag: tag ? + tag : undefined,
                 })
-                const params = {
+
+                const params: any = {
                     metric: _.isArray(metric) ? metric : [metric],
-                    project_id, tag, start_time, end_time,
+                    project_id, tag,
                     test_suite_id, test_case_id, sub_case_name,
                     show_type: showType, provider_env
                 }
+
+                let start = start_time
+                let end = end_time || moment().format("YYYY-MM-DD")
+
+                const hasNearDay = !isNaN(+ days) && Object.prototype.toString.call(+ days) === "[object Number]"
+
+                if (hasNearDay) {
+                    start = moment().subtract(days - 1, "days")
+                    end = moment()
+                }
+
+                params.start_time = moment(start).format("YYYY-MM-DD")
+                params.end_time = moment(end).format("YYYY-MM-DD")
+
                 setMetricData({
                     title,
                     metric: _.isArray(metric) ? metric : [metric],
@@ -202,14 +216,16 @@ const TabPaneCard: React.FC<any> = (props) => {
                 })
                 if (title) requestAnalysisData(params)
 
-                if (start_time || end_time)
-                    form.setFieldsValue({ time: [moment(start_time), moment(end_time)] })
+                if (hasNearDay) {
+                    form.setFieldsValue({ time: [moment(start), moment()] })
+                }
+                else if (start_time)
+                    form.setFieldsValue({ time: [moment(start_time), end_time ? moment(end_time) : moment()] })
             }
         }
     }, [query])
 
     const handleProductChange = (val: any) => {
-        /* run({ project_id: val, page_size: 999 }) */
         setProjectId(val)
     }
 

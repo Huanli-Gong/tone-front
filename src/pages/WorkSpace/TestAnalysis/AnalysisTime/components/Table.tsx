@@ -1,6 +1,6 @@
 import React, { memo, useRef, } from 'react'
 import { Table, Card } from 'antd'
-import { useModel, useAccess, Access, useParams, useIntl, FormattedMessage } from 'umi'
+import { useAccess, useParams, FormattedMessage } from 'umi'
 import EditMarks from './EditMarks'
 import { EllipsisEditColumn } from '@/pages/WorkSpace/TestResult/Details/components'
 import ServerLink from '@/components/MachineWebLink/index';
@@ -12,20 +12,24 @@ export default memo(
         const editMarks: any = useRef(null)
         const access = useAccess()
 
-        let columns = [
+        const handleEditMarks = (_: any) => {
+            editMarks.current.show(_)
+        }
+
+        const columns = [
             {
-                title: <FormattedMessage id="analysis.table.column.id"/>,
+                title: <FormattedMessage id="analysis.table.column.id" />,
                 dataIndex: 'job_id'
             }, {
-                title: <FormattedMessage id="analysis.table.column.name"/>,
+                title: <FormattedMessage id="analysis.table.column.name" />,
                 dataIndex: 'job_name',
                 render: (_: any, row: any) => (
-                    <a target="_blank" href={`${location.origin}/ws/${ws_id}/test_result/${row.job_id}`}>{_}</a>
+                    <a target="_blank" rel="noreferrer" href={`${location.origin}/ws/${ws_id}/test_result/${row.job_id}`}>{_}</a>
                 )
             }, {
-                title: <FormattedMessage id="analysis.table.column.server"/>,
+                title: <FormattedMessage id="analysis.table.column.server" />,
                 dataIndex: 'server',
-                render: (_: any, row:any) => (
+                render: (_: any, row: any) => (
                     <ServerLink
                         val={_}
                         param={row.server_id}
@@ -33,39 +37,31 @@ export default memo(
                     />
                 )
             }, {
-                title: <FormattedMessage id="analysis.table.column.creator"/>,
+                title: <FormattedMessage id="analysis.table.column.creator" />,
                 dataIndex: 'creator'
             }, {
-                title: <FormattedMessage id="analysis.table.column.startTime"/>,
+                title: <FormattedMessage id="analysis.table.column.startTime" />,
                 dataIndex: 'start_time'
             }, {
-                title: <FormattedMessage id="analysis.table.column.emdTime"/>,
+                title: <FormattedMessage id="analysis.table.column.emdTime" />,
                 dataIndex: 'end_time'
             },
-        ];
-        
-        if (access.WsTourist()) {
-            columns = columns.concat([
-                {
-                    title: <FormattedMessage id="analysis.table.column.note"/>,
-                    dataIndex: 'note',
-                    render: (_: any, row: any) => (
-                        <EllipsisEditColumn
-                            title={_}
-                            width={135 + 28 - 20}
-                            access={access.WsMemberOperateSelf(row.creator_id)}
-                            onEdit={
-                                () => handleEditMarks(row)
-                            }
-                        />
-                    )
-                }
-            ]);
-        }
-
-        const handleEditMarks = (_: any) => {
-            editMarks.current.show(_)
-        }
+            access.WsTourist() &&
+            {
+                title: <FormattedMessage id="analysis.table.column.note" />,
+                dataIndex: 'note',
+                render: (_: any, row: any) => (
+                    <EllipsisEditColumn
+                        title={_}
+                        width={135 + 28 - 20}
+                        access={access.WsMemberOperateSelf(row.creator_id)}
+                        onEdit={
+                            () => handleEditMarks(row)
+                        }
+                    />
+                )
+            }
+        ].filter(Boolean) as any;
 
         return (
             <>

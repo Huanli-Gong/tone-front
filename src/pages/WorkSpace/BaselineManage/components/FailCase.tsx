@@ -2,12 +2,12 @@ import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } f
 import { Tooltip, Col, Space, Typography, Table, message, Popconfirm } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { queryFunctionalBaseline, deletefuncsDetail } from '../services'
-import _ from 'lodash'
 import { AccessTootip, requestCodeMessage } from '@/utils/utils';
 import { useParams, useIntl, useAccess, Access } from 'umi';
 import CommonPagination from '@/components/CommonPagination';
 import { DrawerCls, DrawerLayout, InfoRow, TableRow } from "./styled"
 import EditCaseInfo from './EditCaseInfo';
+import { ColumnEllipsisText } from '@/components/ColumnComponents';
 
 type IProps = Record<string, any>
 type IRefs = IProps
@@ -96,11 +96,11 @@ const FailCaseDrawer: React.ForwardRefRenderFunction<IProps, IRefs> = (props, re
             textWrap: 'word-break',
             render: (text: any) => {
                 return (
-                    <Tooltip placement="topLeft" title={text} overlayStyle={{ wordBreak: 'break-all' }}>
-                        <Typography.Text ellipsis={{ tooltip: true }}>
-                            {text || "-"}
-                        </Typography.Text>
-                    </Tooltip >
+                    <ColumnEllipsisText
+                        ellipsis={{ tooltip: true }}
+                    >
+                        {text || "-"}
+                    </ColumnEllipsisText>
                 )
             }
         },

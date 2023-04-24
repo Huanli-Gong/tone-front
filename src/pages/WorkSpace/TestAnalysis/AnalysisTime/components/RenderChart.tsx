@@ -1,7 +1,6 @@
 import { Card } from 'antd'
 import React, { memo, useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
-import _ from 'lodash'
 import { useParams, useIntl, FormattedMessage } from 'umi'
 
 import customChartOption from './customChartOption'

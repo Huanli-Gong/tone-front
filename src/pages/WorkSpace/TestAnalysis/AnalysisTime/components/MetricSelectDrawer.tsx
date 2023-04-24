@@ -31,6 +31,18 @@ export default forwardRef(
             requestSuiteList()
         }, [ws_id, test_type])
 
+        const requestMetricList = _.debounce(
+            async (params: any) => {
+                setFetch(true)
+                params.project_id = projectId || query.project_id
+                const { data: list } = await queryPerfomanceMetrics(params)
+                setMetricList(list || [])
+                setFetch(false)
+            },
+            500,
+            { trailing: true }
+        )
+
         /**
          * 项目切换后，需要重新发起请求
          */
@@ -39,18 +51,6 @@ export default forwardRef(
                 requestMetricList({ test_suite_id: activeSuite, test_case_id: activeConf })
             }
         }, [projectId])
-
-        const requestMetricList = _.debounce(
-            async (params: any) => {
-                setFetch(true)
-                params.project_id = projectId || query.project_id
-                let { data: list } = await queryPerfomanceMetrics(params)
-                setMetricList(list || [])
-                setFetch(false)
-            },
-            500,
-            { trailing: true }
-        )
 
         const { data: subcaseList, run: requestSubcaseList, loading: subcaseFetching } = useRequest(
             queryFunctionalSubcases,
@@ -132,8 +132,12 @@ export default forwardRef(
             return showType === 'pass_rate' ? 'Test Conf' : 'Test Case'
         }, [test_type, showType, selectMetric])
 
+        const handleClose = useCallback(() => {
+            setVisible(false)
+        }, [])
+
         const handleOk = (): any => {
-            let params: any = { test_suite_id: activeSuite }
+            const params: any = { test_suite_id: activeSuite }
             if (test_type === 'performance') {
                 params.test_case_id = activeConf
                 params.metric = selectMetric
@@ -154,10 +158,6 @@ export default forwardRef(
             handleClose()
         }
 
-        const handleClose = useCallback(() => {
-            setVisible(false)
-        }, [])
-
         const canSubmit = useMemo(() => {
             if (test_type === 'performance')
                 return selectMetric.length > 0
@@ -174,8 +174,8 @@ export default forwardRef(
                 onCancel={handleClose}
                 footer={
                     <Space>
-                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
-                        <Button type="primary" onClick={handleOk} disabled={!canSubmit}><FormattedMessage id="operation.ok"/></Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk} disabled={!canSubmit}><FormattedMessage id="operation.ok" /></Button>
                     </Space>
                 }
             >
@@ -289,7 +289,7 @@ export default forwardRef(
                                 test_type === 'performance' &&
                                 <Table
                                     dataSource={metricList}
-                                    columns={[{ dataIndex: '', title: formatMessage({id: 'analysis.metric'})  }]}
+                                    columns={[{ dataIndex: '', title: formatMessage({ id: 'analysis.metric' }) }]}
                                     rowKey={record => record}
                                     size="small"
                                     scroll={{ y: 320 }}
