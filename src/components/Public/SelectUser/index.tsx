@@ -4,39 +4,42 @@ import { FormattedMessage, useParams } from 'umi'
 import { member } from './service';
 import styles from './style.less';
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, mode = 'multiple' }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, page_size, mode = 'multiple' }) => {
 	const { ws_id } = useParams() as any
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<any>()
 	const [fetching, setFetching] = useState<boolean>(true)
 	const [focus, setFous] = useState<boolean>(false)
-	const { Option } = Select;
-	useEffect(() => {
-		handleSearch()
-	}, []);
+
 	const handleSearch = async (word?: string) => {
 		const param = word && word.replace(/\s*/g, "")
 		if (keyword && keyword == param) return
 		setKeyword(param)
 		setFetching(true)
-		let { data } = await member({ ws_id, keyword: param, page_size: page_size || 10, page_num: 1 })
+		const { data } = await member({ ws_id, keyword: param, page_size: page_size || 10, page_num: 1 })
 		setUser(Array.isArray(data) ? data : [])
 		setFetching(false)
 	}
+
+	useEffect(() => {
+		handleSearch()
+	}, []);
+
 	const handleCancleSel = () => {
 		handleSearch()
 	}
+
 	return (
 		<div style={{ padding: 8 }}>
-			<div className={styles.cover}
+			<div
+				className={styles.cover}
 				onClick={() => {
 					if (!focus) {
 						confirm?.()
 					}
 				}}
-			>
-			</div>
+			/>
 			<Select
 				mode={mode}
 				allowClear
@@ -57,13 +60,10 @@ const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, page_size, 
 						setFous(false)
 					}, 200)
 				}}
-			>
-				{
-					user.map((item: any) => {
-						return <Option value={item.id} key={item.id}>{item.last_name}</Option>
-					})
+				options={
+					user?.map((item: any) => ({ label: item.last_name, value: item.id }))
 				}
-			</Select>
+			/>
 			<Divider style={{ marginTop: '10px', marginBottom: '4px' }} />
 			<Space>
 				<Button

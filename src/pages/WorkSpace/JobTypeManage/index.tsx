@@ -124,7 +124,7 @@ export default (props: any) => {
                 shwoTitle: false,
             },
             fixed: 'left',
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />,
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>,
         },
         {
             title: <FormattedMessage id="job.types.test_type" />,
@@ -163,7 +163,7 @@ export default (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="Table.columns.operation" />,
