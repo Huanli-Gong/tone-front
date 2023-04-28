@@ -84,7 +84,7 @@ const BaseTab: React.FC<IProps> = () => {
 
     const [tab, setTab] = React.useState(query.tab ?? "all")
     const [pageQuery, setPageQuery] = React.useState({ ...DEFAULT_PAGE_QUERY, tab, ws_id, ...query })
-    const [selectionType, setSelectionType] = React.useState()
+    const [selectionType, setSelectionType] = React.useState(1)
     const [filter, setFilter] = React.useState(false)
 
     const [initialColumns, setInitialColumns] = React.useState({})
@@ -164,6 +164,7 @@ const BaseTab: React.FC<IProps> = () => {
                                             stateCount={source}
                                             pageQuery={pageQuery}
                                             setPageQuery={setPageQuery}
+                                            selectionType={selectionType}
                                             onSelectionChange={setSelectionType}
                                             onFilterChange={setFilter}
                                         />
@@ -191,6 +192,7 @@ const BaseTab: React.FC<IProps> = () => {
                     countRefresh={fetchTestJobCount}
                     setPageQuery={setPageQuery}
                     radioValue={selectionType}
+                    setRadioValue={setSelectionType}
                 />
             </React.Fragment>
         </JobListProvider.Provider>

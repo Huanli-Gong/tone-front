@@ -17,14 +17,6 @@ const DispathTagSelect = (props: any) => {
     const [tagPageNum, setTagPageNum] = useState(1)
     const [fetching, setFetching] = useState(true)
 
-    useEffect(() => {
-        if (serverObjectType === 'server_tag_id') {
-            setTagList([])
-            dispatchRequest(1)
-            setTagPageNum(1)
-        }
-    }, [serverObjectType])
-
     const dispatchRequest = async (page_num = 1) => {
         setFetching(true)
         const { data, code } = await queryDispatchTags({
@@ -34,9 +26,22 @@ const DispathTagSelect = (props: any) => {
             run_environment: server_type,
             page_size: PAGE_SIZE
         })
-        if (code === 200 && data) setTagList(tagList.concat(data))
+        if (code === 200 && data)
+            setTagList((p: any) => data.reduce((pre: any, cur: any) => {
+                const ids = p.map(({ id }: any) => id)
+                if (ids.includes(cur.id)) return pre
+                return pre.concat(cur)
+            }, []))
         setFetching(false)
     }
+
+    useEffect(() => {
+        if (serverObjectType === 'server_tag_id') {
+            setTagList([])
+            dispatchRequest(1)
+            setTagPageNum(1)
+        }
+    }, [serverObjectType])
 
     const handleTagePopupScroll = ({ target }: any) => { //tag
         const { clientHeight, scrollHeight, scrollTop } = target
@@ -65,7 +70,7 @@ const DispathTagSelect = (props: any) => {
                 mode="multiple"
                 loading={fetching}
                 onPopupScroll={handleTagePopupScroll}
-                options={tagList.map((i: any) => ({
+                options={tagList?.map((i: any) => ({
                     value: i.id,
                     label: <Tag color={i.tag_color}>{i.name}</Tag>,
                     name: i.name,
