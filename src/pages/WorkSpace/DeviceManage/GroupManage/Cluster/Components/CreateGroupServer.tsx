@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react'
+import { useState, useImperativeHandle, forwardRef } from 'react'
 import { useIntl, FormattedMessage, useParams } from 'umi'
 import { Drawer, Form, Input, Space, Button, message } from 'antd'
 import { createServerGroup, updateServerGroup } from '../../services'
@@ -8,7 +8,7 @@ import MachineTags from '@/components/MachineTags';
 
 const CreateGroupDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = useParams()
+    const { ws_id } = useParams() as any
     const { onFinish } = props
     const [tagFlag, setTagFlag] = useState({
         list: [],
@@ -20,12 +20,18 @@ const CreateGroupDrawer = (props: any, ref: any) => {
 
     const [form] = Form.useForm()
 
+    const handleCancel = () => {
+        form.resetFields()
+        setVisible(false)
+        setSource(null)
+    }
+
     useImperativeHandle(ref, () => ({
         show(_: any) {
             setVisible(true)
             if (_) {
                 setSource(_)
-                let params = _
+                const params = _
                 const list = params.tag_list.map((i: any) => i.id)
                 params.tags = list
                 setTagFlag({ ...tagFlag, isQuery: 'edit', list })
@@ -66,19 +72,13 @@ const CreateGroupDrawer = (props: any, ref: any) => {
             })
     }
 
-    const handleCancel = () => {
-        form.resetFields()
-        setVisible(false)
-        setSource(null)
-    }
-
     return (
         <Drawer
             maskClosable={false}
             keyboard={false}
             title={!source ? <FormattedMessage id="device.cluster.btn" /> : <FormattedMessage id="device.cluster.edit" />}
             forceRender={true}
-            visible={visible}
+            open={visible}
             onClose={handleCancel}
             width="376"
             destroyOnClose

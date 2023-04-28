@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import { Button, Drawer, Row, Col, Form, Input, message } from 'antd';
 import Owner from '@/components/Owner/index';
 import MachineTags from '@/components/MachineTags';
@@ -12,15 +13,12 @@ const AddCluster = (props: any) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState<boolean>(false)
     const [validateResult, setValidateResult] = useState<any>({});
-    const onSubmit = () => {
-        // 云上: cluster_type字段传"aliyun"
-        form.validateFields().then(val => submit(val))
-    }
+
     useEffect(() => {
         form.resetFields()
         if (JSON.stringify(outParam) !== '{}') {
             setTimeout(function () {
-                let tags = outParam.tag_list?.map((item: any) => { return item.id }) || []
+                const tags = outParam.tag_list?.map((item: any) => { return item.id }) || []
                 form.setFieldsValue({ ...outParam, tags })
             }, 1)
         }
@@ -34,7 +32,7 @@ const AddCluster = (props: any) => {
 
     const submit = async (param: any) => {
         if (JSON.stringify(outParam) !== '{}') {
-            let obj: any = {
+            const obj: any = {
                 description: param.description || '',
                 tags: param.tags,
                 emp_id: param.emp_id,
@@ -54,7 +52,7 @@ const AddCluster = (props: any) => {
             return
         }
 
-        let obj = { ...param, ws_id, is_instance: String(is_instance) }
+        const obj = { ...param, ws_id, is_instance: String(is_instance) }
         obj.description = param.description || ''
         obj.cluster_type = 'aliyun'
 
@@ -69,6 +67,12 @@ const AddCluster = (props: any) => {
         // 失败
         setValidateResult({ ...res, error: true })
     }
+
+    const onSubmit = () => {
+        // 云上: cluster_type字段传"aliyun"
+        form.validateFields().then(val => submit(val))
+    }
+
     return (
         <Drawer
             maskClosable={false}

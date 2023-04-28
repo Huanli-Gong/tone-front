@@ -1,4 +1,5 @@
-import React, { useImperativeHandle, forwardRef, useState, useMemo, useRef } from 'react'
+/* eslint-disable @typescript-eslint/dot-notation */
+import { useImperativeHandle, forwardRef, useState, useMemo, useRef } from 'react'
 
 import { Tag, Row, Col, Space, Typography } from 'antd'
 
@@ -12,7 +13,6 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import { switchServerType, switchTestType } from '@/utils/utils'
 import { useParams, FormattedMessage, useIntl } from 'umi'
 import { useClientSize } from '@/utils/hooks'
-
 interface PreviewProps {
     item_dict: any,
     name: string,
@@ -23,7 +23,7 @@ interface PreviewProps {
 }
 
 export default forwardRef(
-    ({ item_dict = {}, name = '', server_type = '', test_type = '', description = '', onOk }: PreviewProps, ref: any) => {
+    ({ item_dict = {}, name = '', server_type = '', test_type = '', description = '' }: PreviewProps, ref: any) => {
         const { formatMessage } = useIntl()
         const { ws_id }: any = useParams()
         const [visible, setVisible] = useState(false)

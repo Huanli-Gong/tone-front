@@ -1,4 +1,5 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import React, { useState, useImperativeHandle, forwardRef } from 'react'
 import { Drawer, Form, Radio, Input, Select, Space, Button, message, Spin, Badge, Row, Col, Tooltip, AutoComplete } from 'antd'
 import { useIntl, FormattedMessage, useParams } from 'umi'
 import { addServerGroup, checkTestServerIps, queryTestServerList } from '../../services'
@@ -10,7 +11,7 @@ import { AgentSelect } from '@/components/utils';
 const CreateClusterDrawer = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const { onFinish } = props
-    const { ws_id } = useParams()
+    const { ws_id } = useParams() as any
     const [form] = Form.useForm()
     const [options, setOptions] = useState<{ value: string }[]>([]);
     const [ips, setIps] = useState({ success: [], errors: [] })
@@ -31,7 +32,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             setLoading(true)
             queryServerList(defaultParam).then((res: any) => {
                 if (res.code === 200) {
-                    let arr: any = []
+                    const arr: any = []
                     !!res.data.length && res.data.map((item: any) => {
                         arr.push({ value: item.ip })
                         if (!!item.sub_server_list.length) {
@@ -51,13 +52,13 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     }))
 
     const searchServerList = (val: string) => {
-        let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+        const reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
         const text = reg.test(val)
         if (text) {
             queryServerList({ ...defaultParam, ip: val })
                 .then((res: any) => {
                     if (res.code === 200 && !!res.data.length) {
-                        let data = res.data[0]
+                        const data = res.data[0]
                         if (data.in_pool) {
                             setIps({ success: [], errors: [] })
                             form.setFieldsValue({ channel_type: data.channel_type })
@@ -81,6 +82,13 @@ const CreateClusterDrawer = (props: any, ref: any) => {
         searchServerList(searchText)
     };
 
+    const handleCancel = () => {
+        form.resetFields()
+        setPoolFlag(false)
+        setVisible(false)
+        setSource(null)
+    }
+
     const handleOk = () => {
         form
             .validateFields()
@@ -102,13 +110,6 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                     console.log(err)
                 }
             )
-    }
-
-    const handleCancel = () => {
-        form.resetFields()
-        setPoolFlag(false)
-        setVisible(false)
-        setSource(null)
     }
 
     const ValidateDisplayMessage: React.FC<any> = ({ data }) => (
@@ -139,7 +140,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
     }
 
     // 失焦校验
-    const handleBlurIp = (e: any) => {
+    const handleBlurIp = () => {
         if (form.getFieldValue('channel_type') && !BUILD_APP_ENV && !poolFlag) {
             handleIpsCheck()
         }
@@ -151,7 +152,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
             keyboard={false}
             title={<FormattedMessage id="device.add.btn" />}
             forceRender={true}
-            visible={visible}
+            open={visible}
             width="376"
             onClose={handleCancel}
             footer={
@@ -193,7 +194,7 @@ const CreateClusterDrawer = (props: any, ref: any) => {
                             style={{ width: '100%' }}
                             onSelect={onSelect}
                             onSearch={onSearch}
-                            onBlur={(e: any) => handleBlurIp(e)}
+                            onBlur={() => handleBlurIp()}
                             placeholder={formatMessage({ id: 'device.machine.select.message' })}
                         />
                     </Form.Item>

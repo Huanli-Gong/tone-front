@@ -1,6 +1,5 @@
 import * as antv from '@antv/g2';
 const { Chart } = antv
-
 export const filterChartSource = (data: any, key: any, judge: boolean) => data.reduce((pre: any, cur: any) => pre.concat(
     Object.keys(cur).reduce(
         (p: any, c: any) => {
@@ -14,7 +13,7 @@ export const filterChartSource = (data: any, key: any, judge: boolean) => data.r
 ), [])
 
 
-export const renderChart = (dom: any, data: []) => {
+export const renderChart = (dom: any, data: any[]) => {
     const chart = new Chart({
         container: dom,
         autoFit: true,

@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useMemo, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useMemo, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Modal, message, Form, Select, Input, Radio, Popover, Spin, Alert, Tooltip } from 'antd'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { FormattedMessage, useIntl } from 'umi';
@@ -19,12 +20,13 @@ export default forwardRef((props: any, ref: any) => {
     const [radioType, setRadioType] = useState<any>('')
     const [visible, setVisible] = useState(false);
     // 版本数据
-    const [data, setData] = useState<any>([]);
+    const [source, setSource] = useState<any>([]);
     const [selectedRow, setSelectedRow] = useState<any>([]);
     const [deployType, setDeployType] = useState<any>('common');
     // Agent部署的结果提示
     const [deployResult, setDeployResult] = useState<any>({});
     const [arch, setArch] = useState('x86_64')
+    const useBuildEnv = useMemo(() => BUILD_APP_ENV && ['openanolis', 'opensource'].includes(BUILD_APP_ENV), [])
     // console.log('deployType:', deployType) 
 
     /**
@@ -43,12 +45,12 @@ export default forwardRef((props: any, ref: any) => {
             const { code, msg, data = [] } = await queryVersionList({ arch: val }); // { page_num: 1, page_size: 100000  }
             if (code === 200) {
                 if (isString(data)) {
-                    setData([])
+                    setSource([])
                 } else {
-                    setData(data)
+                    setSource(data)
                 }
             } else {
-                message.error(msg || formatMessage({id: 'device.failed.to.request.version'}) );
+                message.error(msg || formatMessage({ id: 'device.failed.to.request.version' }));
             }
         } catch (e) {
             // setLoading(false)
@@ -89,14 +91,14 @@ export default forwardRef((props: any, ref: any) => {
             .validateFields()
             .then(async (values) => {
                 setLoading(true);
-                setTip(formatMessage({ id: "device.deploying" }) )
+                setTip(formatMessage({ id: "device.deploying" }))
                 // Agent部署接口
                 const { code, msg, data = {} } = await agentDeploy(values);
                 if (code === 200) {
                     if (data.fail_servers?.length) {
                         setDeployResult(data);
                     } else {
-                        message.success(formatMessage({ id: "device.deploy.finish" }) );
+                        message.success(formatMessage({ id: "device.deploy.finish" }));
                         // case1.重置状态数据&&重置表单数据
                         form.resetFields();
                         resetInitialState();
@@ -105,7 +107,7 @@ export default forwardRef((props: any, ref: any) => {
                     }
                 }
                 else {
-                    message.error(msg || formatMessage({ id: "device.deploy.failed" }) );
+                    message.error(msg || formatMessage({ id: "device.deploy.failed" }));
                 }
                 setLoading(false);
                 setTip('')
@@ -132,11 +134,11 @@ export default forwardRef((props: any, ref: any) => {
         // const failMsg = (<div>{fail_servers.map((item: any)=> <div>{}</div>)}</div>)
         return (
             <div>
-                {success_servers?.length ? (<><span style={{ color: '#1890FF' }}>{successIps}</span>&nbsp;<FormattedMessage id="device.deploy.success"/>；&nbsp;</>) : null}
+                {success_servers?.length ? (<><span style={{ color: '#1890FF' }}>{successIps}</span>&nbsp;<FormattedMessage id="device.deploy.success" />；&nbsp;</>) : null}
                 {fail_servers?.map((item: any) =>
-                    <div>
-                        <span style={{ color: '#F5222D' }} >{item && item.ip}</span>&nbsp;<FormattedMessage id="device.deploy.failed"/>&nbsp;
-                        <Tooltip placement="bottomLeft" title={item && item.msg}><a><FormattedMessage id="view.details"/></a></Tooltip>
+                    <div key={item.ip}>
+                        <span style={{ color: '#F5222D' }} >{item && item.ip}</span>&nbsp;<FormattedMessage id="device.deploy.failed" />&nbsp;
+                        <Tooltip placement="bottomLeft" title={item && item.msg}><a><FormattedMessage id="view.details" /></a></Tooltip>
                     </div>
                 )}
             </div>
@@ -148,7 +150,6 @@ export default forwardRef((props: any, ref: any) => {
         setDeployResult({})
     }
 
-    const useBuildEnv = useMemo(() => BUILD_APP_ENV && ['openanolis', 'opensource'].includes(BUILD_APP_ENV), [])
 
     const getDeployMode = () => {
         if (useBuildEnv) return 'active'
@@ -156,16 +157,16 @@ export default forwardRef((props: any, ref: any) => {
     }
 
     useEffect(() => {
-        if(visible){
+        if (visible) {
             getVersionData(arch)
         }
-    }, [visible,arch])
+    }, [visible, arch])
 
     return (
         <div>
             <Modal className={styles.DeployModal_root}
                 title={formatMessage({ id: 'agent.deploy.btn' })}
-                visible={visible}
+                open={visible}
                 maskClosable={false}
                 width={460}
                 confirmLoading={loading}
@@ -213,14 +214,14 @@ export default forwardRef((props: any, ref: any) => {
 
                         {
                             !useBuildEnv &&
-                            <Form.Item label={<FormattedMessage id="device.deploy.mode"/>}
+                            <Form.Item label={<FormattedMessage id="device.deploy.mode" />}
                                 name="channel"
                             >
                                 <Radio.Group onChange={onChangeChannel}>
-                                    <Radio value="common"><FormattedMessage id="device.deploy.mode.common"/></Radio>
+                                    <Radio value="common"><FormattedMessage id="device.deploy.mode.common" /></Radio>
                                     {
                                         (!useBuildEnv && radioType !== 'cloudManage') &&
-                                        <Radio value={self_agent}>{formatMessage({ id: "device.deploy.mode.self_agent" }, {data: self_agent_name})}</Radio>
+                                        <Radio value={self_agent}>{formatMessage({ id: "device.deploy.mode.self_agent" }, { data: self_agent_name })}</Radio>
                                     }
                                 </Radio.Group>
                             </Form.Item>
@@ -233,12 +234,12 @@ export default forwardRef((props: any, ref: any) => {
                             <Radio.Group>
                                 <Radio value="active">
                                     active
-                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.active"/>}>
+                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.active" />}>
                                         <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
                                 </Radio>
                                 <Radio value="passive">
                                     passive
-                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.passive"/>}>
+                                    <Popover placement="topLeft" content={<FormattedMessage id="device.mode.passive" />}>
                                         <QuestionCircleOutlined style={{ opacity: 0.65, marginLeft: 2 }} /></Popover>
                                 </Radio>
                             </Radio.Group>
@@ -262,13 +263,13 @@ export default forwardRef((props: any, ref: any) => {
                                 required: true,
                                 message: formatMessage({ id: 'please.select' }),
                             }]}>
-                            <Select placeholder={formatMessage({ id: 'please.select' }) }
+                            <Select placeholder={formatMessage({ id: 'please.select' })}
                                 showSearch
                                 optionFilterProp="children"
                                 filterOption={(input, option: any) =>
                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }>
-                                {data?.map((item: any) => (
+                                {source?.map((item: any) => (
                                     <Select.Option key={item.id} value={item.version}>{item.version}</Select.Option>
                                 ))}
                             </Select>

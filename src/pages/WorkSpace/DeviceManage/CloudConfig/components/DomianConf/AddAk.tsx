@@ -1,5 +1,5 @@
 import { Drawer, Space, Button, Form, Input, Radio, message, Select } from 'antd'
-import React, { forwardRef, useState, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useState, useImperativeHandle, useRef } from 'react'
 import { useIntl, FormattedMessage, useParams } from 'umi'
 import { createCloudAk, updateCloudAk } from '../../service'
 import styles from './index.less'
@@ -19,9 +19,9 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = "new", data: any = {}) => {
+                show: ($title: string = "new", data: any = {}) => {
                     setVisible(true)
-                    setTitle(title)
+                    setTitle($title)
                     setEditer(data)
                     form.setFieldsValue(data) // 动态改变表单值
                 }
@@ -33,7 +33,7 @@ export default forwardRef(
             setVisible(false)
         }
 
-        const defaultOption = (code: number, msg: string, type: string) => {
+        const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
                 props.onOk()
                 message.success(formatMessage({ id: 'operation.success' }))
@@ -77,11 +77,11 @@ export default forwardRef(
                     valuesCopy.enable = valuesCopy.enable ? 'True' : 'False'
                     if (title === 'new') {
                         const { code, msg } = await createCloudAk({ ...valuesCopy, ws_id })
-                        defaultOption(code, msg, 'new')
+                        defaultOption(code, msg)
                     }
                     else {
                         const { code, msg } = await updateCloudAk({ id: editer.id, ...valuesCopy, ws_id })
-                        defaultOption(code, msg, 'edit')
+                        defaultOption(code, msg)
                     }
                     setPadding(false)
                 })
@@ -102,7 +102,7 @@ export default forwardRef(
                 title={title === 'new' ? <FormattedMessage id="device.new.ak" /> : <FormattedMessage id="device.edit.ak" />}
                 width="375"
                 onClose={handleClose}
-                visible={visible}
+                open={visible}
                 className={styles.add_baseline_drawer}
                 footer={
                     <div style={{ textAlign: 'right', }} >

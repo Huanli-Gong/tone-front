@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, memo } from 'react'
 import { Space, Button, Tag, message, Typography, Row, Checkbox, Modal, Spin, Tooltip, Menu, Dropdown } from 'antd'
 import { useIntl, FormattedMessage, getLocale, useParams } from 'umi'
@@ -166,6 +167,14 @@ const Standalone = (props: any, ref: any) => {
             setSelectRowKeys(selectedRowKeys)
         }, []
     )
+
+    const hanldeClickMenu = (item: any, row: any) => {
+        switch (item.key) {
+            case 'data': return handleUpdateTestServer(row.id)
+            case 'vm': return selectVmServerList.current.show(row.id)
+            default: return false
+        }
+    }
 
     const handleOpenLogDrawer = useCallback(
         (id) => {
@@ -424,11 +433,13 @@ const Standalone = (props: any, ref: any) => {
                     onConfirm={(val: number) => { setUrlParams({ ...urlParmas, page: 1, tags: val }) }}
                 />,
             render: (record: any) => (
-                <OverflowList list={
-                    record.map((item: any, index: number) => {
-                        return <Tag color={item.tag_color} key={index}>{item.name}</Tag>
-                    })
-                } />
+                <OverflowList
+                    list={
+                        record.map((item: any) => {
+                            return <Tag color={item.tag_color} key={item.name}>{item.name}</Tag>
+                        })
+                    }
+                />
             ),
         },
         {
@@ -516,14 +527,6 @@ const Standalone = (props: any, ref: any) => {
             )
         }
     ]
-
-    const hanldeClickMenu = (item: any, row: any) => {
-        switch (item.key) {
-            case 'data': return handleUpdateTestServer(row.id)
-            case 'vm': return selectVmServerList.current.show(row.id)
-            default: return false
-        }
-    }
 
     return (
         <Spin spinning={syncLoading} tip={formatMessage({ id: 'device.Synchronizing' })}>

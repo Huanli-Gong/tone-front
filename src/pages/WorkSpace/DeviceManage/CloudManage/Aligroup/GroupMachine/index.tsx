@@ -1,10 +1,16 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React, { useEffect, useState, useImperativeHandle } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, Badge, message, Cascader, InputNumber } from 'antd';
 import { requestCodeMessage, resetImage, resetECI, enumerEnglish } from '@/utils/utils';
 import { QusetionIconTootip } from '@/components/Product/index'
 import {
     queryClusterMachine, queryCloudType, addGroupMachine, editGroupMachine, queryMember, queryInstance,
-    querysImage, queryCategories, querysServer, querysAK, querysRegion, queryZone, queryVarName, queryName
+    querysImage, queryCategories, querysServer, querysAK, querysRegion, queryZone, queryName
 } from '../../service';
 import Owner from '@/components/Owner/index';
 import { textRender } from '@/utils/hooks';
@@ -65,56 +71,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
 
     const [form] = Form.useForm();
 
-    // 1.查询云类型
-    const getCloudType = async (param: any) => {
-        const { data } = await queryCloudType(param);
-        // console.log('cloudType:', data);
-        setCloudType(0)
-        let status = undefined
-        switch (data) {
-            case 1:
-                status = 1
-                break;
-            case 2:
-                status = 0
-                break;
-            default:
-                break;
-        }
-        setIs_instance(status)
-        data && form.setFieldsValue({
-            is_instance: status
+    // 重置联动控件
+    const imageResetStatus = () => {
+        form.setFieldsValue({
+            instance_type: undefined, instance_type_one: undefined, instance_type_two: undefined,
+            storage_type: undefined, storage_size: 40, storage_number: 0,
+            system_disk_category: undefined, system_disk_size: 40,
         })
-        setTimeout(function () {
-            data && setCloudType(data)
-        }, 1)
-
-        // 查询添加的第一条数据
-        if (data) {
-            const { code, data: dataSource = [] } = await queryClusterMachine({ cluster_id: param }) || {};
-            if (code === 200 && dataSource.length) {
-                // 回填"云厂商/AK" 和 "地域"两个选框都同步第一次选的数据
-                const { test_server = {} } = dataSource[dataSource.length - 1]
-                const { manufacturer, ak_id, region, zone } = test_server
-                if (ak_id && manufacturer && region && zone) {
-                    setFirstAddDataFlag(false)
-                    setChangeManufacturer(manufacturer)
-                    let params = {
-                        ak_id,
-                        id: manufacturer,
-                        region,
-                        zone,
-                    }
-                    if (status) {
-                        Promise.all([getShowRegion(params), getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
-                    } else {
-                        Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
-                    }
-                    form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [region, zone] })
-                }
-            }
-        }
     }
+
     const getInstancegList = async (param: any) => {
         const { data } = await queryInstance(param)
         setInstance(data || [])
@@ -193,14 +158,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             system_disk_category: undefined, system_disk_size: 40,
         })
     }
-    // 重置联动控件
-    const imageResetStatus = () => {
-        form.setFieldsValue({
-            instance_type: undefined, instance_type_one: undefined, instance_type_two: undefined,
-            storage_type: undefined, storage_size: 40, storage_number: 0,
-            system_disk_category: undefined, system_disk_size: 40,
-        })
-    }
+
     const onAkChange = async (value: any, selectedOptions: any) => {
         // console.log('value', value)
         // 再次添加机器时，"云厂商/AK"和"地域"两个选框没有联动关系
@@ -344,40 +302,15 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }
     };
     const handleTypeChange = (val: any) => {
-        let region = form.getFieldValue('region')
-        let manufacturer = form.getFieldValue('manufacturer')
-        let param = {
+        const $region = form.getFieldValue('region')
+        const manufacturer = form.getFieldValue('manufacturer')
+        const param = {
             ak_id: manufacturer[1],
-            region: region[0],
-            zone: region[1],
+            region: $region[0],
+            zone: $region[1],
             instance_type: val
         }
         getImageList(param)
-    }
-    const newMachine = (id: number) => {
-        getCloudType(id)
-        setCluster_id(id)
-        setLoading(true)
-        setId(undefined)
-        setVisible(true)
-        setSever([])
-        setImage([])
-        setInstance([])
-        // --------------
-        setRegion([])
-        setValidateImage(false)
-        // --------------
-        setCategories([])
-        form.resetFields()
-        Promise.all([handleSearch(), getAK()]).then(() => { setLoading(false) })
-        setTimeout(function () {
-            form.setFieldsValue({
-
-                baseline_server: 1,
-                kernel_install: 1,
-                bandwidth: 10,
-            })
-        }, 1)
     }
 
     // 编辑: 表单控件数据回填
@@ -407,9 +340,9 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             id: param.manufacturer[0]
         }
         if (param.ak_name == 'aliyun_eci') {
-            let t = param.instance_type
-            let type1 = t.indexOf('C')
-            let type2 = t.indexOf('G')
+            const t = param.instance_type
+            const type1 = t.indexOf('C')
+            const type2 = t.indexOf('G')
             param.instance_type_one = Number(t.substring(0, type1))
             param.instance_type_two = Number(t.substring(type1 + 1, type2))
         }
@@ -425,14 +358,60 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }, 1)
     }
 
+    // 1.查询云类型
+    const getCloudType = async (param: any) => {
+        const { data } = await queryCloudType(param);
+        // console.log('cloudType:', data);
+        setCloudType(0)
+        let status = undefined
+        switch (data) {
+            case 1:
+                status = 1
+                break;
+            case 2:
+                status = 0
+                break;
+            default:
+                break;
+        }
+        setIs_instance(status)
+        data && form.setFieldsValue({
+            is_instance: status
+        })
+        setTimeout(function () {
+            data && setCloudType(data)
+        }, 1)
+
+        // 查询添加的第一条数据
+        if (data) {
+            const { code, data: dataSource = [] } = await queryClusterMachine({ cluster_id: param }) || {};
+            if (code === 200 && dataSource.length) {
+                // 回填"云厂商/AK" 和 "地域"两个选框都同步第一次选的数据
+                const { test_server = {} } = dataSource[dataSource.length - 1]
+                const { manufacturer, ak_id, region: $region, zone } = test_server
+                if (ak_id && manufacturer && $region && zone) {
+                    setFirstAddDataFlag(false)
+                    setChangeManufacturer(manufacturer)
+                    const params = {
+                        ak_id,
+                        id: manufacturer,
+                        region: $region,
+                        zone,
+                    }
+                    if (status) {
+                        Promise.all([getShowRegion(params), getSeverList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+                    } else {
+                        Promise.all([getShowRegion(params), getInstancegList(params), getImageList(params), getCategoriesList(params), getAK()]).then(() => { setLoading(false), setDisabled(false) })
+                    }
+                    form.setFieldsValue({ manufacturer: [manufacturer, ak_id], region: [$region, zone] })
+                }
+            }
+        }
+    }
+
     useEffect(() => {
         setShowZone(!firstAddDataFlag)
     }, [firstAddDataFlag])
-
-    useImperativeHandle(onRef, () => ({
-        newMachine: (id: number) => { newMachine(id) },
-        editMachine: (row: any) => { editMachine(row) }
-    }));
 
     // 编辑时，镜像字段数据回填
     useEffect(() => {
@@ -454,9 +433,21 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }
     }, [image])
 
+    // 初始化状态
+    const initialState = () => {
+        form.resetFields()
+        setValidateRegion(true)
+        setValidateImage(false)
+        setChangeManufacturer('')
+        setNameStatus('')
+        setEditData({})
+        setFirstAddDataFlag(true)
+        setVisible(false)
+    }
+
     const submit = async (params: any) => {
         setBtnLoading(true)
-        let param = { ...params, ws_id }
+        const param = { ...params, ws_id }
         if (params.hasOwnProperty('manufacturer')) {
             param.manufacturer = params?.manufacturer[0]
             param.ak_id = params.manufacturer[1]
@@ -487,7 +478,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                 param.image_name = itemObj.label?.props?.children // 注意这里的label不是字符串，是个ReactNode。
             } else {
                 if (params.image[3] === 'latest') {
-                    let str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
+                    const str = `${params.image[1]}:${params.image[2]}:${params.image[3]}`
                     param.image = str
                     param.image_name = str
                 } else if (params.image.indexOf(':latest') > 0) {
@@ -522,28 +513,49 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
         }
         setBtnLoading(false)
     }
+
+    const newMachine = ($id: number) => {
+        getCloudType($id)
+        setCluster_id($id)
+        setLoading(true)
+        setId(undefined)
+        setVisible(true)
+        setSever([])
+        setImage([])
+        setInstance([])
+        // --------------
+        setRegion([])
+        setValidateImage(false)
+        // --------------
+        setCategories([])
+        form.resetFields()
+        Promise.all([handleSearch(), getAK()]).then(() => { setLoading(false) })
+        setTimeout(function () {
+            form.setFieldsValue({
+
+                baseline_server: 1,
+                kernel_install: 1,
+                bandwidth: 10,
+            })
+        }, 1)
+    }
+
     useEffect(() => {
         AkResetStatus()
     }, [is_instance])
 
+    useImperativeHandle(onRef, () => ({
+        newMachine: ($id: number) => { newMachine($id) },
+        editMachine: (row: any) => { editMachine(row) }
+    }));
+
     const onSubmit = () => {
         form.validateFields().then(val => submit(val))
     }
+
     const onClose = () => {
         initialState()
         setBtnLoading(false)
-    }
-
-    // 初始化状态
-    const initialState = () => {
-        form.resetFields()
-        setValidateRegion(true)
-        setValidateImage(false)
-        setChangeManufacturer('')
-        setNameStatus('')
-        setEditData({})
-        setFirstAddDataFlag(true)
-        setVisible(false)
     }
 
     /**
@@ -571,7 +583,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
     /**
      * @function 2.名称校验输入字符串
      */
-    function checkVarName(rule: any, value: string, callback: any) {
+    /* function checkVarName(rule: any, value: string, callback: any) {
         const maxNumber = 32
         if (!value) {
             setNameStatus('error');
@@ -593,7 +605,7 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
             setNameStatus('error');
             callback()
         }
-    }
+    } */
 
     // Just show the latest item.
     function displayRender(label: any) {
@@ -819,8 +831,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                                 }
                                                 onSelect={handleTypeChange}
                                             >
-                                                {instance.map((item: any, index: number) =>
-                                                    <Option value={item.Value} key={index}>{item.Value}</Option>
+                                                {instance.map((item: any) =>
+                                                    <Option value={item.value} key={item.value}>{item.value}</Option>
                                                 )}
                                             </Select>
                                         </Form.Item>
@@ -871,8 +883,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })}>
-                                            {categories.map((item: any, index: number) => {
-                                                return <Option value={item.value} key={index}>{item.title}</Option>
+                                            {categories.map((item: any) => {
+                                                return <Option value={item.value} key={item.value}>{item.title}</Option>
                                             })
                                             }
                                         </Select>
@@ -913,8 +925,8 @@ const NewMachine: React.FC<any> = ({ onRef, onSuccess }) => {
                                         <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })} disabled={image.length === 0}>
-                                            {categories.map((item: any, index: number) => {
-                                                return <Option value={item.value} key={index}>{item.title}</Option>
+                                            {categories.map((item: any) => {
+                                                return <Option value={item.value} key={item.value}>{item.title}</Option>
                                             })
                                             }
                                         </Select>

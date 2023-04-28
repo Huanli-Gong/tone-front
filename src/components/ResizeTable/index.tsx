@@ -33,7 +33,7 @@ const ResizeBorder = styled.div.attrs((props: BorderPosition) => ({
 `
 
 type ResizeProps = {
-    resize?: boolean;
+    resize?: number;
 }
 
 const StyledResizeable = styled(Resizable) <ResizeProps>`
@@ -72,12 +72,16 @@ const StyledResizeable = styled(Resizable) <ResizeProps>`
 `
 
 const ResizeableTitle = (props: any) => {
-    const { width, ...restProps } = props;
+    const { width, onResizeStart, onResize, onResizeStop, resize, ...restProps } = props;
     return (
         <StyledResizeable
             width={!width ? 100 : width}
             height={0}
             draggableOpts={{ enableUserSelectHack: false }}
+            onResizeStart={onResizeStart}
+            onResize={onResize}
+            onResizeStop={onResizeStop}
+            resize={resize ? 1 : 0}
             {...restProps}
         >
             <th {...restProps} />
