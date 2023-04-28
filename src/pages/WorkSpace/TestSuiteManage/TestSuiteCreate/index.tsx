@@ -371,7 +371,8 @@ const TestSuiteCreate: React.FC = () => {
             if (data.code === 200) {
                 setBtnLoad(false)
                 message.success(formatMessage({ id: 'operation.success' }))
-                callback?.()
+                if (callback && Object.prototype.toString.call(callback) === '[object Function]')
+                    callback()
                 history.push(`/ws/${ws_id}/test_suite?test_type=${test_type}`)
             }
             else

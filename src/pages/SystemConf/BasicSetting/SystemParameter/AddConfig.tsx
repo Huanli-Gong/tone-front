@@ -1,6 +1,6 @@
 import { requestCodeMessage } from '@/utils/utils'
 import { Drawer, Form, Input, Radio, Space, Button, message } from 'antd'
-import React, { useImperativeHandle, forwardRef, useState } from 'react'
+import { useImperativeHandle, forwardRef, useState } from 'react'
 import { useIntl, FormattedMessage } from 'umi'
 import { createCongfig, updateConfig } from '../services'
 
@@ -16,10 +16,10 @@ export default forwardRef(
         useImperativeHandle(
             ref,
             () => ({
-                show: (title: string = 'new', editValue: any = {}) => {
+                show: ($title: string = 'new', editValue: any = {}) => {
                     setData(editValue)
                     form.setFieldsValue(editValue)
-                    setTitle(title)
+                    setTitle($title)
                     setVisible(true)
                 }
             })
@@ -32,13 +32,13 @@ export default forwardRef(
 
         const defaultOption = (code: number, msg: string) => {
             if (code === 200) {
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
                 form.resetFields()
                 setVisible(false)
                 onOk()
             }
             else {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
             }
         }
 
@@ -77,17 +77,17 @@ export default forwardRef(
             <Drawer
                 maskClosable={false}
                 keyboard={false}
-                visible={visible}
+                open={visible}
                 width="376"
-                title={<FormattedMessage id={`basic.addConfig.${title}`}/> }
+                title={<FormattedMessage id={`basic.addConfig.${title}`} />}
                 onClose={handleClose}
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleOk}>
                                 {
-                                    title === 'edit' ? <FormattedMessage id="operation.update"/> : <FormattedMessage id="operation.ok"/>
+                                    title === 'edit' ? <FormattedMessage id="operation.update" /> : <FormattedMessage id="operation.ok" />
                                 }
                             </Button>
                         </Space>
@@ -101,18 +101,18 @@ export default forwardRef(
                         enable: true
                     }}
                 >
-                    <Form.Item 
+                    <Form.Item
                         label={<FormattedMessage id="basic.config_key" />}
-                        name="config_key" 
+                        name="config_key"
                         rules={[{
                             required: true,
                             min: 1,
                             max: 32,
                             pattern: /^[A-Za-z0-9\._-]+$/g,
-                            message: formatMessage({id: 'please.enter.message'})
+                            message: formatMessage({ id: 'please.enter.message' })
                         }]}
                     >
-                        <Input autoComplete="off" placeholder={formatMessage({id: 'basic.please.enter.config_key'})} />
+                        <Input autoComplete="off" placeholder={formatMessage({ id: 'basic.please.enter.config_key' })} />
                     </Form.Item>
                     <Form.Item label={<FormattedMessage id="basic.is_enable" />} name="enable">
                         <Radio.Group>
@@ -121,10 +121,10 @@ export default forwardRef(
                         </Radio.Group>
                     </Form.Item>
                     <Form.Item label={<FormattedMessage id="basic.config_value" />} name="config_value">
-                        <Input.TextArea style={{ height: 400 }} placeholder={formatMessage({id: 'basic.please.enter.config_value'})} />
+                        <Input.TextArea style={{ height: 400 }} placeholder={formatMessage({ id: 'basic.please.enter.config_value' })} />
                     </Form.Item>
                     <Form.Item label={<FormattedMessage id="basic.desc" />} name="description">
-                        <Input.TextArea style={{ height: 110 }} placeholder={formatMessage({id: 'basic.please.enter.desc'})} />
+                        <Input.TextArea style={{ height: 110 }} placeholder={formatMessage({ id: 'basic.please.enter.desc' })} />
                     </Form.Item>
                 </Form>
             </Drawer>

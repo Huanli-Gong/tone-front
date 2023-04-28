@@ -1,5 +1,4 @@
 import { useClientSize } from '@/utils/hooks';
-import React from 'react';
 
 export default function ContentContainer(props: any) {
   const { height: layoutHeight } = useClientSize()

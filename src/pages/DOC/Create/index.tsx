@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Row, Button, Input, message } from 'antd'
@@ -83,8 +85,8 @@ const CreateDoc: React.FC = () => {
     }
 
     const initEditor = (data: any) => {
-        const { title, content } = data
-        title && setTtitle(title)
+        const { $title, content } = data
+        $title && setTtitle($title)
         content && setText(tarnsformEmoji(content))
     }
 
@@ -112,7 +114,7 @@ const CreateDoc: React.FC = () => {
     }
 
     const handlePublish = async () => {
-        const html = replaceEmoji(vm?.getHTML())
+        const html = replaceEmoji(vm?.getHTML() || "")
         if (!html) return message.warning("内容不能为空！")
         if (!title) return message.warning('标题不能为空！')
         const form = setting.current

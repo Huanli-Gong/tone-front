@@ -1,7 +1,6 @@
-import React from 'react';
 
 // 填充颜色
-const handleColor = ( name ) => {
+const handleColor = (name) => {
     const dict = {
         normal: 'normal',
         increase: 'increase',
@@ -9,9 +8,9 @@ const handleColor = ( name ) => {
         invalid: 'invalid',
     }
     return dict[name]
-} 
+}
 // 填充图标
-const handleIcon = ( name ) => {
+const handleIcon = (name) => {
     const dict = {
         normal: '-',
         invalid: '⊘',
@@ -30,13 +29,13 @@ const handleArrow = (suite, i) => {
             let result = metric.compare_data[i]
             if (result.compare_result === 'decline') {
                 result.sortNum = 0
-            }else if (result.compare_result === 'increase') {
+            } else if (result.compare_result === 'increase') {
                 result.sortNum = 1
-            }else if (result.compare_result === 'normal') {
+            } else if (result.compare_result === 'normal') {
                 result.sortNum = 2
-            }else if (result.compare_result === 'invalid') {
+            } else if (result.compare_result === 'invalid') {
                 result.sortNum = 3
-            }else{
+            } else {
                 result.sortNum = 4
             }
             newConf.push(metric)
@@ -52,34 +51,34 @@ const handleArrow = (suite, i) => {
         str = Number(str)
         return str;
     }
-   
+
     const sortMetric = (metric_list) => toPoint(metric_list.sort((a, b) => {
-        return toPoint(a.compare_data[i].compare_value) - toPoint(b.compare_data[i].compare_value) 
+        return toPoint(a.compare_data[i].compare_value) - toPoint(b.compare_data[i].compare_value)
     })[0].compare_data[i].compare_value)
 
     const newList = list.sort((a, b) => {
         return sortMetric(a.metric_list) - sortMetric(b.metric_list)
     })
 
-    const compare = (metric_list) => metric_list.sort((a,b) => {
+    const compare = (metric_list) => metric_list.sort((a, b) => {
         return (a.compare_data[i].sortNum) - (b.compare_data[i].sortNum)
     })[0].compare_data[i].sortNum
-    
+
     const endList = newList.sort((a, b) => {
         return compare(a.metric_list) - compare(b.metric_list)
     })
-    setDataSource(
+    /* setDataSource(
         dataSource.map((item) => {
             if (item.suite_id === suite.suite_id) {
                 return {
                     ...item,
-                    conf_list:endList
+                    conf_list: endList
                 }
             } else {
                 return item
             }
         })
-    )
+    ) */
 }
 const toPercentage = (point) => {
     var str = Number(point * 100).toFixed(1);
@@ -88,24 +87,24 @@ const toPercentage = (point) => {
 }
 
 const toShowNum = (num) => {
-    if(num == 0){
+    if (num == 0) {
         return '0';
-    }else if(num){
+    } else if (num) {
         return num;
-    }else{
+    } else {
         return '-';
     }
 }
 
 const handleCaseColor = (type) => {
-    if(type == 'Pass'){
+    if (type == 'Pass') {
         return '#81BF84';
-    }else if(type == 'Fail'){
+    } else if (type == 'Fail') {
         return '#C84C5A';
-    }else if(type == 'Skip'){
+    } else if (type == 'Skip') {
         return 'rgba(0,0,0,0.85)';
     }
-        
+
 }
 
 export { handleColor, handleIcon, handleArrow, toPercentage, toShowNum, handleCaseColor }

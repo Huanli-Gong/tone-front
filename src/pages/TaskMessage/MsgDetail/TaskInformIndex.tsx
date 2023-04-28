@@ -1,13 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { TaskListItem } from './data';
-import { Spin, Space, Typography, Badge, Row, Col, Pagination, message, Button } from 'antd'
+import type { TaskListItem } from './data';
+import { Spin, Space, Typography, Badge, Row, Col, Pagination, Button } from 'antd'
 import MsgEmpty from './Component/index'
 import { useModel } from 'umi';
 import { queryTaskMsg, allTagRead, singleTagRead } from '@/services/Workspace'
 import styles from './index.less';
 import { requestCodeMessage } from '@/utils/utils';
 
-const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) => {
+const TaskInformIndex: React.FC<TaskListItem> = ({ height: layoutHeight }) => {
     const [taskMsg, setTaskMsg] = useState([])
     const [params, setParams] = useState<any>({ page_num: 1, page_size: 20, is_read: '1' })
     const [taskLoading, setTaskLoading] = useState(false)
@@ -81,7 +82,7 @@ const TaskInformIndex: React.FC<TaskListItem> = ({ tab, height: layoutHeight }) 
                             </div>
                             <div className={styles.read_content}>
                                 {
-                                    taskMsg.map((item: any, index: number) => {
+                                    taskMsg.map((item: any) => {
                                         const obj = JSON.parse(item.content)
                                         if (item.msg_type === 'job_complete') {
                                             return (

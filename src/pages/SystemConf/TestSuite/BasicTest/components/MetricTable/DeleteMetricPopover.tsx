@@ -6,6 +6,7 @@ import styles from '../../style.less';
 
 const DeleteMetricPopover: React.FC<AnyType> = ({ onOk, isBatch }) => {
     const [visible, setVisible] = useState(false)
+    const [val, setVal] = useState(0)
 
     const handleCancel = (visi: boolean) => {
         setVal(0)
@@ -20,8 +21,6 @@ const DeleteMetricPopover: React.FC<AnyType> = ({ onOk, isBatch }) => {
     const hadleClick = () => {
         setVisible(true)
     }
-
-    const [val, setVal] = useState(0)
 
     const handleChange = ({ target }: any) => setVal(target.value)
 

@@ -1,6 +1,7 @@
-import React, { useImperativeHandle, useState, forwardRef } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useImperativeHandle, useState, forwardRef } from 'react'
 import { Drawer, Form, Input, Radio, Space, Button, message } from 'antd'
-import { useRequest, useIntl, FormattedMessage } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 import { createKernel, updateKernel } from './services'
 import { requestCodeMessage } from '@/utils/utils'
 
@@ -41,10 +42,10 @@ export default forwardRef(
                 setVisible(false)
                 form.resetFields()
                 setInitValue({})
-                message.success(formatMessage({id: 'operation.success'}) )
+                message.success(formatMessage({ id: 'operation.success' }))
             }
             else {
-                requestCodeMessage( code , msg )
+                requestCodeMessage(code, msg)
             }
         }
 
@@ -68,9 +69,9 @@ export default forwardRef(
         }
 
         return (
-            <Drawer 
-                maskClosable={ false }
-                keyboard={ false }
+            <Drawer
+                maskClosable={false}
+                keyboard={false}
                 width={376}
                 title={title}
                 visible={visible}
@@ -80,9 +81,9 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right', }} >
                         <Space>
-                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
+                            <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
                             <Button type="primary" disabled={padding} onClick={handleSubmit}>
-                                {title.indexOf('新增') > -1 ? <FormattedMessage id="operation.ok"/> : <FormattedMessage id="operation.update"/>}
+                                {title.indexOf('新增') > -1 ? <FormattedMessage id="operation.ok" /> : <FormattedMessage id="operation.update" />}
                             </Button>
                         </Space>
                     </div>
@@ -91,16 +92,16 @@ export default forwardRef(
                 <Form
                     form={form}
                     layout="vertical"
-                    /*hideRequiredMark*/
+                /*hideRequiredMark*/
                 >
                     <Form.Item
                         rules={[{
                             required: true,
-                            max:64,
+                            max: 64,
                             pattern: /^[A-Za-z0-9\._-]+$/g,
                             message: '仅允许包含字母、数字、下划线、中划线、点，最长64个字符'
-                        }]} 
-                        label="内核版本" 
+                        }]}
+                        label="内核版本"
                         name="version"
                     >
                         <Input autoComplete="off" placeholder="请输入" />

@@ -15,7 +15,7 @@ interface EllipsisProps {
     children?: React.ReactNode,
     style?: any,
     height?: number,
-    color?:string,
+    color?: string,
     lineClamp?: number,
 }
 
@@ -24,10 +24,6 @@ const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
 
-    useEffect(() => {
-        setEllipsis();
-    }, [title])
-
     const setEllipsis = () => {
         const clientHeight = ellipsis?.current?.clientHeight
         const scrollHeight = ellipsis?.current?.scrollHeight
@@ -35,9 +31,13 @@ const EllipsisPulic: React.FC<EllipsisProps> = (props) => {
         setShow(flag)
     }
 
+    useEffect(() => {
+        setEllipsis();
+    }, [title])
+
     const TypographyDiv = (
         <TextWarp ref={ellipsis} style={{ height, color, WebkitLineClamp: lineClamp, ...style }} {...rest}>
-            { children || title || '-' }
+            {children || title || '-'}
         </TextWarp>
     )
 

@@ -1,5 +1,5 @@
 const filterResult = (arr: any, value: any) => {
-    let strList = JSON.stringify(arr)
+    const strList = JSON.stringify(arr)
     if (value === 'volatility') {
         if (strList.search('increase') !== -1 || strList.search('decline') !== -1) {
             return true

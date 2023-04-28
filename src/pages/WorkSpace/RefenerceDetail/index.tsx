@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useEffect, useState, useMemo } from 'react';
-import { Breadcrumb, Collapse, message, Table, Tooltip } from 'antd';
+import { Breadcrumb, Collapse, Table, Tooltip } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks';
 import CommonPagination from '@/components/CommonPagination';
@@ -68,11 +70,11 @@ const Refenerce = (props: any) => {
     const [JobData, setJobData] = useState<any>([])
     const [TempTotal, setTempTotal] = useState(0)
     const [TempData, setTempData] = useState<any>([])
-    let param = new URLSearchParams(search);
-    let [id, name, test_type] = [param.get('id'), param.get('name'), param.get('test_type')]
+    const param = new URLSearchParams(search);
+    const [id, name, test_type] = [param.get('id'), param.get('name'), param.get('test_type')]
     const { height: layoutHeight } = useClientSize()
 
-    let obj: any = {}
+    const obj: any = {}
     if (type == 1) obj.path = `/ws/${ws_id}/test_suite`, obj.name = `Test Suite管理`
     else if (type == 2) obj.path = `/ws/${ws_id}/job/types`, obj.name = `Job类型管理`
     else if (type == 3) obj.path = `/ws/${ws_id}/job/templates`, obj.name = `模板列表`
@@ -98,7 +100,7 @@ const Refenerce = (props: any) => {
     // else if (type == 7) text = `云上集群`
     else if (type == 7) text = `${aliyunServer}集群`
 
-    let JobObj: any = {
+    const JobObj: any = {
         flag: 'job',
         ws_id,
         suite_id_list: '',
@@ -106,7 +108,7 @@ const Refenerce = (props: any) => {
         test_type,
         ...params
     }
-    let TempObj: any = {
+    const TempObj: any = {
         flag: 'template',
         ws_id,
         suite_id_list: '',
@@ -230,7 +232,7 @@ const Refenerce = (props: any) => {
         }
     }, [params])
 
-    const JobColumns = [
+    const JobColumns: any = [
         {
             title: 'Conf',
             dataIndex: 'case_name_list',
@@ -239,7 +241,7 @@ const Refenerce = (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => (
+            render: (_: any) => (
                 <Tooltip
                     overlayStyle={{ maxWidth: 390 }}
                     overlay={<div>{_.replace(/,/g, '/')}</div>}
@@ -283,7 +285,7 @@ const Refenerce = (props: any) => {
             key: 'gmt_created',
         },
     ];
-    const TempColumns = [
+    const TempColumns: any = [
         {
             title: test_type && <>Conf</>,
             dataIndex: 'case_name_list',
@@ -292,7 +294,7 @@ const Refenerce = (props: any) => {
             ellipsis: {
                 shwoTitle: false,
             },
-            render: (_: any, row: any) => (
+            render: (_: any) => (
                 test_type && <Tooltip
                     overlayStyle={{ maxWidth: 390 }}
                     overlay={<div>{_.replace(/,/g, '/')}</div>}
@@ -330,7 +332,7 @@ const Refenerce = (props: any) => {
             title: '计划名称',
             dataIndex: 'name',
             key: 'name',
-            render: (_: any, row: any) => (
+            render: (_: any) => (
                 <span
                     onClick={() => window.open(`/ws/${ws_id}/test_plan`)}
                     style={{ color: '#1890FF', cursor: 'pointer' }}>

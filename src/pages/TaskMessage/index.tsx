@@ -7,19 +7,19 @@ import TaskInformIndex from './MsgDetail/TaskInformIndex'
 import SystemInformIndex from './MsgDetail/SystemInformIndex'
 import { useClientSize } from '@/utils/hooks';
 
-const msg: React.FC<any> = () => {
-    let state = window.location.search.substring(1)
+const Msg: React.FC = () => {
+    const state = window.location.search.substring(1)
     const [tab, setTab] = useState(state === 'task' ? '1' : '2')
     const { TabPane } = Tabs;
     const { msgNum } = useModel('msg');
     // tab切换
-    const handleTabClick = (tab: string) => {
-        setTab(tab)
+    const handleTabClick = ($tab: string) => {
+        setTab($tab)
     }
     document.title = '消息通知 T-One'
 
     const { height: layoutHeight } = useClientSize()
-    
+
     return (
         <Layout style={{ padding: '14px 20px 0 20px', height: layoutHeight - 50, minHeight: 0, overflow: 'auto' }}>
             <Layout.Content style={{ background: '#fff' }}>
@@ -38,4 +38,5 @@ const msg: React.FC<any> = () => {
         </Layout>
     )
 }
-export default msg;
+
+export default Msg;
