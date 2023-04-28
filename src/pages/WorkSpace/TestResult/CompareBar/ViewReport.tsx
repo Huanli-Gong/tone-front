@@ -8,7 +8,7 @@ import SearchInput from '@/components/Public/SearchInput'
 import SelectUser from '@/components/Public/SelectUser'
 import { FilterFilled, CaretDownOutlined } from '@ant-design/icons';
 import { useParams, useIntl, FormattedMessage } from 'umi'
-import _ from 'lodash'
+import lodash from 'lodash'
 import { ColumnEllipsisText } from '@/components/ColumnComponents';
 import { useClickAway } from 'ahooks';
 
@@ -35,13 +35,35 @@ export default (props: any) => {
         setVisible(false)
     }, [ref])
 
+    const creatorFilterFn = (creatorVal: string, arr: any[]) => {
+        let refAllJobCopy = lodash.cloneDeep(arr)
+        if (creatorVal) {
+            refAllJobCopy = refAllJobCopy.filter((item: any) => {
+                const $arr = creatorVal.split(',').map((val: any) => val && val?.trim())
+                const creator = lodash.get(item, 'creator')
+                return $arr.includes(String(creator))
+            })
+        }
+        return refAllJobCopy
+    }
+    const nameFilterFn = (nameVal: string, arr: any[]) => {
+        let refAllJobCopy = lodash.cloneDeep(arr)
+        if (nameVal) {
+            refAllJobCopy = refAllJobCopy.filter((item: any) => {
+                const name = lodash.get(item, 'name')
+                return name.includes(nameVal.trim())
+            })
+        }
+        return refAllJobCopy
+    }
+
     const handleMemberFilter = (val: [], name: string) => {
         let searchVal: any = val || ''
-        if (_.isArray(searchVal)) searchVal = searchVal.join(',')
+        if (lodash.isArray(searchVal)) searchVal = searchVal.join(',')
         const obj = {}
         obj[name] = searchVal;
 
-        let refAllJobCopy = _.cloneDeep(viewAllReport)
+        let refAllJobCopy = lodash.cloneDeep(viewAllReport)
         if (searchVal === '') {
             refAllJobCopy = nameFilterFn(params.name || '', refAllJobCopy)
         } else {
@@ -51,27 +73,7 @@ export default (props: any) => {
         setJobRefAllReport(refAllJobCopy)
         setParams({ ...params, ...obj })
     }
-    const creatorFilterFn = (creatorVal: string, arr: any[]) => {
-        let refAllJobCopy = _.cloneDeep(arr)
-        if (creatorVal) {
-            refAllJobCopy = refAllJobCopy.filter((item: any) => {
-                const arr = creatorVal.split(',').map((val: any) => val && val?.trim())
-                const creator = _.get(item, 'creator')
-                return arr.includes(String(creator))
-            })
-        }
-        return refAllJobCopy
-    }
-    const nameFilterFn = (nameVal: string, arr: any[]) => {
-        let refAllJobCopy = _.cloneDeep(arr)
-        if (nameVal) {
-            refAllJobCopy = refAllJobCopy.filter((item: any) => {
-                const name = _.get(item, 'name')
-                return name.includes(nameVal.trim())
-            })
-        }
-        return refAllJobCopy
-    }
+
     const columns: TableColumnProps<any>[] = [
         {
             dataIndex: 'name',
@@ -86,7 +88,7 @@ export default (props: any) => {
                 autoFocus={autoFocus}
                 styleObj={styleObj}
                 onConfirm={(val: any) => {
-                    let refAllJobCopy = _.cloneDeep(viewAllReport)
+                    let refAllJobCopy = lodash.cloneDeep(viewAllReport)
                     if (val === undefined) {
                         refAllJobCopy = creatorFilterFn(params.creator_name || '', refAllJobCopy)
                     } else {
@@ -98,8 +100,8 @@ export default (props: any) => {
                 }}
                 placeholder={formatMessage({ id: 'ws.result.list.report.name.placeholder' })}
             />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
+            onFilterDropdownVisibleChange: (open: any) => {
+                if (open) {
                     setFocus(!autoFocus)
                 }
             },
@@ -123,29 +125,31 @@ export default (props: any) => {
             width: 100,
             title: <FormattedMessage id="ws.result.list.creators" />,
             filterDropdown: ({ confirm }: any) => <SelectUser autoFocus={autoFocus} confirm={confirm} onConfirm={(val: []) => handleMemberFilter(val, 'creator_name')} page_size={20} />,
-            onFilterDropdownVisibleChange: (visible: any) => {
-                if (visible) {
+            onFilterDropdownVisibleChange: (open: any) => {
+                if (open) {
                     setFocus(!autoFocus)
                 }
             },
             filterIcon: () => <FilterFilled style={{ color: params.creator_name ? '#1890ff' : undefined }} />,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
         {
             dataIndex: 'gmt_created',
             title: <FormattedMessage id="ws.result.list.gmt_created" />,
             width: 200,
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         }
     ]
-    const handleEdit = async (id: any, name: string) => {
+    const handleEdit = async (id: any) => {
         window.open(`/ws/${ws_id}/test_report/${id}`)
     }
+
     const handleViewReport = (e: any, all: any) => {
         e.stopPropagation()
-        if (!_.isArray(all)) all = []
+        // eslint-disable-next-line no-param-reassign
+        if (!lodash.isArray(all)) all = []
         if (all.length === 1) {
-            handleEdit(all[0].id, 'detail')
+            handleEdit(all[0].id)
             return
         }
         setVisible(!visible)
@@ -171,7 +175,7 @@ export default (props: any) => {
         );
     }
 
-    const isFlag = _.get(jobInfo, 'report_li') && jobInfo.report_li.length
+    const isFlag = lodash.get(jobInfo, 'report_li') && jobInfo.report_li.length
 
     return (
         <div className={styles.conf_item_box} >
@@ -186,13 +190,13 @@ export default (props: any) => {
                 {
                     origin === 'jobList' ?
                         <Typography.Text style={{ color: '#1890FF', cursor: 'pointer', display: isFlag ? 'inlineBlock' : 'none' }}>
-                            <span onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
+                            <span onClick={lodash.partial(handleViewReport, lodash, jobInfo && jobInfo.report_li)} style={{ display: 'flex', alignItems: 'center' }}>
                                 {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
                             </span>
                         </Typography.Text>
                         :
                         <Button type="primary"
-                            onClick={_.partial(handleViewReport, _, jobInfo && jobInfo.report_li)}
+                            onClick={lodash.partial(handleViewReport, lodash, jobInfo && jobInfo.report_li)}
                             style={{ marginRight: 8, display: isFlag ? 'inlineBlock' : 'none', ...buttonStyle }}>
                             {title || <FormattedMessage id="ws.result.list.view.report" />}<CaretDownOutlined style={{ display: isFlag > 1 ? 'inline-block' : 'none', marginLeft: '2px', marginTop: '2px' }} />
                         </Button>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { Row, Col, Space, Typography, Popconfirm, message, Button } from "antd"
 import { useAccess, Access, useParams, useIntl, FormattedMessage, getLocale } from 'umi'
@@ -63,10 +64,11 @@ const ListTable: React.FC<IProps> = (props) => {
 
     const [loading, setLoading] = React.useState(true)
     const [source, setSource] = React.useState<Record<string, any>>({})
-    const [sortOrder, setSortOrder] = React.useState({})
+    const [sortOrder, setSortOrder] = React.useState<any>({})
 
     const queryTestList = async () => {
         setLoading(true)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { code, msg, ...rest } = await queryTestResultList(pageQuery)
         setLoading(false)
         if (code !== 200) return
@@ -86,7 +88,7 @@ const ListTable: React.FC<IProps> = (props) => {
         }
     }, [setPageQuery, ws_id])
 
-    const handleClickStar = async ({ collection, id }: any, flag: any) => {
+    const handleClickStar = async ({ collection, id }: any) => {
         const { msg, code } = !collection ?
             await addMyCollection({ job_id: id }) :
             await deleteMyCollection({ job_id: id })
@@ -129,7 +131,7 @@ const ListTable: React.FC<IProps> = (props) => {
             fixed: 'left',
             className: 'collection_star result_job_hover_span',
             render: (_: any) => (
-                <div onClick={() => handleClickStar(_, !_.collection)}>
+                <div onClick={() => handleClickStar(_)}>
                     {
                         _.collection ?
                             <StarFilled className="is_collection_star" style={{ color: '#F7B500' }} /> :
@@ -190,7 +192,7 @@ const ListTable: React.FC<IProps> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_: any, row: any) => {
+            render: (_: any) => {
                 const strLocale = matchTestType(_)
                 return <FormattedMessage id={`${strLocale}.test`} defaultMessage={_} />
             }
@@ -331,6 +333,12 @@ const ListTable: React.FC<IProps> = (props) => {
         }
     ]
 
+    const handleResetSelectedKeys = React.useCallback(() => {
+        setSelectedRowKeys([])
+        setSelectRowData([])
+        setRadioValue(1)
+    }, [])
+
     const selectedChange = (record: any, selected: any) => {
         if (!record) {
             handleResetSelectedKeys()
@@ -380,12 +388,6 @@ const ListTable: React.FC<IProps> = (props) => {
             }
         },
     }
-
-    const handleResetSelectedKeys = React.useCallback(() => {
-        setSelectedRowKeys([])
-        setSelectRowData([])
-        setRadioValue(1)
-    }, [])
 
     const handleMoreDeleOk = async () => {
         if (!selectedRowKeys.length) return
@@ -454,7 +456,7 @@ const ListTable: React.FC<IProps> = (props) => {
                 rowSelection={rowSelection}
                 onChange={(pagination: any, filters: any, sorter: any) => {
                     const { field, order } = sorter
-                    setSortOrder(p => ({ ...p, [field]: order }))
+                    setSortOrder((p: any) => ({ ...p, [field]: order }))
                     sortStartTime(sorter)
                 }}
             />

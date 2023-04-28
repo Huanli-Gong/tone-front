@@ -1,7 +1,7 @@
 import { Tabs } from 'antd'
 import React from 'react'
 import { isUrl } from '@/utils/utils'
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 
 import TestResult from './InfoResultTable'
 import ResultFile from './InfoResultFile'
@@ -18,7 +18,6 @@ const CustomTabs = styled(Tabs)`
 `
 
 const ResultInfo: React.FC<any> = (props) => {
-    const { formatMessage } = useIntl()
     const { testType = 'functional' } = props
     const { result_data = {} } = props
     const { ci_detail, result } = result_data
@@ -26,6 +25,15 @@ const ResultInfo: React.FC<any> = (props) => {
 
     const [tab, setTab] = React.useState("1")
     // console.log('ciDetail:', ci_detail);
+
+    const matchResult = (params: string) => {
+        switch (params) {
+            case 'success': return <span style={{ color: '#81BF84' }}>{'Complete'}</span>
+            case 'fail': return <span style={{ color: '#C84C5A' }}>{'Fail'}</span>
+            default: return isUrl(params) ? <a href={params}>{params}</a> : <span style={{ opacity: 0.65 }}>{params}</span>
+        }
+    }
+
     const RowItem = ({ label, value }: any) => {
         return (
             <div style={{ display: 'flex' }}>
@@ -33,13 +41,6 @@ const ResultInfo: React.FC<any> = (props) => {
                 {matchResult(value)}
             </div>
         )
-    }
-    const matchResult = (params: string) => {
-        switch (params) {
-            case 'success': return <span style={{ color: '#81BF84' }}>{'Complete'}</span>
-            case 'fail': return <span style={{ color: '#C84C5A' }}>{'Fail'}</span>
-            default: return isUrl(params) ? <a href={params}>{params}</a> : <span style={{ opacity: 0.65 }}>{params}</span>
-        }
     }
 
     return (

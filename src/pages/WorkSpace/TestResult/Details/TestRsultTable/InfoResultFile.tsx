@@ -20,7 +20,7 @@ export default ({ test_case_id, suite_id }: any) => {
     const { formatMessage } = useIntl()
     const { id: job_id } = useParams() as any
 
-    const handlePathClick = async (ctx: any, job_id: number | string, state: string) => {
+    const handlePathClick = async (ctx: any, state: string) => {
         let obj = {}
         if (state == 'download') {
             obj = { path: ctx.path, job_id, download: '1' }
@@ -35,22 +35,22 @@ export default ({ test_case_id, suite_id }: any) => {
         }
     }
 
-    const RenderItem = (ctx: any, job_id: any) => {
+    const RenderItem = (ctx: any) => {
         return (
             <Space>
-                <span onClick={() => handlePathClick(ctx, job_id, 'look')}>{ctx.name}</span>
-                {!ctx.items.length && <DownloadOutlined onClick={() => handlePathClick(ctx, job_id, 'download')} />}
+                <span onClick={() => handlePathClick(ctx, 'look')}>{ctx.name}</span>
+                {!ctx.items.length && <DownloadOutlined onClick={() => handlePathClick(ctx, 'download')} />}
             </Space>
         )
     }
-    const treeDataMap = (item: any, index: string | number, job_id: string | number): Array<any> => (
+    const treeDataMap = (item: any, index: string | number): any => (
         item.map((ctx: any, idx: number) => (
             {
                 ...ctx,
-                title: RenderItem(ctx, job_id),
+                title: RenderItem(ctx),
                 key: `${index}-${idx}`,
                 icon: (p: any) => <TreeFileIcon {...p} />,
-                children: ctx.items && ctx.items.length > 0 ? treeDataMap(ctx.items, `${index}-${idx}`, job_id) : [],
+                children: ctx.items && ctx.items.length > 0 ? treeDataMap(ctx.items, `${index}-${idx}`) : [],
             }
         ))
     )
@@ -61,17 +61,17 @@ export default ({ test_case_id, suite_id }: any) => {
             initialData: [],
             formatResult: res => {
                 if (res.code === 200) {
-                    return treeDataMap(res.data, 0, job_id)
+                    return treeDataMap(res.data, 0)
                 }
                 return []
             },
         }
     )
 
-    const handleOpenOss = async (path: string) => {
-        const data = await request(`/api/get/oss/url/`, { params: { path, job_id } })
-        if (data) {
-            if (data.code === 200 && data.msg === 'ok') window.open(data.data)
+    /* const handleOpenOss = async (path: string) => {
+        const { data: source, code, msg } = await request(`/api/get/oss/url/`, { params: { path, job_id } })
+        if (source) {
+            if (code === 200 && msg === 'ok') window.open(source)
             else message.warn(formatMessage({ id: 'ws.result.details.failed.get.file' }))
         }
     }
@@ -84,7 +84,7 @@ export default ({ test_case_id, suite_id }: any) => {
                 return handleOpenOss(item.path)
             item.children.length > 0 && mapChildKey(item.children, clickKey)
         }
-    }
+    } */
 
     return (
         <div style={{ minHeight: 50 }}>

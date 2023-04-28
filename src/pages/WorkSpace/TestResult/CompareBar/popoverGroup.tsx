@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import { Checkbox,Popover } from 'antd'
+import { useState, useEffect } from 'react'
+import { Checkbox, Popover } from 'antd'
 import styles from './index.less'
 
 
 export default (props: any) => {
-    const {disabled,content,title, isChecked, selectedChange, jobInfo} = props
+    const { disabled, content, title, isChecked, selectedChange, jobInfo } = props
     const [visible, setVisible] = useState(false)
     const fn = () => {
         setVisible(false)
@@ -16,7 +16,7 @@ export default (props: any) => {
             window.removeEventListener('click', fn, false)
         }
     }, []);
-    const handleClick = (e:any) => {
+    const handleClick = (e: any) => {
         e.stopPropagation();
         selectedChange(jobInfo, e.target.checked)
         setVisible(e.target.checked)
@@ -30,9 +30,9 @@ export default (props: any) => {
             <Popover
                 title={title}
                 trigger="click"
-                visible={visible}
+                open={visible}
                 placement='rightTop'
-                onVisibleChange={visible => setVisible(visible)}
+                onOpenChange={open => setVisible(open)}
                 content={content}
                 overlayClassName={styles.popover_group}
             />

@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import { useIntl, FormattedMessage } from 'umi';
-import { Button, TableColumnsType, Table } from 'antd';
+import { Button, Table } from 'antd';
+import type { TableColumnsType } from "antd"
 import { copyTooltipColumn, evnPrepareState } from '../components'
 import TidDetail from './QueryTidList';
 import styles from './index.less'
@@ -70,7 +72,7 @@ const ProcessExpandTable: React.FC<AnyType> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'gmt_created',
@@ -117,8 +119,9 @@ const ProcessExpandTable: React.FC<AnyType> = (props) => {
             size="small"
             scroll={{
                 x: columns.reduce((p: any, c: any) => {
+                    // eslint-disable-next-line no-param-reassign
                     if (c?.width) return p += +c.width
-                    p
+                    return p
                 }, 0)
             }}
             rowClassName={styles.prep_test_conf_row}

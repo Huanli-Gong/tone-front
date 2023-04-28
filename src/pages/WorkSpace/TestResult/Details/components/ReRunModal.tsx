@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 
 import { Modal, Row, Col, Form, Checkbox } from 'antd'
@@ -19,12 +20,12 @@ const Content = styled(Modal)`
 
 const ReRunModal = (props: any, ref: any) => {
     const { ws_id } = useParams<any>()
+    const [form] = Form.useForm()
 
     const [visible, setVisible] = useState(false)
     const [source, setSource] = useState<any>(null)
     // 重跑选项之一
     const [reRunChecked, setReRunChecked] = useState(false)
-    const [form] = Form.useForm()
 
     const hanldeCancle = () => {
         setVisible(false)
