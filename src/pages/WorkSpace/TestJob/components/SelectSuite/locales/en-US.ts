@@ -1,9 +1,10 @@
 const defaultKey = 'select.suite'
 
-const text =  {
+const text = {
   'select.case': 'Select Case',
   'selected': 'Selected Test Suite',
-  'removed': 'Has been removed!',
+  'removed': 'Has been removed, please reconfigure the machine before executing!',
+  'existent': 'Machine does not exist, please reconfigure the machine!',
   'please.select.case': 'Select Case',
 
   // 业务测试(选择用例)
@@ -36,7 +37,7 @@ const text =  {
   'variable': 'Variable',
 
   // Suite Select Drawer
-  'vertical.message': 'If multiple values are displayed, enter a new value to cover all values. If no value is entered, the original value is retained', 
+  'vertical.message': 'If multiple values are displayed, enter a new value to cover all values. If no value is entered, the original value is retained',
   'variable.name': 'Variable Name：',
   'variable.desc': 'Variable Desc：',
   'value': 'Value',
@@ -48,7 +49,7 @@ const text =  {
   'cleanup_info.placeholder': 'Multiple scripts have been configured, careful operation',
   'monitor.console': 'Monitoring Configuration',
   'monitor.item': 'Select Monitoring Items',
-  'monitor.data': 'Data Monitoring',  
+  'monitor.data': 'Data Monitoring',
   'monitor.the.server': 'Select Monitoring Server',
   'the.server.one': '机器一',
   'add.group.monitor': '+ Add a set of monitors',
@@ -73,7 +74,7 @@ const text =  {
   'agent.select': 'Select Server Type(agent)',
   'custom_ip': 'Enter IP/SN',
   'enter.ip': 'Enter IP',
-  'deploy.toneagent': 'Deploy ToneAgent',	
+  'deploy.toneagent': 'Deploy ToneAgent',
   'repeat.tootip1': 'Applies to all Conf files under the Suite selected, range 1-10000',
   'repeat.tootip2': 'Range 1-10000',
 

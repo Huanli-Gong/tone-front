@@ -1,4 +1,5 @@
-import React, { forwardRef, useImperativeHandle, useState, useCallback, useMemo, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { forwardRef, useImperativeHandle, useState, useCallback, useMemo, useEffect } from 'react'
 import { Modal, Row, Space, Button, Col, Spin, Select, Table } from 'antd'
 
 import { useRequest, useLocation, useParams, useIntl, FormattedMessage } from 'umi'
@@ -11,7 +12,7 @@ export default forwardRef(
         const { formatMessage } = useIntl()
         const { ws_id } = useParams() as any
         const { query }: any = useLocation()
-        const { test_type, projectId, onOk, showType } = props
+        const { test_type, projectId, onOk, show_type } = props
 
         const [visible, setVisible] = useState(false)
         const [activeSuite, setActiveSuite] = useState<any>(undefined)
@@ -29,7 +30,7 @@ export default forwardRef(
 
         useEffect(() => {
             requestSuiteList()
-        }, [ws_id, test_type])
+        }, [ws_id, test_type, requestSuiteList])
 
         const requestMetricList = _.debounce(
             async (params: any) => {
@@ -50,7 +51,7 @@ export default forwardRef(
             if (projectId && activeSuite && activeConf) {
                 requestMetricList({ test_suite_id: activeSuite, test_case_id: activeConf })
             }
-        }, [projectId])
+        }, [activeConf, activeSuite, projectId, requestMetricList])
 
         const { data: subcaseList, run: requestSubcaseList, loading: subcaseFetching } = useRequest(
             queryFunctionalSubcases,
@@ -102,7 +103,7 @@ export default forwardRef(
                         const test_case_id = activeConf || suiteList[i].test_case_list[0].id
                         if (test_type === 'performance')
                             requestMetricList({ test_suite_id: suiteList[i].id, test_case_id })
-                        if (test_type !== 'performance' && showType !== 'pass_rate')
+                        if (test_type !== 'performance' && show_type !== 'pass_rate')
                             requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
                         !activeConf && setActiveConf(test_case_id)
                         return suiteList[i].test_case_list
@@ -110,7 +111,7 @@ export default forwardRef(
                     return []
                 }
             return []
-        }, [activeSuite, suiteList, test_type])
+        }, [activeConf, activeSuite, requestMetricList, requestSubcaseList, show_type, suiteList, test_type])
 
         const selectSuiteName = useMemo(() => {
             for (let len = suiteList.length, i = 0; i < len; i++)
@@ -129,8 +130,8 @@ export default forwardRef(
         const title = useMemo(() => {
             if (test_type === 'performance')
                 return `Metric${selectMetric.length ? `(${selectMetric.length})` : ''}`
-            return showType === 'pass_rate' ? 'Test Conf' : 'Test Case'
-        }, [test_type, showType, selectMetric])
+            return show_type === 'pass_rate' ? 'Test Conf' : 'Test Case'
+        }, [test_type, show_type, selectMetric])
 
         const handleClose = useCallback(() => {
             setVisible(false)
@@ -147,7 +148,7 @@ export default forwardRef(
             if (test_type === 'functional') {
                 params.test_case_id = activeConf
                 params.title = `${selectSuiteName}/${selectConfName}`
-                if (showType !== 'pass_rate') {
+                if (show_type !== 'pass_rate') {
                     params.sub_case_name = selectSubcase[0]
                     params.test_case_id = activeConf
                     params.title = `${selectSuiteName}/${selectConfName}` ///${ selectSubcase.toString() }
@@ -161,16 +162,16 @@ export default forwardRef(
         const canSubmit = useMemo(() => {
             if (test_type === 'performance')
                 return selectMetric.length > 0
-            if (showType !== 'pass_rate')
+            if (show_type !== 'pass_rate')
                 return selectSubcase && selectSubcase.length > 0
             return activeConf || false
-        }, [selectMetric, selectSubcase, test_type, activeConf, showType])
+        }, [selectMetric, selectSubcase, test_type, activeConf, show_type])
 
         return (
             <Modal
                 title={title}
                 width={940}
-                visible={visible}
+                open={visible}
                 onCancel={handleClose}
                 footer={
                     <Space>
@@ -183,7 +184,7 @@ export default forwardRef(
                     <Row style={{ height: 400 }}>
                         <Col span={24} style={{ marginBottom: 10 }}>
                             {
-                                (test_type === 'performance' || showType !== 'pass_rate') &&
+                                (test_type === 'performance' || show_type !== 'pass_rate') &&
                                 <Row>
                                     <Col span={12}>
                                         <Row align="middle">
@@ -203,18 +204,13 @@ export default forwardRef(
                                                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                                 }
                                                 showSearch
-                                            >
-                                                {
-                                                    suiteList.map((i: any) => (
-                                                        <Select.Option
-                                                            key={i.id}
-                                                            value={i.id}
-                                                        >
-                                                            {i.name}
-                                                        </Select.Option>
-                                                    ))
+                                                options={
+                                                    suiteList.map((i: any) => ({
+                                                        value: i.id,
+                                                        label: i.name
+                                                    }))
                                                 }
-                                            </Select>
+                                            />
                                         </Row>
                                     </Col>
                                     <Col span={12}>
@@ -227,7 +223,7 @@ export default forwardRef(
                                                     setSelectMetric([])
                                                     if (test_type === 'performance')
                                                         requestMetricList({ test_suite_id: activeSuite, test_case_id })
-                                                    if (test_type !== 'performance' && showType !== 'pass_rate')
+                                                    if (test_type !== 'performance' && show_type !== 'pass_rate')
                                                         requestSubcaseList({ test_case_id, test_suite_id: activeSuite })
                                                     setSelectSubcase([])
                                                 }}
@@ -254,7 +250,7 @@ export default forwardRef(
                                 </Row>
                             }
                             {
-                                (test_type === 'functional' && showType === 'pass_rate') &&
+                                (test_type === 'functional' && show_type === 'pass_rate') &&
                                 <Row align="middle">
                                     <span style={{ width: 76, display: 'inline-block' }} >Test Suite:</span>
                                     <Select
@@ -302,7 +298,7 @@ export default forwardRef(
                                     }}
                                     onRow={
                                         record => ({
-                                            onClick: event => {
+                                            onClick: () => {
                                                 if (selectMetric.includes(record)) {
                                                     setSelectMetric(selectMetric.filter((i: any) => i !== record))
                                                 }
@@ -316,7 +312,7 @@ export default forwardRef(
                                 />
                             }
                             {
-                                (test_type === 'functional' && showType === 'pass_rate') &&
+                                (test_type === 'functional' && show_type === 'pass_rate') &&
                                 <Table
                                     dataSource={confList}
                                     columns={[{ dataIndex: 'name', title: 'Test Conf' }]}
@@ -332,7 +328,7 @@ export default forwardRef(
                                     }}
                                     onRow={
                                         record => ({
-                                            onClick: event => {
+                                            onClick: () => {
                                                 setActiveConf(record.id)
                                             }
                                         })
@@ -341,7 +337,7 @@ export default forwardRef(
                                 />
                             }
                             {
-                                (test_type === 'functional' && showType !== 'pass_rate') &&
+                                (test_type === 'functional' && show_type !== 'pass_rate') &&
                                 <Table
                                     dataSource={subcaseList}
                                     columns={[{ dataIndex: '', title: 'Test Case' }]}
@@ -357,7 +353,7 @@ export default forwardRef(
                                     }}
                                     onRow={
                                         record => ({
-                                            onClick: event => {
+                                            onClick: () => {
                                                 setSelectSubcase([record])
                                             }
                                         })

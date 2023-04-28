@@ -31,10 +31,10 @@ const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any)
 
                 let x = coord[0],
                     y = coord[1],
-                    rect = { width: 40, height: coordSys.height / 3 },
-                    style = {
-                        fill: baseicData.filter((v) => v.value === seriesName)[0].color
-                    };
+                    rect = { width: 40, height: coordSys.height / 3 };
+                const style = {
+                    fill: baseicData.filter((v) => v.value === seriesName)[0].color
+                };
                 x = x - rect.width / 2;
                 let pathData: any, arrowX, arrowY;
 
@@ -67,12 +67,12 @@ const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any)
                     new Array(len)
                         .fill('')
                         .reduce(
-                            (p, cur, x) => p.concat({
+                            (p, cur, a) => p.concat({
                                 type: "line",
                                 shape: {
-                                    x1: coordSys.x + x * 6,
+                                    x1: coordSys.x + a * 6,
                                     y1: coordSys.y + coordSys.height / 2,
-                                    x2: coordSys.x + x * 6 + 4,
+                                    x2: coordSys.x + a * 6 + 4,
                                     y2: coordSys.y + coordSys.height / 2
                                 },
                                 silent: true,
@@ -88,6 +88,7 @@ const customChartOption: any = (dataSource: any, ws_id: any, formatMessage: any)
                     children.push({
                         type: "path",
                         shape: {
+                            /* @ts-ignore */
                             pathData,
                             x,
                             y
