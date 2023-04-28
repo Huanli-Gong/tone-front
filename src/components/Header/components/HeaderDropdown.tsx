@@ -79,8 +79,8 @@ export const HearderDropdown: React.FC<any> = (props) => {
 
     const queryWorkspaceList = async (params: any = DEFAULT_PAGE_PARAMS) => {
         if (!initialState.fetchHistory) return
-        const { data = [], code, total_page } = await queryWorkspaceHistory(params)
-        setIsOver(total_page === pageParams?.page_num)
+        const { data = [], code, page_num } = await queryWorkspaceHistory(params)
+        setIsOver(page_num === pageParams?.page_num)
         if (code !== 200) {
             redirectErrorPage(500)
             return

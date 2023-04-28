@@ -32,8 +32,7 @@ const PersonCenter = () => {
                 }
             }
 
-            await request
-                .get('/api/auth/logout/')
+            await request('/api/auth/logout/')
 
             window.location.href = '/'
         }
