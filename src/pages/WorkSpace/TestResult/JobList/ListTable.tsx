@@ -55,7 +55,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const { initialColumns } = useProvider()
     const { formatMessage } = useIntl()
     const locale = getLocale() === 'en-US';
-    const { pageQuery, setPageQuery, radioValue = 1, countRefresh } = props
+    const { pageQuery, setPageQuery, radioValue = 1, setRadioValue, countRefresh } = props
     const { ws_id } = useParams() as any
     const access = useAccess()
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<any[]>([])
@@ -336,6 +336,7 @@ const ListTable: React.FC<IProps> = (props) => {
     const handleResetSelectedKeys = React.useCallback(() => {
         setSelectedRowKeys([])
         setSelectRowData([])
+        setRadioValue(1)
     }, [])
 
     const selectedChange = (record: any, selected: any) => {

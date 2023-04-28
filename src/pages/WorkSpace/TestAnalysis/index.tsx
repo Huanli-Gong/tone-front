@@ -1,8 +1,8 @@
 import { Button, Layout, Modal } from 'antd';
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Icon from '@/assets/img/compareHome.png';
 import { useClientSize, writeDocumentTitle } from '@/utils/hooks';
-import { history, useIntl, FormattedMessage, useParams } from 'umi'
+import { history, FormattedMessage, useParams } from 'umi'
 import styles from './AnalysisCompare/index.less'
 import Draggable from 'react-draggable';
 import AddJob from './AnalysisCompare/AddJob'
@@ -26,15 +26,16 @@ export default (props: any) => {
     const handleAddJobGroup = () => {
         setVisibleAddGroupItem(true)
     }
+
+    const destroyAll = () => {
+        Modal.destroyAll();
+    }
+
     const handleAddGroupItemCancel = () => {
         setVisibleAddGroupItem(false);
         destroyAll()
     }
 
-    const destroyAll = () => {
-        Modal.destroyAll();
-    }
-    
     const handleAddGroupItemOk = (obj: any) => {
         setVisibleAddGroupItem(false)
         window.sessionStorage.setItem(`${ws_id}-compareData`, JSON.stringify([obj]))
@@ -58,7 +59,7 @@ export default (props: any) => {
                 <div style={{ textAlign: 'center', position: 'relative', top: '50%', transform: 'translateY(-50%)' }}>
                     <div>
                         <div style={{ display: 'inline-block' }}>
-                            <img alt="icon" src={Icon} style={{ width: 438, height: 268, transform: 'translateY(-30px)' }}></img>
+                            <img alt="icon" src={Icon} style={{ width: 438, height: 268, transform: 'translateY(-30px)' }} />
                         </div>
                         <div style={{ textAlign: 'left', display: 'inline-block', marginLeft: 80 }}>
                             <div style={{ color: '#000', fontSize: 46, opacity: 0.85, fontWeight: 'bold' }}><FormattedMessage id="analysis.title" /></div>

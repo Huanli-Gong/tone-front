@@ -11,7 +11,7 @@ import { useParams, useIntl, FormattedMessage } from 'umi'
 interface ContainerProps {
     height?: number;
 }
-const { RangePicker }:any = DatePicker;
+const { RangePicker }: any = DatePicker;
 
 const Container = styled(Layout) <ContainerProps>`
     min-height:unset;
@@ -83,10 +83,7 @@ const RangeTime = styled.div`
     float:right;
 `
 
-type IProps = {
-    [k: string]: any
-}
-const ProjectDashboard: React.FC<IProps> = (props) => {
+const ProjectDashboard: React.FC<AnyType> = (props) => {
     const { formatMessage } = useIntl()
     const { ws_id, project_id } = useParams() as any
     const { height: layoutHeight } = useClientSize()
@@ -156,8 +153,8 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
     }, [])
     let startDate: any = moment().subtract(30, "days").format('YYYY-MM-DD')
     let endDate: any = moment().format('YYYY-MM-DD')
-    const todayText = formatMessage({id: 'ws.dashboard.today'})
-    const monthText = formatMessage({id: 'ws.dashboard.one.month'})
+    const todayText = formatMessage({ id: 'ws.dashboard.today' })
+    const monthText = formatMessage({ id: 'ws.dashboard.one.month' })
     return (
         <Container height={layoutHeight - 50}>
             <InfoBanner >
@@ -190,7 +187,7 @@ const ProjectDashboard: React.FC<IProps> = (props) => {
                                     [monthText]: [moment().startOf('month'), moment().endOf('month')],
                                 }}
                                 format="YYYY-MM-DD"
-                                onChange={(d:any, t:any) => getChartData(t)}
+                                onChange={(d: any, t: any) => getChartData(t)}
                             />
                         </RangeTime>
                     </Col>

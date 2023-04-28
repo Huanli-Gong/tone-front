@@ -56,16 +56,18 @@ const ReRunModal = (props: any, ref: any) => {
     }
 
     const afterClose = () => {
-        okLink && targetJump(okLink)
+        if (okLink)
+            targetJump(okLink)
     }
-
 
     const fail_case = Form.useWatch('fail_case', form);
     const suite = Form.useWatch('suite', form);
 
     useImperativeHandle(ref, () => ({
         show(_: any) {
-            _ && setSource(_)
+            console.log(_)
+            if (_)
+                setSource(_)
             setVisible(true)
             setOkLink(null)
         }
@@ -125,13 +127,16 @@ const ReRunModal = (props: any, ref: any) => {
                     <Form.Item valuePropName="checked" name="notice">
                         <Checkbox><FormattedMessage id="ws.result.list.reRun.checked.notice" /></Checkbox>
                     </Form.Item>
-                    <Form.Item valuePropName="checked" name="inheriting_machine">
-                        <Checkbox
-                            disabled={!reRunChecked}
-                        >
-                            <FormattedMessage id={`ws.result.list.reRun.checked.inheriting_machine`} />
-                        </Checkbox>
-                    </Form.Item>
+                    {
+                        !["pending", "pending_q"].includes(source?.state) &&
+                        <Form.Item valuePropName="checked" name="inheriting_machine">
+                            <Checkbox
+                                disabled={!reRunChecked}
+                            >
+                                <FormattedMessage id={`ws.result.list.reRun.checked.inheriting_machine`} />
+                            </Checkbox>
+                        </Form.Item>
+                    }
                 </Form>
             </Row>
         </Content>

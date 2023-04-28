@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useRef, useEffect } from 'react'
-import { Row, Col, Form, Select, DatePicker, Card, Button, Empty, Tooltip, message, Descriptions, Spin } from 'antd'
+import { Row, Col, Form, Select, DatePicker, Button, Tooltip, message, Descriptions, Space } from 'antd'
 import moment from 'moment'
 import { useRequest, useLocation, useParams, useIntl, FormattedMessage } from 'umi'
 import styled from 'styled-components'
@@ -8,15 +9,14 @@ import AnalysisTable from './Table'
 import ChartRender from './RenderChart'
 import { queryProjectList, queryPerfAnalysisList, queryFuncAnalysisList } from '../services';
 import { tagList as queryJobTagList } from "@/pages/WorkSpace/TagManage/service"
-import SelectMertric from './MetricSelectDrawer'
+import SelectMertric from "./MetricSelectModal/layouts"
 import styles from './index.less'
-import _ from 'lodash'
 import { QuestionCircleOutlined } from '@ant-design/icons'
-// import { sourceData } from './SelectMertric_old'
 
-const CardWrapper = styled(Card)`
-    border: none;
-`
+import ClusterChart from './PerformanceCharts/Cluster'
+import StandaloneChart from './PerformanceCharts/Standalone'
+import EmptyComp from "./EmptyComp"
+import LoadingComp from './Loading'
 
 const TootipTipRow = styled(Row)`
     position:relative;
@@ -56,6 +56,7 @@ const SuiteConfMetric = (props: any) => {
                 >
                     {props?.metric?.map(
                         (item: any, i: number) =>
+                            // eslint-disable-next-line react/no-array-index-key
                             <div key={i}>{item}</div>)
                     }
                 </Descriptions.Item>
@@ -68,12 +69,14 @@ const TabPaneCard: React.FC<any> = (props) => {
     const { formatMessage } = useIntl()
     const { ws_id } = useParams() as any
     const { query }: any = useLocation()
-    const { provider, testType, showType, onChange } = props
+    const { info, setInfo } = props
+    const { show_type, provider_env, test_type } = info
     const [chartData, setChartData] = useState<any>({})
     const [tableData, setTableData] = useState<any>([])
     const [metricData, setMetricData] = useState<any>(null)
     const [projectId, setProjectId] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(JSON.stringify(query) !== "{}")
+    const [fetchData, setFetchData] = React.useState<any[]>([])
 
     const selectMetricRef: any = useRef()
     const [form] = Form.useForm()
@@ -85,25 +88,25 @@ const TabPaneCard: React.FC<any> = (props) => {
     const { data: projectList } = useRequest(() => queryProjectList({ ws_id, page_size: 500 }), { initialData: [] })
 
     const requestAnalysisData = async (params: any) => {
-        onChange(params)
-        setLoading(true)
-
+        setInfo(params)
         if (loading) return
-        const { data, code } = testType === 'performance' ?
+        setLoading(true)
+        const { data, code } = test_type === 'performance' ?
             await queryPerfAnalysisList(params) :
             await queryFuncAnalysisList(params)
         setLoading(false)
 
-        if (code === 200) {
-            const { job_list, metric_map, case_map } = data
-            if (job_list.length > 0) {
-                setChartData(testType === 'performance' ? metric_map : case_map)
-                setTableData(job_list)
-                return
-            }
+        if (code !== 200) {
+            setTableData([])
+            setChartData({})
+            return
         }
-        setTableData([])
-        setChartData({})
+        const { job_list, metric_map, case_map } = data
+        if (job_list.length > 0) {
+            setChartData(test_type === 'performance' ? metric_map : case_map)
+            setTableData(job_list)
+            return
+        }
     }
 
     const handleSelectMertric = () => {
@@ -114,17 +117,10 @@ const TabPaneCard: React.FC<any> = (props) => {
         }
     }
 
-    const handleMerticSelectOk = (data: any) => {
-        setMetricData(data)
-        fetchAnalysis(data)
-    }
-
-    const fetchAnalysis = (data: any) => {
-        const params: any = testType === 'functional' ? { show_type: showType } : { provider_env: provider }
+    const getAnalysisFormData = () => {
+        const params: any = test_type === 'functional' ? { show_type } : { provider_env }
         const values = form.getFieldsValue()
         const { project_id, tag, time } = values
-
-        const { test_suite_id, test_case_id } = data
 
         if (time && time.length > 0) {
             const [start_time, end_time] = time
@@ -132,8 +128,16 @@ const TabPaneCard: React.FC<any> = (props) => {
             params.end_time = moment(end_time).format('YYYY-MM-DD')
         }
 
-        params.tag = tag
+        if (tag)
+            params.tag = tag
         params.project_id = project_id
+        return params
+    }
+
+    const fetchAnalysis = (data: any) => {
+        const { test_suite_id, test_case_id } = data
+        const params = getAnalysisFormData()
+        const { project_id } = params
         if (project_id && test_suite_id && test_case_id) {
             requestAnalysisData({
                 ...params,
@@ -142,22 +146,42 @@ const TabPaneCard: React.FC<any> = (props) => {
         }
     }
 
-    const handleFormChange = (changedFields: any, allFields: any) => {
-        const params: any = { provider_env: provider, show_type: showType }
-        allFields.forEach((i: any) => {
-            if (i.name.toString() === 'project_id' && i.value) params.project_id = i.value
-            if (i.name.toString() === 'tag' && i.value) params.tag = i.value
-            if (i.name.toString() === 'time' && i.value) {
-                const [start_time, end_time] = i.value
-                params.start_time = moment(start_time).format('YYYY-MM-DD')
-                params.end_time = moment(end_time).format('YYYY-MM-DD')
-            }
-        })
+    React.useEffect(() => {
+        const baseFormData = getAnalysisFormData()
+        const obj = { ...baseFormData, ...metricData, metric: metricData?.metric?.toString() }
+        if (fetchData?.length !== 0) {
+            fetchData?.forEach(({ key, metric }: any) => {
+                obj[key] = metric.toString()
+            })
+        }
+        setInfo(obj)
+    }, [fetchData, metricData])
 
+    const handleMerticSelectOk = (data: any) => {
+        setMetricData(data)
+        if (test_type !== "performance")
+            fetchAnalysis(data)
+        else {
+            const { metric } = data
+            const params = getAnalysisFormData()
+            const metrics = metric.map((i: any) => ({ ...params, ...data, metric: [i], key: i }))
+            setTableData([])
+            setFetchData(metrics)
+        }
+    }
+
+    const handleFormChange = () => {
+        const params = getAnalysisFormData()
         if (metricData) {
-            const { test_suite_id, test_case_id } = metricData
+            const { test_suite_id, test_case_id, metric } = metricData
             const { project_id } = params
             if (test_suite_id && test_case_id && project_id) {
+                if (test_type === "performance") {
+                    const metrics = metric.map((i: any) => ({ ...params, ...metricData, metric: [i], key: i }))
+                    setTableData([])
+                    setFetchData(metrics)
+                    return
+                }
                 requestAnalysisData({
                     ...params,
                     ...metricData
@@ -167,31 +191,35 @@ const TabPaneCard: React.FC<any> = (props) => {
     }
 
     useEffect(() => {
-        selectMetricRef.current.reset()
-        setChartData(null)
-        setTableData([])
-        // form.resetFields()
-        setMetricData(null)
-    }, [provider, showType, testType])
+        return () => {
+            setChartData(null)
+            setTableData([])
+            setMetricData({})
+            setFetchData([])
+            form.resetFields()
+        }
+    }, [provider_env, show_type, test_type])
 
     useEffect(() => {
         if (query && JSON.stringify(query) !== '{}') {
             const {
-                test_type, project_id, tag, start_time, end_time, provider_env,
+                test_type: $test_type, project_id, tag, start_time, end_time, provider_env: $provider_env,
                 metric, title, test_suite_id, test_case_id, sub_case_name, days
             } = query
 
-            if (test_type === testType) {
+            const $metric = Object.prototype.toString.call(metric) === "[object Array]" ? metric : metric.split(",")
+
+            if (test_type === $test_type) {
                 form.setFieldsValue({
                     project_id: project_id ? + project_id : undefined,
                     tag: tag ? + tag : undefined,
                 })
 
                 const params: any = {
-                    metric: _.isArray(metric) ? metric : [metric],
+                    metric: $metric,
                     project_id, tag,
                     test_suite_id, test_case_id, sub_case_name,
-                    show_type: showType, provider_env
+                    show_type, provider_env: $provider_env
                 }
 
                 let start = start_time
@@ -207,14 +235,27 @@ const TabPaneCard: React.FC<any> = (props) => {
                 params.start_time = moment(start).format("YYYY-MM-DD")
                 params.end_time = moment(end).format("YYYY-MM-DD")
 
+                if (title) {
+                    if (test_type !== "performance")
+                        requestAnalysisData(params)
+                    else {
+                        const metrics = $metric?.map((i: any) => ({
+                            ...params,
+                            metric: query[i] ? query[i]?.split(",") : [i],
+                            key: i
+                        }))
+                        setTableData([])
+                        setFetchData(metrics)
+                    }
+                }
+
                 setMetricData({
                     title,
-                    metric: _.isArray(metric) ? metric : [metric],
+                    metric: $metric,
                     sub_case_name,
                     test_suite_id,
                     test_case_id
                 })
-                if (title) requestAnalysisData(params)
 
                 if (hasNearDay) {
                     form.setFieldsValue({ time: [moment(start), moment()] })
@@ -229,9 +270,18 @@ const TabPaneCard: React.FC<any> = (props) => {
         setProjectId(val)
     }
 
+    const handleListChange = (list: any[]) => {
+        setTableData((p: any) => p.concat(list.filter((i: any) => !p.map((x: any) => x.id).includes(i.id))).sort((a: any, b: any) => b.id - a.id))
+    }
+
     return (
-        <>
-            <Row style={{ padding: '0 20px 10px', background: '#fff' }}>
+        <div style={{ width: "100%", background: "rgba(0, 0, 0, 0.04)", position: "relative" }} >
+            {
+                loading &&
+                <LoadingComp />
+            }
+
+            <Row style={{ padding: '0 20px 10px', background: '#fff', marginBottom: 10 }}>
                 <Col span={24}>
                     <Form
                         layout="inline"
@@ -246,16 +296,14 @@ const TabPaneCard: React.FC<any> = (props) => {
                                 placeholder={formatMessage({ id: 'analysis.project.placeholder' })}
                                 onChange={handleProductChange}
                                 showSearch
-                                filterOption={(input, option: any) => {
-                                    return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                }}
-                            >
-                                {
-                                    projectList.map((i: any) => (
-                                        <Select.Option key={i.id} value={i.id}>{i.name}</Select.Option>
-                                    ))
+                                filterOption={(input, option: any) => option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                options={
+                                    projectList.map((i: any) => ({
+                                        value: i.id,
+                                        label: i.name
+                                    }))
                                 }
-                            </Select>
+                            />
                         </Form.Item>
                         <Form.Item label={<FormattedMessage id="analysis.tag" />}>
                             <TootipTipRow>
@@ -265,26 +313,20 @@ const TabPaneCard: React.FC<any> = (props) => {
                                         placeholder={formatMessage({ id: 'analysis.tag.placeholder' })}
                                         showSearch
                                         style={{ width: 300 }}
-                                        filterOption={(input, option: any) => {
-                                            if (typeof option.children === "string")
-                                                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            return false
-                                        }}
-                                    >
-                                        <Select.Option value=""><FormattedMessage id="analysis.indistinguishable" /></Select.Option>
-                                        {
-                                            tagList
-                                                .filter(({ creator }: any) => Object.prototype.toString.call(creator) === "[object Number]")
-                                                .map((i: any) => (
-                                                    <Select.Option
-                                                        key={i.id}
-                                                        value={i.id}
-                                                    >
-                                                        {i.name}
-                                                    </Select.Option>
-                                                ))
-                                        }
-                                    </Select>
+                                        filterOption={(input, option: any) => option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                        options={
+                                            [{ value: "", label: formatMessage({ id: "analysis.indistinguishable" }) }]
+                                                .concat(
+                                                    tagList
+                                                        .filter(({ creator }: any) => Object.prototype.toString.call(creator) === "[object Number]")
+                                                        .map(
+                                                            (i: any) => ({
+                                                                value: i.id,
+                                                                label: i.name
+                                                            })
+                                                        )
+                                                )}
+                                    />
                                 </Form.Item>
                                 <div className="tootip_pos">
                                     <Tooltip
@@ -319,15 +361,15 @@ const TabPaneCard: React.FC<any> = (props) => {
                 <Col span={24}>
                     <Row style={{ marginTop: 12 }} align="middle">
                         {
-                            (testType === 'functional' && showType === 'pass_rate') &&
+                            (test_type === 'functional' && show_type === 'pass_rate') &&
                             <span className={styles.select_left_title}>Test Conf：</span>
                         }
                         {
-                            (testType === 'functional' && showType === 'result_trend') &&
+                            (test_type === 'functional' && show_type === 'result_trend') &&
                             <span className={styles.select_left_title}>Test Case：</span>
                         }
                         {
-                            testType !== 'functional' &&
+                            test_type !== 'functional' &&
                             <span className={styles.select_left_title}>
                                 <FormattedMessage id="analysis.metric" />：
                             </span>
@@ -336,7 +378,7 @@ const TabPaneCard: React.FC<any> = (props) => {
                             metricData &&
                             <Tooltip
                                 title={
-                                    showType === 'result_trend' ?
+                                    show_type === 'result_trend' ?
                                         metricData.sub_case_name : <SuiteConfMetric {...metricData} />
                                 }
                                 autoAdjustOverflow={true}
@@ -355,62 +397,76 @@ const TabPaneCard: React.FC<any> = (props) => {
                     </Row>
                 </Col>
             </Row>
-            <Row style={{ height: 10, background: 'rgba(0, 0, 0, 0.04)' }} />
 
-            <Spin spinning={loading}>
-                {
-                    (testType === 'performance' && tableData?.length > 0) &&
-                    Object.keys(chartData).map(
-                        (i: any, idx: any) => {
-                            return (
-                                <ChartRender
-                                    key={idx}
-                                    testType={testType}
-                                    provider={provider}
-                                    title={i}
-                                    dataSource={chartData[i]}
-                                    showType={showType}
-                                />
-                            )
+            {
+                test_type === 'performance' &&
+                <Row>
+                    <Space style={{ width: "100%", background: "rgba(0, 0, 0, 0.04)" }} direction="vertical">
+                        {
+                            fetchData?.map((i: any) => {
+                                const _props = {
+                                    fetchData: i,
+                                    key: i.key,
+                                    provider_env,
+                                    valueChange: handleListChange,
+                                    setFetchData,
+                                    setLoading
+                                }
+
+                                return (
+                                    provider_env === "aliyun" ?
+                                        <ClusterChart
+                                            {..._props}
+                                        /> :
+                                        <StandaloneChart
+                                            {..._props}
+                                        />
+                                )
+                            })
                         }
-                    )
-                }
-                {
-                    (testType !== 'performance' && tableData?.length > 0) &&
-                    <ChartRender
-                        testType={testType}
-                        provider={provider}
-                        showType={showType}
-                        dataSource={chartData}
-                    />
-                }
-                {
-                    tableData?.length === 0 &&
-                    <CardWrapper style={{ marginTop: 10, width: '100%' }} bordered={false}>
-                        <Row style={{ height: innerHeight - 176 - 50 - 120 }} justify="center" align="middle">
-                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                        </Row>
-                    </CardWrapper>
-                }
-                {
-                    tableData?.length > 0 &&
-                    <AnalysisTable
-                        refresh={() => fetchAnalysis(metricData)}
-                        dataSource={tableData}
-                        testType={testType}
-                        showType={showType}
-                    />
-                }
-            </Spin>
+                    </Space>
+                </Row>
+            }
+
+            <Row>
+                <Space style={{ width: "100%", background: "rgba(0, 0, 0, 0.04)" }} direction="vertical">
+                    {
+                        (test_type !== 'performance' && tableData?.length > 0) &&
+                        <ChartRender
+                            test_type={test_type}
+                            provider_env={provider_env}
+                            show_type={show_type}
+                            dataSource={chartData}
+                        />
+                    }
+
+                    {
+                        tableData?.length === 0 &&
+                        <EmptyComp />
+                    }
+
+                    {
+                        tableData?.length > 0 &&
+                        <AnalysisTable
+                            refresh={() => fetchAnalysis(metricData)}
+                            dataSource={tableData}
+                            test_type={test_type}
+                            show_type={show_type}
+                        />
+                    }
+                </Space>
+            </Row>
 
             <SelectMertric
                 ref={selectMetricRef}
                 projectId={projectId}
-                showType={showType}
-                test_type={testType}
+                show_type={show_type}
+                provider_env={provider_env}
+                test_type={test_type}
                 onOk={handleMerticSelectOk}
             />
-        </>
+
+        </div>
     )
 }
 

@@ -28,7 +28,7 @@ const { Text } = Typography
 const WorkspaceBasicConfig: React.FC = () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
-    const { historyList, setHistoryList } = useModel('workspaceHistoryList');
+    const { setHistoryList } = useModel('workspaceHistoryList');
 
     const { ws_id } = useParams() as any
 

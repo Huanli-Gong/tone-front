@@ -4,7 +4,7 @@ export const filterChartSource = (data: any, key: any, judge: boolean) => data.r
     Object.keys(cur).reduce(
         (p: any, c: any) => {
             if (c === 'date') return p
-            const $data = { date: cur.date, name: c, count: cur[c] }
+            const $data = { date: cur.date, name: c.split(/(?=[A-Z])/).join(" "), count: cur[c] }
             if (judge)
                 return ~c.indexOf(key) ? p.concat($data) : p
             return c.indexOf(key) === -1 ? p.concat($data) : p

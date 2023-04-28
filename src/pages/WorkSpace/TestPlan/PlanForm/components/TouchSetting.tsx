@@ -60,12 +60,13 @@ const TouchSetting = (props: any, ref: any) => {
                                     rules={[
                                         () => ({
                                             async validator(rule, value) {
+                                                setExpression([])
+                                                if (!value) return Promise.reject(formatMessage({ id: "plan.cron_info.empty" }))
                                                 const { code, data = [] } = await checkCronExpression({ cron_express: value }) || {}
                                                 if (code === 200) {
                                                     setExpression(data)
                                                     return Promise.resolve()
                                                 }
-                                                setExpression([])
                                                 return Promise.reject(formatMessage({ id: 'plan.cron_info.reject' }))
                                             }
                                         }),
