@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useRef, useEffect } from 'react';
 import { Space, Button, Input, Divider } from 'antd';
-import { useIntl, FormattedMessage, getLocale } from 'umi'
+import { useIntl, FormattedMessage } from 'umi'
 
 const FilterRadio: React.FC<any> = (props) => {
 	const { confirm, onConfirm, initVal, autoFocus, placeholder, styleObj, currentData } = props
@@ -29,9 +30,9 @@ const FilterRadio: React.FC<any> = (props) => {
 					placeholder={placeholder || formatMessage({ id: 'please.enter' })}
 					value={val}
 					onChange={(e: any) => setVal(e.target.value)}
-					onSearch={(val: any) => {
+					onSearch={($val: any) => {
 						confirm?.()
-						onConfirm(val?.trim())
+						onConfirm($val?.trim())
 					}}
 					onPressEnter={() => {
 						confirm?.()

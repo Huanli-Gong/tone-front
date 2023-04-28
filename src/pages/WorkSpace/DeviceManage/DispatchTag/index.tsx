@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Space, Tag, message, Popconfirm, Pagination, Spin, Tooltip, Table, Row, Typography } from 'antd';
+import { Button, Space, Tag, message, Popconfirm, Pagination, Spin, Tooltip, Row, Typography } from 'antd';
 import { tagList, delSuite } from './service';
 import styles from './style.less';
 import SearchInput from '@/components/Public/SearchInput';
@@ -92,7 +94,7 @@ const SuiteManagement: React.FC<any> = () => {
 	const [dataSource, setDataSource] = useState<any>({});
 	const [listParams, setListParams] = React.useState<any>(DEFAULT_LIST_PARAMS_VALUE)
 	const [focus, setFocus] = React.useState(false)
-	const [refresh, setRefresh] = useState<boolean>(true)
+	const [refresh, setRefresh] = useState<any>()
 	const [loading, setLoading] = useState<boolean>(true)
 
 	const addModelRef: any = useRef()
@@ -125,7 +127,7 @@ const SuiteManagement: React.FC<any> = () => {
 	}
 
 	const handleModalOk = () => {
-		setRefresh(!refresh)
+		setRefresh(new Date().getTime())
 	}
 
 	const editOuter = (row: any) => {
@@ -135,7 +137,7 @@ const SuiteManagement: React.FC<any> = () => {
 	const remOuter = async (params: any) => {
 		await delSuite(params.id, ws_id)
 		message.success(formatMessage({ id: 'operation.success' }));
-		setRefresh(!refresh)
+		setRefresh(new Date().getTime())
 	}
 
 	const columns: any[] = [

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { Avatar, Spin, Space } from 'antd'
 import styles from './index.less'
 import { ReactComponent as PublicIcon } from '@/assets/svg/public.svg'
@@ -12,7 +12,7 @@ import { jumpWorkspace } from '@/utils/utils'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { workspaceList, loading, userId } = props
+    const { workspaceList, loading } = props
     const { height: layoutHeight } = useClientSize()
     const workspaceDataList = _.isArray(workspaceList.workspace_list) ? workspaceList.workspace_list : []
     const wsNameEllipsis = useRef<any>(null)
@@ -22,7 +22,7 @@ export default (props: any) => {
         return name.slice(0, 1)
     }
     const wsInfoFn = (wsInfo: any) => {
-        let logo = wsInfo.logo
+        const logo = wsInfo.logo
         // if (logo) logo = `window.location.origin${logo}`
         return (
             <>
@@ -36,16 +36,18 @@ export default (props: any) => {
                 <EllipsisRect
                     text={wsInfo.show_name || wsInfo.name}
                     ellipsis={wsNameEllipsis}
-                    // placement="topLeft"
-                    children={<span ref={wsNameEllipsis} className={styles.name}>
-                        {wsInfo.show_name || wsInfo.name}
-                    </span>} />
+                // placement="topLeft"
 
+                >
+                    <span ref={wsNameEllipsis} className={styles.name}>
+                        {wsInfo.show_name || wsInfo.name}
+                    </span>
+                </EllipsisRect>
             </>
         )
     }
 
-    const handleEnterWs = async (id: any, creator: number) => {
+    const handleEnterWs = async (id: any) => {
         history.push(jumpWorkspace(id))
     }
 
@@ -66,8 +68,12 @@ export default (props: any) => {
                 <EllipsisRect
                     text={item.description}
                     ellipsis={desEllipsis}
-                    children={<span className={styles.ws_description} ref={desEllipsis}>
-                        <span className={`${styles.text_label}`} style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}><FormattedMessage id="person.center.introduction" />： </span>{item.description}</span>} />
+                >
+                    <span className={styles.ws_description} ref={desEllipsis}>
+                        <span className={`${styles.text_label}`} style={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}>
+                            <FormattedMessage id="person.center.introduction" />： </span>{item.description}
+                    </span>
+                </EllipsisRect>
             </div>
             <div className={styles.ws_info_colum}>
                 <Space>

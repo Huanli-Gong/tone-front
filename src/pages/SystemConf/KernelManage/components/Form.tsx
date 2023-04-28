@@ -1,4 +1,5 @@
-import React, { useImperativeHandle, useState, forwardRef } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useImperativeHandle, useState, forwardRef } from 'react'
 import { Drawer, Form, Input, Radio, Space, Button, message, Row, Col } from 'antd'
 import { useIntl, FormattedMessage } from 'umi'
 import { createKernel, updateKernel } from '../services'
@@ -101,7 +102,7 @@ export default forwardRef(
                         <FormCls
                             form={form}
                             layout="vertical"
-                            /*hideRequiredMark*/
+                        /*hideRequiredMark*/
                         >
                             <Form.Item
                                 rules={[{

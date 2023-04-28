@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 import { Row } from 'antd'
-import { PlusCircleFilled , PlusOutlined , CloseOutlined } from '@ant-design/icons'
+import { PlusCircleFilled, PlusOutlined, CloseOutlined } from '@ant-design/icons'
 
 import { ReactComponent as DeleteIcon } from '@/assets/svg/TestPlan/delete.svg'
 import { ReactComponent as GaryDeleteIcon } from '@/assets/svg/TestPlan/delete_icon.svg'
-import React , { useState } from 'react'
+import { useState } from 'react'
 
 export const PiplineContainer = styled(Row)`
     width : 100% ;
@@ -53,13 +53,13 @@ export const LineStyle = `
     background:#CECECE;
 `
 export const StepOptionLeft = styled.div`
-    ${ LineStyle };
+    ${LineStyle};
     width:20px;
     left:-20px;
 `
 
 export const StepOptionRight = styled.div`
-    ${ LineStyle };
+    ${LineStyle};
     width:32px;
     right : -32px;
 `
@@ -73,14 +73,14 @@ export const addBtnStyle = `
 `
 
 export const StepPreAddBtn = styled(PlusCircleFilled)`
-    ${ addBtnStyle }
+    ${addBtnStyle}
     top : 50%;
     left : -5px;
     transform:translate(-50% , -7px);
 `
 
 export const StepNextAddBtn = styled(PlusCircleFilled)`
-    ${ addBtnStyle }
+    ${addBtnStyle}
     top : 50%;
     right : -20px;
     transform:translate(-50% , -7px);
@@ -95,27 +95,6 @@ const IconWrapper = styled.span`
     height:15.4px;
 `
 
-export const StepDeleteIcon = ( props : any ) => {
-    const [ hover , setHover ] = useState(false)
-
-    const handleOver = () => {
-        setHover( true )
-    }
-    const handleOut = () => {
-        setHover( false )
-    }
-
-    return (
-        <IconWrapper { ...props } onMouseEnter={ handleOver } onMouseLeave={ handleOut }>
-            {
-                hover ? 
-                    <DeleteIconRed /> :
-                    <DeleteIconGary />
-            }
-        </IconWrapper>
-    )
-}
-
 const DeleteIconRed = styled(DeleteIcon)`
     visibility:hidden;
 `
@@ -123,6 +102,28 @@ const DeleteIconRed = styled(DeleteIcon)`
 const DeleteIconGary = styled(GaryDeleteIcon)`
     visibility:hidden;
 `
+
+export const StepDeleteIcon = (props: any) => {
+    const [hover, setHover] = useState(false)
+
+    const handleOver = () => {
+        setHover(true)
+    }
+    const handleOut = () => {
+        setHover(false)
+    }
+
+    return (
+        <IconWrapper {...props} onMouseEnter={handleOver} onMouseLeave={handleOut}>
+            {
+                hover ?
+                    <DeleteIconRed /> :
+                    <DeleteIconGary />
+            }
+        </IconWrapper>
+    )
+}
+
 
 export const StartPiplineWrapper = styled.div`
     width:166px;
@@ -200,7 +201,7 @@ export const ChildAddItem = styled.div`
 `
 
 export const ChildAddIcon = styled(PlusCircleFilled)`
-    ${ addBtnStyle }
+    ${addBtnStyle}
     position: relative;
     margin-right:8px;
     margin-left:14px;
@@ -235,12 +236,12 @@ export const ArrowDashedBlue = styled.div`
 `
 
 interface ArrowProps {
-    type? : any
-} 
+    type?: any
+}
 
 export const ArrowSolidGery = styled.div<ArrowProps>`
     width: 30px;
-    height: ${ ({ type }) => type === 'env' ? '98px' : '109px' };
+    height: ${({ type }) => type === 'env' ? '98px' : '109px'};
     border-left: 2px solid #CECECE;
     border-bottom: 2px solid #CECECE;
     border-top: transparent;
@@ -249,7 +250,7 @@ export const ArrowSolidGery = styled.div<ArrowProps>`
     display: inline-block;
     position: absolute;
     left: 25px;
-    top: ${ ({ type }) => type === 'env' ? '-81px' : '-84px' }; 
+    top: ${({ type }) => type === 'env' ? '-81px' : '-84px'}; 
     &::after {
         content:'';
         width: 0px;
@@ -276,7 +277,7 @@ export const TemplateItem = styled.div`
     cursor:pointer;
 `
 
-export const DeleteTemplateIcon = styled( CloseOutlined )`
+export const DeleteTemplateIcon = styled(CloseOutlined)`
     width:16px;
     height:16px;
     position:absolute;
@@ -291,12 +292,12 @@ export const TemplatesChildrenWrapper = styled.div`
     // transform: translate(0px, -5px);
     // padding-top:13px;
     :hover {
-        ${ TemplateItem } {
+        ${TemplateItem} {
             background: rgba(0,0,0,0.04);
             border-radius: 4px;
             color: #1890FF;
         }
-        ${ DeleteTemplateIcon } {
+        ${DeleteTemplateIcon} {
             visibility:visible;
         }
     }
@@ -320,12 +321,12 @@ export const TemplateName = styled.div`
 `
 
 interface LeftLineProp {
-    index : number
+    index: number
 }
 
 export const WrapperLeftLine = styled.div<LeftLineProp>`
     width:2px;
-    height:${ props => props.index * 30 }px;
+    height:${props => props.index * 30}px;
 `
 
 export const StepWrapper = styled.div`
@@ -338,9 +339,9 @@ export const StepWrapper = styled.div`
     position:relative;
     &:hover {
         background: #FAFAFA;
-        ${ DeleteIconRed } , 
-        ${ ChildAddItem } ,
-        ${ DeleteIconGary } {
+        ${DeleteIconRed} , 
+        ${ChildAddItem} ,
+        ${DeleteIconGary} {
             visibility:visible;
         }
     }
@@ -374,13 +375,13 @@ export const ServerIndex = styled.div`
     text-align:center;
 `
 
-export const ServerDeleteIcon = styled( CloseOutlined ) `
+export const ServerDeleteIcon = styled(CloseOutlined)`
     position : absolute;
     right:10px;
     top:10px;
     cursor:pointer;
     visibility:hidden;
-` 
+`
 export const ServerItem = styled.div`
     width: 310px;
     position: relative;
@@ -392,9 +393,9 @@ export const ServerItem = styled.div`
     &:hover {
         background: rgba(0,0,0,0.04);
         border-radius: 4px;
-        ${ ServerTitle } , 
-        ${ ServerScript } { color: #1890FF; }
-        ${ ServerDeleteIcon } { visibility: visible; }
+        ${ServerTitle} , 
+        ${ServerScript} { color: #1890FF; }
+        ${ServerDeleteIcon} { visibility: visible; }
     }
 `
 
@@ -406,10 +407,10 @@ export const ScriptChildrenWrapper = styled.div`
     position: relative;
 `
 
-export const ServerChildAddItem = styled( ChildAddItem )`
+export const ServerChildAddItem = styled(ChildAddItem)`
     padding-left: 50px;
     cursor:pointer;
-    ${ ArrowDashedBlue } {
+    ${ArrowDashedBlue} {
         width: 28px;
         height: 126px;
         border-left: 2px dashed #1890FF;
@@ -423,5 +424,5 @@ export const ServerChildAddItem = styled( ChildAddItem )`
         top: -84px;
         z-index: 0;
     }
-    ${ AddTemplateItem } { padding-left : 0 ;}
+    ${AddTemplateItem} { padding-left : 0 ;}
 `

@@ -11,14 +11,14 @@ import AliyunPerfLine from './AliyunPerfLine'
 import { targetJump } from '@/utils/utils'
 
 const Title = styled.div`
-    width:100%;
-    font-size:16px;
-    font-weight:500;
-    color: rgba(0,0,0,0.85);
-    line-height:43px;
-    height:43px;
-    border-bottom:1px solid #E9E9E9;
-    text-indent:1em;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 500;
+    color:  rgba(0,0,0,0.85);
+    line-height: 43px;
+    height: 43px;
+    border-bottom: 1px solid #E9E9E9;
+    text-indent: 1em;
 `
 
 const CardWrapper = styled(Card)`
@@ -31,33 +31,41 @@ const CardWrapper = styled(Card)`
     }
 `
 
-const RenderChart = (props: any) => {
+type RenderChartProps = {
+    dataSource: any;
+    title?: string;
+    provider_env: string;
+    test_type: string;
+    show_type: string;
+}
+
+const RenderChart: React.FC<RenderChartProps> = (props) => {
     const { formatMessage } = useIntl()
-    const { dataSource: chartDatas, title, provider, testType, showType } = props
+    const { dataSource: chartDatas, title, provider_env, test_type, show_type } = props
     const { ws_id }: any = useParams()
 
     const chart: any = useRef()
     const [dataSource, setDataSource] = useState<any>(undefined)
 
-    useEffect(() => {
+    React.useEffect(() => {
         const myChart = echarts.init(chart.current)
         myChart.clear()
         myChart.showLoading()
         if (dataSource && JSON.stringify(dataSource) !== '{}') {
-            if (testType === 'performance') {
-                if (provider === "aliyun") {
+            if (test_type === 'performance') {
+                if (provider_env === "aliyun") {
                     myChart.setOption(AliyunPerfLine({ dataSource, ws_id, formatMessage }))
                 }
                 else {
                     myChart.setOption(PerfLineOption({ dataSource, ws_id, formatMessage }))
                 }
             }
-            if (testType === 'functional') {
-                if (showType === 'result_trend')
+            if (test_type === 'functional') {
+                if (show_type === 'result_trend')
                     myChart.setOption(
                         customChartOption(dataSource, ws_id, formatMessage)
                     )
-                if (showType === 'pass_rate')
+                if (show_type === 'pass_rate')
                     myChart.setOption(
                         passRateLineOption(dataSource, ws_id, formatMessage)
                     )
@@ -74,11 +82,11 @@ const RenderChart = (props: any) => {
         return () => {
             myChart.dispose()
         }
-    }, [dataSource])
+    }, [dataSource, formatMessage, provider_env, show_type, test_type, ws_id])
 
     useEffect(() => {
         setDataSource(undefined)
-    }, [provider, testType, showType])
+    }, [provider_env, test_type, show_type])
 
     useEffect(() => {
         setDataSource(chartDatas || undefined)
@@ -87,15 +95,15 @@ const RenderChart = (props: any) => {
     return (
         <CardWrapper >
             {
-                testType === 'performance' &&
+                test_type === 'performance' &&
                 <Title>{title}</Title>
             }
             {
-                (testType === 'functional' && showType === 'result_trend') &&
+                (test_type === 'functional' && show_type === 'result_trend') &&
                 <Title><FormattedMessage id="analysis.chart.title.passRate" /></Title>
             }
             {
-                (testType === 'functional' && showType === 'pass_rate') &&
+                (test_type === 'functional' && show_type === 'pass_rate') &&
                 <Title><FormattedMessage id="analysis.chart.title.resultTrend" /></Title>
             }
             <div ref={chart} style={{ width: '100%', height: 360 - 48 }} />

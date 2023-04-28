@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useRef } from 'react'
 import { Button, Select, Space, Tag, Row } from 'antd'
 
 import { tagList as queryTagList } from '@/pages/WorkSpace/TagManage/service'
@@ -29,6 +31,11 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel }: any
     const access = useAccess();
     const { data: tagList, loading, refresh, run: getTagList } = useRequest(() => queryTagList({ ws_id }), { manual: true, initialData: [] })
     const jobTagsCreateModal: any = useRef(null)
+
+    const handleCancel = () => {
+        setState(false)
+    }
+
     const handleOk = async () => {
         const { code, msg } = await updateJobTags({ job_id, tag_id: keys, ws_id })
         if (code !== 200) {
@@ -46,10 +53,6 @@ export default ({ tags = [], onOk, ws_id, job_id, creator_id, accessLabel }: any
     useEffect(() => {
         setKeys(tags.map((i: any) => i.id))
     }, [tags])
-
-    const handleCancel = () => {
-        setState(false)
-    }
 
     const handleSetTags = () => {
         getTagList()

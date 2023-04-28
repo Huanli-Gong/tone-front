@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useRef } from 'react'
 import { Tooltip, Tag, Space, Popover, Row, Col, Breadcrumb } from 'antd'
 import styles from './index.less'
@@ -8,7 +9,14 @@ import { AccessTootip } from '@/utils/utils';
 import { useCopyText } from '@/utils/hooks'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export const BreadcrumbItem: React.FC<any> = (d: any, clickPath: string) => {
+const stateColorMap = new Map([
+    ['success', '#81BF84'],
+    ['pass', '#81BF84'],
+    ['running', '#649FF6'],
+    ['fail', '#C84C5A'],
+])
+
+export const BreadcrumbItem: React.FC<any> = (d: any) => {
     const { ws_id }: any = useParams()
     return (
         <Breadcrumb style={{ marginBottom: d.bottomHeight }}>
@@ -72,6 +80,8 @@ export const EllipsisEditColumn: React.FC<any> = ({ title, width = '100%', onEdi
         </div >
     )
 }
+
+const getStateColor = (state: string) => stateColorMap.get(state) || '#D9D9D9'
 
 export const CopyTextBtn: React.FC<{ text: string }> = ({ text }) => {
     const intl = useIntl()
@@ -165,6 +175,7 @@ const QuestionPopover = ({ title }: any) => (
         title={title}
         placement="right"
         trigger="hover"
+        // eslint-disable-next-line @typescript-eslint/dot-notation
         overlayClassName={styles["tag_popover_style"]}
     >
         <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.65)', verticalAlign: 'middle' }} />
@@ -203,6 +214,22 @@ export const JobListStateTag: React.FC<any> = (props) => {
     const { state, run_state = '', state_desc } = props
     const { ws_id }: any = useParams()
     if (state === 'running') {
+        if (state_desc) {
+            return (
+                <Space size={0}>
+                    <CustomStateTag {...props}>{state}</CustomStateTag>
+                    <QuestionPopover
+                        title={
+                            <span
+                                dangerouslySetInnerHTML={{
+                                    __html: state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
+                                }}
+                            />
+                        }
+                    />
+                </Space>
+            )
+        }
         if (run_state)
             return (
                 <Space size={0}>
@@ -224,9 +251,10 @@ export const JobListStateTag: React.FC<any> = (props) => {
                 <CustomStateTag {...props}>{state}</CustomStateTag>
                 <QuestionPopover
                     title={
-                        <span dangerouslySetInnerHTML={{
-                            __html: state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
-                        }}
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html: state_desc.replace(/(\d+)/g, `<a href="/ws/${ws_id}/test_result/$1" target="_blank">$1</a>`)
+                            }}
                         />
                     }
                 />
@@ -237,14 +265,6 @@ export const JobListStateTag: React.FC<any> = (props) => {
     return <CustomStateTag {...props} />
 }
 
-const stateColorMap = new Map([
-    ['success', '#81BF84'],
-    ['pass', '#81BF84'],
-    ['running', '#649FF6'],
-    ['fail', '#C84C5A'],
-])
-
-const getStateColor = (state: string) => stateColorMap.get(state) || '#D9D9D9'
 
 export const StateTag: React.FC<any> = (props) => {
     return <CustomTooltipStateTag {...props} no_margin={1} />

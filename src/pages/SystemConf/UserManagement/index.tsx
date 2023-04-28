@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useRef, useEffect } from 'react';
 import { Tabs, Input, Space, Select } from 'antd';
 import UserManagementTable from './components/UserManagementTable';
@@ -16,7 +17,7 @@ const UserManagement: React.FC<{}> = () => {
 	const [select, setSelect] = useState<any[]>([]);
 	const [rolelist, setRolelist] = useState<any[]>([]);
 	const [num, setNum] = useState<number>(0);
-	const [roleTotal,setRoleTotal] = useState<number>(0);
+	const [roleTotal, setRoleTotal] = useState<number>(0);
 	const [role, setRole] = useState<number>()
 	const [keyword, setKeyword] = useState<string>()
 
@@ -27,12 +28,12 @@ const UserManagement: React.FC<{}> = () => {
 		// all.current && all.current.search()
 	};
 	const getRoleList = async () => {
-        const { total } = await roleList({ role_type: '' })
+		const { total } = await roleList({ role_type: '' })
 		total && setRoleTotal(total)
-    };
+	};
 	const getRoleFilterSysList = async () => {
 		const { data } = await roleList({ role_type: 'system', is_filter: '0' }) // is_filter: '1':不过滤，获取全量
-		let all = [{ id: '', name: "all", title: "all" }]
+		const all = [{ id: '', name: "all", title: "all" }]
 		data && setRolelist(all.concat(data.list || []))
 	};
 	useEffect(() => {
@@ -59,7 +60,7 @@ const UserManagement: React.FC<{}> = () => {
 				break;
 		}
 	}
-	
+
 	const onSearch = (val: string) => {
 		setKeyword(val)
 		switch (index) {
@@ -85,7 +86,7 @@ const UserManagement: React.FC<{}> = () => {
 	<Space>
 		<Select
 			style={{ width: 180 }}
-			placeholder={<FormattedMessage id="user.please.select.role"/>}
+			placeholder={<FormattedMessage id="user.please.select.role" />}
 			allowClear
 			defaultValue={role}
 			onChange={(val: number) => {
@@ -97,7 +98,7 @@ const UserManagement: React.FC<{}> = () => {
 			})}
 		</Select>
 		<Search
-			placeholder={formatMessage({id: 'user.please.search.user'}) }
+			placeholder={formatMessage({ id: 'user.please.search.user' })}
 			allowClear
 			defaultValue={keyword}
 			onSearch={onSearch}
@@ -113,14 +114,14 @@ const UserManagement: React.FC<{}> = () => {
 					onChange={handleTab}
 					className={styles.tab_style}
 				>
-					<TabPane tab={`${formatMessage({id: 'user.tab.user'})} ${num}`} key="1" />
-					<TabPane tab={`${formatMessage({id: 'user.tab.role'})} ${roleTotal}`} key="2" />
+					<TabPane tab={`${formatMessage({ id: 'user.tab.user' })} ${num}`} key="1" />
+					<TabPane tab={`${formatMessage({ id: 'user.tab.role' })} ${roleTotal}`} key="2" />
 				</Tabs>
 			}
 		>
 			{
 				index === '1' ?
-				!!select.length && <UserManagementTable
+					!!select.length && <UserManagementTable
 						onRef={all}
 						select={select}
 						rolelist={rolelist}

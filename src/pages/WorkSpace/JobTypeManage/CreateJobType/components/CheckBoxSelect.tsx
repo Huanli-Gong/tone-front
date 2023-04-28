@@ -1,15 +1,13 @@
-import React from 'react'
 import { Row, Col, Checkbox, Space, Typography } from 'antd'
 import styles from './index.less'
 import { EditShowName } from './EditNameModal'
-
 interface checkSelectProps {
     title: string,
     desc: string,
     data: any,
     name: string,
-    defaultValue: Array<number>,
-    onSelect: (vals: Array<number>, name: string) => void,
+    defaultValue: any,
+    onSelect: (vals: any, name: string) => void,
     onEdit: (name: string, id: number, alias: string) => void,
 }
 

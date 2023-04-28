@@ -1,3 +1,6 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Space, Switch, Tooltip, Dropdown, Menu, Row, message, Typography } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import TemplateListDrawer from './TemplateListDrawer'
@@ -18,8 +21,8 @@ const TestSetting = (props: any) => {
     const { show, onChange, template } = props
     const { ws_id } = useParams() as any
 
-    const defaultPrepStepData = { name: formatMessage({id: 'job.types.env'}), /*'环境准备'*/ machine_info: [], visible: false }
-    const defaultTemplateData = { name: formatMessage({id: 'plan.new.stage'}), /*'新测试阶段',*/ template: [], impact_next: false, }
+    const defaultPrepStepData = { name: formatMessage({ id: 'job.types.env' }), /*'环境准备'*/ machine_info: [], visible: false }
+    const defaultTemplateData = { name: formatMessage({ id: 'plan.new.stage' }), /*'新测试阶段',*/ template: [], impact_next: false, }
 
     const [testConfig, setTestConfig] = useState<any>([defaultTemplateData])
 
@@ -41,15 +44,15 @@ const TestSetting = (props: any) => {
     }
 
     const addTemplateData = () => ({
-        name: `${formatMessage({id: 'plan.new.stage'})}${testConfig.length + 1}`, template: [], impact_next: false
+        name: `${formatMessage({ id: 'plan.new.stage' })}${testConfig.length + 1}`, template: [], impact_next: false
     })
 
     const handleAddTestStep = (index: number) => {
         if (testConfig.length > 4) {
-            message.warning(formatMessage({id: 'plan.stage.maximum5'}) )
+            message.warning(formatMessage({ id: 'plan.stage.maximum5' }))
             return
         }
-        let content: any = []
+        const content: any = []
         testConfig.forEach((i: any, idx: any) => {
             if (idx === index) content.push(addTemplateData())
             content.push(i)
@@ -58,24 +61,24 @@ const TestSetting = (props: any) => {
         setTestConfig(content)
     }
 
-    const AddStepDropdown: React.FC<any> = (props) => (
+    const AddStepDropdown: React.FC<any> = ({ hasEnv, index, children }) => (
         <Dropdown
             trigger={['click']}
             overlay={
                 <Menu>
                     {
-                        props.hasEnv &&
+                        hasEnv &&
                         <Menu.Item onClick={handleAddPrepareStep}>
                             <Space>
                                 <PlusMnueIcon />
-                                <span><FormattedMessage id="plan.pre.stage"/></span>
+                                <span><FormattedMessage id="plan.pre.stage" /></span>
                             </Space>
                         </Menu.Item>
                     }
-                    <Menu.Item onClick={() => handleAddTestStep(props.index)}>
+                    <Menu.Item onClick={() => handleAddTestStep(index)}>
                         <Space>
                             <PlusMnueIcon />
-                            <span><FormattedMessage id="plan.new.stage"/></span>
+                            <span><FormattedMessage id="plan.new.stage" /></span>
                         </Space>
                     </Menu.Item>
                 </Menu>
@@ -83,8 +86,8 @@ const TestSetting = (props: any) => {
             placement="bottom"
             arrow
         >
-            <Tooltip placement="top" title={formatMessage({id: 'plan.add.stage'})}>
-                {props.children}
+            <Tooltip placement="top" title={formatMessage({ id: 'plan.add.stage' })}>
+                {children}
             </Tooltip>
         </Dropdown>
     )
@@ -115,7 +118,7 @@ const TestSetting = (props: any) => {
 
     const hanldeStepTitleChange = (val: any, index: any) => {
         if (val.length > 20) {
-            message.warning(formatMessage({id: 'plan.enter.up.20.characters'}) )
+            message.warning(formatMessage({ id: 'plan.enter.up.20.characters' }))
             return
         }
         setTestConfig(
@@ -180,8 +183,8 @@ const TestSetting = (props: any) => {
         setTestConfig(
             testConfig.map((row: any, idx: number) => {
                 if (idx === index) {
-                    const template = row.template.filter((item: any) => item.id !== itemId)
-                    return { ...row, template }
+                    const $template = row.template.filter((item: any) => item.id !== itemId)
+                    return { ...row, template: $template }
                 }
                 return row
             })
@@ -202,14 +205,14 @@ const TestSetting = (props: any) => {
                 <div style={{ display: 'flex', margin: '0 auto' }}>
                     <StartPiplineWrapper >
                         <StartStepCircle />
-                        <StepStartWord ><FormattedMessage id="plan.start"/></StepStartWord>
+                        <StepStartWord ><FormattedMessage id="plan.start" /></StepStartWord>
                         <StartLine />
                     </StartPiplineWrapper>
                     {
                         envPrep.visible &&
                         <StepWrapper >
                             <StepTips justify="space-between" align="middle">
-                                <span></span>
+                                <span />
                                 <StepDeleteIcon onClick={handleDeleteServerStep} />
                             </StepTips>
                             <StepTitle>
@@ -243,7 +246,7 @@ const TestSetting = (props: any) => {
                                     <ArrowDashedBlue />
                                     <AddTemplateItem >
                                         <ChildAddIcon />
-                                        <span><FormattedMessage id="plan.add.machine"/></span>
+                                        <span><FormattedMessage id="plan.add.machine" /></span>
                                     </AddTemplateItem>
                                 </ServerChildAddItem>
                             </ChildrenStepWrapper>
@@ -254,11 +257,11 @@ const TestSetting = (props: any) => {
                             <StepWrapper key={index}>
                                 <StepTips justify="space-between" align="middle">
                                     <Space>
-                                        <span><FormattedMessage id="plan.subsequent.steps"/></span>
+                                        <span><FormattedMessage id="plan.subsequent.steps" /></span>
                                         <Switch
                                             onChange={(val: any) => hanldeEffectStepSwitchChange(val, index)}
-                                            checkedChildren={<FormattedMessage id="operation.yes"/>}
-                                            unCheckedChildren={<FormattedMessage id="operation.no"/>}
+                                            checkedChildren={<FormattedMessage id="operation.yes" />}
+                                            unCheckedChildren={<FormattedMessage id="operation.no" />}
                                             checked={i.impact_next}
                                         />
                                     </Space>
@@ -271,7 +274,7 @@ const TestSetting = (props: any) => {
                                                 <AddStepDropdown hasEnv={index === 0 && !envPrep.visible} index={index}>
                                                     <StepPreAddBtn />
                                                 </AddStepDropdown> :
-                                                <Tooltip placement="top" title={formatMessage({id:'plan.add.stage'})}>
+                                                <Tooltip placement="top" title={formatMessage({ id: 'plan.add.stage' })}>
                                                     <StepPreAddBtn onClick={() => handleAddTestStep(index)} />
                                                 </Tooltip>
                                         }
@@ -292,7 +295,7 @@ const TestSetting = (props: any) => {
                                                     <StepNextAddBtn />
                                                 </AddStepDropdown> :
                                         } */}
-                                        <Tooltip placement="top" title={formatMessage({id:'plan.add.stage'})}>
+                                        <Tooltip placement="top" title={formatMessage({ id: 'plan.add.stage' })}>
                                             <StepNextAddBtn onClick={() => handleAddTestStep(index + 1)} />
                                         </Tooltip>
                                     </StepOptionRight>
@@ -327,7 +330,7 @@ const TestSetting = (props: any) => {
                                             <ArrowDashedBlue />
                                             <AddTemplateItem onClick={() => handleAddTemplate(index)}>
                                                 <ChildAddIcon />
-                                                <span><FormattedMessage id="plan.add.template"/></span>
+                                                <span><FormattedMessage id="plan.add.template" /></span>
                                             </AddTemplateItem>
                                         </ChildAddItem>
                                     }

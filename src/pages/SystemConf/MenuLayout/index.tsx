@@ -1,29 +1,34 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { Layout, Menu, Space } from 'antd';
 import { FormattedMessage, history } from 'umi';
-import { layoutProps } from './data.d';
+import type { layoutProps } from './data.d';
 import styles from './style.less';
 import { useClientSize } from '@/utils/hooks'
 import { SystemMenuIcon } from '@/utils/menuIcon'
-import { useMemo } from 'react';
 const { Sider, Content } = Layout;
 
-const systemLayout = (props: layoutProps) => {
+const SystemLayout: React.FC<layoutProps> = (props) => {
 	const { route, location } = props
 	const { routes } = route
-	let routeRight: any[] = []
-	routes.map(item => { !item.unaccessible && routeRight.push(item) })
+	const routeRight: any[] = []
+	routes.forEach(item => {
+		if (!item.unaccessible)
+			routeRight.push(item)
+	})
 	const { path } = routeRight[0]
 	const { pathname } = location
-	const onClick = async (path: string) => {
-		history.push(path)
+	const onClick = async ($path: string) => {
+		history.push($path)
 	}
 
-	const timeStampKey = useMemo(() => new Date().getTime(), [location])
+	// eslint-disable-next-line react-hooks/rules-of-hooks, react-hooks/exhaustive-deps
+	const timeStampKey = React.useMemo(() => new Date().getTime(), [location])
 
 	useEffect(() => {
-		pathname == '/system' && history.push(path);
-	});
+		if (pathname == '/system')
+			history.push(path);
+	}, [pathname, path]);
 
 	const { height: windowHeight } = useClientSize()
 
@@ -40,7 +45,7 @@ const systemLayout = (props: layoutProps) => {
 				>
 					{
 						routeRight.map(
-							(item, index) => (
+							(item) => (
 								!item.hideInMenu &&
 								<Menu.Item
 									key={item.path}
@@ -67,21 +72,4 @@ const systemLayout = (props: layoutProps) => {
 	);
 };
 
-export default systemLayout;
-
-
-
-{/* <div
-className={styles.menu}
-key={index}
-onClick={() => onClick(item.path)}
->
-<div
-	className={pathname == item.path ? styles.selected : styles.menuItem}
->
-	<Space>
-		{SystemMenuIcon(item.name)}
-		{<FormattedMessage id={"SystemConf.menuLayout." + item.name} />}
-	</Space>
-</div>
-</div> */}
+export default SystemLayout;

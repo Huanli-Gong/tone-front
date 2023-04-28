@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Table } from 'antd';
 import type { TableProps } from 'antd/lib/table';
 import React from 'react';
@@ -32,7 +33,7 @@ const ResizeBorder = styled.div.attrs((props: BorderPosition) => ({
 `
 
 type ResizeProps = {
-    resize?: boolean;
+    resize?: number;
 }
 
 const StyledResizeable = styled(Resizable) <ResizeProps>`
@@ -71,12 +72,16 @@ const StyledResizeable = styled(Resizable) <ResizeProps>`
 `
 
 const ResizeableTitle = (props: any) => {
-    const { width, ...restProps } = props;
+    const { width, onResizeStart, onResize, onResizeStop, resize, ...restProps } = props;
     return (
         <StyledResizeable
             width={!width ? 100 : width}
             height={0}
             draggableOpts={{ enableUserSelectHack: false }}
+            onResizeStart={onResizeStart}
+            onResize={onResize}
+            onResizeStop={onResizeStop}
+            resize={resize ? 1 : 0}
             {...restProps}
         >
             <th {...restProps} />
@@ -85,7 +90,7 @@ const ResizeableTitle = (props: any) => {
 }
 
 const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (props) => {
-    const { columns = [], setColumns, name, onColumnsChange, ...rest } = props
+    const { columns = [], name, onColumnsChange, ...rest } = props
 
     const [end, setEnd] = React.useState(0)
     const [start, setStart] = React.useState(0)
@@ -96,7 +101,7 @@ const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (prop
 
     const size = useSize(ref)
 
-    const handleResizeStart = (index: number) => (e: any, { size }: any) => {
+    const handleResizeStart = (index: number) => (e: any, { }: any) => {
         if (!columns[index].ellipsis) return
 
         const { clientX } = e
@@ -106,21 +111,21 @@ const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (prop
         setBorderShow(true)
     }
 
-    const handleResizeMove = (index: number) => (e: any) => {
+    const handleResizeMove = () => (e: any) => {
         const { clientX } = e
         const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
 
         setEnd(drageX)
     }
 
-    const handleResizeStop = (index: number) => (e: any, { size }: any) => {
+    const handleResizeStop = (index: number) => (e: any, { size: $size }: any) => {
         const { clientX } = e
         const drageX = clientX - (ref.current as any)?.getBoundingClientRect().x
 
         const nextColumns = [...columns];
 
         if (nextColumns[index].ellipsis) {
-            const w = size.width += drageX - start
+            const w = $size.width += drageX - start
             const { dataIndex, key }: any = nextColumns[index]
             /* 计算小于20px操作不生效 */
             if (w > 20) {
@@ -139,6 +144,7 @@ const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (prop
     }
 
     const scrollX = React.useMemo(() => columns.reduce((p: any, c: any) => {
+        // eslint-disable-next-line no-param-reassign
         if (c.width) return p += c?.width
         return p
     }, 0), [columns])
@@ -160,7 +166,7 @@ const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (prop
                             resize: !!col.ellipsis,
                             width: column.width,
                             onResizeStart: handleResizeStart(index),
-                            onResize: handleResizeMove(index),
+                            onResize: handleResizeMove(),
                             onResizeStop: handleResizeStop(index),
                         }),
                     }))
@@ -178,41 +184,3 @@ const ResizeColumnTable: React.FC<TableProps<any> & Record<string, any>> = (prop
 }
 
 export default ResizeColumnTable
-
-
-
-/* const scrollX = React.useMemo(() => {
-    const { columns: cols = [] } = props
-    const { width } = size
-    if (!width) return
-    const rw = cols?.reduce((pre: any, cur: any, index: number) => {
-        if (cur?.width)
-            return pre += cur.width
-        return pre
-    }, 0)
-    if (rw > width) return rw
-    return width
-}, [props.columns, size]) */
-
-/* React.useEffect(() => {
-    const { columns: cols = [], expandable, rowSelection } = props
-    const table = tb.current
-    const allCols = [expandable, rowSelection, ...cols].filter(Boolean)
-
-    if (table) {
-        const ths = table?.querySelector("thead")?.querySelectorAll("th")
-        const allThs: { width?: number, className?: string }[] = ths ? Array.from(ths)?.map((i) => ({
-            width: i.getBoundingClientRect()?.width,
-            calssName: i?.className
-        })) : []
-        if (!!allThs?.length) {
-            allCols.forEach((i: any, index) => {
-                const { width, dataIndex, key } = i
-                const w = allThs[index]?.width
-                const title = dataIndex || key
-                if (!width && w && title && name)
-                    setStorageState(name, title, w)
-            })
-        }
-    }
-}, [props]) */

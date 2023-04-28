@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useState, useRef, useEffect } from 'react'
 import { Breadcrumb, Row, Steps, Button, Result, Col, Space, message, Spin, Badge } from 'antd'
 
 import BasicSetting from './components/BasicSetting'
@@ -62,19 +64,38 @@ const TestPlan = (props: any) => {
         const { name } = route
         if (name !== 'Create')
             getEditTestPlanData()
-    }, [])
+    }, [route])
 
     const handleStepPre = () => {
         setCurrent(current - 1)
     }
 
-    const handleStepChange = async (key: number) => {
-        if (key > current) {
-            await hanleStepNext(key)
-        }
-        else setCurrent(key)
-    }
+    // 校验数据
+    const checkDataSource = () => {
+        return new Promise((resolve: any, reject: any) => {
+            const pipline = dataSource.pipline
+            const { env_prep = {}, test_config = [] } = pipline || {}
+            const localStr = formatMessage({ id: 'plan.cannot.be.empty' })
+            if (env_prep.machine_info && !env_prep.machine_info.length) {
+                message.error(`${env_prep.name}${localStr}`)
+                reject()
+            }
 
+            if (test_config.length) {
+                test_config.forEach((item: any) => {
+                    const { name, template: $template = [] } = item
+                    if (!$template.length) {
+                        message.error(`${name}${localStr}`)
+                        reject()
+                    }
+                })
+            } else {
+                message.error(`${env_prep.name}${localStr}`)
+                reject()
+            }
+            resolve()
+        })
+    }
     const hanleStepNext = async (stepKey: any) => {
         if (pedding) return
         setPedding(true)
@@ -101,7 +122,7 @@ const TestPlan = (props: any) => {
                 await checkDataSource()
             } else if (current === 2) {
                 // 校验表单必填项填写了没有
-                const formData = await reportSettingRef.current.validate()
+                await reportSettingRef.current.validate()
             }
 
             // 编辑时通过校验后，可随意跳步骤。
@@ -111,6 +132,13 @@ const TestPlan = (props: any) => {
             console.log(err, 8888)
         }
         setPedding(false)
+    }
+
+    const handleStepChange = async (key: number) => {
+        if (key > current) {
+            await hanleStepNext(key)
+        }
+        else setCurrent(key)
     }
 
     const hanldePrepDataChange = ({ test_config, env_prep }: any) => {
@@ -125,6 +153,16 @@ const TestPlan = (props: any) => {
         })
         // 将步骤2产生的数据，传给步骤3中
         reportSettingRef.current.refreshData(test_config);
+    }
+
+    const trhowErrorMsg = (err: any) => {
+        if (err) {
+            const { errorFields } = err
+            if (errorFields && _.isArray(errorFields) && errorFields.length > 0) {
+                const { errors } = errorFields[0]
+                message.error(errors.toString())
+            }
+        }
     }
 
     const formatterData = async () => {
@@ -200,16 +238,6 @@ const TestPlan = (props: any) => {
         }
     }
 
-    const trhowErrorMsg = (err: any) => {
-        if (err) {
-            const { errorFields } = err
-            if (errorFields && _.isArray(errorFields) && errorFields.length > 0) {
-                const { errors } = errorFields[0]
-                message.error(errors.toString())
-            }
-        }
-    }
-
     const handleBackPlanManage = () => history.push(`/ws/${ws_id}/test_plan?${stringify(state)}`)
 
     const hanldeUpdatePlan = async () => {
@@ -232,32 +260,7 @@ const TestPlan = (props: any) => {
         }
     }
 
-    // 校验数据
-    const checkDataSource = () => {
-        return new Promise((resolve: any, reject: any) => {
-            const pipline = dataSource.pipline
-            const { env_prep = {}, test_config = [] } = pipline || {}
-            const localStr = formatMessage({ id: 'plan.cannot.be.empty' })
-            if (env_prep.machine_info && !env_prep.machine_info.length) {
-                message.error(`${env_prep.name}${localStr}`)
-                reject()
-            }
 
-            if (test_config.length) {
-                test_config.forEach((item: any) => {
-                    const { name, template = [] } = item
-                    if (!template.length) {
-                        message.error(`${name}${localStr}`)
-                        reject()
-                    }
-                })
-            } else {
-                message.error(`${env_prep.name}${localStr}`)
-                reject()
-            }
-            resolve()
-        })
-    }
     return (
         <Spin spinning={loading} >
             <CreateContainer height={layoutHeight}>

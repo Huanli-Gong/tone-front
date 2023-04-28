@@ -62,12 +62,9 @@ export default forwardRef(
             return bindStageText
         }
 
-        const { language, value } = React.useMemo(() => {
+        const { language, value }: any = React.useMemo(() => {
             if (current.config_value) {
-                const { language, value } = hljs.highlightAuto(current.config_value)
-                return {
-                    language, value
-                }
+                return hljs.highlightAuto(current.config_value)
             }
             return {}
         }, [current.config_value])

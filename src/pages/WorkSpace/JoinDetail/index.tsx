@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Tabs, message } from 'antd'
-import { useIntl, FormattedMessage } from "umi"
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react'
+import { Tabs } from 'antd'
+import { useIntl, useParams } from "umi"
 import { queryWorkspaceApproveQuantity } from '@/services/Workspace'
 import TableComponent from './Components/Table'
 import styles from './index.less'
@@ -9,7 +10,7 @@ import { requestCodeMessage } from '@/utils/utils'
 
 export default (props: any) => {
     const { formatMessage } = useIntl()
-    const { ws_id } = props.match.params
+    const { ws_id } = useParams() as any
     const [status, setStatus] = useState('0')
     const [tabNumbers, setTabNumbers] = useState({
         backlog_count: 0,
@@ -21,7 +22,7 @@ export default (props: any) => {
         if (code === 200) {
             setTabNumbers(data)
         }
-        else requestCodeMessage( code , msg )
+        else requestCodeMessage(code, msg)
     }
 
     useEffect(() => {
@@ -37,13 +38,13 @@ export default (props: any) => {
                     defaultActiveKey={status}
                     onChange={val => setStatus(val)}
                 >
-                    <Tabs.TabPane tab={`${formatMessage({id: 'approval.pending'})} ${tabNumbers.backlog_count}`} key="0" />
-                    <Tabs.TabPane tab={`${formatMessage({id: 'approval.record'})} ${tabNumbers.finished_count}`} key="1" />
+                    <Tabs.TabPane tab={`${formatMessage({ id: 'approval.pending' })} ${tabNumbers.backlog_count}`} key="0" />
+                    <Tabs.TabPane tab={`${formatMessage({ id: 'approval.record' })} ${tabNumbers.finished_count}`} key="1" />
                 </Tabs>
             }
         >
-            { status === '0' && <TableComponent {...props} status={status} onChange={initPage} />}
-            { status === '1' && <TableComponent {...props} status={status} />}
+            {status === '0' && <TableComponent {...props} status={status} onChange={initPage} />}
+            {status === '1' && <TableComponent {...props} status={status} />}
         </TabCard>
     )
 }

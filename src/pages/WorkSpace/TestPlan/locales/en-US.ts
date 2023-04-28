@@ -129,6 +129,7 @@ export default {
   'plan.report_description.placeholder': 'Please enter a report description',
   'plan.timed.trigger': 'Timing Trigger',
   'plan.cron_info.reject': 'The rule is wrong, please check whether the trigger rule is correct',
+  'plan.cron_info.empty': 'Trigger rule cannot be empty.',
 
   /* 触发规则说明格式 */
   "plan.trigger.rule.format": 'Trigger Rule Format',

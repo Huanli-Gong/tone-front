@@ -2,7 +2,7 @@ import React from 'react'
 import { Tooltip, Space } from 'antd'
 import styles from './index.less'
 import { QuestionCircleOutlined } from '@ant-design/icons'
-import { TooltipProps } from 'antd/es/tooltip'
+import type { TooltipProps } from 'antd/es/tooltip'
 
 type IProps = {
     title: React.ReactNode | null | undefined;

@@ -1,6 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Space, Tabs, message, Popconfirm, Pagination, Table, Row, TableColumnProps } from 'antd';
+import { Form, Button, Space, Tabs, message, Popconfirm, Pagination, Table, Row } from 'antd';
 import { FilterFilled, QuestionCircleOutlined } from '@ant-design/icons';
+import type { TableColumnProps } from "antd"
 import { deleteCloudImage, queryCloudImage, deleteCloudAk, queryCloudAk } from './service';
 import styles from './style.less';
 import { history, useIntl, FormattedMessage, getLocale } from 'umi'
@@ -130,7 +135,7 @@ const CloudConfig: React.FC<any> = (props) => {
 		button_width: 90
 	}
 
-	const columnsAk: TableColumnProps<any>[] = [
+	const columnsAk: any = [
 		{
 			title: 'AK Name',
 			dataIndex: 'name',
@@ -346,7 +351,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			width: 120,
 			dataIndex: 'update_user',
 			ellipsis: true,
-			render(_) {
+			render(_: any) {
 				return _ || "-"
 			}
 		},
@@ -356,7 +361,7 @@ const CloudConfig: React.FC<any> = (props) => {
 			ellipsis: true,
 			// fixed: 'right',
 			width: 100,
-			render(_) {
+			render(_: any) {
 				return _ || "-"
 			}
 		},

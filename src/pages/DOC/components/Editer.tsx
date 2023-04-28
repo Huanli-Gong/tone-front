@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Row, Space, Typography } from 'antd'
 import styled from 'styled-components';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
@@ -166,8 +167,8 @@ const EditorBlock: React.FC<any> = ({ id, title, gmt_modified }) => {
                                 <RichEditor
                                     editable={false}
                                     content={text}
-                                    onCreate={({ editor }) => {
-                                        setEditor(editor)
+                                    onCreate={({ editor: $vm }: any) => {
+                                        setEditor($vm)
                                     }}
                                 />
                             </EditorWrapper>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { useClientSize } from '@/utils/hooks';
 import { queryEenvironmentResultList, queryDomainGroup } from './services'
@@ -822,7 +823,7 @@ export default (props: any) => {
                     index={index}
                     type={`1`}
                 >
-                    {(provided: any, snapshot: any) => (
+                    {(provided: any) => (
                         <div
                             className={styles.second_part}
                             ref={provided.innerRef}
@@ -883,7 +884,7 @@ export default (props: any) => {
                         index={index}
                         type={`1`}
                     >
-                        {(provided: any, snapshot: any) => (
+                        {(provided: any) => (
                             <Scrollbars autoHeightMax={isAlertClose ? scroll.height + 64 - 20 : scroll.height + 64 + 32} autoHeight>
                                 <div
                                     className={styles.second_part}
@@ -1014,7 +1015,7 @@ export default (props: any) => {
                 <ul>
                     <Scrollbars autoHeightMax={scroll.height - 94 + 68 + 80 + 5} autoHeight={true}>
                         <Droppable key={`noGroup${newNoGroupData.length}`} droppableId={`noGroup`} index={newNoGroupData.length} type={`1`}>
-                            {(provided: any, snapshot: any) => (
+                            {(provided: any) => (
                                 <div className={styles.second_part} ref={provided.innerRef} {...provided.droppableProps} {...provided.dragHandleProps} style={{ ...getJobItemStyle(provided.droppableProps.style), height: scroll.height - 94 + 68 + 80 }}>
 
                                     {newNoGroupData.map((obj: any, num: number) => {
@@ -1197,7 +1198,7 @@ export default (props: any) => {
                                                 })
                                             }
                                             <Draggable isDragDisabled={true} key={`create-${newGroupData.length}`} draggableId={`create-${newGroupData.length}`} index={newGroupData.length}>
-                                                {(provided: any, snapshot: any) => (
+                                                {(provided: any) => (
                                                     <div
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}

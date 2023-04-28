@@ -90,7 +90,7 @@ const SuiteDrawer = (props: any, ref: any) => {
     const caseHasMultip = useMemo(() => getHasMuiltip(caseFrom), [caseFrom])
     const suiteHasMultip = useMemo(() => getHasMuiltip(suiteForm), [suiteForm, caseFrom])
 
-    const getMultipFields = (source: Array<any>, isSuite: boolean = false) => {
+    const getMultipFields = (source: any[], isSuite: boolean = false) => {
         let caseMultipFields: any = {}
 
         const filterSourceMultip = (_: any, initial = {}) => _.reduce(

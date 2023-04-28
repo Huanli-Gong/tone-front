@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button, Space, Tag, message, Tooltip, Tabs, Modal, Row, Typography } from 'antd';
 import { FilterFilled, QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import DataSetPulic from '../DataSetPulic';
@@ -16,7 +18,7 @@ import { queryServerDel } from '../../GroupManage/services'
 import CloudDetail from './CloudDetail'
 import styles from './style.less';
 import { useParams, useIntl, FormattedMessage, getLocale, history, useLocation } from 'umi'
-import _ from 'lodash'
+import lodash from 'lodash'
 import { requestCodeMessage, AccessTootip, handlePageNum, useStateRef } from '@/utils/utils';
 import SelectDropSync from '@/components/Public/SelectDropSync';
 import { Access, useAccess } from 'umi'
@@ -62,7 +64,7 @@ export default () => {
     const [isInstance, setIsInstance] = useState<number>(Object.prototype.toString.call(query?.isInstance) === "[object String]" ? + query?.isInstance : 0)
     const [loading, setLoading] = useState<boolean>(false)
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
-    const [data, setData] = useState<any>({});
+    const [source, setSource] = useState<any>({});
     const [params, setParams] = useState<MachineParams>(DEFAULT_PARAM)
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [deleteDefault, setDeleteDefault] = useState(false);
@@ -119,10 +121,20 @@ export default () => {
         }
         setLoading(true)
         const data: any = await cloudList({ ...obj, ws_id })
-        data && setData(data)
+        data && setSource(data)
         setLoading(false)
     };
-    const totalCurrent = useStateRef(data)
+
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aliyun' })
+        if (code === 200) {
+            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
+            getList()
+        }
+        else requestCodeMessage(code, msg)
+    }
+
+    const totalCurrent = useStateRef(source)
 
     const paramTransform = (val: any) => {
         const dict = {
@@ -135,6 +147,76 @@ export default () => {
 
     const $instance = + isInstance
 
+    // 部署Agent
+    const deployClick = (row: any) => {
+        deployModal.current?.show({ ...row, detailData: [row.private_ip] || [], radio_type: 'cloudManage' });
+    }
+
+    const handleOpenLogDrawer = useCallback(
+        (id) => {
+            logDrawer.current.show(id)
+        }, []
+    )
+
+    const removeCloud = lodash.debounce(
+        async (id: number, is_release: boolean) => {
+            setBtnLoad(true)
+            const { page_size } = pageCurrent.current
+            const obj = { ws_id, is_release }
+            const res = await delCloud(id, obj)
+            if (res.code == 200) {
+                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
+                message.success(formatMessage({ id: 'operation.success' }));
+                setDeleteVisible(false)
+                setDeleteDefault(false)
+            } else {
+                requestCodeMessage(res.code, res.msg)
+                setTimeout(() => {
+                    setDeleteVisible(false)
+                    setDeleteDefault(false)
+                }, 300);
+            }
+            setBtnLoad(false)
+        }, 300
+    )
+
+    const handleDelServer = async (row: any, type: boolean) => {
+        setDeleteObj({ ...row, is_release: type })
+        const data = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aliyun' })
+        if (data.data.length > 0) {
+            setDeleteVisible(true)
+        } else {
+            setDeleteDefault(true)
+        }
+    }
+
+    const handleDetail = () => {
+        window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
+    }
+    useEffect(() => {
+        getList()
+    }, [params, isInstance]);
+
+    const tabRadioChange = (val: any) => {
+        setIsInstance(val)
+        setParams(DEFAULT_PARAM)
+        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
+    }
+
+    const addMachine = () => {
+        aloneMachine.current?.newMachine(undefined)
+    }
+
+    const editMachine = (row: any) => {
+        aloneMachine.current?.editMachine(row)
+    }
+    const onSuccess = (is_instance: any) => {
+        if ($instance == is_instance) {
+            getList()
+        } else {
+            setParams({ ...params, is_instance })
+        }
+    }
     const columns: any = [
         {
             title: (
@@ -300,7 +382,7 @@ export default () => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText>
         },
         {
             title: <FormattedMessage id="device.channel_type" />,
@@ -520,85 +602,6 @@ export default () => {
             ),
         },
     ]
-    // 部署Agent
-    const deployClick = (row: any) => {
-        deployModal.current?.show({ ...row, detailData: [row.private_ip] || [], radio_type: 'cloudManage' });
-    }
-
-    const handleOpenLogDrawer = useCallback(
-        (id) => {
-            logDrawer.current.show(id)
-        }, []
-    )
-
-    const removeCloud = _.debounce(
-        async (id: number, is_release: boolean) => {
-            setBtnLoad(true)
-            const { page_size } = pageCurrent.current
-            let obj = { ws_id, is_release }
-            const res = await delCloud(id, obj)
-            if (res.code == 200) {
-                setParams({ ...params, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
-                message.success(formatMessage({ id: 'operation.success' }));
-                setDeleteVisible(false)
-                setDeleteDefault(false)
-            } else {
-                requestCodeMessage(res.code, res.msg)
-                setTimeout(() => {
-                    setDeleteVisible(false)
-                    setDeleteDefault(false)
-                }, 300);
-            }
-            setBtnLoad(false)
-        }, 300
-    )
-
-    const handleDelServer = async (row: any, type: boolean) => {
-        setDeleteObj({ ...row, is_release: type })
-        const data = await queryServerDel({ server_id: row.id, run_mode: 'standalone', server_provider: 'aliyun' })
-        if (data.data.length > 0) {
-            setDeleteVisible(true)
-        } else {
-            setDeleteDefault(true)
-        }
-    }
-
-    const handleRefresh = async (row: any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.id, server_provider: 'aliyun' })
-        if (code === 200) {
-            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
-            getList()
-        }
-        else requestCodeMessage(code, msg)
-    }
-
-    const handleDetail = () => {
-        window.open(`/ws/${ws_id}/refenerce/6/?name=${deleteObj.name}&id=${deleteObj.id}`)
-    }
-    useEffect(() => {
-        getList()
-    }, [params, isInstance]);
-
-    const tabRadioChange = (val: any) => {
-        setIsInstance(val)
-        setParams(DEFAULT_PARAM)
-        history.replace(`${pathname}?${stringify({ ...query, isInstance: val })}`)
-    }
-
-    const addMachine = () => {
-        aloneMachine.current?.newMachine(undefined)
-    }
-
-    const editMachine = (row: any) => {
-        aloneMachine.current?.editMachine(row)
-    }
-    const onSuccess = (is_instance: any) => {
-        if ($instance == is_instance) {
-            getList()
-        } else {
-            setParams({ ...params, is_instance })
-        }
-    }
 
     const localeStr = deleteObj[!$instance ? "name" : !BUILD_APP_ENV ? "pub_ip" : "private_ip"]
 
@@ -625,13 +628,13 @@ export default () => {
                 columns={columns}
                 refreshDeps={[$instance, ws_id, access, enLocale, params]}
                 name={`ws-server-cloud-standalone-${$instance ? "setting" : "server"}`}
-                dataSource={data.data}
+                dataSource={source.data}
                 rowKey={'id'}
                 pagination={false}
             />
             {
                 <CommonPagination
-                    total={data.total}
+                    total={source.total}
                     pageSize={params.page_size}
                     currentPage={params.page_num}
                     onPageChange={
@@ -656,7 +659,7 @@ export default () => {
                 open={deleteVisible}
                 onCancel={() => setDeleteVisible(false)}
                 footer={[
-                    <Button key="submit" type="danger" onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
+                    <Button key="submit" type={"danger" as any} onClick={() => removeCloud(deleteObj.id, deleteObj.is_release)} loading={btnLoad}>
                         <FormattedMessage id={deleteObj.is_release ? 'operation.release' : 'operation.confirm.delete'} />
                     </Button>,
                     <Button key="back" onClick={() => setDeleteVisible(false)}>

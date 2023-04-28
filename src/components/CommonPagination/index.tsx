@@ -1,4 +1,3 @@
-import React from 'react'
 import { useIntl } from 'umi'
 import { Pagination, Row, Col } from 'antd'
 import styled from 'styled-components'

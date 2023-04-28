@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Card, Typography } from 'antd'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { tooltipTd } from '../components'
 import { evnPrepareState } from '../components'
 import { queryMonitorList } from '../service'
@@ -73,7 +74,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_ || '-'} />
+            render: (_: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_ || '-'}</ColumnEllipsisText>
         },
     ]
 
@@ -81,7 +82,7 @@ export default ({ job_id, refresh = false, provider_name }: any) => {
     /* 
      *** 后端字段调整
     */
-    let dataCopy = data && Array.isArray(data.result_list) ? data.result_list : []
+    const dataCopy = data && Array.isArray(data.result_list) ? data.result_list : []
 
     return (
         <Card

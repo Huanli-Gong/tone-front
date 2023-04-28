@@ -1,4 +1,5 @@
-import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
 import { Form, Input, Select, Radio } from 'antd'
 import { useParams, useRequest, useIntl, FormattedMessage } from 'umi'
 
@@ -12,7 +13,7 @@ import UnPushForm from '@/pages/WorkSpace/TestJob/components/KernalForms/UnPushF
 import BuildKernalForm from '@/pages/WorkSpace/TestJob/components/KernalForms/BuildKernalForm'
 
 import styled from 'styled-components'
-import _ from 'lodash'
+
 const BaselineSpan = styled.span`
     position:absolute;
     right: 30px;
@@ -128,7 +129,7 @@ const BasicSetting = (props: any, ref: any) => {
                         placeholder={formatMessage({ id: 'plan.plan.project_id' })}
                         options={
                             projectList.map(
-                                (item: any, idx: any) => ({
+                                (item: any) => ({
                                     value: item.id,
                                     label: `${item.name}(${item.product_name})`
                                 })

@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import { Typography, message, Spin, Radio, InputNumber, Button, Row, Col, Space } from 'antd'
-import { useIntl, FormattedMessage, useParams, getLocale } from 'umi'
+import { useIntl, FormattedMessage, useParams } from 'umi'
 import { QusetionIconTootip } from '@/pages/WorkSpace/TestJob/components/untils'
 
 import { queryDevOpsConfig, updateDevOpsConfig } from './service'
@@ -33,7 +34,6 @@ const TypographyIcon = styled(Typography.Text)`
 
 const DevOps = (props: any) => {
     const { formatMessage } = useIntl()
-    const enLocale = getLocale() === 'en-US'
     const { ws_id } = useParams() as any
     const [loading, setLoading] = useState<boolean>(false)
     const [btnSwitch, setBtnSwitch] = useState(true)
@@ -132,7 +132,7 @@ const DevOps = (props: any) => {
                         <RowWrapper gutter={20}>
                             <ColTitle>
                                 <Typography.Text>
-                                <FormattedMessage id="devOps.time" />：
+                                    <FormattedMessage id="devOps.time" />：
                                 </Typography.Text>
                             </ColTitle>
                             <Col>
@@ -147,7 +147,7 @@ const DevOps = (props: any) => {
                                             onChange={(val: any) => setDay(typeof val === 'number' ? val : 0)}
                                         />
                                         <TypographyText>
-                                        <FormattedMessage id="devOps.day" />
+                                            <FormattedMessage id="devOps.day" />
                                         </TypographyText>
                                     </Typography.Text>
                                     <Typography.Text>
@@ -178,7 +178,7 @@ const DevOps = (props: any) => {
                                     <TypographyIcon>
                                         <QusetionIconTootip
                                             title=""
-                                            desc={formatMessage({id: 'devOps.recovery.time.range'}) }
+                                            desc={formatMessage({ id: 'devOps.recovery.time.range' })}
                                         />
                                     </TypographyIcon>
                                 </Space>

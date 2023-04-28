@@ -27,17 +27,18 @@ const PackagesFormItem: React.FC<IProps> = (props) => {
                 initialValue={[""]}
                 rules={[
                     {
-                        validator: async (_, names) => {
+                        validator: async () => {
                             return Promise.resolve()
                         },
                     },
                 ]}
             >
-                {(fields, { add, remove }, { errors }) => {
+                {(fields, { add, remove }, { }) => {
                     return (
                         <Row style={{ flexDirection: "column", gap: 8, width: "100%" }}>
                             {fields.map((field, index) => (
-                                <div style={{ position: "relative" }} >
+                                // eslint-disable-next-line react/no-array-index-key
+                                <div style={{ position: "relative" }} key={index}>
                                     <Form.Item
                                         {...field}
                                         rules={[{

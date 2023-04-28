@@ -1,29 +1,30 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Space, Button, Select, Divider, Spin } from 'antd';
-import { FormattedMessage, useIntl } from 'umi'
+import { FormattedMessage } from 'umi'
 import { member } from './service';
 
-const FilterRadio: React.FC<any> = ({ confirm, onConfirm, autoFocus, pageSize = 999, initVal }) => {
+const FilterRadio: React.FC<any> = ({ confirm, onConfirm, pageSize = 999, initVal }) => {
 	const [user, setUser] = useState<any>([])
 	const [keyword, setKeyword] = useState<string>()
 	const [val, setVal] = useState<number | undefined>(initVal?.name)
 	const [userName, setUserName] = useState<string | undefined>(initVal?.name)
 	const [fetching, setFetching] = useState<boolean>(true)
 	const { Option } = Select;
-	useEffect(() => {
-		handleSearch()
-	}, []);
+
 	const handleSearch = async (word?: string) => {
 		const param = word && word.replace(/\s*/g, "")
 		if (keyword && keyword == param) return
 		setKeyword(param)
 		setFetching(true)
-		let { data } = await member({ keyword: param, page_size: pageSize })
+		const { data } = await member({ keyword: param, page_size: pageSize })
 		setUser(data || [])
 		// if(initVal && val !== initVal?.id) setVal(initVal)
 		setFetching(false)
 	}
-
+	useEffect(() => {
+		handleSearch()
+	}, []);
 	return (
 		<div style={{ padding: 8 }}>
 			<div>

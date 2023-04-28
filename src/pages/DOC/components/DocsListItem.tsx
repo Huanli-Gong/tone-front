@@ -2,7 +2,8 @@ import React, { useRef } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import styled from 'styled-components'
 import { HolderOutlined, MoreOutlined } from '@ant-design/icons'
-import { Badge, Tag, Dropdown, Menu, message, Typography, MenuProps } from 'antd'
+import { Badge, Tag, Dropdown, Menu, message, Typography } from 'antd'
+import type { MenuProps } from "antd"
 import classnames from 'classnames'
 import { useParams, useAccess, Access, history } from 'umi'
 import { deleteDoc } from '../services'
@@ -90,9 +91,7 @@ const DragTitle = styled.div`
 
 const type = 'DragableBodyRow'
 
-type IProps = {
-    [k: string]: any
-}
+type IProps = AnyType
 
 const tagsWords = (t: string) => new Map([
     ['mustRead', '必看'],
@@ -113,7 +112,7 @@ const switchColor = (t: string, i: number) => {
 }
 
 const DocListItem: React.FC<IProps> = (props) => {
-    const { index, onMove, title, active, id, tags, disable, className, refresh, ...rest } = props
+    const { index, onMove, title, active, tags, disable, className, refresh, ...rest } = props
 
     const { doc_type, doc_id } = useParams() as any
     const access = useAccess()

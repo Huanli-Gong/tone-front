@@ -34,11 +34,11 @@ export default (props: any) => {
             destroyTooltipOnHide
             title={intl.formatMessage({ id: `pages.anolis_home.button.apply_join` })}
             trigger="click"
-            visible={visible}
+            open={visible}
             placement={'topRight'}
             overlayClassName={styles.applyInner}
-            onVisibleChange={visible => {
-                setVisible(visible)
+            onOpenChange={open => {
+                setVisible(open)
             }}
             content={
                 <Row>

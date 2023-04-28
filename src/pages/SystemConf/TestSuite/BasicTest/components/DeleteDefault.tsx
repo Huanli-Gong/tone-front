@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React from "react"
 import { Modal, Button, Typography, Space } from "antd"
 import { FormattedMessage } from "umi"
@@ -33,10 +34,10 @@ const DeleteTip: React.ForwardRefRenderFunction<IRefs, Iprops> = (props, ref) =>
             destroyOnClose
             title={<FormattedMessage id="delete.tips" />}
             centered={true}
-            visible={visible}
+            open={visible}
             onCancel={hanldeCancel}
             footer={[
-                <Button key="submit" onClick={handleOk} type="danger">
+                <Button key="submit" onClick={handleOk} type={"danger" as any} >
                     <FormattedMessage id="operation.confirm.delete" />
                 </Button>,
                 <Button key="back" type="primary" onClick={hanldeCancel}>

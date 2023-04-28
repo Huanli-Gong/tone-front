@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Table, Space, Row } from 'antd'
 import React, { useRef, useState, useEffect } from 'react'
 import { useRequest, Access, useAccess, useParams, FormattedMessage, getLocale } from 'umi'
@@ -28,7 +30,7 @@ const CaseTable: React.FC<Record<string, any>> = ({
     const { id: job_id } = useParams() as any
     const background = `url(${treeSvg}) center center / 38.6px 32px `
     const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([])
-    const [expandedRowKeys, setExpandedRowKeys] = useState<Array<any>>([])
+    const [expandedRowKeys, setExpandedRowKeys] = useState<any[]>([])
 
     const access = useAccess()
     const [childState, setChildState] = useState(expandedState)
@@ -56,6 +58,14 @@ const CaseTable: React.FC<Record<string, any>> = ({
 
     const hasBaselineColumn = !!data.length && data[0].baseline
     const hasBaselineIdColumn = !!data.length && data[0].baseline_job_id
+
+    const handleContrastBaseline = (_: any) => {
+        contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
+    }
+
+    const handleJoinBaseline = (_: any) => {
+        joinBaselineDrawer.current.show({ ..._, suite_id, job_id })
+    }
 
     const columns = React.useMemo(() => [
         {
@@ -203,19 +213,12 @@ const CaseTable: React.FC<Record<string, any>> = ({
         }
     ], [testType, creator, access, hasBaselineColumn, hasBaselineIdColumn, columnsChange]).filter(Boolean)
 
-    const handleContrastBaseline = (_: any) => {
-        contrastBaselineDrawer.current.show({ ..._, suite_id, job_id })
-    }
-
-    const handleJoinBaseline = (_: any) => {
-        joinBaselineDrawer.current.show({ ..._, suite_id, job_id })
-    }
 
     const rowSelection = ['performance', 'business_performance'].includes(testType) ? {
         columnWidth: 40,
         selectedRowKeys,
-        onChange: (selectedRowKeys: any[]) => {
-            setSelectedRowKeys(selectedRowKeys)
+        onChange: ($selectedRowKeys: any[]) => {
+            setSelectedRowKeys($selectedRowKeys)
         }
     } : undefined
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react"
 import { Tabs, Row, Space, Input, Button, Spin, Empty } from "antd"
 import { useIntl, useAccess, Access, history, useModel } from "umi"
@@ -60,7 +61,7 @@ const WorkspaceTabs: React.FC = () => {
 
     const fetcher = async () => {
         setLoading(true)
-        const { code, msg, ...rest } = await queryHomeWorkspace(params)
+        const { code, ...rest } = await queryHomeWorkspace(params)
         setLoading(false)
         setDataSource(code !== 200 ? {} : rest)
     }

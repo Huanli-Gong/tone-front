@@ -42,7 +42,7 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 async (values: any) => {
                     setPadding(true)
                     console.log(values, data)
-                    let params: any = { ...values }
+                    const params: any = { ...values }
                     params.editor_obj = data.editor_obj
                     params.ws_id = ws_id
                     if (data.editor_obj === 'job') params.job_id = data.job_id
@@ -54,7 +54,7 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                     if (code === 200) {
                         props.onOk()
                         handleClose()
-                        message.success(formatMessage({id: 'operation.success'}) )
+                        message.success(formatMessage({ id: 'operation.success' }))
                         return
                     }
                     setPadding(false)
@@ -79,15 +79,15 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
             maskClosable={false}
             keyboard={false}
             width="376"
-            title={<FormattedMessage id="ws.result.details.edit.remarks"/>}
+            title={<FormattedMessage id="ws.result.details.edit.remarks" />}
             visible={visible}
             onClose={handleClose}
             bodyStyle={{ padding: 0 }}
             footer={
                 <div style={{ textAlign: 'right', }} >
                     <Space>
-                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel"/></Button>
-                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.update"/></Button>
+                        <Button onClick={handleClose}><FormattedMessage id="operation.cancel" /></Button>
+                        <Button type="primary" onClick={handleOk}><FormattedMessage id="operation.update" /></Button>
                     </Space>
                 </div>
             }
@@ -106,10 +106,10 @@ const EditRemark: React.ForwardRefRenderFunction<any, any> = (props, ref) => {
                 /*hideRequiredMark*/
                 style={{ background: '#fff', padding: 20, height: 'calc( 100% - 94px )' }}
             >
-                <Form.Item label={<FormattedMessage id="ws.result.details.test_summary"/>}
+                <Form.Item label={<FormattedMessage id="ws.result.details.test_summary" />}
                     name="note">
-                    <Input.TextArea rows={8} 
-                        placeholder={formatMessage({id: 'ws.result.details.please.enter.remarks'})}
+                    <Input.TextArea rows={8}
+                        placeholder={formatMessage({ id: 'ws.result.details.please.enter.remarks' })}
                     />
                 </Form.Item>
             </Form>

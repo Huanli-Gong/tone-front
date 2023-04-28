@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useState } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 import { Drawer, Space, Button, Form, Input, Select, Radio, Badge } from 'antd'
 
 import { updateClusterServer } from '../../services'
@@ -51,7 +51,7 @@ const EditServerDrawer = (props: any, ref: any) => {
                 }
             )
             .catch(
-                (err: any) => {
+                () => {
                     setPadding(false)
                 }
             )
@@ -63,7 +63,7 @@ const EditServerDrawer = (props: any, ref: any) => {
             keyboard={false}
             title={<FormattedMessage id="device.device.edit" />}
             forceRender={true}
-            visible={visible}
+            open={visible}
             width="376"
             destroyOnClose={true}
             onClose={hanldeClose}

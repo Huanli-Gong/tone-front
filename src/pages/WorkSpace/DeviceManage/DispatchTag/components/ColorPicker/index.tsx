@@ -6,7 +6,7 @@ import { CheckOutlined } from '@ant-design/icons';
 import CustomStyle from './style.less';
 import Picker from '@/assets/svg/picker.png'
 
-const colorPicker: React.FC<any> = ({ value, onChange }) => {
+const ColorPicker: React.FC<any> = ({ value, onChange }) => {
 
 	const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false)
 	const [show, setShow] = useState<boolean>(false)
@@ -33,8 +33,8 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 		setDisplayColorPicker(false)
 	};
 
-	const handleChange = (color: any) => {
-		const rgb = color.rgb
+	const handleChange = ($color: any) => {
+		const rgb = $color.rgb
 		setColor(rgb)
 		const rgba = `rgb(${rgb.r},${rgb.g},${rgb.b},${rgb.a})`
 		if (onChange) {
@@ -112,11 +112,12 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 			</div>
 			{displayColorPicker ?
 				<div style={styles.popover}>
-					<div style={styles.cover} onClick={handleClose}></div>
+					<div style={styles.cover} onClick={handleClose} />
 					<div style={styles.warp}>
 						<div style={{ background: "#fff", width: 244, paddingLeft: '16px' }}>
 							{
 								colors.map((item, index) => {
+									// eslint-disable-next-line react/no-array-index-key
 									return <div key={index}>
 										<div
 											className={CustomStyle.waves}
@@ -163,13 +164,13 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 										borderRadius: '2px',
 										background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
 									}}
-									></div>
+									/>
 								</div>
 							</div>
 						</div>
 						{show && <Divider style={{ margin: 0 }} />}
 						{show && <div style={{ padding: '6px' }}>
-							<SketchPicker className={CustomStyle.picker} width={212} color={color} onChange={handleChange} presetColors={[]} />
+							<SketchPicker className={CustomStyle.picker} width={212 as any} color={color} onChange={handleChange} presetColors={[]} />
 						</div>
 						}
 					</div>
@@ -179,4 +180,4 @@ const colorPicker: React.FC<any> = ({ value, onChange }) => {
 	)
 }
 
-export default colorPicker
+export default ColorPicker

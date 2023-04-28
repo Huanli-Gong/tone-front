@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState, useEffect, useRef } from 'react'
 import { Row, Col, Form, Radio, Input, Select, Button, Space, message, Spin, Breadcrumb } from 'antd'
 
@@ -53,8 +55,8 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
             form.setFieldsValue({ server_type, test_type, name, description, enable: temlEnable })
             setEnabel(temlEnable)
             const { data: typeItems } = await queryJobTypeItems({ jt_id })
-            let more: Array<number> = []
-            let server: Array<number> = []
+            const more: any = []
+            const server: any = []
             Object.keys(data).forEach((key) => {
                 data[key] = data[key].map((item: any) => {
                     const idx = typeItems.findIndex(
@@ -85,12 +87,12 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
     }, [])
 
     const handleSelect = (name: string, id: any, select: boolean) => {
-        let data: any = {}
+        const data: any = {}
         Object.keys(source).forEach(
             (key) => {
                 data[key] = key === name ?
                     source[key].map(
-                        (ctx: any, idx: number) => ctx.id === id ? { ...ctx, select, isTouch: select } : ctx
+                        (ctx: any) => ctx.id === id ? { ...ctx, select, isTouch: select } : ctx
                     ) :
                     source[key]
             }
@@ -99,7 +101,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
     }
 
     const hanldeEditName = (name: string, id: number, alias: string) => {
-        let data: any = {}
+        const data: any = {}
         Object.keys(source).forEach(
             (key) => {
                 data[key] = key === name ?
@@ -112,16 +114,16 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
         setSource(data)
     }
 
-    const handleCheckBoxSelect = (vals: Array<number>, name: string) => {
-        let data: any = {}
+    const handleCheckBoxSelect = (vals: any, name: string) => {
+        const data: any = {}
         Object.keys(source).forEach(
             key => {
                 data[key] = key === name ?
                     source[key].map(
                         (ctx: any) => {
-                            const idx = vals.findIndex(id => id === ctx.id)
+                            const idx = vals.findIndex((id: any) => id === ctx.id)
                             const select = idx > -1 ? true : false
-                            let obj = Object.assign({}, defaultSelect)
+                            const obj = Object.assign({}, defaultSelect)
                             obj[name] = vals
                             setDefaultSelect(obj)
                             return { ...ctx, select }
@@ -134,7 +136,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
     }
 
     const handleFinish = async (saveType: string = '') => {
-        let item_dict = {}
+        const item_dict = {}
         setPadding(true)
         if (padding) return
         form.validateFields()
@@ -189,7 +191,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
      * 测试类型 性能 performance 基线 （默认选择） baseline
      */
     const handleServerChange = ({ target }: any) => {
-        let data: any = {}
+        const data: any = {}
 
         Object.keys(source).forEach(
             (key) => {
@@ -215,7 +217,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
     const handleTestTypeChange = (value: any) => {
         setTestType(value)
 
-        let data: any = {}
+        const data: any = {}
         Object.keys(source).forEach(
             (key) => {
                 data[key] = source[key].map((ctx: any) => {
@@ -246,7 +248,7 @@ const CreateJobType: React.FC<Record<string, any>> = (props) => {
     const handleBusinessTypeChange = ({ target }: any) => {
         const value = target.value
 
-        let data: any = {}
+        const data: any = {}
         Object.keys(source).forEach((key) => {
             data[key] = source[key].map((ctx: any) => {
                 if (ctx.name === 'baseline') {

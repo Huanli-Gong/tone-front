@@ -1,5 +1,6 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react'
-import { useIntl, FormattedMessage } from 'umi'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useImperativeHandle, forwardRef } from 'react'
+import { FormattedMessage } from 'umi'
 import { Drawer, Space, Button, Checkbox, Input, message, Row, Typography, Tooltip, Spin } from 'antd'
 import { queryTestTemplateList } from '@/pages/WorkSpace/TestTemplateManage/service'
 import { SearchOutlined } from '@ant-design/icons'
@@ -7,7 +8,6 @@ import { isArray } from 'lodash'
 import styles from './index.less'
 
 const TemplateListDrawer = (props: any, ref: any) => {
-    const { formatMessage } = useIntl()
     const { ws_id, onOk } = props
     const [visible, setVisible] = useState(false)
     const [search, setSearch] = useState('')
@@ -21,6 +21,20 @@ const TemplateListDrawer = (props: any, ref: any) => {
     const [list, setList] = useState([])
     const [allList, setAllList] = useState([])
     const [loading, setLoading] = useState(true)
+
+    const initList = async () => {
+        setLoading(true)
+        const { data, code } = await queryTestTemplateList({ ws_id, enable: 'True', name: search, page_size: 100 })
+        setLoading(false)
+        if (code !== 200) {
+            setList([])
+            return
+        }
+        if (search.length === 0) {
+            setAllList(data)
+        }
+        setList(data)
+    }
 
     useImperativeHandle(ref, () => ({
         show: (_: any, idx: any, rowIndex: any, id: any) => {
@@ -37,20 +51,6 @@ const TemplateListDrawer = (props: any, ref: any) => {
             }
         }
     }), [])
-
-    const initList = async () => {
-        setLoading(true)
-        const { data, code, msg } = await queryTestTemplateList({ ws_id, enable: 'True', name: search, page_size: 100 })
-        setLoading(false)
-        if (code !== 200) {
-            setList([])
-            return
-        }
-        if (search.length === 0) {
-            setAllList(data)
-        }
-        setList(data)
-    }
 
     const handleClose = () => {
         setVisible(false)
