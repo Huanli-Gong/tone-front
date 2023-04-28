@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Space, message, Modal, Popconfirm, Row, Typography } from 'antd';
 import { metricList, addMetric, editMetric, delMetric, getDomain } from '../../../service';
@@ -21,7 +22,7 @@ const MetricTable: React.FC<AnyType> = (props) => {
 	const [expandInnerList, setExpandInnerList] = useState<any>([])
 	const [expandInnerLoading, setExpandInnerLoading] = useState<boolean>(true)
 	const [metricId, setMetricId] = useState<number>()
-	const [refresh, setRefresh] = useState<boolean>(true)
+	const [refresh, setRefresh] = useState<any>()
 
 	const metricEditer: any = useRef(null)
 
@@ -50,16 +51,35 @@ const MetricTable: React.FC<AnyType> = (props) => {
 		metricEditer.current.show('edit', row)
 	}
 
-	const submitMetric = async (data: any) => {
-		const params: any = {
-			...data,
-			...{
-				object_id,
-				object_type: innerKey === '1' ? 'case' : 'suite'
-			}
+	const metricSubmit = async (params: any) => {
+		const { code, msg } = metricId ? await editMetric(metricId, params) : await addMetric(params)
+		if (code === 200) {
+			metricEditer.current.hide()
+			setRefresh(new Date().getTime())
 		}
+		else {
+			requestCodeMessage(code, msg)
+		}
+	}
 
-		innerKey === '1' ? metricSubmit(params) : doMetricModalFn(params)
+	const remMetricRow = async (params: any, is_sync?: any) => {
+		const { object_type, name } = params
+
+		const { code, msg } = innerKey === '1' ?
+			await delMetric(params.id) :
+			await delMetric(params.id, { is_sync, object_id, object_type, name })
+
+		if (code === 200) {
+			console.log("ok")
+			message.success(formatMessage({ id: 'operation.success' }));
+			setRefresh(new Date().getTime())
+		}
+		else requestCodeMessage(code, msg)
+	}
+
+	const newMetric = () => {
+		setMetricId(undefined)
+		metricEditer.current.show('new')
 	}
 
 	const doMetricModalFn = (params: any) => {
@@ -81,34 +101,17 @@ const MetricTable: React.FC<AnyType> = (props) => {
 		});
 	}
 
-	const metricSubmit = async (params: any) => {
-		const { code, msg } = metricId ? await editMetric(metricId, params) : await addMetric(params)
-		if (code === 200) {
-			metricEditer.current.hide()
-			setRefresh(!refresh)
+	const submitMetric = async (data: any) => {
+		const params: any = {
+			...data,
+			...{
+				object_id,
+				object_type: innerKey === '1' ? 'case' : 'suite'
+			}
 		}
-		else {
-			requestCodeMessage(code, msg)
-		}
-	}
-
-	const remMetricRow = async (params: any, is_sync?: any) => {
-		const { object_type, name } = params
-
-		const { code, msg } = innerKey === '1' ?
-			await delMetric(params.id) :
-			await delMetric(params.id, { is_sync, object_id, object_type, name })
-
-		if (code === 200) {
-			message.success(formatMessage({ id: 'operation.success' }));
-			setRefresh(!refresh)
-		}
-		else requestCodeMessage(code, msg)
-	}
-
-	const newMetric = () => {
-		setMetricId(undefined)
-		metricEditer.current.show('new')
+		if (innerKey === '1') {
+			metricSubmit(params)
+		} else doMetricModalFn(params)
 	}
 
 	const DeleteMetricBtn: React.FC<any> = ({ row }) => {

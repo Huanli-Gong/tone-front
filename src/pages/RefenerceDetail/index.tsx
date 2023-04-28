@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Breadcrumb, Collapse, message, Table, Typography } from 'antd';
+import { Breadcrumb, Collapse, Table, Typography } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useClientSize } from '@/utils/hooks'
 import CommonPagination from '@/components/CommonPagination'
-import { history, useIntl, FormattedMessage, getLocale } from 'umi'
+import { history, FormattedMessage } from 'umi'
 import styled from 'styled-components';
 import { JobListStateTag } from '../WorkSpace/TestResult/Details/components/index'
 import { queryConfirm } from '@/pages/WorkSpace/JobTypeManage/services';
@@ -55,8 +56,8 @@ const Refenerce = (props: any) => {
     const [params, setParams] = useState<any>({ page_num: 1, page_size: 10 })
     const [tempParams, setTempParams] = useState<any>({ page_num: 1, page_size: 10 })
     const { height: layoutHeight } = useClientSize()
-    let param = new URLSearchParams(location.search);
-    let [id, name] = [param.get('id'), param.get('name')]
+    const param = new URLSearchParams(location.search);
+    const [id, name] = [param.get('id'), param.get('name')]
 
     const BreadcrumbItem: React.FC<any> = () => (
         <Breadcrumb className="breadcrumb">
@@ -70,8 +71,8 @@ const Refenerce = (props: any) => {
             </Breadcrumb.Item>
         </Breadcrumb>
     )
-    let JobObj: any = { flag: 'job', ...params }
-    let TempObj: any = { flag: 'template', ...tempParams }
+    const JobObj: any = { flag: 'job', ...params }
+    const TempObj: any = { flag: 'template', ...tempParams }
     if (type == 'suite') {
         JobObj.suite_id = id
         TempObj.suite_id = id
@@ -181,9 +182,11 @@ const Refenerce = (props: any) => {
             key: 'gmt_created',
         },
     ];
-    const RenderItem: React.FC<any> = (props: any) => {
-        return props.children
+
+    const RenderItem: React.FC<any> = ($props: any) => {
+        return $props.children
     }
+
     return (
         <Wapper>
             <BreadcrumbItem />

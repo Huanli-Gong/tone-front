@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
 import useMergeValue from 'use-merge-value';
-import { AutoCompleteProps } from 'antd/es/auto-complete';
+import type { AutoCompleteProps } from 'antd/es/auto-complete';
 import React, { useRef } from 'react';
 
 import classNames from 'classnames';
@@ -31,7 +31,7 @@ const HeaderSearch: React.FC<HeaderSearchProps> = (props) => {
         ...restProps
     } = props;
 
-    const inputRef = useRef<Input | null>(null);
+    const inputRef = useRef<any>(null);
 
     const [value, setValue] = useMergeValue<string | undefined>(defaultValue, {
         value: props.value,
@@ -78,7 +78,7 @@ const HeaderSearch: React.FC<HeaderSearchProps> = (props) => {
                 onChange={setValue}
             >
                 <Input
-                    autoComplete="off" 
+                    autoComplete="off"
                     size="small"
                     ref={inputRef}
                     defaultValue={defaultValue}

@@ -26,6 +26,14 @@ export default forwardRef(
             setMetricNames(data)
         }
 
+        const handleCancle = () => {
+            setVisible(false)
+            setSearch('')
+            form.resetFields()
+            setCheckedAll(false)
+            setIndeterminate(false)
+        }
+
         useImperativeHandle(ref, () => ({
             show: (t: string = '', _: any = {}) => {
                 const params: any = componentType === 'suite' ? { suite_id: parentId } : { case_id: parentId }
@@ -46,14 +54,6 @@ export default forwardRef(
                     }
                 )
                 .catch(err => console.log(err))
-        }
-
-        const handleCancle = () => {
-            setVisible(false)
-            setSearch('')
-            form.resetFields()
-            setCheckedAll(false)
-            setIndeterminate(false)
         }
 
         const handleSearchMetric = (val: string) => {

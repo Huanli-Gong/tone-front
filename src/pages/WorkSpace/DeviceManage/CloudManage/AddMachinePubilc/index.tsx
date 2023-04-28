@@ -1,3 +1,12 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/dot-notation */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import React, { useEffect, useState, useImperativeHandle, useMemo } from 'react';
 import { Button, Drawer, Form, Row, Col, Select, Input, Radio, Spin, message, Cascader, InputNumber, Badge, Space } from 'antd';
 import {
@@ -541,7 +550,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
             }
             width={724}
             onClose={onClose}
-            visible={visible}
+            open={visible}
             bodyStyle={{ paddingBottom: 80 }}
             destroyOnClose
             footer={
@@ -796,7 +805,7 @@ const NewMachine: React.FC<any> = ({ onRef, is_instance, onSuccess, type }) => {
                                     rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     {categories.length == 0 ?
-                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} ></Select>
+                                        <Select placeholder={formatMessage({ id: 'device.resource.shortage' })} disabled={true} />
                                         :
                                         <Select placeholder={formatMessage({ id: 'please.select' })} disabled={disabled} >
                                             {categories.map((item: any, index: number) => {

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from "react"
 import { Button, Col, Divider, Row, Space, Typography } from "antd"
 import styled, { keyframes, css } from "styled-components";

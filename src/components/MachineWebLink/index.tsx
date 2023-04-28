@@ -9,7 +9,7 @@ interface ServerType {
     param?: string | number,
     provider: "aligroup" | "aliyun",
     description?: string,
-    machine_pool?:boolean,
+    machine_pool?: boolean,
 }
 const TextWarp = styled.div`
     overflow: hidden;
@@ -21,19 +21,19 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
     const ellipsis = useRef<any>(null)
     const [show, setShow] = useState<boolean>(false)
 
-    useEffect(() => {
-        setEllipsis();
-    }, [val])
-
     const setEllipsis = () => {
         const clientWidth = ellipsis?.current?.clientWidth
         const scrollWidth = ellipsis?.current?.scrollWidth
         setShow(clientWidth < scrollWidth)
     }
 
+    useEffect(() => {
+        setEllipsis();
+    }, [val])
+
     const handleIpHerf = async () => {
         if (provider === "aliyun") {
-            let params = machine_pool ? { server_id: param } : { id: param }
+            const params = machine_pool ? { server_id: param } : { id: param }
             const { data, code, msg } = await querySeverLink(params)
             if (code === 200) {
                 const win: any = window.open("");
@@ -48,11 +48,11 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
             // setTimeout(function () { win.location.href = href })
         }
     }
-    const flag = 
-        (BUILD_APP_ENV && provider === "aligroup") || 
-        (provider === "aliyun" && !access.IsAdmin()) || 
+    const flag =
+        (BUILD_APP_ENV && provider === "aligroup") ||
+        (provider === "aliyun" && !access.IsAdmin()) ||
         (!BUILD_APP_ENV && provider === "aligroup" && !access.IsWsSetting())
-        
+
     const TypographyDiv = flag ? (<TextWarp ref={ellipsis}>{val || '-'}</TextWarp>)
         : (
             <TextWarp ref={ellipsis} style={{ color: '#1890ff', cursor: 'pointer' }} onClick={handleIpHerf}>
@@ -68,21 +68,21 @@ const ServerLink: React.FC<ServerType> = ({ val, param, provider, description, m
     )
 
     if (val) {
-        if(!show && description){
+        if (!show && description) {
             return (
                 <Tooltip title={description} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}
-                </Tooltip> 
+                </Tooltip>
             )
         }
-        if(show && description){
+        if (show && description) {
             return (
                 <Tooltip title={machineDesc} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}
-                </Tooltip> 
+                </Tooltip>
             )
         }
-        if(show){
+        if (show) {
             return (
                 <Tooltip title={val} placement="topLeft" overlayStyle={{ wordBreak: 'break-all' }}>
                     {TypographyDiv}

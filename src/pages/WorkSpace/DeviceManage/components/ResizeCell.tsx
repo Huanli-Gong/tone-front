@@ -1,10 +1,9 @@
-import React from 'react'
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css'
 
 import styled from 'styled-components'
 
-const StyledResizeable = styled( Resizable )`
+const StyledResizeable = styled(Resizable)`
     .react-resizable {
         position: relative;
         background-clip: padding-box;
@@ -22,7 +21,7 @@ const StyledResizeable = styled( Resizable )`
     }
 `
 
-export const ResizeableTitle = ( props : any ) => {
+export const ResizeableTitle = (props: any) => {
     const { onResize, width, ...restProps } = props;
 
     if (!width) {

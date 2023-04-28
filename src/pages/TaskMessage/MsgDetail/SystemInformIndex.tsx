@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { useModel } from 'umi';
 import { Spin, Space, Typography, Badge, List, Avatar, Button, Row, Col, Pagination } from 'antd'
-import { SysListItem } from './data';
+import type { SysListItem } from './data';
 import MsgEmpty from './Component/index'
 import styles from './index.less';
 import { handleTypeRefused, handleTypePassed, NoticeItem, jumpPage, handleTypeWait } from '@/components/RightContent/components/utils'
@@ -18,16 +19,6 @@ const SystemInformIndex: React.FC<SysListItem> = ({ tab, height: layoutHeight })
         increment: ret.increment,
     }));
 
-    // 系统全部已读
-    const handleAllSysRead = async () => {
-        const data = await allTagApplyRead()
-        if (data.code === 200) {
-            getSysMsg()
-            increment()
-        } else {
-            requestCodeMessage(data.code, data.msg)
-        }
-    }
     // 获取系统通知消息列表
     const getSysMsg = async () => {
         setSysLoading(true)
@@ -36,6 +27,17 @@ const SystemInformIndex: React.FC<SysListItem> = ({ tab, height: layoutHeight })
             setSysMsg(data.data)
             setTotal(data)
             setSysLoading(false)
+        }
+    }
+
+    // 系统全部已读
+    const handleAllSysRead = async () => {
+        const data = await allTagApplyRead()
+        if (data.code === 200) {
+            getSysMsg()
+            increment()
+        } else {
+            requestCodeMessage(data.code, data.msg)
         }
     }
     const jumpRoute = async (item: any) => {
@@ -47,9 +49,9 @@ const SystemInformIndex: React.FC<SysListItem> = ({ tab, height: layoutHeight })
             }
         }
         const obj = JSON.parse(item.content)
-        let name = obj.status
-        let action = obj.action
-        let ws_id = obj.ws_info === undefined ? '' : obj.ws_info.ws_id
+        const name = obj.status
+        const action = obj.action
+        const ws_id = obj.ws_info === undefined ? '' : obj.ws_info.ws_id
         jumpPage(name, action, ws_id)
     }
 

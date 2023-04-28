@@ -1,11 +1,11 @@
 import React from 'react';
 import { Form, Select, Spin, Empty } from 'antd';
-import { useRequest, useParams, useIntl, FormattedMessage } from 'umi'
+import { useRequest, useParams, useIntl } from 'umi'
 import { member } from './service'
 
 const Owner: React.FC = () => {
     const { formatMessage } = useIntl()
-    const { ws_id }:any = useParams();
+    const { ws_id }: any = useParams();
     const { data: user, loading: fetchLoading, run: fetchUserRunner } = useRequest(
         (keyword = '') => member({ keyword, scope: 'aligroup', ws_id, page_num: 1, page_size: 500 }),
         {
@@ -32,7 +32,7 @@ const Owner: React.FC = () => {
         <Form.Item
             name="emp_id"
             label="Owner"
-            rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+            rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
         >
             <Select
                 allowClear
@@ -41,7 +41,7 @@ const Owner: React.FC = () => {
                         <Spin size="small" /> :
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 }
-                placeholder={formatMessage({id: 'select.owner'})}
+                placeholder={formatMessage({ id: 'select.owner' })}
                 filterOption={false}
                 onSearch={handleSearch}
                 style={{ width: '100%' }}
@@ -55,6 +55,7 @@ const Owner: React.FC = () => {
                         return (
                             <Select.Option
                                 value={item.emp_id}
+                                // eslint-disable-next-line react/no-array-index-key
                                 key={index}
                             >
                                 {item.last_name}({item.first_name === "" ? item.last_name : item.first_name}){!BUILD_APP_ENV && ` - ${item.emp_id}`}

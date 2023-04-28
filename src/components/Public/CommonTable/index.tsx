@@ -24,7 +24,7 @@ const CommonTable: React.FC<TableProps<Any> & Any> = (props) => {
     const table = useRef<any>(null)
 
     const getTop = (e: any) => {
-        var offset = e.offsetTop;
+        let offset = e.offsetTop;
         if (e.offsetParent != null) offset += getTop(e.offsetParent);
         return offset;
     }
@@ -43,6 +43,7 @@ const CommonTable: React.FC<TableProps<Any> & Any> = (props) => {
     return (
         <Spin spinning={loading as any}>
             <div ref={table} />
+            {/* @ts-ignore */}
             <ResizeHooksTable
                 size={"small"}
                 className={`${styles.table_empty} ${className}`}

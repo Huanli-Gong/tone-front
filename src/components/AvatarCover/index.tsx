@@ -1,4 +1,3 @@
-import React from 'react'
 
 import { Avatar } from 'antd'
 interface Props {
@@ -9,11 +8,11 @@ interface Props {
     logo?: string;
     shape?: 'circle' | 'square';
     className?: string;
-    fontSize?:number;
+    fontSize?: number;
 }
 
 const AvatarCover = (props: Props) => {
-    const { size, show_name, style, theme_color, logo, shape , fontSize } = props
+    const { size, show_name, style, theme_color, logo, shape, fontSize } = props
 
     if (logo)
         return (

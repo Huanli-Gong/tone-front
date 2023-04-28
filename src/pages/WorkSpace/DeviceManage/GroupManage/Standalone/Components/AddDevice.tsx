@@ -1,3 +1,6 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { Drawer, Space, Button, Form, Select, Input, Badge, message, Spin, Tooltip } from 'antd'
 import { checkTestServerIps, addTestServer, putTestServer, batchPutTestServer } from '../../services'
@@ -36,6 +39,17 @@ const AddDeviceDrawer = (props: any, ref: any) => {
         isQuery: '',
     })
 
+    const handleClose = () => {
+        form.resetFields()
+        setVisible(false)
+        setModifyProps(null)
+        setValidateResult({})
+        setValidateMsg('')
+        setVals([])
+        setSelectIpsValue('')
+        setIps({ success: [], errors: [] })
+    }
+
     // 机器状态是occupied--编辑时：控制通道、机器、使用状态不能编辑。
     useImperativeHandle(ref, () => ({
         show: (data: any) => {
@@ -54,7 +68,6 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             } else {
                 setTagFlag({ ...tagFlag, isQuery: 'add', list: [] })
             }
-
         }
     }))
 
@@ -102,11 +115,10 @@ const AddDeviceDrawer = (props: any, ref: any) => {
     const handleMoreEditFinish = () => {
         setPadding(true)
         form.validateFields().then(async (values: any) => {
-            let data: any;
             values.ws_id = ws_id
             values.server_ids = modifyProps.selectRowKeys
             values.description = values.description || ''
-            data = await batchPutTestServer(values)
+            const data = await batchPutTestServer(values)
 
             if (data.code === 200) {
                 message.success(formatMessage({ id: 'operation.success' }))
@@ -165,12 +177,12 @@ const AddDeviceDrawer = (props: any, ref: any) => {
             setValidateResult({})
         }
         setLoading(true)
-        const ips = form.getFieldValue('ips') || []
+        const $ips = form.getFieldValue('$') || []
         const ip = form.getFieldValue('ip')
         const channel_type = value // form.getFieldValue('channel_type')
         // 添加
-        if (channel_type && ips && ips.length > 0) {
-            const data = await checkTestServerIps({ ips, channel_type, ws_id }) || {}
+        if (channel_type && $ips && $ips.length > 0) {
+            const data = await checkTestServerIps({ ips: $ips, channel_type, ws_id }) || {}
             if (data.code === 200) {
                 setIps({ ...data.data })
                 setValidateMsg(<ValidateIps data={data} channelType={channel_type} />)
@@ -260,17 +272,6 @@ const AddDeviceDrawer = (props: any, ref: any) => {
         setSelectIpsValue(values.toString())
     }
 
-    const handleClose = () => {
-        form.resetFields()
-        setVisible(false)
-        setModifyProps(null)
-        setValidateResult({})
-        setValidateMsg('')
-        setVals([])
-        setSelectIpsValue('')
-        setIps({ success: [], errors: [] })
-    }
-
     return (
         <Drawer
             keyboard={false}
@@ -346,8 +347,8 @@ const AddDeviceDrawer = (props: any, ref: any) => {
                                 className={styles.select_ips}
                             >
                                 {
-                                    ips.success.map((item: any, index: number) => (
-                                        <Select.Option key={index} value={item}>
+                                    ips.success.map((item: any) => (
+                                        <Select.Option key={item} value={item}>
                                             {item}
                                         </Select.Option>
                                     ))

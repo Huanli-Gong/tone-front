@@ -1,7 +1,6 @@
-import React, { forwardRef, useState, useImperativeHandle } from 'react'
-import { Drawer, Space, Form, Button, message, Row } from 'antd'
+import { forwardRef, useState, useImperativeHandle } from 'react'
+import { Drawer } from 'antd'
 import { CloseOutlined } from '@ant-design/icons';
-import { FormattedMessage  } from 'umi';
 import CodeEditer from '@/components/CodeEditer';
 import styles from './index.less';
 
@@ -13,11 +12,12 @@ const DrawerForm = forwardRef((props, ref) => {
   useImperativeHandle(
     ref,
     () => ({
-        show: (title= '', propsData) => {
-            // console.log('propsData',propsData);
-            setVisible(true);
-            setCurrent({ config_value: propsData });
-        }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      show: (title = '', propsData: any) => {
+        // console.log('propsData',propsData);
+        setVisible(true);
+        setCurrent({ config_value: propsData });
+      }
     })
   )
 
@@ -30,25 +30,25 @@ const DrawerForm = forwardRef((props, ref) => {
     <div className={styles.ConsoleDrawer}>
       <Drawer
         maskStyle={{ opacity: 0, animation: 'unset' }}
-        maskClosable={ true }
-        keyboard={ false }
+        maskClosable={true}
+        keyboard={false}
         onClose={handleClose}
         visible={visible}
         placement="bottom"
-        closeIcon={<CloseOutlined style={{ color: '#fff' }}  />}
+        closeIcon={<CloseOutlined style={{ color: '#fff' }} />}
         closable={true}
         bodyStyle={{ padding: 0 }}
         footer={null}>
-          <div className={styles.ConsoleDrawer_content}>
-            <CodeEditer
-                code={current.config_value}
-                onChange={(value: any) => setCurrent({
-                    ...current,
-                    config_value: value,
-                })}
-                readOnly="nocursor"
-            />
-          </div>
+        <div className={styles.ConsoleDrawer_content}>
+          <CodeEditer
+            code={current.config_value}
+            onChange={(value: any) => setCurrent({
+              ...current,
+              config_value: value,
+            })}
+            readOnly="nocursor"
+          />
+        </div>
       </Drawer>
     </div>
   )

@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, } from 'react';
 import { Button, Space, Tabs, message, Row, Typography } from 'antd';
 import type { TableColumnProps } from "antd"
 import { CaretRightFilled, CaretDownFilled, EditOutlined } from '@ant-design/icons';
@@ -42,6 +44,16 @@ export default forwardRef(({ id }: any, ref: any) => {
     const deleteTipsRef: any = useRef(null)
     const deleteDefaultRef: any = useRef(null)
 
+    const getCase = async () => {
+        setExpandList({ data: [] })
+        setExpandInnerKey([])
+        setExpandLoading(true)
+        const params = { suite_id: id, page_num: confPage, page_size: confPageSize }
+        const data = await openSuite(params)
+        setExpandList(data)
+        setExpandLoading(false)
+    }
+
     // 刷新列表
     useImperativeHandle(
         ref,
@@ -54,16 +66,6 @@ export default forwardRef(({ id }: any, ref: any) => {
         })
     )
 
-    const getCase = async () => {
-        setExpandList({ data: [] })
-        setExpandInnerKey([])
-        setExpandLoading(true)
-        const params = { suite_id: id, page_num: confPage, page_size: confPageSize }
-        const data = await openSuite(params)
-        setExpandList(data)
-        setExpandLoading(false)
-    }
-
     useEffect(() => {
         getCase()
     }, [confPage, confPageSize, confRefresh]);
@@ -72,8 +74,8 @@ export default forwardRef(({ id }: any, ref: any) => {
         row.var = row.var ? JSON.parse(row.var) : [{ name: '', val: '', des: '' }]
         row.is_default = row.is_default ? 1 : 0
         const arr = row.domain_id_list === '' ? [] : row.domain_id_list.split(',')
-        let newArr = [];
-        for (var i = 0; i < arr.length; i++) {
+        const newArr = [];
+        for (let i = 0; i < arr.length; i++) {
             newArr.push(Number.parseInt(arr[i]));
         }
         row.domain_list_str = newArr
@@ -87,7 +89,7 @@ export default forwardRef(({ id }: any, ref: any) => {
         else deleteDefaultRef.current?.show(row)
     }
 
-    const handleInnerTab = (key: string, id: number) => {
+    const handleInnerTab = (key: string) => {
         setInnerKey(key)
         if (innerKey == '1') return
         setConfRefresh(!confRefresh)
@@ -104,13 +106,12 @@ export default forwardRef(({ id }: any, ref: any) => {
     }
     const rowSelection = + status === 0 ? {
         selectedRowKeys,
-        getCheckboxProps: (record: AnyType) => ({
+        getCheckboxProps: () => ({
             disabled: !!metricDelInfo?.selectedRowKeys?.length, // Column configuration not to be checked
         }),
-        onChange: (selectedRowKeys: any[], selectedRows: any) => {
-            console.log(selectedRows, selectedRowKeys)
+        onChange: ($selectedRowKeys: any[], selectedRows: any) => {
             setSelectedRow(selectedRows)
-            setSelectedRowKeys(selectedRowKeys)
+            setSelectedRowKeys($selectedRowKeys)
         }
     } : undefined
 
@@ -119,7 +120,7 @@ export default forwardRef(({ id }: any, ref: any) => {
     }
 
     const columns: TableColumnProps<any>[] = [
-        { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: { showTitle: false }, render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.name} /> },
+        { title: 'Test Conf', dataIndex: 'name', width: 300, fixed: 'left', ellipsis: { showTitle: false }, render: (_: any, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.name}</ColumnEllipsisText> },
         { title: <FormattedMessage id="TestSuite.alias" />, dataIndex: 'alias', width: 100, ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
         { title: <FormattedMessage id="TestSuite.domain" />, width: 100, dataIndex: 'domain_name_list', ellipsis: true, render: (_: any) => <>{_ ? _ : '-'}</> },
         { title: <FormattedMessage id="TestSuite.timeout" />, dataIndex: 'timeout', width: 160 },
@@ -174,7 +175,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                 showTitle: false
             },
             width: '190px',
-            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={row.gmt_created} />
+            render: (_: number, row: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{row.gmt_created}</ColumnEllipsisText>
         },
         {
             title: (
@@ -223,7 +224,7 @@ export default forwardRef(({ id }: any, ref: any) => {
                 <Tabs
                     defaultActiveKey={'1'}
                     activeKey={innerKey}
-                    onChange={(key) => handleInnerTab(key, id)}
+                    onChange={(key) => handleInnerTab(key)}
                     className={styles.caseTabCls}
                 >
                     <TabPane
@@ -261,9 +262,9 @@ export default forwardRef(({ id }: any, ref: any) => {
                                     },
                                     indentSize: 0,
                                     expandedRowKeys: expandInnerKey,
-                                    expandIcon: ({ expanded, onExpand, record }: any) =>
-                                        expanded ? (<CaretDownFilled onClick={e => onExpand(record, e)} />) :
-                                            (<CaretRightFilled onClick={e => onExpand(record, e)} />)
+                                    expandIcon: ({ expanded, onExpand: handleExpand, record }: any) =>
+                                        expanded ? (<CaretDownFilled onClick={e => handleExpand(record, e)} />) :
+                                            (<CaretRightFilled onClick={e => handleExpand(record, e)} />)
                                 } :
                                 {}
                         }

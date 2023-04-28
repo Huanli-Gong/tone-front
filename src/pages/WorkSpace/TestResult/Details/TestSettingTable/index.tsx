@@ -1,5 +1,5 @@
 import { Spin } from 'antd'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useRequest, useParams } from 'umi'
 import { matchTestType } from '@/utils/utils'
 import { querySettingConfig } from '../service'

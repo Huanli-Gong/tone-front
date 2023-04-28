@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import { message, Space, Typography } from 'antd'
 import ConfPopoverTable from './ConfPopoverTable'
@@ -41,8 +42,28 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             requestCodeMessage(code, msg)
         }
     }
+    
     const pageCurrent = useStateRef(pageParams)
     const totalCurrent = useStateRef(dataSource)
+
+    const doConfServer = async (_: any, state: any) => {
+        // 添加用户id
+        const { user_id } = initialState?.authList
+        const q = user_id ? { user_id } : {}
+        const { code, msg } = await updateSuiteCaseOption({
+            ...q,
+            editor_obj: 'test_job_conf',
+            test_job_conf_id: _.id,
+            state
+        })
+        const { page_size } = pageCurrent.current
+        if (code === 200) {
+            setPageParams({ ...pageParams, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
+            message.success(formatMessage({ id: 'operation.success' }))
+        } else {
+            requestCodeMessage(code, msg)
+        }
+    }
 
     useEffect(() => {
         queryTestListTableData(pageParams)
@@ -104,7 +125,7 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'result',
@@ -197,25 +218,6 @@ const TestConfTable: React.FC<Record<string, any>> = (props) => {
             )
         },
     ]
-
-    const doConfServer = async (_: any, state: any) => {
-        // 添加用户id
-        const { user_id } = initialState?.authList
-        const q = user_id ? { user_id } : {}
-        const { code, msg } = await updateSuiteCaseOption({
-            ...q,
-            editor_obj: 'test_job_conf',
-            test_job_conf_id: _.id,
-            state
-        })
-        const { page_size } = pageCurrent.current
-        if (code === 200) {
-            setPageParams({ ...pageParams, page_num: handlePageNum(pageCurrent, totalCurrent), page_size })
-            message.success(formatMessage({ id: 'operation.success' }))
-        } else {
-            requestCodeMessage(code, msg)
-        }
-    }
 
     return (
         <Space style={{ width: "100%", paddingLeft: 40, paddingBottom: 8 }} direction={"vertical"}>

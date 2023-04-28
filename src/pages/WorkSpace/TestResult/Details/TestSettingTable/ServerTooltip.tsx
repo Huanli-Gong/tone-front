@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Row, Col, Space, Typography, Tag, Tooltip } from "antd"
 import React from "react"
 import { useParams, useIntl, FormattedMessage } from "umi"
@@ -28,10 +29,10 @@ const Container = styled.div`
 
 export const dataSetMethod = (dict: any, formatMessage?: any) => {
     const obj = {
-        cloud: formatMessage({ id: 'common.cloud'}),
-        cloud_efficiency: formatMessage({ id: 'common.cloud_efficiency'}),
-        cloud_ssd: formatMessage({ id: 'common.cloud_ssd'}),
-        cloud_essd: formatMessage({ id: 'common.cloud_essd'}),
+        cloud: formatMessage({ id: 'common.cloud' }),
+        cloud_efficiency: formatMessage({ id: 'common.cloud_efficiency' }),
+        cloud_ssd: formatMessage({ id: 'common.cloud_ssd' }),
+        cloud_essd: formatMessage({ id: 'common.cloud_essd' }),
     }
     return obj[dict]
 }
@@ -60,79 +61,6 @@ const LTRow: React.FC<TRowProps> = ({ label, children }) => {
 
 const SpaceVertical: React.FC<any> = (props) => <Space direction="vertical" style={{ width: "100%" }} {...props} />
 
-const ServerDetail: React.FC<any> = (props) => {
-    const { $type } = props
-    const { formatMessage } = useIntl()
-    return (
-        <Container>
-            <Wrapper direction="vertical" size={20}>
-                <SpaceVertical>
-                    <Typography.Text strong><FormattedMessage id="common.hardware"/></Typography.Text>
-                    <SpaceVertical>
-                        {
-                            $type !== 0 &&
-                            <>
-                                <TRow label={`${formatMessage({id: 'common.instance.ID'})}:`}>{props?.instance_id}</TRow>
-                                <TRow label={`${formatMessage({id: 'common.private_ip'})}:`}>{props?.private_ip}</TRow>
-                            </>
-                        }
-                        <TRow label={"Region/Zone:"}>{props?.region_zone}</TRow>
-                        <TRow label={`${formatMessage({id: 'common.instance_type'})}:`}>{props?.instance_type}</TRow>
-                        <TRow label={`${formatMessage({id: 'common.bandwidth'})}:`}>{props?.bandwidth}</TRow>
-                        {
-                            props?.manufacturer !== 'aliyun_eci' &&
-                            <>
-                                <TRow label={`${formatMessage({id: 'common.system_disk'})}:`}>{dataSetMethod(props?.system_disk_category, formatMessage)}/{props?.system_disk_size}G</TRow>
-                                <TRow label={`${formatMessage({id: 'common.storage_type'})}:`}>{dataSetMethod(props?.storage_type, formatMessage)}/{props?.storage_size}G/{props?.storage_number}个</TRow>
-                            </>
-                        }
-                    </SpaceVertical>
-                </SpaceVertical>
-
-                <SpaceVertical>
-                    <Typography.Text strong><FormattedMessage id="common.soft"/></Typography.Text>
-                    <TRow label={`${formatMessage({id: 'common.image_name'})}:`}>{props?.image_name}</TRow>
-                </SpaceVertical>
-
-                {
-                    $type !== 0 &&
-                    <>
-                        <SpaceVertical>
-                            <Typography.Text strong><FormattedMessage id="ws.result.details.use_state"/></Typography.Text>
-                            <TRow label={`${formatMessage({id: 'common.server.state'})}:`}>{props?.real_state}</TRow>
-                        </SpaceVertical>
-
-                        <SpaceVertical>
-                            <Typography.Text strong><FormattedMessage id="common.channel_type"/></Typography.Text>
-                            <TRow label={"Channel:"}>{props?.image_name}</TRow>
-                            <TRow label={`${formatMessage({id: 'ws.result.details.state'})}:`}>{props?.image_name}</TRow>
-                            {/* <Col span={18}>{channelState?.toString()}</Col> */}
-                        </SpaceVertical>
-                    </>
-                }
-                {
-                    JSON.stringify(props?.extra_param) !== '{}' &&
-                    <SpaceVertical>
-                        <Typography.Text strong><FormattedMessage id="common.extended.field"/></Typography.Text>
-                        {
-                            props?.extra_param?.map(
-                                (item: any) => (
-                                    (item.param_key && item.param_value !== '') &&
-                                    <TRow label=" ">
-                                        {item.param_key}:{item.param_value}
-                                    </TRow>
-                                )
-                            )
-                        }
-                    </SpaceVertical>
-                }
-
-                <ElseTag {...props} />
-            </Wrapper>
-        </Container>
-    )
-}
-
 const ElseTag: React.FC<any> = (props) => {
     const { tag_list } = props
     const { formatMessage } = useIntl()
@@ -141,7 +69,7 @@ const ElseTag: React.FC<any> = (props) => {
             {
                 (tag_list && !!tag_list.length) &&
                 <SpaceVertical>
-                    <Typography.Text strong><FormattedMessage id="ws.result.details.scheduling.tab"/></Typography.Text>
+                    <Typography.Text strong><FormattedMessage id="ws.result.details.scheduling.tab" /></Typography.Text>
                     <Row>
                         {
 
@@ -156,14 +84,88 @@ const ElseTag: React.FC<any> = (props) => {
             }
 
             <SpaceVertical>
-                <Typography.Text strong><FormattedMessage id="ws.result.details.other.information"/></Typography.Text>
-                <TRow label={`${formatMessage({id: 'ws.result.details.configuration.name'})}:`}>{props?.name}</TRow>
+                <Typography.Text strong><FormattedMessage id="ws.result.details.other.information" /></Typography.Text>
+                <TRow label={`${formatMessage({ id: 'ws.result.details.configuration.name' })}:`}>{props?.name}</TRow>
                 <TRow label="Owner:">{props?.owner_name}</TRow>
-                <TRow label={`${formatMessage({id: 'ws.result.details.gmt_created'})}:`}>{props?.gmt_created}</TRow>
-                <TRow label={`${formatMessage({id: 'ws.result.details.gmt_modified'})}:`}>{props?.gmt_modified}</TRow>
-                <TRow label={`${formatMessage({id: 'ws.result.details.test_summary'})}:`}>{props?.description}</TRow>
+                <TRow label={`${formatMessage({ id: 'ws.result.details.gmt_created' })}:`}>{props?.gmt_created}</TRow>
+                <TRow label={`${formatMessage({ id: 'ws.result.details.gmt_modified' })}:`}>{props?.gmt_modified}</TRow>
+                <TRow label={`${formatMessage({ id: 'ws.result.details.test_summary' })}:`}>{props?.description}</TRow>
             </SpaceVertical>
         </Wrapper>
+    )
+}
+
+const ServerDetail: React.FC<any> = (props) => {
+    const { $type } = props
+    const { formatMessage } = useIntl()
+    return (
+        <Container>
+            <Wrapper direction="vertical" size={20}>
+                <SpaceVertical>
+                    <Typography.Text strong><FormattedMessage id="common.hardware" /></Typography.Text>
+                    <SpaceVertical>
+                        {
+                            $type !== 0 &&
+                            <>
+                                <TRow label={`${formatMessage({ id: 'common.instance.ID' })}:`}>{props?.instance_id}</TRow>
+                                <TRow label={`${formatMessage({ id: 'common.private_ip' })}:`}>{props?.private_ip}</TRow>
+                            </>
+                        }
+                        <TRow label={"Region/Zone:"}>{props?.region_zone}</TRow>
+                        <TRow label={`${formatMessage({ id: 'common.instance_type' })}:`}>{props?.instance_type}</TRow>
+                        <TRow label={`${formatMessage({ id: 'common.bandwidth' })}:`}>{props?.bandwidth}</TRow>
+                        {
+                            props?.manufacturer !== 'aliyun_eci' &&
+                            <>
+                                <TRow label={`${formatMessage({ id: 'common.system_disk' })}:`}>{dataSetMethod(props?.system_disk_category, formatMessage)}/{props?.system_disk_size}G</TRow>
+                                <TRow label={`${formatMessage({ id: 'common.storage_type' })}:`}>{dataSetMethod(props?.storage_type, formatMessage)}/{props?.storage_size}G/{props?.storage_number}个</TRow>
+                            </>
+                        }
+                    </SpaceVertical>
+                </SpaceVertical>
+
+                <SpaceVertical>
+                    <Typography.Text strong><FormattedMessage id="common.soft" /></Typography.Text>
+                    <TRow label={`${formatMessage({ id: 'common.image_name' })}:`}>{props?.image_name}</TRow>
+                </SpaceVertical>
+
+                {
+                    $type !== 0 &&
+                    <>
+                        <SpaceVertical>
+                            <Typography.Text strong><FormattedMessage id="ws.result.details.use_state" /></Typography.Text>
+                            <TRow label={`${formatMessage({ id: 'common.server.state' })}:`}>{props?.real_state}</TRow>
+                        </SpaceVertical>
+
+                        <SpaceVertical>
+                            <Typography.Text strong><FormattedMessage id="common.channel_type" /></Typography.Text>
+                            <TRow label={"Channel:"}>{props?.image_name}</TRow>
+                            <TRow label={`${formatMessage({ id: 'ws.result.details.state' })}:`}>{props?.image_name}</TRow>
+                            {/* <Col span={18}>{channelState?.toString()}</Col> */}
+                        </SpaceVertical>
+                    </>
+                }
+                {
+                    JSON.stringify(props?.extra_param) !== '{}' &&
+                    <SpaceVertical>
+                        <Typography.Text strong><FormattedMessage id="common.extended.field" /></Typography.Text>
+                        {
+                            props?.extra_param?.map(
+                                (item: any, idx: number) => (
+                                    (item.param_key && item.param_value !== '') &&
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    <TRow label=" " key={idx}>
+                                        {item.param_key}:{item.param_value}
+                                    </TRow>
+                                )
+                            )
+                        }
+                    </SpaceVertical>
+                }
+
+                <ElseTag {...props} />
+            </Wrapper>
+        </Container>
     )
 }
 
@@ -216,17 +218,17 @@ const ClusterServer: React.FC<any> = (props) => {
     return (
         <ClusterContainer>
             <CLusterTitle >
-                <FormattedMessage id="ws.result.details.cluster.name"/>：{name}
+                <FormattedMessage id="ws.result.details.cluster.name" />：{name}
             </CLusterTitle>
             <Wrapper direction="vertical" style={{ padding: 20 }}>
                 {/* <ElseTag {...props} /> */}
                 <SpaceVertical style={{ padding: "0 20px", width: "100%" }}>
-                    <LTRow label={`${formatMessage({id: 'ws.result.details.configuration.name'})}:`}>{props?.name}</LTRow>
+                    <LTRow label={`${formatMessage({ id: 'ws.result.details.configuration.name' })}:`}>{props?.name}</LTRow>
                     <LTRow label="Owner:">{props?.owner_name}</LTRow>
-                    <LTRow label={`${formatMessage({id: 'ws.result.details.gmt_created'})}:`}>{props?.gmt_created}</LTRow>
-                    <LTRow label={`${formatMessage({id: 'ws.result.details.gmt_modified'})}:`}>{props?.gmt_modified}</LTRow>
-                    <LTRow label={`${formatMessage({id: 'ws.result.details.test_summary'})}:`}>{props?.description}</LTRow>
-                    <LTRow label={`${formatMessage({id: 'ws.result.details.scheduling.tab'})}:`}>
+                    <LTRow label={`${formatMessage({ id: 'ws.result.details.gmt_created' })}:`}>{props?.gmt_created}</LTRow>
+                    <LTRow label={`${formatMessage({ id: 'ws.result.details.gmt_modified' })}:`}>{props?.gmt_modified}</LTRow>
+                    <LTRow label={`${formatMessage({ id: 'ws.result.details.test_summary' })}:`}>{props?.description}</LTRow>
+                    <LTRow label={`${formatMessage({ id: 'ws.result.details.scheduling.tab' })}:`}>
                         {
                             (props.tag_list && !!props.tag_list.length) ?
                                 props?.tag_list.map(
@@ -239,9 +241,9 @@ const ClusterServer: React.FC<any> = (props) => {
                 </SpaceVertical>
                 {
                     source.map((item: any) => {
-                        const title = item.is_instance ? 
-                            formatMessage({id: 'ws.result.details.server.instance.name'}, { data: item.name})
-                            : formatMessage({id: 'ws.result.details.server.configuration.name'}, { data: item.name})
+                        const title = item.is_instance ?
+                            formatMessage({ id: 'ws.result.details.server.instance.name' }, { data: item.name })
+                            : formatMessage({ id: 'ws.result.details.server.configuration.name' }, { data: item.name })
 
                         return (
                             <CLusterTerm key={item.server_id}>
@@ -331,7 +333,7 @@ const ServerTooltip: React.FC<any> = ({ server_ip, is_instance, run_mode, provid
             </Tooltip>
         )
     else if (['随机'].includes(server_ip)) {
-        return <Tooltip title={formatMessage({id: 'common.random'})}><FormattedMessage id="common.random"/></Tooltip>
+        return <Tooltip title={formatMessage({ id: 'common.random' })}><FormattedMessage id="common.random" /></Tooltip>
     }
     return <Tooltip title={basicText}>{basicText}</Tooltip>
 }

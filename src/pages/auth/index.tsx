@@ -1,10 +1,11 @@
-import { Redirect, useParams } from 'umi'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useParams } from 'umi'
 import { queryWorkspaceHistory } from '@/services/Workspace'
 import _ from 'lodash'
 import React, { useEffect, useMemo } from 'react';
 import { redirectErrorPage } from '@/utils/utils';
 
-const NoFoundPage: React.FC<{}> = (props: any) => {
+const NoFoundPage: React.FC<AnyType> = (props) => {
     const { children } = props
     const { ws_id } = useParams<any>()
     const [dom, setDom] = React.useState<any>()

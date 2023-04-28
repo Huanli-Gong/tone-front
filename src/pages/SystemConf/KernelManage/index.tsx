@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
-import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm, TableColumnProps } from 'antd'
+import { Badge, message, Table, Typography, Space, Button, Spin, Popconfirm } from 'antd'
+import type { TableColumnProps } from "antd"
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { queryKernelList, deleteKernel, updateSyncKernel } from './services'
 import CommonPagination from '@/components/CommonPagination'
@@ -9,7 +11,7 @@ import { SingleTabCard } from '@/components/UpgradeUI'
 import { requestCodeMessage } from '@/utils/utils'
 import { ColumnEllipsisText } from '@/components/ColumnComponents'
 
-export default (props: any) => {
+export default () => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
 

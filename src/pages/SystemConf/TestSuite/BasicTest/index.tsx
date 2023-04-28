@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Space, Drawer, message, Pagination, Tooltip, Row, Alert, Table, Spin, Typography } from 'antd';
 import type { TableColumnProps } from "antd"
@@ -52,6 +53,7 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
     const [confRefresh, setConfRefresh] = useState<boolean>(true)
     const [dataSource, setDataSource] = useState<any>([])
     const [asyncTime, setAsyncTime] = useState(new Date().getTime())
+    const [time, setTime] = useState()
 
     const [metricDelInfo, setMetricDelInfo] = React.useState<AnyType>({})
 
@@ -69,14 +71,6 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
     useImperativeHandle(ref, () => ({
         openCreateDrawer: suiteEditDrawer.current.show
     }))
-
-    const getList = async () => {
-        setLoading(true)
-        const data: any = await suiteList(pageParams)
-        setDataSource(data)
-        handleLastSync()
-        setLoading(false)
-    };
 
     const debouncedList = (fn: any, wait: any) => {
         if (timer !== null) clearTimeout(timer);  //清除这个定时器
@@ -145,6 +139,23 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         setExpandKey([])
         setPageParams(DEFAULT_PAGE_PARAMS)
     }, [query])
+
+
+    const handleLastSync = async () => {
+        const data = await lastSync()
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        data.code === 200 ?
+            setTime(data.data) :
+            message.error(data.msg)
+    }
+
+    const getList = async () => {
+        setLoading(true)
+        const data: any = await suiteList(pageParams)
+        setDataSource(data)
+        handleLastSync()
+        setLoading(false)
+    };
 
     useEffect(() => {
         debouncedList(getList, 300)
@@ -419,8 +430,6 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         },
     ]
 
-    const [time, setTime] = useState()
-
     const handleSynchronous = async () => {
         const data = await manual()
         if (data.code === 200) {
@@ -432,20 +441,12 @@ const SuiteManagement: React.ForwardRefRenderFunction<AnyType, AnyType> = (props
         }
     }
 
-    const handleLastSync = async () => {
-        const data = await lastSync()
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        data.code === 200 ?
-            setTime(data.data) :
-            message.error(data.msg)
-    }
-
     const totalPaginationClass = (total: any) => {
         return !total || total <= 0 ? styles.hidden : ''
     }
 
     const handleBatchDelete = async (selectRowKeys: React.Key[], is_sync?: any) => {
-        const { code, msg } = await batchDeleteMetric({
+        const { code } = await batchDeleteMetric({
             id_list: selectRowKeys,
             is_sync,
             object_id: metricDelInfo?.object_id,

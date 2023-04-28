@@ -1,4 +1,4 @@
-import { Row , Typography } from 'antd'
+import { Row, Typography } from 'antd'
 import styled from 'styled-components'
 
 export const Container = styled.div`
@@ -19,11 +19,11 @@ interface RankIndexProp {
     index: number
 }
 
-const indexSwitchColor = (index : number) => {
+const indexSwitchColor = (index: number) => {
     switch (index) {
-        case 0:  return 'background: #EB4B31;'
-        case 1:  return 'background: #F2C700;'
-        case 2:  return 'background: #5D86F9;'
+        case 0: return 'background: #EB4B31;'
+        case 1: return 'background: #F2C700;'
+        case 2: return 'background: #5D86F9;'
         default: return ''
     }
 }
@@ -41,11 +41,11 @@ export const RankIndexDefault = styled.span`
     width: 20px;
     margin-right: 20px;
 `
-export const RankIndex = styled(RankIndexDefault)<RankIndexProp>`
+export const RankIndex = styled(RankIndexDefault) <RankIndexProp>`
     color:#fff;
     font-size:14px;
     border-radius: 50%;
-    ${({ index }) => indexSwitchColor( index )}
+    ${({ index }) => indexSwitchColor(index)}
 `
 export const RankUserName = styled(Typography.Text)`
     width:100px;

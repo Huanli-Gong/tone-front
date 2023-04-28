@@ -1,6 +1,5 @@
-import React from 'react';
 import { Alert } from 'antd';
-import { history, useModel, useIntl } from 'umi'
+import { history, useIntl } from 'umi'
 import styled from 'styled-components';
 import { OPENANOLIS_LOGIN_URL } from '@/utils/utils';
 
@@ -13,7 +12,7 @@ const SpanText = styled.span`
   line-height: 24px;
   cursor: pointer;
 `
-export default (props: any) => {
+export default () => {
   const { formatMessage } = useIntl()
 
   const notLoginToLogin = () => {

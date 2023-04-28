@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useRef, useImperativeHandle, useCallback } from 'react';
 import { Space, Popconfirm, message, Typography } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
@@ -20,8 +22,8 @@ const GroupTree: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
     const { cluster_id, width, onRef, size, top, is_instance } = props
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState<any>([]);
-    const [refresh, setRefresh] = useState<boolean>(true)
+    const [source, setSource] = useState<any>([]);
+    const [refresh, setRefresh] = useState<any>()
     const aloneMachine = useRef<any>(null)
     const access = useAccess();
     const logDrawer: any = useRef();
@@ -35,9 +37,9 @@ const GroupTree: React.FC<any> = (props) => {
             return { ...item, ...item.test_server }
         })
         if (Array.isArray(data.data)) {
-            setData(data.data)
+            setSource(data.data)
         } else {
-            setData([])
+            setSource([])
         }
         setLoading(false)
     };
@@ -70,6 +72,39 @@ const GroupTree: React.FC<any> = (props) => {
         }
         return dict[val] || ''
     }
+
+    const handleRefresh = async (row: any) => {
+        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
+        if (code === 200) {
+            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
+            getList()
+        }
+        else requestCodeMessage(code, msg)
+    }
+
+    const editMachine = (row: any) => {
+        aloneMachine.current && aloneMachine.current.editMachine({ ...row, cluster_id })
+    }
+    const remMachine = async (row: any) => {
+        const { code, msg } = await delGroupMachine(row.machineId)
+        if (code === 200) {
+            getList()
+            message.success(formatMessage({ id: 'request.delete.success' }));
+        } else {
+            message.success(msg);
+        }
+    }
+
+    useEffect(() => {
+        // 1.请求列表;
+        getList()
+    }, [refresh]);
+
+    useImperativeHandle(onRef, () => ({
+        reload: () => {
+            setRefresh(new Date().getTime())
+        }
+    }));
 
     const columns: any = [
         {
@@ -251,7 +286,7 @@ const GroupTree: React.FC<any> = (props) => {
             title: <FormattedMessage id="device.install.kernel" />,
             dataIndex: 'kernel_install',
             width: 120,
-            render: (text: number, row: any) => text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />
+            render: (text: number) => text ? <FormattedMessage id="operation.yes" /> : <FormattedMessage id="operation.no" />
         },
         {
             title: <FormattedMessage id="device.var_name" />,
@@ -269,7 +304,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_, record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
+            render: (_: any, record: any) => StateBadge(record.test_server.state, record.test_server, ws_id)
         },
         !!is_instance &&
         {
@@ -279,7 +314,7 @@ const GroupTree: React.FC<any> = (props) => {
             ellipsis: {
                 showTitle: false,
             },
-            render: (_, record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
+            render: (_: any, record: any) => StateBadge(record.test_server.real_state, record.test_server, ws_id)
         },
         {
             title: <FormattedMessage id="device.description" />,
@@ -352,42 +387,10 @@ const GroupTree: React.FC<any> = (props) => {
         }
     ]
 
-    const handleRefresh = async (row: any) => {
-        const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aliyun' })
-        if (code === 200) {
-            message.success(formatMessage({ id: 'device.synchronization.state.success' }))
-            getList()
-        }
-        else requestCodeMessage(code, msg)
-    }
-
-    const editMachine = (row: any) => {
-        aloneMachine.current && aloneMachine.current.editMachine({ ...row, cluster_id })
-    }
-    const remMachine = async (row: any) => {
-        const { code, msg } = await delGroupMachine(row.machineId)
-        if (code === 200) {
-            getList()
-            message.success(formatMessage({ id: 'request.delete.success' }));
-        } else {
-            message.success(msg);
-        }
-    }
-
-    useEffect(() => {
-        // 1.请求列表;
-        getList()
-    }, [refresh]);
-
-    useImperativeHandle(onRef, () => ({
-        reload: (title: string, data: any = {}) => {
-            setRefresh(!refresh)
-        }
-    }));
-
     const onSuccess = () => {
-        setRefresh(!refresh)
+        setRefresh(new Date().getTime())
     }
+
     return (
         <div className={styles.warp}>
             <div
@@ -395,10 +398,10 @@ const GroupTree: React.FC<any> = (props) => {
                 style={{ backgroundSize: `40px ${size}px`, height: top, backgroundPosition: 'left center' }}
             />
             {
-                !!data.length &&
+                !!source.length &&
                 <div
                     className={styles.tree}
-                    style={{ backgroundSize: `40px ${size}px`, height: size * data.length + 30, top: top }}
+                    style={{ backgroundSize: `40px ${size}px`, height: size * source.length + 30, top: top }}
                 />
             }
             <ResizeHooksTable
@@ -408,8 +411,8 @@ const GroupTree: React.FC<any> = (props) => {
                 columns={columns as any}
                 refreshDeps={[is_instance, ws_id, enLocale]}
                 name="ws-device-cloud-group"
-                showHeader={!!data.length}
-                dataSource={data}
+                showHeader={!!source.length}
+                dataSource={source}
                 rowKey={'id'}
                 pagination={false}
             />

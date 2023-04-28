@@ -123,15 +123,14 @@ const StateSelect: React.FC<any> = (props) => {
 
 const TagSelect: React.FC<any> = (props) => {
     const { ws_id } = useParams() as any
-    const { api, ...rest } = props
     const { data } = useRequest(() => queryTag({ ws_id }), { debounceInterval: 300 })
 
-    const { placeholder } = rest
+    const { placeholder } = props
     if (!data) return <Input placeholder={placeholder} />
 
     return (
         <TagSelectStyled
-            {...rest}
+            {...props}
             tagRender={tagRender}
             labelInValue
             filterOption={(input, option) => (option?.name ?? '').toLowerCase().includes(input.toLowerCase())}

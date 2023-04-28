@@ -1,10 +1,11 @@
-import React,{ useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 import { Form, Select, Spin, Empty, message, Tag } from 'antd';
 import { useParams, useIntl, FormattedMessage } from 'umi';
 import { queryTag } from './service'
 const { Option } = Select;
 
-export default (props:any) => {
+export default (props: any) => {
     const { formatMessage } = useIntl()
     const { isQuery, list } = props;
     const { ws_id }: any = useParams()
@@ -17,21 +18,11 @@ export default (props:any) => {
         page_size: 20
     })
 
-    useEffect(() => {
-        if(isQuery === 'edit'){
-            requestData({ tag_id_list: list + '' , page_num: 1, page_size: 20, ws_id }, 'reset')
-        }
-
-        if(isQuery === 'add'){
-            getServerTagList()
-        }
-
-    },[ isQuery, list ])
 
     const requestData = async (query: any, option = "concat") => {
         setFetching(true)
         try {
-            let res = await queryTag(query)
+            const res = await queryTag(query)
             if (res.code === 200) {
                 if (option === 'concat') {
                     const data = tagList.concat(res.data || [])
@@ -41,13 +32,32 @@ export default (props:any) => {
                 }
                 setTagParam(res);
             } else {
-                message.error(res.msg || formatMessage({id: 'operation.failed'}) );
+                message.error(res.msg || formatMessage({ id: 'operation.failed' }));
             }
             setFetching(false)
         } catch (err) {
             setFetching(false)
         }
     }
+
+
+    const getServerTagList = async (word?: string) => {
+        const param = word && word.replace(/\s*/g, "")
+        if (tagWord && tagWord == param) return
+        setTagword(param)
+        requestData({ name: param, page_num: 1, page_size: 20, ws_id }, 'reset')
+    }
+
+    useEffect(() => {
+        if (isQuery === 'edit') {
+            requestData({ tag_id_list: list + '', page_num: 1, page_size: 20, ws_id }, 'reset')
+        }
+
+        if (isQuery === 'add') {
+            getServerTagList()
+        }
+
+    }, [isQuery, list])
 
     const handlePopupScroll = (e: any) => {
         const { page_num, page_size, total, } = tagParam
@@ -57,20 +67,13 @@ export default (props:any) => {
         }
     }
 
-    const getServerTagList = async (word?: string) => {
-        const param = word && word.replace(/\s*/g, "")
-        if (tagWord && tagWord == param) return
-        setTagword(param)
-        requestData({ name: param, page_num: 1, page_size: 20, ws_id }, 'reset')
-    }
-
     // 过滤后清除重调查询接口
     const handleClear = () => {
         getServerTagList()
     }
 
-    const tagRender = (props: any) => {
-        const { label, closable, onClose } = props;
+    const tagRender = ($props: any) => {
+        const { label, closable, onClose } = $props;
         const { color, children } = label.props || {}
         return (
             <Tag color={color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
@@ -78,11 +81,11 @@ export default (props:any) => {
             </Tag>
         )
     }
-    
+
     return (
         <Form.Item
             name="tags"
-            label={<FormattedMessage id="device.tag"/>}
+            label={<FormattedMessage id="device.tag" />}
         >
             <Select
                 mode="multiple"
@@ -90,7 +93,7 @@ export default (props:any) => {
                 notFoundContent={fetching ? <Spin size="small" /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                 filterOption={false}
                 loading={fetching}
-                placeholder={<FormattedMessage id="device.tag.dispatch.tag"/>}
+                placeholder={<FormattedMessage id="device.tag.dispatch.tag" />}
                 onSearch={getServerTagList}
                 style={{ width: '100%' }}
                 showArrow={true}

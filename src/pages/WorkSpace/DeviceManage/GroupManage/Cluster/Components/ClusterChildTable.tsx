@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useIntl, FormattedMessage, getLocale } from 'umi'
 import { Space, message, Popconfirm, Typography } from 'antd'
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons'
@@ -22,7 +23,7 @@ export default (props: any) => {
     const access = useAccess();
     const [loading, setLoading] = useState(true)
     const [dataSource, setDataSoure] = useState<any>([])
-    const [refrush, setRefrush] = useState(false)
+    const [refrush, setRefrush] = useState<any>()
     const [tree, setTree] = useState({ first: 46.6, next: 49 })
 
     const background = `url(${treeSvg}) no-repeat center center / 100% 100%`
@@ -50,7 +51,7 @@ export default (props: any) => {
         const { code, msg } = await stateRefresh({ server_id: row.server_id, server_provider: 'aligroup' })
         if (code === 200) {
             message.success(formatMessage({ id: 'device.synchronization.state.success' }))
-            setRefrush(!refrush)
+            setRefrush(new Date().getTime())
         }
         else requestCodeMessage(code, msg)
     }
@@ -63,7 +64,7 @@ export default (props: any) => {
 
     const defaultFetchOption = (ret: any) => {
         if (ret.code === 200) {
-            setRefrush(!refrush)
+            setRefrush(new Date().getTime())
             message.success(formatMessage({ id: 'operation.success' }))
         }
         else requestCodeMessage(ret.code, ret.msg)
@@ -181,7 +182,7 @@ export default (props: any) => {
             title: <FormattedMessage id="device.channel_type" />,
             width: 100,
             key: 'channel_type',
-            render: (_, record: any) => (record.test_server.channel_type || '-')
+            render: (_: any, record: any) => (record.test_server.channel_type || '-')
         },
         {
             title: <FormattedMessage id="device.local.server" />,
@@ -326,12 +327,13 @@ export default (props: any) => {
         <>
             <div style={{ width: '100%', display: 'flex' }}>
                 <div style={{ width: 47, background: '#fff' }}>
-                    <div style={{ height: tree.first, background: firstBackground }}></div>
+                    <div style={{ height: tree.first, background: firstBackground }} />
                     {
                         dataSource.length > 0 &&
                         dataSource.map(
                             (item: any, index: any) => (
                                 <div
+                                    // eslint-disable-next-line react/no-array-index-key
                                     key={index}
                                     style={{ height: tree.next, background }}
                                 />

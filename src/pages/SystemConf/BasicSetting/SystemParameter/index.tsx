@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Layout, Space, Table, Typography, Badge, message, Spin, Popconfirm } from 'antd'
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { useRequest, useIntl, FormattedMessage, getLocale } from 'umi'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { deleteConfig, queryConfigList } from '../services'
@@ -12,12 +13,12 @@ import { ColumnEllipsisText } from '@/components/ColumnComponents'
 const SystemParameter = (props: any, ref: any) => {
     const { formatMessage } = useIntl()
     const enLocale = getLocale() === 'en-US'
+    const addConfigDrawer: any = useRef()
 
     useImperativeHandle(ref, () => ({
         openSetting: () => addConfigDrawer.current.show()
     }))
 
-    const addConfigDrawer: any = useRef()
     const PAGE_DEFAULT_PARAMS: any = { config_type: 'sys', page_size: 10, page_num: 1 }
     const [params, setParams] = useState<any>(PAGE_DEFAULT_PARAMS)
 
@@ -33,6 +34,21 @@ const SystemParameter = (props: any, ref: any) => {
     useEffect(() => {
         run(params)
     }, [params])
+
+    const handleEdit = (_: any) => {
+        addConfigDrawer.current.show('edit', _)
+    }
+
+    const handleDelete = async (_: any) => {
+        const { code, msg } = await deleteConfig({ config_id: _.id })
+        if (code === 200) {
+            refresh()
+            message.success(formatMessage({ id: 'operation.success' }))
+        }
+        else {
+            requestCodeMessage(code, msg)
+        }
+    }
 
     const columns = [{
         dataIndex: 'config_key',
@@ -136,21 +152,6 @@ const SystemParameter = (props: any, ref: any) => {
             </Space>
         )
     },]
-
-    const handleEdit = (_: any) => {
-        addConfigDrawer.current.show('edit', _)
-    }
-
-    const handleDelete = async (_: any) => {
-        const { code, msg } = await deleteConfig({ config_id: _.id })
-        if (code === 200) {
-            refresh()
-            message.success(formatMessage({ id: 'operation.success' }))
-        }
-        else {
-            requestCodeMessage(code, msg)
-        }
-    }
 
     const hanldeOk = () => refresh()
 

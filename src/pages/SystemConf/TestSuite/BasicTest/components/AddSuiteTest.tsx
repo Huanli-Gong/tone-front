@@ -1,9 +1,10 @@
-import React, { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useState, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { Drawer, Button, Form, Col, Row, Select, Input, Radio } from 'antd'
 import styles from '../style.less'
 import Owner from '@/components/Owner/index';
 import { useLocation, useIntl, FormattedMessage } from 'umi'
-import _ from 'lodash'
 import { useSuiteProvider } from '../../hooks'
 import { QusetionIconTootip } from '@/components/Product/index'
 
@@ -25,6 +26,15 @@ export default forwardRef(
         const [help, setHelp] = useState<string | undefined>()
         const [disable, setDisable] = useState(false)
         const [dataSource, setDataSource] = useState<any>({})
+
+        const handleCancel = () => {
+            setVisible(false)
+            setDisable(false)
+            form.resetFields()
+            setHelp(undefined)
+            setValidateStatus('')
+            setDataSource({})
+        }
 
         useImperativeHandle(ref, () => ({
             show: (t: any, d: any = {}) => {
@@ -70,15 +80,6 @@ export default forwardRef(
         const handleChange = () => {
             setHelp(undefined)
             setValidateStatus('')
-        }
-
-        const handleCancel = () => {
-            setVisible(false)
-            setDisable(false)
-            form.resetFields()
-            setHelp(undefined)
-            setValidateStatus('')
-            setDataSource({})
         }
 
         const title = useMemo(() => {
@@ -157,7 +158,7 @@ export default forwardRef(
                             >
                                 <Select placeholder={formatMessage({ id: 'please.select' })} getPopupContainer={node => node.parentNode}>
                                     {
-                                        runList.map((item: any, index: number) => {
+                                        runList.map((item: any) => {
                                             return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
                                         })
                                     }
@@ -173,7 +174,7 @@ export default forwardRef(
                                 >
                                     <Select placeholder={formatMessage({ id: 'please.select' })}>
                                         {
-                                            viewType.map((item: any, index: number) => {
+                                            viewType.map((item: any) => {
                                                 return <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
                                             })
                                         }
@@ -196,7 +197,7 @@ export default forwardRef(
                                     }}
                                     allowClear
                                     options={
-                                        domainList.map((item: any, index: number) => {
+                                        domainList.map((item: any) => {
                                             return {
                                                 value: item.id,
                                                 label: item.name

@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
-import { getLocale, useIntl, FormattedMessage } from 'umi'
+import { getLocale, useIntl } from 'umi'
 import { matchTestType } from '@/utils/utils'
 
-export default ({ data = {}, test_type = '', plan = false }: any) => {
+export default ({ data = {}, test_type = '' }: any) => {
     const { formatMessage } = useIntl()
     const switchState = (state: string, testType: string) => {
         if (state === 'increase') return { color: '#81BF84', name: formatMessage({ id: `ws.result.details.${state}` }), legend: '#389E0D' }
@@ -48,7 +50,7 @@ export default ({ data = {}, test_type = '', plan = false }: any) => {
 
         const mychart = echarts.init(chart.current)
 
-        let rich = {}
+        const rich = {}
         dataSource.forEach(({ legend, key }: any) => {
             rich[key] = { color: legend }
         })

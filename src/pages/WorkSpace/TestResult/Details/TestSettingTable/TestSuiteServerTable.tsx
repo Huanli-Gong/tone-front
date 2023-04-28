@@ -29,7 +29,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                 ellipsis: {
                     showTitle: false
                 },
-                render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} children={text} />,
+                render: (text: any) => <ColumnEllipsisText ellipsis={{ tooltip: true }} >{text}</ColumnEllipsisText>,
             } :
             {
                 title: <FormattedMessage id="ws.result.details.mode" />,
@@ -85,7 +85,7 @@ export default ({ data = [], testType, provider_name }: any) => {
                 showTitle: false
             },
             width: 100,
-            render: (_: any) => ('-')
+            render: () => ('-')
         },
         {
             title: <FormattedMessage id="ws.result.details.priority" />,

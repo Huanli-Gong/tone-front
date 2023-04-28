@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react';
 import { Col, Row, Space, Typography, Table, Spin } from 'antd';
 import { ExclamationCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { FormattedMessage, useParams } from 'umi'
@@ -10,7 +12,7 @@ const RenderMachineItem = (props: any) => {
     const { ws_id } = useParams() as any
     const [flag, setFlag] = useState<boolean>(true)
     const [loading, setLoading] = useState<boolean>(true)
-    const [dataSource, setDataSource] = useState<Array<{}>>([])
+    const [dataSource, setDataSource] = useState<any[]>([])
     const handleChange = () => {
         setFlag(!flag)
     }

@@ -29,7 +29,7 @@ export default ({ title = '', need_reboot, setup_info, cleanup_info, step }: any
             ellipsis: {
                 showTitle: false
             },
-            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} children={_} /> : <TidDetail tid={_} /> : '-'
+            render: (_: any) => _ && _.length ? _.indexOf('API_v2_0_') > -1 ? <ColumnEllipsisText ellipsis={{ tooltip: true }} >{_}</ColumnEllipsisText> : <TidDetail tid={_} /> : '-'
         },
         {
             dataIndex: 'start_time',
@@ -42,8 +42,9 @@ export default ({ title = '', need_reboot, setup_info, cleanup_info, step }: any
             ...tooltipTd(),
         }
     ]
-    let needReboot = need_reboot ? formatMessage({ id: 'ws.result.details.restart.server' }) : ''
-    let hasScript = setup_info || cleanup_info ? formatMessage({ id: 'ws.result.details.execute.script' }) : ''
+
+    const needReboot = need_reboot ? formatMessage({ id: 'ws.result.details.restart.server' }) : ''
+    const hasScript = setup_info || cleanup_info ? formatMessage({ id: 'ws.result.details.execute.script' }) : ''
 
     if (needReboot || hasScript)
         return (

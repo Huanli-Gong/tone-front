@@ -1,4 +1,6 @@
-import React, { useState, useImperativeHandle, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useState, useImperativeHandle, useEffect } from 'react'
 import { Form, Radio, Row, Col, Select, Input, Card } from 'antd'
 import styles from './index.less'
 import { queryKernelList } from '@/pages/SystemConf/KernelManage/services'
@@ -197,9 +199,11 @@ export default ({ contrl, disabled = false, onRef = null, template = {} }: any) 
                                     </Row>
                                 </Form.Item>
                                 <Form.Item name="vm" label={<FormattedMessage id="ws.result.details.vm" />}>
-                                    <Select getPopupContainer={node => node.parentNode}
+                                    <Select
+                                        getPopupContainer={node => node.parentNode}
                                         placeholder={<FormattedMessage id="ws.result.details.vm.placeholder" />}
-                                        disabled={disabled}></Select>
+                                        disabled={disabled}
+                                    />
                                 </Form.Item>
                             </Form.Item>
                         }

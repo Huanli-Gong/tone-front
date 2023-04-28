@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect } from 'react';
 import { Checkbox, Button, Divider, Space } from 'antd';
-import { useIntl, FormattedMessage } from 'umi'
+import { FormattedMessage } from 'umi'
 import styles from './index.less';
 
 const FilterRadio: React.FC<any> = ({ list, confirm, onConfirm, configType }) => {
-	const { formatMessage } = useIntl()
 	const [val, setVal] = useState<number[]>([])
 	const [all, setAll] = useState<boolean>(false)
 	const [init, setInit] = useState<boolean>(false)
-	const handleDomainRadio = (val: any) => {
-		setInit(!!val.length && val.length < list.length)
-		setVal(val)
-		setAll(val.length === list.length)
+	const handleDomainRadio = ($val: any) => {
+		setInit(!!$val.length && $val.length < list.length)
+		setVal($val)
+		setAll($val.length === list.length)
 	}
 	const box = list.map((item: any) => (item.id))
 	const onCheckAllChange = (e: any) => {

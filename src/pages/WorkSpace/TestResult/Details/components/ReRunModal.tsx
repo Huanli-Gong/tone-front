@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 
 import { Modal, Row, Col, Form, Checkbox } from 'antd'
@@ -5,8 +6,6 @@ import styled from 'styled-components'
 import { useParams, FormattedMessage } from 'umi'
 import { stringify } from 'querystring'
 import { targetJump } from '@/utils/utils'
-
-const reRunCheckedText = 'reRun.checked.inheriting_machine'
 
 const Content = styled(Modal)`
     .ant-modal-body {
@@ -21,12 +20,13 @@ const Content = styled(Modal)`
 
 const ReRunModal = (props: any, ref: any) => {
     const { ws_id } = useParams<any>()
+    const [form] = Form.useForm()
 
     const [visible, setVisible] = useState(false)
     const [source, setSource] = useState<any>(null)
     // 重跑选项之一
     const [reRunChecked, setReRunChecked] = useState(false)
-    
+
     const hanldeCancle = () => {
         setVisible(false)
         setReRunChecked(false)
@@ -40,7 +40,7 @@ const ReRunModal = (props: any, ref: any) => {
         form
             .validateFields()
             .then(values => {
-                let obj: any = {}
+                const obj: any = {}
                 Object.keys(values).forEach(
                     key => {
                         if (values[key]) {
@@ -56,17 +56,18 @@ const ReRunModal = (props: any, ref: any) => {
     }
 
     const afterClose = () => {
-        okLink && targetJump(okLink)
+        if (okLink)
+            targetJump(okLink)
     }
-
-    const [form] = Form.useForm()
 
     const fail_case = Form.useWatch('fail_case', form);
     const suite = Form.useWatch('suite', form);
 
     useImperativeHandle(ref, () => ({
         show(_: any) {
-            _ && setSource(_)
+            console.log(_)
+            if (_)
+                setSource(_)
             setVisible(true)
             setOkLink(null)
         }
@@ -126,13 +127,16 @@ const ReRunModal = (props: any, ref: any) => {
                     <Form.Item valuePropName="checked" name="notice">
                         <Checkbox><FormattedMessage id="ws.result.list.reRun.checked.notice" /></Checkbox>
                     </Form.Item>
-                    <Form.Item valuePropName="checked" name="inheriting_machine">
-                        <Checkbox
-                            disabled={!reRunChecked}
-                        >
-                            <FormattedMessage id={`ws.result.list.reRun.checked.inheriting_machine`} />
-                        </Checkbox>
-                    </Form.Item>
+                    {
+                        !["pending", "pending_q"].includes(source?.state) &&
+                        <Form.Item valuePropName="checked" name="inheriting_machine">
+                            <Checkbox
+                                disabled={!reRunChecked}
+                            >
+                                <FormattedMessage id={`ws.result.list.reRun.checked.inheriting_machine`} />
+                            </Checkbox>
+                        </Form.Item>
+                    }
                 </Form>
             </Row>
         </Content>

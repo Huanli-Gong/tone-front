@@ -1,4 +1,5 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { useState, forwardRef, useImperativeHandle } from 'react'
 import { Popover, Drawer, Button, Form, Row, Col, Input, Select, InputNumber, Space, Radio, message } from 'antd'
 import styles from '../../style.less'
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
@@ -19,6 +20,15 @@ export default forwardRef(
         const [data, setData] = useState<any>({ bentch: false })
         const [pending, setPending] = useState(false)
 
+        const handleCancel = () => {
+            setData({ bentch: false })
+            setHandle(true)
+            setVisible(false)
+            setTitle('')
+            form.resetFields()
+            setPending(false)
+        }
+
         useImperativeHandle(
             ref,
             () => ({
@@ -26,7 +36,7 @@ export default forwardRef(
                     t && setTitle(t)
                     setData(_)
                     setVisible(true)
-                    let params: any = {
+                    const params: any = {
                         ..._,
                         certificated: _.certificated ? 1 : 0,
                     }
@@ -40,15 +50,6 @@ export default forwardRef(
                 hide: handleCancel
             }),
         )
-
-        const handleCancel = () => {
-            setData({ bentch: false })
-            setHandle(true)
-            setVisible(false)
-            setTitle('')
-            form.resetFields()
-            setPending(false)
-        }
 
         const handleOk = () => {
             if (pending) return;
@@ -74,14 +75,14 @@ export default forwardRef(
         }
 
         const validCell = (rule: any, value: any, callback: any, index: any) => {
-            let content = form.getFieldValue('var')
-            let param = content[index]
+            const content = form.getFieldValue('var')
+            const param = content[index]
             if ((param.name !== '' && param.val !== '' && param.des !== '') || (param.name === '' && param.val === '' && param.des === '')) {
                 callback()
                 return
             } else {
                 if (value == '') {
-                    callback(formatMessage({id: 'please.enter'}) );
+                    callback(formatMessage({ id: 'please.enter' }));
                     return
                 }
             }
@@ -90,45 +91,45 @@ export default forwardRef(
 
         const validFunction = (rule: any, value: any, callback: any) => {
             try {
-                let valid = JSON.parse(value)
+                const valid = JSON.parse(value)
                 if (Object.prototype.toString.call(valid) === '[object Array]') {
-                    let len = valid.length
-                    for (var i = 0; i < len; i++) {
+                    const len = valid.length
+                    for (let i = 0; i < len; i++) {
                         if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                            callback(formatMessage({id: 'TestSuite.data.format.error'}));
+                            callback(formatMessage({ id: 'TestSuite.data.format.error' }));
                             return
                         }
                     }
                 } else {
-                    callback(formatMessage({id: 'TestSuite.data.format.error'}));
+                    callback(formatMessage({ id: 'TestSuite.data.format.error' }));
                     return
                 }
             } catch (e) {
-                callback(formatMessage({id: 'TestSuite.data.format.error'}));
+                callback(formatMessage({ id: 'TestSuite.data.format.error' }));
                 return
             }
             callback()
         }
 
         const handleChangeValueStyle = () => {
-            let content = form.getFieldValue('var')
+            const content = form.getFieldValue('var')
             if (!handle) {
                 try {
-                    let valid = JSON.parse(content)
+                    const valid = JSON.parse(content)
                     if (Object.prototype.toString.call(valid) === '[object Array]') {
-                        let len = valid.length
-                        for (var i = 0; i < len; i++) {
+                        const len = valid.length
+                        for (let i = 0; i < len; i++) {
                             if (!(Object.prototype.toString.call(valid[i]) === '[object Object]')) {
-                                message.error(formatMessage({id: 'TestSuite.data.format.error'}));
+                                message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                                 return
                             }
                         }
                     } else {
-                        message.error(formatMessage({id: 'TestSuite.data.format.error'}));
+                        message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                         return
                     }
                 } catch (e) {
-                    message.error(formatMessage({id: 'TestSuite.data.format.error'}));
+                    message.error(formatMessage({ id: 'TestSuite.data.format.error' }));
                     return
                 }
             }
@@ -151,11 +152,11 @@ export default forwardRef(
                 footer={
                     <div style={{ textAlign: 'right' }} >
                         <Button onClick={handleCancel} style={{ marginRight: 8 }}>
-                            <FormattedMessage id="operation.cancel"/>
+                            <FormattedMessage id="operation.cancel" />
                         </Button>
                         <Button onClick={handleOk} type="primary" htmlType="submit">
 
-                            {title.indexOf('new') > -1 ? <FormattedMessage id="operation.ok"/> : <FormattedMessage id="operation.update"/>}
+                            {title.indexOf('new') > -1 ? <FormattedMessage id="operation.ok" /> : <FormattedMessage id="operation.update" />}
                         </Button>
                     </div>
                 }
@@ -177,9 +178,9 @@ export default forwardRef(
                                 <Form.Item
                                     name="name"
                                     label="Test Conf"
-                                    rules={[{ required: true, message: formatMessage({id: 'please.enter'})  }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                                 >
-                                    <Input autoComplete="off" placeholder={formatMessage({id: 'please.enter'})} />
+                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'please.enter' })} />
                                 </Form.Item>
                             </Col>
                         }
@@ -188,20 +189,20 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="alias"
-                                    label={<FormattedMessage id="TestSuite.alias"/>}
+                                    label={<FormattedMessage id="TestSuite.alias" />}
                                 // rules={[{ required: true, message: '请输入' }]}
                                 >
-                                    <Input placeholder={formatMessage({id: 'TestSuite.alias.placeholder'})} />
+                                    <Input placeholder={formatMessage({ id: 'TestSuite.alias.placeholder' })} />
                                 </Form.Item>
                             </Col>
                         }
                         <Col span={24}>
                             <Form.Item
                                 name="domain_list_str"
-                                label={<FormattedMessage id="TestSuite.domain"/>}
-                                rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                label={<FormattedMessage id="TestSuite.domain" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                             >
-                                <Select placeholder={formatMessage({id: 'please.select'})} mode="multiple" getPopupContainer={node => node.parentNode} >
+                                <Select placeholder={formatMessage({ id: 'please.select' })} mode="multiple" getPopupContainer={node => node.parentNode} >
                                     {
                                         domainList.map((item: any) => (
                                             <Select.Option value={item.id} key={item.id}>{item.name}</Select.Option>
@@ -213,19 +214,19 @@ export default forwardRef(
                         <Col span={24}>
                             <Form.Item
                                 name="timeout"
-                                label={<FormattedMessage id="TestSuite.timeout"/>}
-                                rules={[{ required: true, message: formatMessage({id: 'please.enter'}) }]}
+                                label={<FormattedMessage id="TestSuite.timeout" />}
+                                rules={[{ required: true, message: formatMessage({ id: 'please.enter' }) }]}
                             >
-                                <InputNumber style={{ width: '100%' }} min={0} step={1} placeholder={formatMessage({id: 'please.enter'})} />
+                                <InputNumber style={{ width: '100%' }} min={0} step={1} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
                         <Col span={24}>
                             <Form.Item
                                 name="repeat"
-                                label={<FormattedMessage id="TestSuite.repeat"/>}
-                                rules={!data.bentch ? [{ required: true, message: formatMessage({id: 'please.enter'}) }] : []}
+                                label={<FormattedMessage id="TestSuite.repeat" />}
+                                rules={!data.bentch ? [{ required: true, message: formatMessage({ id: 'please.enter' }) }] : []}
                             >
-                                <InputNumber style={{ width: '100%' }} min={1} step={1} placeholder={formatMessage({id: 'please.enter'})} />
+                                <InputNumber style={{ width: '100%' }} min={1} step={1} placeholder={formatMessage({ id: 'please.enter' })} />
                             </Form.Item>
                         </Col>
                         {
@@ -243,7 +244,7 @@ export default forwardRef(
                                     !handle ?
                                         <Form.Item
                                             name="var"
-                                            label={<FormattedMessage id="TestSuite.var"/>}
+                                            label={<FormattedMessage id="TestSuite.var" />}
                                             rules={[{ validator: validFunction }]}
                                         >
                                             <Input.TextArea rows={4} style={{ width: '100%' }} placeholder="格式：key=value, description，多个换行" />
@@ -256,17 +257,17 @@ export default forwardRef(
                                                         {fields.map((field: any, index: any) => (
                                                             <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="start">
                                                                 <Form.Item
-                                                                    label={index == 0 ? <FormattedMessage id="TestSuite.var"/> : null}
+                                                                    label={index == 0 ? <FormattedMessage id="TestSuite.var" /> : null}
                                                                     {...field}
                                                                     name={[field.name, 'name']}
                                                                     fieldKey={[field.fieldKey, 'name']}
                                                                     rules={[{
-                                                                        validator(rule, value, callback) { 
-                                                                            validCell(rule, value, callback, index) 
+                                                                        validator(rule, value, callback) {
+                                                                            validCell(rule, value, callback, index)
                                                                         },
                                                                     }]}
                                                                 >
-                                                                    <Input autoComplete="off" placeholder={formatMessage({id: 'TestSuite.variable.name'})} />
+                                                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'TestSuite.variable.name' })} />
                                                                 </Form.Item>
                                                                 <div style={{ paddingTop: index == 0 ? '33px' : '0' }}>=</div>
                                                                 <Form.Item
@@ -278,7 +279,7 @@ export default forwardRef(
                                                                 //     validator(rule, value, callback) { validCell(rule, value, callback, index) },
                                                                 // }]}
                                                                 >
-                                                                    <Input autoComplete="off" placeholder={formatMessage({id: 'TestSuite.default'})} />
+                                                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'TestSuite.default' })} />
                                                                 </Form.Item>
                                                                 <div style={{ paddingTop: index == 0 ? '38px' : '0' }}>,</div>
                                                                 <Form.Item
@@ -287,7 +288,7 @@ export default forwardRef(
                                                                     name={[field.name, 'des']}
                                                                     fieldKey={[field.fieldKey, 'des']}
                                                                 >
-                                                                    <Input autoComplete="off" placeholder={formatMessage({id: 'TestSuite.var.desc'})} />
+                                                                    <Input autoComplete="off" placeholder={formatMessage({ id: 'TestSuite.var.desc' })} />
                                                                 </Form.Item>
 
                                                                 {fields.length > 1 ?
@@ -310,13 +311,13 @@ export default forwardRef(
                                                             type="link"
                                                             size="small"
                                                             onClick={() => {
-                                                                let content = form.getFieldValue('var')
+                                                                const content = form.getFieldValue('var')
                                                                 content.push({ name: '', val: '', des: '' })
                                                                 form.setFieldsValue({ var: content })
                                                             }}
                                                             block
                                                         >
-                                                            + <FormattedMessage id="TestSuite.var.add"/>
+                                                            + <FormattedMessage id="TestSuite.var.add" />
                                                         </Button>
 
                                                     </div>
@@ -331,12 +332,12 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="is_default"
-                                    label={<FormattedMessage id="TestSuite.default.case"/>}
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    label={<FormattedMessage id="TestSuite.default.case" />}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
-                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.yes" /></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no" /></Radio>
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
@@ -348,12 +349,12 @@ export default forwardRef(
                                     name="certificated"
                                     label={
                                         <span>
-                                            <FormattedMessage id="TestSuite.is_certified"/>&nbsp;
+                                            <FormattedMessage id="TestSuite.is_certified" />&nbsp;
                                             <Popover
                                                 overlayClassName={styles.cer_tips}
                                                 content={
                                                     <div>
-                                                        <p><FormattedMessage id="TestSuite.is_certified.ps"/></p>
+                                                        <p><FormattedMessage id="TestSuite.is_certified.ps" /></p>
                                                     </div>
                                                 }
                                                 placement="bottomLeft"
@@ -362,11 +363,11 @@ export default forwardRef(
                                             </Popover>
                                         </span>
                                     }
-                                    rules={[{ required: true, message: formatMessage({id: 'please.select'}) }]}
+                                    rules={[{ required: true, message: formatMessage({ id: 'please.select' }) }]}
                                 >
                                     <Radio.Group>
-                                        <Radio value={1}><FormattedMessage id="operation.yes"/></Radio>
-                                        <Radio value={0}><FormattedMessage id="operation.no"/></Radio>
+                                        <Radio value={1}><FormattedMessage id="operation.yes" /></Radio>
+                                        <Radio value={0}><FormattedMessage id="operation.no" /></Radio>
 
                                     </Radio.Group>
                                 </Form.Item>
@@ -377,9 +378,9 @@ export default forwardRef(
                             <Col span={24}>
                                 <Form.Item
                                     name="description"
-                                    label={<FormattedMessage id="TestSuite.desc"/>}
+                                    label={<FormattedMessage id="TestSuite.desc" />}
                                 >
-                                    <Input.TextArea rows={4} placeholder={formatMessage({id: 'TestSuite.desc.placeholder'})} />
+                                    <Input.TextArea rows={4} placeholder={formatMessage({ id: 'TestSuite.desc.placeholder' })} />
                                 </Form.Item>
                             </Col>
                         }

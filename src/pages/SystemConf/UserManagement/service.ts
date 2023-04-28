@@ -1,5 +1,5 @@
 import { request } from 'umi';
-import { TableListParams, RoleChangeParams } from './data.d';
+import type { TableListParams, RoleChangeParams } from './data.d';
 
 //用户角色列表
 export async function roleList(params: any) {
